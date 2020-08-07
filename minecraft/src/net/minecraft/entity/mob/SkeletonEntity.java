@@ -15,22 +15,22 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_SKELETON_AMBIENT;
+		return SoundEvents.field_15200;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_SKELETON_HURT;
+		return SoundEvents.field_15069;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_SKELETON_DEATH;
+		return SoundEvents.field_14877;
 	}
 
 	@Override
 	SoundEvent getStepSound() {
-		return SoundEvents.ENTITY_SKELETON_STEP;
+		return SoundEvents.field_14548;
 	}
 
 	@Override

@@ -6,14 +6,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
-import com.mojang.datafixers.types.DynamicOps;
-import com.mojang.datafixers.types.JsonOps;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -110,25 +110,26 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 	@Override
 	protected TypeRewriteRule makeRule() {
 		Type<?> type = this.getOutputSchema().getType(TypeReferences.LEVEL);
-		return this.fixTypeEverywhereTyped("LevelDataGeneratorOptionsFix", this.getInputSchema().getType(TypeReferences.LEVEL), type, typed -> {
-			Dynamic<?> dynamic = typed.write();
-			Optional<String> optional = dynamic.get("generatorOptions").asString();
-			Dynamic<?> dynamic2;
-			if ("flat".equalsIgnoreCase(dynamic.get("generatorName").asString(""))) {
-				String string = (String)optional.orElse("");
-				dynamic2 = dynamic.set("generatorOptions", fixGeneratorOptions(string, dynamic.getOps()));
-			} else if ("buffet".equalsIgnoreCase(dynamic.get("generatorName").asString("")) && optional.isPresent()) {
-				Dynamic<JsonElement> dynamic3 = new Dynamic<>(JsonOps.INSTANCE, JsonHelper.deserialize((String)optional.get(), true));
-				dynamic2 = dynamic.set("generatorOptions", dynamic3.convert(dynamic.getOps()));
-			} else {
-				dynamic2 = dynamic;
-			}
+		return this.fixTypeEverywhereTyped(
+			"LevelDataGeneratorOptionsFix", this.getInputSchema().getType(TypeReferences.LEVEL), type, typed -> (Typed)typed.write().flatMap(dynamic -> {
+					Optional<String> optional = dynamic.get("generatorOptions").asString().result();
+					Dynamic<?> dynamic2;
+					if ("flat".equalsIgnoreCase(dynamic.get("generatorName").asString(""))) {
+						String string = (String)optional.orElse("");
+						dynamic2 = dynamic.set("generatorOptions", fixGeneratorOptions(string, dynamic.getOps()));
+					} else if ("buffet".equalsIgnoreCase(dynamic.get("generatorName").asString("")) && optional.isPresent()) {
+						Dynamic<JsonElement> dynamic3 = new Dynamic<>(JsonOps.INSTANCE, JsonHelper.deserialize((String)optional.get(), true));
+						dynamic2 = dynamic.set("generatorOptions", dynamic3.convert(dynamic.getOps()));
+					} else {
+						dynamic2 = dynamic;
+					}
 
-			return (Typed)type.readTyped(dynamic2).getSecond().orElseThrow(() -> new IllegalStateException("Could not read new level type."));
-		});
+					return type.readTyped(dynamic2);
+				}).map(Pair::getFirst).result().orElseThrow(() -> new IllegalStateException("Could not read new level type."))
+		);
 	}
 
-	private static <T> Dynamic<T> fixGeneratorOptions(String generatorOptions, DynamicOps<T> ops) {
+	private static <T> Dynamic<T> fixGeneratorOptions(String generatorOptions, DynamicOps<T> dynamicOps) {
 		Iterator<String> iterator = Splitter.on(';').split(generatorOptions).iterator();
 		String string = "minecraft:plains";
 		Map<String, Map<String, String>> map = Maps.<String, Map<String, String>>newHashMap();
@@ -171,27 +172,30 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 			map.put("village", Maps.newHashMap());
 		}
 
-		T object = ops.createList(
+		T object = dynamicOps.createList(
 			list.stream()
 				.map(
-					pair -> ops.createMap(
+					pair -> dynamicOps.createMap(
 							ImmutableMap.of(
-								ops.createString("height"), ops.createInt((Integer)pair.getFirst()), ops.createString("block"), ops.createString((String)pair.getSecond())
+								dynamicOps.createString("height"),
+								dynamicOps.createInt((Integer)pair.getFirst()),
+								dynamicOps.createString("block"),
+								dynamicOps.createString((String)pair.getSecond())
 							)
 						)
 				)
 		);
-		T object2 = ops.createMap(
+		T object2 = dynamicOps.createMap(
 			(Map<T, T>)map.entrySet()
 				.stream()
 				.map(
 					entry -> Pair.of(
-							ops.createString(((String)entry.getKey()).toLowerCase(Locale.ROOT)),
-							ops.createMap(
+							dynamicOps.createString(((String)entry.getKey()).toLowerCase(Locale.ROOT)),
+							dynamicOps.createMap(
 								(Map<T, T>)((Map)entry.getValue())
 									.entrySet()
 									.stream()
-									.map(entryx -> Pair.of(ops.createString((String)entryx.getKey()), ops.createString((String)entryx.getValue())))
+									.map(entryx -> Pair.of(dynamicOps.createString((String)entryx.getKey()), dynamicOps.createString((String)entryx.getValue())))
 									.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
 							)
 						)
@@ -199,9 +203,16 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
 		);
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(ops.createString("layers"), object, ops.createString("biome"), ops.createString(string), ops.createString("structures"), object2)
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(
+					dynamicOps.createString("layers"),
+					object,
+					dynamicOps.createString("biome"),
+					dynamicOps.createString(string),
+					dynamicOps.createString("structures"),
+					object2
+				)
 			)
 		);
 	}

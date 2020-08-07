@@ -1,161 +1,51 @@
 package net.minecraft.world;
 
 import com.mojang.datafixers.DataFixer;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.util.Util;
-import net.minecraft.world.level.LevelProperties;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class WorldSaveHandler implements PlayerSaveHandler {
+public class WorldSaveHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final File worldDir;
 	private final File playerDataDir;
-	private final long saveStartTime = Util.getMeasuringTimeMs();
-	private final String worldName;
-	private final StructureManager structureManager;
 	protected final DataFixer dataFixer;
 
-	public WorldSaveHandler(File worldsDirectory, String worldName, @Nullable MinecraftServer server, DataFixer dataFixer) {
+	public WorldSaveHandler(LevelStorage.Session session, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
-		this.worldDir = new File(worldsDirectory, worldName);
-		this.worldDir.mkdirs();
-		this.playerDataDir = new File(this.worldDir, "playerdata");
-		this.worldName = worldName;
-		if (server != null) {
-			this.playerDataDir.mkdirs();
-			this.structureManager = new StructureManager(server, this.worldDir, dataFixer);
-		} else {
-			this.structureManager = null;
-		}
-
-		this.writeSessionLock();
+		this.playerDataDir = session.getDirectory(WorldSavePath.field_24182).toFile();
+		this.playerDataDir.mkdirs();
 	}
 
-	public void saveWorld(LevelProperties levelProperties, @Nullable CompoundTag compoundTag) {
-		levelProperties.setVersion(19133);
-		CompoundTag compoundTag2 = levelProperties.cloneWorldTag(compoundTag);
-		CompoundTag compoundTag3 = new CompoundTag();
-		compoundTag3.put("Data", compoundTag2);
-
-		try {
-			File file = new File(this.worldDir, "level.dat_new");
-			File file2 = new File(this.worldDir, "level.dat_old");
-			File file3 = new File(this.worldDir, "level.dat");
-			NbtIo.writeCompressed(compoundTag3, new FileOutputStream(file));
-			if (file2.exists()) {
-				file2.delete();
-			}
-
-			file3.renameTo(file2);
-			if (file3.exists()) {
-				file3.delete();
-			}
-
-			file.renameTo(file3);
-			if (file.exists()) {
-				file.delete();
-			}
-		} catch (Exception var8) {
-			var8.printStackTrace();
-		}
-	}
-
-	private void writeSessionLock() {
-		try {
-			File file = new File(this.worldDir, "session.lock");
-			DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file));
-
-			try {
-				dataOutputStream.writeLong(this.saveStartTime);
-			} finally {
-				dataOutputStream.close();
-			}
-		} catch (IOException var7) {
-			var7.printStackTrace();
-			throw new RuntimeException("Failed to check session lock, aborting");
-		}
-	}
-
-	public File getWorldDir() {
-		return this.worldDir;
-	}
-
-	public void checkSessionLock() throws SessionLockException {
-		try {
-			File file = new File(this.worldDir, "session.lock");
-			DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file));
-
-			try {
-				if (dataInputStream.readLong() != this.saveStartTime) {
-					throw new SessionLockException("The save is being accessed from another location, aborting");
-				}
-			} finally {
-				dataInputStream.close();
-			}
-		} catch (IOException var7) {
-			throw new SessionLockException("Failed to check session lock, aborting");
-		}
-	}
-
-	@Nullable
-	public LevelProperties readProperties() {
-		File file = new File(this.worldDir, "level.dat");
-		if (file.exists()) {
-			LevelProperties levelProperties = LevelStorage.readLevelProperties(file, this.dataFixer);
-			if (levelProperties != null) {
-				return levelProperties;
-			}
-		}
-
-		file = new File(this.worldDir, "level.dat_old");
-		return file.exists() ? LevelStorage.readLevelProperties(file, this.dataFixer) : null;
-	}
-
-	public void saveWorld(LevelProperties levelProperties) {
-		this.saveWorld(levelProperties, null);
-	}
-
-	@Override
 	public void savePlayerData(PlayerEntity playerEntity) {
 		try {
 			CompoundTag compoundTag = playerEntity.toTag(new CompoundTag());
-			File file = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat.tmp");
+			File file = File.createTempFile(playerEntity.getUuidAsString() + "-", ".dat", this.playerDataDir);
+			NbtIo.method_30614(compoundTag, file);
 			File file2 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
-			NbtIo.writeCompressed(compoundTag, new FileOutputStream(file));
-			if (file2.exists()) {
-				file2.delete();
-			}
-
-			file.renameTo(file2);
-		} catch (Exception var5) {
+			File file3 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat_old");
+			Util.backupAndReplace(file2, file, file3);
+		} catch (Exception var6) {
 			LOGGER.warn("Failed to save player data for {}", playerEntity.getName().getString());
 		}
 	}
 
 	@Nullable
-	@Override
 	public CompoundTag loadPlayerData(PlayerEntity playerEntity) {
 		CompoundTag compoundTag = null;
 
 		try {
 			File file = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
 			if (file.exists() && file.isFile()) {
-				compoundTag = NbtIo.readCompressed(new FileInputStream(file));
+				compoundTag = NbtIo.method_30613(file);
 			}
 		} catch (Exception var4) {
 			LOGGER.warn("Failed to load player data for {}", playerEntity.getName().getString());
@@ -163,7 +53,7 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 
 		if (compoundTag != null) {
 			int i = compoundTag.contains("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
-			playerEntity.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
+			playerEntity.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.field_19213, compoundTag, i));
 		}
 
 		return compoundTag;
@@ -182,13 +72,5 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 		}
 
 		return strings;
-	}
-
-	public StructureManager getStructureManager() {
-		return this.structureManager;
-	}
-
-	public DataFixer getDataFixer() {
-		return this.dataFixer;
 	}
 }

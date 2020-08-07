@@ -6,13 +6,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class CyclingOption extends Option {
 	private final BiConsumer<GameOptions, Integer> setter;
-	private final BiFunction<GameOptions, CyclingOption, String> messageProvider;
+	private final BiFunction<GameOptions, CyclingOption, Text> messageProvider;
 
-	public CyclingOption(String key, BiConsumer<GameOptions, Integer> setter, BiFunction<GameOptions, CyclingOption, String> messageProvider) {
+	public CyclingOption(String key, BiConsumer<GameOptions, Integer> setter, BiFunction<GameOptions, CyclingOption, Text> messageProvider) {
 		super(key);
 		this.setter = setter;
 		this.messageProvider = messageProvider;
@@ -25,13 +26,13 @@ public class CyclingOption extends Option {
 
 	@Override
 	public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
-		return new OptionButtonWidget(x, y, width, 20, this, this.getMessage(options), buttonWidget -> {
+		return new OptionButtonWidget(x, y, width, 20, this, this.getMessage(options), button -> {
 			this.cycle(options, 1);
-			buttonWidget.setMessage(this.getMessage(options));
+			button.setMessage(this.getMessage(options));
 		});
 	}
 
-	public String getMessage(GameOptions options) {
-		return (String)this.messageProvider.apply(options, this);
+	public Text getMessage(GameOptions options) {
+		return (Text)this.messageProvider.apply(options, this);
 	}
 }

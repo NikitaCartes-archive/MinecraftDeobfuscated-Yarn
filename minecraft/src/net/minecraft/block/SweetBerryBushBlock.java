@@ -4,7 +4,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -31,7 +30,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	private static final VoxelShape SMALL_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 8.0, 13.0);
 	private static final VoxelShape LARGE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
-	public SweetBerryBushBlock(Block.Settings settings) {
+	public SweetBerryBushBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
@@ -39,21 +38,25 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return new ItemStack(Items.SWEET_BERRIES);
+		return new ItemStack(Items.field_16998);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if ((Integer)state.get(AGE) == 0) {
 			return SMALL_SHAPE;
 		} else {
-			return state.get(AGE) < 3 ? LARGE_SHAPE : super.getOutlineShape(state, view, pos, ePos);
+			return state.get(AGE) < 3 ? LARGE_SHAPE : super.getOutlineShape(state, world, pos, context);
 		}
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		super.scheduledTick(state, world, pos, random);
+	public boolean hasRandomTicks(BlockState state) {
+		return (Integer)state.get(AGE) < 3;
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		int i = (Integer)state.get(AGE);
 		if (i < 3 && random.nextInt(5) == 0 && world.getBaseLightLevel(pos.up(), 0) >= 9) {
 			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), 2);
@@ -62,7 +65,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity instanceof LivingEntity && entity.getType() != EntityType.FOX && entity.getType() != EntityType.BEE) {
+		if (entity instanceof LivingEntity && entity.getType() != EntityType.field_17943 && entity.getType() != EntityType.field_20346) {
 			entity.slowMovement(state, new Vec3d(0.8F, 0.75, 0.8F));
 			if (!world.isClient && (Integer)state.get(AGE) > 0 && (entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ())) {
 				double d = Math.abs(entity.getX() - entity.lastRenderX);
@@ -78,14 +81,14 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		int i = (Integer)state.get(AGE);
 		boolean bl = i == 3;
-		if (!bl && player.getStackInHand(hand).getItem() == Items.BONE_MEAL) {
+		if (!bl && player.getStackInHand(hand).getItem() == Items.field_8324) {
 			return ActionResult.PASS;
 		} else if (i > 1) {
 			int j = 1 + world.random.nextInt(2);
-			dropStack(world, pos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
-			world.playSound(null, pos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+			dropStack(world, pos, new ItemStack(Items.field_16998, j + (bl ? 1 : 0)));
+			world.playSound(null, pos, SoundEvents.field_17617, SoundCategory.field_15245, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
 			world.setBlockState(pos, state.with(AGE, Integer.valueOf(1)), 2);
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		} else {
 			return super.onUse(state, world, pos, player, hand, hit);
 		}

@@ -3,7 +3,6 @@ package net.minecraft.world;
 import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -15,19 +14,19 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	private final ChunkPos pos;
 	private final ShortList[] scheduledPositions = new ShortList[16];
 
-	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos chunkPos) {
-		this(shouldExclude, chunkPos, new ListTag());
+	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos) {
+		this(shouldExclude, pos, new ListTag());
 	}
 
-	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos chunkPos, ListTag listTag) {
+	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, ListTag tag) {
 		this.shouldExclude = shouldExclude;
-		this.pos = chunkPos;
+		this.pos = pos;
 
-		for (int i = 0; i < listTag.size(); i++) {
-			ListTag listTag2 = listTag.getList(i);
+		for (int i = 0; i < tag.size(); i++) {
+			ListTag listTag = tag.getList(i);
 
-			for (int j = 0; j < listTag2.size(); j++) {
-				Chunk.getList(this.scheduledPositions, i).add(listTag2.getShort(j));
+			for (int j = 0; j < listTag.size(); j++) {
+				Chunk.getList(this.scheduledPositions, i).add(listTag.getShort(j));
 			}
 		}
 	}
@@ -62,10 +61,5 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	@Override
 	public boolean isTicking(BlockPos pos, T object) {
 		return false;
-	}
-
-	@Override
-	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
-		stream.forEach(scheduledTick -> this.schedule(scheduledTick.pos, (T)scheduledTick.getObject(), 0, scheduledTick.priority));
 	}
 }

@@ -4,7 +4,7 @@ import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum AddIslandLayer implements CrossSamplingLayer {
-	INSTANCE;
+	field_16158;
 
 	@Override
 	public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {

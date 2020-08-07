@@ -7,5 +7,5 @@ import net.minecraft.util.Arm;
 
 @Environment(EnvType.CLIENT)
 public interface ModelWithArms {
-	void setArmAngle(Arm arm, MatrixStack matrixStack);
+	void setArmAngle(Arm arm, MatrixStack matrices);
 }

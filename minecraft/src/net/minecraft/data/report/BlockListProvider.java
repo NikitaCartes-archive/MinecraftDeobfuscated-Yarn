@@ -26,7 +26,7 @@ public class BlockListProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void run(DataCache cache) throws IOException {
 		JsonObject jsonObject = new JsonObject();
 
 		for (Block block : Registry.BLOCK) {
@@ -76,7 +76,7 @@ public class BlockListProvider implements DataProvider {
 		}
 
 		Path path = this.root.getOutput().resolve("reports/blocks.json");
-		DataProvider.writeToPath(GSON, dataCache, jsonObject, path);
+		DataProvider.writeToPath(GSON, cache, jsonObject, path);
 	}
 
 	@Override

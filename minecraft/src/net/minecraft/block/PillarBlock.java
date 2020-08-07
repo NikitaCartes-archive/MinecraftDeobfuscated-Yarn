@@ -10,21 +10,21 @@ import net.minecraft.util.math.Direction;
 public class PillarBlock extends Block {
 	public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS;
 
-	public PillarBlock(Block.Settings settings) {
+	public PillarBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.getDefaultState().with(AXIS, Direction.Axis.Y));
+		this.setDefaultState(this.getDefaultState().with(AXIS, Direction.Axis.field_11052));
 	}
 
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
-			case COUNTERCLOCKWISE_90:
-			case CLOCKWISE_90:
+			case field_11465:
+			case field_11463:
 				switch ((Direction.Axis)state.get(AXIS)) {
-					case X:
-						return state.with(AXIS, Direction.Axis.Z);
-					case Z:
-						return state.with(AXIS, Direction.Axis.X);
+					case field_11048:
+						return state.with(AXIS, Direction.Axis.field_11051);
+					case field_11051:
+						return state.with(AXIS, Direction.Axis.field_11048);
 					default:
 						return state;
 				}

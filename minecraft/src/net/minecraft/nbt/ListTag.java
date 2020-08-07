@@ -12,11 +12,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 public class ListTag extends AbstractListTag<Tag> {
 	public static final TagReader<ListTag> READER = new TagReader<ListTag>() {
-		public ListTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public ListTag method_23249(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(296L);
 			if (i > 512) {
 				throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
@@ -49,7 +50,7 @@ public class ListTag extends AbstractListTag<Tag> {
 			return "TAG_List";
 		}
 	};
-	private static final ByteSet field_21461 = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
+	private static final ByteSet NBT_NUMBER_TYPES = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
 	private final List<Tag> value;
 	private byte type;
 
@@ -110,7 +111,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public Tag remove(int i) {
+	public Tag method_10536(int i) {
 		Tag tag = (Tag)this.value.remove(i);
 		this.forgetTypeIfEmpty();
 		return tag;
@@ -210,13 +211,13 @@ public class ListTag extends AbstractListTag<Tag> {
 		return this.value.size();
 	}
 
-	public Tag get(int i) {
+	public Tag method_10534(int i) {
 		return (Tag)this.value.get(i);
 	}
 
 	@Override
-	public Tag set(int i, Tag tag) {
-		Tag tag2 = this.get(i);
+	public Tag method_10606(int i, Tag tag) {
+		Tag tag2 = this.method_10534(i);
 		if (!this.setTag(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		} else {
@@ -225,7 +226,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public void add(int i, Tag tag) {
+	public void method_10531(int i, Tag tag) {
 		if (!this.addTag(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		}
@@ -262,7 +263,7 @@ public class ListTag extends AbstractListTag<Tag> {
 		}
 	}
 
-	public ListTag copy() {
+	public ListTag method_10612() {
 		Iterable<Tag> iterable = (Iterable<Tag>)(TagReaders.of(this.type).isImmutable() ? this.value : Iterables.transform(this.value, Tag::copy));
 		List<Tag> list = Lists.<Tag>newArrayList(iterable);
 		return new ListTag(list, this.type);
@@ -280,48 +281,49 @@ public class ListTag extends AbstractListTag<Tag> {
 	public Text toText(String indent, int depth) {
 		if (this.isEmpty()) {
 			return new LiteralText("[]");
-		} else if (field_21461.contains(this.type) && this.size() <= 8) {
+		} else if (NBT_NUMBER_TYPES.contains(this.type) && this.size() <= 8) {
 			String string = ", ";
-			Text text = new LiteralText("[");
+			MutableText mutableText = new LiteralText("[");
 
 			for (int i = 0; i < this.value.size(); i++) {
 				if (i != 0) {
-					text.append(", ");
+					mutableText.append(", ");
 				}
 
-				text.append(((Tag)this.value.get(i)).toText());
+				mutableText.append(((Tag)this.value.get(i)).toText());
 			}
 
-			text.append("]");
-			return text;
+			mutableText.append("]");
+			return mutableText;
 		} else {
-			Text text2 = new LiteralText("[");
+			MutableText mutableText2 = new LiteralText("[");
 			if (!indent.isEmpty()) {
-				text2.append("\n");
+				mutableText2.append("\n");
 			}
 
 			String string2 = String.valueOf(',');
 
 			for (int i = 0; i < this.value.size(); i++) {
-				Text text3 = new LiteralText(Strings.repeat(indent, depth + 1));
-				text3.append(((Tag)this.value.get(i)).toText(indent, depth + 1));
+				MutableText mutableText3 = new LiteralText(Strings.repeat(indent, depth + 1));
+				mutableText3.append(((Tag)this.value.get(i)).toText(indent, depth + 1));
 				if (i != this.value.size() - 1) {
-					text3.append(string2).append(indent.isEmpty() ? " " : "\n");
+					mutableText3.append(string2).append(indent.isEmpty() ? " " : "\n");
 				}
 
-				text2.append(text3);
+				mutableText2.append(mutableText3);
 			}
 
 			if (!indent.isEmpty()) {
-				text2.append("\n").append(Strings.repeat(indent, depth));
+				mutableText2.append("\n").append(Strings.repeat(indent, depth));
 			}
 
-			text2.append("]");
-			return text2;
+			mutableText2.append("]");
+			return mutableText2;
 		}
 	}
 
-	public int getElementType() {
+	@Override
+	public byte getElementType() {
 		return this.type;
 	}
 

@@ -2,15 +2,16 @@ package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.OptionalDynamic;
+import java.util.List;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityRedundantChanceTagsFix extends DataFix {
+	private static final Codec<List<Float>> field_25695 = Codec.FLOAT.listOf();
+
 	public EntityRedundantChanceTagsFix(Schema outputSchema, boolean changesType) {
 		super(outputSchema, changesType);
 	}
@@ -19,17 +20,23 @@ public class EntityRedundantChanceTagsFix extends DataFix {
 	public TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
 			"EntityRedundantChanceTagsFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
-					Dynamic<?> dynamic2 = dynamic;
-					if (Objects.equals(dynamic.get("HandDropChances"), Optional.of(dynamic.createList(Stream.generate(() -> dynamic2.createFloat(0.0F)).limit(2L))))) {
+					if (method_30073(dynamic.get("HandDropChances"), 2)) {
 						dynamic = dynamic.remove("HandDropChances");
 					}
 
-					if (Objects.equals(dynamic.get("ArmorDropChances"), Optional.of(dynamic.createList(Stream.generate(() -> dynamic2.createFloat(0.0F)).limit(4L))))) {
+					if (method_30073(dynamic.get("ArmorDropChances"), 4)) {
 						dynamic = dynamic.remove("ArmorDropChances");
 					}
 
 					return dynamic;
 				})
 		);
+	}
+
+	private static boolean method_30073(OptionalDynamic<?> optionalDynamic, int i) {
+		return (Boolean)optionalDynamic.flatMap(field_25695::parse)
+			.map(list -> list.size() == i && list.stream().allMatch(float_ -> float_ == 0.0F))
+			.result()
+			.orElse(false);
 	}
 }

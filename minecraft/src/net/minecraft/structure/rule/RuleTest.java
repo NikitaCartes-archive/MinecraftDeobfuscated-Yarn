@@ -1,17 +1,17 @@
 package net.minecraft.structure.rule;
 
-import net.minecraft.util.DynamicDeserializer;
+import com.mojang.serialization.Codec;
+import java.util.Random;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.registry.Registry;
 
-public interface RuleTest extends DynamicDeserializer<AbstractRuleTest> {
-	RuleTest ALWAYS_TRUE = register("always_true", dynamic -> AlwaysTrueRuleTest.INSTANCE);
-	RuleTest BLOCK_MATCH = register("block_match", BlockMatchRuleTest::new);
-	RuleTest BLOCKSTATE_MATCH = register("blockstate_match", BlockStateMatchRuleTest::new);
-	RuleTest TAG_MATCH = register("tag_match", TagMatchRuleTest::new);
-	RuleTest RANDOM_BLOCK_MATCH = register("random_block_match", RandomBlockMatchRuleTest::new);
-	RuleTest RANDOM_BLOCKSTATE_MATCH = register("random_blockstate_match", RandomBlockStateMatchRuleTest::new);
+/**
+ * Rule tests are used in structure generation to check if a block state matches some condition.
+ */
+public abstract class RuleTest {
+	public static final Codec<RuleTest> field_25012 = Registry.RULE_TEST.dispatch("predicate_type", RuleTest::getType, RuleTestType::codec);
 
-	static RuleTest register(String id, RuleTest test) {
-		return Registry.register(Registry.RULE_TEST, id, test);
-	}
+	public abstract boolean test(BlockState state, Random random);
+
+	protected abstract RuleTestType<?> getType();
 }

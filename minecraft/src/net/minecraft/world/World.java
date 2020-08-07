@@ -1,22 +1,22 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
@@ -36,8 +36,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.tag.RegistryTagManager;
-import net.minecraft.util.MaterialPredicate;
+import net.minecraft.tag.TagManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -49,6 +49,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
@@ -57,22 +58,25 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.explosion.ExplosionBehavior;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class World implements IWorld, AutoCloseable {
+public abstract class World implements WorldAccess, AutoCloseable {
 	protected static final Logger LOGGER = LogManager.getLogger();
+	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.field_25298), RegistryKey::getValue);
+	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.field_25298, new Identifier("overworld"));
+	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.field_25298, new Identifier("the_nether"));
+	public static final RegistryKey<World> END = RegistryKey.of(Registry.field_25298, new Identifier("the_end"));
 	private static final Direction[] DIRECTIONS = Direction.values();
 	public final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 	public final List<BlockEntity> tickingBlockEntities = Lists.<BlockEntity>newArrayList();
 	protected final List<BlockEntity> pendingBlockEntities = Lists.<BlockEntity>newArrayList();
 	protected final List<BlockEntity> unloadedBlockEntities = Lists.<BlockEntity>newArrayList();
 	private final Thread thread;
+	private final boolean debugWorld;
 	private int ambientDarkness;
 	protected int lcgBlockSeed = new Random().nextInt();
 	protected final int unusedIncrement = 1013904223;
@@ -81,32 +85,42 @@ public abstract class World implements IWorld, AutoCloseable {
 	protected float thunderGradientPrev;
 	protected float thunderGradient;
 	public final Random random = new Random();
-	public final Dimension dimension;
-	protected final ChunkManager chunkManager;
-	protected final LevelProperties properties;
-	private final Profiler profiler;
+	private final DimensionType dimension;
+	protected final MutableWorldProperties properties;
+	private final Supplier<Profiler> profiler;
 	public final boolean isClient;
 	protected boolean iteratingTickingBlockEntities;
 	private final WorldBorder border;
 	private final BiomeAccess biomeAccess;
+	private final RegistryKey<World> registryKey;
 
 	protected World(
-		LevelProperties levelProperties,
-		DimensionType dimensionType,
-		BiFunction<World, Dimension, ChunkManager> chunkManagerProvider,
-		Profiler profiler,
-		boolean isClient
+		MutableWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l
 	) {
-		this.profiler = profiler;
-		this.properties = levelProperties;
-		this.dimension = dimensionType.create(this);
-		this.chunkManager = (ChunkManager)chunkManagerProvider.apply(this, this.dimension);
-		this.isClient = isClient;
-		this.border = this.dimension.createWorldBorder();
+		this.profiler = supplier;
+		this.properties = properties;
+		this.dimension = dimensionType;
+		this.registryKey = registryKey;
+		this.isClient = bl;
+		if (dimensionType.method_31110() != 1.0) {
+			this.border = new WorldBorder() {
+				@Override
+				public double getCenterX() {
+					return super.getCenterX() / dimensionType.method_31110();
+				}
+
+				@Override
+				public double getCenterZ() {
+					return super.getCenterZ() / dimensionType.method_31110();
+				}
+			};
+		} else {
+			this.border = new WorldBorder();
+		}
+
 		this.thread = Thread.currentThread();
-		this.biomeAccess = new BiomeAccess(
-			this, isClient ? levelProperties.getSeed() : LevelProperties.sha256Hash(levelProperties.getSeed()), dimensionType.getBiomeAccessType()
-		);
+		this.biomeAccess = new BiomeAccess(this, l, dimensionType.getBiomeAccessType());
+		this.debugWorld = bl2;
 	}
 
 	@Override
@@ -119,23 +133,20 @@ public abstract class World implements IWorld, AutoCloseable {
 		return null;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public void setDefaultSpawnClient() {
-		this.setSpawnPos(new BlockPos(8, 64, 8));
+	public static boolean method_24794(BlockPos blockPos) {
+		return !isHeightInvalid(blockPos) && isValid(blockPos);
 	}
 
-	public BlockState getTopNonAirState(BlockPos blockPos) {
-		BlockPos blockPos2 = new BlockPos(blockPos.getX(), this.getSeaLevel(), blockPos.getZ());
-
-		while (!this.isAir(blockPos2.up())) {
-			blockPos2 = blockPos2.up();
-		}
-
-		return this.getBlockState(blockPos2);
+	public static boolean method_25953(BlockPos blockPos) {
+		return !method_25952(blockPos.getY()) && isValid(blockPos);
 	}
 
-	public static boolean isValid(BlockPos pos) {
-		return !isHeightInvalid(pos) && pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
+	private static boolean isValid(BlockPos pos) {
+		return pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
+	}
+
+	private static boolean method_25952(int i) {
+		return i < -20000000 || i >= 20000000;
 	}
 
 	public static boolean isHeightInvalid(BlockPos pos) {
@@ -146,17 +157,17 @@ public abstract class World implements IWorld, AutoCloseable {
 		return y < 0 || y >= 256;
 	}
 
-	public WorldChunk getWorldChunk(BlockPos blockPos) {
-		return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+	public WorldChunk getWorldChunk(BlockPos pos) {
+		return this.method_8497(pos.getX() >> 4, pos.getZ() >> 4);
 	}
 
-	public WorldChunk getChunk(int i, int j) {
-		return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL);
+	public WorldChunk method_8497(int i, int j) {
+		return (WorldChunk)this.getChunk(i, j, ChunkStatus.field_12803);
 	}
 
 	@Override
 	public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
-		Chunk chunk = this.chunkManager.getChunk(chunkX, chunkZ, leastStatus, create);
+		Chunk chunk = this.getChunkManager().getChunk(chunkX, chunkZ, leastStatus, create);
 		if (chunk == null && create) {
 			throw new IllegalStateException("Should always be able to create a chunk!");
 		} else {
@@ -166,9 +177,14 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Override
 	public boolean setBlockState(BlockPos pos, BlockState state, int flags) {
+		return this.setBlockState(pos, state, flags, 512);
+	}
+
+	@Override
+	public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
 		if (isHeightInvalid(pos)) {
 			return false;
-		} else if (!this.isClient && this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+		} else if (!this.isClient && this.isDebugWorld()) {
 			return false;
 		} else {
 			WorldChunk worldChunk = this.getWorldChunk(pos);
@@ -178,41 +194,42 @@ public abstract class World implements IWorld, AutoCloseable {
 				return false;
 			} else {
 				BlockState blockState2 = this.getBlockState(pos);
-				if (blockState2 != blockState
+				if ((flags & 128) == 0
+					&& blockState2 != blockState
 					&& (
 						blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos)
 							|| blockState2.getLuminance() != blockState.getLuminance()
 							|| blockState2.hasSidedTransparency()
 							|| blockState.hasSidedTransparency()
 					)) {
-					this.profiler.push("queueCheckLight");
+					this.getProfiler().push("queueCheckLight");
 					this.getChunkManager().getLightingProvider().checkBlock(pos);
-					this.profiler.pop();
+					this.getProfiler().pop();
 				}
 
 				if (blockState2 == state) {
 					if (blockState != blockState2) {
-						this.checkBlockRerender(pos, blockState, blockState2);
+						this.scheduleBlockRerenderIfNeeded(pos, blockState, blockState2);
 					}
 
 					if ((flags & 2) != 0
 						&& (!this.isClient || (flags & 4) == 0)
-						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
+						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.field_13875))) {
 						this.updateListeners(pos, blockState, state, flags);
 					}
 
-					if (!this.isClient && (flags & 1) != 0) {
+					if ((flags & 1) != 0) {
 						this.updateNeighbors(pos, blockState.getBlock());
-						if (state.hasComparatorOutput()) {
-							this.updateHorizontalAdjacent(pos, block);
+						if (!this.isClient && state.hasComparatorOutput()) {
+							this.updateComparators(pos, block);
 						}
 					}
 
-					if ((flags & 16) == 0) {
-						int i = flags & -2;
-						blockState.method_11637(this, pos, i);
-						state.updateNeighborStates(this, pos, i);
-						state.method_11637(this, pos, i);
+					if ((flags & 16) == 0 && maxUpdateDepth > 0) {
+						int i = flags & -34;
+						blockState.prepare(this, pos, i, maxUpdateDepth - 1);
+						state.updateNeighbors(this, pos, i, maxUpdateDepth - 1);
+						state.prepare(this, pos, i, maxUpdateDepth - 1);
 					}
 
 					this.onBlockChanged(pos, blockState, blockState2);
@@ -233,69 +250,65 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Override
-	public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity) {
+	public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth) {
 		BlockState blockState = this.getBlockState(pos);
 		if (blockState.isAir()) {
 			return false;
 		} else {
 			FluidState fluidState = this.getFluidState(pos);
-			this.playLevelEvent(2001, pos, Block.getRawIdFromState(blockState));
+			if (!(blockState.getBlock() instanceof AbstractFireBlock)) {
+				this.syncWorldEvent(2001, pos, Block.getRawIdFromState(blockState));
+			}
+
 			if (drop) {
 				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(pos) : null;
 				Block.dropStacks(blockState, this, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			return this.setBlockState(pos, fluidState.getBlockState(), 3);
+			return this.setBlockState(pos, fluidState.getBlockState(), 3, maxUpdateDepth);
 		}
 	}
 
-	public boolean setBlockState(BlockPos pos, BlockState blockState) {
-		return this.setBlockState(pos, blockState, 3);
+	public boolean setBlockState(BlockPos pos, BlockState state) {
+		return this.setBlockState(pos, state, 3);
 	}
 
 	public abstract void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags);
 
-	@Override
-	public void updateNeighbors(BlockPos pos, Block block) {
-		if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-			this.updateNeighborsAlways(pos, block);
-		}
-	}
-
-	public void checkBlockRerender(BlockPos pos, BlockState old, BlockState updated) {
+	public void scheduleBlockRerenderIfNeeded(BlockPos pos, BlockState old, BlockState updated) {
 	}
 
 	public void updateNeighborsAlways(BlockPos pos, Block block) {
 		this.updateNeighbor(pos.west(), block, pos);
 		this.updateNeighbor(pos.east(), block, pos);
-		this.updateNeighbor(pos.down(), block, pos);
+		this.updateNeighbor(pos.method_10074(), block, pos);
 		this.updateNeighbor(pos.up(), block, pos);
 		this.updateNeighbor(pos.north(), block, pos);
 		this.updateNeighbor(pos.south(), block, pos);
 	}
 
 	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
-		if (direction != Direction.WEST) {
+		if (direction != Direction.field_11039) {
 			this.updateNeighbor(pos.west(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.EAST) {
+		if (direction != Direction.field_11034) {
 			this.updateNeighbor(pos.east(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.DOWN) {
-			this.updateNeighbor(pos.down(), sourceBlock, pos);
+		if (direction != Direction.field_11033) {
+			this.updateNeighbor(pos.method_10074(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.UP) {
+		if (direction != Direction.field_11036) {
 			this.updateNeighbor(pos.up(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.NORTH) {
+		if (direction != Direction.field_11043) {
 			this.updateNeighbor(pos.north(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.SOUTH) {
+		if (direction != Direction.field_11035) {
 			this.updateNeighbor(pos.south(), sourceBlock, pos);
 		}
 	}
@@ -327,7 +340,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		int i;
 		if (x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000) {
 			if (this.isChunkLoaded(x >> 4, z >> 4)) {
-				i = this.getChunk(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
+				i = this.method_8497(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
 			} else {
 				i = 0;
 			}
@@ -346,9 +359,9 @@ public abstract class World implements IWorld, AutoCloseable {
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
 		if (isHeightInvalid(pos)) {
-			return Blocks.VOID_AIR.getDefaultState();
+			return Blocks.field_10243.getDefaultState();
 		} else {
-			WorldChunk worldChunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
+			WorldChunk worldChunk = this.method_8497(pos.getX() >> 4, pos.getZ() >> 4);
 			return worldChunk.getBlockState(pos);
 		}
 	}
@@ -356,7 +369,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
 		if (isHeightInvalid(pos)) {
-			return Fluids.EMPTY.getDefaultState();
+			return Fluids.field_15906.getDefaultState();
 		} else {
 			WorldChunk worldChunk = this.getWorldChunk(pos);
 			return worldChunk.getFluidState(pos);
@@ -364,27 +377,25 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public boolean isDay() {
-		return this.dimension.getType() == DimensionType.OVERWORLD && this.ambientDarkness < 4;
+		return !this.getDimension().hasFixedTime() && this.ambientDarkness < 4;
 	}
 
 	public boolean isNight() {
-		return this.dimension.getType() == DimensionType.OVERWORLD && !this.isDay();
+		return !this.getDimension().hasFixedTime() && !this.isDay();
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity player, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch) {
-		this.playSound(player, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, soundEvent, soundCategory, volume, pitch);
+	public void playSound(@Nullable PlayerEntity player, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSound(player, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch);
 	}
 
 	public abstract void playSound(
 		@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch
 	);
 
-	public abstract void playSoundFromEntity(
-		@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch
-	);
+	public abstract void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
-	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory soundCategory, float f, float g, boolean bl) {
+	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean bl) {
 	}
 
 	@Override
@@ -403,9 +414,9 @@ public abstract class World implements IWorld, AutoCloseable {
 	) {
 	}
 
-	public float getSkyAngleRadians(float f) {
-		float g = this.getSkyAngle(f);
-		return g * (float) (Math.PI * 2);
+	public float getSkyAngleRadians(float tickDelta) {
+		float f = this.method_30274(tickDelta);
+		return f * (float) (Math.PI * 2);
 	}
 
 	public boolean addBlockEntity(BlockEntity blockEntity) {
@@ -427,11 +438,11 @@ public abstract class World implements IWorld, AutoCloseable {
 		return bl;
 	}
 
-	public void addBlockEntities(Collection<BlockEntity> collection) {
+	public void addBlockEntities(Collection<BlockEntity> blockEntities) {
 		if (this.iteratingTickingBlockEntities) {
-			this.pendingBlockEntities.addAll(collection);
+			this.pendingBlockEntities.addAll(blockEntities);
 		} else {
-			for (BlockEntity blockEntity : collection) {
+			for (BlockEntity blockEntity : blockEntities) {
 				this.addBlockEntity(blockEntity);
 			}
 		}
@@ -453,7 +464,7 @@ public abstract class World implements IWorld, AutoCloseable {
 			BlockEntity blockEntity = (BlockEntity)iterator.next();
 			if (!blockEntity.isRemoved() && blockEntity.hasWorld()) {
 				BlockPos blockPos = blockEntity.getPos();
-				if (this.chunkManager.shouldTickBlock(blockPos) && this.getWorldBorder().contains(blockPos)) {
+				if (this.getChunkManager().shouldTickBlock(blockPos) && this.getWorldBorder().contains(blockPos)) {
 					try {
 						profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType()))));
 						if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {
@@ -506,9 +517,9 @@ public abstract class World implements IWorld, AutoCloseable {
 		profiler.pop();
 	}
 
-	public void tickEntity(Consumer<Entity> consumer, Entity entity) {
+	public void tickEntity(Consumer<Entity> tickConsumer, Entity entity) {
 		try {
-			consumer.accept(entity);
+			tickConsumer.accept(entity);
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, "Ticking entity");
 			CrashReportSection crashReportSection = crashReport.addElement("Entity being ticked");
@@ -517,139 +528,36 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 	}
 
-	public boolean isAreaNotEmpty(Box box) {
-		int i = MathHelper.floor(box.x1);
-		int j = MathHelper.ceil(box.x2);
-		int k = MathHelper.floor(box.y1);
-		int l = MathHelper.ceil(box.y2);
-		int m = MathHelper.floor(box.z1);
-		int n = MathHelper.ceil(box.z2);
-
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int o = i; o < j; o++) {
-				for (int p = k; p < l; p++) {
-					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-						if (!blockState.isAir()) {
-							return true;
-						}
-					}
-				}
-			}
-
-			return false;
-		}
-	}
-
-	public boolean doesAreaContainFireSource(Box box) {
-		int i = MathHelper.floor(box.x1);
-		int j = MathHelper.ceil(box.x2);
-		int k = MathHelper.floor(box.y1);
-		int l = MathHelper.ceil(box.y2);
-		int m = MathHelper.floor(box.z1);
-		int n = MathHelper.ceil(box.z2);
-		if (this.isRegionLoaded(i, k, m, j, l, n)) {
-			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				for (int o = i; o < j; o++) {
-					for (int p = k; p < l; p++) {
-						for (int q = m; q < n; q++) {
-							Block block = this.getBlockState(pooledMutable.set(o, p, q)).getBlock();
-							if (block == Blocks.FIRE || block == Blocks.LAVA) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-
-	@Nullable
-	@Environment(EnvType.CLIENT)
-	public BlockState getBlockState(Box area, Block block) {
-		int i = MathHelper.floor(area.x1);
-		int j = MathHelper.ceil(area.x2);
-		int k = MathHelper.floor(area.y1);
-		int l = MathHelper.ceil(area.y2);
-		int m = MathHelper.floor(area.z1);
-		int n = MathHelper.ceil(area.z2);
-		if (this.isRegionLoaded(i, k, m, j, l, n)) {
-			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				for (int o = i; o < j; o++) {
-					for (int p = k; p < l; p++) {
-						for (int q = m; q < n; q++) {
-							BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-							if (blockState.getBlock() == block) {
-								return blockState;
-							}
-						}
-					}
-				}
-
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	public boolean containsBlockWithMaterial(Box area, Material material) {
-		int i = MathHelper.floor(area.x1);
-		int j = MathHelper.ceil(area.x2);
-		int k = MathHelper.floor(area.y1);
-		int l = MathHelper.ceil(area.y2);
-		int m = MathHelper.floor(area.z1);
-		int n = MathHelper.ceil(area.z2);
-		MaterialPredicate materialPredicate = MaterialPredicate.create(material);
-		return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.test(this.getBlockState(blockPos)));
-	}
-
 	public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, Explosion.DestructionType destructionType) {
-		return this.createExplosion(entity, null, x, y, z, power, false, destructionType);
+		return this.createExplosion(entity, null, null, x, y, z, power, false, destructionType);
 	}
 
 	public Explosion createExplosion(
 		@Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType
 	) {
-		return this.createExplosion(entity, null, x, y, z, power, createFire, destructionType);
+		return this.createExplosion(entity, null, null, x, y, z, power, createFire, destructionType);
 	}
 
 	public Explosion createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
-		double x,
-		double y,
-		double z,
-		float power,
-		boolean createFire,
+		@Nullable ExplosionBehavior explosionBehavior,
+		double d,
+		double e,
+		double f,
+		float g,
+		boolean bl,
 		Explosion.DestructionType destructionType
 	) {
-		Explosion explosion = new Explosion(this, entity, x, y, z, power, createFire, destructionType);
-		if (damageSource != null) {
-			explosion.setDamageSource(damageSource);
-		}
-
+		Explosion explosion = new Explosion(this, entity, damageSource, explosionBehavior, d, e, f, g, bl, destructionType);
 		explosion.collectBlocksAndDamageEntities();
 		explosion.affectWorld(true);
 		return explosion;
 	}
 
-	public boolean extinguishFire(@Nullable PlayerEntity playerEntity, BlockPos blockPos, Direction direction) {
-		blockPos = blockPos.offset(direction);
-		if (this.getBlockState(blockPos).getBlock() == Blocks.FIRE) {
-			this.playLevelEvent(playerEntity, 1009, blockPos, 0);
-			this.removeBlock(blockPos, false);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	@Environment(EnvType.CLIENT)
 	public String getDebugString() {
-		return this.chunkManager.getDebugString();
+		return this.getChunkManager().getDebugString();
 	}
 
 	@Nullable
@@ -666,7 +574,7 @@ public abstract class World implements IWorld, AutoCloseable {
 			}
 
 			if (blockEntity == null) {
-				blockEntity = this.getWorldChunk(pos).getBlockEntity(pos, WorldChunk.CreationType.IMMEDIATE);
+				blockEntity = this.getWorldChunk(pos).getBlockEntity(pos, WorldChunk.CreationType.field_12860);
 			}
 
 			if (blockEntity == null) {
@@ -678,10 +586,10 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Nullable
-	private BlockEntity getPendingBlockEntity(BlockPos blockPos) {
+	private BlockEntity getPendingBlockEntity(BlockPos pos) {
 		for (int i = 0; i < this.pendingBlockEntities.size(); i++) {
 			BlockEntity blockEntity = (BlockEntity)this.pendingBlockEntities.get(i);
-			if (!blockEntity.isRemoved() && blockEntity.getPos().equals(blockPos)) {
+			if (!blockEntity.isRemoved() && blockEntity.getPos().equals(pos)) {
 				return blockEntity;
 			}
 		}
@@ -693,7 +601,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		if (!isHeightInvalid(pos)) {
 			if (blockEntity != null && !blockEntity.isRemoved()) {
 				if (this.iteratingTickingBlockEntities) {
-					blockEntity.setWorld(this, pos);
+					blockEntity.setLocation(this, pos);
 					Iterator<BlockEntity> iterator = this.pendingBlockEntities.iterator();
 
 					while (iterator.hasNext()) {
@@ -713,8 +621,8 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 	}
 
-	public void removeBlockEntity(BlockPos blockPos) {
-		BlockEntity blockEntity = this.getBlockEntity(blockPos);
+	public void removeBlockEntity(BlockPos pos) {
+		BlockEntity blockEntity = this.getBlockEntity(pos);
 		if (blockEntity != null && this.iteratingTickingBlockEntities) {
 			blockEntity.markRemoved();
 			this.pendingBlockEntities.remove(blockEntity);
@@ -725,27 +633,31 @@ public abstract class World implements IWorld, AutoCloseable {
 				this.tickingBlockEntities.remove(blockEntity);
 			}
 
-			this.getWorldChunk(blockPos).removeBlockEntity(blockPos);
+			this.getWorldChunk(pos).removeBlockEntity(pos);
 		}
 	}
 
 	public boolean canSetBlock(BlockPos pos) {
-		return isHeightInvalid(pos) ? false : this.chunkManager.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
+		return isHeightInvalid(pos) ? false : this.getChunkManager().isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
 	}
 
-	public boolean isTopSolid(BlockPos pos, Entity entity) {
+	public boolean isDirectionSolid(BlockPos pos, Entity entity, Direction direction) {
 		if (isHeightInvalid(pos)) {
 			return false;
 		} else {
-			Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
-			return chunk == null ? false : chunk.getBlockState(pos).hasSolidTopSurface(this, pos, entity);
+			Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.field_12803, false);
+			return chunk == null ? false : chunk.getBlockState(pos).hasSolidTopSurface(this, pos, entity, direction);
 		}
+	}
+
+	public boolean isTopSolid(BlockPos pos, Entity entity) {
+		return this.isDirectionSolid(pos, entity, Direction.field_11036);
 	}
 
 	public void calculateAmbientDarkness() {
 		double d = 1.0 - (double)(this.getRainGradient(1.0F) * 5.0F) / 16.0;
 		double e = 1.0 - (double)(this.getThunderGradient(1.0F) * 5.0F) / 16.0;
-		double f = 0.5 + 2.0 * MathHelper.clamp((double)MathHelper.cos(this.getSkyAngle(1.0F) * (float) (Math.PI * 2)), -0.25, 0.25);
+		double f = 0.5 + 2.0 * MathHelper.clamp((double)MathHelper.cos(this.method_30274(1.0F) * (float) (Math.PI * 2)), -0.25, 0.25);
 		this.ambientDarkness = (int)((1.0 - f * d * e) * 11.0);
 	}
 
@@ -763,29 +675,30 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public void close() throws IOException {
-		this.chunkManager.close();
+		this.getChunkManager().close();
 	}
 
 	@Nullable
 	@Override
 	public BlockView getExistingChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, false);
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.field_12803, false);
 	}
 
 	@Override
-	public List<Entity> getEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
-		this.getProfiler().method_24270("getEntities");
+	public List<Entity> getOtherEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
+		this.getProfiler().visit("getEntities");
 		List<Entity> list = Lists.<Entity>newArrayList();
-		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
-		int j = MathHelper.floor((box.x2 + 2.0) / 16.0);
-		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
-		int l = MathHelper.floor((box.z2 + 2.0) / 16.0);
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.floor((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.floor((box.maxZ + 2.0) / 16.0);
+		ChunkManager chunkManager = this.getChunkManager();
 
 		for (int m = i; m <= j; m++) {
 			for (int n = k; n <= l; n++) {
-				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
+				WorldChunk worldChunk = chunkManager.getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.getEntities(except, box, list, predicate);
+					worldChunk.collectOtherEntities(except, box, list, predicate);
 				}
 			}
 		}
@@ -793,19 +706,32 @@ public abstract class World implements IWorld, AutoCloseable {
 		return list;
 	}
 
-	public <T extends Entity> List<T> getEntities(@Nullable EntityType<T> type, Box box, Predicate<? super T> predicate) {
-		this.getProfiler().method_24270("getEntities");
-		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
-		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
-		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
-		int l = MathHelper.ceil((box.z2 + 2.0) / 16.0);
+	/**
+	 * Computes a list of entities of the given type within some region that satisfy the given predicate.
+	 * 
+	 * <strong>Warning:<strong> If {@code null} is passed as the entity type filter, care should be
+	 * taken that the type argument {@code T} is set to {@link Entity}, otherwise heap pollution
+	 * in the output list or {@link ClassCastException} can occur.
+	 * 
+	 * @return a list of entities
+	 * 
+	 * @param type the entity type of the returned entities, or {@code null} to return entities of all types
+	 * @param box the box in which to search for entities
+	 * @param predicate a predicate which entities must satisfy in order to be considered
+	 */
+	public <T extends Entity> List<T> getEntitiesByType(@Nullable EntityType<T> type, Box box, Predicate<? super T> predicate) {
+		this.getProfiler().visit("getEntities");
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
 		List<T> list = Lists.<T>newArrayList();
 
 		for (int m = i; m < j; m++) {
 			for (int n = k; n < l; n++) {
 				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.getEntities(type, box, list, predicate);
+					worldChunk.collectEntities(type, box, list, predicate);
 				}
 			}
 		}
@@ -814,12 +740,12 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Override
-	public <T extends Entity> List<T> getEntities(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
-		this.getProfiler().method_24270("getEntities");
-		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
-		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
-		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
-		int l = MathHelper.ceil((box.z2 + 2.0) / 16.0);
+	public <T extends Entity> List<T> getEntitiesByClass(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
+		this.getProfiler().visit("getEntities");
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
 		List<T> list = Lists.<T>newArrayList();
 		ChunkManager chunkManager = this.getChunkManager();
 
@@ -827,7 +753,7 @@ public abstract class World implements IWorld, AutoCloseable {
 			for (int n = k; n < l; n++) {
 				WorldChunk worldChunk = chunkManager.getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.getEntities(entityClass, box, list, predicate);
+					worldChunk.collectEntitiesByClass(entityClass, box, list, predicate);
 				}
 			}
 		}
@@ -837,11 +763,11 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Override
 	public <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
-		this.getProfiler().method_24270("getLoadedEntities");
-		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
-		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
-		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
-		int l = MathHelper.ceil((box.z2 + 2.0) / 16.0);
+		this.getProfiler().visit("getLoadedEntities");
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
 		List<T> list = Lists.<T>newArrayList();
 		ChunkManager chunkManager = this.getChunkManager();
 
@@ -849,7 +775,7 @@ public abstract class World implements IWorld, AutoCloseable {
 			for (int n = k; n < l; n++) {
 				WorldChunk worldChunk = chunkManager.getWorldChunk(m, n);
 				if (worldChunk != null) {
-					worldChunk.getEntities(entityClass, box, list, predicate);
+					worldChunk.collectEntitiesByClass(entityClass, box, list, predicate);
 				}
 			}
 		}
@@ -871,38 +797,29 @@ public abstract class World implements IWorld, AutoCloseable {
 		return 63;
 	}
 
-	@Override
-	public World getWorld() {
-		return this;
-	}
-
-	public LevelGeneratorType getGeneratorType() {
-		return this.properties.getGeneratorType();
-	}
-
-	public int getReceivedStrongRedstonePower(BlockPos blockPos) {
+	public int getReceivedStrongRedstonePower(BlockPos pos) {
 		int i = 0;
-		i = Math.max(i, this.getStrongRedstonePower(blockPos.down(), Direction.DOWN));
+		i = Math.max(i, this.getStrongRedstonePower(pos.method_10074(), Direction.field_11033));
 		if (i >= 15) {
 			return i;
 		} else {
-			i = Math.max(i, this.getStrongRedstonePower(blockPos.up(), Direction.UP));
+			i = Math.max(i, this.getStrongRedstonePower(pos.up(), Direction.field_11036));
 			if (i >= 15) {
 				return i;
 			} else {
-				i = Math.max(i, this.getStrongRedstonePower(blockPos.north(), Direction.NORTH));
+				i = Math.max(i, this.getStrongRedstonePower(pos.north(), Direction.field_11043));
 				if (i >= 15) {
 					return i;
 				} else {
-					i = Math.max(i, this.getStrongRedstonePower(blockPos.south(), Direction.SOUTH));
+					i = Math.max(i, this.getStrongRedstonePower(pos.south(), Direction.field_11035));
 					if (i >= 15) {
 						return i;
 					} else {
-						i = Math.max(i, this.getStrongRedstonePower(blockPos.west(), Direction.WEST));
+						i = Math.max(i, this.getStrongRedstonePower(pos.west(), Direction.field_11039));
 						if (i >= 15) {
 							return i;
 						} else {
-							i = Math.max(i, this.getStrongRedstonePower(blockPos.east(), Direction.EAST));
+							i = Math.max(i, this.getStrongRedstonePower(pos.east(), Direction.field_11034));
 							return i >= 15 ? i : i;
 						}
 					}
@@ -917,28 +834,29 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public int getEmittedRedstonePower(BlockPos pos, Direction direction) {
 		BlockState blockState = this.getBlockState(pos);
-		return blockState.isSimpleFullBlock(this, pos) ? this.getReceivedStrongRedstonePower(pos) : blockState.getWeakRedstonePower(this, pos, direction);
+		int i = blockState.getWeakRedstonePower(this, pos, direction);
+		return blockState.isSolidBlock(this, pos) ? Math.max(i, this.getReceivedStrongRedstonePower(pos)) : i;
 	}
 
-	public boolean isReceivingRedstonePower(BlockPos blockPos) {
-		if (this.getEmittedRedstonePower(blockPos.down(), Direction.DOWN) > 0) {
+	public boolean isReceivingRedstonePower(BlockPos pos) {
+		if (this.getEmittedRedstonePower(pos.method_10074(), Direction.field_11033) > 0) {
 			return true;
-		} else if (this.getEmittedRedstonePower(blockPos.up(), Direction.UP) > 0) {
+		} else if (this.getEmittedRedstonePower(pos.up(), Direction.field_11036) > 0) {
 			return true;
-		} else if (this.getEmittedRedstonePower(blockPos.north(), Direction.NORTH) > 0) {
+		} else if (this.getEmittedRedstonePower(pos.north(), Direction.field_11043) > 0) {
 			return true;
-		} else if (this.getEmittedRedstonePower(blockPos.south(), Direction.SOUTH) > 0) {
+		} else if (this.getEmittedRedstonePower(pos.south(), Direction.field_11035) > 0) {
 			return true;
 		} else {
-			return this.getEmittedRedstonePower(blockPos.west(), Direction.WEST) > 0 ? true : this.getEmittedRedstonePower(blockPos.east(), Direction.EAST) > 0;
+			return this.getEmittedRedstonePower(pos.west(), Direction.field_11039) > 0 ? true : this.getEmittedRedstonePower(pos.east(), Direction.field_11034) > 0;
 		}
 	}
 
-	public int getReceivedRedstonePower(BlockPos blockPos) {
+	public int getReceivedRedstonePower(BlockPos pos) {
 		int i = 0;
 
 		for (Direction direction : DIRECTIONS) {
-			int j = this.getEmittedRedstonePower(blockPos.offset(direction), direction);
+			int j = this.getEmittedRedstonePower(pos.offset(direction), direction);
 			if (j >= 15) {
 				return 15;
 			}
@@ -955,46 +873,12 @@ public abstract class World implements IWorld, AutoCloseable {
 	public void disconnect() {
 	}
 
-	public void setTime(long time) {
-		this.properties.setTime(time);
-	}
-
-	@Override
-	public long getSeed() {
-		return this.properties.getSeed();
-	}
-
 	public long getTime() {
 		return this.properties.getTime();
 	}
 
 	public long getTimeOfDay() {
 		return this.properties.getTimeOfDay();
-	}
-
-	public void setTimeOfDay(long time) {
-		this.properties.setTimeOfDay(time);
-	}
-
-	protected void tickTime() {
-		this.setTime(this.properties.getTime() + 1L);
-		if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-			this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
-		}
-	}
-
-	@Override
-	public BlockPos getSpawnPos() {
-		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
-		if (!this.getWorldBorder().contains(blockPos)) {
-			blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
-		}
-
-		return blockPos;
-	}
-
-	public void setSpawnPos(BlockPos pos) {
-		this.properties.setSpawnPos(pos);
 	}
 
 	public boolean canPlayerModifyAt(PlayerEntity player, BlockPos pos) {
@@ -1004,17 +888,12 @@ public abstract class World implements IWorld, AutoCloseable {
 	public void sendEntityStatus(Entity entity, byte status) {
 	}
 
-	@Override
-	public ChunkManager getChunkManager() {
-		return this.chunkManager;
-	}
-
-	public void addBlockAction(BlockPos pos, Block block, int type, int data) {
-		this.getBlockState(pos).onBlockAction(this, pos, type, data);
+	public void addSyncedBlockEvent(BlockPos pos, Block block, int type, int data) {
+		this.getBlockState(pos).onSyncedBlockEvent(this, pos, type, data);
 	}
 
 	@Override
-	public LevelProperties getLevelProperties() {
+	public WorldProperties getLevelProperties() {
 		return this.properties;
 	}
 
@@ -1022,8 +901,8 @@ public abstract class World implements IWorld, AutoCloseable {
 		return this.properties.getGameRules();
 	}
 
-	public float getThunderGradient(float f) {
-		return MathHelper.lerp(f, this.thunderGradientPrev, this.thunderGradient) * this.getRainGradient(f);
+	public float getThunderGradient(float delta) {
+		return MathHelper.lerp(delta, this.thunderGradientPrev, this.thunderGradient) * this.getRainGradient(delta);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1032,8 +911,8 @@ public abstract class World implements IWorld, AutoCloseable {
 		this.thunderGradient = thunderGradient;
 	}
 
-	public float getRainGradient(float f) {
-		return MathHelper.lerp(f, this.rainGradientPrev, this.rainGradient);
+	public float getRainGradient(float delta) {
+		return MathHelper.lerp(delta, this.rainGradientPrev, this.rainGradient);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1043,7 +922,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public boolean isThundering() {
-		return this.dimension.hasSkyLight() && !this.dimension.isNether() ? (double)this.getThunderGradient(1.0F) > 0.9 : false;
+		return this.getDimension().hasSkyLight() && !this.getDimension().hasCeiling() ? (double)this.getThunderGradient(1.0F) > 0.9 : false;
 	}
 
 	public boolean isRaining() {
@@ -1055,15 +934,16 @@ public abstract class World implements IWorld, AutoCloseable {
 			return false;
 		} else if (!this.isSkyVisible(pos)) {
 			return false;
+		} else if (this.getTopPosition(Heightmap.Type.field_13197, pos).getY() > pos.getY()) {
+			return false;
 		} else {
-			return this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()
-				? false
-				: this.getBiome(pos).getPrecipitation() == Biome.Precipitation.RAIN;
+			Biome biome = this.getBiome(pos);
+			return biome.getPrecipitation() == Biome.Precipitation.field_9382 && biome.getTemperature(pos) >= 0.15F;
 		}
 	}
 
-	public boolean hasHighHumidity(BlockPos blockPos) {
-		Biome biome = this.getBiome(blockPos);
+	public boolean hasHighHumidity(BlockPos pos) {
+		Biome biome = this.getBiome(pos);
 		return biome.hasHighHumidity();
 	}
 
@@ -1074,18 +954,14 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public abstract int getNextMapId();
 
-	public void playGlobalEvent(int type, BlockPos pos, int data) {
-	}
-
-	public int getEffectiveHeight() {
-		return this.dimension.isNether() ? 128 : 256;
+	public void syncGlobalEvent(int eventId, BlockPos pos, int data) {
 	}
 
 	public CrashReportSection addDetailsToCrashReport(CrashReport report) {
 		CrashReportSection crashReportSection = report.addElement("Affected level", 1);
 		crashReportSection.add("All players", (CrashCallable<String>)(() -> this.getPlayers().size() + " total; " + this.getPlayers()));
-		crashReportSection.add("Chunk stats", this.chunkManager::getDebugString);
-		crashReportSection.add("Level dimension", (CrashCallable<String>)(() -> this.dimension.getType().toString()));
+		crashReportSection.add("Chunk stats", this.getChunkManager()::getDebugString);
+		crashReportSection.add("Level dimension", (CrashCallable<String>)(() -> this.getRegistryKey().getValue().toString()));
 
 		try {
 			this.properties.populateCrashReport(crashReportSection);
@@ -1104,17 +980,17 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public abstract Scoreboard getScoreboard();
 
-	public void updateHorizontalAdjacent(BlockPos pos, Block block) {
-		for (Direction direction : Direction.Type.HORIZONTAL) {
+	public void updateComparators(BlockPos pos, Block block) {
+		for (Direction direction : Direction.Type.field_11062) {
 			BlockPos blockPos = pos.offset(direction);
 			if (this.isChunkLoaded(blockPos)) {
 				BlockState blockState = this.getBlockState(blockPos);
-				if (blockState.getBlock() == Blocks.COMPARATOR) {
+				if (blockState.isOf(Blocks.field_10377)) {
 					blockState.neighborUpdate(this, blockPos, block, pos, false);
-				} else if (blockState.isSimpleFullBlock(this, blockPos)) {
+				} else if (blockState.isSolidBlock(this, blockPos)) {
 					blockPos = blockPos.offset(direction);
 					blockState = this.getBlockState(blockPos);
-					if (blockState.getBlock() == Blocks.COMPARATOR) {
+					if (blockState.isOf(Blocks.field_10377)) {
 						blockState.neighborUpdate(this, blockPos, block, pos, false);
 					}
 				}
@@ -1152,8 +1028,12 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Override
-	public Dimension getDimension() {
+	public DimensionType getDimension() {
 		return this.dimension;
+	}
+
+	public RegistryKey<World> getRegistryKey() {
+		return this.registryKey;
 	}
 
 	@Override
@@ -1162,13 +1042,13 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Override
-	public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> state) {
-		return state.test(this.getBlockState(blockPos));
+	public boolean testBlockState(BlockPos pos, Predicate<BlockState> state) {
+		return state.test(this.getBlockState(pos));
 	}
 
 	public abstract RecipeManager getRecipeManager();
 
-	public abstract RegistryTagManager getTagManager();
+	public abstract TagManager getTagManager();
 
 	public BlockPos getRandomPosInChunk(int x, int y, int z, int i) {
 		this.lcgBlockSeed = this.lcgBlockSeed * 3 + 1013904223;
@@ -1181,11 +1061,19 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public Profiler getProfiler() {
+		return (Profiler)this.profiler.get();
+	}
+
+	public Supplier<Profiler> getProfilerSupplier() {
 		return this.profiler;
 	}
 
 	@Override
 	public BiomeAccess getBiomeAccess() {
 		return this.biomeAccess;
+	}
+
+	public final boolean isDebugWorld() {
+		return this.debugWorld;
 	}
 }

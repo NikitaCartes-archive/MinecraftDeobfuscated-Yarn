@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.util.math.Vec3d;
 
@@ -15,15 +16,15 @@ public class FormCaravanGoal extends Goal {
 	public FormCaravanGoal(LlamaEntity llama, double speed) {
 		this.llama = llama;
 		this.speed = speed;
-		this.setControls(EnumSet.of(Goal.Control.MOVE));
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
 		if (!this.llama.isLeashed() && !this.llama.isFollowing()) {
-			List<Entity> list = this.llama.world.getEntities(this.llama, this.llama.getBoundingBox().expand(9.0, 4.0, 9.0), entityx -> {
+			List<Entity> list = this.llama.world.getOtherEntities(this.llama, this.llama.getBoundingBox().expand(9.0, 4.0, 9.0), entityx -> {
 				EntityType<?> entityType = entityx.getType();
-				return entityType == EntityType.LLAMA || entityType == EntityType.TRADER_LLAMA;
+				return entityType == EntityType.field_6074 || entityType == EntityType.field_17714;
 			});
 			LlamaEntity llamaEntity = null;
 			double d = Double.MAX_VALUE;
@@ -102,13 +103,15 @@ public class FormCaravanGoal extends Goal {
 	@Override
 	public void tick() {
 		if (this.llama.isFollowing()) {
-			LlamaEntity llamaEntity = this.llama.getFollowing();
-			double d = (double)this.llama.distanceTo(llamaEntity);
-			float f = 2.0F;
-			Vec3d vec3d = new Vec3d(llamaEntity.getX() - this.llama.getX(), llamaEntity.getY() - this.llama.getY(), llamaEntity.getZ() - this.llama.getZ())
-				.normalize()
-				.multiply(Math.max(d - 2.0, 0.0));
-			this.llama.getNavigation().startMovingTo(this.llama.getX() + vec3d.x, this.llama.getY() + vec3d.y, this.llama.getZ() + vec3d.z, this.speed);
+			if (!(this.llama.getHoldingEntity() instanceof LeashKnotEntity)) {
+				LlamaEntity llamaEntity = this.llama.getFollowing();
+				double d = (double)this.llama.distanceTo(llamaEntity);
+				float f = 2.0F;
+				Vec3d vec3d = new Vec3d(llamaEntity.getX() - this.llama.getX(), llamaEntity.getY() - this.llama.getY(), llamaEntity.getZ() - this.llama.getZ())
+					.normalize()
+					.multiply(Math.max(d - 2.0, 0.0));
+				this.llama.getNavigation().startMovingTo(this.llama.getX() + vec3d.x, this.llama.getY() + vec3d.y, this.llama.getZ() + vec3d.z, this.speed);
+			}
 		}
 	}
 

@@ -8,10 +8,10 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.container.Container;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinBrain;
+import net.minecraft.entity.mob.ShulkerLidCollisions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -21,23 +21,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -50,25 +51,20 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	@Nullable
 	private final DyeColor color;
 
-	public ShulkerBoxBlock(@Nullable DyeColor color, Block.Settings settings) {
+	public ShulkerBoxBlock(@Nullable DyeColor color, AbstractBlock.Settings settings) {
 		super(settings);
 		this.color = color;
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11036));
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new ShulkerBoxBlockEntity(this.color);
 	}
 
 	@Override
-	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
-		return true;
-	}
-
-	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.ENTITYBLOCK_ANIMATED;
+		return BlockRenderType.field_11456;
 	}
 
 	@Override
@@ -76,29 +72,26 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else if (player.isSpectator()) {
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
-				Direction direction = state.get(FACING);
 				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 				boolean bl;
-				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
-					Box box = VoxelShapes.fullCube()
-						.getBoundingBox()
-						.stretch((double)(0.5F * (float)direction.getOffsetX()), (double)(0.5F * (float)direction.getOffsetY()), (double)(0.5F * (float)direction.getOffsetZ()))
-						.shrink((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ());
-					bl = world.doesNotCollide(box.offset(pos.offset(direction)));
+				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.field_12065) {
+					Direction direction = state.get(FACING);
+					bl = world.doesNotCollide(ShulkerLidCollisions.getLidCollisionBox(pos, direction));
 				} else {
 					bl = true;
 				}
 
 				if (bl) {
-					player.openContainer(shulkerBoxBlockEntity);
-					player.incrementStat(Stats.OPEN_SHULKER_BOX);
+					player.openHandledScreen(shulkerBoxBlockEntity);
+					player.incrementStat(Stats.field_15418);
+					PiglinBrain.onGuardedBlockBroken(player, true);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.CONSUME;
 			} else {
 				return ActionResult.PASS;
 			}
@@ -120,7 +113,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isInvEmpty()) {
+			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
 				ItemStack itemStack = getItemStack(this.getColor());
 				CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
 				if (!compoundTag.isEmpty()) {
@@ -131,7 +124,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 					itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
 				}
 
-				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
+				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, itemStack);
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);
 			} else {
@@ -144,12 +137,12 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-		BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
+		BlockEntity blockEntity = builder.getNullable(LootContextParameters.field_1228);
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 			builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
-				for (int i = 0; i < shulkerBoxBlockEntity.getInvSize(); i++) {
-					consumer.accept(shulkerBoxBlockEntity.getInvStack(i));
+				for (int i = 0; i < shulkerBoxBlockEntity.size(); i++) {
+					consumer.accept(shulkerBoxBlockEntity.getStack(i));
 				}
 			});
 		}
@@ -168,21 +161,21 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (state.getBlock() != newState.getBlock()) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
-				world.updateHorizontalAdjacent(pos, state.getBlock());
+				world.updateComparators(pos, state.getBlock());
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack stack, @Nullable BlockView view, List<Text> tooltip, TooltipContext options) {
-		super.buildTooltip(stack, view, tooltip, options);
+	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+		super.appendTooltip(stack, world, tooltip, options);
 		CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
 		if (compoundTag != null) {
 			if (compoundTag.contains("LootTable", 8)) {
@@ -200,15 +193,15 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 						j++;
 						if (i <= 4) {
 							i++;
-							Text text = itemStack.getName().deepCopy();
-							text.append(" x").append(String.valueOf(itemStack.getCount()));
-							tooltip.add(text);
+							MutableText mutableText = itemStack.getName().shallowCopy();
+							mutableText.append(" x").append(String.valueOf(itemStack.getCount()));
+							tooltip.add(mutableText);
 						}
 					}
 				}
 
 				if (j - i > 0) {
-					tooltip.add(new TranslatableText("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
+					tooltip.add(new TranslatableText("container.shulkerBox.more", j - i).formatted(Formatting.field_1056));
 				}
 			}
 		}
@@ -216,12 +209,12 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
+		return PistonBehavior.field_15971;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		BlockEntity blockEntity = view.getBlockEntity(pos);
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		return blockEntity instanceof ShulkerBoxBlockEntity ? VoxelShapes.cuboid(((ShulkerBoxBlockEntity)blockEntity).getBoundingBox(state)) : VoxelShapes.fullCube();
 	}
 
@@ -232,7 +225,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return Container.calculateComparatorOutput((Inventory)world.getBlockEntity(pos));
+		return ScreenHandler.calculateComparatorOutput((Inventory)world.getBlockEntity(pos));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -262,42 +255,42 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	public static Block get(@Nullable DyeColor dyeColor) {
 		if (dyeColor == null) {
-			return Blocks.SHULKER_BOX;
+			return Blocks.field_10603;
 		} else {
 			switch (dyeColor) {
-				case WHITE:
-					return Blocks.WHITE_SHULKER_BOX;
-				case ORANGE:
-					return Blocks.ORANGE_SHULKER_BOX;
-				case MAGENTA:
-					return Blocks.MAGENTA_SHULKER_BOX;
-				case LIGHT_BLUE:
-					return Blocks.LIGHT_BLUE_SHULKER_BOX;
-				case YELLOW:
-					return Blocks.YELLOW_SHULKER_BOX;
-				case LIME:
-					return Blocks.LIME_SHULKER_BOX;
-				case PINK:
-					return Blocks.PINK_SHULKER_BOX;
-				case GRAY:
-					return Blocks.GRAY_SHULKER_BOX;
-				case LIGHT_GRAY:
-					return Blocks.LIGHT_GRAY_SHULKER_BOX;
-				case CYAN:
-					return Blocks.CYAN_SHULKER_BOX;
-				case PURPLE:
+				case field_7952:
+					return Blocks.field_10199;
+				case field_7946:
+					return Blocks.field_10407;
+				case field_7958:
+					return Blocks.field_10063;
+				case field_7951:
+					return Blocks.field_10203;
+				case field_7947:
+					return Blocks.field_10600;
+				case field_7961:
+					return Blocks.field_10275;
+				case field_7954:
+					return Blocks.field_10051;
+				case field_7944:
+					return Blocks.field_10140;
+				case field_7967:
+					return Blocks.field_10320;
+				case field_7955:
+					return Blocks.field_10532;
+				case field_7945:
 				default:
-					return Blocks.PURPLE_SHULKER_BOX;
-				case BLUE:
-					return Blocks.BLUE_SHULKER_BOX;
-				case BROWN:
-					return Blocks.BROWN_SHULKER_BOX;
-				case GREEN:
-					return Blocks.GREEN_SHULKER_BOX;
-				case RED:
-					return Blocks.RED_SHULKER_BOX;
-				case BLACK:
-					return Blocks.BLACK_SHULKER_BOX;
+					return Blocks.field_10268;
+				case field_7966:
+					return Blocks.field_10605;
+				case field_7957:
+					return Blocks.field_10373;
+				case field_7942:
+					return Blocks.field_10055;
+				case field_7964:
+					return Blocks.field_10068;
+				case field_7963:
+					return Blocks.field_10371;
 			}
 		}
 	}

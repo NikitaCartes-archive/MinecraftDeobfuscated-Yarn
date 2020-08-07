@@ -7,19 +7,20 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.PortUnreachableException;
 import java.net.SocketAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
-import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.Util;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class QueryResponseHandler extends RconBase {
+	private static final Logger field_23963 = LogManager.getLogger();
 	private long lastQueryTime;
 	private final int queryPort;
 	private final int port;
@@ -28,18 +29,17 @@ public class QueryResponseHandler extends RconBase {
 	private final String levelName;
 	private DatagramSocket socket;
 	private final byte[] packetBuffer = new byte[1460];
-	private DatagramPacket currentPacket;
-	private final Map<SocketAddress, String> field_14448;
 	private String ip;
 	private String hostname;
 	private final Map<SocketAddress, QueryResponseHandler.Query> queries;
-	private final long creationTime;
 	private final DataStreamHelper data;
 	private long lastResponseTime;
+	private final DedicatedServer field_23964;
 
-	public QueryResponseHandler(DedicatedServer server) {
-		super(server, "Query Listener");
-		this.queryPort = server.getProperties().queryPort;
+	private QueryResponseHandler(DedicatedServer server, int i) {
+		super("Query Listener");
+		this.field_23964 = server;
+		this.queryPort = i;
 		this.hostname = server.getHostname();
 		this.port = server.getPort();
 		this.motd = server.getMotd();
@@ -55,15 +55,25 @@ public class QueryResponseHandler extends RconBase {
 			try {
 				InetAddress inetAddress = InetAddress.getLocalHost();
 				this.ip = inetAddress.getHostAddress();
-			} catch (UnknownHostException var3) {
-				this.warn("Unable to determine local host IP, please set server-ip in server.properties: " + var3.getMessage());
+			} catch (UnknownHostException var4) {
+				field_23963.warn("Unable to determine local host IP, please set server-ip in server.properties", (Throwable)var4);
 			}
 		}
 
-		this.field_14448 = Maps.<SocketAddress, String>newHashMap();
 		this.data = new DataStreamHelper(1460);
 		this.queries = Maps.<SocketAddress, QueryResponseHandler.Query>newHashMap();
-		this.creationTime = new Date().getTime();
+	}
+
+	@Nullable
+	public static QueryResponseHandler method_30737(DedicatedServer dedicatedServer) {
+		int i = dedicatedServer.getProperties().queryPort;
+		if (0 < i && 65535 >= i) {
+			QueryResponseHandler queryResponseHandler = new QueryResponseHandler(dedicatedServer, i);
+			return !queryResponseHandler.start() ? null : queryResponseHandler;
+		} else {
+			field_23963.warn("Invalid query port {} found in server.properties (queries disabled)", i);
+			return null;
+		}
 	}
 
 	private void reply(byte[] buf, DatagramPacket datagramPacket) throws IOException {
@@ -74,17 +84,17 @@ public class QueryResponseHandler extends RconBase {
 		byte[] bs = packet.getData();
 		int i = packet.getLength();
 		SocketAddress socketAddress = packet.getSocketAddress();
-		this.log("Packet len " + i + " [" + socketAddress + "]");
+		field_23963.debug("Packet len {} [{}]", i, socketAddress);
 		if (3 <= i && -2 == bs[0] && -3 == bs[1]) {
-			this.log("Packet '" + BufferHelper.toHex(bs[2]) + "' [" + socketAddress + "]");
+			field_23963.debug("Packet '{}' [{}]", BufferHelper.toHex(bs[2]), socketAddress);
 			switch (bs[2]) {
 				case 0:
 					if (!this.isValidQuery(packet)) {
-						this.log("Invalid challenge [" + socketAddress + "]");
+						field_23963.debug("Invalid challenge [{}]", socketAddress);
 						return false;
 					} else if (15 == i) {
 						this.reply(this.createRulesReply(packet), packet);
-						this.log("Rules [" + socketAddress + "]");
+						field_23963.debug("Rules [{}]", socketAddress);
 					} else {
 						DataStreamHelper dataStreamHelper = new DataStreamHelper(1460);
 						dataStreamHelper.write(0);
@@ -92,22 +102,22 @@ public class QueryResponseHandler extends RconBase {
 						dataStreamHelper.writeBytes(this.motd);
 						dataStreamHelper.writeBytes("SMP");
 						dataStreamHelper.writeBytes(this.levelName);
-						dataStreamHelper.writeBytes(Integer.toString(this.getCurrentPlayerCount()));
+						dataStreamHelper.writeBytes(Integer.toString(this.field_23964.getCurrentPlayerCount()));
 						dataStreamHelper.writeBytes(Integer.toString(this.maxPlayerCount));
 						dataStreamHelper.writeShort((short)this.port);
 						dataStreamHelper.writeBytes(this.ip);
 						this.reply(dataStreamHelper.bytes(), packet);
-						this.log("Status [" + socketAddress + "]");
+						field_23963.debug("Status [{}]", socketAddress);
 					}
 				default:
 					return true;
 				case 9:
 					this.createQuery(packet);
-					this.log("Challenge [" + socketAddress + "]");
+					field_23963.debug("Challenge [{}]", socketAddress);
 					return true;
 			}
 		} else {
-			this.log("Invalid packet [" + socketAddress + "]");
+			field_23963.debug("Invalid packet [{}]", socketAddress);
 			return false;
 		}
 	}
@@ -137,13 +147,13 @@ public class QueryResponseHandler extends RconBase {
 			this.data.writeBytes("game_id");
 			this.data.writeBytes("MINECRAFT");
 			this.data.writeBytes("version");
-			this.data.writeBytes(this.server.getVersion());
+			this.data.writeBytes(this.field_23964.getVersion());
 			this.data.writeBytes("plugins");
-			this.data.writeBytes(this.server.getPlugins());
+			this.data.writeBytes(this.field_23964.getPlugins());
 			this.data.writeBytes("map");
 			this.data.writeBytes(this.levelName);
 			this.data.writeBytes("numplayers");
-			this.data.writeBytes("" + this.getCurrentPlayerCount());
+			this.data.writeBytes("" + this.field_23964.getCurrentPlayerCount());
 			this.data.writeBytes("maxplayers");
 			this.data.writeBytes("" + this.maxPlayerCount);
 			this.data.writeBytes("hostport");
@@ -154,7 +164,7 @@ public class QueryResponseHandler extends RconBase {
 			this.data.write(1);
 			this.data.writeBytes("player_");
 			this.data.write(0);
-			String[] strings = this.server.getPlayerNames();
+			String[] strings = this.field_23964.getPlayerNames();
 
 			for (String string : strings) {
 				this.data.writeBytes(string);
@@ -175,7 +185,7 @@ public class QueryResponseHandler extends RconBase {
 			return false;
 		} else {
 			byte[] bs = datagramPacket.getData();
-			return ((QueryResponseHandler.Query)this.queries.get(socketAddress)).getId() != BufferHelper.getIntBE(bs, 7, datagramPacket.getLength()) ? false : true;
+			return ((QueryResponseHandler.Query)this.queries.get(socketAddress)).getId() == BufferHelper.getIntBE(bs, 7, datagramPacket.getLength());
 		}
 	}
 
@@ -190,59 +200,49 @@ public class QueryResponseHandler extends RconBase {
 			long l = Util.getMeasuringTimeMs();
 			if (l >= this.lastQueryTime + 30000L) {
 				this.lastQueryTime = l;
-				Iterator<Entry<SocketAddress, QueryResponseHandler.Query>> iterator = this.queries.entrySet().iterator();
-
-				while (iterator.hasNext()) {
-					Entry<SocketAddress, QueryResponseHandler.Query> entry = (Entry<SocketAddress, QueryResponseHandler.Query>)iterator.next();
-					if (((QueryResponseHandler.Query)entry.getValue()).startedBefore(l)) {
-						iterator.remove();
-					}
-				}
+				this.queries.values().removeIf(query -> query.startedBefore(l));
 			}
 		}
 	}
 
 	public void run() {
-		this.info("Query running on " + this.hostname + ":" + this.queryPort);
+		field_23963.info("Query running on {}:{}", this.hostname, this.queryPort);
 		this.lastQueryTime = Util.getMeasuringTimeMs();
-		this.currentPacket = new DatagramPacket(this.packetBuffer, this.packetBuffer.length);
+		DatagramPacket datagramPacket = new DatagramPacket(this.packetBuffer, this.packetBuffer.length);
 
 		try {
 			while (this.running) {
 				try {
-					this.socket.receive(this.currentPacket);
+					this.socket.receive(datagramPacket);
 					this.cleanUp();
-					this.handle(this.currentPacket);
-				} catch (SocketTimeoutException var7) {
+					this.handle(datagramPacket);
+				} catch (SocketTimeoutException var8) {
 					this.cleanUp();
-				} catch (PortUnreachableException var8) {
-				} catch (IOException var9) {
-					this.handleIoException(var9);
+				} catch (PortUnreachableException var9) {
+				} catch (IOException var10) {
+					this.handleIoException(var10);
 				}
 			}
 		} finally {
-			this.forceClose();
+			field_23963.debug("closeSocket: {}:{}", this.hostname, this.queryPort);
+			this.socket.close();
 		}
 	}
 
 	@Override
-	public void start() {
-		if (!this.running) {
-			if (0 < this.queryPort && 65535 >= this.queryPort) {
-				if (this.initialize()) {
-					super.start();
-				}
-			} else {
-				this.warn("Invalid query port " + this.queryPort + " found in server.properties (queries disabled)");
-			}
+	public boolean start() {
+		if (this.running) {
+			return true;
+		} else {
+			return !this.initialize() ? false : super.start();
 		}
 	}
 
 	private void handleIoException(Exception e) {
 		if (this.running) {
-			this.warn("Unexpected exception, buggy JRE? (" + e + ")");
+			field_23963.warn("Unexpected exception", (Throwable)e);
 			if (!this.initialize()) {
-				this.logError("Failed to recover from buggy JRE, shutting down!");
+				field_23963.error("Failed to recover from exception, shutting down!");
 				this.running = false;
 			}
 		}
@@ -251,21 +251,15 @@ public class QueryResponseHandler extends RconBase {
 	private boolean initialize() {
 		try {
 			this.socket = new DatagramSocket(this.queryPort, InetAddress.getByName(this.hostname));
-			this.registerSocket(this.socket);
 			this.socket.setSoTimeout(500);
 			return true;
-		} catch (SocketException var2) {
-			this.warn("Unable to initialise query system on " + this.hostname + ":" + this.queryPort + " (Socket): " + var2.getMessage());
-		} catch (UnknownHostException var3) {
-			this.warn("Unable to initialise query system on " + this.hostname + ":" + this.queryPort + " (Unknown Host): " + var3.getMessage());
-		} catch (Exception var4) {
-			this.warn("Unable to initialise query system on " + this.hostname + ":" + this.queryPort + " (E): " + var4.getMessage());
+		} catch (Exception var2) {
+			field_23963.warn("Unable to initialise query system on {}:{}", this.hostname, this.queryPort, var2);
+			return false;
 		}
-
-		return false;
 	}
 
-	class Query {
+	static class Query {
 		private final long startTime = new Date().getTime();
 		private final int id;
 		private final byte[] messageBytes;

@@ -10,22 +10,22 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 
 public class ThornsEnchantment extends Enchantment {
-	public ThornsEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ARMOR_CHEST, slotTypes);
+	public ThornsEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
+		super(weight, EnchantmentTarget.field_9071, slotTypes);
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return 10 + 20 * (level - 1);
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return super.getMinimumPower(level) + 50;
+	public int getMaxPower(int level) {
+		return super.getMinPower(level) + 50;
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 3;
 	}
 
@@ -37,17 +37,15 @@ public class ThornsEnchantment extends Enchantment {
 	@Override
 	public void onUserDamaged(LivingEntity user, Entity attacker, int level) {
 		Random random = user.getRandom();
-		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.THORNS, user);
+		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.field_9097, user);
 		if (shouldDamageAttacker(level, random)) {
 			if (attacker != null) {
 				attacker.damage(DamageSource.thorns(user), (float)getDamageAmount(level, random));
 			}
 
 			if (entry != null) {
-				((ItemStack)entry.getValue()).damage(3, user, livingEntity -> livingEntity.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
+				((ItemStack)entry.getValue()).damage(2, user, livingEntity -> livingEntity.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
 			}
-		} else if (entry != null) {
-			((ItemStack)entry.getValue()).damage(1, user, livingEntity -> livingEntity.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
 		}
 	}
 

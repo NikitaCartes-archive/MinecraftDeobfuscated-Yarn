@@ -5,19 +5,19 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.FollowGroupLeaderGoal;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public abstract class SchoolingFishEntity extends FishEntity {
 	private SchoolingFishEntity leader;
 	private int groupSize = 1;
 
-	public SchoolingFishEntity(EntityType<? extends SchoolingFishEntity> type, World world) {
-		super(type, world);
+	public SchoolingFishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -100,21 +100,23 @@ public abstract class SchoolingFishEntity extends FishEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		super.initialize(world, difficulty, spawnType, entityData, entityTag);
+	public EntityData initialize(
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
+		super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 		if (entityData == null) {
-			entityData = new SchoolingFishEntity.Data(this);
+			entityData = new SchoolingFishEntity.FishData(this);
 		} else {
-			this.joinGroupOf(((SchoolingFishEntity.Data)entityData).leader);
+			this.joinGroupOf(((SchoolingFishEntity.FishData)entityData).leader);
 		}
 
 		return entityData;
 	}
 
-	public static class Data implements EntityData {
+	public static class FishData implements EntityData {
 		public final SchoolingFishEntity leader;
 
-		public Data(SchoolingFishEntity leader) {
+		public FishData(SchoolingFishEntity leader) {
 			this.leader = leader;
 		}
 	}

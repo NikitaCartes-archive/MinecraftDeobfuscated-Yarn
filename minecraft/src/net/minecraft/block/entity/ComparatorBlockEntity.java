@@ -1,12 +1,13 @@
 package net.minecraft.block.entity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
 
 public class ComparatorBlockEntity extends BlockEntity {
 	private int outputSignal;
 
 	public ComparatorBlockEntity() {
-		super(BlockEntityType.COMPARATOR);
+		super(BlockEntityType.field_11908);
 	}
 
 	@Override
@@ -17,8 +18,8 @@ public class ComparatorBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
 		this.outputSignal = tag.getInt("OutputSignal");
 	}
 

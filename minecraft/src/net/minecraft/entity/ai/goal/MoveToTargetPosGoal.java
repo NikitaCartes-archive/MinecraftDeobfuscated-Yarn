@@ -1,12 +1,12 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public abstract class MoveToTargetPosGoal extends Goal {
-	protected final MobEntityWithAi mob;
+	protected final PathAwareEntity mob;
 	public final double speed;
 	protected int cooldown;
 	protected int tryingTime;
@@ -17,17 +17,17 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	private final int maxYDifference;
 	protected int lowestY;
 
-	public MoveToTargetPosGoal(MobEntityWithAi mob, double speed, int range) {
+	public MoveToTargetPosGoal(PathAwareEntity mob, double speed, int range) {
 		this(mob, speed, range, 1);
 	}
 
-	public MoveToTargetPosGoal(MobEntityWithAi mob, double speed, int range, int maxYDifference) {
+	public MoveToTargetPosGoal(PathAwareEntity mob, double speed, int range, int maxYDifference) {
 		this.mob = mob;
 		this.speed = speed;
 		this.range = range;
 		this.lowestY = 0;
 		this.maxYDifference = maxYDifference;
-		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.JUMP));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18407));
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		}
 	}
 
-	protected int getInterval(MobEntityWithAi mob) {
+	protected int getInterval(PathAwareEntity mob) {
 		return 200 + mob.getRandom().nextInt(200);
 	}
 
@@ -67,15 +67,18 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		return 1.0;
 	}
 
+	protected BlockPos method_30953() {
+		return this.targetPos.up();
+	}
+
 	@Override
 	public void tick() {
-		if (!this.targetPos.up().isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
+		BlockPos blockPos = this.method_30953();
+		if (!blockPos.isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
 			this.reached = false;
 			this.tryingTime++;
 			if (this.shouldResetPath()) {
-				this.mob
-					.getNavigation()
-					.startMovingTo((double)((float)this.targetPos.getX()) + 0.5, (double)(this.targetPos.getY() + 1), (double)((float)this.targetPos.getZ()) + 0.5, this.speed);
+				this.mob.getNavigation().startMovingTo((double)((float)blockPos.getX()) + 0.5, (double)blockPos.getY(), (double)((float)blockPos.getZ()) + 0.5, this.speed);
 			}
 		} else {
 			this.reached = true;
@@ -94,14 +97,14 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	protected boolean findTargetPos() {
 		int i = this.range;
 		int j = this.maxYDifference;
-		BlockPos blockPos = new BlockPos(this.mob);
+		BlockPos blockPos = this.mob.getBlockPos();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int k = this.lowestY; k <= j; k = k > 0 ? -k : 1 - k) {
 			for (int l = 0; l < i; l++) {
 				for (int m = 0; m <= l; m = m > 0 ? -m : 1 - m) {
 					for (int n = m < l && m > -l ? l : 0; n <= l; n = n > 0 ? -n : 1 - n) {
-						mutable.set(blockPos).setOffset(m, k - 1, n);
+						mutable.set(blockPos, m, k - 1, n);
 						if (this.mob.isInWalkTargetRange(mutable) && this.isTargetPos(this.mob.world, mutable)) {
 							this.targetPos = mutable;
 							return true;

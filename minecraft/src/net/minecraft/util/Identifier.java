@@ -6,10 +6,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -17,7 +18,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * The namespace and path must contain only lowercase letters ([a-z]), digits ([0-9]), or the characters '_', '.', and '-'. The path can also contain the standard path separator '/'.
+ */
 public class Identifier implements Comparable<Identifier> {
+	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::method_29186, Identifier::toString).stable();
 	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
 	protected final String namespace;
 	protected final String path;
@@ -32,12 +37,17 @@ public class Identifier implements Comparable<Identifier> {
 		}
 	}
 
-	public Identifier(String string) {
-		this(split(string, ':'));
+	/**
+	 * @param id A string of the form <namespace>:<path>, for example minecraft:iron_ingot.
+	 * The string will be split (on the :) into an identifier with the specified path and namespace.
+	 * Prefer using the constructor {@link net.minecraft.util.Identifier#Identifier(java.lang.String, java.lang.String)} that takes the namespace and path as individual parameters to avoid mistakes.
+	 */
+	public Identifier(String id) {
+		this(split(id, ':'));
 	}
 
-	public Identifier(String string, String string2) {
-		this(new String[]{string, string2});
+	public Identifier(String namespace, String path) {
+		this(new String[]{namespace, path});
 	}
 
 	public static Identifier splitOn(String id, char delimiter) {
@@ -64,6 +74,14 @@ public class Identifier implements Comparable<Identifier> {
 		}
 
 		return strings;
+	}
+
+	private static DataResult<Identifier> method_29186(String string) {
+		try {
+			return DataResult.success(new Identifier(string));
+		} catch (InvalidIdentifierException var2) {
+			return DataResult.error("Not a valid resource location: " + string + " " + var2.getMessage());
+		}
 	}
 
 	public String getPath() {
@@ -93,7 +111,7 @@ public class Identifier implements Comparable<Identifier> {
 		return 31 * this.namespace.hashCode() + this.path.hashCode();
 	}
 
-	public int compareTo(Identifier identifier) {
+	public int method_12833(Identifier identifier) {
 		int i = this.path.compareTo(identifier.path);
 		if (i == 0) {
 			i = this.namespace.compareTo(identifier.namespace);
@@ -124,11 +142,31 @@ public class Identifier implements Comparable<Identifier> {
 	}
 
 	private static boolean isPathValid(String path) {
-		return path.chars().allMatch(c -> c == 95 || c == 45 || c >= 97 && c <= 122 || c >= 48 && c <= 57 || c == 47 || c == 46);
+		for (int i = 0; i < path.length(); i++) {
+			if (!isPathCharacterValid(path.charAt(i))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private static boolean isNamespaceValid(String namespace) {
-		return namespace.chars().allMatch(c -> c == 95 || c == 45 || c >= 97 && c <= 122 || c >= 48 && c <= 57 || c == 46);
+		for (int i = 0; i < namespace.length(); i++) {
+			if (!isNamespaceCharacterValid(namespace.charAt(i))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean isPathCharacterValid(char c) {
+		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '.';
+	}
+
+	private static boolean isNamespaceCharacterValid(char c) {
+		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -137,12 +175,12 @@ public class Identifier implements Comparable<Identifier> {
 		return isNamespaceValid(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && isPathValid(strings[1]);
 	}
 
-	public static class Serializer implements JsonDeserializer<Identifier>, JsonSerializer<Identifier> {
-		public Identifier deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+	public static class Serializer implements JsonDeserializer<Identifier>, com.google.gson.JsonSerializer<Identifier> {
+		public Identifier method_12840(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			return new Identifier(JsonHelper.asString(jsonElement, "location"));
 		}
 
-		public JsonElement serialize(Identifier identifier, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement method_12839(Identifier identifier, Type type, JsonSerializationContext jsonSerializationContext) {
 			return new JsonPrimitive(identifier.toString());
 		}
 	}

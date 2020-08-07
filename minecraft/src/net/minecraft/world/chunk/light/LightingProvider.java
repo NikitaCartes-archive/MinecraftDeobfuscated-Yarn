@@ -56,64 +56,64 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Override
-	public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
+	public void setSectionStatus(ChunkSectionPos pos, boolean notReady) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.updateSectionStatus(pos, status);
+			this.blockLightProvider.setSectionStatus(pos, notReady);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.updateSectionStatus(pos, status);
+			this.skyLightProvider.setSectionStatus(pos, notReady);
 		}
 	}
 
-	public void setLightEnabled(ChunkPos pos, boolean lightEnabled) {
+	public void setColumnEnabled(ChunkPos pos, boolean lightEnabled) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.setLightEnabled(pos, lightEnabled);
+			this.blockLightProvider.setColumnEnabled(pos, lightEnabled);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.setLightEnabled(pos, lightEnabled);
+			this.skyLightProvider.setColumnEnabled(pos, lightEnabled);
 		}
 	}
 
 	public ChunkLightingView get(LightType lightType) {
-		if (lightType == LightType.BLOCK) {
-			return (ChunkLightingView)(this.blockLightProvider == null ? ChunkLightingView.Empty.INSTANCE : this.blockLightProvider);
+		if (lightType == LightType.field_9282) {
+			return (ChunkLightingView)(this.blockLightProvider == null ? ChunkLightingView.Empty.field_15812 : this.blockLightProvider);
 		} else {
-			return (ChunkLightingView)(this.skyLightProvider == null ? ChunkLightingView.Empty.INSTANCE : this.skyLightProvider);
+			return (ChunkLightingView)(this.skyLightProvider == null ? ChunkLightingView.Empty.field_15812 : this.skyLightProvider);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_22876(LightType lightType, ChunkSectionPos chunkSectionPos) {
-		if (lightType == LightType.BLOCK) {
+	public String displaySectionLevel(LightType lightType, ChunkSectionPos chunkSectionPos) {
+		if (lightType == LightType.field_9282) {
 			if (this.blockLightProvider != null) {
-				return this.blockLightProvider.method_22875(chunkSectionPos.asLong());
+				return this.blockLightProvider.displaySectionLevel(chunkSectionPos.asLong());
 			}
 		} else if (this.skyLightProvider != null) {
-			return this.skyLightProvider.method_22875(chunkSectionPos.asLong());
+			return this.skyLightProvider.displaySectionLevel(chunkSectionPos.asLong());
 		}
 
 		return "n/a";
 	}
 
-	public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {
-		if (lightType == LightType.BLOCK) {
+	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
+		if (lightType == LightType.field_9282) {
 			if (this.blockLightProvider != null) {
-				this.blockLightProvider.setLightArray(chunkSectionPos.asLong(), chunkNibbleArray);
+				this.blockLightProvider.enqueueSectionData(pos.asLong(), nibbles, bl);
 			}
 		} else if (this.skyLightProvider != null) {
-			this.skyLightProvider.setLightArray(chunkSectionPos.asLong(), chunkNibbleArray);
+			this.skyLightProvider.enqueueSectionData(pos.asLong(), nibbles, bl);
 		}
 	}
 
 	public void setRetainData(ChunkPos pos, boolean retainData) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.setRetainData(pos, retainData);
+			this.blockLightProvider.setRetainColumn(pos, retainData);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.setRetainData(pos, retainData);
+			this.skyLightProvider.setRetainColumn(pos, retainData);
 		}
 	}
 

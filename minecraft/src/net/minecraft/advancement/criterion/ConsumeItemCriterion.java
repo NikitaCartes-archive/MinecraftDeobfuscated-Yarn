@@ -1,12 +1,13 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,28 +21,31 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 		return ID;
 	}
 
-	public ConsumeItemCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		return new ConsumeItemCriterion.Conditions(ItemPredicate.fromJson(jsonObject.get("item")));
+	public ConsumeItemCriterion.Conditions method_8820(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
+		return new ConsumeItemCriterion.Conditions(extended, ItemPredicate.fromJson(jsonObject.get("item")));
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(stack));
+		this.test(player, conditions -> conditions.matches(stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate item;
 
-		public Conditions(ItemPredicate item) {
-			super(ConsumeItemCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, ItemPredicate item) {
+			super(ConsumeItemCriterion.ID, player);
 			this.item = item;
 		}
 
 		public static ConsumeItemCriterion.Conditions any() {
-			return new ConsumeItemCriterion.Conditions(ItemPredicate.ANY);
+			return new ConsumeItemCriterion.Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.ANY);
 		}
 
 		public static ConsumeItemCriterion.Conditions item(ItemConvertible item) {
 			return new ConsumeItemCriterion.Conditions(
+				EntityPredicate.Extended.EMPTY,
 				new ItemPredicate(
 					null,
 					item.asItem(),
@@ -60,8 +64,8 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}

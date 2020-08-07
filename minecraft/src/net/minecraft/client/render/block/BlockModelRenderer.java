@@ -32,12 +32,12 @@ public class BlockModelRenderer {
 	private final BlockColors colorMap;
 	private static final ThreadLocal<BlockModelRenderer.BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BlockModelRenderer.BrightnessCache());
 
-	public BlockModelRenderer(BlockColors blockColors) {
-		this.colorMap = blockColors;
+	public BlockModelRenderer(BlockColors colorMap) {
+		this.colorMap = colorMap;
 	}
 
 	public boolean render(
-		BlockRenderView view,
+		BlockRenderView world,
 		BakedModel model,
 		BlockState state,
 		BlockPos pos,
@@ -49,13 +49,13 @@ public class BlockModelRenderer {
 		int overlay
 	) {
 		boolean bl = MinecraftClient.isAmbientOcclusionEnabled() && state.getLuminance() == 0 && model.useAmbientOcclusion();
-		Vec3d vec3d = state.getOffsetPos(view, pos);
+		Vec3d vec3d = state.getModelOffset(world, pos);
 		matrix.translate(vec3d.x, vec3d.y, vec3d.z);
 
 		try {
 			return bl
-				? this.renderSmooth(view, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay)
-				: this.renderFlat(view, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay);
+				? this.renderSmooth(world, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay)
+				: this.renderFlat(world, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay);
 		} catch (Throwable var17) {
 			CrashReport crashReport = CrashReport.create(var17, "Tesselating block model");
 			CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
@@ -102,7 +102,7 @@ public class BlockModelRenderer {
 	}
 
 	public boolean renderFlat(
-		BlockRenderView view,
+		BlockRenderView world,
 		BakedModel model,
 		BlockState state,
 		BlockPos pos,
@@ -119,9 +119,9 @@ public class BlockModelRenderer {
 		for (Direction direction : Direction.values()) {
 			random.setSeed(l);
 			List<BakedQuad> list = model.getQuads(state, direction, random);
-			if (!list.isEmpty() && (!cull || Block.shouldDrawSide(state, view, pos, direction))) {
-				int j = WorldRenderer.getLightmapCoordinates(view, state, pos.offset(direction));
-				this.renderQuadsFlat(view, state, pos, j, i, false, buffer, vertexConsumer, list, bitSet);
+			if (!list.isEmpty() && (!cull || Block.shouldDrawSide(state, world, pos, direction))) {
+				int j = WorldRenderer.getLightmapCoordinates(world, state, pos.offset(direction));
+				this.renderQuadsFlat(world, state, pos, j, i, false, buffer, vertexConsumer, list, bitSet);
 				bl = true;
 			}
 		}
@@ -129,7 +129,7 @@ public class BlockModelRenderer {
 		random.setSeed(l);
 		List<BakedQuad> list2 = model.getQuads(state, null, random);
 		if (!list2.isEmpty()) {
-			this.renderQuadsFlat(view, state, pos, -1, i, true, buffer, vertexConsumer, list2, bitSet);
+			this.renderQuadsFlat(world, state, pos, -1, i, true, buffer, vertexConsumer, list2, bitSet);
 			bl = true;
 		}
 
@@ -150,7 +150,7 @@ public class BlockModelRenderer {
 	) {
 		for (BakedQuad bakedQuad : quads) {
 			this.getQuadDimensions(world, state, pos, bakedQuad.getVertexData(), bakedQuad.getFace(), box, flags);
-			ambientOcclusionCalculator.apply(world, state, pos, bakedQuad.getFace(), box, flags);
+			ambientOcclusionCalculator.apply(world, state, pos, bakedQuad.getFace(), box, flags, bakedQuad.hasShade());
 			this.renderQuad(
 				world,
 				state,
@@ -228,45 +228,45 @@ public class BlockModelRenderer {
 		}
 
 		if (box != null) {
-			box[Direction.WEST.getId()] = f;
-			box[Direction.EAST.getId()] = i;
-			box[Direction.DOWN.getId()] = g;
-			box[Direction.UP.getId()] = j;
-			box[Direction.NORTH.getId()] = h;
-			box[Direction.SOUTH.getId()] = k;
+			box[Direction.field_11039.getId()] = f;
+			box[Direction.field_11034.getId()] = i;
+			box[Direction.field_11033.getId()] = g;
+			box[Direction.field_11036.getId()] = j;
+			box[Direction.field_11043.getId()] = h;
+			box[Direction.field_11035.getId()] = k;
 			int l = Direction.values().length;
-			box[Direction.WEST.getId() + l] = 1.0F - f;
-			box[Direction.EAST.getId() + l] = 1.0F - i;
-			box[Direction.DOWN.getId() + l] = 1.0F - g;
-			box[Direction.UP.getId() + l] = 1.0F - j;
-			box[Direction.NORTH.getId() + l] = 1.0F - h;
-			box[Direction.SOUTH.getId() + l] = 1.0F - k;
+			box[Direction.field_11039.getId() + l] = 1.0F - f;
+			box[Direction.field_11034.getId() + l] = 1.0F - i;
+			box[Direction.field_11033.getId() + l] = 1.0F - g;
+			box[Direction.field_11036.getId() + l] = 1.0F - j;
+			box[Direction.field_11043.getId() + l] = 1.0F - h;
+			box[Direction.field_11035.getId() + l] = 1.0F - k;
 		}
 
 		float p = 1.0E-4F;
 		float m = 0.9999F;
 		switch (face) {
-			case DOWN:
+			case field_11033:
 				flags.set(1, f >= 1.0E-4F || h >= 1.0E-4F || i <= 0.9999F || k <= 0.9999F);
 				flags.set(0, g == j && (g < 1.0E-4F || state.isFullCube(world, pos)));
 				break;
-			case UP:
+			case field_11036:
 				flags.set(1, f >= 1.0E-4F || h >= 1.0E-4F || i <= 0.9999F || k <= 0.9999F);
 				flags.set(0, g == j && (j > 0.9999F || state.isFullCube(world, pos)));
 				break;
-			case NORTH:
+			case field_11043:
 				flags.set(1, f >= 1.0E-4F || g >= 1.0E-4F || i <= 0.9999F || j <= 0.9999F);
 				flags.set(0, h == k && (h < 1.0E-4F || state.isFullCube(world, pos)));
 				break;
-			case SOUTH:
+			case field_11035:
 				flags.set(1, f >= 1.0E-4F || g >= 1.0E-4F || i <= 0.9999F || j <= 0.9999F);
 				flags.set(0, h == k && (k > 0.9999F || state.isFullCube(world, pos)));
 				break;
-			case WEST:
+			case field_11039:
 				flags.set(1, g >= 1.0E-4F || h >= 1.0E-4F || j <= 0.9999F || k <= 0.9999F);
 				flags.set(0, f == i && (f < 1.0E-4F || state.isFullCube(world, pos)));
 				break;
-			case EAST:
+			case field_11034:
 				flags.set(1, g >= 1.0E-4F || h >= 1.0E-4F || j <= 0.9999F || k <= 0.9999F);
 				flags.set(0, f == i && (i > 0.9999F || state.isFullCube(world, pos)));
 		}
@@ -279,7 +279,7 @@ public class BlockModelRenderer {
 		int light,
 		int overlay,
 		boolean useWorldLight,
-		MatrixStack matrix,
+		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
 		List<BakedQuad> quads,
 		BitSet flags
@@ -291,7 +291,8 @@ public class BlockModelRenderer {
 				light = WorldRenderer.getLightmapCoordinates(world, state, blockPos);
 			}
 
-			this.renderQuad(world, state, pos, vertexConsumer, matrix.peek(), bakedQuad, 1.0F, 1.0F, 1.0F, 1.0F, light, light, light, light, overlay);
+			float f = world.getBrightness(bakedQuad.getFace(), bakedQuad.hasShade());
+			this.renderQuad(world, state, pos, vertexConsumer, matrices.peek(), bakedQuad, f, f, f, f, light, light, light, light, overlay);
 		}
 	}
 
@@ -345,42 +346,42 @@ public class BlockModelRenderer {
 		public AmbientOcclusionCalculator() {
 		}
 
-		public void apply(BlockRenderView world, BlockState state, BlockPos pos, Direction direction, float[] box, BitSet flags) {
+		public void apply(BlockRenderView world, BlockState state, BlockPos pos, Direction direction, float[] box, BitSet flags, boolean bl) {
 			BlockPos blockPos = flags.get(0) ? pos.offset(direction) : pos;
 			BlockModelRenderer.NeighborData neighborData = BlockModelRenderer.NeighborData.getData(direction);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			BlockModelRenderer.BrightnessCache brightnessCache = (BlockModelRenderer.BrightnessCache)BlockModelRenderer.brightnessCache.get();
-			mutable.set(blockPos).setOffset(neighborData.faces[0]);
+			mutable.set(blockPos, neighborData.faces[0]);
 			BlockState blockState = world.getBlockState(mutable);
 			int i = brightnessCache.getInt(blockState, world, mutable);
 			float f = brightnessCache.getFloat(blockState, world, mutable);
-			mutable.set(blockPos).setOffset(neighborData.faces[1]);
+			mutable.set(blockPos, neighborData.faces[1]);
 			BlockState blockState2 = world.getBlockState(mutable);
 			int j = brightnessCache.getInt(blockState2, world, mutable);
 			float g = brightnessCache.getFloat(blockState2, world, mutable);
-			mutable.set(blockPos).setOffset(neighborData.faces[2]);
+			mutable.set(blockPos, neighborData.faces[2]);
 			BlockState blockState3 = world.getBlockState(mutable);
 			int k = brightnessCache.getInt(blockState3, world, mutable);
 			float h = brightnessCache.getFloat(blockState3, world, mutable);
-			mutable.set(blockPos).setOffset(neighborData.faces[3]);
+			mutable.set(blockPos, neighborData.faces[3]);
 			BlockState blockState4 = world.getBlockState(mutable);
 			int l = brightnessCache.getInt(blockState4, world, mutable);
 			float m = brightnessCache.getFloat(blockState4, world, mutable);
-			mutable.set(blockPos).setOffset(neighborData.faces[0]).setOffset(direction);
-			boolean bl = world.getBlockState(mutable).getOpacity(world, mutable) == 0;
-			mutable.set(blockPos).setOffset(neighborData.faces[1]).setOffset(direction);
+			mutable.set(blockPos, neighborData.faces[0]).move(direction);
 			boolean bl2 = world.getBlockState(mutable).getOpacity(world, mutable) == 0;
-			mutable.set(blockPos).setOffset(neighborData.faces[2]).setOffset(direction);
+			mutable.set(blockPos, neighborData.faces[1]).move(direction);
 			boolean bl3 = world.getBlockState(mutable).getOpacity(world, mutable) == 0;
-			mutable.set(blockPos).setOffset(neighborData.faces[3]).setOffset(direction);
+			mutable.set(blockPos, neighborData.faces[2]).move(direction);
 			boolean bl4 = world.getBlockState(mutable).getOpacity(world, mutable) == 0;
+			mutable.set(blockPos, neighborData.faces[3]).move(direction);
+			boolean bl5 = world.getBlockState(mutable).getOpacity(world, mutable) == 0;
 			float n;
 			int o;
-			if (!bl3 && !bl) {
+			if (!bl4 && !bl2) {
 				n = f;
 				o = i;
 			} else {
-				mutable.set(blockPos).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[2]);
+				mutable.set(blockPos, neighborData.faces[0]).move(neighborData.faces[2]);
 				BlockState blockState5 = world.getBlockState(mutable);
 				n = brightnessCache.getFloat(blockState5, world, mutable);
 				o = brightnessCache.getInt(blockState5, world, mutable);
@@ -388,11 +389,11 @@ public class BlockModelRenderer {
 
 			float p;
 			int q;
-			if (!bl4 && !bl) {
+			if (!bl5 && !bl2) {
 				p = f;
 				q = i;
 			} else {
-				mutable.set(blockPos).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[3]);
+				mutable.set(blockPos, neighborData.faces[0]).move(neighborData.faces[3]);
 				BlockState blockState5 = world.getBlockState(mutable);
 				p = brightnessCache.getFloat(blockState5, world, mutable);
 				q = brightnessCache.getInt(blockState5, world, mutable);
@@ -400,11 +401,11 @@ public class BlockModelRenderer {
 
 			float r;
 			int s;
-			if (!bl3 && !bl2) {
+			if (!bl4 && !bl3) {
 				r = f;
 				s = i;
 			} else {
-				mutable.set(blockPos).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[2]);
+				mutable.set(blockPos, neighborData.faces[1]).move(neighborData.faces[2]);
 				BlockState blockState5 = world.getBlockState(mutable);
 				r = brightnessCache.getFloat(blockState5, world, mutable);
 				s = brightnessCache.getInt(blockState5, world, mutable);
@@ -412,20 +413,20 @@ public class BlockModelRenderer {
 
 			float t;
 			int u;
-			if (!bl4 && !bl2) {
+			if (!bl5 && !bl3) {
 				t = f;
 				u = i;
 			} else {
-				mutable.set(blockPos).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[3]);
+				mutable.set(blockPos, neighborData.faces[1]).move(neighborData.faces[3]);
 				BlockState blockState5 = world.getBlockState(mutable);
 				t = brightnessCache.getFloat(blockState5, world, mutable);
 				u = brightnessCache.getInt(blockState5, world, mutable);
 			}
 
 			int v = brightnessCache.getInt(state, world, pos);
-			mutable.set(pos).setOffset(direction);
+			mutable.set(pos, direction);
 			BlockState blockState6 = world.getBlockState(mutable);
-			if (flags.get(0) || !blockState6.isFullOpaque(world, mutable)) {
+			if (flags.get(0) || !blockState6.isOpaqueFullCube(world, mutable)) {
 				v = brightnessCache.getInt(blockState6, world, mutable);
 			}
 
@@ -479,6 +480,12 @@ public class BlockModelRenderer {
 				this.brightness[translation.secondCorner] = y;
 				this.brightness[translation.thirdCorner] = z;
 				this.brightness[translation.fourthCorner] = aa;
+			}
+
+			float x = world.getBrightness(direction, bl);
+
+			for (int av = 0; av < this.brightness.length; av++) {
+				this.brightness[av] = this.brightness[av] * x;
 			}
 		}
 
@@ -540,7 +547,7 @@ public class BlockModelRenderer {
 			this.floatCache.clear();
 		}
 
-		public int getInt(BlockState blockState, BlockRenderView blockRenderView, BlockPos pos) {
+		public int getInt(BlockState state, BlockRenderView blockRenderView, BlockPos pos) {
 			long l = pos.asLong();
 			if (this.enabled) {
 				int i = this.intCache.get(l);
@@ -549,7 +556,7 @@ public class BlockModelRenderer {
 				}
 			}
 
-			int i = WorldRenderer.getLightmapCoordinates(blockRenderView, blockState, pos);
+			int i = WorldRenderer.getLightmapCoordinates(blockRenderView, state, pos);
 			if (this.enabled) {
 				if (this.intCache.size() == 100) {
 					this.intCache.removeFirstInt();
@@ -585,274 +592,274 @@ public class BlockModelRenderer {
 
 	@Environment(EnvType.CLIENT)
 	public static enum NeighborData {
-		DOWN(
-			new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH},
+		field_4181(
+			new Direction[]{Direction.field_11039, Direction.field_11034, Direction.field_11043, Direction.field_11035},
 			0.5F,
 			true,
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.SOUTH
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4213,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4213
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.NORTH
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4211,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4211
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.NORTH
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4211,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4211
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.SOUTH
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4213,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4213
 			}
 		),
-		UP(
-			new Direction[]{Direction.EAST, Direction.WEST, Direction.NORTH, Direction.SOUTH},
+		field_4182(
+			new Direction[]{Direction.field_11034, Direction.field_11039, Direction.field_11043, Direction.field_11035},
 			1.0F,
 			true,
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.SOUTH,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.SOUTH
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4213,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4213
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.NORTH,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.NORTH
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4211,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4211
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.NORTH,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.NORTH
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4211,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4211
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.SOUTH,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.SOUTH
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4213,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4213
 			}
 		),
-		NORTH(
-			new Direction[]{Direction.UP, Direction.DOWN, Direction.EAST, Direction.WEST},
+		field_4183(
+			new Direction[]{Direction.field_11036, Direction.field_11033, Direction.field_11034, Direction.field_11039},
 			0.8F,
 			true,
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4216
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4214
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4214
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4216
 			}
 		),
-		SOUTH(
-			new Direction[]{Direction.WEST, Direction.EAST, Direction.DOWN, Direction.UP},
+		field_4184(
+			new Direction[]{Direction.field_11039, Direction.field_11034, Direction.field_11033, Direction.field_11036},
 			0.8F,
 			true,
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.WEST
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4215
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_WEST,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.WEST,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.WEST
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4216,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4215,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4215
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.EAST
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4219
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_EAST,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.EAST,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.EAST
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4214,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4219,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4219
 			}
 		),
-		WEST(
-			new Direction[]{Direction.UP, Direction.DOWN, Direction.NORTH, Direction.SOUTH},
+		field_4187(
+			new Direction[]{Direction.field_11036, Direction.field_11033, Direction.field_11043, Direction.field_11035},
 			0.6F,
 			true,
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.SOUTH,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.SOUTH
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4213,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4213
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.NORTH,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.NORTH
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4211,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4211
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.NORTH,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.NORTH
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4211,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4211
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.SOUTH,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.SOUTH
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4213,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4213
 			}
 		),
-		EAST(
-			new Direction[]{Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH},
+		field_4186(
+			new Direction[]{Direction.field_11033, Direction.field_11036, Direction.field_11043, Direction.field_11035},
 			0.6F,
 			true,
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.SOUTH
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4213,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4213
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.DOWN,
-				BlockModelRenderer.NeighborOrientation.NORTH
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4211,
+				BlockModelRenderer.NeighborOrientation.field_4220,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4210,
+				BlockModelRenderer.NeighborOrientation.field_4211
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.NORTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_NORTH,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.NORTH
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4211,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4218,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4211
 			},
 			new BlockModelRenderer.NeighborOrientation[]{
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.SOUTH,
-				BlockModelRenderer.NeighborOrientation.FLIP_UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.FLIP_SOUTH,
-				BlockModelRenderer.NeighborOrientation.UP,
-				BlockModelRenderer.NeighborOrientation.SOUTH
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4213,
+				BlockModelRenderer.NeighborOrientation.field_4217,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4221,
+				BlockModelRenderer.NeighborOrientation.field_4212,
+				BlockModelRenderer.NeighborOrientation.field_4213
 			}
 		);
 
@@ -863,12 +870,12 @@ public class BlockModelRenderer {
 		private final BlockModelRenderer.NeighborOrientation[] field_4180;
 		private final BlockModelRenderer.NeighborOrientation[] field_4188;
 		private static final BlockModelRenderer.NeighborData[] field_4190 = Util.make(new BlockModelRenderer.NeighborData[6], neighborDatas -> {
-			neighborDatas[Direction.DOWN.getId()] = DOWN;
-			neighborDatas[Direction.UP.getId()] = UP;
-			neighborDatas[Direction.NORTH.getId()] = NORTH;
-			neighborDatas[Direction.SOUTH.getId()] = SOUTH;
-			neighborDatas[Direction.WEST.getId()] = WEST;
-			neighborDatas[Direction.EAST.getId()] = EAST;
+			neighborDatas[Direction.field_11033.getId()] = field_4181;
+			neighborDatas[Direction.field_11036.getId()] = field_4182;
+			neighborDatas[Direction.field_11043.getId()] = field_4183;
+			neighborDatas[Direction.field_11035.getId()] = field_4184;
+			neighborDatas[Direction.field_11039.getId()] = field_4187;
+			neighborDatas[Direction.field_11034.getId()] = field_4186;
 		});
 
 		private NeighborData(
@@ -895,18 +902,18 @@ public class BlockModelRenderer {
 
 	@Environment(EnvType.CLIENT)
 	public static enum NeighborOrientation {
-		DOWN(Direction.DOWN, false),
-		UP(Direction.UP, false),
-		NORTH(Direction.NORTH, false),
-		SOUTH(Direction.SOUTH, false),
-		WEST(Direction.WEST, false),
-		EAST(Direction.EAST, false),
-		FLIP_DOWN(Direction.DOWN, true),
-		FLIP_UP(Direction.UP, true),
-		FLIP_NORTH(Direction.NORTH, true),
-		FLIP_SOUTH(Direction.SOUTH, true),
-		FLIP_WEST(Direction.WEST, true),
-		FLIP_EAST(Direction.EAST, true);
+		field_4210(Direction.field_11033, false),
+		field_4212(Direction.field_11036, false),
+		field_4211(Direction.field_11043, false),
+		field_4213(Direction.field_11035, false),
+		field_4215(Direction.field_11039, false),
+		field_4219(Direction.field_11034, false),
+		field_4220(Direction.field_11033, true),
+		field_4217(Direction.field_11036, true),
+		field_4218(Direction.field_11043, true),
+		field_4221(Direction.field_11035, true),
+		field_4216(Direction.field_11039, true),
+		field_4214(Direction.field_11034, true);
 
 		private final int shape;
 
@@ -917,31 +924,31 @@ public class BlockModelRenderer {
 
 	@Environment(EnvType.CLIENT)
 	static enum Translation {
-		DOWN(0, 1, 2, 3),
-		UP(2, 3, 0, 1),
-		NORTH(3, 0, 1, 2),
-		SOUTH(0, 1, 2, 3),
-		WEST(3, 0, 1, 2),
-		EAST(1, 2, 3, 0);
+		field_4199(0, 1, 2, 3),
+		field_4200(2, 3, 0, 1),
+		field_4204(3, 0, 1, 2),
+		field_4205(0, 1, 2, 3),
+		field_4206(3, 0, 1, 2),
+		field_4207(1, 2, 3, 0);
 
 		private final int firstCorner;
 		private final int secondCorner;
 		private final int thirdCorner;
 		private final int fourthCorner;
 		private static final BlockModelRenderer.Translation[] VALUES = Util.make(new BlockModelRenderer.Translation[6], translations -> {
-			translations[Direction.DOWN.getId()] = DOWN;
-			translations[Direction.UP.getId()] = UP;
-			translations[Direction.NORTH.getId()] = NORTH;
-			translations[Direction.SOUTH.getId()] = SOUTH;
-			translations[Direction.WEST.getId()] = WEST;
-			translations[Direction.EAST.getId()] = EAST;
+			translations[Direction.field_11033.getId()] = field_4199;
+			translations[Direction.field_11036.getId()] = field_4200;
+			translations[Direction.field_11043.getId()] = field_4204;
+			translations[Direction.field_11035.getId()] = field_4205;
+			translations[Direction.field_11039.getId()] = field_4206;
+			translations[Direction.field_11034.getId()] = field_4207;
 		});
 
-		private Translation(int j, int k, int l, int m) {
-			this.firstCorner = j;
-			this.secondCorner = k;
-			this.thirdCorner = l;
-			this.fourthCorner = m;
+		private Translation(int firstCorner, int secondCorner, int thirdCorner, int fourthCorner) {
+			this.firstCorner = firstCorner;
+			this.secondCorner = secondCorner;
+			this.thirdCorner = thirdCorner;
+			this.fourthCorner = fourthCorner;
 		}
 
 		public static BlockModelRenderer.Translation getTranslations(Direction direction) {

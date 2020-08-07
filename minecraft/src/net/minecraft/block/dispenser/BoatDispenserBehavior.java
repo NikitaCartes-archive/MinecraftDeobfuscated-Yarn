@@ -26,10 +26,10 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 		double f = pointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125F);
 		BlockPos blockPos = pointer.getBlockPos().offset(direction);
 		double g;
-		if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
+		if (world.getFluidState(blockPos).isIn(FluidTags.field_15517)) {
 			g = 1.0;
 		} else {
-			if (!world.getBlockState(blockPos).isAir() || !world.getFluidState(blockPos.down()).matches(FluidTags.WATER)) {
+			if (!world.getBlockState(blockPos).isAir() || !world.getFluidState(blockPos.method_10074()).isIn(FluidTags.field_15517)) {
 				return this.itemDispenser.dispense(pointer, stack);
 			}
 
@@ -46,6 +46,6 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 
 	@Override
 	protected void playSound(BlockPointer pointer) {
-		pointer.getWorld().playLevelEvent(1000, pointer.getBlockPos(), 0);
+		pointer.getWorld().syncWorldEvent(1000, pointer.getBlockPos(), 0);
 	}
 }

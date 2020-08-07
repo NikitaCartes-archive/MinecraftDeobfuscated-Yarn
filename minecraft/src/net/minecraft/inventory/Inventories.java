@@ -1,10 +1,11 @@
 package net.minecraft.inventory;
 
 import java.util.List;
+import java.util.function.Predicate;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 
 public class Inventories {
 	public static ItemStack splitStack(List<ItemStack> stacks, int slot, int amount) {
@@ -50,6 +51,34 @@ public class Inventories {
 			if (j >= 0 && j < stacks.size()) {
 				stacks.set(j, ItemStack.fromTag(compoundTag));
 			}
+		}
+	}
+
+	public static int method_29234(Inventory inventory, Predicate<ItemStack> predicate, int i, boolean bl) {
+		int j = 0;
+
+		for (int k = 0; k < inventory.size(); k++) {
+			ItemStack itemStack = inventory.getStack(k);
+			int l = method_29235(itemStack, predicate, i - j, bl);
+			if (l > 0 && !bl && itemStack.isEmpty()) {
+				inventory.setStack(k, ItemStack.EMPTY);
+			}
+
+			j += l;
+		}
+
+		return j;
+	}
+
+	public static int method_29235(ItemStack itemStack, Predicate<ItemStack> predicate, int i, boolean bl) {
+		if (itemStack.isEmpty() || !predicate.test(itemStack)) {
+			return 0;
+		} else if (bl) {
+			return itemStack.getCount();
+		} else {
+			int j = i < 0 ? itemStack.getCount() : Math.min(i, itemStack.getCount());
+			itemStack.decrement(j);
+			return j;
 		}
 	}
 }

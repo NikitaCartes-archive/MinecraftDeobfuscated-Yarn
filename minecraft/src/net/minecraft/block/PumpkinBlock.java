@@ -14,25 +14,25 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class PumpkinBlock extends GourdBlock {
-	protected PumpkinBlock(Block.Settings settings) {
+	protected PumpkinBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.SHEARS) {
+		if (itemStack.getItem() == Items.field_8868) {
 			if (!world.isClient) {
 				Direction direction = hit.getSide();
-				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? player.getHorizontalFacing().getOpposite() : direction;
-				world.playSound(null, pos, SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				world.setBlockState(pos, Blocks.CARVED_PUMPKIN.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), 11);
+				Direction direction2 = direction.getAxis() == Direction.Axis.field_11052 ? player.getHorizontalFacing().getOpposite() : direction;
+				world.playSound(null, pos, SoundEvents.field_14619, SoundCategory.field_15245, 1.0F, 1.0F);
+				world.setBlockState(pos, Blocks.field_10147.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), 11);
 				ItemEntity itemEntity = new ItemEntity(
 					world,
 					(double)pos.getX() + 0.5 + (double)direction2.getOffsetX() * 0.65,
 					(double)pos.getY() + 0.1,
 					(double)pos.getZ() + 0.5 + (double)direction2.getOffsetZ() * 0.65,
-					new ItemStack(Items.PUMPKIN_SEEDS, 4)
+					new ItemStack(Items.field_8706, 4)
 				);
 				itemEntity.setVelocity(
 					0.05 * (double)direction2.getOffsetX() + world.random.nextDouble() * 0.02, 0.05, 0.05 * (double)direction2.getOffsetZ() + world.random.nextDouble() * 0.02
@@ -41,7 +41,7 @@ public class PumpkinBlock extends GourdBlock {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		} else {
 			return super.onUse(state, world, pos, player, hand, hit);
 		}
@@ -49,11 +49,11 @@ public class PumpkinBlock extends GourdBlock {
 
 	@Override
 	public StemBlock getStem() {
-		return (StemBlock)Blocks.PUMPKIN_STEM;
+		return (StemBlock)Blocks.field_9984;
 	}
 
 	@Override
 	public AttachedStemBlock getAttachedStem() {
-		return (AttachedStemBlock)Blocks.ATTACHED_PUMPKIN_STEM;
+		return (AttachedStemBlock)Blocks.field_10331;
 	}
 }

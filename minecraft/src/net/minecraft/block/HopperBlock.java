@@ -3,13 +3,13 @@ package net.minecraft.block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.HopperBlockEntity;
-import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -18,9 +18,9 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -47,23 +47,23 @@ public class HopperBlock extends BlockWithEntity {
 	private static final VoxelShape SOUTH_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
 	private static final VoxelShape WEST_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
 
-	public HopperBlock(Block.Settings settings) {
+	public HopperBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.DOWN).with(ENABLED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11033).with(ENABLED, Boolean.valueOf(true)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction)state.get(FACING)) {
-			case DOWN:
+			case field_11033:
 				return DOWN_SHAPE;
-			case NORTH:
+			case field_11043:
 				return NORTH_SHAPE;
-			case SOUTH:
+			case field_11035:
 				return SOUTH_SHAPE;
-			case WEST:
+			case field_11039:
 				return WEST_SHAPE;
-			case EAST:
+			case field_11034:
 				return EAST_SHAPE;
 			default:
 				return DEFAULT_SHAPE;
@@ -71,17 +71,17 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
 		switch ((Direction)state.get(FACING)) {
-			case DOWN:
+			case field_11033:
 				return DOWN_RAY_TRACE_SHAPE;
-			case NORTH:
+			case field_11043:
 				return NORTH_RAY_TRACE_SHAPE;
-			case SOUTH:
+			case field_11035:
 				return SOUTH_RAY_TRACE_SHAPE;
-			case WEST:
+			case field_11039:
 				return WEST_RAY_TRACE_SHAPE;
-			case EAST:
+			case field_11034:
 				return EAST_RAY_TRACE_SHAPE;
 			default:
 				return Hopper.INSIDE_SHAPE;
@@ -91,11 +91,13 @@ public class HopperBlock extends BlockWithEntity {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		Direction direction = ctx.getSide().getOpposite();
-		return this.getDefaultState().with(FACING, direction.getAxis() == Direction.Axis.Y ? Direction.DOWN : direction).with(ENABLED, Boolean.valueOf(true));
+		return this.getDefaultState()
+			.with(FACING, direction.getAxis() == Direction.Axis.field_11052 ? Direction.field_11033 : direction)
+			.with(ENABLED, Boolean.valueOf(true));
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new HopperBlockEntity();
 	}
 
@@ -110,8 +112,8 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-		if (oldState.getBlock() != state.getBlock()) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+		if (!oldState.isOf(state.getBlock())) {
 			this.updateEnabled(world, pos, state);
 		}
 	}
@@ -123,16 +125,16 @@ public class HopperBlock extends BlockWithEntity {
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof HopperBlockEntity) {
-				player.openContainer((HopperBlockEntity)blockEntity);
-				player.incrementStat(Stats.INSPECT_HOPPER);
+				player.openHandledScreen((HopperBlockEntity)blockEntity);
+				player.incrementStat(Stats.field_15366);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		this.updateEnabled(world, pos, state);
 	}
 
@@ -144,21 +146,21 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (state.getBlock() != newState.getBlock()) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof HopperBlockEntity) {
 				ItemScatterer.spawn(world, pos, (HopperBlockEntity)blockEntity);
-				world.updateHorizontalAdjacent(pos, this);
+				world.updateComparators(pos, this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
@@ -168,7 +170,7 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return Container.calculateComparatorOutput(world.getBlockEntity(pos));
+		return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
 	}
 
 	@Override
@@ -195,7 +197,7 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

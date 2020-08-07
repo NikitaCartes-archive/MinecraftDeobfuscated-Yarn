@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -15,10 +15,10 @@ import net.minecraft.potion.Potions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
@@ -27,17 +27,16 @@ public class PotionItem extends Item {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getStackForRender() {
-		return PotionUtil.setPotion(super.getStackForRender(), Potions.WATER);
+		return PotionUtil.setPotion(super.getStackForRender(), Potions.field_8991);
 	}
 
 	@Override
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 		PlayerEntity playerEntity = user instanceof PlayerEntity ? (PlayerEntity)user : null;
 		if (playerEntity instanceof ServerPlayerEntity) {
-			Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, stack);
+			Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, stack);
 		}
 
 		if (!world.isClient) {
@@ -51,7 +50,7 @@ public class PotionItem extends Item {
 		}
 
 		if (playerEntity != null) {
-			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 			if (!playerEntity.abilities.creativeMode) {
 				stack.decrement(1);
 			}
@@ -59,11 +58,11 @@ public class PotionItem extends Item {
 
 		if (playerEntity == null || !playerEntity.abilities.creativeMode) {
 			if (stack.isEmpty()) {
-				return new ItemStack(Items.GLASS_BOTTLE);
+				return new ItemStack(Items.field_8469);
 			}
 
 			if (playerEntity != null) {
-				playerEntity.inventory.insertStack(new ItemStack(Items.GLASS_BOTTLE));
+				playerEntity.inventory.insertStack(new ItemStack(Items.field_8469));
 			}
 		}
 
@@ -77,13 +76,12 @@ public class PotionItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.DRINK;
+		return UseAction.field_8946;
 	}
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		user.setCurrentHand(hand);
-		return TypedActionResult.success(user.getStackInHand(hand));
+		return ItemUsage.consumeHeldItem(world, user, hand);
 	}
 
 	@Override
@@ -98,15 +96,15 @@ public class PotionItem extends Item {
 	}
 
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack stack) {
-		return super.hasEnchantmentGlint(stack) || !PotionUtil.getPotionEffects(stack).isEmpty();
+	public boolean hasGlint(ItemStack stack) {
+		return super.hasGlint(stack) || !PotionUtil.getPotionEffects(stack).isEmpty();
 	}
 
 	@Override
 	public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
 		if (this.isIn(group)) {
 			for (Potion potion : Registry.POTION) {
-				if (potion != Potions.EMPTY) {
+				if (potion != Potions.field_8984) {
 					stacks.add(PotionUtil.setPotion(new ItemStack(this), potion));
 				}
 			}

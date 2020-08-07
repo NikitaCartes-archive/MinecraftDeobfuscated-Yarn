@@ -3,7 +3,6 @@ package net.minecraft.entity;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
@@ -11,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -27,8 +27,8 @@ public class ExperienceOrbEntity extends Entity {
 	private int lastTargetUpdateTick;
 
 	public ExperienceOrbEntity(World world, double x, double y, double z, int amount) {
-		this(EntityType.EXPERIENCE_ORB, world);
-		this.setPosition(x, y, z);
+		this(EntityType.field_6044, world);
+		this.updatePosition(x, y, z);
 		this.yaw = (float)(this.random.nextDouble() * 360.0);
 		this.setVelocity((this.random.nextDouble() * 0.2F - 0.1F) * 2.0, this.random.nextDouble() * 0.2 * 2.0, (this.random.nextDouble() * 0.2F - 0.1F) * 2.0);
 		this.amount = amount;
@@ -57,21 +57,21 @@ public class ExperienceOrbEntity extends Entity {
 		this.prevX = this.getX();
 		this.prevY = this.getY();
 		this.prevZ = this.getZ();
-		if (this.isInFluid(FluidTags.WATER)) {
+		if (this.isSubmergedIn(FluidTags.field_15517)) {
 			this.applyWaterMovement();
 		} else if (!this.hasNoGravity()) {
 			this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 		}
 
-		if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {
+		if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.field_15518)) {
 			this.setVelocity(
 				(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 			);
-			this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+			this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 		}
 
 		if (!this.world.doesNotCollide(this.getBoundingBox())) {
-			this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().y1 + this.getBoundingBox().y2) / 2.0, this.getZ());
+			this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 		}
 
 		double d = 8.0;
@@ -98,7 +98,7 @@ public class ExperienceOrbEntity extends Entity {
 			}
 		}
 
-		this.move(MovementType.SELF, this.getVelocity());
+		this.move(MovementType.field_6308, this.getVelocity());
 		float g = 0.98F;
 		if (this.onGround) {
 			g = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
@@ -123,11 +123,6 @@ public class ExperienceOrbEntity extends Entity {
 
 	@Override
 	protected void onSwimmingStart() {
-	}
-
-	@Override
-	protected void burn(int time) {
-		this.damage(DamageSource.IN_FIRE, (float)time);
 	}
 
 	@Override
@@ -165,7 +160,7 @@ public class ExperienceOrbEntity extends Entity {
 			if (this.pickupDelay == 0 && player.experiencePickUpDelay == 0) {
 				player.experiencePickUpDelay = 2;
 				player.sendPickup(this, 1);
-				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.MENDING, player);
+				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.field_9101, player, ItemStack::isDamaged);
 				if (entry != null) {
 					ItemStack itemStack = (ItemStack)entry.getValue();
 					if (!itemStack.isEmpty() && itemStack.isDamaged()) {

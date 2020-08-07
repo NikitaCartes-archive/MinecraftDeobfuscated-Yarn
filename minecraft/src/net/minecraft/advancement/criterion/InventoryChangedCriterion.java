@@ -1,17 +1,17 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.util.Iterator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,17 +26,39 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		return ID;
 	}
 
-	public InventoryChangedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public InventoryChangedCriterion.Conditions method_8952(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
 		JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "slots", new JsonObject());
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject2.get("occupied"));
 		NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject2.get("full"));
 		NumberRange.IntRange intRange3 = NumberRange.IntRange.fromJson(jsonObject2.get("empty"));
 		ItemPredicate[] itemPredicates = ItemPredicate.deserializeAll(jsonObject.get("items"));
-		return new InventoryChangedCriterion.Conditions(intRange, intRange2, intRange3, itemPredicates);
+		return new InventoryChangedCriterion.Conditions(extended, intRange, intRange2, intRange3, itemPredicates);
 	}
 
-	public void trigger(ServerPlayerEntity player, PlayerInventory inventory) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(inventory));
+	public void trigger(ServerPlayerEntity player, PlayerInventory inventory, ItemStack stack) {
+		int i = 0;
+		int j = 0;
+		int k = 0;
+
+		for (int l = 0; l < inventory.size(); l++) {
+			ItemStack itemStack = inventory.getStack(l);
+			if (itemStack.isEmpty()) {
+				j++;
+			} else {
+				k++;
+				if (itemStack.getCount() >= itemStack.getMaxCount()) {
+					i++;
+				}
+			}
+		}
+
+		this.trigger(player, inventory, stack, i, j, k);
+	}
+
+	private void trigger(ServerPlayerEntity player, PlayerInventory inventory, ItemStack stack, int full, int empty, int occupied) {
+		this.test(player, conditions -> conditions.matches(inventory, stack, full, empty, occupied));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -45,8 +67,10 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		private final NumberRange.IntRange empty;
 		private final ItemPredicate[] items;
 
-		public Conditions(NumberRange.IntRange occupied, NumberRange.IntRange full, NumberRange.IntRange empty, ItemPredicate[] items) {
-			super(InventoryChangedCriterion.ID);
+		public Conditions(
+			EntityPredicate.Extended player, NumberRange.IntRange occupied, NumberRange.IntRange full, NumberRange.IntRange empty, ItemPredicate[] items
+		) {
+			super(InventoryChangedCriterion.ID, player);
 			this.occupied = occupied;
 			this.full = full;
 			this.empty = empty;
@@ -54,7 +78,9 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		}
 
 		public static InventoryChangedCriterion.Conditions items(ItemPredicate... items) {
-			return new InventoryChangedCriterion.Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, items);
+			return new InventoryChangedCriterion.Conditions(
+				EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, items
+			);
 		}
 
 		public static InventoryChangedCriterion.Conditions items(ItemConvertible... items) {
@@ -77,8 +103,8 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			if (!this.occupied.isDummy() || !this.full.isDummy() || !this.empty.isDummy()) {
 				JsonObject jsonObject2 = new JsonObject();
 				jsonObject2.add("occupied", this.occupied.toJson());
@@ -100,39 +126,36 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 			return jsonObject;
 		}
 
-		public boolean matches(PlayerInventory inventory) {
-			int i = 0;
-			int j = 0;
-			int k = 0;
-			List<ItemPredicate> list = Lists.<ItemPredicate>newArrayList(this.items);
-
-			for (int l = 0; l < inventory.getInvSize(); l++) {
-				ItemStack itemStack = inventory.getInvStack(l);
-				if (itemStack.isEmpty()) {
-					j++;
-				} else {
-					k++;
-					if (itemStack.getCount() >= itemStack.getMaxCount()) {
-						i++;
-					}
-
-					Iterator<ItemPredicate> iterator = list.iterator();
-
-					while (iterator.hasNext()) {
-						ItemPredicate itemPredicate = (ItemPredicate)iterator.next();
-						if (itemPredicate.test(itemStack)) {
-							iterator.remove();
-						}
-					}
-				}
-			}
-
-			if (!this.full.test(i)) {
+		public boolean matches(PlayerInventory inventory, ItemStack stack, int full, int empty, int occupied) {
+			if (!this.full.test(full)) {
 				return false;
-			} else if (!this.empty.test(j)) {
+			} else if (!this.empty.test(empty)) {
+				return false;
+			} else if (!this.occupied.test(occupied)) {
 				return false;
 			} else {
-				return !this.occupied.test(k) ? false : list.isEmpty();
+				int i = this.items.length;
+				if (i == 0) {
+					return true;
+				} else if (i != 1) {
+					List<ItemPredicate> list = new ObjectArrayList<>(this.items);
+					int j = inventory.size();
+
+					for (int k = 0; k < j; k++) {
+						if (list.isEmpty()) {
+							return true;
+						}
+
+						ItemStack itemStack = inventory.getStack(k);
+						if (!itemStack.isEmpty()) {
+							list.removeIf(itemPredicate -> itemPredicate.test(itemStack));
+						}
+					}
+
+					return list.isEmpty();
+				} else {
+					return !stack.isEmpty() && this.items[0].test(stack);
+				}
 			}
 		}
 	}

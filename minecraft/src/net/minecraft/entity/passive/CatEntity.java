@@ -9,12 +9,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.CatSitOnBlockGoal;
@@ -28,17 +29,18 @@ import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
@@ -51,21 +53,24 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
+/**
+ * Meow.
+ */
 public class CatEntity extends TameableEntity {
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
+	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.field_8429, Items.field_8209);
 	private static final TrackedData<Integer> CAT_TYPE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> SLEEPING_WITH_OWNER = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -90,7 +95,7 @@ public class CatEntity extends TameableEntity {
 	private float tailCurlAnimation;
 	private float prevTailCurlAnimation;
 	private float headDownAnimation;
-	private float prevHeadDownAniamtion;
+	private float prevHeadDownAnimation;
 
 	public CatEntity(EntityType<? extends CatEntity> entityType, World world) {
 		super(entityType, world);
@@ -102,11 +107,10 @@ public class CatEntity extends TameableEntity {
 
 	@Override
 	protected void initGoals() {
-		this.sitGoal = new SitGoal(this);
 		this.temptGoal = new CatEntity.TemptGoal(this, 0.6, TAMING_INGREDIENT, true);
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(1, new CatEntity.SleepWithOwnerGoal(this));
-		this.goalSelector.add(2, this.sitGoal);
+		this.goalSelector.add(1, new SitGoal(this));
+		this.goalSelector.add(2, new CatEntity.SleepWithOwnerGoal(this));
 		this.goalSelector.add(3, this.temptGoal);
 		this.goalSelector.add(5, new GoToOwnerAndPurrGoal(this, 1.1, 8));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 5.0F, false));
@@ -152,8 +156,8 @@ public class CatEntity extends TameableEntity {
 		return DyeColor.byId(this.dataTracker.get(COLLAR_COLOR));
 	}
 
-	public void setCollarColor(DyeColor dyeColor) {
-		this.dataTracker.set(COLLAR_COLOR, dyeColor.getId());
+	public void setCollarColor(DyeColor color) {
+		this.dataTracker.set(COLLAR_COLOR, color.getId());
 	}
 
 	@Override
@@ -162,7 +166,7 @@ public class CatEntity extends TameableEntity {
 		this.dataTracker.startTracking(CAT_TYPE, 1);
 		this.dataTracker.startTracking(SLEEPING_WITH_OWNER, false);
 		this.dataTracker.startTracking(HEAD_DOWN, false);
-		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
+		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.field_7964.getId());
 	}
 
 	@Override
@@ -186,17 +190,17 @@ public class CatEntity extends TameableEntity {
 		if (this.getMoveControl().isMoving()) {
 			double d = this.getMoveControl().getSpeed();
 			if (d == 0.6) {
-				this.setPose(EntityPose.CROUCHING);
+				this.setPose(EntityPose.field_18081);
 				this.setSprinting(false);
 			} else if (d == 1.33) {
-				this.setPose(EntityPose.STANDING);
+				this.setPose(EntityPose.field_18076);
 				this.setSprinting(true);
 			} else {
-				this.setPose(EntityPose.STANDING);
+				this.setPose(EntityPose.field_18076);
 				this.setSprinting(false);
 			}
 		} else {
-			this.setPose(EntityPose.STANDING);
+			this.setPose(EntityPose.field_18076);
 			this.setSprinting(false);
 		}
 	}
@@ -206,12 +210,12 @@ public class CatEntity extends TameableEntity {
 	protected SoundEvent getAmbientSound() {
 		if (this.isTamed()) {
 			if (this.isInLove()) {
-				return SoundEvents.ENTITY_CAT_PURR;
+				return SoundEvents.field_14741;
 			} else {
-				return this.random.nextInt(4) == 0 ? SoundEvents.ENTITY_CAT_PURREOW : SoundEvents.ENTITY_CAT_AMBIENT;
+				return this.random.nextInt(4) == 0 ? SoundEvents.field_14589 : SoundEvents.field_15051;
 			}
 		} else {
-			return SoundEvents.ENTITY_CAT_STRAY_AMBIENT;
+			return SoundEvents.field_16440;
 		}
 	}
 
@@ -221,25 +225,21 @@ public class CatEntity extends TameableEntity {
 	}
 
 	public void hiss() {
-		this.playSound(SoundEvents.ENTITY_CAT_HISS, this.getSoundVolume(), this.getSoundPitch());
+		this.playSound(SoundEvents.field_14938, this.getSoundVolume(), this.getSoundPitch());
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_CAT_HURT;
+		return SoundEvents.field_14867;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_CAT_DEATH;
+		return SoundEvents.field_14971;
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
+	public static DefaultAttributeContainer.Builder createCatAttributes() {
+		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 10.0).add(EntityAttributes.field_23719, 0.3F).add(EntityAttributes.field_23721, 3.0);
 	}
 
 	@Override
@@ -250,26 +250,26 @@ public class CatEntity extends TameableEntity {
 	@Override
 	protected void eat(PlayerEntity player, ItemStack stack) {
 		if (this.isBreedingItem(stack)) {
-			this.playSound(SoundEvents.ENTITY_CAT_EAT, 1.0F, 1.0F);
+			this.playSound(SoundEvents.field_16439, 1.0F, 1.0F);
 		}
 
 		super.eat(player, stack);
 	}
 
-	private float method_22327() {
-		return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
+	private float getAttackDamage() {
+		return (float)this.getAttributeValue(EntityAttributes.field_23721);
 	}
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		return target.damage(DamageSource.mob(this), this.method_22327());
+		return target.damage(DamageSource.mob(this), this.getAttackDamage());
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
 		if (this.temptGoal != null && this.temptGoal.isActive() && !this.isTamed() && this.age % 100 == 0) {
-			this.playSound(SoundEvents.ENTITY_CAT_BEG_FOR_FOOD, 1.0F, 1.0F);
+			this.playSound(SoundEvents.field_16438, 1.0F, 1.0F);
 		}
 
 		this.updateAnimations();
@@ -277,7 +277,7 @@ public class CatEntity extends TameableEntity {
 
 	private void updateAnimations() {
 		if ((this.isSleepingWithOwner() || this.isHeadDown()) && this.age % 5 == 0) {
-			this.playSound(SoundEvents.ENTITY_CAT_PURR, 0.6F + 0.4F * (this.random.nextFloat() - this.random.nextFloat()), 1.0F);
+			this.playSound(SoundEvents.field_14741, 0.6F + 0.4F * (this.random.nextFloat() - this.random.nextFloat()), 1.0F);
 		}
 
 		this.updateSleepAnimation();
@@ -297,7 +297,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	private void updateHeadDownAnimation() {
-		this.prevHeadDownAniamtion = this.headDownAnimation;
+		this.prevHeadDownAnimation = this.headDownAnimation;
 		if (this.isHeadDown()) {
 			this.headDownAnimation = Math.min(1.0F, this.headDownAnimation + 0.1F);
 		} else {
@@ -317,11 +317,11 @@ public class CatEntity extends TameableEntity {
 
 	@Environment(EnvType.CLIENT)
 	public float getHeadDownAnimation(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.prevHeadDownAniamtion, this.headDownAnimation);
+		return MathHelper.lerp(tickDelta, this.prevHeadDownAnimation, this.headDownAnimation);
 	}
 
-	public CatEntity createChild(PassiveEntity passiveEntity) {
-		CatEntity catEntity = EntityType.CAT.create(this.world);
+	public CatEntity method_6573(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		CatEntity catEntity = EntityType.field_16281.create(serverWorld);
 		if (passiveEntity instanceof CatEntity) {
 			if (this.random.nextBoolean()) {
 				catEntity.setCatType(this.getCatType());
@@ -357,17 +357,19 @@ public class CatEntity extends TameableEntity {
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
+	public EntityData initialize(
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
-		if (world.getMoonSize() > 0.9F) {
+		entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		if (serverWorldAccess.getMoonSize() > 0.9F) {
 			this.setCatType(this.random.nextInt(11));
 		} else {
 			this.setCatType(this.random.nextInt(10));
 		}
 
-		if (Feature.SWAMP_HUT.isInsideStructure(world, new BlockPos(this))) {
+		World world = serverWorldAccess.toServerWorld();
+		if (world instanceof ServerWorld
+			&& ((ServerWorld)world).getStructureAccessor().getStructureAt(this.getBlockPos(), true, StructureFeature.SWAMP_HUT).hasChildren()) {
 			this.setCatType(10);
 			this.setPersistent();
 		}
@@ -376,29 +378,31 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if (itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(player, hand);
-		} else if (this.world.isClient) {
-			return this.isTamed() && this.isOwner(player) || this.isBreedingItem(itemStack);
+		if (this.world.isClient) {
+			if (this.isTamed() && this.isOwner(player)) {
+				return ActionResult.SUCCESS;
+			} else {
+				return !this.isBreedingItem(itemStack) || !(this.getHealth() < this.getMaxHealth()) && this.isTamed() ? ActionResult.PASS : ActionResult.SUCCESS;
+			}
 		} else {
 			if (this.isTamed()) {
 				if (this.isOwner(player)) {
 					if (!(item instanceof DyeItem)) {
-						if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaximumHealth()) {
+						if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 							this.eat(player, itemStack);
 							this.heal((float)item.getFoodComponent().getHunger());
-							return true;
+							return ActionResult.CONSUME;
 						}
 
-						boolean bl = super.interactMob(player, hand);
-						if (!bl || this.isBaby()) {
-							this.sitGoal.setEnabledWithOwner(!this.isSitting());
+						ActionResult actionResult = super.interactMob(player, hand);
+						if (!actionResult.isAccepted() || this.isBaby()) {
+							this.setSitting(!this.isSitting());
 						}
 
-						return bl;
+						return actionResult;
 					}
 
 					DyeColor dyeColor = ((DyeItem)item).getColor();
@@ -409,35 +413,35 @@ public class CatEntity extends TameableEntity {
 						}
 
 						this.setPersistent();
-						return true;
+						return ActionResult.CONSUME;
 					}
 				}
 			} else if (this.isBreedingItem(itemStack)) {
 				this.eat(player, itemStack);
 				if (this.random.nextInt(3) == 0) {
 					this.setOwner(player);
-					this.sitGoal.setEnabledWithOwner(true);
+					this.setSitting(true);
 					this.world.sendEntityStatus(this, (byte)7);
 				} else {
 					this.world.sendEntityStatus(this, (byte)6);
 				}
 
 				this.setPersistent();
-				return true;
+				return ActionResult.CONSUME;
 			}
 
-			boolean bl = super.interactMob(player, hand);
-			if (bl) {
+			ActionResult actionResult = super.interactMob(player, hand);
+			if (actionResult.isAccepted()) {
 				this.setPersistent();
 			}
 
-			return bl;
+			return actionResult;
 		}
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return TAMING_INGREDIENT.test(stack);
+		return TAMING_INGREDIENT.method_8093(stack);
 	}
 
 	@Override
@@ -509,11 +513,12 @@ public class CatEntity extends TameableEntity {
 						return false;
 					}
 
-					BlockPos blockPos = new BlockPos(this.owner);
+					BlockPos blockPos = this.owner.getBlockPos();
 					BlockState blockState = this.cat.world.getBlockState(blockPos);
-					if (blockState.getBlock().matches(BlockTags.BEDS)) {
-						Direction direction = blockState.get(BedBlock.FACING);
-						this.bedPos = new BlockPos(blockPos.getX() - direction.getOffsetX(), blockPos.getY(), blockPos.getZ() - direction.getOffsetZ());
+					if (blockState.getBlock().isIn(BlockTags.field_16443)) {
+						this.bedPos = (BlockPos)blockState.method_28500(BedBlock.FACING)
+							.map(direction -> blockPos.offset(direction.getOpposite()))
+							.orElseGet(() -> new BlockPos(blockPos));
 						return !this.method_16098();
 					}
 				}
@@ -540,7 +545,7 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void start() {
 			if (this.bedPos != null) {
-				this.cat.getSitGoal().setEnabledWithOwner(false);
+				this.cat.setInSittingPose(false);
 				this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
 			}
 		}
@@ -548,7 +553,7 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void stop() {
 			this.cat.setSleepingWithOwner(false);
-			float f = this.cat.world.getSkyAngle(1.0F);
+			float f = this.cat.world.method_30274(1.0F);
 			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.world.getRandom().nextFloat() < 0.7) {
 				this.dropMorningGifts();
 			}
@@ -561,7 +566,7 @@ public class CatEntity extends TameableEntity {
 		private void dropMorningGifts() {
 			Random random = this.cat.getRandom();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			mutable.set(this.cat);
+			mutable.set(this.cat.getBlockPos());
 			this.cat
 				.teleport(
 					(double)(mutable.getX() + random.nextInt(11) - 5),
@@ -569,22 +574,22 @@ public class CatEntity extends TameableEntity {
 					(double)(mutable.getZ() + random.nextInt(11) - 5),
 					false
 				);
-			mutable.set(this.cat);
-			LootTable lootTable = this.cat.world.getServer().getLootManager().getSupplier(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+			mutable.set(this.cat.getBlockPos());
+			LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.field_16216);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
-				.put(LootContextParameters.POSITION, mutable)
-				.put(LootContextParameters.THIS_ENTITY, this.cat)
-				.setRandom(random);
+				.parameter(LootContextParameters.field_24424, this.cat.getPos())
+				.parameter(LootContextParameters.field_1226, this.cat)
+				.random(random);
 
-			for (ItemStack itemStack : lootTable.getDrops(builder.build(LootContextTypes.GIFT))) {
+			for (ItemStack itemStack : lootTable.generateLoot(builder.build(LootContextTypes.field_16235))) {
 				this.cat
 					.world
 					.spawnEntity(
 						new ItemEntity(
 							this.cat.world,
-							(double)((float)mutable.getX() - MathHelper.sin(this.cat.bodyYaw * (float) (Math.PI / 180.0))),
+							(double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
 							(double)mutable.getY(),
-							(double)((float)mutable.getZ() + MathHelper.cos(this.cat.bodyYaw * (float) (Math.PI / 180.0))),
+							(double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
 							itemStack
 						)
 					);
@@ -594,7 +599,7 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void tick() {
 			if (this.owner != null && this.bedPos != null) {
-				this.cat.getSitGoal().setEnabledWithOwner(false);
+				this.cat.setInSittingPose(false);
 				this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
 				if (this.cat.squaredDistanceTo(this.owner) < 2.5) {
 					this.ticksOnBed++;

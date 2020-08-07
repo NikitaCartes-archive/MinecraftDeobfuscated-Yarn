@@ -1,10 +1,13 @@
 package net.minecraft.client.gui.screen.world;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -24,21 +27,30 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.world.WorldSaveHandler;
-import net.minecraft.world.level.LevelProperties;
+import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -53,6 +65,11 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
 	private static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
+	private static final Text field_26606 = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.field_1061);
+	private static final Text field_26607 = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.field_1061);
+	private static final Text field_26608 = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.field_1065);
+	private static final Text field_26609 = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.field_1065);
+	private static final Text field_26610 = new TranslatableText("selectWorld.locked").formatted(Formatting.field_1061);
 	private final SelectWorldScreen parent;
 	@Nullable
 	private List<LevelSummary> levels;
@@ -77,33 +94,37 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		this.filter(searchFilter, false);
 	}
 
-	public void filter(Supplier<String> filter, boolean load) {
+	public void filter(Supplier<String> supplier, boolean load) {
 		this.clearEntries();
-		LevelStorage levelStorage = this.minecraft.getLevelStorage();
+		LevelStorage levelStorage = this.client.getLevelStorage();
 		if (this.levels == null || load) {
 			try {
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
 				LOGGER.error("Couldn't load level list", (Throwable)var7);
-				this.minecraft.openScreen(new FatalErrorScreen(new TranslatableText("selectWorld.unable_to_load"), var7.getMessage()));
+				this.client.openScreen(new FatalErrorScreen(new TranslatableText("selectWorld.unable_to_load"), new LiteralText(var7.getMessage())));
 				return;
 			}
 
 			Collections.sort(this.levels);
 		}
 
-		String string = ((String)filter.get()).toLowerCase(Locale.ROOT);
+		if (this.levels.isEmpty()) {
+			this.client.openScreen(CreateWorldScreen.method_31130(null));
+		} else {
+			String string = ((String)supplier.get()).toLowerCase(Locale.ROOT);
 
-		for (LevelSummary levelSummary : this.levels) {
-			if (levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) || levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) {
-				this.addEntry(new WorldListWidget.Entry(this, levelSummary, this.minecraft.getLevelStorage()));
+			for (LevelSummary levelSummary : this.levels) {
+				if (levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) || levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) {
+					this.addEntry(new WorldListWidget.Entry(this, levelSummary));
+				}
 			}
 		}
 	}
 
 	@Override
-	protected int getScrollbarPosition() {
-		return super.getScrollbarPosition() + 20;
+	protected int getScrollbarPositionX() {
+		return super.getScrollbarPositionX() + 20;
 	}
 
 	@Override
@@ -116,7 +137,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		return this.parent.getFocused() == this;
 	}
 
-	public void setSelected(@Nullable WorldListWidget.Entry entry) {
+	public void method_20157(@Nullable WorldListWidget.Entry entry) {
 		super.setSelected(entry);
 		if (entry != null) {
 			LevelSummary levelSummary = entry.level;
@@ -128,20 +149,21 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								"narrator.select.world",
 								levelSummary.getDisplayName(),
 								new Date(levelSummary.getLastPlayed()),
-								levelSummary.isHardcore() ? I18n.translate("gameMode.hardcore") : I18n.translate("gameMode." + levelSummary.getGameMode().getName()),
-								levelSummary.hasCheats() ? I18n.translate("selectWorld.cheats") : "",
+								levelSummary.isHardcore() ? new TranslatableText("gameMode.hardcore") : new TranslatableText("gameMode." + levelSummary.getGameMode().getName()),
+								levelSummary.hasCheats() ? new TranslatableText("selectWorld.cheats") : LiteralText.EMPTY,
 								levelSummary.getVersion()
 							)
 						)
 						.getString()
 				);
 		}
+
+		this.parent.worldSelected(entry != null && !entry.level.isLocked());
 	}
 
 	@Override
-	protected void moveSelection(int i) {
-		super.moveSelection(i);
-		this.parent.worldSelected(true);
+	protected void moveSelection(EntryListWidget.MoveDirection direction) {
+		this.moveSelectionIf(direction, entry -> !entry.level.isLocked());
 	}
 
 	public Optional<WorldListWidget.Entry> method_20159() {
@@ -163,12 +185,15 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private final NativeImageBackedTexture icon;
 		private long time;
 
-		public Entry(WorldListWidget levelList, LevelSummary level, LevelStorage levelStorage) {
+		public Entry(WorldListWidget levelList, LevelSummary level) {
 			this.screen = levelList.getParent();
 			this.level = level;
 			this.client = MinecraftClient.getInstance();
-			this.iconLocation = new Identifier("worlds/" + Hashing.sha1().hashUnencodedChars(level.getName()) + "/icon");
-			this.iconFile = levelStorage.resolveFile(level.getName(), "icon.png");
+			String string = level.getName();
+			this.iconLocation = new Identifier(
+				"minecraft", "worlds/" + Util.replaceInvalidChars(string, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon"
+			);
+			this.iconFile = level.getFile();
 			if (!this.iconFile.isFile()) {
 				this.iconFile = null;
 			}
@@ -177,151 +202,122 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		@Override
-		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			String string = this.level.getDisplayName();
 			String string2 = this.level.getName() + " (" + WorldListWidget.DATE_FORMAT.format(new Date(this.level.getLastPlayed())) + ")";
 			if (StringUtils.isEmpty(string)) {
-				string = I18n.translate("selectWorld.world") + " " + (i + 1);
+				string = I18n.translate("selectWorld.world") + " " + (index + 1);
 			}
 
-			String string3 = "";
-			if (this.level.requiresConversion()) {
-				string3 = I18n.translate("selectWorld.conversion") + " " + string3;
-			} else {
-				string3 = I18n.translate("gameMode." + this.level.getGameMode().getName());
-				if (this.level.isHardcore()) {
-					string3 = Formatting.DARK_RED + I18n.translate("gameMode.hardcore") + Formatting.RESET;
-				}
-
-				if (this.level.hasCheats()) {
-					string3 = string3 + ", " + I18n.translate("selectWorld.cheats");
-				}
-
-				String string4 = this.level.getVersion().asFormattedString();
-				if (this.level.isDifferentVersion()) {
-					if (this.level.isFutureLevel()) {
-						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + Formatting.RED + string4 + Formatting.RESET;
-					} else {
-						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + Formatting.ITALIC + string4 + Formatting.RESET;
-					}
-				} else {
-					string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + string4;
-				}
-			}
-
-			this.client.textRenderer.draw(string, (float)(k + 32 + 3), (float)(j + 1), 16777215);
-			this.client.textRenderer.draw(string2, (float)(k + 32 + 3), (float)(j + 9 + 3), 8421504);
-			this.client.textRenderer.draw(string3, (float)(k + 32 + 3), (float)(j + 9 + 9 + 3), 8421504);
+			Text text = this.level.method_27429();
+			this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 16777215);
+			this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + 9 + 3), 8421504);
+			this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + 9 + 9 + 3), 8421504);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION);
 			RenderSystem.enableBlend();
-			DrawableHelper.blit(k, j, 0.0F, 0.0F, 32, 32, 32, 32);
+			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
-			if (this.client.options.touchscreen || bl) {
+			if (this.client.options.touchscreen || hovered) {
 				this.client.getTextureManager().bindTexture(WorldListWidget.WORLD_SELECTION_LOCATION);
-				DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
+				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				int p = n - k;
-				int q = p < 32 ? 32 : 0;
-				if (this.level.isDifferentVersion()) {
-					DrawableHelper.blit(k, j, 32.0F, (float)q, 32, 32, 256, 256);
-					if (this.level.isLegacyCustomizedWorld()) {
-						DrawableHelper.blit(k, j, 96.0F, (float)q, 32, 32, 256, 256);
-						if (p < 32) {
-							Text text = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
-							this.screen.setTooltip(this.client.textRenderer.wrapStringToWidth(text.asFormattedString(), 175));
-						}
-					} else if (this.level.isFutureLevel()) {
-						DrawableHelper.blit(k, j, 96.0F, (float)q, 32, 32, 256, 256);
-						if (p < 32) {
-							this.screen
-								.setTooltip(
-									Formatting.RED
-										+ I18n.translate("selectWorld.tooltip.fromNewerVersion1")
-										+ "\n"
-										+ Formatting.RED
-										+ I18n.translate("selectWorld.tooltip.fromNewerVersion2")
-								);
+				int i = mouseX - x;
+				boolean bl = i < 32;
+				int j = bl ? 32 : 0;
+				if (this.level.isLocked()) {
+					DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+					if (bl) {
+						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.field_26610, 175));
+					}
+				} else if (this.level.isDifferentVersion()) {
+					DrawableHelper.drawTexture(matrices, x, y, 32.0F, (float)j, 32, 32, 256, 256);
+					if (this.level.isFutureLevel()) {
+						DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+						if (bl) {
+							this.screen.setTooltip(ImmutableList.of(WorldListWidget.field_26606.asOrderedText(), WorldListWidget.field_26607.asOrderedText()));
 						}
 					} else if (!SharedConstants.getGameVersion().isStable()) {
-						DrawableHelper.blit(k, j, 64.0F, (float)q, 32, 32, 256, 256);
-						if (p < 32) {
-							this.screen
-								.setTooltip(
-									Formatting.GOLD + I18n.translate("selectWorld.tooltip.snapshot1") + "\n" + Formatting.GOLD + I18n.translate("selectWorld.tooltip.snapshot2")
-								);
+						DrawableHelper.drawTexture(matrices, x, y, 64.0F, (float)j, 32, 32, 256, 256);
+						if (bl) {
+							this.screen.setTooltip(ImmutableList.of(WorldListWidget.field_26608.asOrderedText(), WorldListWidget.field_26609.asOrderedText()));
 						}
 					}
 				} else {
-					DrawableHelper.blit(k, j, 0.0F, (float)q, 32, 32, 256, 256);
+					DrawableHelper.drawTexture(matrices, x, y, 0.0F, (float)j, 32, 32, 256, 256);
 				}
 			}
 		}
 
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			WorldListWidget.this.setSelected(this);
-			this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
-			if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
-				this.play();
-				return true;
-			} else if (Util.getMeasuringTimeMs() - this.time < 250L) {
-				this.play();
+			if (this.level.isLocked()) {
 				return true;
 			} else {
-				this.time = Util.getMeasuringTimeMs();
-				return false;
+				WorldListWidget.this.method_20157(this);
+				this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
+				if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
+					this.play();
+					return true;
+				} else if (Util.getMeasuringTimeMs() - this.time < 250L) {
+					this.play();
+					return true;
+				} else {
+					this.time = Util.getMeasuringTimeMs();
+					return false;
+				}
 			}
 		}
 
 		public void play() {
-			if (this.level.isOutdatedLevel() || this.level.isLegacyCustomizedWorld()) {
-				Text text = new TranslatableText("selectWorld.backupQuestion");
-				Text text2 = new TranslatableText("selectWorld.backupWarning", this.level.getVersion().asFormattedString(), SharedConstants.getGameVersion().getName());
-				if (this.level.isLegacyCustomizedWorld()) {
-					text = new TranslatableText("selectWorld.backupQuestion.customized");
-					text2 = new TranslatableText("selectWorld.backupWarning.customized");
-				}
+			if (!this.level.isLocked()) {
+				if (this.level.isOutdatedLevel()) {
+					Text text = new TranslatableText("selectWorld.backupQuestion");
+					Text text2 = new TranslatableText("selectWorld.backupWarning", this.level.getVersion(), SharedConstants.getGameVersion().getName());
+					this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
+						if (bl) {
+							String string = this.level.getName();
 
-				this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
-					if (bl) {
-						String string = this.level.getName();
-						EditWorldScreen.backupLevel(this.client.getLevelStorage(), string);
-					}
+							try (LevelStorage.Session session = this.client.getLevelStorage().createSession(string)) {
+								EditWorldScreen.backupLevel(session);
+							} catch (IOException var17) {
+								SystemToast.addWorldAccessFailureToast(this.client, string);
+								WorldListWidget.LOGGER.error("Failed to backup level {}", string, var17);
+							}
+						}
 
-					this.start();
-				}, text, text2, false));
-			} else if (this.level.isFutureLevel()) {
-				this.client
-					.openScreen(
-						new ConfirmScreen(
-							bl -> {
-								if (bl) {
-									try {
-										this.start();
-									} catch (Exception var3) {
-										WorldListWidget.LOGGER.error("Failure to open 'future world'", (Throwable)var3);
-										this.client
-											.openScreen(
-												new NoticeScreen(
-													() -> this.client.openScreen(this.screen),
-													new TranslatableText("selectWorld.futureworld.error.title"),
-													new TranslatableText("selectWorld.futureworld.error.text")
-												)
-											);
+						this.start();
+					}, text, text2, false));
+				} else if (this.level.isFutureLevel()) {
+					this.client
+						.openScreen(
+							new ConfirmScreen(
+								bl -> {
+									if (bl) {
+										try {
+											this.start();
+										} catch (Exception var3) {
+											WorldListWidget.LOGGER.error("Failure to open 'future world'", (Throwable)var3);
+											this.client
+												.openScreen(
+													new NoticeScreen(
+														() -> this.client.openScreen(this.screen),
+														new TranslatableText("selectWorld.futureworld.error.title"),
+														new TranslatableText("selectWorld.futureworld.error.text")
+													)
+												);
+										}
+									} else {
+										this.client.openScreen(this.screen);
 									}
-								} else {
-									this.client.openScreen(this.screen);
-								}
-							},
-							new TranslatableText("selectWorld.versionQuestion"),
-							new TranslatableText("selectWorld.versionWarning", this.level.getVersion().asFormattedString()),
-							I18n.translate("selectWorld.versionJoinButton"),
-							I18n.translate("gui.cancel")
-						)
-					);
-			} else {
-				this.start();
+								},
+								new TranslatableText("selectWorld.versionQuestion"),
+								new TranslatableText("selectWorld.versionWarning", this.level.getVersion(), new TranslatableText("selectWorld.versionJoinButton"), ScreenTexts.CANCEL)
+							)
+						);
+				} else {
+					this.start();
+				}
 			}
 		}
 
@@ -333,7 +329,15 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 							if (bl) {
 								this.client.openScreen(new ProgressScreen());
 								LevelStorage levelStorage = this.client.getLevelStorage();
-								levelStorage.deleteLevel(this.level.getName());
+								String string = this.level.getName();
+
+								try (LevelStorage.Session session = levelStorage.createSession(string)) {
+									session.deleteSessionLock();
+								} catch (IOException var17) {
+									SystemToast.addWorldDeleteFailureToast(this.client, string);
+									WorldListWidget.LOGGER.error("Failed to delete world {}", string, var17);
+								}
+
 								WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
 							}
 
@@ -341,47 +345,67 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						},
 						new TranslatableText("selectWorld.deleteQuestion"),
 						new TranslatableText("selectWorld.deleteWarning", this.level.getDisplayName()),
-						I18n.translate("selectWorld.deleteButton"),
-						I18n.translate("gui.cancel")
+						new TranslatableText("selectWorld.deleteButton"),
+						ScreenTexts.CANCEL
 					)
 				);
 		}
 
 		public void edit() {
-			this.client.openScreen(new EditWorldScreen(bl -> {
-				if (bl) {
-					WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
-				}
+			String string = this.level.getName();
 
-				this.client.openScreen(this.screen);
-			}, this.level.getName()));
+			try {
+				LevelStorage.Session session = this.client.getLevelStorage().createSession(string);
+				this.client.openScreen(new EditWorldScreen(bl -> {
+					try {
+						session.close();
+					} catch (IOException var5) {
+						WorldListWidget.LOGGER.error("Failed to unlock level {}", string, var5);
+					}
+
+					if (bl) {
+						WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
+					}
+
+					this.client.openScreen(this.screen);
+				}, session));
+			} catch (IOException var3) {
+				SystemToast.addWorldAccessFailureToast(this.client, string);
+				WorldListWidget.LOGGER.error("Failed to access level {}", string, var3);
+				WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
+			}
 		}
 
 		public void recreate() {
-			try {
-				this.client.openScreen(new ProgressScreen());
-				CreateWorldScreen createWorldScreen = new CreateWorldScreen(this.screen);
-				WorldSaveHandler worldSaveHandler = this.client.getLevelStorage().createSaveHandler(this.level.getName(), null);
-				LevelProperties levelProperties = worldSaveHandler.readProperties();
-				if (levelProperties != null) {
-					createWorldScreen.recreateLevel(levelProperties);
-					if (this.level.isLegacyCustomizedWorld()) {
-						this.client
-							.openScreen(
-								new ConfirmScreen(
-									bl -> this.client.openScreen((Screen)(bl ? createWorldScreen : this.screen)),
-									new TranslatableText("selectWorld.recreate.customized.title"),
-									new TranslatableText("selectWorld.recreate.customized.text"),
-									I18n.translate("gui.proceed"),
-									I18n.translate("gui.cancel")
-								)
-							);
-					} else {
-						this.client.openScreen(createWorldScreen);
-					}
+			this.method_29990();
+			DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+
+			try (
+				LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
+				MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client
+					.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);
+			) {
+				LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
+				DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
+				GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
+				Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.field_24186), this.client);
+				if (generatorOptions.isLegacyCustomizedType()) {
+					this.client
+						.openScreen(
+							new ConfirmScreen(
+								bl -> this.client
+										.openScreen((Screen)(bl ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl) : this.screen)),
+								new TranslatableText("selectWorld.recreate.customized.title"),
+								new TranslatableText("selectWorld.recreate.customized.text"),
+								ScreenTexts.PROCEED,
+								ScreenTexts.CANCEL
+							)
+						);
+				} else {
+					this.client.openScreen(new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl));
 				}
-			} catch (Exception var4) {
-				WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var4);
+			} catch (Exception var37) {
+				WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var37);
 				this.client
 					.openScreen(
 						new NoticeScreen(
@@ -394,10 +418,15 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		private void start() {
-			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
 			if (this.client.getLevelStorage().levelExists(this.level.getName())) {
-				this.client.startIntegratedServer(this.level.getName(), this.level.getDisplayName(), null);
+				this.method_29990();
+				this.client.startIntegratedServer(this.level.getName());
 			}
+		}
+
+		private void method_29990() {
+			this.client.method_29970(new SaveLevelScreen(new TranslatableText("selectWorld.data_read")));
 		}
 
 		@Nullable

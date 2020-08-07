@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -12,100 +11,62 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.BooleanBiFunction;
-import net.minecraft.util.DefaultedList;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Hand;
-import net.minecraft.util.IdList;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.collection.IdList;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Block implements ItemConvertible {
+public class Block extends AbstractBlock implements ItemConvertible {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
-	private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
 	private static final LoadingCache<VoxelShape, Boolean> FULL_CUBE_SHAPE_CACHE = CacheBuilder.newBuilder()
 		.maximumSize(512L)
 		.weakKeys()
 		.build(new CacheLoader<VoxelShape, Boolean>() {
-			public Boolean load(VoxelShape voxelShape) {
+			public Boolean method_20516(VoxelShape voxelShape) {
 				return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
 			}
 		});
-	private static final VoxelShape SOLID_MEDIUM_SQUARE_SHAPE = VoxelShapes.combineAndSimplify(
-		VoxelShapes.fullCube(), createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
-	);
-	private static final VoxelShape SOLID_SMALL_SQUARE_SHAPE = createCuboidShape(7.0, 0.0, 7.0, 9.0, 10.0, 9.0);
-	protected final int lightLevel;
-	protected final float hardness;
-	protected final float resistance;
-	protected final boolean randomTicks;
-	protected final BlockSoundGroup soundGroup;
-	protected final Material material;
-	protected final MaterialColor materialColor;
-	private final float slipperiness;
-	private final float velocityMultiplier;
-	private final float jumpVelocityMultiplier;
 	protected final StateManager<Block, BlockState> stateManager;
 	private BlockState defaultState;
-	protected final boolean collidable;
-	private final boolean dynamicBounds;
-	private final boolean opaque;
-	@Nullable
-	private Identifier dropTableId;
 	@Nullable
 	private String translationKey;
 	@Nullable
@@ -124,26 +85,26 @@ public class Block implements ItemConvertible {
 		if (state == null) {
 			return 0;
 		} else {
-			int i = STATE_IDS.getId(state);
+			int i = STATE_IDS.getRawId(state);
 			return i == -1 ? 0 : i;
 		}
 	}
 
 	public static BlockState getStateFromRawId(int stateId) {
 		BlockState blockState = STATE_IDS.get(stateId);
-		return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
+		return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
 	}
 
 	public static Block getBlockFromItem(@Nullable Item item) {
-		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.AIR;
+		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.field_10124;
 	}
 
 	public static BlockState pushEntitiesUpBeforeBlockChange(BlockState from, BlockState to, World world, BlockPos pos) {
 		VoxelShape voxelShape = VoxelShapes.combine(from.getCollisionShape(world, pos), to.getCollisionShape(world, pos), BooleanBiFunction.ONLY_SECOND)
 			.offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 
-		for (Entity entity : world.getEntities(null, voxelShape.getBoundingBox())) {
-			double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
+		for (Entity entity : world.getOtherEntities(null, voxelShape.getBoundingBox())) {
+			double d = VoxelShapes.calculateMaxOffset(Direction.Axis.field_11052, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
 			entity.requestTeleport(entity.getX(), entity.getY() + 1.0 + d, entity.getZ());
 		}
 
@@ -154,194 +115,97 @@ public class Block implements ItemConvertible {
 		return VoxelShapes.cuboid(xMin / 16.0, yMin / 16.0, zMin / 16.0, xMax / 16.0, yMax / 16.0, zMax / 16.0);
 	}
 
-	@Deprecated
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
-		return state.isSideSolidFullSquare(view, pos, Direction.UP) && this.lightLevel < 14;
-	}
-
-	@Deprecated
-	public boolean isAir(BlockState state) {
-		return false;
-	}
-
-	@Deprecated
-	public int getLuminance(BlockState state) {
-		return this.lightLevel;
-	}
-
-	@Deprecated
-	public Material getMaterial(BlockState state) {
-		return this.material;
-	}
-
-	@Deprecated
-	public MaterialColor getMapColor(BlockState state, BlockView view, BlockPos pos) {
-		return this.materialColor;
-	}
-
-	@Deprecated
-	public void updateNeighborStates(BlockState state, IWorld world, BlockPos pos, int flags) {
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (Direction direction : FACINGS) {
-				pooledMutable.set(pos).setOffset(direction);
-				BlockState blockState = world.getBlockState(pooledMutable);
-				BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), state, world, pooledMutable, pos);
-				replaceBlock(blockState, blockState2, world, pooledMutable, flags);
-			}
-		}
-	}
-
-	public boolean matches(Tag<Block> tag) {
+	public boolean isIn(Tag<Block> tag) {
 		return tag.contains(this);
 	}
 
-	public static BlockState getRenderingState(BlockState state, IWorld world, BlockPos pos) {
+	public boolean is(Block block) {
+		return this == block;
+	}
+
+	public static BlockState postProcessState(BlockState state, WorldAccess world, BlockPos pos) {
 		BlockState blockState = state;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Direction direction : FACINGS) {
-			mutable.set(pos).setOffset(direction);
+			mutable.set(pos, direction);
 			blockState = blockState.getStateForNeighborUpdate(direction, world.getBlockState(mutable), world, pos, mutable);
 		}
 
 		return blockState;
 	}
 
-	public static void replaceBlock(BlockState state, BlockState newState, IWorld world, BlockPos pos, int flags) {
+	/**
+	 * Replaces the {@code state} with the {@code newState} at the {@code pos}.
+	 * 
+	 * <p>If the two state objects are identical, this method does nothing.
+	 * 
+	 * <p>If the new state {@linkplain BlockState#isAir() is air},
+	 * breaks the block at the position instead.
+	 * 
+	 * @param state the existing block state
+	 * @param newState the new block state
+	 * @param world the world
+	 * @param pos the position of the replaced block state
+	 * @param flags the bitwise flags for {@link net.minecraft.world.ModifiableWorld#setBlockState(BlockPos, BlockState, int, int)}
+	 */
+	public static void replace(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags) {
+		replace(state, newState, world, pos, flags, 512);
+	}
+
+	/**
+	 * Replaces the {@code state} with the {@code newState} at the {@code pos}.
+	 * 
+	 * <p>If the two state objects are identical, this method does nothing.
+	 * 
+	 * <p>If the new state {@linkplain BlockState#isAir() is air},
+	 * breaks the block at the position instead.
+	 * 
+	 * @param state the existing block state
+	 * @param newState the new block state
+	 * @param world the world
+	 * @param pos the position of the replaced block state
+	 * @param flags the bitwise flags for {@link net.minecraft.world.ModifiableWorld#setBlockState(BlockPos, BlockState, int, int)}
+	 * @param maxUpdateDepth the limit for the cascading block updates
+	 */
+	public static void replace(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
 		if (newState != state) {
 			if (newState.isAir()) {
 				if (!world.isClient()) {
-					world.breakBlock(pos, (flags & 32) == 0);
+					world.breakBlock(pos, (flags & 32) == 0, null, maxUpdateDepth);
 				}
 			} else {
-				world.setBlockState(pos, newState, flags & -33);
+				world.setBlockState(pos, newState, flags & -33, maxUpdateDepth);
 			}
 		}
 	}
 
-	@Deprecated
-	public void method_9517(BlockState state, IWorld world, BlockPos pos, int flags) {
-	}
-
-	@Deprecated
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return state;
-	}
-
-	@Deprecated
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		return state;
-	}
-
-	@Deprecated
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
-		return state;
-	}
-
-	public Block(Block.Settings settings) {
+	public Block(AbstractBlock.Settings settings) {
+		super(settings);
 		StateManager.Builder<Block, BlockState> builder = new StateManager.Builder<>(this);
 		this.appendProperties(builder);
-		this.material = settings.material;
-		this.materialColor = settings.materialColor;
-		this.collidable = settings.collidable;
-		this.soundGroup = settings.soundGroup;
-		this.lightLevel = settings.luminance;
-		this.resistance = settings.resistance;
-		this.hardness = settings.hardness;
-		this.randomTicks = settings.randomTicks;
-		this.slipperiness = settings.slipperiness;
-		this.velocityMultiplier = settings.slowDownMultiplier;
-		this.jumpVelocityMultiplier = settings.jumpVelocityMultiplier;
-		this.dynamicBounds = settings.dynamicBounds;
-		this.dropTableId = settings.dropTableId;
-		this.opaque = settings.opaque;
-		this.stateManager = builder.build(BlockState::new);
+		this.stateManager = builder.build(Block::getDefaultState, BlockState::new);
 		this.setDefaultState(this.stateManager.getDefaultState());
 	}
 
-	public static boolean canConnect(Block block) {
+	public static boolean cannotConnect(Block block) {
 		return block instanceof LeavesBlock
-			|| block == Blocks.BARRIER
-			|| block == Blocks.CARVED_PUMPKIN
-			|| block == Blocks.JACK_O_LANTERN
-			|| block == Blocks.MELON
-			|| block == Blocks.PUMPKIN
-			|| block.matches(BlockTags.SHULKER_BOXES);
-	}
-
-	@Deprecated
-	public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
-		return state.getMaterial().blocksLight() && state.isFullCube(view, pos) && !state.emitsRedstonePower();
-	}
-
-	@Deprecated
-	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
-		return this.material.blocksMovement() && state.isFullCube(view, pos);
-	}
-
-	@Deprecated
-	@Environment(EnvType.CLIENT)
-	public boolean hasInWallOverlay(BlockState state, BlockView view, BlockPos pos) {
-		return state.canSuffocate(view, pos);
-	}
-
-	@Deprecated
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
-		switch (env) {
-			case LAND:
-				return !world.isFullCube(view, pos);
-			case WATER:
-				return view.getFluidState(pos).matches(FluidTags.WATER);
-			case AIR:
-				return !world.isFullCube(view, pos);
-			default:
-				return false;
-		}
-	}
-
-	@Deprecated
-	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
-	}
-
-	@Deprecated
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-		return this.material.isReplaceable() && (ctx.getStack().isEmpty() || ctx.getStack().getItem() != this.asItem());
-	}
-
-	@Deprecated
-	public boolean canBucketPlace(BlockState state, Fluid fluid) {
-		return this.material.isReplaceable() || !this.material.isSolid();
-	}
-
-	@Deprecated
-	public float getHardness(BlockState state, BlockView world, BlockPos pos) {
-		return this.hardness;
+			|| block == Blocks.field_10499
+			|| block == Blocks.field_10147
+			|| block == Blocks.field_10009
+			|| block == Blocks.field_10545
+			|| block == Blocks.field_10261
+			|| block.isIn(BlockTags.field_21490);
 	}
 
 	public boolean hasRandomTicks(BlockState state) {
 		return this.randomTicks;
 	}
 
-	public boolean hasBlockEntity() {
-		return this instanceof BlockEntityProvider;
-	}
-
-	@Deprecated
-	public boolean shouldPostProcess(BlockState state, BlockView view, BlockPos pos) {
-		return false;
-	}
-
-	@Deprecated
 	@Environment(EnvType.CLIENT)
-	public boolean hasEmissiveLighting(BlockState state) {
-		return false;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static boolean shouldDrawSide(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		BlockPos blockPos = pos.offset(facing);
-		BlockState blockState = view.getBlockState(blockPos);
+		BlockState blockState = world.getBlockState(blockPos);
 		if (state.isSideInvisible(blockState, facing)) {
 			return false;
 		} else if (blockState.isOpaque()) {
@@ -351,8 +215,8 @@ public class Block implements ItemConvertible {
 			if (b != 127) {
 				return b != 0;
 			} else {
-				VoxelShape voxelShape = state.getCullingFace(view, pos, facing);
-				VoxelShape voxelShape2 = blockState.getCullingFace(view, blockPos, facing.getOpposite());
+				VoxelShape voxelShape = state.getCullingFace(world, pos, facing);
+				VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, facing.getOpposite());
 				boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
 				if (object2ByteLinkedOpenHashMap.size() == 2048) {
 					object2ByteLinkedOpenHashMap.removeLastByte();
@@ -366,51 +230,13 @@ public class Block implements ItemConvertible {
 		}
 	}
 
-	@Deprecated
-	public final boolean isOpaque(BlockState state) {
-		return this.opaque;
-	}
-
-	@Deprecated
-	@Environment(EnvType.CLIENT)
-	public boolean isSideInvisible(BlockState state, BlockState neighbor, Direction facing) {
-		return false;
-	}
-
-	@Deprecated
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		return VoxelShapes.fullCube();
-	}
-
-	@Deprecated
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		return this.collidable ? state.getOutlineShape(view, pos) : VoxelShapes.empty();
-	}
-
-	@Deprecated
-	public VoxelShape getCullingShape(BlockState state, BlockView view, BlockPos pos) {
-		return state.getOutlineShape(view, pos);
-	}
-
-	@Deprecated
-	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
-		return VoxelShapes.empty();
-	}
-
-	public static boolean topCoversMediumSquare(BlockView world, BlockPos pos) {
-		BlockState blockState = world.getBlockState(pos);
-		return !blockState.matches(BlockTags.LEAVES)
-			&& !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(world, pos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+	public static boolean hasTopRim(BlockView world, BlockPos pos) {
+		return world.getBlockState(pos).isSideSolid(world, pos, Direction.field_11036, SideShapeType.field_25824);
 	}
 
 	public static boolean sideCoversSmallSquare(WorldView world, BlockPos pos, Direction side) {
 		BlockState blockState = world.getBlockState(pos);
-		return !blockState.matches(BlockTags.LEAVES)
-			&& !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(world, pos).getFace(side), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
-	}
-
-	public static boolean isSideSolidFullSquare(BlockState state, BlockView world, BlockPos pos, Direction side) {
-		return !state.matches(BlockTags.LEAVES) && isFaceFullSquare(state.getCollisionShape(world, pos), side);
+		return side == Direction.field_11033 && blockState.isIn(BlockTags.field_25148) ? false : blockState.isSideSolid(world, pos, side, SideShapeType.field_25823);
 	}
 
 	public static boolean isFaceFullSquare(VoxelShape shape, Direction side) {
@@ -422,114 +248,23 @@ public class Block implements ItemConvertible {
 		return FULL_CUBE_SHAPE_CACHE.getUnchecked(shape);
 	}
 
-	@Deprecated
-	public final boolean isFullOpaque(BlockState state, BlockView view, BlockPos pos) {
-		return state.isOpaque() ? isShapeFullCube(state.getCullingShape(view, pos)) : false;
-	}
-
-	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
-		return !isShapeFullCube(state.getOutlineShape(view, pos)) && state.getFluidState().isEmpty();
-	}
-
-	@Deprecated
-	public int getOpacity(BlockState state, BlockView view, BlockPos pos) {
-		if (state.isFullOpaque(view, pos)) {
-			return view.getMaxLightLevel();
-		} else {
-			return state.isTranslucent(view, pos) ? 0 : 1;
-		}
-	}
-
-	@Deprecated
-	public boolean hasSidedTransparency(BlockState state) {
-		return false;
-	}
-
-	@Deprecated
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		this.scheduledTick(state, world, pos, random);
-	}
-
-	@Deprecated
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
+		return !isShapeFullCube(state.getOutlineShape(world, pos)) && state.getFluidState().isEmpty();
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 	}
 
-	public void onBroken(IWorld world, BlockPos pos, BlockState state) {
-	}
-
-	@Deprecated
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
-		DebugRendererInfoManager.sendNeighborUpdate(world, pos);
-	}
-
-	public int getTickRate(WorldView worldView) {
-		return 10;
-	}
-
-	@Nullable
-	@Deprecated
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return null;
-	}
-
-	@Deprecated
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-	}
-
-	@Deprecated
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (this.hasBlockEntity() && state.getBlock() != newState.getBlock()) {
-			world.removeBlockEntity(pos);
-		}
-	}
-
-	@Deprecated
-	public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-		float f = state.getHardness(world, pos);
-		if (f == -1.0F) {
-			return 0.0F;
-		} else {
-			int i = player.isUsingEffectiveTool(state) ? 30 : 100;
-			return player.getBlockBreakingSpeed(state) / f / (float)i;
-		}
-	}
-
-	@Deprecated
-	public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
-	}
-
-	public Identifier getDropTableId() {
-		if (this.dropTableId == null) {
-			Identifier identifier = Registry.BLOCK.getId(this);
-			this.dropTableId = new Identifier(identifier.getNamespace(), "blocks/" + identifier.getPath());
-		}
-
-		return this.dropTableId;
-	}
-
-	@Deprecated
-	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-		Identifier identifier = this.getDropTableId();
-		if (identifier == LootTables.EMPTY) {
-			return Collections.emptyList();
-		} else {
-			LootContext lootContext = builder.put(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
-			ServerWorld serverWorld = lootContext.getWorld();
-			LootTable lootTable = serverWorld.getServer().getLootManager().getSupplier(identifier);
-			return lootTable.getDrops(lootContext);
-		}
+	public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
 	}
 
 	public static List<ItemStack> getDroppedStacks(BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity) {
 		LootContext.Builder builder = new LootContext.Builder(world)
-			.setRandom(world.random)
-			.put(LootContextParameters.POSITION, pos)
-			.put(LootContextParameters.TOOL, ItemStack.EMPTY)
-			.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+			.random(world.random)
+			.parameter(LootContextParameters.field_24424, Vec3d.ofCenter(pos))
+			.parameter(LootContextParameters.field_1229, ItemStack.EMPTY)
+			.optionalParameter(LootContextParameters.field_1228, blockEntity);
 		return state.getDroppedStacks(builder);
 	}
 
@@ -537,36 +272,33 @@ public class Block implements ItemConvertible {
 		BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack stack
 	) {
 		LootContext.Builder builder = new LootContext.Builder(world)
-			.setRandom(world.random)
-			.put(LootContextParameters.POSITION, pos)
-			.put(LootContextParameters.TOOL, stack)
-			.putNullable(LootContextParameters.THIS_ENTITY, entity)
-			.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+			.random(world.random)
+			.parameter(LootContextParameters.field_24424, Vec3d.ofCenter(pos))
+			.parameter(LootContextParameters.field_1229, stack)
+			.optionalParameter(LootContextParameters.field_1226, entity)
+			.optionalParameter(LootContextParameters.field_1228, blockEntity);
 		return state.getDroppedStacks(builder);
 	}
 
 	public static void dropStacks(BlockState state, World world, BlockPos pos) {
 		if (world instanceof ServerWorld) {
-			getDroppedStacks(state, (ServerWorld)world, pos, null).forEach(itemStack -> dropStack(world, pos, itemStack));
+			getDroppedStacks(state, (ServerWorld)world, pos, null).forEach(stack -> dropStack(world, pos, stack));
+			state.onStacksDropped((ServerWorld)world, pos, ItemStack.EMPTY);
 		}
-
-		state.onStacksDropped(world, pos, ItemStack.EMPTY);
 	}
 
-	public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity) {
-		if (world instanceof ServerWorld) {
-			getDroppedStacks(state, (ServerWorld)world, pos, blockEntity).forEach(itemStack -> dropStack(world, pos, itemStack));
+	public static void dropStacks(BlockState state, WorldAccess worldAccess, BlockPos pos, @Nullable BlockEntity blockEntity) {
+		if (worldAccess instanceof ServerWorld) {
+			getDroppedStacks(state, (ServerWorld)worldAccess, pos, blockEntity).forEach(stack -> dropStack((ServerWorld)worldAccess, pos, stack));
+			state.onStacksDropped((ServerWorld)worldAccess, pos, ItemStack.EMPTY);
 		}
-
-		state.onStacksDropped(world, pos, ItemStack.EMPTY);
 	}
 
 	public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack stack) {
 		if (world instanceof ServerWorld) {
 			getDroppedStacks(state, (ServerWorld)world, pos, blockEntity, entity, stack).forEach(itemStack -> dropStack(world, pos, itemStack));
+			state.onStacksDropped((ServerWorld)world, pos, stack);
 		}
-
-		state.onStacksDropped(world, pos, stack);
 	}
 
 	public static void dropStack(World world, BlockPos pos, ItemStack stack) {
@@ -581,12 +313,12 @@ public class Block implements ItemConvertible {
 		}
 	}
 
-	protected void dropExperience(World world, BlockPos pos, int size) {
-		if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+	protected void dropExperience(ServerWorld serverWorld, BlockPos pos, int size) {
+		if (serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			while (size > 0) {
 				int i = ExperienceOrbEntity.roundToOrbSize(size);
 				size -= i;
-				world.spawnEntity(new ExperienceOrbEntity(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, i));
+				serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, i));
 			}
 		}
 	}
@@ -598,16 +330,6 @@ public class Block implements ItemConvertible {
 	public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
 	}
 
-	@Deprecated
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return true;
-	}
-
-	@Deprecated
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		return ActionResult.PASS;
-	}
-
 	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
 	}
 
@@ -616,31 +338,8 @@ public class Block implements ItemConvertible {
 		return this.getDefaultState();
 	}
 
-	@Deprecated
-	public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-	}
-
-	@Deprecated
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return 0;
-	}
-
-	@Deprecated
-	public boolean emitsRedstonePower(BlockState state) {
-		return false;
-	}
-
-	@Deprecated
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-	}
-
-	@Deprecated
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return 0;
-	}
-
 	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
-		player.incrementStat(Stats.MINED.getOrCreateStat(this));
+		player.incrementStat(Stats.field_15427.getOrCreateStat(this));
 		player.addExhaustion(0.005F);
 		dropStacks(state, world, pos, blockEntity, player, stack);
 	}
@@ -653,7 +352,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text getName() {
+	public MutableText getName() {
 		return new TranslatableText(this.getTranslationKey());
 	}
 
@@ -663,22 +362,6 @@ public class Block implements ItemConvertible {
 		}
 
 		return this.translationKey;
-	}
-
-	@Deprecated
-	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
-		return false;
-	}
-
-	@Deprecated
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return this.material.getPistonBehavior();
-	}
-
-	@Deprecated
-	@Environment(EnvType.CLIENT)
-	public float getAmbientOcclusionLightLevel(BlockState state, BlockView view, BlockPos pos) {
-		return state.isFullCube(view, pos) ? 0.2F : 1.0F;
 	}
 
 	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
@@ -698,11 +381,6 @@ public class Block implements ItemConvertible {
 		list.add(new ItemStack(this));
 	}
 
-	@Deprecated
-	public FluidState getFluidState(BlockState state) {
-		return Fluids.EMPTY.getDefaultState();
-	}
-
 	public float getSlipperiness() {
 		return this.slipperiness;
 	}
@@ -715,17 +393,11 @@ public class Block implements ItemConvertible {
 		return this.jumpVelocityMultiplier;
 	}
 
-	@Deprecated
-	@Environment(EnvType.CLIENT)
-	public long getRenderingSeed(BlockState state, BlockPos pos) {
-		return MathHelper.hashCode(pos);
-	}
-
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
-	}
-
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		world.playLevelEvent(player, 2001, pos, getRawIdFromState(state));
+		world.syncWorldEvent(player, 2001, pos, getRawIdFromState(state));
+		if (this.isIn(BlockTags.field_23800)) {
+			PiglinBrain.onGuardedBlockBroken(player, false);
+		}
 	}
 
 	public void rainTick(World world, BlockPos pos) {
@@ -733,16 +405,6 @@ public class Block implements ItemConvertible {
 
 	public boolean shouldDropItemsOnExplosion(Explosion explosion) {
 		return true;
-	}
-
-	@Deprecated
-	public boolean hasComparatorOutput(BlockState state) {
-		return false;
-	}
-
-	@Deprecated
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return 0;
 	}
 
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
@@ -758,25 +420,6 @@ public class Block implements ItemConvertible {
 
 	public final BlockState getDefaultState() {
 		return this.defaultState;
-	}
-
-	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.NONE;
-	}
-
-	@Deprecated
-	public Vec3d getOffsetPos(BlockState state, BlockView view, BlockPos blockPos) {
-		Block.OffsetType offsetType = this.getOffsetType();
-		if (offsetType == Block.OffsetType.NONE) {
-			return Vec3d.ZERO;
-		} else {
-			long l = MathHelper.hashCode(blockPos.getX(), 0, blockPos.getZ());
-			return new Vec3d(
-				((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5,
-				offsetType == Block.OffsetType.XYZ ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0,
-				((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5
-			);
-		}
 	}
 
 	public BlockSoundGroup getSoundGroup(BlockState state) {
@@ -801,7 +444,12 @@ public class Block implements ItemConvertible {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void buildTooltip(ItemStack stack, @Nullable BlockView view, List<Text> tooltip, TooltipContext options) {
+	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+	}
+
+	@Override
+	protected Block asBlock() {
+		return this;
 	}
 
 	public static final class NeighborGroup {
@@ -830,134 +478,6 @@ public class Block implements ItemConvertible {
 			int i = this.self.hashCode();
 			i = 31 * i + this.other.hashCode();
 			return 31 * i + this.facing.hashCode();
-		}
-	}
-
-	public static enum OffsetType {
-		NONE,
-		XZ,
-		XYZ;
-	}
-
-	public static class Settings {
-		private Material material;
-		private MaterialColor materialColor;
-		private boolean collidable = true;
-		private BlockSoundGroup soundGroup = BlockSoundGroup.STONE;
-		private int luminance;
-		private float resistance;
-		private float hardness;
-		private boolean randomTicks;
-		private float slipperiness = 0.6F;
-		private float slowDownMultiplier = 1.0F;
-		private float jumpVelocityMultiplier = 1.0F;
-		private Identifier dropTableId;
-		private boolean opaque = true;
-		private boolean dynamicBounds;
-
-		private Settings(Material material, MaterialColor materialColor) {
-			this.material = material;
-			this.materialColor = materialColor;
-		}
-
-		public static Block.Settings of(Material material) {
-			return of(material, material.getColor());
-		}
-
-		public static Block.Settings of(Material material, DyeColor color) {
-			return of(material, color.getMaterialColor());
-		}
-
-		public static Block.Settings of(Material material, MaterialColor color) {
-			return new Block.Settings(material, color);
-		}
-
-		public static Block.Settings copy(Block source) {
-			Block.Settings settings = new Block.Settings(source.material, source.materialColor);
-			settings.material = source.material;
-			settings.hardness = source.hardness;
-			settings.resistance = source.resistance;
-			settings.collidable = source.collidable;
-			settings.randomTicks = source.randomTicks;
-			settings.luminance = source.lightLevel;
-			settings.materialColor = source.materialColor;
-			settings.soundGroup = source.soundGroup;
-			settings.slipperiness = source.getSlipperiness();
-			settings.slowDownMultiplier = source.getVelocityMultiplier();
-			settings.dynamicBounds = source.dynamicBounds;
-			settings.opaque = source.opaque;
-			return settings;
-		}
-
-		public Block.Settings noCollision() {
-			this.collidable = false;
-			this.opaque = false;
-			return this;
-		}
-
-		public Block.Settings nonOpaque() {
-			this.opaque = false;
-			return this;
-		}
-
-		public Block.Settings slipperiness(float slipperiness) {
-			this.slipperiness = slipperiness;
-			return this;
-		}
-
-		public Block.Settings velocityMultiplier(float velocityMultiplier) {
-			this.slowDownMultiplier = velocityMultiplier;
-			return this;
-		}
-
-		public Block.Settings jumpVelocityMultiplier(float jumpVelocityMultiplier) {
-			this.jumpVelocityMultiplier = jumpVelocityMultiplier;
-			return this;
-		}
-
-		protected Block.Settings sounds(BlockSoundGroup soundGroup) {
-			this.soundGroup = soundGroup;
-			return this;
-		}
-
-		protected Block.Settings lightLevel(int luminance) {
-			this.luminance = luminance;
-			return this;
-		}
-
-		public Block.Settings strength(float hardness, float resistance) {
-			this.hardness = hardness;
-			this.resistance = Math.max(0.0F, resistance);
-			return this;
-		}
-
-		protected Block.Settings breakInstantly() {
-			return this.strength(0.0F);
-		}
-
-		protected Block.Settings strength(float strength) {
-			this.strength(strength, strength);
-			return this;
-		}
-
-		protected Block.Settings ticksRandomly() {
-			this.randomTicks = true;
-			return this;
-		}
-
-		protected Block.Settings hasDynamicBounds() {
-			this.dynamicBounds = true;
-			return this;
-		}
-
-		protected Block.Settings dropsNothing() {
-			this.dropTableId = LootTables.EMPTY;
-			return this;
-		}
-
-		public Block.Settings dropsLike(Block source) {
-			this.dropTableId = source.getDropTableId();
-			return this;
 		}
 	}
 }

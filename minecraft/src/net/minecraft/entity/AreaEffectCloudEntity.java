@@ -11,8 +11,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
-import net.minecraft.command.arguments.ParticleArgumentType;
+import net.minecraft.command.argument.ParticleArgumentType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -20,6 +19,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -38,7 +38,7 @@ public class AreaEffectCloudEntity extends Entity {
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> WAITING = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<ParticleEffect> PARTICLE_ID = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.PARTICLE);
-	private Potion potion = Potions.EMPTY;
+	private Potion potion = Potions.field_8984;
 	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
 	private final Map<Entity, Integer> affectedEntities = Maps.<Entity, Integer>newHashMap();
 	private int duration = 600;
@@ -58,8 +58,8 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	public AreaEffectCloudEntity(World world, double x, double y, double z) {
-		this(EntityType.AREA_EFFECT_CLOUD, world);
-		this.setPosition(x, y, z);
+		this(EntityType.field_6083, world);
+		this.updatePosition(x, y, z);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class AreaEffectCloudEntity extends Entity {
 		this.getDataTracker().startTracking(COLOR, 0);
 		this.getDataTracker().startTracking(RADIUS, 0.5F);
 		this.getDataTracker().startTracking(WAITING, false);
-		this.getDataTracker().startTracking(PARTICLE_ID, ParticleTypes.ENTITY_EFFECT);
+		this.getDataTracker().startTracking(PARTICLE_ID, ParticleTypes.field_11226);
 	}
 
 	public void setRadius(float radius) {
@@ -82,7 +82,7 @@ public class AreaEffectCloudEntity extends Entity {
 		double e = this.getY();
 		double f = this.getZ();
 		super.calculateDimensions();
-		this.setPosition(d, e, f);
+		this.updatePosition(d, e, f);
 	}
 
 	public float getRadius() {
@@ -97,7 +97,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	private void updateColor() {
-		if (this.potion == Potions.EMPTY && this.effects.isEmpty()) {
+		if (this.potion == Potions.field_8984 && this.effects.isEmpty()) {
 			this.getDataTracker().set(COLOR, 0);
 		} else {
 			this.getDataTracker().set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
@@ -158,7 +158,7 @@ public class AreaEffectCloudEntity extends Entity {
 						float h = MathHelper.sqrt(this.random.nextFloat()) * 0.2F;
 						float j = MathHelper.cos(g) * h;
 						float k = MathHelper.sin(g) * h;
-						if (particleEffect.getType() == ParticleTypes.ENTITY_EFFECT) {
+						if (particleEffect.getType() == ParticleTypes.field_11226) {
 							int l = this.random.nextBoolean() ? 16777215 : this.getColor();
 							int m = l >> 16 & 0xFF;
 							int n = l >> 8 & 0xFF;
@@ -186,7 +186,7 @@ public class AreaEffectCloudEntity extends Entity {
 					float j = MathHelper.sqrt(this.random.nextFloat()) * f;
 					float k = MathHelper.cos(h) * j;
 					float r = MathHelper.sin(h) * j;
-					if (particleEffect.getType() == ParticleTypes.ENTITY_EFFECT) {
+					if (particleEffect.getType() == ParticleTypes.field_11226) {
 						int m = this.getColor();
 						int n = m >> 16 & 0xFF;
 						int o = m >> 8 & 0xFF;
@@ -351,7 +351,10 @@ public class AreaEffectCloudEntity extends Entity {
 		this.radiusOnUse = tag.getFloat("RadiusOnUse");
 		this.radiusGrowth = tag.getFloat("RadiusPerTick");
 		this.setRadius(tag.getFloat("Radius"));
-		this.ownerUuid = tag.getUuid("OwnerUUID");
+		if (tag.containsUuid("Owner")) {
+			this.ownerUuid = tag.getUuid("Owner");
+		}
+
 		if (tag.contains("Particle", 8)) {
 			try {
 				this.setParticleType(ParticleArgumentType.readParameters(new StringReader(tag.getString("Particle"))));
@@ -373,7 +376,7 @@ public class AreaEffectCloudEntity extends Entity {
 			this.effects.clear();
 
 			for (int i = 0; i < listTag.size(); i++) {
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(listTag.getCompound(i));
+				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(listTag.getCompound(i));
 				if (statusEffectInstance != null) {
 					this.addEffect(statusEffectInstance);
 				}
@@ -393,14 +396,14 @@ public class AreaEffectCloudEntity extends Entity {
 		tag.putFloat("Radius", this.getRadius());
 		tag.putString("Particle", this.getParticleType().asString());
 		if (this.ownerUuid != null) {
-			tag.putUuid("OwnerUUID", this.ownerUuid);
+			tag.putUuid("Owner", this.ownerUuid);
 		}
 
 		if (this.customColor) {
 			tag.putInt("Color", this.getColor());
 		}
 
-		if (this.potion != Potions.EMPTY && this.potion != null) {
+		if (this.potion != Potions.field_8984 && this.potion != null) {
 			tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
 		}
 
@@ -408,7 +411,7 @@ public class AreaEffectCloudEntity extends Entity {
 			ListTag listTag = new ListTag();
 
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				listTag.add(statusEffectInstance.serialize(new CompoundTag()));
+				listTag.add(statusEffectInstance.toTag(new CompoundTag()));
 			}
 
 			tag.put("Effects", listTag);
@@ -426,7 +429,7 @@ public class AreaEffectCloudEntity extends Entity {
 
 	@Override
 	public PistonBehavior getPistonBehavior() {
-		return PistonBehavior.IGNORE;
+		return PistonBehavior.field_15975;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import java.util.List;
@@ -15,7 +15,9 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
@@ -24,15 +26,13 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Arm;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -42,25 +42,12 @@ import net.minecraft.world.World;
 
 public class Item implements ItemConvertible {
 	public static final Map<Block, Item> BLOCK_ITEMS = Maps.<Block, Item>newHashMap();
-	private static final ItemPropertyGetter DAMAGED_PROPERTY_GETTER = (stack, world, entity) -> stack.isDamaged() ? 1.0F : 0.0F;
-	private static final ItemPropertyGetter DAMAGE_PROPERTY_GETTER = (stack, world, entity) -> MathHelper.clamp(
-			(float)stack.getDamage() / (float)stack.getMaxDamage(), 0.0F, 1.0F
-		);
-	private static final ItemPropertyGetter LEFTHANDED_PROPERTY_GETTER = (stack, world, entity) -> entity != null && entity.getMainArm() != Arm.RIGHT
-			? 1.0F
-			: 0.0F;
-	private static final ItemPropertyGetter COOLDOWN_PROPERTY_GETTER = (stack, world, entity) -> entity instanceof PlayerEntity
-			? ((PlayerEntity)entity).getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0F)
-			: 0.0F;
-	private static final ItemPropertyGetter CUSTOM_DATA_PROPERTY_GETTER = (stack, world, entity) -> stack.hasTag()
-			? (float)stack.getTag().getInt("CustomModelData")
-			: 0.0F;
 	protected static final Random RANDOM = new Random();
-	private final Map<Identifier, ItemPropertyGetter> propertyGetters = Maps.<Identifier, ItemPropertyGetter>newHashMap();
 	protected final ItemGroup group;
 	private final Rarity rarity;
 	private final int maxCount;
 	private final int maxDamage;
+	private final boolean fireproof;
 	private final Item recipeRemainder;
 	@Nullable
 	private String translationKey;
@@ -81,33 +68,16 @@ public class Item implements ItemConvertible {
 	}
 
 	public Item(Item.Settings settings) {
-		this.addPropertyGetter(new Identifier("lefthanded"), LEFTHANDED_PROPERTY_GETTER);
-		this.addPropertyGetter(new Identifier("cooldown"), COOLDOWN_PROPERTY_GETTER);
-		this.addPropertyGetter(new Identifier("custom_model_data"), CUSTOM_DATA_PROPERTY_GETTER);
 		this.group = settings.group;
 		this.rarity = settings.rarity;
 		this.recipeRemainder = settings.recipeRemainder;
 		this.maxDamage = settings.maxDamage;
 		this.maxCount = settings.maxCount;
 		this.foodComponent = settings.foodComponent;
-		if (this.maxDamage > 0) {
-			this.addPropertyGetter(new Identifier("damaged"), DAMAGED_PROPERTY_GETTER);
-			this.addPropertyGetter(new Identifier("damage"), DAMAGE_PROPERTY_GETTER);
-		}
+		this.fireproof = settings.fireproof;
 	}
 
 	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-	}
-
-	@Nullable
-	@Environment(EnvType.CLIENT)
-	public ItemPropertyGetter getPropertyGetter(Identifier id) {
-		return (ItemPropertyGetter)this.propertyGetters.get(id);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean hasPropertyGetters() {
-		return !this.propertyGetters.isEmpty();
 	}
 
 	public boolean postProcessTag(CompoundTag tag) {
@@ -123,15 +93,11 @@ public class Item implements ItemConvertible {
 		return this;
 	}
 
-	public final void addPropertyGetter(Identifier id, ItemPropertyGetter property) {
-		this.propertyGetters.put(id, property);
-	}
-
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		return ActionResult.PASS;
 	}
 
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
+	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		return 1.0F;
 	}
 
@@ -177,8 +143,8 @@ public class Item implements ItemConvertible {
 		return false;
 	}
 
-	public boolean useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-		return false;
+	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+		return ActionResult.PASS;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -230,12 +196,12 @@ public class Item implements ItemConvertible {
 	}
 
 	public UseAction getUseAction(ItemStack stack) {
-		return stack.getItem().isFood() ? UseAction.EAT : UseAction.NONE;
+		return stack.getItem().isFood() ? UseAction.field_8950 : UseAction.field_8952;
 	}
 
 	public int getMaxUseTime(ItemStack stack) {
 		if (stack.getItem().isFood()) {
-			return this.getFoodComponent().isSnack() ? 20 : 40;
+			return this.getFoodComponent().isSnack() ? 16 : 32;
 		} else {
 			return 0;
 		}
@@ -252,7 +218,7 @@ public class Item implements ItemConvertible {
 		return new TranslatableText(this.getTranslationKey(stack));
 	}
 
-	public boolean hasEnchantmentGlint(ItemStack stack) {
+	public boolean hasGlint(ItemStack stack) {
 		return stack.hasEnchantments();
 	}
 
@@ -261,12 +227,12 @@ public class Item implements ItemConvertible {
 			return this.rarity;
 		} else {
 			switch (this.rarity) {
-				case COMMON:
-				case UNCOMMON:
-					return Rarity.RARE;
-				case RARE:
-					return Rarity.EPIC;
-				case EPIC:
+				case field_8906:
+				case field_8907:
+					return Rarity.field_8903;
+				case field_8903:
+					return Rarity.field_8904;
+				case field_8904:
 				default:
 					return this.rarity;
 			}
@@ -277,7 +243,7 @@ public class Item implements ItemConvertible {
 		return this.getMaxCount() == 1 && this.isDamageable();
 	}
 
-	protected static HitResult rayTrace(World world, PlayerEntity player, RayTraceContext.FluidHandling fluidHandling) {
+	protected static BlockHitResult rayTrace(World world, PlayerEntity player, RayTraceContext.FluidHandling fluidHandling) {
 		float f = player.pitch;
 		float g = player.yaw;
 		Vec3d vec3d = player.getCameraPosVec(1.0F);
@@ -289,7 +255,7 @@ public class Item implements ItemConvertible {
 		float n = h * j;
 		double d = 5.0;
 		Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double)k * 5.0, (double)n * 5.0);
-		return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, fluidHandling, player));
+		return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, fluidHandling, player));
 	}
 
 	public int getEnchantability() {
@@ -316,15 +282,14 @@ public class Item implements ItemConvertible {
 		return false;
 	}
 
-	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
-		return HashMultimap.create();
+	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+		return ImmutableMultimap.of();
 	}
 
 	public boolean isUsedOnRelease(ItemStack stack) {
-		return stack.getItem() == Items.CROSSBOW;
+		return stack.getItem() == Items.field_8399;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ItemStack getStackForRender() {
 		return new ItemStack(this);
 	}
@@ -343,11 +308,19 @@ public class Item implements ItemConvertible {
 	}
 
 	public SoundEvent getDrinkSound() {
-		return SoundEvents.ENTITY_GENERIC_DRINK;
+		return SoundEvents.field_20613;
 	}
 
 	public SoundEvent getEatSound() {
-		return SoundEvents.ENTITY_GENERIC_EAT;
+		return SoundEvents.field_20614;
+	}
+
+	public boolean isFireproof() {
+		return this.fireproof;
+	}
+
+	public boolean damage(DamageSource source) {
+		return !this.fireproof || !source.isFire();
 	}
 
 	public static class Settings {
@@ -355,8 +328,9 @@ public class Item implements ItemConvertible {
 		private int maxDamage;
 		private Item recipeRemainder;
 		private ItemGroup group;
-		private Rarity rarity = Rarity.COMMON;
+		private Rarity rarity = Rarity.field_8906;
 		private FoodComponent foodComponent;
+		private boolean fireproof;
 
 		public Item.Settings food(FoodComponent foodComponent) {
 			this.foodComponent = foodComponent;
@@ -394,6 +368,11 @@ public class Item implements ItemConvertible {
 
 		public Item.Settings rarity(Rarity rarity) {
 			this.rarity = rarity;
+			return this;
+		}
+
+		public Item.Settings fireproof() {
+			this.fireproof = true;
 			return this;
 		}
 	}

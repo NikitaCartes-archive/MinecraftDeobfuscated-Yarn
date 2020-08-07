@@ -4,12 +4,14 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
+import net.minecraft.block.StainedGlassPaneBlock;
+import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
@@ -17,6 +19,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.Tessellator;
@@ -33,7 +36,9 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -100,37 +105,95 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	) {
 		if (!stack.isEmpty()) {
 			matrices.push();
-			boolean bl = renderMode == ModelTransformation.Mode.GUI;
-			boolean bl2 = bl || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
-			if (stack.getItem() == Items.TRIDENT && bl2) {
+			boolean bl = renderMode == ModelTransformation.Mode.field_4317
+				|| renderMode == ModelTransformation.Mode.field_4318
+				|| renderMode == ModelTransformation.Mode.field_4319;
+			if (stack.getItem() == Items.field_8547 && bl) {
 				model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
 			}
 
 			model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
 			matrices.translate(-0.5, -0.5, -0.5);
-			if (!model.isBuiltin() && (stack.getItem() != Items.TRIDENT || bl2)) {
-				RenderLayer renderLayer = RenderLayers.getItemLayer(stack);
-				RenderLayer renderLayer2;
-				if (bl && Objects.equals(renderLayer, TexturedRenderLayers.getEntityTranslucent())) {
-					renderLayer2 = TexturedRenderLayers.getEntityTranslucentCull();
+			if (!model.isBuiltin() && (stack.getItem() != Items.field_8547 || bl)) {
+				boolean bl2;
+				if (renderMode != ModelTransformation.Mode.field_4317 && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem) {
+					Block block = ((BlockItem)stack.getItem()).getBlock();
+					bl2 = !(block instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock);
 				} else {
-					renderLayer2 = renderLayer;
+					bl2 = true;
 				}
 
-				VertexConsumer vertexConsumer = getArmorVertexConsumer(vertexConsumers, renderLayer2, true, stack.hasEnchantmentGlint());
+				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl2);
+				VertexConsumer vertexConsumer;
+				if (stack.getItem() == Items.field_8251 && stack.hasGlint()) {
+					matrices.push();
+					MatrixStack.Entry entry = matrices.peek();
+					if (renderMode == ModelTransformation.Mode.field_4317) {
+						entry.getModel().multiply(0.5F);
+					} else if (renderMode.isFirstPerson()) {
+						entry.getModel().multiply(0.75F);
+					}
+
+					if (bl2) {
+						vertexConsumer = getDirectGlintVertexConsumer(vertexConsumers, renderLayer, entry);
+					} else {
+						vertexConsumer = getGlintVertexConsumer(vertexConsumers, renderLayer, entry);
+					}
+
+					matrices.pop();
+				} else if (bl2) {
+					vertexConsumer = getDirectGlintVertexConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
+				} else {
+					vertexConsumer = getGlintVertexConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
+				}
+
 				this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
 			} else {
-				BuiltinModelItemRenderer.INSTANCE.render(stack, matrices, vertexConsumers, light, overlay);
+				BuiltinModelItemRenderer.INSTANCE.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
 			}
 
 			matrices.pop();
 		}
 	}
 
-	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
+	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean glint) {
 		return glint
-			? VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer))
-			: vertexConsumers.getBuffer(layer);
+			? VertexConsumers.dual(
+				vertexConsumerProvider.getBuffer(bl ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), vertexConsumerProvider.getBuffer(renderLayer)
+			)
+			: vertexConsumerProvider.getBuffer(renderLayer);
+	}
+
+	public static VertexConsumer getGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
+		return VertexConsumers.dual(
+			new OverlayVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()),
+			vertexConsumerProvider.getBuffer(renderLayer)
+		);
+	}
+
+	public static VertexConsumer getDirectGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
+		return VertexConsumers.dual(
+			new OverlayVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlintDirect()), entry.getModel(), entry.getNormal()),
+			vertexConsumerProvider.getBuffer(renderLayer)
+		);
+	}
+
+	public static VertexConsumer getGlintVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
+		if (glint) {
+			return MinecraftClient.isFabulousGraphicsOrBetter() && layer == TexturedRenderLayers.getItemEntityTranslucentCull()
+				? VertexConsumers.dual(vertexConsumers.getBuffer(RenderLayer.method_30676()), vertexConsumers.getBuffer(layer))
+				: VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer));
+		} else {
+			return vertexConsumers.getBuffer(layer);
+		}
+	}
+
+	public static VertexConsumer getDirectGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer layer, boolean bl, boolean glint) {
+		return glint
+			? VertexConsumers.dual(
+				vertexConsumerProvider.getBuffer(bl ? RenderLayer.getGlintDirect() : RenderLayer.getEntityGlintDirect()), vertexConsumerProvider.getBuffer(layer)
+			)
+			: vertexConsumerProvider.getBuffer(layer);
 	}
 
 	private void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {
@@ -153,18 +216,15 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
 		Item item = stack.getItem();
 		BakedModel bakedModel;
-		if (item == Items.TRIDENT) {
+		if (item == Items.field_8547) {
 			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
 		} else {
 			bakedModel = this.models.getModel(stack);
 		}
 
-		return !item.hasPropertyGetters() ? bakedModel : this.getOverriddenModel(bakedModel, stack, world, entity);
-	}
-
-	private BakedModel getOverriddenModel(BakedModel model, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-		BakedModel bakedModel = model.getItemPropertyOverrides().apply(model, stack, world, entity);
-		return bakedModel == null ? this.models.getModelManager().getMissingModel() : bakedModel;
+		ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
+		BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity);
+		return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
 	}
 
 	public void renderItem(
@@ -202,7 +262,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.enableAlphaTest();
 		RenderSystem.defaultAlphaFunc();
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.translatef((float)x, (float)y, 100.0F + this.zOffset);
 		RenderSystem.translatef(8.0F, 8.0F, 0.0F);
@@ -210,12 +270,12 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.scalef(16.0F, 16.0F, 16.0F);
 		MatrixStack matrixStack = new MatrixStack();
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		boolean bl = !model.method_24304();
+		boolean bl = !model.isSideLit();
 		if (bl) {
 			DiffuseLighting.disableGuiDepthLighting();
 		}
 
-		this.renderItem(stack, ModelTransformation.Mode.GUI, false, matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
+		this.renderItem(stack, ModelTransformation.Mode.field_4317, false, matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
 		immediate.draw();
 		RenderSystem.enableDepthTest();
 		if (bl) {
@@ -227,11 +287,31 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.popMatrix();
 	}
 
-	public void renderGuiItem(ItemStack stack, int x, int y) {
-		this.renderGuiItem(MinecraftClient.getInstance().player, stack, x, y);
+	/**
+	 * Renders an item in a GUI with the player as the attached entity
+	 * for calculating model overrides.
+	 */
+	public void renderInGuiWithOverrides(ItemStack stack, int x, int y) {
+		this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y);
 	}
 
-	public void renderGuiItem(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y) {
+	/**
+	 * Renders an item in a GUI without an attached entity.
+	 */
+	public void renderInGui(ItemStack stack, int x, int y) {
+		this.innerRenderInGui(null, stack, x, y);
+	}
+
+	/**
+	 * Renders an item in a GUI with an attached entity.
+	 * 
+	 * <p>The entity is used to calculate model overrides for the item.
+	 */
+	public void renderInGuiWithOverrides(LivingEntity entity, ItemStack stack, int x, int y) {
+		this.innerRenderInGui(entity, stack, x, y);
+	}
+
+	private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y) {
 		if (!itemStack.isEmpty()) {
 			this.zOffset += 50.0F;
 
@@ -243,7 +323,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 				crashReportSection.add("Item Type", (CrashCallable<String>)(() -> String.valueOf(itemStack.getItem())));
 				crashReportSection.add("Item Damage", (CrashCallable<String>)(() -> String.valueOf(itemStack.getDamage())));
 				crashReportSection.add("Item NBT", (CrashCallable<String>)(() -> String.valueOf(itemStack.getTag())));
-				crashReportSection.add("Item Foil", (CrashCallable<String>)(() -> String.valueOf(itemStack.hasEnchantmentGlint())));
+				crashReportSection.add("Item Foil", (CrashCallable<String>)(() -> String.valueOf(itemStack.hasGlint())));
 				throw new CrashException(crashReport);
 			}
 
@@ -251,28 +331,27 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public void renderGuiItemOverlay(TextRenderer fontRenderer, ItemStack stack, int x, int y) {
-		this.renderGuiItemOverlay(fontRenderer, stack, x, y, null);
+	/**
+	 * Renders the overlay for items in GUIs, including the damage bar and the item count.
+	 */
+	public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y) {
+		this.renderGuiItemOverlay(renderer, stack, x, y, null);
 	}
 
-	public void renderGuiItemOverlay(TextRenderer fontRenderer, ItemStack stack, int x, int y, @Nullable String amountText) {
+	/**
+	 * Renders the overlay for items in GUIs, including the damage bar and the item count.
+	 * 
+	 * @param countLabel a label for the stack; if null, the stack count is drawn instead
+	 */
+	public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, @Nullable String countLabel) {
 		if (!stack.isEmpty()) {
 			MatrixStack matrixStack = new MatrixStack();
-			if (stack.getCount() != 1 || amountText != null) {
-				String string = amountText == null ? String.valueOf(stack.getCount()) : amountText;
+			if (stack.getCount() != 1 || countLabel != null) {
+				String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
 				matrixStack.translate(0.0, 0.0, (double)(this.zOffset + 200.0F));
 				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-				fontRenderer.draw(
-					string,
-					(float)(x + 19 - 2 - fontRenderer.getStringWidth(string)),
-					(float)(y + 6 + 3),
-					16777215,
-					true,
-					matrixStack.peek().getModel(),
-					immediate,
-					false,
-					0,
-					15728880
+				renderer.draw(
+					string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 16777215, true, matrixStack.peek().getModel(), immediate, false, 0, 15728880
 				);
 				immediate.draw();
 			}

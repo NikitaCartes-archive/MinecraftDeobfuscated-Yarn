@@ -12,27 +12,27 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class SpongeBlock extends Block {
-	protected SpongeBlock(Block.Settings settings) {
+	protected SpongeBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-		if (oldState.getBlock() != state.getBlock()) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+		if (!oldState.isOf(state.getBlock())) {
 			this.update(world, pos);
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		this.update(world, pos);
-		super.neighborUpdate(state, world, pos, block, neighborPos, moved);
+		super.neighborUpdate(state, world, pos, block, fromPos, notify);
 	}
 
 	protected void update(World world, BlockPos pos) {
 		if (this.absorbWater(world, pos)) {
-			world.setBlockState(pos, Blocks.WET_SPONGE.getDefaultState(), 2);
-			world.playLevelEvent(2001, pos, Block.getRawIdFromState(Blocks.WATER.getDefaultState()));
+			world.setBlockState(pos, Blocks.field_10562.getDefaultState(), 2);
+			world.syncWorldEvent(2001, pos, Block.getRawIdFromState(Blocks.field_10382.getDefaultState()));
 		}
 	}
 
@@ -51,24 +51,23 @@ public class SpongeBlock extends Block {
 				BlockState blockState = world.getBlockState(blockPos2);
 				FluidState fluidState = world.getFluidState(blockPos2);
 				Material material = blockState.getMaterial();
-				if (fluidState.matches(FluidTags.WATER)) {
-					if (blockState.getBlock() instanceof FluidDrainable && ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos2, blockState) != Fluids.EMPTY
-						)
-					 {
+				if (fluidState.isIn(FluidTags.field_15517)) {
+					if (blockState.getBlock() instanceof FluidDrainable
+						&& ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos2, blockState) != Fluids.field_15906) {
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos2, j + 1));
 						}
 					} else if (blockState.getBlock() instanceof FluidBlock) {
-						world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 3);
+						world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 3);
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos2, j + 1));
 						}
-					} else if (material == Material.UNDERWATER_PLANT || material == Material.SEAGRASS) {
+					} else if (material == Material.UNDERWATER_PLANT || material == Material.REPLACEABLE_UNDERWATER_PLANT) {
 						BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? world.getBlockEntity(blockPos2) : null;
 						dropStacks(blockState, world, blockPos2, blockEntity);
-						world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 3);
+						world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 3);
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos2, j + 1));

@@ -6,8 +6,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public interface Recipe<C extends Inventory> {
@@ -21,10 +21,10 @@ public interface Recipe<C extends Inventory> {
 	ItemStack getOutput();
 
 	default DefaultedList<ItemStack> getRemainingStacks(C inventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.getInvSize(), ItemStack.EMPTY);
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			Item item = inventory.getInvStack(i).getItem();
+			Item item = inventory.getStack(i).getItem();
 			if (item.hasRecipeRemainder()) {
 				defaultedList.set(i, new ItemStack(item.getRecipeRemainder()));
 			}
@@ -48,7 +48,7 @@ public interface Recipe<C extends Inventory> {
 
 	@Environment(EnvType.CLIENT)
 	default ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.CRAFTING_TABLE);
+		return new ItemStack(Blocks.field_9980);
 	}
 
 	Identifier getId();

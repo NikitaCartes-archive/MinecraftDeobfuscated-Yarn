@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -14,6 +15,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 	private final ModelPart head;
 
 	public ShulkerEntityModel() {
+		super(RenderLayer::getEntityCutoutNoCullZOffset);
 		this.bottomShell = new ModelPart(64, 64, 0, 28);
 		this.head = new ModelPart(64, 64, 0, 52);
 		this.topShell.addCuboid(-8.0F, -16.0F, -8.0F, 16.0F, 12.0F, 16.0F);
@@ -24,9 +26,9 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 		this.head.setPivot(0.0F, 12.0F, 0.0F);
 	}
 
-	public void setAngles(T shulkerEntity, float f, float g, float h, float i, float j) {
+	public void method_17122(T shulkerEntity, float f, float g, float h, float i, float j) {
 		float k = h - (float)shulkerEntity.age;
-		float l = (0.5F + shulkerEntity.method_7116(k)) * (float) Math.PI;
+		float l = (0.5F + shulkerEntity.getOpenProgress(k)) * (float) Math.PI;
 		float m = -1.0F + MathHelper.sin(l);
 		float n = 0.0F;
 		if (l > (float) Math.PI) {
@@ -34,14 +36,14 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 		}
 
 		this.topShell.setPivot(0.0F, 16.0F + MathHelper.sin(l) * 8.0F + n, 0.0F);
-		if (shulkerEntity.method_7116(k) > 0.3F) {
+		if (shulkerEntity.getOpenProgress(k) > 0.3F) {
 			this.topShell.yaw = m * m * m * m * (float) Math.PI * 0.125F;
 		} else {
 			this.topShell.yaw = 0.0F;
 		}
 
 		this.head.pitch = j * (float) (Math.PI / 180.0);
-		this.head.yaw = i * (float) (Math.PI / 180.0);
+		this.head.yaw = (shulkerEntity.headYaw - 180.0F - shulkerEntity.bodyYaw) * (float) (Math.PI / 180.0);
 	}
 
 	@Override

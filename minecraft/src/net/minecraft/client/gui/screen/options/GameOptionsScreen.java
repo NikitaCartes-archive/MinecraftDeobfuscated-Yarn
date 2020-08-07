@@ -1,9 +1,16 @@
 package net.minecraft.client.gui.screen.options;
 
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5499;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -19,11 +26,22 @@ public class GameOptionsScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.minecraft.options.write();
+		this.client.options.write();
 	}
 
 	@Override
 	public void onClose() {
-		this.minecraft.openScreen(this.parent);
+		this.client.openScreen(this.parent);
+	}
+
+	@Nullable
+	public static List<OrderedText> method_31048(ButtonListWidget buttonListWidget, int i, int j) {
+		Optional<AbstractButtonWidget> optional = buttonListWidget.getHoveredButton((double)i, (double)j);
+		if (optional.isPresent() && optional.get() instanceof class_5499) {
+			Optional<List<OrderedText>> optional2 = ((class_5499)optional.get()).method_31047();
+			return (List<OrderedText>)optional2.orElse(null);
+		} else {
+			return null;
+		}
 	}
 }

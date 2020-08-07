@@ -4,7 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
@@ -21,9 +21,9 @@ public class EndRodBlock extends FacingBlock {
 	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 6.0, 0.0, 10.0, 10.0, 16.0);
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 6.0, 6.0, 16.0, 10.0, 10.0);
 
-	protected EndRodBlock(Block.Settings settings) {
+	protected EndRodBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11036));
 	}
 
 	@Override
@@ -37,14 +37,14 @@ public class EndRodBlock extends FacingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch (((Direction)state.get(FACING)).getAxis()) {
-			case X:
+			case field_11048:
 			default:
 				return X_SHAPE;
-			case Z:
+			case field_11051:
 				return Z_SHAPE;
-			case Y:
+			case field_11052:
 				return Y_SHAPE;
 		}
 	}
@@ -53,7 +53,7 @@ public class EndRodBlock extends FacingBlock {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		Direction direction = ctx.getSide();
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(direction.getOpposite()));
-		return blockState.getBlock() == this && blockState.get(FACING) == direction
+		return blockState.isOf(this) && blockState.get(FACING) == direction
 			? this.getDefaultState().with(FACING, direction.getOpposite())
 			: this.getDefaultState().with(FACING, direction);
 	}
@@ -68,7 +68,7 @@ public class EndRodBlock extends FacingBlock {
 		double g = (double)(0.4F - (random.nextFloat() + random.nextFloat()) * 0.4F);
 		if (random.nextInt(5) == 0) {
 			world.addParticle(
-				ParticleTypes.END_ROD,
+				ParticleTypes.field_11207,
 				d + (double)direction.getOffsetX() * g,
 				e + (double)direction.getOffsetY() * g,
 				f + (double)direction.getOffsetZ() * g,
@@ -86,6 +86,11 @@ public class EndRodBlock extends FacingBlock {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.NORMAL;
+		return PistonBehavior.field_15974;
+	}
+
+	@Override
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		return false;
 	}
 }

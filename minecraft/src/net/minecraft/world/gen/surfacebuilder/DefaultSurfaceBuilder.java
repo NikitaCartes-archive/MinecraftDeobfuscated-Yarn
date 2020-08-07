@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.surfacebuilder;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -10,11 +9,11 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	public DefaultSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public DefaultSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+		super(codec);
 	}
 
-	public void generate(
+	public void method_15219(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -73,10 +72,10 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 			BlockState blockState3 = chunk.getBlockState(mutable);
 			if (blockState3.isAir()) {
 				i = -1;
-			} else if (blockState3.getBlock() == defaultBlock.getBlock()) {
+			} else if (blockState3.isOf(defaultBlock.getBlock())) {
 				if (i == -1) {
 					if (j <= 0) {
-						blockState = Blocks.AIR.getDefaultState();
+						blockState = Blocks.field_10124.getDefaultState();
 						blockState2 = defaultBlock;
 					} else if (m >= seaLevel - 4 && m <= seaLevel + 1) {
 						blockState = topBlock;
@@ -85,7 +84,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 
 					if (m < seaLevel && (blockState == null || blockState.isAir())) {
 						if (biome.getTemperature(mutable.set(x, m, z)) < 0.15F) {
-							blockState = Blocks.ICE.getDefaultState();
+							blockState = Blocks.field_10295.getDefaultState();
 						} else {
 							blockState = fluidBlock;
 						}
@@ -97,7 +96,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 					if (m >= seaLevel - 1) {
 						chunk.setBlockState(mutable, blockState, false);
 					} else if (m < seaLevel - 7 - j) {
-						blockState = Blocks.AIR.getDefaultState();
+						blockState = Blocks.field_10124.getDefaultState();
 						blockState2 = defaultBlock;
 						chunk.setBlockState(mutable, underwaterBlock, false);
 					} else {
@@ -106,9 +105,9 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 				} else if (i > 0) {
 					i--;
 					chunk.setBlockState(mutable, blockState2, false);
-					if (i == 0 && blockState2.getBlock() == Blocks.SAND && j > 1) {
+					if (i == 0 && blockState2.isOf(Blocks.field_10102) && j > 1) {
 						i = random.nextInt(4) + Math.max(0, m - 63);
-						blockState2 = blockState2.getBlock() == Blocks.RED_SAND ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
+						blockState2 = blockState2.isOf(Blocks.field_10534) ? Blocks.field_10344.getDefaultState() : Blocks.field_9979.getDefaultState();
 					}
 				}
 			}

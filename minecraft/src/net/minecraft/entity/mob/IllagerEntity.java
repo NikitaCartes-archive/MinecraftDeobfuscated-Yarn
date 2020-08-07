@@ -8,8 +8,8 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.world.World;
 
 public abstract class IllagerEntity extends RaiderEntity {
-	protected IllagerEntity(EntityType<? extends IllagerEntity> type, World world) {
-		super(type, world);
+	protected IllagerEntity(EntityType<? extends IllagerEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -24,12 +24,12 @@ public abstract class IllagerEntity extends RaiderEntity {
 
 	@Environment(EnvType.CLIENT)
 	public IllagerEntity.State getState() {
-		return IllagerEntity.State.CROSSED;
+		return IllagerEntity.State.field_7207;
 	}
 
 	public class LongDoorInteractGoal extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {
-		public LongDoorInteractGoal(RaiderEntity raiderEntity) {
-			super(raiderEntity, false);
+		public LongDoorInteractGoal(RaiderEntity raider) {
+			super(raider, false);
 		}
 
 		@Override
@@ -40,13 +40,13 @@ public abstract class IllagerEntity extends RaiderEntity {
 
 	@Environment(EnvType.CLIENT)
 	public static enum State {
-		CROSSED,
-		ATTACKING,
-		SPELLCASTING,
-		BOW_AND_ARROW,
-		CROSSBOW_HOLD,
-		CROSSBOW_CHARGE,
-		CELEBRATING,
-		NEUTRAL;
+		field_7207,
+		field_7211,
+		field_7212,
+		field_7208,
+		field_7213,
+		field_7210,
+		field_19012,
+		field_21512;
 	}
 }

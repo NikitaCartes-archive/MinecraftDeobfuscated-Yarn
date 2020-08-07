@@ -7,8 +7,8 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.ItemEnchantmentArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.ItemEnchantmentArgumentType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -64,8 +64,8 @@ public class EnchantCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Enchantment enchantment, int level) throws CommandSyntaxException {
-		if (level > enchantment.getMaximumLevel()) {
-			throw FAILED_LEVEL_EXCEPTION.create(level, enchantment.getMaximumLevel());
+		if (level > enchantment.getMaxLevel()) {
+			throw FAILED_LEVEL_EXCEPTION.create(level, enchantment.getMaxLevel());
 		} else {
 			int i = 0;
 
@@ -74,7 +74,7 @@ public class EnchantCommand {
 					LivingEntity livingEntity = (LivingEntity)entity;
 					ItemStack itemStack = livingEntity.getMainHandStack();
 					if (!itemStack.isEmpty()) {
-						if (enchantment.isAcceptableItem(itemStack) && EnchantmentHelper.contains(EnchantmentHelper.getEnchantments(itemStack).keySet(), enchantment)) {
+						if (enchantment.isAcceptableItem(itemStack) && EnchantmentHelper.isCompatible(EnchantmentHelper.get(itemStack).keySet(), enchantment)) {
 							itemStack.addEnchantment(enchantment, level);
 							i++;
 						} else if (targets.size() == 1) {

@@ -1,10 +1,9 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
@@ -15,17 +14,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
-	public BonusChestFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public BonusChestFeature(Codec<DefaultFeatureConfig> codec) {
+		super(codec);
 	}
 
-	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+	public boolean method_12817(
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		ChunkPos chunkPos = new ChunkPos(blockPos);
 		List<Integer> list = (List<Integer>)IntStream.rangeClosed(chunkPos.getStartX(), chunkPos.getEndX()).boxed().collect(Collectors.toList());
@@ -37,16 +35,16 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 		for (Integer integer : list) {
 			for (Integer integer2 : list2) {
 				mutable.set(integer, 0, integer2);
-				BlockPos blockPos2 = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable);
-				if (iWorld.isAir(blockPos2) || iWorld.getBlockState(blockPos2).getCollisionShape(iWorld, blockPos2).isEmpty()) {
-					iWorld.setBlockState(blockPos2, Blocks.CHEST.getDefaultState(), 2);
-					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.SPAWN_BONUS_CHEST);
-					BlockState blockState = Blocks.TORCH.getDefaultState();
+				BlockPos blockPos2 = structureWorldAccess.getTopPosition(Heightmap.Type.field_13203, mutable);
+				if (structureWorldAccess.isAir(blockPos2) || structureWorldAccess.getBlockState(blockPos2).getCollisionShape(structureWorldAccess, blockPos2).isEmpty()) {
+					structureWorldAccess.setBlockState(blockPos2, Blocks.field_10034.getDefaultState(), 2);
+					LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos2, LootTables.SPAWN_BONUS_CHEST);
+					BlockState blockState = Blocks.field_10336.getDefaultState();
 
-					for (Direction direction : Direction.Type.HORIZONTAL) {
+					for (Direction direction : Direction.Type.field_11062) {
 						BlockPos blockPos3 = blockPos2.offset(direction);
-						if (blockState.canPlaceAt(iWorld, blockPos3)) {
-							iWorld.setBlockState(blockPos3, blockState, 2);
+						if (blockState.canPlaceAt(structureWorldAccess, blockPos3)) {
+							structureWorldAccess.setBlockState(blockPos3, blockState, 2);
 						}
 					}
 

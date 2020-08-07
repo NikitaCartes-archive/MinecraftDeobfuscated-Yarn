@@ -4,7 +4,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -34,19 +33,19 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
 	};
 
-	protected CropBlock(Block.Settings settings) {
+	protected CropBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(this.getAgeProperty(), Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return AGE_TO_SHAPE[state.get(this.getAgeProperty())];
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-		return floor.getBlock() == Blocks.FARMLAND;
+	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+		return floor.isOf(Blocks.field_10362);
 	}
 
 	public IntProperty getAgeProperty() {
@@ -70,8 +69,12 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		super.scheduledTick(state, world, pos, random);
+	public boolean hasRandomTicks(BlockState state) {
+		return !this.isMature(state);
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getBaseLightLevel(pos, 0) >= 9) {
 			int i = this.getAge(state);
 			if (i < this.getMaxAge()) {
@@ -99,13 +102,13 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	protected static float getAvailableMoisture(Block block, BlockView world, BlockPos pos) {
 		float f = 1.0F;
-		BlockPos blockPos = pos.down();
+		BlockPos blockPos = pos.method_10074();
 
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				float g = 0.0F;
 				BlockState blockState = world.getBlockState(blockPos.add(i, 0, j));
-				if (blockState.getBlock() == Blocks.FARMLAND) {
+				if (blockState.isOf(Blocks.field_10362)) {
 					g = 1.0F;
 					if ((Integer)blockState.get(FarmlandBlock.MOISTURE) > 0) {
 						g = 3.0F;
@@ -148,7 +151,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 			world.breakBlock(pos, true, entity);
 		}
 
@@ -157,7 +160,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Environment(EnvType.CLIENT)
 	protected ItemConvertible getSeedsItem() {
-		return Items.WHEAT_SEEDS;
+		return Items.field_8317;
 	}
 
 	@Environment(EnvType.CLIENT)

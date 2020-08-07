@@ -9,6 +9,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public abstract class ItemNameFix extends DataFix {
 	private final String name;
@@ -20,7 +21,7 @@ public abstract class ItemNameFix extends DataFix {
 
 	@Override
 	public TypeRewriteRule makeRule() {
-		Type<Pair<String, String>> type = DSL.named(TypeReferences.ITEM_NAME.typeName(), DSL.namespacedString());
+		Type<Pair<String, String>> type = DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType());
 		if (!Objects.equals(this.getInputSchema().getType(TypeReferences.ITEM_NAME), type)) {
 			throw new IllegalStateException("item name type is not what was expected.");
 		} else {
@@ -28,13 +29,13 @@ public abstract class ItemNameFix extends DataFix {
 		}
 	}
 
-	protected abstract String rename(String string);
+	protected abstract String rename(String input);
 
 	public static DataFix create(Schema outputSchema, String name, Function<String, String> rename) {
 		return new ItemNameFix(outputSchema, name) {
 			@Override
-			protected String rename(String string) {
-				return (String)rename.apply(string);
+			protected String rename(String input) {
+				return (String)rename.apply(input);
 			}
 		};
 	}

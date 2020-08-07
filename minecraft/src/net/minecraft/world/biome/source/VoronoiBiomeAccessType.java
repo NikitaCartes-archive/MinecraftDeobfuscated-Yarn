@@ -3,7 +3,7 @@ package net.minecraft.world.biome.source;
 import net.minecraft.world.biome.Biome;
 
 public enum VoronoiBiomeAccessType implements BiomeAccessType {
-	INSTANCE;
+	field_20644;
 
 	@Override
 	public Biome getBiome(long seed, int x, int y, int z, BiomeAccess.Storage storage) {
@@ -28,7 +28,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType {
 			double g = bl ? d : d - 1.0;
 			double h = bl2 ? e : e - 1.0;
 			double s = bl3 ? f : f - 1.0;
-			ds[o] = calcChance(seed, p, q, r, g, h, s);
+			ds[o] = calcSquaredDistance(seed, p, q, r, g, h, s);
 		}
 
 		int o = 0;
@@ -47,7 +47,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType {
 		return storage.getBiomeForNoiseGen(ux, p, q);
 	}
 
-	private static double calcChance(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {
+	private static double calcSquaredDistance(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {
 		long l = SeedMixer.mixSeed(seed, (long)x);
 		l = SeedMixer.mixSeed(l, (long)y);
 		l = SeedMixer.mixSeed(l, (long)z);
@@ -59,7 +59,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType {
 		double e = distribute(l);
 		l = SeedMixer.mixSeed(l, seed);
 		double f = distribute(l);
-		return sqr(zFraction + f) + sqr(yFraction + e) + sqr(xFraction + d);
+		return square(zFraction + f) + square(yFraction + e) + square(xFraction + d);
 	}
 
 	private static double distribute(long seed) {
@@ -67,7 +67,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType {
 		return (d - 0.5) * 0.9;
 	}
 
-	private static double sqr(double d) {
+	private static double square(double d) {
 		return d * d;
 	}
 }

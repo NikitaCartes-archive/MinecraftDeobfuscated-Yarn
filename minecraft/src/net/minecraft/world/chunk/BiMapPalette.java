@@ -1,14 +1,15 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.IdList;
-import net.minecraft.util.Int2ObjectBiMap;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.collection.IdList;
+import net.minecraft.util.collection.Int2ObjectBiMap;
 
 public class BiMapPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
@@ -35,7 +36,7 @@ public class BiMapPalette<T> implements Palette<T> {
 
 	@Override
 	public int getIndex(T object) {
-		int i = this.map.getId(object);
+		int i = this.map.getRawId(object);
 		if (i == -1) {
 			i = this.map.add(object);
 			if (i >= 1 << this.indexBits) {
@@ -47,8 +48,14 @@ public class BiMapPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public boolean accepts(T object) {
-		return this.map.getId(object) != -1;
+	public boolean accepts(Predicate<T> predicate) {
+		for (int i = 0; i < this.getIndexBits(); i++) {
+			if (predicate.test(this.map.get(i))) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Nullable
@@ -74,7 +81,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		buf.writeVarInt(i);
 
 		for (int j = 0; j < i; j++) {
-			buf.writeVarInt(this.idList.getId(this.map.get(j)));
+			buf.writeVarInt(this.idList.getRawId(this.map.get(j)));
 		}
 	}
 
@@ -83,7 +90,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		int i = PacketByteBuf.getVarIntSizeBytes(this.getIndexBits());
 
 		for (int j = 0; j < this.getIndexBits(); j++) {
-			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getId(this.map.get(j)));
+			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getRawId(this.map.get(j)));
 		}
 
 		return i;

@@ -1,178 +1,128 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.TestableWorld;
+import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class Feature<FC extends FeatureConfig> {
-	public static final StructureFeature<DefaultFeatureConfig> PILLAGER_OUTPOST = register(
-		"pillager_outpost", new PillagerOutpostFeature(DefaultFeatureConfig::deserialize)
+	public static final Feature<DefaultFeatureConfig> field_21590 = register("no_op", new NoOpFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<TreeFeatureConfig> field_24134 = register("tree", new TreeFeature(TreeFeatureConfig.CODEC));
+	public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC));
+	public static final FlowerFeature<RandomPatchFeatureConfig> field_26361 = register(
+		"no_bonemeal_flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC)
 	);
-	public static final StructureFeature<MineshaftFeatureConfig> MINESHAFT = register("mineshaft", new MineshaftFeature(MineshaftFeatureConfig::deserialize));
-	public static final StructureFeature<DefaultFeatureConfig> WOODLAND_MANSION = register(
-		"woodland_mansion", new WoodlandMansionFeature(DefaultFeatureConfig::deserialize)
+	public static final Feature<RandomPatchFeatureConfig> field_21220 = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig.CODEC));
+	public static final Feature<BlockPileFeatureConfig> field_21221 = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig.CODEC));
+	public static final Feature<SpringFeatureConfig> field_13513 = register("spring_feature", new SpringFeature(SpringFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13552 = register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<EmeraldOreFeatureConfig> field_13594 = register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13591 = register("void_start_platform", new VoidStartPlatformFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13592 = register("desert_well", new DesertWellFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13516 = register("fossil", new FossilFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<HugeMushroomFeatureConfig> field_13571 = register("huge_red_mushroom", new HugeRedMushroomFeature(HugeMushroomFeatureConfig.CODEC));
+	public static final Feature<HugeMushroomFeatureConfig> field_13531 = register(
+		"huge_brown_mushroom", new HugeBrownMushroomFeature(HugeMushroomFeatureConfig.CODEC)
 	);
-	public static final StructureFeature<DefaultFeatureConfig> JUNGLE_TEMPLE = register(
-		"jungle_temple", new JungleTempleFeature(DefaultFeatureConfig::deserialize)
+	public static final Feature<DefaultFeatureConfig> field_13562 = register("ice_spike", new IceSpikeFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13568 = register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13539 = register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13559 = register("vines", new VinesFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13579 = register("monster_room", new DungeonFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13560 = register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<SingleStateFeatureConfig> field_13544 = register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));
+	public static final Feature<SingleStateFeatureConfig> field_13584 = register("forest_rock", new ForestRockFeature(SingleStateFeatureConfig.CODEC));
+	public static final Feature<DiskFeatureConfig> field_13509 = register("disk", new UnderwaterDiskFeature(DiskFeatureConfig.CODEC));
+	public static final Feature<DiskFeatureConfig> field_13551 = register("ice_patch", new IcePatchFeature(DiskFeatureConfig.CODEC));
+	public static final Feature<SingleStateFeatureConfig> field_13573 = register("lake", new LakeFeature(SingleStateFeatureConfig.CODEC));
+	public static final Feature<OreFeatureConfig> field_13517 = register("ore", new OreFeature(OreFeatureConfig.CODEC));
+	public static final Feature<EndSpikeFeatureConfig> field_13522 = register("end_spike", new EndSpikeFeature(EndSpikeFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13574 = register("end_island", new EndIslandFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<EndGatewayFeatureConfig> field_13564 = register("end_gateway", new EndGatewayFeature(EndGatewayFeatureConfig.CODEC));
+	public static final SeagrassFeature SEAGRASS = register("seagrass", new SeagrassFeature(ProbabilityConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13535 = register("kelp", new KelpFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13525 = register("coral_tree", new CoralTreeFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13585 = register("coral_mushroom", new CoralMushroomFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_13546 = register("coral_claw", new CoralClawFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<CountConfig> field_13575 = register("sea_pickle", new SeaPickleFeature(CountConfig.CODEC));
+	public static final Feature<SimpleBlockFeatureConfig> field_13518 = register("simple_block", new SimpleBlockFeature(SimpleBlockFeatureConfig.CODEC));
+	public static final Feature<ProbabilityConfig> field_13540 = register("bamboo", new BambooFeature(ProbabilityConfig.CODEC));
+	public static final Feature<HugeFungusFeatureConfig> field_22185 = register("huge_fungus", new HugeFungusFeature(HugeFungusFeatureConfig.CODEC));
+	public static final Feature<BlockPileFeatureConfig> field_22186 = register(
+		"nether_forest_vegetation", new NetherForestVegetationFeature(BlockPileFeatureConfig.CODEC)
 	);
-	public static final StructureFeature<DefaultFeatureConfig> DESERT_PYRAMID = register(
-		"desert_pyramid", new DesertPyramidFeature(DefaultFeatureConfig::deserialize)
+	public static final Feature<DefaultFeatureConfig> field_22187 = register("weeping_vines", new WeepingVinesFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_23088 = register("twisting_vines", new TwistingVinesFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<BasaltColumnsFeatureConfig> field_23884 = register("basalt_columns", new BasaltColumnsFeature(BasaltColumnsFeatureConfig.CODEC));
+	public static final Feature<DeltaFeatureConfig> field_23885 = register("delta_feature", new DeltaFeature(DeltaFeatureConfig.CODEC));
+	public static final Feature<NetherrackReplaceBlobsFeatureConfig> field_23886 = register(
+		"netherrack_replace_blobs", new NetherrackReplaceBlobsFeature(NetherrackReplaceBlobsFeatureConfig.field_25848)
 	);
-	public static final StructureFeature<DefaultFeatureConfig> IGLOO = register("igloo", new IglooFeature(DefaultFeatureConfig::deserialize));
-	public static final StructureFeature<ShipwreckFeatureConfig> SHIPWRECK = register("shipwreck", new ShipwreckFeature(ShipwreckFeatureConfig::deserialize));
-	public static final SwampHutFeature SWAMP_HUT = register("swamp_hut", new SwampHutFeature(DefaultFeatureConfig::deserialize));
-	public static final StructureFeature<DefaultFeatureConfig> STRONGHOLD = register("stronghold", new StrongholdFeature(DefaultFeatureConfig::deserialize));
-	public static final StructureFeature<DefaultFeatureConfig> OCEAN_MONUMENT = register(
-		"ocean_monument", new OceanMonumentFeature(DefaultFeatureConfig::deserialize)
+	public static final Feature<FillLayerFeatureConfig> field_19201 = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig.CODEC));
+	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> field_22188 = register("basalt_pillar", new BasaltPillarFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<OreFeatureConfig> field_22189 = register("no_surface_ore", new NoSurfaceOreFeature(OreFeatureConfig.CODEC));
+	public static final Feature<RandomFeatureConfig> field_13593 = register("random_selector", new RandomFeature(RandomFeatureConfig.CODEC));
+	public static final Feature<SimpleRandomFeatureConfig> field_13555 = register(
+		"simple_random_selector", new SimpleRandomFeature(SimpleRandomFeatureConfig.CODEC)
 	);
-	public static final StructureFeature<OceanRuinFeatureConfig> OCEAN_RUIN = register("ocean_ruin", new OceanRuinFeature(OceanRuinFeatureConfig::deserialize));
-	public static final StructureFeature<DefaultFeatureConfig> NETHER_BRIDGE = register(
-		"nether_bridge", new NetherFortressFeature(DefaultFeatureConfig::deserialize)
+	public static final Feature<RandomBooleanFeatureConfig> field_13550 = register(
+		"random_boolean_selector", new RandomBooleanFeature(RandomBooleanFeatureConfig.CODEC)
 	);
-	public static final StructureFeature<DefaultFeatureConfig> END_CITY = register("end_city", new EndCityFeature(DefaultFeatureConfig::deserialize));
-	public static final StructureFeature<BuriedTreasureFeatureConfig> BURIED_TREASURE = register(
-		"buried_treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig::deserialize)
-	);
-	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> NO_OP = register("no_op", new NoOpFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(BranchedTreeFeatureConfig::deserialize));
-	public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = register("acacia_tree", new AcaciaTreeFeature(BranchedTreeFeatureConfig::deserialize));
-	public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = register("fancy_tree", new LargeOakTreeFeature(BranchedTreeFeatureConfig::deserialize));
-	public static final Feature<TreeFeatureConfig> JUNGLE_GROUND_BUSH = register("jungle_ground_bush", new JungleGroundBushFeature(TreeFeatureConfig::deserialize));
-	public static final Feature<MegaTreeFeatureConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeFeature(MegaTreeFeatureConfig::deserialize));
-	public static final Feature<MegaTreeFeatureConfig> MEGA_JUNGLE_TREE = register(
-		"mega_jungle_tree", new MegaJungleTreeFeature(MegaTreeFeatureConfig::deserialize)
-	);
-	public static final Feature<MegaTreeFeatureConfig> MEGA_SPRUCE_TREE = register("mega_spruce_tree", new MegaPineTreeFeature(MegaTreeFeatureConfig::deserialize));
-	public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(RandomPatchFeatureConfig::deserialize));
-	public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig::deserialize));
-	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig::deserialize));
-	public static final Feature<SpringFeatureConfig> SPRING_FEATURE = register("spring_feature", new SpringFeature(SpringFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<EmeraldOreFeatureConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> VOID_START_PLATFORM = register(
-		"void_start_platform", new VoidStartPlatformFeature(DefaultFeatureConfig::deserialize)
-	);
-	public static final Feature<DefaultFeatureConfig> DESERT_WELL = register("desert_well", new DesertWellFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> FOSSIL = register("fossil", new FossilFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<HugeMushroomFeatureConfig> HUGE_RED_MUSHROOM = register(
-		"huge_red_mushroom", new HugeRedMushroomFeature(HugeMushroomFeatureConfig::deserialize)
-	);
-	public static final Feature<HugeMushroomFeatureConfig> HUGE_BROWN_MUSHROOM = register(
-		"huge_brown_mushroom", new HugeBrownMushroomFeature(HugeMushroomFeatureConfig::deserialize)
-	);
-	public static final Feature<DefaultFeatureConfig> ICE_SPIKE = register("ice_spike", new IceSpikeFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> GLOWSTONE_BLOB = register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> FREEZE_TOP_LAYER = register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> VINES = register("vines", new VinesFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> MONSTER_ROOM = register("monster_room", new DungeonFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> BLUE_ICE = register("blue_ice", new BlueIceFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<SingleStateFeatureConfig> ICEBERG = register("iceberg", new IcebergFeature(SingleStateFeatureConfig::deserialize));
-	public static final Feature<BoulderFeatureConfig> FOREST_ROCK = register("forest_rock", new ForestRockFeature(BoulderFeatureConfig::deserialize));
-	public static final Feature<DiskFeatureConfig> DISK = register("disk", new DiskFeature(DiskFeatureConfig::deserialize));
-	public static final Feature<IcePatchFeatureConfig> ICE_PATCH = register("ice_patch", new IcePatchFeature(IcePatchFeatureConfig::deserialize));
-	public static final Feature<SingleStateFeatureConfig> LAKE = register("lake", new LakeFeature(SingleStateFeatureConfig::deserialize));
-	public static final Feature<OreFeatureConfig> ORE = register("ore", new OreFeature(OreFeatureConfig::deserialize));
-	public static final Feature<EndSpikeFeatureConfig> END_SPIKE = register("end_spike", new EndSpikeFeature(EndSpikeFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> END_ISLAND = register("end_island", new EndIslandFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<EndGatewayFeatureConfig> END_GATEWAY = register("end_gateway", new EndGatewayFeature(EndGatewayFeatureConfig::deserialize));
-	public static final Feature<SeagrassFeatureConfig> SEAGRASS = register("seagrass", new SeagrassFeature(SeagrassFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> KELP = register("kelp", new KelpFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> CORAL_TREE = register("coral_tree", new CoralTreeFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> CORAL_MUSHROOM = register("coral_mushroom", new CoralMushroomFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> CORAL_CLAW = register("coral_claw", new CoralClawFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<SeaPickleFeatureConfig> SEA_PICKLE = register("sea_pickle", new SeaPickleFeature(SeaPickleFeatureConfig::deserialize));
-	public static final Feature<SimpleBlockFeatureConfig> SIMPLE_BLOCK = register("simple_block", new SimpleBlockFeature(SimpleBlockFeatureConfig::deserialize));
-	public static final Feature<ProbabilityConfig> BAMBOO = register("bamboo", new BambooFeature(ProbabilityConfig::deserialize));
-	public static final Feature<FillLayerFeatureConfig> FILL_LAYER = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig::deserialize));
-	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<RandomRandomFeatureConfig> RANDOM_RANDOM_SELECTOR = register(
-		"random_random_selector", new RandomRandomFeature(RandomRandomFeatureConfig::deserialize)
-	);
-	public static final Feature<RandomFeatureConfig> RANDOM_SELECTOR = register("random_selector", new RandomFeature(RandomFeatureConfig::deserialize));
-	public static final Feature<SimpleRandomFeatureConfig> SIMPLE_RANDOM_SELECTOR = register(
-		"simple_random_selector", new SimpleRandomFeature(SimpleRandomFeatureConfig::deserialize)
-	);
-	public static final Feature<RandomBooleanFeatureConfig> RANDOM_BOOLEAN_SELECTOR = register(
-		"random_boolean_selector", new RandomBooleanFeature(RandomBooleanFeatureConfig::deserialize)
-	);
-	public static final Feature<DecoratedFeatureConfig> DECORATED = register("decorated", new DecoratedFeature(DecoratedFeatureConfig::deserialize));
-	public static final Feature<DecoratedFeatureConfig> DECORATED_FLOWER = register(
-		"decorated_flower", new DecoratedFlowerFeature(DecoratedFeatureConfig::deserialize)
-	);
-	public static final BiMap<String, StructureFeature<?>> STRUCTURES = Util.make(HashBiMap.create(), hashBiMap -> {
-		hashBiMap.put("Pillager_Outpost".toLowerCase(Locale.ROOT), PILLAGER_OUTPOST);
-		hashBiMap.put("Mineshaft".toLowerCase(Locale.ROOT), MINESHAFT);
-		hashBiMap.put("Mansion".toLowerCase(Locale.ROOT), WOODLAND_MANSION);
-		hashBiMap.put("Jungle_Pyramid".toLowerCase(Locale.ROOT), JUNGLE_TEMPLE);
-		hashBiMap.put("Desert_Pyramid".toLowerCase(Locale.ROOT), DESERT_PYRAMID);
-		hashBiMap.put("Igloo".toLowerCase(Locale.ROOT), IGLOO);
-		hashBiMap.put("Shipwreck".toLowerCase(Locale.ROOT), SHIPWRECK);
-		hashBiMap.put("Swamp_Hut".toLowerCase(Locale.ROOT), SWAMP_HUT);
-		hashBiMap.put("Stronghold".toLowerCase(Locale.ROOT), STRONGHOLD);
-		hashBiMap.put("Monument".toLowerCase(Locale.ROOT), OCEAN_MONUMENT);
-		hashBiMap.put("Ocean_Ruin".toLowerCase(Locale.ROOT), OCEAN_RUIN);
-		hashBiMap.put("Fortress".toLowerCase(Locale.ROOT), NETHER_BRIDGE);
-		hashBiMap.put("EndCity".toLowerCase(Locale.ROOT), END_CITY);
-		hashBiMap.put("Buried_Treasure".toLowerCase(Locale.ROOT), BURIED_TREASURE);
-		hashBiMap.put("Village".toLowerCase(Locale.ROOT), VILLAGE);
-	});
-	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE);
-	private final Function<Dynamic<?>, ? extends FC> configDeserializer;
+	public static final Feature<DecoratedFeatureConfig> field_21217 = register("decorated", new DecoratedFeature(DecoratedFeatureConfig.CODEC));
+	private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {
 		return Registry.register(Registry.FEATURE, name, feature);
 	}
 
-	public Feature(Function<Dynamic<?>, ? extends FC> configDeserializer) {
-		this.configDeserializer = configDeserializer;
+	public Feature(Codec<FC> configCodec) {
+		this.codec = configCodec.fieldOf("config")
+			.<ConfiguredFeature<FC, Feature<FC>>>xmap(featureConfig -> new ConfiguredFeature<>(this, featureConfig), configuredFeature -> configuredFeature.config)
+			.codec();
+	}
+
+	public Codec<ConfiguredFeature<FC, Feature<FC>>> getCodec() {
+		return this.codec;
 	}
 
 	public ConfiguredFeature<FC, ?> configure(FC config) {
 		return new ConfiguredFeature<>(this, config);
 	}
 
-	public FC deserializeConfig(Dynamic<?> dynamic) {
-		return (FC)this.configDeserializer.apply(dynamic);
-	}
-
 	protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state, 3);
 	}
 
-	public abstract boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, FC config);
-
-	public List<Biome.SpawnEntry> getMonsterSpawns() {
-		return Collections.emptyList();
-	}
-
-	public List<Biome.SpawnEntry> getCreatureSpawns() {
-		return Collections.emptyList();
-	}
+	public abstract boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, FC featureConfig);
 
 	protected static boolean isStone(Block block) {
-		return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
+		return block == Blocks.field_10340 || block == Blocks.field_10474 || block == Blocks.field_10508 || block == Blocks.field_10115;
 	}
 
-	protected static boolean isDirt(Block block) {
-		return block == Blocks.DIRT || block == Blocks.GRASS_BLOCK || block == Blocks.PODZOL || block == Blocks.COARSE_DIRT || block == Blocks.MYCELIUM;
+	public static boolean isSoil(Block block) {
+		return block == Blocks.field_10566
+			|| block == Blocks.field_10219
+			|| block == Blocks.field_10520
+			|| block == Blocks.field_10253
+			|| block == Blocks.field_10402;
+	}
+
+	public static boolean isSoil(TestableWorld world, BlockPos pos) {
+		return world.testBlockState(pos, state -> isSoil(state.getBlock()));
+	}
+
+	public static boolean isAir(TestableWorld world, BlockPos pos) {
+		return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
 	}
 }

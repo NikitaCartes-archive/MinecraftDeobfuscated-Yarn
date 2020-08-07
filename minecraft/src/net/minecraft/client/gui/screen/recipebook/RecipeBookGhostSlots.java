@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
@@ -48,29 +49,29 @@ public class RecipeBookGhostSlots {
 		this.recipe = recipe;
 	}
 
-	public void draw(MinecraftClient client, int x, int y, boolean isBig, float lastFrameDuration) {
+	public void draw(MatrixStack matrixStack, MinecraftClient minecraftClient, int i, int j, boolean bl, float f) {
 		if (!Screen.hasControlDown()) {
-			this.time += lastFrameDuration;
+			this.time += f;
 		}
 
-		for (int i = 0; i < this.slots.size(); i++) {
-			RecipeBookGhostSlots.GhostInputSlot ghostInputSlot = (RecipeBookGhostSlots.GhostInputSlot)this.slots.get(i);
-			int j = ghostInputSlot.getX() + x;
-			int k = ghostInputSlot.getY() + y;
-			if (i == 0 && isBig) {
-				DrawableHelper.fill(j - 4, k - 4, j + 20, k + 20, 822018048);
+		for (int k = 0; k < this.slots.size(); k++) {
+			RecipeBookGhostSlots.GhostInputSlot ghostInputSlot = (RecipeBookGhostSlots.GhostInputSlot)this.slots.get(k);
+			int l = ghostInputSlot.getX() + i;
+			int m = ghostInputSlot.getY() + j;
+			if (k == 0 && bl) {
+				DrawableHelper.fill(matrixStack, l - 4, m - 4, l + 20, m + 20, 822018048);
 			} else {
-				DrawableHelper.fill(j, k, j + 16, k + 16, 822018048);
+				DrawableHelper.fill(matrixStack, l, m, l + 16, m + 16, 822018048);
 			}
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
-			ItemRenderer itemRenderer = client.getItemRenderer();
-			itemRenderer.renderGuiItem(client.player, itemStack, j, k);
+			ItemRenderer itemRenderer = minecraftClient.getItemRenderer();
+			itemRenderer.renderInGui(itemStack, l, m);
 			RenderSystem.depthFunc(516);
-			DrawableHelper.fill(j, k, j + 16, k + 16, 822083583);
+			DrawableHelper.fill(matrixStack, l, m, l + 16, m + 16, 822083583);
 			RenderSystem.depthFunc(515);
-			if (i == 0) {
-				itemRenderer.renderGuiItemOverlay(client.textRenderer, itemStack, j, k);
+			if (k == 0) {
+				itemRenderer.renderGuiItemOverlay(minecraftClient.textRenderer, itemStack, l, m);
 			}
 		}
 	}

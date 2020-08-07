@@ -20,8 +20,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.CriterionProgress;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.PacketByteBuf;
 
 public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	private final Map<String, CriterionProgress> criteriaProgresses = Maps.<String, CriterionProgress>newHashMap();
@@ -74,8 +74,8 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return false;
 	}
 
-	public boolean obtain(String string) {
-		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(string);
+	public boolean obtain(String name) {
+		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(name);
 		if (criterionProgress != null && !criterionProgress.isObtained()) {
 			criterionProgress.obtain();
 			return true;
@@ -84,8 +84,8 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		}
 	}
 
-	public boolean reset(String string) {
-		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(string);
+	public boolean reset(String name) {
+		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(name);
 		if (criterionProgress != null && criterionProgress.isObtained()) {
 			criterionProgress.reset();
 			return true;
@@ -98,12 +98,12 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString(this.requirements) + '}';
 	}
 
-	public void toPacket(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeVarInt(this.criteriaProgresses.size());
+	public void toPacket(PacketByteBuf buf) {
+		buf.writeVarInt(this.criteriaProgresses.size());
 
 		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
-			packetByteBuf.writeString((String)entry.getKey());
-			((CriterionProgress)entry.getValue()).toPacket(packetByteBuf);
+			buf.writeString((String)entry.getKey());
+			((CriterionProgress)entry.getValue()).toPacket(buf);
 		}
 	}
 
@@ -119,8 +119,8 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	@Nullable
-	public CriterionProgress getCriterionProgress(String string) {
-		return (CriterionProgress)this.criteriaProgresses.get(string);
+	public CriterionProgress getCriterionProgress(String name) {
+		return (CriterionProgress)this.criteriaProgresses.get(name);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -210,7 +210,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return date;
 	}
 
-	public int compareTo(AdvancementProgress advancementProgress) {
+	public int method_738(AdvancementProgress advancementProgress) {
 		Date date = this.getEarliestProgressObtainDate();
 		Date date2 = advancementProgress.getEarliestProgressObtainDate();
 		if (date == null && date2 != null) {
@@ -223,7 +223,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	public static class Serializer implements JsonDeserializer<AdvancementProgress>, JsonSerializer<AdvancementProgress> {
-		public JsonElement serialize(AdvancementProgress advancementProgress, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement method_744(AdvancementProgress advancementProgress, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			JsonObject jsonObject2 = new JsonObject();
 
@@ -242,7 +242,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 			return jsonObject;
 		}
 
-		public AdvancementProgress deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public AdvancementProgress method_745(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "advancement");
 			JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "criteria", new JsonObject());
 			AdvancementProgress advancementProgress = new AdvancementProgress();

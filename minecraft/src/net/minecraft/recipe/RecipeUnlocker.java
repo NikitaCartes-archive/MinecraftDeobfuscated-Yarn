@@ -22,7 +22,7 @@ public interface RecipeUnlocker {
 	}
 
 	default boolean shouldCraftRecipe(World world, ServerPlayerEntity player, Recipe<?> recipe) {
-		if (!recipe.isIgnoredInRecipeBook() && world.getGameRules().getBoolean(GameRules.DO_LIMITED_CRAFTING) && !player.getRecipeBook().contains(recipe)) {
+		if (!recipe.isIgnoredInRecipeBook() && world.getGameRules().getBoolean(GameRules.field_19407) && !player.getRecipeBook().contains(recipe)) {
 			return false;
 		} else {
 			this.setLastRecipe(recipe);

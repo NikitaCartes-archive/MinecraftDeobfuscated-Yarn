@@ -4,12 +4,13 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.container.NameableContainerProvider;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -65,20 +66,20 @@ public class LecternBlock extends BlockWithEntity {
 		BASE_SHAPE
 	);
 
-	protected LecternBlock(Block.Settings settings) {
+	protected LecternBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public VoxelShape getCullingShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
 		return BASE_SHAPE;
 	}
 
@@ -89,24 +90,36 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
+		World world = ctx.getWorld();
+		ItemStack itemStack = ctx.getStack();
+		CompoundTag compoundTag = itemStack.getTag();
+		PlayerEntity playerEntity = ctx.getPlayer();
+		boolean bl = false;
+		if (!world.isClient && playerEntity != null && compoundTag != null && playerEntity.isCreativeLevelTwoOp() && compoundTag.contains("BlockEntityTag")) {
+			CompoundTag compoundTag2 = compoundTag.getCompound("BlockEntityTag");
+			if (compoundTag2.contains("Book")) {
+				bl = true;
+			}
+		}
+
+		return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite()).with(HAS_BOOK, Boolean.valueOf(bl));
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return COLLISION_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction)state.get(FACING)) {
-			case NORTH:
+			case field_11043:
 				return NORTH_SHAPE;
-			case SOUTH:
+			case field_11035:
 				return SOUTH_SHAPE;
-			case EAST:
+			case field_11034:
 				return EAST_SHAPE;
-			case WEST:
+			case field_11039:
 				return WEST_SHAPE;
 			default:
 				return BASE_SHAPE;
@@ -130,7 +143,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new LecternBlockEntity();
 	}
 
@@ -152,7 +165,7 @@ public class LecternBlock extends BlockWithEntity {
 			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
 			lecternBlockEntity.setBook(book.split(1));
 			setHasBook(world, pos, state, true);
-			world.playSound(null, pos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			world.playSound(null, pos, SoundEvents.field_17482, SoundCategory.field_15245, 1.0F, 1.0F);
 		}
 	}
 
@@ -164,7 +177,7 @@ public class LecternBlock extends BlockWithEntity {
 	public static void setPowered(World world, BlockPos pos, BlockState state) {
 		setPowered(world, pos, state, true);
 		world.getBlockTickScheduler().schedule(pos, state.getBlock(), 2);
-		world.playLevelEvent(1043, pos, 0);
+		world.syncWorldEvent(1043, pos, 0);
 	}
 
 	private static void setPowered(World world, BlockPos pos, BlockState state, boolean powered) {
@@ -173,7 +186,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	private static void updateNeighborAlways(World world, BlockPos pos, BlockState state) {
-		world.updateNeighborsAlways(pos.down(), state.getBlock());
+		world.updateNeighborsAlways(pos.method_10074(), state.getBlock());
 	}
 
 	@Override
@@ -182,17 +195,17 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (state.getBlock() != newState.getBlock()) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!state.isOf(newState.getBlock())) {
 			if ((Boolean)state.get(HAS_BOOK)) {
 				this.dropBook(state, world, pos);
 			}
 
 			if ((Boolean)state.get(POWERED)) {
-				world.updateNeighborsAlways(pos.down(), this);
+				world.updateNeighborsAlways(pos.method_10074(), this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 
@@ -219,13 +232,13 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return facing == Direction.UP && state.get(POWERED) ? 15 : 0;
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+		return direction == Direction.field_11036 && state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
@@ -249,32 +262,32 @@ public class LecternBlock extends BlockWithEntity {
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if ((Boolean)state.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				this.openContainer(world, pos, player);
+				this.openScreen(world, pos, player);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		} else {
 			ItemStack itemStack = player.getStackInHand(hand);
-			return !itemStack.isEmpty() && !itemStack.getItem().isIn(ItemTags.LECTERN_BOOKS) ? ActionResult.CONSUME : ActionResult.PASS;
+			return !itemStack.isEmpty() && !itemStack.getItem().isIn(ItemTags.field_21465) ? ActionResult.CONSUME : ActionResult.PASS;
 		}
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return !state.get(HAS_BOOK) ? null : super.createContainerProvider(state, world, pos);
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return !state.get(HAS_BOOK) ? null : super.createScreenHandlerFactory(state, world, pos);
 	}
 
-	private void openContainer(World world, BlockPos pos, PlayerEntity player) {
+	private void openScreen(World world, BlockPos pos, PlayerEntity player) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof LecternBlockEntity) {
-			player.openContainer((LecternBlockEntity)blockEntity);
-			player.incrementStat(Stats.INTERACT_WITH_LECTERN);
+			player.openHandledScreen((LecternBlockEntity)blockEntity);
+			player.incrementStat(Stats.field_17485);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

@@ -1,12 +1,18 @@
 package net.minecraft.structure.rule;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 
-public class RandomBlockStateMatchRuleTest extends AbstractRuleTest {
+public class RandomBlockStateMatchRuleTest extends RuleTest {
+	public static final Codec<RandomBlockStateMatchRuleTest> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					BlockState.CODEC.fieldOf("block_state").forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.blockState),
+					Codec.FLOAT.fieldOf("probability").forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.probability)
+				)
+				.apply(instance, RandomBlockStateMatchRuleTest::new)
+	);
 	private final BlockState blockState;
 	private final float probability;
 
@@ -15,32 +21,13 @@ public class RandomBlockStateMatchRuleTest extends AbstractRuleTest {
 		this.probability = probability;
 	}
 
-	public <T> RandomBlockStateMatchRuleTest(Dynamic<T> dynamic) {
-		this(BlockState.deserialize(dynamic.get("blockstate").orElseEmptyMap()), dynamic.get("probability").asFloat(1.0F));
+	@Override
+	public boolean test(BlockState state, Random random) {
+		return state == this.blockState && random.nextFloat() < this.probability;
 	}
 
 	@Override
-	public boolean test(BlockState blockState, Random random) {
-		return blockState == this.blockState && random.nextFloat() < this.probability;
-	}
-
-	@Override
-	protected RuleTest getRuleTest() {
-		return RuleTest.RANDOM_BLOCKSTATE_MATCH;
-	}
-
-	@Override
-	protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
-				ImmutableMap.of(
-					dynamicOps.createString("blockstate"),
-					BlockState.serialize(dynamicOps, this.blockState).getValue(),
-					dynamicOps.createString("probability"),
-					dynamicOps.createFloat(this.probability)
-				)
-			)
-		);
+	protected RuleTestType<?> getType() {
+		return RuleTestType.field_16984;
 	}
 }

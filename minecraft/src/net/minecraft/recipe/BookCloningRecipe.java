@@ -7,8 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class BookCloningRecipe extends SpecialCraftingRecipe {
@@ -16,21 +16,21 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean method_17706(CraftingInventory craftingInventory, World world) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(j);
+		for (int j = 0; j < craftingInventory.size(); j++) {
+			ItemStack itemStack2 = craftingInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
-				if (itemStack2.getItem() == Items.WRITTEN_BOOK) {
+				if (itemStack2.getItem() == Items.field_8360) {
 					if (!itemStack.isEmpty()) {
 						return false;
 					}
 
 					itemStack = itemStack2;
 				} else {
-					if (itemStack2.getItem() != Items.WRITABLE_BOOK) {
+					if (itemStack2.getItem() != Items.field_8674) {
 						return false;
 					}
 
@@ -42,21 +42,21 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && itemStack.hasTag() && i > 0;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack method_17705(CraftingInventory craftingInventory) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(j);
+		for (int j = 0; j < craftingInventory.size(); j++) {
+			ItemStack itemStack2 = craftingInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
-				if (itemStack2.getItem() == Items.WRITTEN_BOOK) {
+				if (itemStack2.getItem() == Items.field_8360) {
 					if (!itemStack.isEmpty()) {
 						return ItemStack.EMPTY;
 					}
 
 					itemStack = itemStack2;
 				} else {
-					if (itemStack2.getItem() != Items.WRITABLE_BOOK) {
+					if (itemStack2.getItem() != Items.field_8674) {
 						return ItemStack.EMPTY;
 					}
 
@@ -66,8 +66,8 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		}
 
 		if (!itemStack.isEmpty() && itemStack.hasTag() && i >= 1 && WrittenBookItem.getGeneration(itemStack) < 2) {
-			ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK, i);
-			CompoundTag compoundTag = itemStack.getTag().copy();
+			ItemStack itemStack3 = new ItemStack(Items.field_8360, i);
+			CompoundTag compoundTag = itemStack.getTag().method_10553();
 			compoundTag.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
 			itemStack3.setTag(compoundTag);
 			return itemStack3;
@@ -76,11 +76,11 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.getInvSize(), ItemStack.EMPTY);
+	public DefaultedList<ItemStack> method_17707(CraftingInventory craftingInventory) {
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+			ItemStack itemStack = craftingInventory.getStack(i);
 			if (itemStack.getItem().hasRecipeRemainder()) {
 				defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
 			} else if (itemStack.getItem() instanceof WrittenBookItem) {

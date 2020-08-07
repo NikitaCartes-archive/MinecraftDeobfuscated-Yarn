@@ -5,19 +5,18 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.entity.ai.TargetFinder;
-import net.minecraft.entity.raid.Raid;
-import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.village.raid.Raid;
+import net.minecraft.village.raid.RaidManager;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	private final T actor;
 
 	public MoveToRaidCenterGoal(T actor) {
 		this.actor = actor;
-		this.setControls(EnumSet.of(Goal.Control.MOVE));
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
@@ -26,7 +25,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			&& !this.actor.hasPassengers()
 			&& this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
+			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getBlockPos());
 	}
 
 	@Override
@@ -34,7 +33,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 		return this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
 			&& this.actor.world instanceof ServerWorld
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
+			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getBlockPos());
 	}
 
 	@Override
@@ -46,7 +45,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			}
 
 			if (!this.actor.isNavigating()) {
-				Vec3d vec3d = TargetFinder.findTargetTowards(this.actor, 15, 4, new Vec3d(raid.getCenter()));
+				Vec3d vec3d = TargetFinder.findTargetTowards(this.actor, 15, 4, Vec3d.ofBottomCenter(raid.getCenter()));
 				if (vec3d != null) {
 					this.actor.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 				}
@@ -59,7 +58,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			Set<RaiderEntity> set = Sets.<RaiderEntity>newHashSet();
 			List<RaiderEntity> list = this.actor
 				.world
-				.getEntities(
+				.getEntitiesByClass(
 					RaiderEntity.class,
 					this.actor.getBoundingBox().expand(16.0),
 					raiderEntityx -> !raiderEntityx.hasActiveRaid() && RaidManager.isValidRaiderFor(raiderEntityx, raid)

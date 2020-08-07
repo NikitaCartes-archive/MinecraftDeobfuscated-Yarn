@@ -1,10 +1,11 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -17,25 +18,27 @@ public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Con
 		return ID;
 	}
 
-	public UsedTotemCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public UsedTotemCriterion.Conditions method_9163(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new UsedTotemCriterion.Conditions(itemPredicate);
+		return new UsedTotemCriterion.Conditions(extended, itemPredicate);
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(stack));
+		this.test(player, conditions -> conditions.matches(stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate item;
 
-		public Conditions(ItemPredicate item) {
-			super(UsedTotemCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, ItemPredicate item) {
+			super(UsedTotemCriterion.ID, player);
 			this.item = item;
 		}
 
-		public static UsedTotemCriterion.Conditions create(ItemConvertible itemConvertible) {
-			return new UsedTotemCriterion.Conditions(ItemPredicate.Builder.create().item(itemConvertible).build());
+		public static UsedTotemCriterion.Conditions create(ItemConvertible item) {
+			return new UsedTotemCriterion.Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.Builder.create().item(item).build());
 		}
 
 		public boolean matches(ItemStack stack) {
@@ -43,8 +46,8 @@ public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Con
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}

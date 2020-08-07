@@ -1,10 +1,11 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -17,25 +18,27 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 		return ID;
 	}
 
-	public ShotCrossbowCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ShotCrossbowCriterion.Conditions method_9114(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new ShotCrossbowCriterion.Conditions(itemPredicate);
+		return new ShotCrossbowCriterion.Conditions(extended, itemPredicate);
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(stack));
+		this.test(player, conditions -> conditions.matches(stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate item;
 
-		public Conditions(ItemPredicate item) {
-			super(ShotCrossbowCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, ItemPredicate item) {
+			super(ShotCrossbowCriterion.ID, player);
 			this.item = item;
 		}
 
-		public static ShotCrossbowCriterion.Conditions create(ItemConvertible itemConvertible) {
-			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().item(itemConvertible).build());
+		public static ShotCrossbowCriterion.Conditions create(ItemConvertible item) {
+			return new ShotCrossbowCriterion.Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.Builder.create().item(item).build());
 		}
 
 		public boolean matches(ItemStack stack) {
@@ -43,8 +46,8 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}

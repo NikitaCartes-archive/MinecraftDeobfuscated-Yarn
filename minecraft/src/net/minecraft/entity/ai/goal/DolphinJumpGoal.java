@@ -29,7 +29,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 			Direction direction = this.dolphin.getMovementDirection();
 			int i = direction.getOffsetX();
 			int j = direction.getOffsetZ();
-			BlockPos blockPos = new BlockPos(this.dolphin);
+			BlockPos blockPos = this.dolphin.getBlockPos();
 
 			for (int k : OFFSET_MULTIPLIERS) {
 				if (!this.isWater(blockPos, i, j, k) || !this.isAirAbove(blockPos, i, j, k)) {
@@ -43,7 +43,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 
 	private boolean isWater(BlockPos pos, int xOffset, int zOffset, int multiplier) {
 		BlockPos blockPos = pos.add(xOffset * multiplier, 0, zOffset * multiplier);
-		return this.dolphin.world.getFluidState(blockPos).matches(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos).getMaterial().blocksMovement();
+		return this.dolphin.world.getFluidState(blockPos).isIn(FluidTags.field_15517) && !this.dolphin.world.getBlockState(blockPos).getMaterial().blocksMovement();
 	}
 
 	private boolean isAirAbove(BlockPos pos, int xOffset, int zOffset, int multiplier) {
@@ -54,7 +54,8 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	@Override
 	public boolean shouldContinue() {
 		double d = this.dolphin.getVelocity().y;
-		return (!(d * d < 0.03F) || this.dolphin.pitch == 0.0F || !(Math.abs(this.dolphin.pitch) < 10.0F) || !this.dolphin.isInsideWater()) && !this.dolphin.onGround;
+		return (!(d * d < 0.03F) || this.dolphin.pitch == 0.0F || !(Math.abs(this.dolphin.pitch) < 10.0F) || !this.dolphin.isTouchingWater())
+			&& !this.dolphin.isOnGround();
 	}
 
 	@Override
@@ -78,12 +79,12 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	public void tick() {
 		boolean bl = this.inWater;
 		if (!bl) {
-			FluidState fluidState = this.dolphin.world.getFluidState(new BlockPos(this.dolphin));
-			this.inWater = fluidState.matches(FluidTags.WATER);
+			FluidState fluidState = this.dolphin.world.getFluidState(this.dolphin.getBlockPos());
+			this.inWater = fluidState.isIn(FluidTags.field_15517);
 		}
 
 		if (this.inWater && !bl) {
-			this.dolphin.playSound(SoundEvents.ENTITY_DOLPHIN_JUMP, 1.0F, 1.0F);
+			this.dolphin.playSound(SoundEvents.field_14707, 1.0F, 1.0F);
 		}
 
 		Vec3d vec3d = this.dolphin.getVelocity();

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import java.util.Arrays;
@@ -19,13 +18,16 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.PacketByteBuf;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class Advancement {
@@ -61,9 +63,9 @@ public class Advancement {
 		} else {
 			Text text = display.getTitle();
 			Formatting formatting = display.getFrame().getTitleFormat();
-			Text text2 = text.deepCopy().formatted(formatting).append("\n").append(display.getDescription());
-			Text text3 = text.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
-			this.text = new LiteralText("[").append(text3).append("]").formatted(formatting);
+			Text text2 = Texts.setStyleIfAbsent(text.shallowCopy(), Style.EMPTY.withColor(formatting)).append("\n").append(display.getDescription());
+			Text text3 = text.shallowCopy().styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, text2)));
+			this.text = Texts.bracketed(text3).formatted(formatting);
 		}
 	}
 
@@ -152,7 +154,7 @@ public class Advancement {
 		private AdvancementRewards rewards = AdvancementRewards.NONE;
 		private Map<String, AdvancementCriterion> criteria = Maps.<String, AdvancementCriterion>newLinkedHashMap();
 		private String[][] requirements;
-		private CriteriaMerger merger = CriteriaMerger.AND;
+		private CriterionMerger merger = CriterionMerger.AND;
 
 		private Task(
 			@Nullable Identifier parentId,
@@ -225,45 +227,45 @@ public class Advancement {
 			return this;
 		}
 
-		public Advancement.Task criterion(String conditions, CriterionConditions criterionConditions) {
-			return this.criterion(conditions, new AdvancementCriterion(criterionConditions));
+		public Advancement.Task criterion(String name, CriterionConditions criterionConditions) {
+			return this.criterion(name, new AdvancementCriterion(criterionConditions));
 		}
 
-		public Advancement.Task criterion(String criterion, AdvancementCriterion advancementCriterion) {
-			if (this.criteria.containsKey(criterion)) {
-				throw new IllegalArgumentException("Duplicate criterion " + criterion);
+		public Advancement.Task criterion(String name, AdvancementCriterion advancementCriterion) {
+			if (this.criteria.containsKey(name)) {
+				throw new IllegalArgumentException("Duplicate criterion " + name);
 			} else {
-				this.criteria.put(criterion, advancementCriterion);
+				this.criteria.put(name, advancementCriterion);
 				return this;
 			}
 		}
 
-		public Advancement.Task criteriaMerger(CriteriaMerger merger) {
+		public Advancement.Task criteriaMerger(CriterionMerger merger) {
 			this.merger = merger;
 			return this;
 		}
 
-		public boolean findParent(Function<Identifier, Advancement> function) {
+		public boolean findParent(Function<Identifier, Advancement> parentProvider) {
 			if (this.parentId == null) {
 				return true;
 			} else {
 				if (this.parentObj == null) {
-					this.parentObj = (Advancement)function.apply(this.parentId);
+					this.parentObj = (Advancement)parentProvider.apply(this.parentId);
 				}
 
 				return this.parentObj != null;
 			}
 		}
 
-		public Advancement build(Identifier identifier) {
-			if (!this.findParent(identifierx -> null)) {
+		public Advancement build(Identifier id) {
+			if (!this.findParent(identifier -> null)) {
 				throw new IllegalStateException("Tried to build incomplete advancement!");
 			} else {
 				if (this.requirements == null) {
 					this.requirements = this.merger.createRequirements(this.criteria.keySet());
 				}
 
-				return new Advancement(identifier, this.parentObj, this.display, this.rewards, this.criteria, this.requirements);
+				return new Advancement(id, this.parentObj, this.display, this.rewards, this.criteria, this.requirements);
 			}
 		}
 
@@ -313,29 +315,29 @@ public class Advancement {
 			return jsonObject;
 		}
 
-		public void toPacket(PacketByteBuf packetByteBuf) {
+		public void toPacket(PacketByteBuf buf) {
 			if (this.parentId == null) {
-				packetByteBuf.writeBoolean(false);
+				buf.writeBoolean(false);
 			} else {
-				packetByteBuf.writeBoolean(true);
-				packetByteBuf.writeIdentifier(this.parentId);
+				buf.writeBoolean(true);
+				buf.writeIdentifier(this.parentId);
 			}
 
 			if (this.display == null) {
-				packetByteBuf.writeBoolean(false);
+				buf.writeBoolean(false);
 			} else {
-				packetByteBuf.writeBoolean(true);
-				this.display.toPacket(packetByteBuf);
+				buf.writeBoolean(true);
+				this.display.toPacket(buf);
 			}
 
-			AdvancementCriterion.serialize(this.criteria, packetByteBuf);
-			packetByteBuf.writeVarInt(this.requirements.length);
+			AdvancementCriterion.criteriaToPacket(this.criteria, buf);
+			buf.writeVarInt(this.requirements.length);
 
 			for (String[] strings : this.requirements) {
-				packetByteBuf.writeVarInt(strings.length);
+				buf.writeVarInt(strings.length);
 
 				for (String string : strings) {
-					packetByteBuf.writeString(string);
+					buf.writeString(string);
 				}
 			}
 		}
@@ -354,11 +356,11 @@ public class Advancement {
 				+ '}';
 		}
 
-		public static Advancement.Task fromJson(JsonObject obj, JsonDeserializationContext context) {
+		public static Advancement.Task fromJson(JsonObject obj, AdvancementEntityPredicateDeserializer predicateDeserializer) {
 			Identifier identifier = obj.has("parent") ? new Identifier(JsonHelper.getString(obj, "parent")) : null;
-			AdvancementDisplay advancementDisplay = obj.has("display") ? AdvancementDisplay.fromJson(JsonHelper.getObject(obj, "display"), context) : null;
-			AdvancementRewards advancementRewards = JsonHelper.deserialize(obj, "rewards", AdvancementRewards.NONE, context, AdvancementRewards.class);
-			Map<String, AdvancementCriterion> map = AdvancementCriterion.fromJson(JsonHelper.getObject(obj, "criteria"), context);
+			AdvancementDisplay advancementDisplay = obj.has("display") ? AdvancementDisplay.fromJson(JsonHelper.getObject(obj, "display")) : null;
+			AdvancementRewards advancementRewards = obj.has("rewards") ? AdvancementRewards.fromJson(JsonHelper.getObject(obj, "rewards")) : AdvancementRewards.NONE;
+			Map<String, AdvancementCriterion> map = AdvancementCriterion.criteriaFromJson(JsonHelper.getObject(obj, "criteria"), predicateDeserializer);
 			if (map.isEmpty()) {
 				throw new JsonSyntaxException("Advancement criteria cannot be empty");
 			} else {
@@ -419,7 +421,7 @@ public class Advancement {
 		public static Advancement.Task fromPacket(PacketByteBuf buf) {
 			Identifier identifier = buf.readBoolean() ? buf.readIdentifier() : null;
 			AdvancementDisplay advancementDisplay = buf.readBoolean() ? AdvancementDisplay.fromPacket(buf) : null;
-			Map<String, AdvancementCriterion> map = AdvancementCriterion.fromPacket(buf);
+			Map<String, AdvancementCriterion> map = AdvancementCriterion.criteriaFromPacket(buf);
 			String[][] strings = new String[buf.readVarInt()][];
 
 			for (int i = 0; i < strings.length; i++) {

@@ -7,9 +7,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.OrderedText;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -22,45 +23,45 @@ public class AdvancementToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(ToastManager manager, long currentTime) {
+	public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
 		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		RenderSystem.color3f(1.0F, 1.0F, 1.0F);
 		AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
-		manager.blit(0, 0, 0, 0, 160, 32);
+		manager.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
 		if (advancementDisplay != null) {
-			List<String> list = manager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().asFormattedString(), 125);
-			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;
+			List<OrderedText> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
+			int i = advancementDisplay.getFrame() == AdvancementFrame.field_1250 ? 16746751 : 16776960;
 			if (list.size() == 1) {
-				manager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 7.0F, i | 0xFF000000);
-				manager.getGame().textRenderer.draw(advancementDisplay.getTitle().asFormattedString(), 30.0F, 18.0F, -1);
+				manager.getGame().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0F, 7.0F, i | 0xFF000000);
+				manager.getGame().textRenderer.draw(matrices, (OrderedText)list.get(0), 30.0F, 18.0F, -1);
 			} else {
 				int j = 1500;
 				float f = 300.0F;
-				if (currentTime < 1500L) {
-					int k = MathHelper.floor(MathHelper.clamp((float)(1500L - currentTime) / 300.0F, 0.0F, 1.0F) * 255.0F) << 24 | 67108864;
-					manager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 11.0F, i | k);
+				if (startTime < 1500L) {
+					int k = MathHelper.floor(MathHelper.clamp((float)(1500L - startTime) / 300.0F, 0.0F, 1.0F) * 255.0F) << 24 | 67108864;
+					manager.getGame().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0F, 11.0F, i | k);
 				} else {
-					int k = MathHelper.floor(MathHelper.clamp((float)(currentTime - 1500L) / 300.0F, 0.0F, 1.0F) * 252.0F) << 24 | 67108864;
-					int l = 16 - list.size() * 9 / 2;
+					int k = MathHelper.floor(MathHelper.clamp((float)(startTime - 1500L) / 300.0F, 0.0F, 1.0F) * 252.0F) << 24 | 67108864;
+					int l = this.getHeight() / 2 - list.size() * 9 / 2;
 
-					for (String string : list) {
-						manager.getGame().textRenderer.draw(string, 30.0F, (float)l, 16777215 | k);
+					for (OrderedText orderedText : list) {
+						manager.getGame().textRenderer.draw(matrices, orderedText, 30.0F, (float)l, 16777215 | k);
 						l += 9;
 					}
 				}
 			}
 
-			if (!this.soundPlayed && currentTime > 0L) {
+			if (!this.soundPlayed && startTime > 0L) {
 				this.soundPlayed = true;
-				if (advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE) {
-					manager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0F, 1.0F));
+				if (advancementDisplay.getFrame() == AdvancementFrame.field_1250) {
+					manager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15195, 1.0F, 1.0F));
 				}
 			}
 
-			manager.getGame().getItemRenderer().renderGuiItem(null, advancementDisplay.getIcon(), 8, 8);
-			return currentTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
+			manager.getGame().getItemRenderer().renderInGui(advancementDisplay.getIcon(), 8, 8);
+			return startTime >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
 		} else {
-			return Toast.Visibility.HIDE;
+			return Toast.Visibility.field_2209;
 		}
 	}
 }

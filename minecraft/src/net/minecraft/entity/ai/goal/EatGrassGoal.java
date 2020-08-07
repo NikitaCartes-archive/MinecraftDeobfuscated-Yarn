@@ -12,7 +12,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class EatGrassGoal extends Goal {
-	private static final Predicate<BlockState> GRASS_PREDICATE = BlockStatePredicate.forBlock(Blocks.GRASS);
+	private static final Predicate<BlockState> GRASS_PREDICATE = BlockStatePredicate.forBlock(Blocks.field_10479);
 	private final MobEntity mob;
 	private final World world;
 	private int timer;
@@ -20,7 +20,7 @@ public class EatGrassGoal extends Goal {
 	public EatGrassGoal(MobEntity mob) {
 		this.mob = mob;
 		this.world = mob.world;
-		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK, Goal.Control.JUMP));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406, Goal.Control.field_18407));
 	}
 
 	@Override
@@ -28,8 +28,8 @@ public class EatGrassGoal extends Goal {
 		if (this.mob.getRandom().nextInt(this.mob.isBaby() ? 50 : 1000) != 0) {
 			return false;
 		} else {
-			BlockPos blockPos = new BlockPos(this.mob);
-			return GRASS_PREDICATE.test(this.world.getBlockState(blockPos)) ? true : this.world.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK;
+			BlockPos blockPos = this.mob.getBlockPos();
+			return GRASS_PREDICATE.test(this.world.getBlockState(blockPos)) ? true : this.world.getBlockState(blockPos.method_10074()).isOf(Blocks.field_10219);
 		}
 	}
 
@@ -58,19 +58,19 @@ public class EatGrassGoal extends Goal {
 	public void tick() {
 		this.timer = Math.max(0, this.timer - 1);
 		if (this.timer == 4) {
-			BlockPos blockPos = new BlockPos(this.mob);
+			BlockPos blockPos = this.mob.getBlockPos();
 			if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
-				if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					this.world.breakBlock(blockPos, false);
 				}
 
 				this.mob.onEatingGrass();
 			} else {
-				BlockPos blockPos2 = blockPos.down();
-				if (this.world.getBlockState(blockPos2).getBlock() == Blocks.GRASS_BLOCK) {
-					if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-						this.world.playLevelEvent(2001, blockPos2, Block.getRawIdFromState(Blocks.GRASS_BLOCK.getDefaultState()));
-						this.world.setBlockState(blockPos2, Blocks.DIRT.getDefaultState(), 2);
+				BlockPos blockPos2 = blockPos.method_10074();
+				if (this.world.getBlockState(blockPos2).isOf(Blocks.field_10219)) {
+					if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+						this.world.syncWorldEvent(2001, blockPos2, Block.getRawIdFromState(Blocks.field_10219.getDefaultState()));
+						this.world.setBlockState(blockPos2, Blocks.field_10566.getDefaultState(), 2);
 					}
 
 					this.mob.onEatingGrass();

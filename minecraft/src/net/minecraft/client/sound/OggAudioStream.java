@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
-import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -167,18 +166,16 @@ public class OggAudioStream implements AudioStream {
 		return this.format;
 	}
 
-	@Nullable
 	@Override
-	public ByteBuffer method_19720(int i) throws IOException {
-		OggAudioStream.ChannelList channelList = new OggAudioStream.ChannelList(i + 8192);
+	public ByteBuffer getBuffer(int size) throws IOException {
+		OggAudioStream.ChannelList channelList = new OggAudioStream.ChannelList(size + 8192);
 
-		while (this.readOggFile(channelList) && channelList.field_18913 < i) {
+		while (this.readOggFile(channelList) && channelList.currentBufferSize < size) {
 		}
 
 		return channelList.getBuffer();
 	}
 
-	@Override
 	public ByteBuffer getBuffer() throws IOException {
 		OggAudioStream.ChannelList channelList = new OggAudioStream.ChannelList(16384);
 
@@ -192,11 +189,11 @@ public class OggAudioStream implements AudioStream {
 	static class ChannelList {
 		private final List<ByteBuffer> buffers = Lists.<ByteBuffer>newArrayList();
 		private final int size;
-		private int field_18913;
+		private int currentBufferSize;
 		private ByteBuffer buffer;
 
-		public ChannelList(int i) {
-			this.size = i + 1 & -2;
+		public ChannelList(int size) {
+			this.size = size + 1 & -2;
 			this.init();
 		}
 
@@ -213,7 +210,7 @@ public class OggAudioStream implements AudioStream {
 
 			int i = MathHelper.clamp((int)(f * 32767.5F - 0.5F), -32768, 32767);
 			this.buffer.putShort((short)i);
-			this.field_18913 += 2;
+			this.currentBufferSize += 2;
 		}
 
 		public ByteBuffer getBuffer() {
@@ -221,7 +218,7 @@ public class OggAudioStream implements AudioStream {
 			if (this.buffers.isEmpty()) {
 				return this.buffer;
 			} else {
-				ByteBuffer byteBuffer = BufferUtils.createByteBuffer(this.field_18913);
+				ByteBuffer byteBuffer = BufferUtils.createByteBuffer(this.currentBufferSize);
 				this.buffers.forEach(byteBuffer::put);
 				byteBuffer.put(this.buffer);
 				byteBuffer.flip();

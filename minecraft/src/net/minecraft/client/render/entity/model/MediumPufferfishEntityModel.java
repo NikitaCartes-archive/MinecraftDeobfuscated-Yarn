@@ -86,8 +86,8 @@ public class MediumPufferfishEntityModel<T extends Entity> extends CompositeEnti
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
-		this.field_3518.roll = -0.2F + 0.4F * MathHelper.sin(customAngle * 0.2F);
-		this.field_3517.roll = 0.2F - 0.4F * MathHelper.sin(customAngle * 0.2F);
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+		this.field_3518.roll = -0.2F + 0.4F * MathHelper.sin(animationProgress * 0.2F);
+		this.field_3517.roll = 0.2F - 0.4F * MathHelper.sin(animationProgress * 0.2F);
 	}
 }

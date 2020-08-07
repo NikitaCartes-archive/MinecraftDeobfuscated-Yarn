@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.text.LiteralText;
@@ -35,18 +35,19 @@ public class FireworkItem extends Item {
 			ItemStack itemStack = context.getStack();
 			Vec3d vec3d = context.getHitPos();
 			Direction direction = context.getSide();
-			FireworkEntity fireworkEntity = new FireworkEntity(
+			FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(
 				world,
+				context.getPlayer(),
 				vec3d.x + (double)direction.getOffsetX() * 0.15,
 				vec3d.y + (double)direction.getOffsetY() * 0.15,
 				vec3d.z + (double)direction.getOffsetZ() * 0.15,
 				itemStack
 			);
-			world.spawnEntity(fireworkEntity);
+			world.spawnEntity(fireworkRocketEntity);
 			itemStack.decrement(1);
 		}
 
-		return ActionResult.SUCCESS;
+		return ActionResult.success(world.isClient);
 	}
 
 	@Override
@@ -54,13 +55,13 @@ public class FireworkItem extends Item {
 		if (user.isFallFlying()) {
 			ItemStack itemStack = user.getStackInHand(hand);
 			if (!world.isClient) {
-				world.spawnEntity(new FireworkEntity(world, itemStack, user));
+				world.spawnEntity(new FireworkRocketEntity(world, itemStack, user));
 				if (!user.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
 			}
 
-			return TypedActionResult.success(user.getStackInHand(hand));
+			return TypedActionResult.method_29237(user.getStackInHand(hand), world.isClient());
 		} else {
 			return TypedActionResult.pass(user.getStackInHand(hand));
 		}
@@ -73,7 +74,10 @@ public class FireworkItem extends Item {
 		if (compoundTag != null) {
 			if (compoundTag.contains("Flight", 99)) {
 				tooltip.add(
-					new TranslatableText("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(compoundTag.getByte("Flight"))).formatted(Formatting.GRAY)
+					new TranslatableText("item.minecraft.firework_rocket.flight")
+						.append(" ")
+						.append(String.valueOf(compoundTag.getByte("Flight")))
+						.formatted(Formatting.field_1080)
 				);
 			}
 
@@ -85,7 +89,7 @@ public class FireworkItem extends Item {
 					FireworkChargeItem.appendFireworkTooltip(compoundTag2, list);
 					if (!list.isEmpty()) {
 						for (int j = 1; j < list.size(); j++) {
-							list.set(j, new LiteralText("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
+							list.set(j, new LiteralText("  ").append((Text)list.get(j)).formatted(Formatting.field_1080));
 						}
 
 						tooltip.addAll(list);
@@ -96,11 +100,11 @@ public class FireworkItem extends Item {
 	}
 
 	public static enum Type {
-		SMALL_BALL(0, "small_ball"),
-		LARGE_BALL(1, "large_ball"),
-		STAR(2, "star"),
-		CREEPER(3, "creeper"),
-		BURST(4, "burst");
+		field_7976(0, "small_ball"),
+		field_7977(1, "large_ball"),
+		field_7973(2, "star"),
+		field_7974(3, "creeper"),
+		field_7970(4, "burst");
 
 		private static final FireworkItem.Type[] TYPES = (FireworkItem.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(type -> type.id))
@@ -124,7 +128,7 @@ public class FireworkItem extends Item {
 
 		@Environment(EnvType.CLIENT)
 		public static FireworkItem.Type byId(int id) {
-			return id >= 0 && id < TYPES.length ? TYPES[id] : SMALL_BALL;
+			return id >= 0 && id < TYPES.length ? TYPES[id] : field_7976;
 		}
 	}
 }

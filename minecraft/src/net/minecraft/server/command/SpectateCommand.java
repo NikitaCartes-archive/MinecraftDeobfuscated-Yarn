@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import javax.annotation.Nullable;
-import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
@@ -42,7 +42,7 @@ public class SpectateCommand {
 	private static int execute(ServerCommandSource source, @Nullable Entity entity, ServerPlayerEntity player) throws CommandSyntaxException {
 		if (player == entity) {
 			throw SPECTATE_SELF_EXCEPTION.create();
-		} else if (player.interactionManager.getGameMode() != GameMode.SPECTATOR) {
+		} else if (player.interactionManager.getGameMode() != GameMode.field_9219) {
 			throw NOT_SPECTATOR_EXCEPTION.create(player.getDisplayName());
 		} else {
 			player.setCameraEntity(entity);

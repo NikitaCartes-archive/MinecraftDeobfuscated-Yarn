@@ -5,12 +5,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public abstract class TrackTargetGoal extends Goal {
@@ -74,8 +72,7 @@ public abstract class TrackTargetGoal extends Goal {
 	}
 
 	protected double getFollowRange() {
-		EntityAttributeInstance entityAttributeInstance = this.mob.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
-		return entityAttributeInstance == null ? 16.0 : entityAttributeInstance.getValue();
+		return this.mob.getAttributeValue(EntityAttributes.field_23717);
 	}
 
 	@Override
@@ -96,7 +93,7 @@ public abstract class TrackTargetGoal extends Goal {
 			return false;
 		} else if (!targetPredicate.test(this.mob, target)) {
 			return false;
-		} else if (!this.mob.isInWalkTargetRange(new BlockPos(target))) {
+		} else if (!this.mob.isInWalkTargetRange(target.getBlockPos())) {
 			return false;
 		} else {
 			if (this.checkCanNavigate) {

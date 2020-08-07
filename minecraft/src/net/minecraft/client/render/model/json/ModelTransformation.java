@@ -67,21 +67,21 @@ public class ModelTransformation {
 
 	public Transformation getTransformation(ModelTransformation.Mode renderMode) {
 		switch (renderMode) {
-			case THIRD_PERSON_LEFT_HAND:
+			case field_4323:
 				return this.thirdPersonLeftHand;
-			case THIRD_PERSON_RIGHT_HAND:
+			case field_4320:
 				return this.thirdPersonRightHand;
-			case FIRST_PERSON_LEFT_HAND:
+			case field_4321:
 				return this.firstPersonLeftHand;
-			case FIRST_PERSON_RIGHT_HAND:
+			case field_4322:
 				return this.firstPersonRightHand;
-			case HEAD:
+			case field_4316:
 				return this.head;
-			case GUI:
+			case field_4317:
 				return this.gui;
-			case GROUND:
+			case field_4318:
 				return this.ground;
-			case FIXED:
+			case field_4319:
 				return this.fixed;
 			default:
 				return Transformation.IDENTITY;
@@ -97,24 +97,24 @@ public class ModelTransformation {
 		protected Deserializer() {
 		}
 
-		public ModelTransformation deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-			JsonObject jsonObject = element.getAsJsonObject();
-			Transformation transformation = this.parseModelTransformation(context, jsonObject, "thirdperson_righthand");
-			Transformation transformation2 = this.parseModelTransformation(context, jsonObject, "thirdperson_lefthand");
+		public ModelTransformation method_3505(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			Transformation transformation = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_righthand");
+			Transformation transformation2 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_lefthand");
 			if (transformation2 == Transformation.IDENTITY) {
 				transformation2 = transformation;
 			}
 
-			Transformation transformation3 = this.parseModelTransformation(context, jsonObject, "firstperson_righthand");
-			Transformation transformation4 = this.parseModelTransformation(context, jsonObject, "firstperson_lefthand");
+			Transformation transformation3 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_righthand");
+			Transformation transformation4 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_lefthand");
 			if (transformation4 == Transformation.IDENTITY) {
 				transformation4 = transformation3;
 			}
 
-			Transformation transformation5 = this.parseModelTransformation(context, jsonObject, "head");
-			Transformation transformation6 = this.parseModelTransformation(context, jsonObject, "gui");
-			Transformation transformation7 = this.parseModelTransformation(context, jsonObject, "ground");
-			Transformation transformation8 = this.parseModelTransformation(context, jsonObject, "fixed");
+			Transformation transformation5 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "head");
+			Transformation transformation6 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "gui");
+			Transformation transformation7 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "ground");
+			Transformation transformation8 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "fixed");
 			return new ModelTransformation(
 				transformation2, transformation, transformation4, transformation3, transformation5, transformation6, transformation7, transformation8
 			);
@@ -127,14 +127,18 @@ public class ModelTransformation {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Mode {
-		NONE,
-		THIRD_PERSON_LEFT_HAND,
-		THIRD_PERSON_RIGHT_HAND,
-		FIRST_PERSON_LEFT_HAND,
-		FIRST_PERSON_RIGHT_HAND,
-		HEAD,
-		GUI,
-		GROUND,
-		FIXED;
+		field_4315,
+		field_4323,
+		field_4320,
+		field_4321,
+		field_4322,
+		field_4316,
+		field_4317,
+		field_4318,
+		field_4319;
+
+		public boolean isFirstPerson() {
+			return this == field_4321 || this == field_4322;
+		}
 	}
 }

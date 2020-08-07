@@ -8,7 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -24,17 +24,17 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private int offerIndex;
 	private int ticksLeft;
 
-	public HoldTradeOffersTask(int rminRunTime, int maxRunTime) {
-		super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT), rminRunTime, maxRunTime);
+	public HoldTradeOffersTask(int minRunTime, int maxRunTime) {
+		super(ImmutableMap.of(MemoryModuleType.field_18447, MemoryModuleState.field_18456), minRunTime, maxRunTime);
 	}
 
-	public boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	public boolean method_19599(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		Brain<?> brain = villagerEntity.getBrain();
-		if (!brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent()) {
+		if (!brain.getOptionalMemory(MemoryModuleType.field_18447).isPresent()) {
 			return false;
 		} else {
-			LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
-			return livingEntity.getType() == EntityType.PLAYER
+			LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.field_18447).get();
+			return livingEntity.getType() == EntityType.field_6097
 				&& villagerEntity.isAlive()
 				&& livingEntity.isAlive()
 				&& !villagerEntity.isBaby()
@@ -42,37 +42,37 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 		}
 	}
 
-	public boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		return this.shouldRun(serverWorld, villagerEntity)
+	public boolean method_19600(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		return this.method_19599(serverWorld, villagerEntity)
 			&& this.ticksLeft > 0
-			&& villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
+			&& villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).isPresent();
 	}
 
-	public void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	public void method_19602(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		super.run(serverWorld, villagerEntity, l);
-		this.findPotentialCuatomer(villagerEntity);
+		this.findPotentialCustomer(villagerEntity);
 		this.offerShownTicks = 0;
 		this.offerIndex = 0;
 		this.ticksLeft = 40;
 	}
 
-	public void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		LivingEntity livingEntity = this.findPotentialCuatomer(villagerEntity);
+	public void method_19604(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		LivingEntity livingEntity = this.findPotentialCustomer(villagerEntity);
 		this.setupOffers(livingEntity, villagerEntity);
 		if (!this.offers.isEmpty()) {
 			this.refreshShownOffer(villagerEntity);
 		} else {
-			villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			villagerEntity.equipStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 			this.ticksLeft = Math.min(this.ticksLeft, 40);
 		}
 
 		this.ticksLeft--;
 	}
 
-	public void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	public void method_19605(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		super.finishRunning(serverWorld, villagerEntity, l);
-		villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
-		villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+		villagerEntity.getBrain().forget(MemoryModuleType.field_18447);
+		villagerEntity.equipStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
 		this.customerHeldStack = null;
 	}
 
@@ -95,7 +95,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	}
 
 	private void holdOffer(VillagerEntity villager) {
-		villager.equipStack(EquipmentSlot.MAINHAND, (ItemStack)this.offers.get(0));
+		villager.equipStack(EquipmentSlot.field_6173, (ItemStack)this.offers.get(0));
 	}
 
 	private void loadPossibleOffers(VillagerEntity villager) {
@@ -111,10 +111,10 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 			|| ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, offer.getSecondBuyItem());
 	}
 
-	private LivingEntity findPotentialCuatomer(VillagerEntity villager) {
+	private LivingEntity findPotentialCustomer(VillagerEntity villager) {
 		Brain<?> brain = villager.getBrain();
-		LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
-		brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntity));
+		LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.field_18447).get();
+		brain.remember(MemoryModuleType.field_18446, new EntityLookTarget(livingEntity, true));
 		return livingEntity;
 	}
 
@@ -126,7 +126,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 				this.offerIndex = 0;
 			}
 
-			villager.equipStack(EquipmentSlot.MAINHAND, (ItemStack)this.offers.get(this.offerIndex));
+			villager.equipStack(EquipmentSlot.field_6173, (ItemStack)this.offers.get(this.offerIndex));
 		}
 	}
 }

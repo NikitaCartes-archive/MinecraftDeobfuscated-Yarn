@@ -1,10 +1,10 @@
 package net.minecraft.item;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
 public class SaddleItem extends Item {
@@ -13,17 +13,19 @@ public class SaddleItem extends Item {
 	}
 
 	@Override
-	public boolean useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-		if (entity instanceof PigEntity) {
-			PigEntity pigEntity = (PigEntity)entity;
-			if (pigEntity.isAlive() && !pigEntity.isSaddled() && !pigEntity.isBaby()) {
-				pigEntity.setSaddled(true);
-				pigEntity.world.playSound(user, pigEntity.getX(), pigEntity.getY(), pigEntity.getZ(), SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
-				stack.decrement(1);
-				return true;
+	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+		if (entity instanceof Saddleable && entity.isAlive()) {
+			Saddleable saddleable = (Saddleable)entity;
+			if (!saddleable.isSaddled() && saddleable.canBeSaddled()) {
+				if (!user.world.isClient) {
+					saddleable.saddle(SoundCategory.field_15254);
+					stack.decrement(1);
+				}
+
+				return ActionResult.success(user.world.isClient);
 			}
 		}
 
-		return false;
+		return ActionResult.PASS;
 	}
 }

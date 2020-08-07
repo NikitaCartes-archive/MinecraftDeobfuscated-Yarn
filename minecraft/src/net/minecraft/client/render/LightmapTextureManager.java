@@ -11,28 +11,27 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class LightmapTextureManager implements AutoCloseable {
 	private final NativeImageBackedTexture texture;
 	private final NativeImage image;
 	private final Identifier textureIdentifier;
-	private boolean isDirty;
+	private boolean dirty;
 	private float field_21528;
-	private final GameRenderer worldRenderer;
+	private final GameRenderer renderer;
 	private final MinecraftClient client;
 
-	public LightmapTextureManager(GameRenderer gameRenderer, MinecraftClient minecraftClient) {
-		this.worldRenderer = gameRenderer;
-		this.client = minecraftClient;
+	public LightmapTextureManager(GameRenderer renderer, MinecraftClient client) {
+		this.renderer = renderer;
+		this.client = client;
 		this.texture = new NativeImageBackedTexture(16, 16, false);
 		this.textureIdentifier = this.client.getTextureManager().registerDynamicTexture("light_map", this.texture);
 		this.image = this.texture.getImage();
 
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < 16; j++) {
-				this.image.setPixelRgba(j, i, -1);
+				this.image.setPixelColor(j, i, -1);
 			}
 		}
 
@@ -46,7 +45,7 @@ public class LightmapTextureManager implements AutoCloseable {
 	public void tick() {
 		this.field_21528 = (float)((double)this.field_21528 + (Math.random() - Math.random()) * Math.random() * Math.random() * 0.1);
 		this.field_21528 = (float)((double)this.field_21528 * 0.9);
-		this.isDirty = true;
+		this.dirty = true;
 	}
 
 	public void disable() {
@@ -74,8 +73,8 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public void update(float delta) {
-		if (this.isDirty) {
-			this.isDirty = false;
+		if (this.dirty) {
+			this.dirty = false;
 			this.client.getProfiler().push("lightTex");
 			ClientWorld clientWorld = this.client.world;
 			if (clientWorld != null) {
@@ -87,11 +86,11 @@ public class LightmapTextureManager implements AutoCloseable {
 					g = f * 0.95F + 0.05F;
 				}
 
-				float h = this.client.player.method_3140();
+				float h = this.client.player.getUnderwaterVisibility();
 				float i;
-				if (this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
+				if (this.client.player.hasStatusEffect(StatusEffects.field_5925)) {
 					i = GameRenderer.getNightVisionStrength(this.client.player, delta);
-				} else if (h > 0.0F && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)) {
+				} else if (h > 0.0F && this.client.player.hasStatusEffect(StatusEffects.field_5927)) {
 					i = h;
 				} else {
 					i = 0.0F;
@@ -109,15 +108,15 @@ public class LightmapTextureManager implements AutoCloseable {
 						float p = n * ((n * 0.6F + 0.4F) * 0.6F + 0.4F);
 						float q = n * (n * n * 0.6F + 0.4F);
 						vector3f2.set(n, p, q);
-						if (clientWorld.dimension.getType() == DimensionType.THE_END) {
+						if (clientWorld.getSkyProperties().shouldRenderSky()) {
 							vector3f2.lerp(new Vector3f(0.99F, 1.12F, 1.0F), 0.25F);
 						} else {
 							Vector3f vector3f3 = vector3f.copy();
 							vector3f3.scale(m);
 							vector3f2.add(vector3f3);
 							vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
-							if (this.worldRenderer.getSkyDarkness(delta) > 0.0F) {
-								float r = this.worldRenderer.getSkyDarkness(delta);
+							if (this.renderer.getSkyDarkness(delta) > 0.0F) {
+								float r = this.renderer.getSkyDarkness(delta);
 								Vector3f vector3f4 = vector3f2.copy();
 								vector3f4.multiplyComponentwise(0.7F, 0.6F, 0.6F);
 								vector3f2.lerp(vector3f4, r);
@@ -146,7 +145,7 @@ public class LightmapTextureManager implements AutoCloseable {
 						int u = (int)vector3f2.getX();
 						int v = (int)vector3f2.getY();
 						int w = (int)vector3f2.getZ();
-						this.image.setPixelRgba(l, k, 0xFF000000 | w << 16 | v << 8 | u);
+						this.image.setPixelColor(l, k, 0xFF000000 | w << 16 | v << 8 | u);
 					}
 				}
 
@@ -162,7 +161,7 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	private float getBrightness(World world, int i) {
-		return world.dimension.getBrightness(i);
+		return world.getDimension().method_28516(i);
 	}
 
 	public static int pack(int block, int sky) {

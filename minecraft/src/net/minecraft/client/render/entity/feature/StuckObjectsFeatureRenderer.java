@@ -21,10 +21,10 @@ public abstract class StuckObjectsFeatureRenderer<T extends LivingEntity, M exte
 	protected abstract int getObjectCount(T entity);
 
 	protected abstract void renderObject(
-		MatrixStack matrix, VertexConsumerProvider vertexConsumers, int i, Entity entity, float tickDelta, float f, float g, float h
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta
 	);
 
-	public void render(
+	public void method_22132(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		int m = this.getObjectCount(livingEntity);

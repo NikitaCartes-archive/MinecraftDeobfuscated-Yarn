@@ -2,8 +2,7 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BlockHalf;
-import net.minecraft.entity.EntityContext;
-import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -19,8 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggable {
 	public static final BooleanProperty OPEN = Properties.OPEN;
@@ -34,47 +33,47 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	protected static final VoxelShape OPEN_BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 3.0, 16.0);
 	protected static final VoxelShape OPEN_TOP_SHAPE = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
 
-	protected TrapdoorBlock(Block.Settings settings) {
+	protected TrapdoorBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
-				.with(FACING, Direction.NORTH)
+				.with(FACING, Direction.field_11043)
 				.with(OPEN, Boolean.valueOf(false))
-				.with(HALF, BlockHalf.BOTTOM)
+				.with(HALF, BlockHalf.field_12617)
 				.with(POWERED, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if (!(Boolean)state.get(OPEN)) {
-			return state.get(HALF) == BlockHalf.TOP ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
+			return state.get(HALF) == BlockHalf.field_12619 ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
 		} else {
 			switch ((Direction)state.get(FACING)) {
-				case NORTH:
+				case field_11043:
 				default:
 					return NORTH_SHAPE;
-				case SOUTH:
+				case field_11035:
 					return SOUTH_SHAPE;
-				case WEST:
+				case field_11039:
 					return WEST_SHAPE;
-				case EAST:
+				case field_11034:
 					return EAST_SHAPE;
 			}
 		}
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
-		switch (env) {
-			case LAND:
-				return (Boolean)world.get(OPEN);
-			case WATER:
-				return (Boolean)world.get(WATERLOGGED);
-			case AIR:
-				return (Boolean)world.get(OPEN);
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		switch (type) {
+			case field_50:
+				return (Boolean)state.get(OPEN);
+			case field_48:
+				return (Boolean)state.get(WATERLOGGED);
+			case field_51:
+				return (Boolean)state.get(OPEN);
 			default:
 				return false;
 		}
@@ -92,22 +91,22 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			}
 
 			this.playToggleSound(player, world, pos, (Boolean)state.get(OPEN));
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		}
 	}
 
 	protected void playToggleSound(@Nullable PlayerEntity player, World world, BlockPos pos, boolean open) {
 		if (open) {
 			int i = this.material == Material.METAL ? 1037 : 1007;
-			world.playLevelEvent(player, i, pos, 0);
+			world.syncWorldEvent(player, i, pos, 0);
 		} else {
 			int i = this.material == Material.METAL ? 1036 : 1013;
-			world.playLevelEvent(player, i, pos, 0);
+			world.syncWorldEvent(player, i, pos, 0);
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (!world.isClient) {
 			boolean bl = world.isReceivingRedstonePower(pos);
 			if (bl != (Boolean)state.get(POWERED)) {
@@ -130,9 +129,11 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		Direction direction = ctx.getSide();
 		if (!ctx.canReplaceExisting() && direction.getAxis().isHorizontal()) {
-			blockState = blockState.with(FACING, direction).with(HALF, ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
+			blockState = blockState.with(FACING, direction)
+				.with(HALF, ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5 ? BlockHalf.field_12619 : BlockHalf.field_12617);
 		} else {
-			blockState = blockState.with(FACING, ctx.getPlayerFacing().getOpposite()).with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
+			blockState = blockState.with(FACING, ctx.getPlayerFacing().getOpposite())
+				.with(HALF, direction == Direction.field_11036 ? BlockHalf.field_12617 : BlockHalf.field_12619);
 		}
 
 		if (ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos())) {
@@ -153,16 +154,11 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
-	}
-
-	@Override
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
-		return false;
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 }

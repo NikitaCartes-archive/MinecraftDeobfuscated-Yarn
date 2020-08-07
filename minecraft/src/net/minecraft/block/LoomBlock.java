@@ -1,13 +1,14 @@
 package net.minecraft.block;
 
-import net.minecraft.client.network.ClientDummyContainerProvider;
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.LoomContainer;
-import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.LoomScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -16,9 +17,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class LoomBlock extends HorizontalFacingBlock {
-	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.loom");
+	private static final Text TITLE = new TranslatableText("container.loom");
 
-	protected LoomBlock(Block.Settings settings) {
+	protected LoomBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -27,16 +28,16 @@ public class LoomBlock extends HorizontalFacingBlock {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerProvider(world, pos));
-			player.incrementStat(Stats.INTERACT_WITH_LOOM);
-			return ActionResult.SUCCESS;
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+			player.incrementStat(Stats.field_19253);
+			return ActionResult.CONSUME;
 		}
 	}
 
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new LoomContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedScreenHandlerFactory(
+			(i, playerInventory, playerEntity) -> new LoomScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 

@@ -7,5 +7,5 @@ import net.minecraft.loot.context.LootContext;
 public interface LootChoice {
 	int getWeight(float luck);
 
-	void drop(Consumer<ItemStack> itemDropper, LootContext context);
+	void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context);
 }

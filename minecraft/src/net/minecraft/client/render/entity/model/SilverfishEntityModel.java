@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 public class SilverfishEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	private final ModelPart[] field_3560;
 	private final ModelPart[] field_3557;
-	private final ImmutableList<ModelPart> field_20941;
+	private final ImmutableList<ModelPart> parts;
 	private final float[] field_3561 = new float[7];
 	private static final int[][] field_3558 = new int[][]{{3, 2, 2}, {4, 3, 2}, {6, 4, 3}, {3, 3, 3}, {2, 2, 3}, {2, 1, 2}, {1, 1, 2}};
 	private static final int[][] field_3559 = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
@@ -48,18 +48,21 @@ public class SilverfishEntityModel<T extends Entity> extends CompositeEntityMode
 		Builder<ModelPart> builder = ImmutableList.builder();
 		builder.addAll(Arrays.asList(this.field_3560));
 		builder.addAll(Arrays.asList(this.field_3557));
-		this.field_20941 = builder.build();
+		this.parts = builder.build();
 	}
 
-	public ImmutableList<ModelPart> getParts() {
-		return this.field_20941;
+	public ImmutableList<ModelPart> method_22969() {
+		return this.parts;
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		for (int i = 0; i < this.field_3560.length; i++) {
-			this.field_3560[i].yaw = MathHelper.cos(customAngle * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.05F * (float)(1 + Math.abs(i - 2));
-			this.field_3560[i].pivotX = MathHelper.sin(customAngle * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.2F * (float)Math.abs(i - 2);
+			this.field_3560[i].yaw = MathHelper.cos(animationProgress * 0.9F + (float)i * 0.15F * (float) Math.PI)
+				* (float) Math.PI
+				* 0.05F
+				* (float)(1 + Math.abs(i - 2));
+			this.field_3560[i].pivotX = MathHelper.sin(animationProgress * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.2F * (float)Math.abs(i - 2);
 		}
 
 		this.field_3557[0].yaw = this.field_3560[2].yaw;

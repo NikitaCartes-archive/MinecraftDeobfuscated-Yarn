@@ -1,12 +1,13 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.network.ClientDummyContainerProvider;
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.CartographyTableContainer;
-import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.CartographyTableScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -15,9 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CartographyTableBlock extends Block {
-	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.cartography_table");
+	private static final Text TITLE = new TranslatableText("container.cartography_table");
 
-	protected CartographyTableBlock(Block.Settings settings) {
+	protected CartographyTableBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -26,17 +27,17 @@ public class CartographyTableBlock extends Block {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerProvider(world, pos));
-			player.incrementStat(Stats.INTERACT_WITH_CARTOGRAPHY_TABLE);
-			return ActionResult.SUCCESS;
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+			player.incrementStat(Stats.field_19252);
+			return ActionResult.CONSUME;
 		}
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedScreenHandlerFactory(
+			(i, playerInventory, playerEntity) -> new CartographyTableScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 }

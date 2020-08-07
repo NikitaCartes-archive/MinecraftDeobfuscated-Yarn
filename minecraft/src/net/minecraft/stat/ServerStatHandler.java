@@ -19,11 +19,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.network.packet.StatisticsS2CPacket;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -88,7 +88,7 @@ public class ServerStatHandler extends StatHandler {
 						compoundTag.putInt("DataVersion", 1343);
 					}
 
-					compoundTag = NbtHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"));
+					compoundTag = NbtHelper.update(dataFixer, DataFixTypes.field_19218, compoundTag, compoundTag.getInt("DataVersion"));
 					if (compoundTag.contains("stats", 10)) {
 						CompoundTag compoundTag2 = compoundTag.getCompound("stats");
 

@@ -14,14 +14,14 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ProjectileUtil;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -39,6 +39,7 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer blockOutlineDebugRenderer;
 	public final DebugRenderer.Renderer chunkLoadingDebugRenderer;
 	public final VillageDebugRenderer villageDebugRenderer;
+	public final VillageSectionsDebugRenderer villageSectionsDebugRenderer;
 	public final BeeDebugRenderer beeDebugRenderer;
 	public final RaidCenterDebugRenderer raidCenterDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
@@ -58,6 +59,7 @@ public class DebugRenderer {
 		this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(client);
 		this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(client);
 		this.villageDebugRenderer = new VillageDebugRenderer(client);
+		this.villageSectionsDebugRenderer = new VillageSectionsDebugRenderer();
 		this.beeDebugRenderer = new BeeDebugRenderer(client);
 		this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(client);
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(client);
@@ -78,6 +80,7 @@ public class DebugRenderer {
 		this.blockOutlineDebugRenderer.clear();
 		this.chunkLoadingDebugRenderer.clear();
 		this.villageDebugRenderer.clear();
+		this.villageSectionsDebugRenderer.clear();
 		this.beeDebugRenderer.clear();
 		this.raidCenterDebugRenderer.clear();
 		this.goalSelectorDebugRenderer.clear();
@@ -135,7 +138,7 @@ public class DebugRenderer {
 	}
 
 	public static void drawBox(Box box, float red, float green, float blue, float alpha) {
-		drawBox(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, red, green, blue, alpha);
+		drawBox(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, red, green, blue, alpha);
 	}
 
 	public static void drawBox(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, float red, float green, float blue, float alpha) {
@@ -161,7 +164,7 @@ public class DebugRenderer {
 	public static void drawString(String string, double x, double y, double z, int color, float size, boolean center, float offset, boolean visibleThroughObjects) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		Camera camera = minecraftClient.gameRenderer.getCamera();
-		if (camera.isReady() && minecraftClient.getEntityRenderManager().gameOptions != null) {
+		if (camera.isReady() && minecraftClient.getEntityRenderDispatcher().gameOptions != null) {
 			TextRenderer textRenderer = minecraftClient.textRenderer;
 			double d = camera.getPos().x;
 			double e = camera.getPos().y;
@@ -180,11 +183,11 @@ public class DebugRenderer {
 
 			RenderSystem.depthMask(true);
 			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
-			float g = center ? (float)(-textRenderer.getStringWidth(string)) / 2.0F : 0.0F;
+			float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0F : 0.0F;
 			g -= offset / size;
 			RenderSystem.enableAlphaTest();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			textRenderer.draw(string, g, 0.0F, color, false, Rotation3.identity().getMatrix(), immediate, visibleThroughObjects, 0, 15728880);
+			textRenderer.draw(string, g, 0.0F, color, false, AffineTransformation.identity().getMatrix(), immediate, visibleThroughObjects, 0, 15728880);
 			immediate.draw();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableDepthTest();

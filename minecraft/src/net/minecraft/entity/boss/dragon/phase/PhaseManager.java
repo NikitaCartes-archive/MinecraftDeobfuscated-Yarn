@@ -12,7 +12,7 @@ public class PhaseManager {
 
 	public PhaseManager(EnderDragonEntity dragon) {
 		this.dragon = dragon;
-		this.setPhase(PhaseType.HOVER);
+		this.setPhase(PhaseType.field_7075);
 	}
 
 	public void setPhase(PhaseType<?> type) {

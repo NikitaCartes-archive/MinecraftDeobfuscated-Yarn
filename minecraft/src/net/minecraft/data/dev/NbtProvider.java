@@ -23,7 +23,7 @@ public class NbtProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void run(DataCache cache) throws IOException {
 		Path path = this.root.getOutput();
 
 		for (Path path2 : this.root.getInputs()) {

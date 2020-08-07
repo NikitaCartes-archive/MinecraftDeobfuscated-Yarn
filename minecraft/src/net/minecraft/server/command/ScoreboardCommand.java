@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.command.arguments.ObjectiveArgumentType;
-import net.minecraft.command.arguments.ObjectiveCriteriaArgumentType;
-import net.minecraft.command.arguments.OperationArgumentType;
-import net.minecraft.command.arguments.ScoreHolderArgumentType;
-import net.minecraft.command.arguments.ScoreboardSlotArgumentType;
-import net.minecraft.command.arguments.TextArgumentType;
+import net.minecraft.command.argument.ObjectiveArgumentType;
+import net.minecraft.command.argument.ObjectiveCriteriaArgumentType;
+import net.minecraft.command.argument.OperationArgumentType;
+import net.minecraft.command.argument.ScoreHolderArgumentType;
+import net.minecraft.command.argument.ScoreboardSlotArgumentType;
+import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -34,10 +34,10 @@ public class ScoreboardCommand {
 	private static final SimpleCommandExceptionType OBJECTIVES_ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.scoreboard.objectives.add.duplicate")
 	);
-	private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADYEMPTY_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.scoreboard.objectives.display.alreadyEmpty")
 	);
-	private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADYSET_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADY_SET_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.scoreboard.objectives.display.alreadySet")
 	);
 	private static final SimpleCommandExceptionType PLAYERS_ENABLE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
@@ -116,13 +116,13 @@ public class ScoreboardCommand {
 							CommandManager.literal("setdisplay")
 								.then(
 									CommandManager.argument("slot", ScoreboardSlotArgumentType.scoreboardSlot())
-										.executes(commandContext -> executeClearDisplay(commandContext.getSource(), ScoreboardSlotArgumentType.getScorebordSlot(commandContext, "slot")))
+										.executes(commandContext -> executeClearDisplay(commandContext.getSource(), ScoreboardSlotArgumentType.getScoreboardSlot(commandContext, "slot")))
 										.then(
 											CommandManager.argument("objective", ObjectiveArgumentType.objective())
 												.executes(
 													commandContext -> executeSetDisplay(
 															commandContext.getSource(),
-															ScoreboardSlotArgumentType.getScorebordSlot(commandContext, "slot"),
+															ScoreboardSlotArgumentType.getScoreboardSlot(commandContext, "slot"),
 															ObjectiveArgumentType.getObjective(commandContext, "objective")
 														)
 												)
@@ -310,12 +310,12 @@ public class ScoreboardCommand {
 		return literalArgumentBuilder;
 	}
 
-	private static CompletableFuture<Suggestions> suggestDisabled(ServerCommandSource source, Collection<String> targets, SuggestionsBuilder suggestionsBuilder) {
+	private static CompletableFuture<Suggestions> suggestDisabled(ServerCommandSource source, Collection<String> targets, SuggestionsBuilder builder) {
 		List<String> list = Lists.<String>newArrayList();
 		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
 
 		for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
-			if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER) {
+			if (scoreboardObjective.getCriterion() == ScoreboardCriterion.field_1462) {
 				boolean bl = false;
 
 				for (String string : targets) {
@@ -331,7 +331,7 @@ public class ScoreboardCommand {
 			}
 		}
 
-		return CommandSource.suggestMatching(list, suggestionsBuilder);
+		return CommandSource.suggestMatching(list, builder);
 	}
 
 	private static int executeGet(ServerCommandSource source, String target, ScoreboardObjective objective) throws CommandSyntaxException {
@@ -381,7 +381,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeEnable(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective) throws CommandSyntaxException {
-		if (objective.getCriterion() != ScoreboardCriterion.TRIGGER) {
+		if (objective.getCriterion() != ScoreboardCriterion.field_1462) {
 			throw PLAYERS_ENABLE_INVALID_EXCEPTION.create();
 		} else {
 			Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
@@ -540,7 +540,7 @@ public class ScoreboardCommand {
 	private static int executeClearDisplay(ServerCommandSource source, int slot) throws CommandSyntaxException {
 		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
 		if (scoreboard.getObjectiveForSlot(slot) == null) {
-			throw OBJECTIVES_DISPLAY_ALREADYEMPTY_EXCEPTION.create();
+			throw OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION.create();
 		} else {
 			scoreboard.setObjectiveSlot(slot, null);
 			source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.display.cleared", Scoreboard.getDisplaySlotNames()[slot]), true);
@@ -551,7 +551,7 @@ public class ScoreboardCommand {
 	private static int executeSetDisplay(ServerCommandSource source, int slot, ScoreboardObjective objective) throws CommandSyntaxException {
 		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
 		if (scoreboard.getObjectiveForSlot(slot) == objective) {
-			throw OBJECTIVES_DISPLAY_ALREADYSET_EXCEPTION.create();
+			throw OBJECTIVES_DISPLAY_ALREADY_SET_EXCEPTION.create();
 		} else {
 			scoreboard.setObjectiveSlot(slot, objective);
 			source.sendFeedback(

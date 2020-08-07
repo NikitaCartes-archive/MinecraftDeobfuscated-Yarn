@@ -23,13 +23,13 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	private int ticks;
 
 	public EnderChestBlockEntity() {
-		super(BlockEntityType.ENDER_CHEST);
+		super(BlockEntityType.field_11901);
 	}
 
 	@Override
 	public void tick() {
 		if (++this.ticks % 20 * 4 == 0) {
-			this.world.addBlockAction(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
+			this.world.addSyncedBlockEvent(this.pos, Blocks.field_10443, 1, this.viewerCount);
 		}
 
 		this.lastAnimationProgress = this.animationProgress;
@@ -40,8 +40,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 		if (this.viewerCount > 0 && this.animationProgress == 0.0F) {
 			double d = (double)i + 0.5;
 			double e = (double)k + 0.5;
-			this.world
-				.playSound(null, d, (double)j + 0.5, e, SoundEvents.BLOCK_ENDER_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+			this.world.playSound(null, d, (double)j + 0.5, e, SoundEvents.field_14952, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 		}
 
 		if (this.viewerCount == 0 && this.animationProgress > 0.0F || this.viewerCount > 0 && this.animationProgress < 1.0F) {
@@ -60,8 +59,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 			if (this.animationProgress < 0.5F && g >= 0.5F) {
 				double e = (double)i + 0.5;
 				double l = (double)k + 0.5;
-				this.world
-					.playSound(null, e, (double)j + 0.5, l, SoundEvents.BLOCK_ENDER_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+				this.world.playSound(null, e, (double)j + 0.5, l, SoundEvents.field_15206, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
 
 			if (this.animationProgress < 0.0F) {
@@ -71,12 +69,12 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	}
 
 	@Override
-	public boolean onBlockAction(int i, int j) {
-		if (i == 1) {
-			this.viewerCount = j;
+	public boolean onSyncedBlockEvent(int type, int data) {
+		if (type == 1) {
+			this.viewerCount = data;
 			return true;
 		} else {
-			return super.onBlockAction(i, j);
+			return super.onSyncedBlockEvent(type, data);
 		}
 	}
 
@@ -88,12 +86,12 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 
 	public void onOpen() {
 		this.viewerCount++;
-		this.world.addBlockAction(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
+		this.world.addSyncedBlockEvent(this.pos, Blocks.field_10443, 1, this.viewerCount);
 	}
 
 	public void onClose() {
 		this.viewerCount--;
-		this.world.addBlockAction(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
+		this.world.addSyncedBlockEvent(this.pos, Blocks.field_10443, 1, this.viewerCount);
 	}
 
 	public boolean canPlayerUse(PlayerEntity playerEntity) {
@@ -104,7 +102,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float getAnimationProgress(float f) {
-		return MathHelper.lerp(f, this.lastAnimationProgress, this.animationProgress);
+	public float getAnimationProgress(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastAnimationProgress, this.animationProgress);
 	}
 }

@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
@@ -20,6 +21,8 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	private static final Ordering<PlayerListEntry> ORDERING = Ordering.from(
 		(playerListEntry, playerListEntry2) -> ComparisonChain.start().compare(playerListEntry.getProfile().getId(), playerListEntry2.getProfile().getId()).result()
 	);
+	private static final Text field_26616 = new TranslatableText("spectatorMenu.teleport");
+	private static final Text field_26617 = new TranslatableText("spectatorMenu.teleport.prompt");
 	private final List<SpectatorMenuCommand> elements = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public TeleportSpectatorMenu() {
@@ -28,7 +31,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 
 	public TeleportSpectatorMenu(Collection<PlayerListEntry> entries) {
 		for (PlayerListEntry playerListEntry : ORDERING.sortedCopy(entries)) {
-			if (playerListEntry.getGameMode() != GameMode.SPECTATOR) {
+			if (playerListEntry.getGameMode() != GameMode.field_9219) {
 				this.elements.add(new TeleportToSpecificPlayerSpectatorCommand(playerListEntry.getProfile()));
 			}
 		}
@@ -41,7 +44,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 
 	@Override
 	public Text getPrompt() {
-		return new TranslatableText("spectatorMenu.teleport.prompt");
+		return field_26617;
 	}
 
 	@Override
@@ -51,13 +54,13 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 
 	@Override
 	public Text getName() {
-		return new TranslatableText("spectatorMenu.teleport");
+		return field_26616;
 	}
 
 	@Override
-	public void renderIcon(float brightness, int alpha) {
+	public void renderIcon(MatrixStack matrixStack, float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-		DrawableHelper.blit(0, 0, 0.0F, 0.0F, 16, 16, 256, 256);
+		DrawableHelper.drawTexture(matrixStack, 0, 0, 0.0F, 0.0F, 16, 16, 256, 256);
 	}
 
 	@Override

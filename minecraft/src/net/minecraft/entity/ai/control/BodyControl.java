@@ -35,18 +35,18 @@ public class BodyControl {
 	}
 
 	private void rotateLook() {
-		this.entity.bodyYaw = MathHelper.capRotation(this.entity.bodyYaw, this.entity.headYaw, (float)this.entity.getBodyYawSpeed());
+		this.entity.bodyYaw = MathHelper.stepAngleTowards(this.entity.bodyYaw, this.entity.headYaw, (float)this.entity.getBodyYawSpeed());
 	}
 
 	private void rotateHead() {
-		this.entity.headYaw = MathHelper.capRotation(this.entity.headYaw, this.entity.bodyYaw, (float)this.entity.getBodyYawSpeed());
+		this.entity.headYaw = MathHelper.stepAngleTowards(this.entity.headYaw, this.entity.bodyYaw, (float)this.entity.getBodyYawSpeed());
 	}
 
 	private void rotateBody() {
 		int i = this.activeTicks - 10;
 		float f = MathHelper.clamp((float)i / 10.0F, 0.0F, 1.0F);
 		float g = (float)this.entity.getBodyYawSpeed() * (1.0F - f);
-		this.entity.bodyYaw = MathHelper.capRotation(this.entity.bodyYaw, this.entity.headYaw, g);
+		this.entity.bodyYaw = MathHelper.stepAngleTowards(this.entity.bodyYaw, this.entity.headYaw, g);
 	}
 
 	private boolean isIndependent() {

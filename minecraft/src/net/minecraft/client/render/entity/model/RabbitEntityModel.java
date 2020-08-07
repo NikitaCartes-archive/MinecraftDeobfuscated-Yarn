@@ -94,20 +94,20 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
 		if (this.child) {
 			float f = 1.5F;
 			matrices.push();
 			matrices.scale(0.56666666F, 0.56666666F, 0.56666666F);
 			matrices.translate(0.0, 1.375, 0.125);
 			ImmutableList.of(this.head, this.leftEar, this.rightEar, this.nose)
-				.forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 			matrices.push();
 			matrices.scale(0.4F, 0.4F, 0.4F);
 			matrices.translate(0.0, 2.25, 0.0);
 			ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.torso, this.leftFrontLeg, this.rightFrontLeg, this.tail)
-				.forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 		} else {
 			matrices.push();
@@ -127,12 +127,12 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 					this.tail,
 					this.nose
 				)
-				.forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 		}
 	}
 
-	public void setAngles(T rabbitEntity, float f, float g, float h, float i, float j) {
+	public void method_17117(T rabbitEntity, float f, float g, float h, float i, float j) {
 		float k = h - (float)rabbitEntity.age;
 		this.nose.pitch = j * (float) (Math.PI / 180.0);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
@@ -142,7 +142,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.rightEar.yaw = this.nose.yaw - (float) (Math.PI / 12);
 		this.leftEar.yaw = this.nose.yaw + (float) (Math.PI / 12);
-		this.field_3531 = MathHelper.sin(rabbitEntity.method_6605(k) * (float) Math.PI);
+		this.field_3531 = MathHelper.sin(rabbitEntity.getJumpProgress(k) * (float) Math.PI);
 		this.leftBackLeg.pitch = (this.field_3531 * 50.0F - 21.0F) * (float) (Math.PI / 180.0);
 		this.rightBackLeg.pitch = (this.field_3531 * 50.0F - 21.0F) * (float) (Math.PI / 180.0);
 		this.leftFoot.pitch = this.field_3531 * 50.0F * (float) (Math.PI / 180.0);
@@ -151,8 +151,8 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 		this.rightFrontLeg.pitch = (this.field_3531 * -40.0F - 11.0F) * (float) (Math.PI / 180.0);
 	}
 
-	public void animateModel(T rabbitEntity, float f, float g, float h) {
+	public void method_17115(T rabbitEntity, float f, float g, float h) {
 		super.animateModel(rabbitEntity, f, g, h);
-		this.field_3531 = MathHelper.sin(rabbitEntity.method_6605(h) * (float) Math.PI);
+		this.field_3531 = MathHelper.sin(rabbitEntity.getJumpProgress(h) * (float) Math.PI);
 	}
 }

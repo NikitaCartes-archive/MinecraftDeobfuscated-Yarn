@@ -7,9 +7,9 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.command.arguments.BlockPosArgumentType;
-import net.minecraft.command.arguments.BlockStateArgument;
-import net.minecraft.command.arguments.BlockStateArgumentType;
+import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.BlockStateArgument;
+import net.minecraft.command.argument.BlockStateArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
@@ -32,7 +32,7 @@ public class SetBlockCommand {
 											commandContext.getSource(),
 											BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 											BlockStateArgumentType.getBlockState(commandContext, "block"),
-											SetBlockCommand.Mode.REPLACE,
+											SetBlockCommand.Mode.field_13722,
 											null
 										)
 								)
@@ -43,7 +43,7 @@ public class SetBlockCommand {
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
-													SetBlockCommand.Mode.DESTROY,
+													SetBlockCommand.Mode.field_13721,
 													null
 												)
 										)
@@ -55,7 +55,7 @@ public class SetBlockCommand {
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
-													SetBlockCommand.Mode.REPLACE,
+													SetBlockCommand.Mode.field_13722,
 													cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
 												)
 										)
@@ -67,7 +67,7 @@ public class SetBlockCommand {
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
-													SetBlockCommand.Mode.REPLACE,
+													SetBlockCommand.Mode.field_13722,
 													null
 												)
 										)
@@ -85,9 +85,9 @@ public class SetBlockCommand {
 			throw FAILED_EXCEPTION.create();
 		} else {
 			boolean bl;
-			if (mode == SetBlockCommand.Mode.DESTROY) {
+			if (mode == SetBlockCommand.Mode.field_13721) {
 				serverWorld.breakBlock(pos, true);
-				bl = !block.getBlockState().isAir();
+				bl = !block.getBlockState().isAir() || !serverWorld.getBlockState(pos).isAir();
 			} else {
 				BlockEntity blockEntity = serverWorld.getBlockEntity(pos);
 				Clearable.clear(blockEntity);
@@ -110,7 +110,7 @@ public class SetBlockCommand {
 	}
 
 	public static enum Mode {
-		REPLACE,
-		DESTROY;
+		field_13722,
+		field_13721;
 	}
 }

@@ -65,10 +65,6 @@ public class ChunkOcclusionDataBuilder {
 		return chunkOcclusionData;
 	}
 
-	public Set<Direction> getOpenFaces(BlockPos pos) {
-		return this.getOpenFaces(pack(pos));
-	}
-
 	private Set<Direction> getOpenFaces(int pos) {
 		Set<Direction> set = EnumSet.noneOf(Direction.class);
 		IntPriorityQueue intPriorityQueue = new IntArrayFIFOQueue();
@@ -94,59 +90,59 @@ public class ChunkOcclusionDataBuilder {
 	private void addEdgeFaces(int pos, Set<Direction> openFaces) {
 		int i = pos >> 0 & 15;
 		if (i == 0) {
-			openFaces.add(Direction.WEST);
+			openFaces.add(Direction.field_11039);
 		} else if (i == 15) {
-			openFaces.add(Direction.EAST);
+			openFaces.add(Direction.field_11034);
 		}
 
 		int j = pos >> 8 & 15;
 		if (j == 0) {
-			openFaces.add(Direction.DOWN);
+			openFaces.add(Direction.field_11033);
 		} else if (j == 15) {
-			openFaces.add(Direction.UP);
+			openFaces.add(Direction.field_11036);
 		}
 
 		int k = pos >> 4 & 15;
 		if (k == 0) {
-			openFaces.add(Direction.NORTH);
+			openFaces.add(Direction.field_11043);
 		} else if (k == 15) {
-			openFaces.add(Direction.SOUTH);
+			openFaces.add(Direction.field_11035);
 		}
 	}
 
 	private int offset(int pos, Direction direction) {
 		switch (direction) {
-			case DOWN:
+			case field_11033:
 				if ((pos >> 8 & 15) == 0) {
 					return -1;
 				}
 
 				return pos - STEP_Y;
-			case UP:
+			case field_11036:
 				if ((pos >> 8 & 15) == 15) {
 					return -1;
 				}
 
 				return pos + STEP_Y;
-			case NORTH:
+			case field_11043:
 				if ((pos >> 4 & 15) == 0) {
 					return -1;
 				}
 
 				return pos - STEP_Z;
-			case SOUTH:
+			case field_11035:
 				if ((pos >> 4 & 15) == 15) {
 					return -1;
 				}
 
 				return pos + STEP_Z;
-			case WEST:
+			case field_11039:
 				if ((pos >> 0 & 15) == 0) {
 					return -1;
 				}
 
 				return pos - STEP_X;
-			case EAST:
+			case field_11034:
 				if ((pos >> 0 & 15) == 15) {
 					return -1;
 				}

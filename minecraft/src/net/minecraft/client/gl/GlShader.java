@@ -43,18 +43,18 @@ public class GlShader {
 		return this.name;
 	}
 
-	public static GlShader createFromResource(GlShader.Type type, String name, InputStream sourceCode) throws IOException {
+	public static GlShader createFromResource(GlShader.Type type, String name, InputStream sourceCode, String string) throws IOException {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		String string = TextureUtil.readResourceAsString(sourceCode);
-		if (string == null) {
+		String string2 = TextureUtil.readAllToString(sourceCode);
+		if (string2 == null) {
 			throw new IOException("Could not load program " + type.getName());
 		} else {
 			int i = GlStateManager.createShader(type.getGlType());
-			GlStateManager.shaderSource(i, string);
+			GlStateManager.shaderSource(i, string2);
 			GlStateManager.compileShader(i);
 			if (GlStateManager.getShader(i, 35713) == 0) {
-				String string2 = StringUtils.trim(GlStateManager.getShaderInfoLog(i, 32768));
-				throw new IOException("Couldn't compile " + type.getName() + " program: " + string2);
+				String string3 = StringUtils.trim(GlStateManager.getShaderInfoLog(i, 32768));
+				throw new IOException("Couldn't compile " + type.getName() + " program (" + string + ", " + name + ") : " + string3);
 			} else {
 				GlShader glShader = new GlShader(type, i, name);
 				type.getLoadedShaders().put(name, glShader);

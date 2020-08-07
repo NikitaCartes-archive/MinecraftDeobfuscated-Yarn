@@ -1,14 +1,20 @@
 package net.minecraft.world.gen;
 
+import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import net.minecraft.util.StringIdentifiable;
 
 public class GenerationStep {
-	public static enum Carver {
-		AIR("air"),
-		LIQUID("liquid");
+	public static enum Carver implements StringIdentifiable {
+		field_13169("air"),
+		field_13166("liquid");
 
+		public static final Codec<GenerationStep.Carver> field_24770 = StringIdentifiable.createCodec(
+			GenerationStep.Carver::values, GenerationStep.Carver::method_28546
+		);
 		private static final Map<String, GenerationStep.Carver> BY_NAME = (Map<String, GenerationStep.Carver>)Arrays.stream(values())
 			.collect(Collectors.toMap(GenerationStep.Carver::getName, carver -> carver));
 		private final String name;
@@ -20,28 +26,28 @@ public class GenerationStep {
 		public String getName() {
 			return this.name;
 		}
+
+		@Nullable
+		public static GenerationStep.Carver method_28546(String string) {
+			return (GenerationStep.Carver)BY_NAME.get(string);
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
+		}
 	}
 
 	public static enum Feature {
-		RAW_GENERATION("raw_generation"),
-		LOCAL_MODIFICATIONS("local_modifications"),
-		UNDERGROUND_STRUCTURES("underground_structures"),
-		SURFACE_STRUCTURES("surface_structures"),
-		UNDERGROUND_ORES("underground_ores"),
-		UNDERGROUND_DECORATION("underground_decoration"),
-		VEGETAL_DECORATION("vegetal_decoration"),
-		TOP_LAYER_MODIFICATION("top_layer_modification");
-
-		private static final Map<String, GenerationStep.Feature> BY_NAME = (Map<String, GenerationStep.Feature>)Arrays.stream(values())
-			.collect(Collectors.toMap(GenerationStep.Feature::getName, feature -> feature));
-		private final String name;
-
-		private Feature(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return this.name;
-		}
+		field_13174,
+		field_25186,
+		field_13171,
+		field_13172,
+		field_13173,
+		field_25187,
+		field_13176,
+		field_13177,
+		field_13178,
+		field_13179;
 	}
 }

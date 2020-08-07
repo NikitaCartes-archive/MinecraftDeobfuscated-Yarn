@@ -10,10 +10,10 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import java.util.List;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.command.arguments.BlockPosArgumentType;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.ItemSlotArgumentType;
-import net.minecraft.command.arguments.ItemStackArgumentType;
+import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.ItemSlotArgumentType;
+import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -107,8 +107,8 @@ public class ReplaceItemCommand {
 			throw BLOCK_FAILED_EXCEPTION.create();
 		} else {
 			Inventory inventory = (Inventory)blockEntity;
-			if (slot >= 0 && slot < inventory.getInvSize()) {
-				inventory.setInvStack(slot, item);
+			if (slot >= 0 && slot < inventory.size()) {
+				inventory.setStack(slot, item);
 				source.sendFeedback(new TranslatableText("commands.replaceitem.block.success", pos.getX(), pos.getY(), pos.getZ(), item.toHoverableText()), true);
 				return 1;
 			} else {
@@ -122,13 +122,13 @@ public class ReplaceItemCommand {
 
 		for (Entity entity : targets) {
 			if (entity instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
+				((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
 			}
 
 			if (entity.equip(slot, item.copy())) {
 				list.add(entity);
 				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
+					((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
 				}
 			}
 		}

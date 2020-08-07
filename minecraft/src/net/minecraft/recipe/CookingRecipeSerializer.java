@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements RecipeSerializer<T> {
@@ -18,7 +18,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		this.recipeFactory = recipeFactory;
 	}
 
-	public T read(Identifier identifier, JsonObject jsonObject) {
+	public T method_17736(Identifier identifier, JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "group", "");
 		JsonElement jsonElement = (JsonElement)(JsonHelper.hasArray(jsonObject, "ingredient")
 			? JsonHelper.getArray(jsonObject, "ingredient")
@@ -34,7 +34,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
 	}
 
-	public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
+	public T method_17737(Identifier identifier, PacketByteBuf packetByteBuf) {
 		String string = packetByteBuf.readString(32767);
 		Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 		ItemStack itemStack = packetByteBuf.readItemStack();
@@ -43,7 +43,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
 	}
 
-	public void write(PacketByteBuf packetByteBuf, T abstractCookingRecipe) {
+	public void method_17735(PacketByteBuf packetByteBuf, T abstractCookingRecipe) {
 		packetByteBuf.writeString(abstractCookingRecipe.group);
 		abstractCookingRecipe.input.write(packetByteBuf);
 		packetByteBuf.writeItemStack(abstractCookingRecipe.output);

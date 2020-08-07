@@ -4,7 +4,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
@@ -19,20 +18,19 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class WitherRoseBlock extends FlowerBlock {
-	public WitherRoseBlock(StatusEffect effect, Block.Settings settings) {
+	public WitherRoseBlock(StatusEffect effect, AbstractBlock.Settings settings) {
 		super(effect, 8, settings);
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-		Block block = floor.getBlock();
-		return super.canPlantOnTop(floor, view, pos) || block == Blocks.NETHERRACK || block == Blocks.SOUL_SAND;
+	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+		return super.canPlantOnTop(floor, world, pos) || floor.isOf(Blocks.field_10515) || floor.isOf(Blocks.field_10114) || floor.isOf(Blocks.field_22090);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		VoxelShape voxelShape = this.getOutlineShape(state, world, pos, EntityContext.absent());
+		VoxelShape voxelShape = this.getOutlineShape(state, world, pos, ShapeContext.absent());
 		Vec3d vec3d = voxelShape.getBoundingBox().getCenter();
 		double d = (double)pos.getX() + vec3d.x;
 		double e = (double)pos.getZ() + vec3d.z;
@@ -40,13 +38,7 @@ public class WitherRoseBlock extends FlowerBlock {
 		for (int i = 0; i < 3; i++) {
 			if (random.nextBoolean()) {
 				world.addParticle(
-					ParticleTypes.SMOKE,
-					d + (double)(random.nextFloat() / 5.0F),
-					(double)pos.getY() + (0.5 - (double)random.nextFloat()),
-					e + (double)(random.nextFloat() / 5.0F),
-					0.0,
-					0.0,
-					0.0
+					ParticleTypes.field_11251, d + random.nextDouble() / 5.0, (double)pos.getY() + (0.5 - random.nextDouble()), e + random.nextDouble() / 5.0, 0.0, 0.0, 0.0
 				);
 			}
 		}
@@ -54,11 +46,11 @@ public class WitherRoseBlock extends FlowerBlock {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!world.isClient && world.getDifficulty() != Difficulty.PEACEFUL) {
+		if (!world.isClient && world.getDifficulty() != Difficulty.field_5801) {
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				if (!livingEntity.isInvulnerableTo(DamageSource.WITHER)) {
-					livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
+					livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5920, 40));
 				}
 			}
 		}

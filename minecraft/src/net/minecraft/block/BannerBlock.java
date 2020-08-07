@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -17,7 +16,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class BannerBlock extends AbstractBannerBlock {
@@ -25,19 +24,19 @@ public class BannerBlock extends AbstractBannerBlock {
 	private static final Map<DyeColor, Block> COLORED_BANNERS = Maps.<DyeColor, Block>newHashMap();
 	private static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 
-	public BannerBlock(DyeColor color, Block.Settings settings) {
-		super(color, settings);
+	public BannerBlock(DyeColor dyeColor, AbstractBlock.Settings settings) {
+		super(dyeColor, settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(ROTATION, Integer.valueOf(0)));
-		COLORED_BANNERS.put(color, this);
+		COLORED_BANNERS.put(dyeColor, this);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos.down()).getMaterial().isSolid();
+		return world.getBlockState(pos.method_10074()).getMaterial().isSolid();
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
@@ -47,10 +46,10 @@ public class BannerBlock extends AbstractBannerBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing == Direction.DOWN && !state.canPlaceAt(world, pos)
-			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		return direction == Direction.field_11033 && !state.canPlaceAt(world, pos)
+			? Blocks.field_10124.getDefaultState()
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -70,6 +69,6 @@ public class BannerBlock extends AbstractBannerBlock {
 
 	@Environment(EnvType.CLIENT)
 	public static Block getForColor(DyeColor color) {
-		return (Block)COLORED_BANNERS.getOrDefault(color, Blocks.WHITE_BANNER);
+		return (Block)COLORED_BANNERS.getOrDefault(color, Blocks.field_10154);
 	}
 }

@@ -10,7 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.WeightedList;
+import net.minecraft.util.collection.WeightedList;
 
 public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	private final Set<MemoryModuleType<?>> memoriesToForgetWhenStopped;
@@ -34,7 +34,7 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 
 	@Override
 	protected boolean shouldKeepRunning(ServerWorld world, E entity, long time) {
-		return this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).anyMatch(task -> task.shouldKeepRunning(world, entity, time));
+		return this.tasks.stream().filter(task -> task.getStatus() == Task.Status.field_18338).anyMatch(task -> task.shouldKeepRunning(world, entity, time));
 	}
 
 	@Override
@@ -50,12 +50,12 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 
 	@Override
 	protected void keepRunning(ServerWorld world, E entity, long time) {
-		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.tick(world, entity, time));
+		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.field_18338).forEach(task -> task.tick(world, entity, time));
 	}
 
 	@Override
 	protected void finishRunning(ServerWorld world, E entity, long time) {
-		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.stop(world, entity, time));
+		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.field_18338).forEach(task -> task.stop(world, entity, time));
 		this.memoriesToForgetWhenStopped.forEach(entity.getBrain()::forget);
 	}
 
@@ -63,15 +63,15 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	public String toString() {
 		Set<? extends Task<? super E>> set = (Set<? extends Task<? super E>>)this.tasks
 			.stream()
-			.filter(task -> task.getStatus() == Task.Status.RUNNING)
+			.filter(task -> task.getStatus() == Task.Status.field_18338)
 			.collect(Collectors.toSet());
 		return "(" + this.getClass().getSimpleName() + "): " + set;
 	}
 
 	static enum Order {
-		ORDERED(weightedList -> {
+		field_18348(weightedList -> {
 		}),
-		SHUFFLED(WeightedList::shuffle);
+		field_18349(WeightedList::shuffle);
 
 		private final Consumer<WeightedList<?>> listModifier;
 
@@ -85,16 +85,16 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	}
 
 	static enum RunMode {
-		RUN_ONE {
+		field_18855 {
 			@Override
 			public <E extends LivingEntity> void run(WeightedList<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
-				tasks.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(world, entity, time)).findFirst();
+				tasks.stream().filter(task -> task.getStatus() == Task.Status.field_18337).filter(task -> task.tryStarting(world, entity, time)).findFirst();
 			}
 		},
-		TRY_ALL {
+		field_18856 {
 			@Override
 			public <E extends LivingEntity> void run(WeightedList<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
-				tasks.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(world, entity, time));
+				tasks.stream().filter(task -> task.getStatus() == Task.Status.field_18337).forEach(task -> task.tryStarting(world, entity, time));
 			}
 		};
 

@@ -19,13 +19,13 @@ public class DistancePredicate {
 	private final NumberRange.FloatRange absolute;
 
 	public DistancePredicate(
-		NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, NumberRange.FloatRange horizontal, NumberRange.FloatRange floatRange
+		NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, NumberRange.FloatRange horizontal, NumberRange.FloatRange absolute
 	) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.horizontal = horizontal;
-		this.absolute = floatRange;
+		this.absolute = absolute;
 	}
 
 	public static DistancePredicate horizontal(NumberRange.FloatRange horizontal) {
@@ -36,20 +36,20 @@ public class DistancePredicate {
 		return new DistancePredicate(NumberRange.FloatRange.ANY, y, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY);
 	}
 
-	public boolean test(double d, double e, double f, double g, double h, double i) {
-		float j = (float)(d - g);
-		float k = (float)(e - h);
-		float l = (float)(f - i);
-		if (!this.x.test(MathHelper.abs(j)) || !this.y.test(MathHelper.abs(k)) || !this.z.test(MathHelper.abs(l))) {
+	public boolean test(double x0, double y0, double z0, double x1, double y1, double z1) {
+		float f = (float)(x0 - x1);
+		float g = (float)(y0 - y1);
+		float h = (float)(z0 - z1);
+		if (!this.x.test(MathHelper.abs(f)) || !this.y.test(MathHelper.abs(g)) || !this.z.test(MathHelper.abs(h))) {
 			return false;
 		} else {
-			return !this.horizontal.testSqrt((double)(j * j + l * l)) ? false : this.absolute.testSqrt((double)(j * j + k * k + l * l));
+			return !this.horizontal.testSqrt((double)(f * f + h * h)) ? false : this.absolute.testSqrt((double)(f * f + g * g + h * h));
 		}
 	}
 
-	public static DistancePredicate deserialize(@Nullable JsonElement el) {
-		if (el != null && !el.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(el, "distance");
+	public static DistancePredicate fromJson(@Nullable JsonElement json) {
+		if (json != null && !json.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(json, "distance");
 			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("x"));
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject.get("y"));
 			NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject.get("z"));
@@ -61,7 +61,7 @@ public class DistancePredicate {
 		}
 	}
 
-	public JsonElement serialize() {
+	public JsonElement toJson() {
 		if (this == ANY) {
 			return JsonNull.INSTANCE;
 		} else {

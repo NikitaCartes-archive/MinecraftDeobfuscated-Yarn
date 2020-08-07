@@ -1,17 +1,20 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.network.ClientDummyContainerProvider;
-import net.minecraft.container.AnvilContainer;
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.NameableContainerProvider;
-import net.minecraft.entity.EntityContext;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.AnvilScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockRotation;
@@ -35,11 +38,11 @@ public class AnvilBlock extends FallingBlock {
 	private static final VoxelShape Z_FACE_SHAPE = Block.createCuboidShape(3.0, 10.0, 0.0, 13.0, 16.0, 16.0);
 	private static final VoxelShape X_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, X_STEP_SHAPE, X_STEM_SHAPE, X_FACE_SHAPE);
 	private static final VoxelShape Z_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, Z_STEP_SHAPE, Z_STEM_SHAPE, Z_FACE_SHAPE);
-	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.repair");
+	private static final Text TITLE = new TranslatableText("container.repair");
 
-	public AnvilBlock(Block.Settings settings) {
+	public AnvilBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043));
 	}
 
 	@Override
@@ -52,24 +55,24 @@ public class AnvilBlock extends FallingBlock {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerProvider(world, pos));
-			player.incrementStat(Stats.INTERACT_WITH_ANVIL);
-			return ActionResult.SUCCESS;
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+			player.incrementStat(Stats.field_21778);
+			return ActionResult.CONSUME;
 		}
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedScreenHandlerFactory(
+			(i, playerInventory, playerEntity) -> new AnvilScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = state.get(FACING);
-		return direction.getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
+		return direction.getAxis() == Direction.Axis.field_11048 ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
 	}
 
 	@Override
@@ -78,22 +81,25 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
-		world.playLevelEvent(1031, pos, 0);
+	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
+		if (!fallingBlockEntity.isSilent()) {
+			world.syncWorldEvent(1031, pos, 0);
+		}
 	}
 
 	@Override
-	public void onDestroyedOnLanding(World world, BlockPos pos) {
-		world.playLevelEvent(1029, pos, 0);
+	public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
+		if (!fallingBlockEntity.isSilent()) {
+			world.syncWorldEvent(1029, pos, 0);
+		}
 	}
 
 	@Nullable
 	public static BlockState getLandingState(BlockState fallingState) {
-		Block block = fallingState.getBlock();
-		if (block == Blocks.ANVIL) {
-			return Blocks.CHIPPED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING));
+		if (fallingState.isOf(Blocks.field_10535)) {
+			return Blocks.field_10105.getDefaultState().with(FACING, fallingState.get(FACING));
 		} else {
-			return block == Blocks.CHIPPED_ANVIL ? Blocks.DAMAGED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING)) : null;
+			return fallingState.isOf(Blocks.field_10105) ? Blocks.field_10414.getDefaultState().with(FACING, fallingState.get(FACING)) : null;
 		}
 	}
 
@@ -108,7 +114,13 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public int getColor(BlockState state, BlockView world, BlockPos pos) {
+		return state.getTopMaterialColor(world, pos).color;
 	}
 }

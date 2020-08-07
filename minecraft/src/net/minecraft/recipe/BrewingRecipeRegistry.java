@@ -18,7 +18,7 @@ public class BrewingRecipeRegistry {
 	private static final List<Ingredient> POTION_TYPES = Lists.<Ingredient>newArrayList();
 	private static final Predicate<ItemStack> POTION_TYPE_PREDICATE = itemStack -> {
 		for (Ingredient ingredient : POTION_TYPES) {
-			if (ingredient.test(itemStack)) {
+			if (ingredient.method_8093(itemStack)) {
 				return true;
 			}
 		}
@@ -34,7 +34,7 @@ public class BrewingRecipeRegistry {
 		int i = 0;
 
 		for (int j = ITEM_RECIPES.size(); i < j; i++) {
-			if (((BrewingRecipeRegistry.Recipe)ITEM_RECIPES.get(i)).ingredient.test(stack)) {
+			if (((BrewingRecipeRegistry.Recipe)ITEM_RECIPES.get(i)).ingredient.method_8093(stack)) {
 				return true;
 			}
 		}
@@ -46,7 +46,7 @@ public class BrewingRecipeRegistry {
 		int i = 0;
 
 		for (int j = POTION_RECIPES.size(); i < j; i++) {
-			if (((BrewingRecipeRegistry.Recipe)POTION_RECIPES.get(i)).ingredient.test(stack)) {
+			if (((BrewingRecipeRegistry.Recipe)POTION_RECIPES.get(i)).ingredient.method_8093(stack)) {
 				return true;
 			}
 		}
@@ -70,13 +70,13 @@ public class BrewingRecipeRegistry {
 		return !POTION_TYPE_PREDICATE.test(input) ? false : hasItemRecipe(input, ingredient) || hasPotionRecipe(input, ingredient);
 	}
 
-	protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredien) {
+	protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredient) {
 		Item item = input.getItem();
 		int i = 0;
 
 		for (int j = ITEM_RECIPES.size(); i < j; i++) {
 			BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe<Item>)ITEM_RECIPES.get(i);
-			if (recipe.input == item && recipe.ingredient.test(ingredien)) {
+			if (recipe.input == item && recipe.ingredient.method_8093(ingredient)) {
 				return true;
 			}
 		}
@@ -90,7 +90,7 @@ public class BrewingRecipeRegistry {
 
 		for (int j = POTION_RECIPES.size(); i < j; i++) {
 			BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe<Potion>)POTION_RECIPES.get(i);
-			if (recipe.input == potion && recipe.ingredient.test(ingredient)) {
+			if (recipe.input == potion && recipe.ingredient.method_8093(ingredient)) {
 				return true;
 			}
 		}
@@ -106,7 +106,7 @@ public class BrewingRecipeRegistry {
 
 			for (int j = ITEM_RECIPES.size(); i < j; i++) {
 				BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe<Item>)ITEM_RECIPES.get(i);
-				if (recipe.input == item && recipe.ingredient.test(input)) {
+				if (recipe.input == item && recipe.ingredient.method_8093(input)) {
 					return PotionUtil.setPotion(new ItemStack(recipe.output), potion);
 				}
 			}
@@ -115,7 +115,7 @@ public class BrewingRecipeRegistry {
 
 			for (int jx = POTION_RECIPES.size(); i < jx; i++) {
 				BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe<Potion>)POTION_RECIPES.get(i);
-				if (recipe.input == potion && recipe.ingredient.test(input)) {
+				if (recipe.input == potion && recipe.ingredient.method_8093(input)) {
 					return PotionUtil.setPotion(new ItemStack(item), recipe.output);
 				}
 			}
@@ -125,66 +125,66 @@ public class BrewingRecipeRegistry {
 	}
 
 	public static void registerDefaults() {
-		registerPotionType(Items.POTION);
-		registerPotionType(Items.SPLASH_POTION);
-		registerPotionType(Items.LINGERING_POTION);
-		registerItemRecipe(Items.POTION, Items.GUNPOWDER, Items.SPLASH_POTION);
-		registerItemRecipe(Items.SPLASH_POTION, Items.DRAGON_BREATH, Items.LINGERING_POTION);
-		registerPotionRecipe(Potions.WATER, Items.GLISTERING_MELON_SLICE, Potions.MUNDANE);
-		registerPotionRecipe(Potions.WATER, Items.GHAST_TEAR, Potions.MUNDANE);
-		registerPotionRecipe(Potions.WATER, Items.RABBIT_FOOT, Potions.MUNDANE);
-		registerPotionRecipe(Potions.WATER, Items.BLAZE_POWDER, Potions.MUNDANE);
-		registerPotionRecipe(Potions.WATER, Items.SPIDER_EYE, Potions.MUNDANE);
-		registerPotionRecipe(Potions.WATER, Items.SUGAR, Potions.MUNDANE);
-		registerPotionRecipe(Potions.WATER, Items.MAGMA_CREAM, Potions.MUNDANE);
-		registerPotionRecipe(Potions.WATER, Items.GLOWSTONE_DUST, Potions.THICK);
-		registerPotionRecipe(Potions.WATER, Items.REDSTONE, Potions.MUNDANE);
-		registerPotionRecipe(Potions.WATER, Items.NETHER_WART, Potions.AWKWARD);
-		registerPotionRecipe(Potions.AWKWARD, Items.GOLDEN_CARROT, Potions.NIGHT_VISION);
-		registerPotionRecipe(Potions.NIGHT_VISION, Items.REDSTONE, Potions.LONG_NIGHT_VISION);
-		registerPotionRecipe(Potions.NIGHT_VISION, Items.FERMENTED_SPIDER_EYE, Potions.INVISIBILITY);
-		registerPotionRecipe(Potions.LONG_NIGHT_VISION, Items.FERMENTED_SPIDER_EYE, Potions.LONG_INVISIBILITY);
-		registerPotionRecipe(Potions.INVISIBILITY, Items.REDSTONE, Potions.LONG_INVISIBILITY);
-		registerPotionRecipe(Potions.AWKWARD, Items.MAGMA_CREAM, Potions.FIRE_RESISTANCE);
-		registerPotionRecipe(Potions.FIRE_RESISTANCE, Items.REDSTONE, Potions.LONG_FIRE_RESISTANCE);
-		registerPotionRecipe(Potions.AWKWARD, Items.RABBIT_FOOT, Potions.LEAPING);
-		registerPotionRecipe(Potions.LEAPING, Items.REDSTONE, Potions.LONG_LEAPING);
-		registerPotionRecipe(Potions.LEAPING, Items.GLOWSTONE_DUST, Potions.STRONG_LEAPING);
-		registerPotionRecipe(Potions.LEAPING, Items.FERMENTED_SPIDER_EYE, Potions.SLOWNESS);
-		registerPotionRecipe(Potions.LONG_LEAPING, Items.FERMENTED_SPIDER_EYE, Potions.LONG_SLOWNESS);
-		registerPotionRecipe(Potions.SLOWNESS, Items.REDSTONE, Potions.LONG_SLOWNESS);
-		registerPotionRecipe(Potions.SLOWNESS, Items.GLOWSTONE_DUST, Potions.STRONG_SLOWNESS);
-		registerPotionRecipe(Potions.AWKWARD, Items.TURTLE_HELMET, Potions.TURTLE_MASTER);
-		registerPotionRecipe(Potions.TURTLE_MASTER, Items.REDSTONE, Potions.LONG_TURTLE_MASTER);
-		registerPotionRecipe(Potions.TURTLE_MASTER, Items.GLOWSTONE_DUST, Potions.STRONG_TURTLE_MASTER);
-		registerPotionRecipe(Potions.SWIFTNESS, Items.FERMENTED_SPIDER_EYE, Potions.SLOWNESS);
-		registerPotionRecipe(Potions.LONG_SWIFTNESS, Items.FERMENTED_SPIDER_EYE, Potions.LONG_SLOWNESS);
-		registerPotionRecipe(Potions.AWKWARD, Items.SUGAR, Potions.SWIFTNESS);
-		registerPotionRecipe(Potions.SWIFTNESS, Items.REDSTONE, Potions.LONG_SWIFTNESS);
-		registerPotionRecipe(Potions.SWIFTNESS, Items.GLOWSTONE_DUST, Potions.STRONG_SWIFTNESS);
-		registerPotionRecipe(Potions.AWKWARD, Items.PUFFERFISH, Potions.WATER_BREATHING);
-		registerPotionRecipe(Potions.WATER_BREATHING, Items.REDSTONE, Potions.LONG_WATER_BREATHING);
-		registerPotionRecipe(Potions.AWKWARD, Items.GLISTERING_MELON_SLICE, Potions.HEALING);
-		registerPotionRecipe(Potions.HEALING, Items.GLOWSTONE_DUST, Potions.STRONG_HEALING);
-		registerPotionRecipe(Potions.HEALING, Items.FERMENTED_SPIDER_EYE, Potions.HARMING);
-		registerPotionRecipe(Potions.STRONG_HEALING, Items.FERMENTED_SPIDER_EYE, Potions.STRONG_HARMING);
-		registerPotionRecipe(Potions.HARMING, Items.GLOWSTONE_DUST, Potions.STRONG_HARMING);
-		registerPotionRecipe(Potions.POISON, Items.FERMENTED_SPIDER_EYE, Potions.HARMING);
-		registerPotionRecipe(Potions.LONG_POISON, Items.FERMENTED_SPIDER_EYE, Potions.HARMING);
-		registerPotionRecipe(Potions.STRONG_POISON, Items.FERMENTED_SPIDER_EYE, Potions.STRONG_HARMING);
-		registerPotionRecipe(Potions.AWKWARD, Items.SPIDER_EYE, Potions.POISON);
-		registerPotionRecipe(Potions.POISON, Items.REDSTONE, Potions.LONG_POISON);
-		registerPotionRecipe(Potions.POISON, Items.GLOWSTONE_DUST, Potions.STRONG_POISON);
-		registerPotionRecipe(Potions.AWKWARD, Items.GHAST_TEAR, Potions.REGENERATION);
-		registerPotionRecipe(Potions.REGENERATION, Items.REDSTONE, Potions.LONG_REGENERATION);
-		registerPotionRecipe(Potions.REGENERATION, Items.GLOWSTONE_DUST, Potions.STRONG_REGENERATION);
-		registerPotionRecipe(Potions.AWKWARD, Items.BLAZE_POWDER, Potions.STRENGTH);
-		registerPotionRecipe(Potions.STRENGTH, Items.REDSTONE, Potions.LONG_STRENGTH);
-		registerPotionRecipe(Potions.STRENGTH, Items.GLOWSTONE_DUST, Potions.STRONG_STRENGTH);
-		registerPotionRecipe(Potions.WATER, Items.FERMENTED_SPIDER_EYE, Potions.WEAKNESS);
-		registerPotionRecipe(Potions.WEAKNESS, Items.REDSTONE, Potions.LONG_WEAKNESS);
-		registerPotionRecipe(Potions.AWKWARD, Items.PHANTOM_MEMBRANE, Potions.SLOW_FALLING);
-		registerPotionRecipe(Potions.SLOW_FALLING, Items.REDSTONE, Potions.LONG_SLOW_FALLING);
+		registerPotionType(Items.field_8574);
+		registerPotionType(Items.field_8436);
+		registerPotionType(Items.field_8150);
+		registerItemRecipe(Items.field_8574, Items.field_8054, Items.field_8436);
+		registerItemRecipe(Items.field_8436, Items.field_8613, Items.field_8150);
+		registerPotionRecipe(Potions.field_8991, Items.field_8597, Potions.field_8967);
+		registerPotionRecipe(Potions.field_8991, Items.field_8070, Potions.field_8967);
+		registerPotionRecipe(Potions.field_8991, Items.field_8073, Potions.field_8967);
+		registerPotionRecipe(Potions.field_8991, Items.field_8183, Potions.field_8967);
+		registerPotionRecipe(Potions.field_8991, Items.field_8680, Potions.field_8967);
+		registerPotionRecipe(Potions.field_8991, Items.field_8479, Potions.field_8967);
+		registerPotionRecipe(Potions.field_8991, Items.field_8135, Potions.field_8967);
+		registerPotionRecipe(Potions.field_8991, Items.field_8601, Potions.field_8985);
+		registerPotionRecipe(Potions.field_8991, Items.field_8725, Potions.field_8967);
+		registerPotionRecipe(Potions.field_8991, Items.field_8790, Potions.field_8999);
+		registerPotionRecipe(Potions.field_8999, Items.field_8071, Potions.field_8968);
+		registerPotionRecipe(Potions.field_8968, Items.field_8725, Potions.field_8981);
+		registerPotionRecipe(Potions.field_8968, Items.field_8711, Potions.field_8997);
+		registerPotionRecipe(Potions.field_8981, Items.field_8711, Potions.field_9000);
+		registerPotionRecipe(Potions.field_8997, Items.field_8725, Potions.field_9000);
+		registerPotionRecipe(Potions.field_8999, Items.field_8135, Potions.field_8987);
+		registerPotionRecipe(Potions.field_8987, Items.field_8725, Potions.field_8969);
+		registerPotionRecipe(Potions.field_8999, Items.field_8073, Potions.field_8979);
+		registerPotionRecipe(Potions.field_8979, Items.field_8725, Potions.field_8971);
+		registerPotionRecipe(Potions.field_8979, Items.field_8601, Potions.field_8998);
+		registerPotionRecipe(Potions.field_8979, Items.field_8711, Potions.field_8996);
+		registerPotionRecipe(Potions.field_8971, Items.field_8711, Potions.field_8989);
+		registerPotionRecipe(Potions.field_8996, Items.field_8725, Potions.field_8989);
+		registerPotionRecipe(Potions.field_8996, Items.field_8601, Potions.field_8976);
+		registerPotionRecipe(Potions.field_8999, Items.field_8090, Potions.field_8990);
+		registerPotionRecipe(Potions.field_8990, Items.field_8725, Potions.field_8988);
+		registerPotionRecipe(Potions.field_8990, Items.field_8601, Potions.field_8977);
+		registerPotionRecipe(Potions.field_9005, Items.field_8711, Potions.field_8996);
+		registerPotionRecipe(Potions.field_8983, Items.field_8711, Potions.field_8989);
+		registerPotionRecipe(Potions.field_8999, Items.field_8479, Potions.field_9005);
+		registerPotionRecipe(Potions.field_9005, Items.field_8725, Potions.field_8983);
+		registerPotionRecipe(Potions.field_9005, Items.field_8601, Potions.field_8966);
+		registerPotionRecipe(Potions.field_8999, Items.field_8323, Potions.field_8994);
+		registerPotionRecipe(Potions.field_8994, Items.field_8725, Potions.field_9001);
+		registerPotionRecipe(Potions.field_8999, Items.field_8597, Potions.field_8963);
+		registerPotionRecipe(Potions.field_8963, Items.field_8601, Potions.field_8980);
+		registerPotionRecipe(Potions.field_8963, Items.field_8711, Potions.field_9004);
+		registerPotionRecipe(Potions.field_8980, Items.field_8711, Potions.field_8973);
+		registerPotionRecipe(Potions.field_9004, Items.field_8601, Potions.field_8973);
+		registerPotionRecipe(Potions.field_8982, Items.field_8711, Potions.field_9004);
+		registerPotionRecipe(Potions.field_9002, Items.field_8711, Potions.field_9004);
+		registerPotionRecipe(Potions.field_8972, Items.field_8711, Potions.field_8973);
+		registerPotionRecipe(Potions.field_8999, Items.field_8680, Potions.field_8982);
+		registerPotionRecipe(Potions.field_8982, Items.field_8725, Potions.field_9002);
+		registerPotionRecipe(Potions.field_8982, Items.field_8601, Potions.field_8972);
+		registerPotionRecipe(Potions.field_8999, Items.field_8070, Potions.field_8986);
+		registerPotionRecipe(Potions.field_8986, Items.field_8725, Potions.field_9003);
+		registerPotionRecipe(Potions.field_8986, Items.field_8601, Potions.field_8992);
+		registerPotionRecipe(Potions.field_8999, Items.field_8183, Potions.field_8978);
+		registerPotionRecipe(Potions.field_8978, Items.field_8725, Potions.field_8965);
+		registerPotionRecipe(Potions.field_8978, Items.field_8601, Potions.field_8993);
+		registerPotionRecipe(Potions.field_8991, Items.field_8711, Potions.field_8975);
+		registerPotionRecipe(Potions.field_8975, Items.field_8725, Potions.field_8970);
+		registerPotionRecipe(Potions.field_8999, Items.field_8614, Potions.field_8974);
+		registerPotionRecipe(Potions.field_8974, Items.field_8725, Potions.field_8964);
 	}
 
 	private static void registerItemRecipe(Item input, Item ingredient, Item output) {

@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
 
-public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends AbstractProperty<T> {
+public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Property<T> {
 	private final ImmutableSet<T> values;
 	private final Map<String, T> byName = Maps.<String, T>newHashMap();
 
@@ -40,16 +40,16 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 		return Optional.ofNullable(this.byName.get(name));
 	}
 
-	public String name(T enum_) {
+	public String method_11846(T enum_) {
 		return enum_.asString();
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o instanceof EnumProperty && super.equals(o)) {
-			EnumProperty<?> enumProperty = (EnumProperty<?>)o;
+		} else if (object instanceof EnumProperty && super.equals(object)) {
+			EnumProperty<?> enumProperty = (EnumProperty<?>)object;
 			return this.values.equals(enumProperty.values) && this.byName.equals(enumProperty.byName);
 		} else {
 			return false;
@@ -63,10 +63,23 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 		return 31 * i + this.byName.hashCode();
 	}
 
+	/**
+	 * Creates an enum property.
+	 * 
+	 * @param name the name of this property
+	 * @param type the type this property contains
+	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type) {
 		return of(name, type, Predicates.alwaysTrue());
 	}
 
+	/**
+	 * Creates an enum property.
+	 * 
+	 * @param name the name of this property
+	 * @param type the type this property contains
+	 * @param filter a filter that specifies if a value is allowed
+	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Predicate<T> filter) {
 		return of(name, type, (Collection<T>)Arrays.stream(type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
 	}
@@ -75,6 +88,13 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 		return of(name, type, Lists.<T>newArrayList(values));
 	}
 
+	/**
+	 * Creates an enum property.
+	 * 
+	 * @param name the name of this property
+	 * @param type the type this property contains
+	 * @param values the values this property could contain
+	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Collection<T> values) {
 		return new EnumProperty<>(name, type, values);
 	}

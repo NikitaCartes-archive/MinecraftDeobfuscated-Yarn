@@ -11,7 +11,6 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
@@ -19,17 +18,6 @@ import net.minecraft.world.World;
 public class ShieldItem extends Item {
 	public ShieldItem(Item.Settings settings) {
 		super(settings);
-		this.addPropertyGetter(new Identifier("blocking"), (stack, world, entity) -> {
-			if (entity != null && entity.isBlocking()) {
-				if (entity.getActiveItem() == stack) {
-					return 1.0F;
-				} else {
-					return !entity.isUsingItem() && entity.getStackInHand(Hand.OFF_HAND) == stack ? 1.0F : 0.0F;
-				}
-			} else {
-				return 0.0F;
-			}
-		});
 		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
 	}
 
@@ -46,7 +34,7 @@ public class ShieldItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.BLOCK;
+		return UseAction.field_8949;
 	}
 
 	@Override
@@ -63,7 +51,7 @@ public class ShieldItem extends Item {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return ItemTags.PLANKS.contains(ingredient.getItem()) || super.canRepair(stack, ingredient);
+		return ItemTags.field_15537.contains(ingredient.getItem()) || super.canRepair(stack, ingredient);
 	}
 
 	public static DyeColor getColor(ItemStack stack) {

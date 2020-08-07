@@ -1,36 +1,28 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class RandomBooleanFeatureConfig implements FeatureConfig {
-	public final ConfiguredFeature<?, ?> featureTrue;
-	public final ConfiguredFeature<?, ?> featureFalse;
+	public static final Codec<RandomBooleanFeatureConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					ConfiguredFeature.CODEC.fieldOf("feature_true").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureTrue),
+					ConfiguredFeature.CODEC.fieldOf("feature_false").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureFalse)
+				)
+				.apply(instance, RandomBooleanFeatureConfig::new)
+	);
+	public final Supplier<ConfiguredFeature<?, ?>> featureTrue;
+	public final Supplier<ConfiguredFeature<?, ?>> featureFalse;
 
-	public RandomBooleanFeatureConfig(ConfiguredFeature<?, ?> configuredFeature, ConfiguredFeature<?, ?> configuredFeature2) {
-		this.featureTrue = configuredFeature;
-		this.featureFalse = configuredFeature2;
+	public RandomBooleanFeatureConfig(Supplier<ConfiguredFeature<?, ?>> supplier, Supplier<ConfiguredFeature<?, ?>> supplier2) {
+		this.featureTrue = supplier;
+		this.featureFalse = supplier2;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(
-					ops.createString("feature_true"),
-					this.featureTrue.serialize(ops).getValue(),
-					ops.createString("feature_false"),
-					this.featureFalse.serialize(ops).getValue()
-				)
-			)
-		);
-	}
-
-	public static <T> RandomBooleanFeatureConfig deserialize(Dynamic<T> dynamic) {
-		ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeature.deserialize(dynamic.get("feature_true").orElseEmptyMap());
-		ConfiguredFeature<?, ?> configuredFeature2 = ConfiguredFeature.deserialize(dynamic.get("feature_false").orElseEmptyMap());
-		return new RandomBooleanFeatureConfig(configuredFeature, configuredFeature2);
+	public Stream<ConfiguredFeature<?, ?>> method_30649() {
+		return Stream.concat(((ConfiguredFeature)this.featureTrue.get()).method_30648(), ((ConfiguredFeature)this.featureFalse.get()).method_30648());
 	}
 }

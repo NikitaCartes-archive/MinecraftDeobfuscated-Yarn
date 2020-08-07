@@ -10,8 +10,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.math.Vec3d;
 
 public class DamageSourcePropertiesLootCondition implements LootCondition {
@@ -22,33 +21,34 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.POSITION, LootContextParameters.DAMAGE_SOURCE);
+	public LootConditionType getType() {
+		return LootConditionTypes.field_25246;
 	}
 
-	public boolean test(LootContext lootContext) {
-		DamageSource damageSource = lootContext.get(LootContextParameters.DAMAGE_SOURCE);
-		BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
-		return blockPos != null && damageSource != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), damageSource);
+	@Override
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_24424, LootContextParameters.field_1231);
+	}
+
+	public boolean method_834(LootContext lootContext) {
+		DamageSource damageSource = lootContext.get(LootContextParameters.field_1231);
+		Vec3d vec3d = lootContext.get(LootContextParameters.field_24424);
+		return vec3d != null && damageSource != null && this.predicate.test(lootContext.getWorld(), vec3d, damageSource);
 	}
 
 	public static LootCondition.Builder builder(DamageSourcePredicate.Builder builder) {
 		return () -> new DamageSourcePropertiesLootCondition(builder.build());
 	}
 
-	public static class Factory extends LootCondition.Factory<DamageSourcePropertiesLootCondition> {
-		protected Factory() {
-			super(new Identifier("damage_source_properties"), DamageSourcePropertiesLootCondition.class);
-		}
-
-		public void toJson(
+	public static class Serializer implements JsonSerializer<DamageSourcePropertiesLootCondition> {
+		public void method_838(
 			JsonObject jsonObject, DamageSourcePropertiesLootCondition damageSourcePropertiesLootCondition, JsonSerializationContext jsonSerializationContext
 		) {
-			jsonObject.add("predicate", damageSourcePropertiesLootCondition.predicate.serialize());
+			jsonObject.add("predicate", damageSourcePropertiesLootCondition.predicate.toJson());
 		}
 
-		public DamageSourcePropertiesLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.deserialize(jsonObject.get("predicate"));
+		public DamageSourcePropertiesLootCondition method_839(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.fromJson(jsonObject.get("predicate"));
 			return new DamageSourcePropertiesLootCondition(damageSourcePredicate);
 		}
 	}

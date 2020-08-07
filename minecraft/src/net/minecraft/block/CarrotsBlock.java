@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
@@ -21,18 +20,18 @@ public class CarrotsBlock extends CropBlock {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0)
 	};
 
-	public CarrotsBlock(Block.Settings settings) {
+	public CarrotsBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	protected ItemConvertible getSeedsItem() {
-		return Items.CARROT;
+		return Items.field_8179;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return AGE_TO_SHAPE[state.get(this.getAgeProperty())];
 	}
 }

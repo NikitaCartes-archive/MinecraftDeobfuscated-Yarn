@@ -1,8 +1,8 @@
 package net.minecraft.resource;
 
 public enum ResourceType {
-	CLIENT_RESOURCES("assets"),
-	SERVER_DATA("data");
+	field_14188("assets"),
+	field_14190("data");
 
 	private final String directory;
 

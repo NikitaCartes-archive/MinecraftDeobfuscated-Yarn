@@ -1,8 +1,9 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -16,26 +17,32 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 		return ID;
 	}
 
-	public RecipeUnlockedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public RecipeUnlockedCriterion.Conditions method_9106(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe"));
-		return new RecipeUnlockedCriterion.Conditions(identifier);
+		return new RecipeUnlockedCriterion.Conditions(extended, identifier);
 	}
 
 	public void trigger(ServerPlayerEntity player, Recipe<?> recipe) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(recipe));
+		this.test(player, conditions -> conditions.matches(recipe));
+	}
+
+	public static RecipeUnlockedCriterion.Conditions create(Identifier id) {
+		return new RecipeUnlockedCriterion.Conditions(EntityPredicate.Extended.EMPTY, id);
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Identifier recipe;
 
-		public Conditions(Identifier identifier) {
-			super(RecipeUnlockedCriterion.ID);
-			this.recipe = identifier;
+		public Conditions(EntityPredicate.Extended player, Identifier recipe) {
+			super(RecipeUnlockedCriterion.ID, player);
+			this.recipe = recipe;
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			jsonObject.addProperty("recipe", this.recipe.toString());
 			return jsonObject;
 		}

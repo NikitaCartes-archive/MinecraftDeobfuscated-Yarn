@@ -1,7 +1,7 @@
 package net.minecraft.util.shape;
 
 import java.util.BitSet;
-import net.minecraft.util.BooleanBiFunction;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.Direction;
 
 public final class BitSetVoxelSet extends VoxelSet {
@@ -13,8 +13,8 @@ public final class BitSetVoxelSet extends VoxelSet {
 	private int yMax;
 	private int zMax;
 
-	public BitSetVoxelSet(int xSize, int ySize, int zSize) {
-		this(xSize, ySize, zSize, xSize, ySize, zSize, 0, 0, 0);
+	public BitSetVoxelSet(int i, int j, int k) {
+		this(i, j, k, i, j, k, 0, 0, 0);
 	}
 
 	public BitSetVoxelSet(int xMask, int yMask, int zMask, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
@@ -46,12 +46,12 @@ public final class BitSetVoxelSet extends VoxelSet {
 			}
 		}
 
-		this.xMin = other.getMin(Direction.Axis.X);
-		this.yMin = other.getMin(Direction.Axis.Y);
-		this.zMin = other.getMin(Direction.Axis.Z);
-		this.xMax = other.getMax(Direction.Axis.X);
-		this.yMax = other.getMax(Direction.Axis.Y);
-		this.zMax = other.getMax(Direction.Axis.Z);
+		this.xMin = other.getMin(Direction.Axis.field_11048);
+		this.yMin = other.getMin(Direction.Axis.field_11052);
+		this.zMin = other.getMin(Direction.Axis.field_11051);
+		this.xMax = other.getMax(Direction.Axis.field_11048);
+		this.yMax = other.getMax(Direction.Axis.field_11052);
+		this.zMax = other.getMax(Direction.Axis.field_11051);
 	}
 
 	protected int getIndex(int x, int y, int z) {

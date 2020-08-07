@@ -46,12 +46,12 @@ public class ClickEvent {
 	}
 
 	public static enum Action {
-		OPEN_URL("open_url", true),
-		OPEN_FILE("open_file", false),
-		RUN_COMMAND("run_command", true),
-		SUGGEST_COMMAND("suggest_command", true),
-		CHANGE_PAGE("change_page", true),
-		COPY_TO_CLIPBOARD("copy_to_clipboard", true);
+		field_11749("open_url", true),
+		field_11746("open_file", false),
+		field_11750("run_command", true),
+		field_11745("suggest_command", true),
+		field_11748("change_page", true),
+		field_21462("copy_to_clipboard", true);
 
 		private static final Map<String, ClickEvent.Action> BY_NAME = (Map<String, ClickEvent.Action>)Arrays.stream(values())
 			.collect(Collectors.toMap(ClickEvent.Action::getName, a -> a));

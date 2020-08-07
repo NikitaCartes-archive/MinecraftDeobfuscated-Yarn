@@ -13,12 +13,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class EndGatewayBlock extends BlockWithEntity {
-	protected EndGatewayBlock(Block.Settings settings) {
+	protected EndGatewayBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new EndGatewayBlockEntity();
 	}
 
@@ -30,12 +30,12 @@ public class EndGatewayBlock extends BlockWithEntity {
 			int i = ((EndGatewayBlockEntity)blockEntity).getDrawnSidesCount();
 
 			for (int j = 0; j < i; j++) {
-				double d = (double)pos.getX() + (double)random.nextFloat();
-				double e = (double)pos.getY() + (double)random.nextFloat();
-				double f = (double)pos.getZ() + (double)random.nextFloat();
-				double g = ((double)random.nextFloat() - 0.5) * 0.5;
-				double h = ((double)random.nextFloat() - 0.5) * 0.5;
-				double k = ((double)random.nextFloat() - 0.5) * 0.5;
+				double d = (double)pos.getX() + random.nextDouble();
+				double e = (double)pos.getY() + random.nextDouble();
+				double f = (double)pos.getZ() + random.nextDouble();
+				double g = (random.nextDouble() - 0.5) * 0.5;
+				double h = (random.nextDouble() - 0.5) * 0.5;
+				double k = (random.nextDouble() - 0.5) * 0.5;
 				int l = random.nextInt(2) * 2 - 1;
 				if (random.nextBoolean()) {
 					f = (double)pos.getZ() + 0.5 + 0.25 * (double)l;
@@ -45,7 +45,7 @@ public class EndGatewayBlock extends BlockWithEntity {
 					g = (double)(random.nextFloat() * 2.0F * (float)l);
 				}
 
-				world.addParticle(ParticleTypes.PORTAL, d, e, f, g, h, k);
+				world.addParticle(ParticleTypes.field_11214, d, e, f, g, h, k);
 			}
 		}
 	}

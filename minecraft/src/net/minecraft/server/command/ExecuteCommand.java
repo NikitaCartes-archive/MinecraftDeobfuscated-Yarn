@@ -27,19 +27,19 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.DataCommandObject;
-import net.minecraft.command.arguments.BlockPosArgumentType;
-import net.minecraft.command.arguments.BlockPredicateArgumentType;
-import net.minecraft.command.arguments.DimensionArgumentType;
-import net.minecraft.command.arguments.EntityAnchorArgumentType;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.IdentifierArgumentType;
-import net.minecraft.command.arguments.NbtPathArgumentType;
-import net.minecraft.command.arguments.NumberRangeArgumentType;
-import net.minecraft.command.arguments.ObjectiveArgumentType;
-import net.minecraft.command.arguments.RotationArgumentType;
-import net.minecraft.command.arguments.ScoreHolderArgumentType;
-import net.minecraft.command.arguments.SwizzleArgumentType;
-import net.minecraft.command.arguments.Vec3ArgumentType;
+import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.BlockPredicateArgumentType;
+import net.minecraft.command.argument.DimensionArgumentType;
+import net.minecraft.command.argument.EntityAnchorArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.argument.NbtPathArgumentType;
+import net.minecraft.command.argument.NumberRangeArgumentType;
+import net.minecraft.command.argument.ObjectiveArgumentType;
+import net.minecraft.command.argument.RotationArgumentType;
+import net.minecraft.command.argument.ScoreHolderArgumentType;
+import net.minecraft.command.argument.SwizzleArgumentType;
+import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.loot.condition.LootCondition;
@@ -78,7 +78,7 @@ public class ExecuteCommand {
 			resultConsumer.onCommandComplete(commandContext, bl, i);
 			resultConsumer2.onCommandComplete(commandContext, bl, i);
 		};
-	private static final SuggestionProvider<ServerCommandSource> field_20852 = (commandContext, suggestionsBuilder) -> {
+	private static final SuggestionProvider<ServerCommandSource> LOOT_CONDITIONS = (commandContext, suggestionsBuilder) -> {
 		LootConditionManager lootConditionManager = commandContext.getSource().getMinecraftServer().getPredicateManager();
 		return CommandSource.suggestIdentifiers(lootConditionManager.getIds(), suggestionsBuilder);
 	};
@@ -106,7 +106,7 @@ public class ExecuteCommand {
 					List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
 					for (Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-						list.add(commandContext.getSource().withWorld((ServerWorld)entity.world).withPosition(entity.getPosVector()).withRotation(entity.getRotationClient()));
+						list.add(commandContext.getSource().withWorld((ServerWorld)entity.world).withPosition(entity.getPos()).withRotation(entity.getRotationClient()));
 					}
 
 					return list;
@@ -124,14 +124,14 @@ public class ExecuteCommand {
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
 											.withPosition(Vec3ArgumentType.getVec3(commandContext, "pos"))
-											.withEntityAnchor(EntityAnchorArgumentType.EntityAnchor.FEET)
+											.withEntityAnchor(EntityAnchorArgumentType.EntityAnchor.field_9853)
 								)
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, commandContext -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
 							for (Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-								list.add(commandContext.getSource().withPosition(entity.getPosVector()));
+								list.add(commandContext.getSource().withPosition(entity.getPos()));
 							}
 
 							return list;
@@ -205,9 +205,7 @@ public class ExecuteCommand {
 						.then(
 							CommandManager.argument("dimension", DimensionArgumentType.dimension())
 								.redirect(
-									literalCommandNode,
-									commandContext -> commandContext.getSource()
-											.withWorld(commandContext.getSource().getMinecraftServer().getWorld(DimensionArgumentType.getDimensionArgument(commandContext, "dimension")))
+									literalCommandNode, commandContext -> commandContext.getSource().withWorld(DimensionArgumentType.getDimensionArgument(commandContext, "dimension"))
 								)
 						)
 				)
@@ -240,14 +238,14 @@ public class ExecuteCommand {
 			CommandManager.literal("bossbar")
 				.then(
 					CommandManager.argument("id", IdentifierArgumentType.identifier())
-						.suggests(BossBarCommand.suggestionProvider)
+						.suggests(BossBarCommand.SUGGESTION_PROVIDER)
 						.then(
 							CommandManager.literal("value")
-								.redirect(node, commandContext -> executeStoreBossbar(commandContext.getSource(), BossBarCommand.createBossBar(commandContext), true, requestResult))
+								.redirect(node, commandContext -> executeStoreBossbar(commandContext.getSource(), BossBarCommand.getBossBar(commandContext), true, requestResult))
 						)
 						.then(
 							CommandManager.literal("max")
-								.redirect(node, commandContext -> executeStoreBossbar(commandContext.getSource(), BossBarCommand.createBossBar(commandContext), false, requestResult))
+								.redirect(node, commandContext -> executeStoreBossbar(commandContext.getSource(), BossBarCommand.getBossBar(commandContext), false, requestResult))
 						)
 				)
 		);
@@ -544,7 +542,7 @@ public class ExecuteCommand {
 					.then(
 						addConditionLogic(
 							root,
-							CommandManager.argument("predicate", IdentifierArgumentType.identifier()).suggests(field_20852),
+							CommandManager.argument("predicate", IdentifierArgumentType.identifier()).suggests(LOOT_CONDITIONS),
 							positive,
 							commandContext -> testLootCondition(commandContext.getSource(), IdentifierArgumentType.method_23727(commandContext, "predicate"))
 						)
@@ -625,9 +623,9 @@ public class ExecuteCommand {
 	private static boolean testLootCondition(ServerCommandSource serverCommandSource, LootCondition lootCondition) {
 		ServerWorld serverWorld = serverCommandSource.getWorld();
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
-			.put(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()))
-			.putNullable(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity());
-		return lootCondition.test(builder.build(LootContextTypes.COMMAND));
+			.parameter(LootContextParameters.field_24424, serverCommandSource.getPosition())
+			.optionalParameter(LootContextParameters.field_1226, serverCommandSource.getEntity());
+		return lootCondition.test(builder.build(LootContextTypes.field_20761));
 	}
 
 	private static Collection<ServerCommandSource> getSourceOrEmptyForConditionFork(CommandContext<ServerCommandSource> context, boolean positive, boolean value) {
@@ -707,7 +705,7 @@ public class ExecuteCommand {
 						BlockPos blockPos2 = new BlockPos(m, l, k);
 						BlockPos blockPos3 = blockPos2.add(blockPos);
 						BlockState blockState = world.getBlockState(blockPos2);
-						if (!masked || blockState.getBlock() != Blocks.AIR) {
+						if (!masked || !blockState.isOf(Blocks.field_10124)) {
 							if (blockState != world.getBlockState(blockPos3)) {
 								return OptionalInt.empty();
 							}

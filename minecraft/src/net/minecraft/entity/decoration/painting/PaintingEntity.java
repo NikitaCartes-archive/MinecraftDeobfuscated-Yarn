@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -14,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -30,14 +30,14 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	public PaintingEntity(World world, BlockPos pos, Direction direction) {
-		super(EntityType.PAINTING, world, pos);
+		super(EntityType.field_6120, world, pos);
 		List<PaintingMotive> list = Lists.<PaintingMotive>newArrayList();
 		int i = 0;
 
-		for (PaintingMotive paintingMotive : Registry.MOTIVE) {
+		for (PaintingMotive paintingMotive : Registry.PAINTING_MOTIVE) {
 			this.motive = paintingMotive;
 			this.setFacing(direction);
-			if (this.method_6888()) {
+			if (this.canStayAttached()) {
 				list.add(paintingMotive);
 				int j = paintingMotive.getWidth() * paintingMotive.getHeight();
 				if (j > i) {
@@ -63,22 +63,25 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PaintingEntity(World world, BlockPos blockPos, Direction direction, PaintingMotive paintingMotive) {
-		this(world, blockPos, direction);
-		this.motive = paintingMotive;
+	public PaintingEntity(World world, BlockPos pos, Direction direction, PaintingMotive motive) {
+		this(world, pos, direction);
+		this.motive = motive;
 		this.setFacing(direction);
 	}
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
-		tag.putString("Motive", Registry.MOTIVE.getId(this.motive).toString());
+		tag.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
+		tag.putByte("Facing", (byte)this.facing.getHorizontal());
 		super.writeCustomDataToTag(tag);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
-		this.motive = Registry.MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
+		this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
+		this.facing = Direction.fromHorizontal(tag.getByte("Facing"));
 		super.readCustomDataFromTag(tag);
+		this.setFacing(this.facing);
 	}
 
 	@Override
@@ -93,8 +96,8 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
+		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+			this.playSound(SoundEvents.field_14809, 1.0F, 1.0F);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
 				if (playerEntity.abilities.creativeMode) {
@@ -102,25 +105,25 @@ public class PaintingEntity extends AbstractDecorationEntity {
 				}
 			}
 
-			this.dropItem(Items.PAINTING);
+			this.dropItem(Items.field_8892);
 		}
 	}
 
 	@Override
 	public void onPlace() {
-		this.playSound(SoundEvents.ENTITY_PAINTING_PLACE, 1.0F, 1.0F);
+		this.playSound(SoundEvents.field_14875, 1.0F, 1.0F);
 	}
 
 	@Override
-	public void setPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-		this.setPosition(x, y, z);
+	public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
+		this.updatePosition(x, y, z);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-		BlockPos blockPos = this.blockPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
-		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+		BlockPos blockPos = this.attachmentPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
+		this.updatePosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}
 
 	@Override

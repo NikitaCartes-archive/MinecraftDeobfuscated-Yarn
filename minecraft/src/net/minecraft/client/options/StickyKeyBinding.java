@@ -10,7 +10,7 @@ public class StickyKeyBinding extends KeyBinding {
 	private final BooleanSupplier toggleGetter;
 
 	public StickyKeyBinding(String id, int code, String category, BooleanSupplier toggleGetter) {
-		super(id, InputUtil.Type.KEYSYM, code, category);
+		super(id, InputUtil.Type.field_1668, code, category);
 		this.toggleGetter = toggleGetter;
 	}
 

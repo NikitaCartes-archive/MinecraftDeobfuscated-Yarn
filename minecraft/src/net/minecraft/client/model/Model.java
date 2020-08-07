@@ -19,12 +19,12 @@ public abstract class Model implements Consumer<ModelPart> {
 		this.layerFactory = layerFactory;
 	}
 
-	public void accept(ModelPart modelPart) {
+	public void method_22696(ModelPart modelPart) {
 	}
 
 	public final RenderLayer getLayer(Identifier texture) {
 		return (RenderLayer)this.layerFactory.apply(texture);
 	}
 
-	public abstract void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha);
+	public abstract void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha);
 }

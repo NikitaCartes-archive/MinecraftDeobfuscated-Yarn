@@ -8,6 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
@@ -17,19 +19,21 @@ public class Team extends AbstractTeam {
 	private final String name;
 	private final Set<String> playerList = Sets.<String>newHashSet();
 	private Text displayName;
-	private Text prefix = new LiteralText("");
-	private Text suffix = new LiteralText("");
+	private Text prefix = LiteralText.EMPTY;
+	private Text suffix = LiteralText.EMPTY;
 	private boolean friendlyFire = true;
 	private boolean showFriendlyInvisibles = true;
-	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
-	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
-	private Formatting color = Formatting.RESET;
-	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.ALWAYS;
+	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
+	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
+	private Formatting color = Formatting.field_1070;
+	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.field_1437;
+	private final Style field_24195;
 
 	public Team(Scoreboard scoreboard, String name) {
 		this.scoreboard = scoreboard;
 		this.name = name;
 		this.displayName = new LiteralText(name);
+		this.field_24195 = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, new LiteralText(name)));
 	}
 
 	@Override
@@ -41,18 +45,14 @@ public class Team extends AbstractTeam {
 		return this.displayName;
 	}
 
-	public Text getFormattedName() {
-		Text text = Texts.bracketed(
-			this.displayName
-				.deepCopy()
-				.styled(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(this.name))))
-		);
+	public MutableText getFormattedName() {
+		MutableText mutableText = Texts.bracketed(this.displayName.shallowCopy().fillStyle(this.field_24195));
 		Formatting formatting = this.getColor();
-		if (formatting != Formatting.RESET) {
-			text.formatted(formatting);
+		if (formatting != Formatting.field_1070) {
+			mutableText.formatted(formatting);
 		}
 
-		return text;
+		return mutableText;
 	}
 
 	public void setDisplayName(Text text) {
@@ -65,7 +65,7 @@ public class Team extends AbstractTeam {
 	}
 
 	public void setPrefix(@Nullable Text text) {
-		this.prefix = (Text)(text == null ? new LiteralText("") : text.deepCopy());
+		this.prefix = text == null ? LiteralText.EMPTY : text;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -74,7 +74,7 @@ public class Team extends AbstractTeam {
 	}
 
 	public void setSuffix(@Nullable Text text) {
-		this.suffix = (Text)(text == null ? new LiteralText("") : text.deepCopy());
+		this.suffix = text == null ? LiteralText.EMPTY : text;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -88,18 +88,18 @@ public class Team extends AbstractTeam {
 	}
 
 	@Override
-	public Text modifyText(Text text) {
-		Text text2 = new LiteralText("").append(this.prefix).append(text).append(this.suffix);
+	public MutableText modifyText(Text text) {
+		MutableText mutableText = new LiteralText("").append(this.prefix).append(text).append(this.suffix);
 		Formatting formatting = this.getColor();
-		if (formatting != Formatting.RESET) {
-			text2.formatted(formatting);
+		if (formatting != Formatting.field_1070) {
+			mutableText.formatted(formatting);
 		}
 
-		return text2;
+		return mutableText;
 	}
 
-	public static Text modifyText(@Nullable AbstractTeam abstractTeam, Text text) {
-		return abstractTeam == null ? text.deepCopy() : abstractTeam.modifyText(text);
+	public static MutableText modifyText(@Nullable AbstractTeam abstractTeam, Text text) {
+		return abstractTeam == null ? text.shallowCopy() : abstractTeam.modifyText(text);
 	}
 
 	@Override

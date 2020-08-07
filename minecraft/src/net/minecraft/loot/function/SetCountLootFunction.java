@@ -8,7 +8,6 @@ import net.minecraft.loot.LootTableRange;
 import net.minecraft.loot.LootTableRanges;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
 	private final LootTableRange countRange;
@@ -16,6 +15,11 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 	private SetCountLootFunction(LootCondition[] conditions, LootTableRange countRange) {
 		super(conditions);
 		this.countRange = countRange;
+	}
+
+	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25214;
 	}
 
 	@Override
@@ -28,17 +32,13 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new SetCountLootFunction(conditions, countRange));
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetCountLootFunction> {
-		protected Factory() {
-			super(new Identifier("set_count"), SetCountLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setCountLootFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetCountLootFunction> {
+		public void method_623(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, setCountLootFunction, jsonSerializationContext);
 			jsonObject.add("count", LootTableRanges.toJson(setCountLootFunction.countRange, jsonSerializationContext));
 		}
 
-		public SetCountLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetCountLootFunction method_622(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootTableRange lootTableRange = LootTableRanges.fromJson(jsonObject.get("count"), jsonDeserializationContext);
 			return new SetCountLootFunction(lootConditions, lootTableRange);
 		}

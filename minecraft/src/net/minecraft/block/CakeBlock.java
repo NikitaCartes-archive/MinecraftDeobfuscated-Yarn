@@ -1,6 +1,6 @@
 package net.minecraft.block;
 
-import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
@@ -14,8 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class CakeBlock extends Block {
@@ -30,13 +30,13 @@ public class CakeBlock extends Block {
 		Block.createCuboidShape(13.0, 0.0, 1.0, 15.0, 8.0, 15.0)
 	};
 
-	protected CakeBlock(Block.Settings settings) {
+	protected CakeBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(BITES, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return BITES_TO_SHAPE[state.get(BITES)];
 	}
 
@@ -44,7 +44,7 @@ public class CakeBlock extends Block {
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			if (this.tryEat(world, pos, state, player) == ActionResult.SUCCESS) {
+			if (this.tryEat(world, pos, state, player).isAccepted()) {
 				return ActionResult.SUCCESS;
 			}
 
@@ -56,11 +56,11 @@ public class CakeBlock extends Block {
 		return this.tryEat(world, pos, state, player);
 	}
 
-	private ActionResult tryEat(IWorld world, BlockPos pos, BlockState state, PlayerEntity player) {
+	private ActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!player.canConsume(false)) {
 			return ActionResult.PASS;
 		} else {
-			player.incrementStat(Stats.EAT_CAKE_SLICE);
+			player.incrementStat(Stats.field_15369);
 			player.getHungerManager().add(2, 0.1F);
 			int i = (Integer)state.get(BITES);
 			if (i < 6) {
@@ -74,15 +74,15 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing == Direction.DOWN && !state.canPlaceAt(world, pos)
-			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		return direction == Direction.field_11033 && !state.canPlaceAt(world, pos)
+			? Blocks.field_10124.getDefaultState()
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos.down()).getMaterial().isSolid();
+		return world.getBlockState(pos.method_10074()).getMaterial().isSolid();
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

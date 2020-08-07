@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -10,12 +11,14 @@ import net.minecraft.text.Text;
 public class GameInfoChatListener implements ClientChatListener {
 	private final MinecraftClient client;
 
-	public GameInfoChatListener(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public GameInfoChatListener(MinecraftClient client) {
+		this.client = client;
 	}
 
 	@Override
-	public void onChatMessage(MessageType messageType, Text message) {
-		this.client.inGameHud.setOverlayMessage(message, false);
+	public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
+		if (!this.client.shouldBlockMessages(senderUuid)) {
+			this.client.inGameHud.setOverlayMessage(message, false);
+		}
 	}
 }

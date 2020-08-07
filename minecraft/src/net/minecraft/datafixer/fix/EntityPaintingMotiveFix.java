@@ -3,9 +3,9 @@ package net.minecraft.datafixer.fix;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -23,8 +23,8 @@ public class EntityPaintingMotiveFix extends ChoiceFix {
 		super(outputSchema, changesType, "EntityPaintingMotiveFix", TypeReferences.ENTITY, "minecraft:painting");
 	}
 
-	public Dynamic<?> method_15723(Dynamic<?> dynamic) {
-		Optional<String> optional = dynamic.get("Motive").asString();
+	public Dynamic<?> renameMotive(Dynamic<?> dynamic) {
+		Optional<String> optional = dynamic.get("Motive").asString().result();
 		if (optional.isPresent()) {
 			String string = ((String)optional.get()).toLowerCase(Locale.ROOT);
 			return dynamic.set("Motive", dynamic.createString(new Identifier((String)RENAMED_MOTIVES.getOrDefault(string, string)).toString()));
@@ -34,7 +34,7 @@ public class EntityPaintingMotiveFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::method_15723);
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), this::renameMotive);
 	}
 }

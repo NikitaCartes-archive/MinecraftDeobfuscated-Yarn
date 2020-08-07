@@ -4,13 +4,13 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -18,9 +18,9 @@ import net.minecraft.world.World;
 
 public class EvokerFangsEntity extends Entity {
 	private int warmup;
-	private boolean field_7610;
+	private boolean startedAttack;
 	private int ticksLeft = 22;
-	private boolean hasAttacked;
+	private boolean playingAnimation;
 	private LivingEntity owner;
 	private UUID ownerUuid;
 
@@ -28,12 +28,12 @@ public class EvokerFangsEntity extends Entity {
 		super(entityType, world);
 	}
 
-	public EvokerFangsEntity(World world, double x, double y, double z, float f, int warmup, LivingEntity owner) {
-		this(EntityType.EVOKER_FANGS, world);
+	public EvokerFangsEntity(World world, double x, double y, double z, float yaw, int warmup, LivingEntity owner) {
+		this(EntityType.field_6060, world);
 		this.warmup = warmup;
 		this.setOwner(owner);
-		this.yaw = f * (180.0F / (float)Math.PI);
-		this.setPosition(x, y, z);
+		this.yaw = yaw * (180.0F / (float)Math.PI);
+		this.updatePosition(x, y, z);
 	}
 
 	@Override
@@ -60,8 +60,8 @@ public class EvokerFangsEntity extends Entity {
 	@Override
 	protected void readCustomDataFromTag(CompoundTag tag) {
 		this.warmup = tag.getInt("Warmup");
-		if (tag.containsUuid("OwnerUUID")) {
-			this.ownerUuid = tag.getUuid("OwnerUUID");
+		if (tag.containsUuid("Owner")) {
+			this.ownerUuid = tag.getUuid("Owner");
 		}
 	}
 
@@ -69,7 +69,7 @@ public class EvokerFangsEntity extends Entity {
 	protected void writeCustomDataToTag(CompoundTag tag) {
 		tag.putInt("Warmup", this.warmup);
 		if (this.ownerUuid != null) {
-			tag.putUuid("OwnerUUID", this.ownerUuid);
+			tag.putUuid("Owner", this.ownerUuid);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class EvokerFangsEntity extends Entity {
 	public void tick() {
 		super.tick();
 		if (this.world.isClient) {
-			if (this.hasAttacked) {
+			if (this.playingAnimation) {
 				this.ticksLeft--;
 				if (this.ticksLeft == 14) {
 					for (int i = 0; i < 12; i++) {
@@ -87,7 +87,7 @@ public class EvokerFangsEntity extends Entity {
 						double g = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
 						double h = 0.3 + this.random.nextDouble() * 0.3;
 						double j = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
-						this.world.addParticle(ParticleTypes.CRIT, d, e + 1.0, f, g, h, j);
+						this.world.addParticle(ParticleTypes.field_11205, d, e + 1.0, f, g, h, j);
 					}
 				}
 			}
@@ -98,9 +98,9 @@ public class EvokerFangsEntity extends Entity {
 				}
 			}
 
-			if (!this.field_7610) {
+			if (!this.startedAttack) {
 				this.world.sendEntityStatus(this, (byte)4);
-				this.field_7610 = true;
+				this.startedAttack = true;
 			}
 
 			if (--this.ticksLeft < 0) {
@@ -129,26 +129,17 @@ public class EvokerFangsEntity extends Entity {
 	public void handleStatus(byte status) {
 		super.handleStatus(status);
 		if (status == 4) {
-			this.hasAttacked = true;
+			this.playingAnimation = true;
 			if (!this.isSilent()) {
 				this.world
-					.playSound(
-						this.getX(),
-						this.getY(),
-						this.getZ(),
-						SoundEvents.ENTITY_EVOKER_FANGS_ATTACK,
-						this.getSoundCategory(),
-						1.0F,
-						this.random.nextFloat() * 0.2F + 0.85F,
-						false
-					);
+					.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.field_14692, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public float getAnimationProgress(float tickDelta) {
-		if (!this.hasAttacked) {
+		if (!this.playingAnimation) {
 			return 0.0F;
 		} else {
 			int i = this.ticksLeft - 2;

@@ -6,16 +6,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import net.minecraft.command.arguments.BlockPosArgumentType;
-import net.minecraft.command.arguments.ColumnPosArgumentType;
+import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.ColumnPosArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ColumnPos;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 public class ForceLoadCommand {
-	private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableText("commands.forceload.toobig", object, object2)
 	);
 	private static final Dynamic2CommandExceptionType QUERY_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
@@ -96,40 +97,42 @@ public class ForceLoadCommand {
 
 	private static int executeQuery(ServerCommandSource source, ColumnPos pos) throws CommandSyntaxException {
 		ChunkPos chunkPos = new ChunkPos(pos.x >> 4, pos.z >> 4);
-		DimensionType dimensionType = source.getWorld().getDimension().getType();
-		boolean bl = source.getMinecraftServer().getWorld(dimensionType).getForcedChunks().contains(chunkPos.toLong());
+		ServerWorld serverWorld = source.getWorld();
+		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
+		boolean bl = serverWorld.getForcedChunks().contains(chunkPos.toLong());
 		if (bl) {
-			source.sendFeedback(new TranslatableText("commands.forceload.query.success", chunkPos, dimensionType), false);
+			source.sendFeedback(new TranslatableText("commands.forceload.query.success", chunkPos, registryKey.getValue()), false);
 			return 1;
 		} else {
-			throw QUERY_FAILURE_EXCEPTION.create(chunkPos, dimensionType);
+			throw QUERY_FAILURE_EXCEPTION.create(chunkPos, registryKey.getValue());
 		}
 	}
 
 	private static int executeQuery(ServerCommandSource source) {
-		DimensionType dimensionType = source.getWorld().getDimension().getType();
-		LongSet longSet = source.getMinecraftServer().getWorld(dimensionType).getForcedChunks();
+		ServerWorld serverWorld = source.getWorld();
+		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
+		LongSet longSet = serverWorld.getForcedChunks();
 		int i = longSet.size();
 		if (i > 0) {
 			String string = Joiner.on(", ").join(longSet.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
 			if (i == 1) {
-				source.sendFeedback(new TranslatableText("commands.forceload.list.single", dimensionType, string), false);
+				source.sendFeedback(new TranslatableText("commands.forceload.list.single", registryKey.getValue(), string), false);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.forceload.list.multiple", i, dimensionType, string), false);
+				source.sendFeedback(new TranslatableText("commands.forceload.list.multiple", i, registryKey.getValue(), string), false);
 			}
 		} else {
-			source.sendError(new TranslatableText("commands.forceload.added.none", dimensionType));
+			source.sendError(new TranslatableText("commands.forceload.added.none", registryKey.getValue()));
 		}
 
 		return i;
 	}
 
 	private static int executeRemoveAll(ServerCommandSource source) {
-		DimensionType dimensionType = source.getWorld().getDimension().getType();
-		ServerWorld serverWorld = source.getMinecraftServer().getWorld(dimensionType);
+		ServerWorld serverWorld = source.getWorld();
+		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		LongSet longSet = serverWorld.getForcedChunks();
 		longSet.forEach(l -> serverWorld.setChunkForced(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
-		source.sendFeedback(new TranslatableText("commands.forceload.removed.all", dimensionType), true);
+		source.sendFeedback(new TranslatableText("commands.forceload.removed.all", registryKey.getValue()), true);
 		return 0;
 	}
 
@@ -145,10 +148,10 @@ public class ForceLoadCommand {
 			int p = l >> 4;
 			long q = ((long)(o - m) + 1L) * ((long)(p - n) + 1L);
 			if (q > 256L) {
-				throw TOOBIG_EXCEPTION.create(256, q);
+				throw TOO_BIG_EXCEPTION.create(256, q);
 			} else {
-				DimensionType dimensionType = source.getWorld().getDimension().getType();
-				ServerWorld serverWorld = source.getMinecraftServer().getWorld(dimensionType);
+				ServerWorld serverWorld = source.getWorld();
+				RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 				ChunkPos chunkPos = null;
 				int r = 0;
 
@@ -168,12 +171,12 @@ public class ForceLoadCommand {
 					throw (forceLoaded ? ADDED_FAILURE_EXCEPTION : REMOVED_FAILURE_EXCEPTION).create();
 				} else {
 					if (r == 1) {
-						source.sendFeedback(new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", chunkPos, dimensionType), true);
+						source.sendFeedback(new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", chunkPos, registryKey.getValue()), true);
 					} else {
 						ChunkPos chunkPos2 = new ChunkPos(m, n);
 						ChunkPos chunkPos3 = new ChunkPos(o, p);
 						source.sendFeedback(
-							new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", r, dimensionType, chunkPos2, chunkPos3), true
+							new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", r, registryKey.getValue(), chunkPos2, chunkPos3), true
 						);
 					}
 

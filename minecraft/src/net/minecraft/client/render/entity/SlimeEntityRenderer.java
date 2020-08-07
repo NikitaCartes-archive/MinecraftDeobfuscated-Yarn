@@ -12,19 +12,19 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/slime/slime.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/slime/slime.png");
 
 	public SlimeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SlimeEntityModel<>(16), 0.25F);
 		this.addFeature(new SlimeOverlayFeatureRenderer<>(this));
 	}
 
-	public void render(SlimeEntity slimeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		this.shadowSize = 0.25F * (float)slimeEntity.getSize();
-		super.render(slimeEntity, f, g, matrixStack, vertexConsumerProvider, i);
+	public void method_4117(SlimeEntity slimeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		this.shadowRadius = 0.25F * (float)slimeEntity.getSize();
+		super.method_4072(slimeEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	protected void scale(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {
+	protected void method_4118(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {
 		float g = 0.999F;
 		matrixStack.scale(0.999F, 0.999F, 0.999F);
 		matrixStack.translate(0.0, 0.001F, 0.0);
@@ -34,7 +34,7 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 		matrixStack.scale(j * h, 1.0F / j * h, j * h);
 	}
 
-	public Identifier getTexture(SlimeEntity slimeEntity) {
-		return SKIN;
+	public Identifier method_4116(SlimeEntity slimeEntity) {
+		return TEXTURE;
 	}
 }

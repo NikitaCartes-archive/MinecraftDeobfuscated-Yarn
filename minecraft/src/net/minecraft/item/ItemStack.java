@@ -6,12 +6,15 @@ import com.google.common.collect.Multimap;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
@@ -20,14 +23,14 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4752;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.class_5508;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.command.arguments.BlockArgumentParser;
-import net.minecraft.command.arguments.BlockPredicateArgumentType;
+import net.minecraft.command.argument.BlockArgumentParser;
+import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -35,6 +38,7 @@ import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -45,10 +49,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagManager;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -60,6 +65,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -67,29 +73,39 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class ItemStack {
+	public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Registry.ITEM.fieldOf("id").forGetter(itemStack -> itemStack.item),
+					Codec.INT.fieldOf("Count").forGetter(itemStack -> itemStack.count),
+					CompoundTag.field_25128.optionalFieldOf("tag").forGetter(itemStack -> Optional.ofNullable(itemStack.tag))
+				)
+				.apply(instance, ItemStack::new)
+	);
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final ItemStack EMPTY = new ItemStack((Item)null);
-	public static final DecimalFormat MODIFIER_FORMAT = createModifierFormat();
+	public static final DecimalFormat MODIFIER_FORMAT = Util.make(
+		new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
+	);
+	private static final Style LORE_STYLE = Style.EMPTY.withColor(Formatting.field_1064).withItalic(true);
 	private int count;
 	private int cooldown;
 	@Deprecated
 	private final Item item;
 	private CompoundTag tag;
 	private boolean empty;
-	private ItemFrameEntity frame;
+	private Entity holder;
 	private CachedBlockPosition lastDestroyPos;
 	private boolean lastDestroyResult;
 	private CachedBlockPosition lastPlaceOnPos;
 	private boolean lastPlaceOnResult;
 
-	private static DecimalFormat createModifierFormat() {
-		DecimalFormat decimalFormat = new DecimalFormat("#.##");
-		decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
-		return decimalFormat;
-	}
-
 	public ItemStack(ItemConvertible item) {
 		this(item, 1);
+	}
+
+	private ItemStack(ItemConvertible itemConvertible, int count, Optional<CompoundTag> optional) {
+		this(itemConvertible, count);
+		optional.ifPresent(this::setTag);
 	}
 
 	public ItemStack(ItemConvertible item, int count) {
@@ -160,16 +176,16 @@ public final class ItemStack {
 		} else {
 			Item item = this.getItem();
 			ActionResult actionResult = item.useOnBlock(context);
-			if (playerEntity != null && actionResult == ActionResult.SUCCESS) {
-				playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
+			if (playerEntity != null && actionResult.isAccepted()) {
+				playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(item));
 			}
 
 			return actionResult;
 		}
 	}
 
-	public float getMiningSpeed(BlockState state) {
-		return this.getItem().getMiningSpeed(this, state);
+	public float getMiningSpeedMultiplier(BlockState state) {
+		return this.getItem().getMiningSpeedMultiplier(this, state);
 	}
 
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -185,7 +201,7 @@ public final class ItemStack {
 		tag.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
 		tag.putByte("Count", (byte)this.count);
 		if (this.tag != null) {
-			tag.put("tag", this.tag.copy());
+			tag.put("tag", this.tag.method_10553());
 		}
 
 		return tag;
@@ -229,7 +245,7 @@ public final class ItemStack {
 			return false;
 		} else {
 			if (amount > 0) {
-				int i = EnchantmentHelper.getLevel(Enchantments.UNBREAKING, this);
+				int i = EnchantmentHelper.getLevel(Enchantments.field_9119, this);
 				int j = 0;
 
 				for (int k = 0; i > 0 && k < amount; k++) {
@@ -245,7 +261,7 @@ public final class ItemStack {
 			}
 
 			if (player != null && amount != 0) {
-				Criterions.ITEM_DURABILITY_CHANGED.trigger(player, this, this.getDamage() + amount);
+				Criteria.ITEM_DURABILITY_CHANGED.trigger(player, this, this.getDamage() + amount);
 			}
 
 			int i = this.getDamage() + amount;
@@ -262,7 +278,7 @@ public final class ItemStack {
 					Item item = this.getItem();
 					this.decrement(1);
 					if (entity instanceof PlayerEntity) {
-						((PlayerEntity)entity).incrementStat(Stats.BROKEN.getOrCreateStat(item));
+						((PlayerEntity)entity).incrementStat(Stats.field_15383.getOrCreateStat(item));
 					}
 
 					this.setDamage(0);
@@ -274,14 +290,14 @@ public final class ItemStack {
 	public void postHit(LivingEntity target, PlayerEntity attacker) {
 		Item item = this.getItem();
 		if (item.postHit(this, target, attacker)) {
-			attacker.incrementStat(Stats.USED.getOrCreateStat(item));
+			attacker.incrementStat(Stats.field_15372.getOrCreateStat(item));
 		}
 	}
 
 	public void postMine(World world, BlockState state, BlockPos pos, PlayerEntity miner) {
 		Item item = this.getItem();
 		if (item.postMine(this, world, state, pos, miner)) {
-			miner.incrementStat(Stats.USED.getOrCreateStat(item));
+			miner.incrementStat(Stats.field_15372.getOrCreateStat(item));
 		}
 	}
 
@@ -289,7 +305,7 @@ public final class ItemStack {
 		return this.getItem().isEffectiveOn(state);
 	}
 
-	public boolean useOnEntity(PlayerEntity user, LivingEntity entity, Hand hand) {
+	public ActionResult useOnEntity(PlayerEntity user, LivingEntity entity, Hand hand) {
 		return this.getItem().useOnEntity(this, user, entity, hand);
 	}
 
@@ -300,7 +316,7 @@ public final class ItemStack {
 			ItemStack itemStack = new ItemStack(this.getItem(), this.count);
 			itemStack.setCooldown(this.getCooldown());
 			if (this.tag != null) {
-				itemStack.tag = this.tag.copy();
+				itemStack.tag = this.tag.method_10553();
 			}
 
 			return itemStack;
@@ -317,15 +333,15 @@ public final class ItemStack {
 		}
 	}
 
-	public static boolean areEqualIgnoreDamage(ItemStack left, ItemStack right) {
+	public static boolean areEqual(ItemStack left, ItemStack right) {
 		if (left.isEmpty() && right.isEmpty()) {
 			return true;
 		} else {
-			return !left.isEmpty() && !right.isEmpty() ? left.isEqualIgnoreDamage(right) : false;
+			return !left.isEmpty() && !right.isEmpty() ? left.isEqual(right) : false;
 		}
 	}
 
-	private boolean isEqualIgnoreDamage(ItemStack stack) {
+	private boolean isEqual(ItemStack stack) {
 		if (this.count != stack.count) {
 			return false;
 		} else if (this.getItem() != stack.getItem()) {
@@ -378,7 +394,7 @@ public final class ItemStack {
 	}
 
 	public void onCraft(World world, PlayerEntity player, int amount) {
-		player.increaseStat(Stats.CRAFTED.getOrCreateStat(this.getItem()), amount);
+		player.increaseStat(Stats.field_15370.getOrCreateStat(this.getItem()), amount);
 		this.getItem().onCraft(this, world, player);
 	}
 
@@ -501,37 +517,33 @@ public final class ItemStack {
 	@Environment(EnvType.CLIENT)
 	public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
 		List<Text> list = Lists.<Text>newArrayList();
-		Text text = new LiteralText("").append(this.getName()).formatted(this.getRarity().formatting);
+		MutableText mutableText = new LiteralText("").append(this.getName()).formatted(this.getRarity().formatting);
 		if (this.hasCustomName()) {
-			text.formatted(Formatting.ITALIC);
+			mutableText.formatted(Formatting.field_1056);
 		}
 
-		list.add(text);
-		if (!context.isAdvanced() && !this.hasCustomName() && this.getItem() == Items.FILLED_MAP) {
-			list.add(new LiteralText("#" + FilledMapItem.getMapId(this)).formatted(Formatting.GRAY));
+		list.add(mutableText);
+		if (!context.isAdvanced() && !this.hasCustomName() && this.getItem() == Items.field_8204) {
+			list.add(new LiteralText("#" + FilledMapItem.getMapId(this)).formatted(Formatting.field_1080));
 		}
 
-		int i = 0;
-		if (this.hasTag() && this.tag.contains("HideFlags", 99)) {
-			i = this.tag.getInt("HideFlags");
-		}
-
-		if ((i & 32) == 0) {
+		int i = this.getHideFlags();
+		if (isSectionHidden(i, ItemStack.TooltipSection.field_25773)) {
 			this.getItem().appendTooltip(this, player == null ? null : player.world, list, context);
 		}
 
 		if (this.hasTag()) {
-			if ((i & 1) == 0) {
+			if (isSectionHidden(i, ItemStack.TooltipSection.field_25768)) {
 				appendEnchantments(list, this.getEnchantments());
 			}
 
 			if (this.tag.contains("display", 10)) {
 				CompoundTag compoundTag = this.tag.getCompound("display");
-				if (compoundTag.contains("color", 3)) {
+				if (isSectionHidden(i, ItemStack.TooltipSection.field_25774) && compoundTag.contains("color", 99)) {
 					if (context.isAdvanced()) {
-						list.add(new TranslatableText("item.color", String.format("#%06X", compoundTag.getInt("color"))).formatted(Formatting.GRAY));
+						list.add(new TranslatableText("item.color", String.format("#%06X", compoundTag.getInt("color"))).formatted(Formatting.field_1080));
 					} else {
-						list.add(new TranslatableText("item.dyed").formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}));
+						list.add(new TranslatableText("item.dyed").formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056}));
 					}
 				}
 
@@ -542,9 +554,9 @@ public final class ItemStack {
 						String string = listTag.getString(j);
 
 						try {
-							Text text2 = Text.Serializer.fromJson(string);
-							if (text2 != null) {
-								list.add(Texts.setStyleIfAbsent(text2, new Style().setColor(Formatting.DARK_PURPLE).setItalic(true)));
+							MutableText mutableText2 = Text.Serializer.fromJson(string);
+							if (mutableText2 != null) {
+								list.add(Texts.setStyleIfAbsent(mutableText2, LORE_STYLE));
 							}
 						} catch (JsonParseException var19) {
 							compoundTag.remove("Lore");
@@ -554,98 +566,106 @@ public final class ItemStack {
 			}
 		}
 
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-			Multimap<String, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
-			if (!multimap.isEmpty() && (i & 2) == 0) {
-				list.add(new LiteralText(""));
-				list.add(new TranslatableText("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
+		if (isSectionHidden(i, ItemStack.TooltipSection.field_25769)) {
+			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+				Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
+				if (!multimap.isEmpty()) {
+					list.add(LiteralText.EMPTY);
+					list.add(new TranslatableText("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.field_1080));
 
-				for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
-					EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
-					double d = entityAttributeModifier.getAmount();
-					boolean bl = false;
-					if (player != null) {
-						if (entityAttributeModifier.getId() == class_4752.field_21876) {
-							d += player.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getBaseValue();
-							d += (double)EnchantmentHelper.getAttackDamage(this, null);
-							bl = true;
-						} else if (entityAttributeModifier.getId() == class_4752.field_21877) {
-							d += player.getAttributeInstance(EntityAttributes.ATTACK_SPEED).getBaseValue() - 1.5;
-							bl = true;
-						} else if (entityAttributeModifier.getId() == class_4752.field_21878) {
-							d += player.getAttributeInstance(EntityAttributes.field_21868).getBaseValue();
-							bl = true;
+					for (Entry<EntityAttribute, EntityAttributeModifier> entry : multimap.entries()) {
+						EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
+						double d = entityAttributeModifier.getValue();
+						boolean bl = false;
+						if (player != null) {
+							if (entityAttributeModifier.getId() == class_5508.field_26769) {
+								d += player.getAttributeInstance(EntityAttributes.field_23721).getBaseValue();
+								d += (double)EnchantmentHelper.getAttackDamage(this, null);
+								bl = true;
+							} else if (entityAttributeModifier.getId() == class_5508.field_26770) {
+								d += player.getAttributeInstance(EntityAttributes.field_23723).getBaseValue() - 1.5;
+								bl = true;
+							} else if (entityAttributeModifier.getId() == class_5508.field_26771) {
+								d += player.getAttributeInstance(EntityAttributes.field_26761).getBaseValue();
+								bl = true;
+							} else if (((EntityAttribute)entry.getKey()).equals(EntityAttributes.field_23718)) {
+								d += player.getAttributeInstance(EntityAttributes.field_23718).getBaseValue();
+							}
+						}
+
+						double e;
+						if (entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE
+							|| entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
+							e = d * 100.0;
+						} else if (((EntityAttribute)entry.getKey()).equals(EntityAttributes.field_23718)) {
+							e = d * 10.0;
+						} else {
+							e = d;
+						}
+
+						if (bl) {
+							list.add(
+								new LiteralText(" ")
+									.append(
+										new TranslatableText(
+											"attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(),
+											MODIFIER_FORMAT.format(e),
+											new TranslatableText(((EntityAttribute)entry.getKey()).getTranslationKey())
+										)
+									)
+									.formatted(Formatting.field_1077)
+							);
+						} else if (d > 0.0) {
+							list.add(
+								new TranslatableText(
+										"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
+										MODIFIER_FORMAT.format(e),
+										new TranslatableText(((EntityAttribute)entry.getKey()).getTranslationKey())
+									)
+									.formatted(Formatting.field_1078)
+							);
+						} else if (d < 0.0) {
+							e *= -1.0;
+							list.add(
+								new TranslatableText(
+										"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
+										MODIFIER_FORMAT.format(e),
+										new TranslatableText(((EntityAttribute)entry.getKey()).getTranslationKey())
+									)
+									.formatted(Formatting.field_1061)
+							);
 						}
 					}
-
-					double e;
-					if (entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
-						&& entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
-						e = d;
-					} else {
-						e = d * 100.0;
-					}
-
-					if (bl) {
-						list.add(
-							new LiteralText(" ")
-								.append(
-									new TranslatableText(
-										"attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(),
-										MODIFIER_FORMAT.format(e),
-										new TranslatableText("attribute.name." + (String)entry.getKey())
-									)
-								)
-								.formatted(Formatting.DARK_GREEN)
-						);
-					} else if (d > 0.0) {
-						list.add(
-							new TranslatableText(
-									"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
-									MODIFIER_FORMAT.format(e),
-									new TranslatableText("attribute.name." + (String)entry.getKey())
-								)
-								.formatted(Formatting.BLUE)
-						);
-					} else if (d < 0.0) {
-						e *= -1.0;
-						list.add(
-							new TranslatableText(
-									"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
-									MODIFIER_FORMAT.format(e),
-									new TranslatableText("attribute.name." + (String)entry.getKey())
-								)
-								.formatted(Formatting.RED)
-						);
-					}
 				}
 			}
 		}
 
-		if (this.hasTag() && this.getTag().getBoolean("Unbreakable") && (i & 4) == 0) {
-			list.add(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
-		}
+		if (this.hasTag()) {
+			if (isSectionHidden(i, ItemStack.TooltipSection.field_25770) && this.tag.getBoolean("Unbreakable")) {
+				list.add(new TranslatableText("item.unbreakable").formatted(Formatting.field_1078));
+			}
 
-		if (this.hasTag() && this.tag.contains("CanDestroy", 9) && (i & 8) == 0) {
-			ListTag listTag2 = this.tag.getList("CanDestroy", 8);
-			if (!listTag2.isEmpty()) {
-				list.add(new LiteralText(""));
-				list.add(new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
+			if (isSectionHidden(i, ItemStack.TooltipSection.field_25771) && this.tag.contains("CanDestroy", 9)) {
+				ListTag listTag2 = this.tag.getList("CanDestroy", 8);
+				if (!listTag2.isEmpty()) {
+					list.add(LiteralText.EMPTY);
+					list.add(new TranslatableText("item.canBreak").formatted(Formatting.field_1080));
 
-				for (int k = 0; k < listTag2.size(); k++) {
-					list.addAll(parseBlockTag(listTag2.getString(k)));
+					for (int k = 0; k < listTag2.size(); k++) {
+						list.addAll(parseBlockTag(listTag2.getString(k)));
+					}
 				}
 			}
-		}
 
-		if (this.hasTag() && this.tag.contains("CanPlaceOn", 9) && (i & 16) == 0) {
-			ListTag listTag2 = this.tag.getList("CanPlaceOn", 8);
-			if (!listTag2.isEmpty()) {
-				list.add(new LiteralText(""));
-				list.add(new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
+			if (isSectionHidden(i, ItemStack.TooltipSection.field_25772) && this.tag.contains("CanPlaceOn", 9)) {
+				ListTag listTag2 = this.tag.getList("CanPlaceOn", 8);
+				if (!listTag2.isEmpty()) {
+					list.add(LiteralText.EMPTY);
+					list.add(new TranslatableText("item.canPlace").formatted(Formatting.field_1080));
 
-				for (int k = 0; k < listTag2.size(); k++) {
-					list.addAll(parseBlockTag(listTag2.getString(k)));
+					for (int k = 0; k < listTag2.size(); k++) {
+						list.addAll(parseBlockTag(listTag2.getString(k)));
+					}
 				}
 			}
 		}
@@ -655,13 +675,28 @@ public final class ItemStack {
 				list.add(new TranslatableText("item.durability", this.getMaxDamage() - this.getDamage(), this.getMaxDamage()));
 			}
 
-			list.add(new LiteralText(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
+			list.add(new LiteralText(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.field_1063));
 			if (this.hasTag()) {
-				list.add(new TranslatableText("item.nbt_tags", this.getTag().getKeys().size()).formatted(Formatting.DARK_GRAY));
+				list.add(new TranslatableText("item.nbt_tags", this.tag.getKeys().size()).formatted(Formatting.field_1063));
 			}
 		}
 
 		return list;
+	}
+
+	@Environment(EnvType.CLIENT)
+	private static boolean isSectionHidden(int flags, ItemStack.TooltipSection tooltipSection) {
+		return (flags & tooltipSection.getFlag()) == 0;
+	}
+
+	@Environment(EnvType.CLIENT)
+	private int getHideFlags() {
+		return this.hasTag() && this.tag.contains("HideFlags", 99) ? this.tag.getInt("HideFlags") : 0;
+	}
+
+	public void addHideFlag(ItemStack.TooltipSection tooltipSection) {
+		CompoundTag compoundTag = this.getOrCreateTag();
+		compoundTag.putInt("HideFlags", compoundTag.getInt("HideFlags") | tooltipSection.getFlag());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -682,25 +717,25 @@ public final class ItemStack {
 			boolean bl2 = identifier != null;
 			if (bl || bl2) {
 				if (bl) {
-					return Lists.<Text>newArrayList(blockState.getBlock().getName().formatted(Formatting.DARK_GRAY));
+					return Lists.<Text>newArrayList(blockState.getBlock().getName().formatted(Formatting.field_1063));
 				}
 
-				Tag<Block> tag2 = BlockTags.getContainer().get(identifier);
+				Tag<Block> tag2 = BlockTags.getTagGroup().getTag(identifier);
 				if (tag2 != null) {
 					Collection<Block> collection = tag2.values();
 					if (!collection.isEmpty()) {
-						return (Collection<Text>)collection.stream().map(Block::getName).map(text -> text.formatted(Formatting.DARK_GRAY)).collect(Collectors.toList());
+						return (Collection<Text>)collection.stream().map(Block::getName).map(text -> text.formatted(Formatting.field_1063)).collect(Collectors.toList());
 					}
 				}
 			}
 		} catch (CommandSyntaxException var8) {
 		}
 
-		return Lists.<Text>newArrayList(new LiteralText("missingno").formatted(Formatting.DARK_GRAY));
+		return Lists.<Text>newArrayList(new LiteralText("missingno").formatted(Formatting.field_1063));
 	}
 
-	public boolean hasEnchantmentGlint() {
-		return this.getItem().hasEnchantmentGlint(this);
+	public boolean hasGlint() {
+		return this.getItem().hasGlint(this);
 	}
 
 	public Rarity getRarity() {
@@ -733,16 +768,21 @@ public final class ItemStack {
 	}
 
 	public boolean isInFrame() {
-		return this.frame != null;
+		return this.holder instanceof ItemFrameEntity;
 	}
 
-	public void setFrame(@Nullable ItemFrameEntity frame) {
-		this.frame = frame;
+	public void setHolder(@Nullable Entity holder) {
+		this.holder = holder;
 	}
 
 	@Nullable
 	public ItemFrameEntity getFrame() {
-		return this.empty ? null : this.frame;
+		return this.holder instanceof ItemFrameEntity ? (ItemFrameEntity)this.getHolder() : null;
+	}
+
+	@Nullable
+	public Entity getHolder() {
+		return !this.empty ? this.holder : null;
 	}
 
 	public int getRepairCost() {
@@ -753,39 +793,42 @@ public final class ItemStack {
 		this.getOrCreateTag().putInt("RepairCost", repairCost);
 	}
 
-	public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		Multimap<String, EntityAttributeModifier> multimap;
+	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
+		Multimap<EntityAttribute, EntityAttributeModifier> multimap;
 		if (this.hasTag() && this.tag.contains("AttributeModifiers", 9)) {
 			multimap = HashMultimap.create();
 			ListTag listTag = this.tag.getList("AttributeModifiers", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag = listTag.getCompound(i);
-				EntityAttributeModifier entityAttributeModifier = EntityAttributes.createFromTag(compoundTag);
-				if (entityAttributeModifier != null
-					&& (!compoundTag.contains("Slot", 8) || compoundTag.getString("Slot").equals(slot.getName()))
-					&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L
-					&& entityAttributeModifier.getId().getMostSignificantBits() != 0L) {
-					multimap.put(compoundTag.getString("AttributeName"), entityAttributeModifier);
+				if (!compoundTag.contains("Slot", 8) || compoundTag.getString("Slot").equals(equipmentSlot.getName())) {
+					Optional<EntityAttribute> optional = Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(compoundTag.getString("AttributeName")));
+					if (optional.isPresent()) {
+						EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromTag(compoundTag);
+						if (entityAttributeModifier != null
+							&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L
+							&& entityAttributeModifier.getId().getMostSignificantBits() != 0L) {
+							multimap.put((EntityAttribute)optional.get(), entityAttributeModifier);
+						}
+					}
 				}
 			}
 		} else {
-			multimap = this.getItem().getModifiers(slot);
+			multimap = this.getItem().getAttributeModifiers(equipmentSlot);
 		}
 
-		multimap.values().forEach(entityAttributeModifierx -> entityAttributeModifierx.setSerialize(false));
 		return multimap;
 	}
 
-	public void addAttributeModifier(String name, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
+	public void addAttributeModifier(EntityAttribute entityAttribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
 		this.getOrCreateTag();
 		if (!this.tag.contains("AttributeModifiers", 9)) {
 			this.tag.put("AttributeModifiers", new ListTag());
 		}
 
 		ListTag listTag = this.tag.getList("AttributeModifiers", 10);
-		CompoundTag compoundTag = EntityAttributes.toTag(modifier);
-		compoundTag.putString("AttributeName", name);
+		CompoundTag compoundTag = modifier.toTag();
+		compoundTag.putString("AttributeName", Registry.ATTRIBUTE.getId(entityAttribute).toString());
 		if (slot != null) {
 			compoundTag.putString("Slot", slot.getName());
 		}
@@ -794,19 +837,18 @@ public final class ItemStack {
 	}
 
 	public Text toHoverableText() {
-		Text text = new LiteralText("").append(this.getName());
+		MutableText mutableText = new LiteralText("").append(this.getName());
 		if (this.hasCustomName()) {
-			text.formatted(Formatting.ITALIC);
+			mutableText.formatted(Formatting.field_1056);
 		}
 
-		Text text2 = Texts.bracketed(text);
+		MutableText mutableText2 = Texts.bracketed(mutableText);
 		if (!this.empty) {
-			CompoundTag compoundTag = this.toTag(new CompoundTag());
-			text2.formatted(this.getRarity().formatting)
-				.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new LiteralText(compoundTag.toString()))));
+			mutableText2.formatted(this.getRarity().formatting)
+				.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24343, new HoverEvent.ItemStackContent(this))));
 		}
 
-		return text2;
+		return mutableText2;
 	}
 
 	private static boolean areBlocksEqual(CachedBlockPosition first, @Nullable CachedBlockPosition second) {
@@ -821,7 +863,7 @@ public final class ItemStack {
 		}
 	}
 
-	public boolean canDestroy(RegistryTagManager manager, CachedBlockPosition pos) {
+	public boolean canDestroy(TagManager tagManager, CachedBlockPosition pos) {
 		if (areBlocksEqual(pos, this.lastDestroyPos)) {
 			return this.lastDestroyResult;
 		} else {
@@ -833,7 +875,7 @@ public final class ItemStack {
 					String string = listTag.getString(i);
 
 					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(manager);
+						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(tagManager);
 						if (predicate.test(pos)) {
 							this.lastDestroyResult = true;
 							return true;
@@ -848,7 +890,7 @@ public final class ItemStack {
 		}
 	}
 
-	public boolean canPlaceOn(RegistryTagManager manager, CachedBlockPosition pos) {
+	public boolean canPlaceOn(TagManager tagManager, CachedBlockPosition pos) {
 		if (areBlocksEqual(pos, this.lastPlaceOnPos)) {
 			return this.lastPlaceOnResult;
 		} else {
@@ -860,7 +902,7 @@ public final class ItemStack {
 					String string = listTag.getString(i);
 
 					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(manager);
+						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(tagManager);
 						if (predicate.test(pos)) {
 							this.lastPlaceOnResult = true;
 							return true;
@@ -914,5 +956,21 @@ public final class ItemStack {
 
 	public SoundEvent getEatSound() {
 		return this.getItem().getEatSound();
+	}
+
+	public static enum TooltipSection {
+		field_25768,
+		field_25769,
+		field_25770,
+		field_25771,
+		field_25772,
+		field_25773,
+		field_25774;
+
+		private int flag = 1 << this.ordinal();
+
+		public int getFlag() {
+			return this.flag;
+		}
 	}
 }

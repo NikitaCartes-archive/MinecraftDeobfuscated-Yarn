@@ -1,7 +1,6 @@
 package net.minecraft.entity;
 
-import com.mojang.datafixers.DataFixUtils;
-import java.util.Collections;
+import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -9,15 +8,17 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.Schemas;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.decoration.LeadKnotEntity;
+import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
@@ -31,11 +32,14 @@ import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.GiantEntity;
 import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.HuskEntity;
 import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PhantomEntity;
+import net.minecraft.entity.mob.PiglinBruteEntity;
+import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -49,10 +53,11 @@ import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
+import net.minecraft.entity.mob.ZoglinEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
-import net.minecraft.entity.mob.ZombiePigmanEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -78,6 +83,7 @@ import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.passive.SquidEntity;
+import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.passive.TurtleEntity;
@@ -88,6 +94,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
@@ -95,11 +102,11 @@ import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
-import net.minecraft.entity.thrown.SnowballEntity;
-import net.minecraft.entity.thrown.ThrownEggEntity;
-import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
-import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
-import net.minecraft.entity.thrown.ThrownPotionEntity;
+import net.minecraft.entity.projectile.thrown.EggEntity;
+import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
+import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
@@ -112,6 +119,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -131,312 +140,458 @@ import org.apache.logging.log4j.Logger;
 
 public class EntityType<T extends Entity> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = register(
+	public static final EntityType<AreaEffectCloudEntity> field_6083 = register(
 		"area_effect_cloud",
-		EntityType.Builder.<AreaEffectCloudEntity>create(AreaEffectCloudEntity::new, EntityCategory.MISC).makeFireImmune().setDimensions(6.0F, 0.5F)
+		EntityType.Builder.<AreaEffectCloudEntity>create(AreaEffectCloudEntity::new, SpawnGroup.field_17715)
+			.makeFireImmune()
+			.setDimensions(6.0F, 0.5F)
+			.maxTrackingRange(10)
+			.trackingTickInterval(Integer.MAX_VALUE)
 	);
-	public static final EntityType<ArmorStandEntity> ARMOR_STAND = register(
-		"armor_stand", EntityType.Builder.<ArmorStandEntity>create(ArmorStandEntity::new, EntityCategory.MISC).setDimensions(0.5F, 1.975F)
+	public static final EntityType<ArmorStandEntity> field_6131 = register(
+		"armor_stand", EntityType.Builder.<ArmorStandEntity>create(ArmorStandEntity::new, SpawnGroup.field_17715).setDimensions(0.5F, 1.975F).maxTrackingRange(10)
 	);
-	public static final EntityType<ArrowEntity> ARROW = register(
-		"arrow", EntityType.Builder.<ArrowEntity>create(ArrowEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.5F)
+	public static final EntityType<ArrowEntity> field_6122 = register(
+		"arrow",
+		EntityType.Builder.<ArrowEntity>create(ArrowEntity::new, SpawnGroup.field_17715).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20)
 	);
-	public static final EntityType<BatEntity> BAT = register("bat", EntityType.Builder.create(BatEntity::new, EntityCategory.AMBIENT).setDimensions(0.5F, 0.9F));
-	public static final EntityType<BeeEntity> BEE = register("bee", EntityType.Builder.create(BeeEntity::new, EntityCategory.CREATURE).setDimensions(0.7F, 0.6F));
-	public static final EntityType<BlazeEntity> BLAZE = register(
-		"blaze", EntityType.Builder.create(BlazeEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6F, 1.8F)
+	public static final EntityType<BatEntity> field_6108 = register(
+		"bat", EntityType.Builder.create(BatEntity::new, SpawnGroup.field_6303).setDimensions(0.5F, 0.9F).maxTrackingRange(5)
 	);
-	public static final EntityType<BoatEntity> BOAT = register(
-		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, EntityCategory.MISC).setDimensions(1.375F, 0.5625F)
+	public static final EntityType<BeeEntity> field_20346 = register(
+		"bee", EntityType.Builder.create(BeeEntity::new, SpawnGroup.field_6294).setDimensions(0.7F, 0.6F).maxTrackingRange(8)
 	);
-	public static final EntityType<CatEntity> CAT = register("cat", EntityType.Builder.create(CatEntity::new, EntityCategory.CREATURE).setDimensions(0.6F, 0.7F));
-	public static final EntityType<CaveSpiderEntity> CAVE_SPIDER = register(
-		"cave_spider", EntityType.Builder.create(CaveSpiderEntity::new, EntityCategory.MONSTER).setDimensions(0.7F, 0.5F)
+	public static final EntityType<BlazeEntity> field_6099 = register(
+		"blaze", EntityType.Builder.create(BlazeEntity::new, SpawnGroup.field_6302).makeFireImmune().setDimensions(0.6F, 1.8F).maxTrackingRange(8)
 	);
-	public static final EntityType<ChickenEntity> CHICKEN = register(
-		"chicken", EntityType.Builder.create(ChickenEntity::new, EntityCategory.CREATURE).setDimensions(0.4F, 0.7F)
+	public static final EntityType<BoatEntity> field_6121 = register(
+		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.field_17715).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
 	);
-	public static final EntityType<CodEntity> COD = register(
-		"cod", EntityType.Builder.create(CodEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.5F, 0.3F)
+	public static final EntityType<CatEntity> field_16281 = register(
+		"cat", EntityType.Builder.create(CatEntity::new, SpawnGroup.field_6294).setDimensions(0.6F, 0.7F).maxTrackingRange(8)
 	);
-	public static final EntityType<CowEntity> COW = register("cow", EntityType.Builder.create(CowEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.4F));
-	public static final EntityType<CreeperEntity> CREEPER = register(
-		"creeper", EntityType.Builder.create(CreeperEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.7F)
+	public static final EntityType<CaveSpiderEntity> field_6084 = register(
+		"cave_spider", EntityType.Builder.create(CaveSpiderEntity::new, SpawnGroup.field_6302).setDimensions(0.7F, 0.5F).maxTrackingRange(8)
 	);
-	public static final EntityType<DonkeyEntity> DONKEY = register(
-		"donkey", EntityType.Builder.create(DonkeyEntity::new, EntityCategory.CREATURE).setDimensions(1.3964844F, 1.5F)
+	public static final EntityType<ChickenEntity> field_6132 = register(
+		"chicken", EntityType.Builder.create(ChickenEntity::new, SpawnGroup.field_6294).setDimensions(0.4F, 0.7F).maxTrackingRange(10)
 	);
-	public static final EntityType<DolphinEntity> DOLPHIN = register(
-		"dolphin", EntityType.Builder.create(DolphinEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.9F, 0.6F)
+	public static final EntityType<CodEntity> field_6070 = register(
+		"cod", EntityType.Builder.create(CodEntity::new, SpawnGroup.field_24460).setDimensions(0.5F, 0.3F).maxTrackingRange(4)
 	);
-	public static final EntityType<DragonFireballEntity> DRAGON_FIREBALL = register(
-		"dragon_fireball", EntityType.Builder.<DragonFireballEntity>create(DragonFireballEntity::new, EntityCategory.MISC).setDimensions(1.0F, 1.0F)
+	public static final EntityType<CowEntity> field_6085 = register(
+		"cow", EntityType.Builder.create(CowEntity::new, SpawnGroup.field_6294).setDimensions(0.9F, 1.4F).maxTrackingRange(10)
 	);
-	public static final EntityType<DrownedEntity> DROWNED = register(
-		"drowned", EntityType.Builder.create(DrownedEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	public static final EntityType<CreeperEntity> field_6046 = register(
+		"creeper", EntityType.Builder.create(CreeperEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.7F).maxTrackingRange(8)
 	);
-	public static final EntityType<ElderGuardianEntity> ELDER_GUARDIAN = register(
-		"elder_guardian", EntityType.Builder.create(ElderGuardianEntity::new, EntityCategory.MONSTER).setDimensions(1.9975F, 1.9975F)
+	public static final EntityType<DolphinEntity> field_6087 = register(
+		"dolphin", EntityType.Builder.create(DolphinEntity::new, SpawnGroup.field_6300).setDimensions(0.9F, 0.6F)
 	);
-	public static final EntityType<EnderCrystalEntity> END_CRYSTAL = register(
-		"end_crystal", EntityType.Builder.<EnderCrystalEntity>create(EnderCrystalEntity::new, EntityCategory.MISC).setDimensions(2.0F, 2.0F)
+	public static final EntityType<DonkeyEntity> field_6067 = register(
+		"donkey", EntityType.Builder.create(DonkeyEntity::new, SpawnGroup.field_6294).setDimensions(1.3964844F, 1.5F).maxTrackingRange(10)
 	);
-	public static final EntityType<EnderDragonEntity> ENDER_DRAGON = register(
-		"ender_dragon", EntityType.Builder.create(EnderDragonEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(16.0F, 8.0F)
+	public static final EntityType<DragonFireballEntity> field_6129 = register(
+		"dragon_fireball",
+		EntityType.Builder.<DragonFireballEntity>create(DragonFireballEntity::new, SpawnGroup.field_17715)
+			.setDimensions(1.0F, 1.0F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 	);
-	public static final EntityType<EndermanEntity> ENDERMAN = register(
-		"enderman", EntityType.Builder.create(EndermanEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 2.9F)
+	public static final EntityType<DrownedEntity> field_6123 = register(
+		"drowned", EntityType.Builder.create(DrownedEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<EndermiteEntity> ENDERMITE = register(
-		"endermite", EntityType.Builder.create(EndermiteEntity::new, EntityCategory.MONSTER).setDimensions(0.4F, 0.3F)
+	public static final EntityType<ElderGuardianEntity> field_6086 = register(
+		"elder_guardian", EntityType.Builder.create(ElderGuardianEntity::new, SpawnGroup.field_6302).setDimensions(1.9975F, 1.9975F).maxTrackingRange(10)
 	);
-	public static final EntityType<EvokerFangsEntity> EVOKER_FANGS = register(
-		"evoker_fangs", EntityType.Builder.<EvokerFangsEntity>create(EvokerFangsEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.8F)
+	public static final EntityType<EndCrystalEntity> field_6110 = register(
+		"end_crystal",
+		EntityType.Builder.<EndCrystalEntity>create(EndCrystalEntity::new, SpawnGroup.field_17715)
+			.setDimensions(2.0F, 2.0F)
+			.maxTrackingRange(16)
+			.trackingTickInterval(Integer.MAX_VALUE)
 	);
-	public static final EntityType<EvokerEntity> EVOKER = register(
-		"evoker", EntityType.Builder.create(EvokerEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	public static final EntityType<EnderDragonEntity> field_6116 = register(
+		"ender_dragon", EntityType.Builder.create(EnderDragonEntity::new, SpawnGroup.field_6302).makeFireImmune().setDimensions(16.0F, 8.0F).maxTrackingRange(10)
 	);
-	public static final EntityType<ExperienceOrbEntity> EXPERIENCE_ORB = register(
-		"experience_orb", EntityType.Builder.<ExperienceOrbEntity>create(ExperienceOrbEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.5F)
+	public static final EntityType<EndermanEntity> field_6091 = register(
+		"enderman", EntityType.Builder.create(EndermanEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 2.9F).maxTrackingRange(8)
 	);
-	public static final EntityType<EnderEyeEntity> EYE_OF_ENDER = register(
-		"eye_of_ender", EntityType.Builder.<EnderEyeEntity>create(EnderEyeEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<EndermiteEntity> field_6128 = register(
+		"endermite", EntityType.Builder.create(EndermiteEntity::new, SpawnGroup.field_6302).setDimensions(0.4F, 0.3F).maxTrackingRange(8)
 	);
-	public static final EntityType<FallingBlockEntity> FALLING_BLOCK = register(
-		"falling_block", EntityType.Builder.<FallingBlockEntity>create(FallingBlockEntity::new, EntityCategory.MISC).setDimensions(0.98F, 0.98F)
+	public static final EntityType<EvokerEntity> field_6090 = register(
+		"evoker", EntityType.Builder.create(EvokerEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<FireworkEntity> FIREWORK_ROCKET = register(
-		"firework_rocket", EntityType.Builder.<FireworkEntity>create(FireworkEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<EvokerFangsEntity> field_6060 = register(
+		"evoker_fangs",
+		EntityType.Builder.<EvokerFangsEntity>create(EvokerFangsEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.5F, 0.8F)
+			.maxTrackingRange(6)
+			.trackingTickInterval(2)
 	);
-	public static final EntityType<FoxEntity> FOX = register("fox", EntityType.Builder.create(FoxEntity::new, EntityCategory.CREATURE).setDimensions(0.6F, 0.7F));
-	public static final EntityType<GhastEntity> GHAST = register(
-		"ghast", EntityType.Builder.create(GhastEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(4.0F, 4.0F)
+	public static final EntityType<ExperienceOrbEntity> field_6044 = register(
+		"experience_orb",
+		EntityType.Builder.<ExperienceOrbEntity>create(ExperienceOrbEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.5F, 0.5F)
+			.maxTrackingRange(6)
+			.trackingTickInterval(20)
 	);
-	public static final EntityType<GiantEntity> GIANT = register(
-		"giant", EntityType.Builder.create(GiantEntity::new, EntityCategory.MONSTER).setDimensions(3.6F, 12.0F)
+	public static final EntityType<EyeOfEnderEntity> field_6061 = register(
+		"eye_of_ender",
+		EntityType.Builder.<EyeOfEnderEntity>create(EyeOfEnderEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.25F, 0.25F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(4)
 	);
-	public static final EntityType<GuardianEntity> GUARDIAN = register(
-		"guardian", EntityType.Builder.create(GuardianEntity::new, EntityCategory.MONSTER).setDimensions(0.85F, 0.85F)
+	public static final EntityType<FallingBlockEntity> field_6089 = register(
+		"falling_block",
+		EntityType.Builder.<FallingBlockEntity>create(FallingBlockEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.98F, 0.98F)
+			.maxTrackingRange(10)
+			.trackingTickInterval(20)
 	);
-	public static final EntityType<HorseEntity> HORSE = register(
-		"horse", EntityType.Builder.create(HorseEntity::new, EntityCategory.CREATURE).setDimensions(1.3964844F, 1.6F)
+	public static final EntityType<FireworkRocketEntity> field_6133 = register(
+		"firework_rocket",
+		EntityType.Builder.<FireworkRocketEntity>create(FireworkRocketEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.25F, 0.25F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 	);
-	public static final EntityType<HuskEntity> HUSK = register(
-		"husk", EntityType.Builder.create(HuskEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	public static final EntityType<FoxEntity> field_17943 = register(
+		"fox", EntityType.Builder.create(FoxEntity::new, SpawnGroup.field_6294).setDimensions(0.6F, 0.7F).maxTrackingRange(8).allowSpawningInside(Blocks.field_16999)
 	);
-	public static final EntityType<IllusionerEntity> ILLUSIONER = register(
-		"illusioner", EntityType.Builder.create(IllusionerEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	public static final EntityType<GhastEntity> field_6107 = register(
+		"ghast", EntityType.Builder.create(GhastEntity::new, SpawnGroup.field_6302).makeFireImmune().setDimensions(4.0F, 4.0F).maxTrackingRange(10)
 	);
-	public static final EntityType<ItemEntity> ITEM = register(
-		"item", EntityType.Builder.<ItemEntity>create(ItemEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<GiantEntity> field_6095 = register(
+		"giant", EntityType.Builder.create(GiantEntity::new, SpawnGroup.field_6302).setDimensions(3.6F, 12.0F).maxTrackingRange(10)
 	);
-	public static final EntityType<ItemFrameEntity> ITEM_FRAME = register(
-		"item_frame", EntityType.Builder.<ItemFrameEntity>create(ItemFrameEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.5F)
+	public static final EntityType<GuardianEntity> field_6118 = register(
+		"guardian", EntityType.Builder.create(GuardianEntity::new, SpawnGroup.field_6302).setDimensions(0.85F, 0.85F).maxTrackingRange(8)
 	);
-	public static final EntityType<FireballEntity> FIREBALL = register(
-		"fireball", EntityType.Builder.<FireballEntity>create(FireballEntity::new, EntityCategory.MISC).setDimensions(1.0F, 1.0F)
+	public static final EntityType<HoglinEntity> field_21973 = register(
+		"hoglin", EntityType.Builder.create(HoglinEntity::new, SpawnGroup.field_6302).setDimensions(1.3964844F, 1.4F).maxTrackingRange(8)
 	);
-	public static final EntityType<LeadKnotEntity> LEASH_KNOT = register(
-		"leash_knot", EntityType.Builder.<LeadKnotEntity>create(LeadKnotEntity::new, EntityCategory.MISC).disableSaving().setDimensions(0.5F, 0.5F)
+	public static final EntityType<HorseEntity> field_6139 = register(
+		"horse", EntityType.Builder.create(HorseEntity::new, SpawnGroup.field_6294).setDimensions(1.3964844F, 1.6F).maxTrackingRange(10)
 	);
-	public static final EntityType<LlamaEntity> LLAMA = register(
-		"llama", EntityType.Builder.create(LlamaEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.87F)
+	public static final EntityType<HuskEntity> field_6071 = register(
+		"husk", EntityType.Builder.create(HuskEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<LlamaSpitEntity> LLAMA_SPIT = register(
-		"llama_spit", EntityType.Builder.<LlamaSpitEntity>create(LlamaSpitEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<IllusionerEntity> field_6065 = register(
+		"illusioner", EntityType.Builder.create(IllusionerEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<MagmaCubeEntity> MAGMA_CUBE = register(
-		"magma_cube", EntityType.Builder.create(MagmaCubeEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(2.04F, 2.04F)
+	public static final EntityType<IronGolemEntity> field_6147 = register(
+		"iron_golem", EntityType.Builder.create(IronGolemEntity::new, SpawnGroup.field_17715).setDimensions(1.4F, 2.7F).maxTrackingRange(10)
 	);
-	public static final EntityType<MinecartEntity> MINECART = register(
-		"minecart", EntityType.Builder.<MinecartEntity>create(MinecartEntity::new, EntityCategory.MISC).setDimensions(0.98F, 0.7F)
+	public static final EntityType<ItemEntity> field_6052 = register(
+		"item",
+		EntityType.Builder.<ItemEntity>create(ItemEntity::new, SpawnGroup.field_17715).setDimensions(0.25F, 0.25F).maxTrackingRange(6).trackingTickInterval(20)
 	);
-	public static final EntityType<ChestMinecartEntity> CHEST_MINECART = register(
-		"chest_minecart", EntityType.Builder.<ChestMinecartEntity>create(ChestMinecartEntity::new, EntityCategory.MISC).setDimensions(0.98F, 0.7F)
+	public static final EntityType<ItemFrameEntity> field_6043 = register(
+		"item_frame",
+		EntityType.Builder.<ItemFrameEntity>create(ItemFrameEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.5F, 0.5F)
+			.maxTrackingRange(10)
+			.trackingTickInterval(Integer.MAX_VALUE)
 	);
-	public static final EntityType<CommandBlockMinecartEntity> COMMAND_BLOCK_MINECART = register(
+	public static final EntityType<FireballEntity> field_6066 = register(
+		"fireball",
+		EntityType.Builder.<FireballEntity>create(FireballEntity::new, SpawnGroup.field_17715).setDimensions(1.0F, 1.0F).maxTrackingRange(4).trackingTickInterval(10)
+	);
+	public static final EntityType<LeashKnotEntity> field_6138 = register(
+		"leash_knot",
+		EntityType.Builder.<LeashKnotEntity>create(LeashKnotEntity::new, SpawnGroup.field_17715)
+			.disableSaving()
+			.setDimensions(0.5F, 0.5F)
+			.maxTrackingRange(10)
+			.trackingTickInterval(Integer.MAX_VALUE)
+	);
+	public static final EntityType<LightningEntity> field_6112 = register(
+		"lightning_bolt",
+		EntityType.Builder.create(LightningEntity::new, SpawnGroup.field_17715)
+			.disableSaving()
+			.setDimensions(0.0F, 0.0F)
+			.maxTrackingRange(16)
+			.trackingTickInterval(Integer.MAX_VALUE)
+	);
+	public static final EntityType<LlamaEntity> field_6074 = register(
+		"llama", EntityType.Builder.create(LlamaEntity::new, SpawnGroup.field_6294).setDimensions(0.9F, 1.87F).maxTrackingRange(10)
+	);
+	public static final EntityType<LlamaSpitEntity> field_6124 = register(
+		"llama_spit",
+		EntityType.Builder.<LlamaSpitEntity>create(LlamaSpitEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.25F, 0.25F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
+	);
+	public static final EntityType<MagmaCubeEntity> field_6102 = register(
+		"magma_cube", EntityType.Builder.create(MagmaCubeEntity::new, SpawnGroup.field_6302).makeFireImmune().setDimensions(2.04F, 2.04F).maxTrackingRange(8)
+	);
+	public static final EntityType<MinecartEntity> field_6096 = register(
+		"minecart", EntityType.Builder.<MinecartEntity>create(MinecartEntity::new, SpawnGroup.field_17715).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
+	);
+	public static final EntityType<ChestMinecartEntity> field_6126 = register(
+		"chest_minecart",
+		EntityType.Builder.<ChestMinecartEntity>create(ChestMinecartEntity::new, SpawnGroup.field_17715).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
+	);
+	public static final EntityType<CommandBlockMinecartEntity> field_6136 = register(
 		"command_block_minecart",
-		EntityType.Builder.<CommandBlockMinecartEntity>create(CommandBlockMinecartEntity::new, EntityCategory.MISC).setDimensions(0.98F, 0.7F)
+		EntityType.Builder.<CommandBlockMinecartEntity>create(CommandBlockMinecartEntity::new, SpawnGroup.field_17715).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);
-	public static final EntityType<FurnaceMinecartEntity> FURNACE_MINECART = register(
-		"furnace_minecart", EntityType.Builder.<FurnaceMinecartEntity>create(FurnaceMinecartEntity::new, EntityCategory.MISC).setDimensions(0.98F, 0.7F)
+	public static final EntityType<FurnaceMinecartEntity> field_6080 = register(
+		"furnace_minecart",
+		EntityType.Builder.<FurnaceMinecartEntity>create(FurnaceMinecartEntity::new, SpawnGroup.field_17715).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);
-	public static final EntityType<HopperMinecartEntity> HOPPER_MINECART = register(
-		"hopper_minecart", EntityType.Builder.<HopperMinecartEntity>create(HopperMinecartEntity::new, EntityCategory.MISC).setDimensions(0.98F, 0.7F)
+	public static final EntityType<HopperMinecartEntity> field_6058 = register(
+		"hopper_minecart",
+		EntityType.Builder.<HopperMinecartEntity>create(HopperMinecartEntity::new, SpawnGroup.field_17715).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);
-	public static final EntityType<SpawnerMinecartEntity> SPAWNER_MINECART = register(
-		"spawner_minecart", EntityType.Builder.<SpawnerMinecartEntity>create(SpawnerMinecartEntity::new, EntityCategory.MISC).setDimensions(0.98F, 0.7F)
+	public static final EntityType<SpawnerMinecartEntity> field_6142 = register(
+		"spawner_minecart",
+		EntityType.Builder.<SpawnerMinecartEntity>create(SpawnerMinecartEntity::new, SpawnGroup.field_17715).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);
-	public static final EntityType<TntMinecartEntity> TNT_MINECART = register(
-		"tnt_minecart", EntityType.Builder.<TntMinecartEntity>create(TntMinecartEntity::new, EntityCategory.MISC).setDimensions(0.98F, 0.7F)
+	public static final EntityType<TntMinecartEntity> field_6053 = register(
+		"tnt_minecart", EntityType.Builder.<TntMinecartEntity>create(TntMinecartEntity::new, SpawnGroup.field_17715).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);
-	public static final EntityType<MuleEntity> MULE = register(
-		"mule", EntityType.Builder.create(MuleEntity::new, EntityCategory.CREATURE).setDimensions(1.3964844F, 1.6F)
+	public static final EntityType<MuleEntity> field_6057 = register(
+		"mule", EntityType.Builder.create(MuleEntity::new, SpawnGroup.field_6294).setDimensions(1.3964844F, 1.6F).maxTrackingRange(8)
 	);
-	public static final EntityType<MooshroomEntity> MOOSHROOM = register(
-		"mooshroom", EntityType.Builder.create(MooshroomEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.4F)
+	public static final EntityType<MooshroomEntity> field_6143 = register(
+		"mooshroom", EntityType.Builder.create(MooshroomEntity::new, SpawnGroup.field_6294).setDimensions(0.9F, 1.4F).maxTrackingRange(10)
 	);
-	public static final EntityType<OcelotEntity> OCELOT = register(
-		"ocelot", EntityType.Builder.create(OcelotEntity::new, EntityCategory.CREATURE).setDimensions(0.6F, 0.7F)
+	public static final EntityType<OcelotEntity> field_6081 = register(
+		"ocelot", EntityType.Builder.create(OcelotEntity::new, SpawnGroup.field_6294).setDimensions(0.6F, 0.7F).maxTrackingRange(10)
 	);
-	public static final EntityType<PaintingEntity> PAINTING = register(
-		"painting", EntityType.Builder.<PaintingEntity>create(PaintingEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.5F)
+	public static final EntityType<PaintingEntity> field_6120 = register(
+		"painting",
+		EntityType.Builder.<PaintingEntity>create(PaintingEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.5F, 0.5F)
+			.maxTrackingRange(10)
+			.trackingTickInterval(Integer.MAX_VALUE)
 	);
-	public static final EntityType<PandaEntity> PANDA = register(
-		"panda", EntityType.Builder.create(PandaEntity::new, EntityCategory.CREATURE).setDimensions(1.3F, 1.25F)
+	public static final EntityType<PandaEntity> field_6146 = register(
+		"panda", EntityType.Builder.create(PandaEntity::new, SpawnGroup.field_6294).setDimensions(1.3F, 1.25F).maxTrackingRange(10)
 	);
-	public static final EntityType<ParrotEntity> PARROT = register(
-		"parrot", EntityType.Builder.create(ParrotEntity::new, EntityCategory.CREATURE).setDimensions(0.5F, 0.9F)
+	public static final EntityType<ParrotEntity> field_6104 = register(
+		"parrot", EntityType.Builder.create(ParrotEntity::new, SpawnGroup.field_6294).setDimensions(0.5F, 0.9F).maxTrackingRange(8)
 	);
-	public static final EntityType<PigEntity> PIG = register("pig", EntityType.Builder.create(PigEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 0.9F));
-	public static final EntityType<PufferfishEntity> PUFFERFISH = register(
-		"pufferfish", EntityType.Builder.create(PufferfishEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.7F, 0.7F)
+	public static final EntityType<PhantomEntity> field_6078 = register(
+		"phantom", EntityType.Builder.create(PhantomEntity::new, SpawnGroup.field_6302).setDimensions(0.9F, 0.5F).maxTrackingRange(8)
 	);
-	public static final EntityType<ZombiePigmanEntity> ZOMBIE_PIGMAN = register(
-		"zombie_pigman", EntityType.Builder.create(ZombiePigmanEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6F, 1.95F)
+	public static final EntityType<PigEntity> field_6093 = register(
+		"pig", EntityType.Builder.create(PigEntity::new, SpawnGroup.field_6294).setDimensions(0.9F, 0.9F).maxTrackingRange(10)
 	);
-	public static final EntityType<PolarBearEntity> POLAR_BEAR = register(
-		"polar_bear", EntityType.Builder.create(PolarBearEntity::new, EntityCategory.CREATURE).setDimensions(1.4F, 1.4F)
+	public static final EntityType<PiglinEntity> field_22281 = register(
+		"piglin", EntityType.Builder.create(PiglinEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<TntEntity> TNT = register(
-		"tnt", EntityType.Builder.<TntEntity>create(TntEntity::new, EntityCategory.MISC).makeFireImmune().setDimensions(0.98F, 0.98F)
+	public static final EntityType<PiglinBruteEntity> field_25751 = register(
+		"piglin_brute", EntityType.Builder.create(PiglinBruteEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<RabbitEntity> RABBIT = register(
-		"rabbit", EntityType.Builder.create(RabbitEntity::new, EntityCategory.CREATURE).setDimensions(0.4F, 0.5F)
+	public static final EntityType<PillagerEntity> field_6105 = register(
+		"pillager", EntityType.Builder.create(PillagerEntity::new, SpawnGroup.field_6302).spawnableFarFromPlayer().setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<SalmonEntity> SALMON = register(
-		"salmon", EntityType.Builder.create(SalmonEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.7F, 0.4F)
+	public static final EntityType<PolarBearEntity> field_6042 = register(
+		"polar_bear", EntityType.Builder.create(PolarBearEntity::new, SpawnGroup.field_6294).setDimensions(1.4F, 1.4F).maxTrackingRange(10)
 	);
-	public static final EntityType<SheepEntity> SHEEP = register(
-		"sheep", EntityType.Builder.create(SheepEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.3F)
+	public static final EntityType<TntEntity> field_6063 = register(
+		"tnt",
+		EntityType.Builder.<TntEntity>create(TntEntity::new, SpawnGroup.field_17715)
+			.makeFireImmune()
+			.setDimensions(0.98F, 0.98F)
+			.maxTrackingRange(10)
+			.trackingTickInterval(10)
 	);
-	public static final EntityType<ShulkerEntity> SHULKER = register(
-		"shulker", EntityType.Builder.create(ShulkerEntity::new, EntityCategory.MONSTER).makeFireImmune().spawnableFarFromPlayer().setDimensions(1.0F, 1.0F)
+	public static final EntityType<PufferfishEntity> field_6062 = register(
+		"pufferfish", EntityType.Builder.create(PufferfishEntity::new, SpawnGroup.field_24460).setDimensions(0.7F, 0.7F).maxTrackingRange(4)
 	);
-	public static final EntityType<ShulkerBulletEntity> SHULKER_BULLET = register(
-		"shulker_bullet", EntityType.Builder.<ShulkerBulletEntity>create(ShulkerBulletEntity::new, EntityCategory.MISC).setDimensions(0.3125F, 0.3125F)
+	public static final EntityType<RabbitEntity> field_6140 = register(
+		"rabbit", EntityType.Builder.create(RabbitEntity::new, SpawnGroup.field_6294).setDimensions(0.4F, 0.5F).maxTrackingRange(8)
 	);
-	public static final EntityType<SilverfishEntity> SILVERFISH = register(
-		"silverfish", EntityType.Builder.create(SilverfishEntity::new, EntityCategory.MONSTER).setDimensions(0.4F, 0.3F)
+	public static final EntityType<RavagerEntity> field_6134 = register(
+		"ravager", EntityType.Builder.create(RavagerEntity::new, SpawnGroup.field_6302).setDimensions(1.95F, 2.2F).maxTrackingRange(10)
 	);
-	public static final EntityType<SkeletonEntity> SKELETON = register(
-		"skeleton", EntityType.Builder.create(SkeletonEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.99F)
+	public static final EntityType<SalmonEntity> field_6073 = register(
+		"salmon", EntityType.Builder.create(SalmonEntity::new, SpawnGroup.field_24460).setDimensions(0.7F, 0.4F).maxTrackingRange(4)
 	);
-	public static final EntityType<SkeletonHorseEntity> SKELETON_HORSE = register(
-		"skeleton_horse", EntityType.Builder.create(SkeletonHorseEntity::new, EntityCategory.CREATURE).setDimensions(1.3964844F, 1.6F)
+	public static final EntityType<SheepEntity> field_6115 = register(
+		"sheep", EntityType.Builder.create(SheepEntity::new, SpawnGroup.field_6294).setDimensions(0.9F, 1.3F).maxTrackingRange(10)
 	);
-	public static final EntityType<SlimeEntity> SLIME = register(
-		"slime", EntityType.Builder.create(SlimeEntity::new, EntityCategory.MONSTER).setDimensions(2.04F, 2.04F)
+	public static final EntityType<ShulkerEntity> field_6109 = register(
+		"shulker",
+		EntityType.Builder.create(ShulkerEntity::new, SpawnGroup.field_6302).makeFireImmune().spawnableFarFromPlayer().setDimensions(1.0F, 1.0F).maxTrackingRange(10)
 	);
-	public static final EntityType<SmallFireballEntity> SMALL_FIREBALL = register(
-		"small_fireball", EntityType.Builder.<SmallFireballEntity>create(SmallFireballEntity::new, EntityCategory.MISC).setDimensions(0.3125F, 0.3125F)
+	public static final EntityType<ShulkerBulletEntity> field_6100 = register(
+		"shulker_bullet",
+		EntityType.Builder.<ShulkerBulletEntity>create(ShulkerBulletEntity::new, SpawnGroup.field_17715).setDimensions(0.3125F, 0.3125F).maxTrackingRange(8)
 	);
-	public static final EntityType<SnowGolemEntity> SNOW_GOLEM = register(
-		"snow_golem", EntityType.Builder.create(SnowGolemEntity::new, EntityCategory.MISC).setDimensions(0.7F, 1.9F)
+	public static final EntityType<SilverfishEntity> field_6125 = register(
+		"silverfish", EntityType.Builder.create(SilverfishEntity::new, SpawnGroup.field_6302).setDimensions(0.4F, 0.3F).maxTrackingRange(8)
 	);
-	public static final EntityType<SnowballEntity> SNOWBALL = register(
-		"snowball", EntityType.Builder.<SnowballEntity>create(SnowballEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<SkeletonEntity> field_6137 = register(
+		"skeleton", EntityType.Builder.create(SkeletonEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.99F).maxTrackingRange(8)
 	);
-	public static final EntityType<SpectralArrowEntity> SPECTRAL_ARROW = register(
-		"spectral_arrow", EntityType.Builder.<SpectralArrowEntity>create(SpectralArrowEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.5F)
+	public static final EntityType<SkeletonHorseEntity> field_6075 = register(
+		"skeleton_horse", EntityType.Builder.create(SkeletonHorseEntity::new, SpawnGroup.field_6294).setDimensions(1.3964844F, 1.6F).maxTrackingRange(10)
 	);
-	public static final EntityType<SpiderEntity> SPIDER = register(
-		"spider", EntityType.Builder.create(SpiderEntity::new, EntityCategory.MONSTER).setDimensions(1.4F, 0.9F)
+	public static final EntityType<SlimeEntity> field_6069 = register(
+		"slime", EntityType.Builder.create(SlimeEntity::new, SpawnGroup.field_6302).setDimensions(2.04F, 2.04F).maxTrackingRange(10)
 	);
-	public static final EntityType<SquidEntity> SQUID = register(
-		"squid", EntityType.Builder.create(SquidEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.8F, 0.8F)
+	public static final EntityType<SmallFireballEntity> field_6049 = register(
+		"small_fireball",
+		EntityType.Builder.<SmallFireballEntity>create(SmallFireballEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.3125F, 0.3125F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 	);
-	public static final EntityType<StrayEntity> STRAY = register(
-		"stray", EntityType.Builder.create(StrayEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.99F)
+	public static final EntityType<SnowGolemEntity> field_6047 = register(
+		"snow_golem", EntityType.Builder.create(SnowGolemEntity::new, SpawnGroup.field_17715).setDimensions(0.7F, 1.9F).maxTrackingRange(8)
 	);
-	public static final EntityType<TraderLlamaEntity> TRADER_LLAMA = register(
-		"trader_llama", EntityType.Builder.create(TraderLlamaEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.87F)
+	public static final EntityType<SnowballEntity> field_6068 = register(
+		"snowball",
+		EntityType.Builder.<SnowballEntity>create(SnowballEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.25F, 0.25F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 	);
-	public static final EntityType<TropicalFishEntity> TROPICAL_FISH = register(
-		"tropical_fish", EntityType.Builder.create(TropicalFishEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.5F, 0.4F)
+	public static final EntityType<SpectralArrowEntity> field_6135 = register(
+		"spectral_arrow",
+		EntityType.Builder.<SpectralArrowEntity>create(SpectralArrowEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.5F, 0.5F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(20)
 	);
-	public static final EntityType<TurtleEntity> TURTLE = register(
-		"turtle", EntityType.Builder.create(TurtleEntity::new, EntityCategory.CREATURE).setDimensions(1.2F, 0.4F)
+	public static final EntityType<SpiderEntity> field_6079 = register(
+		"spider", EntityType.Builder.create(SpiderEntity::new, SpawnGroup.field_6302).setDimensions(1.4F, 0.9F).maxTrackingRange(8)
 	);
-	public static final EntityType<ThrownEggEntity> EGG = register(
-		"egg", EntityType.Builder.<ThrownEggEntity>create(ThrownEggEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<SquidEntity> field_6114 = register(
+		"squid", EntityType.Builder.create(SquidEntity::new, SpawnGroup.field_6300).setDimensions(0.8F, 0.8F).maxTrackingRange(8)
 	);
-	public static final EntityType<ThrownEnderpearlEntity> ENDER_PEARL = register(
-		"ender_pearl", EntityType.Builder.<ThrownEnderpearlEntity>create(ThrownEnderpearlEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<StrayEntity> field_6098 = register(
+		"stray", EntityType.Builder.create(StrayEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.99F).maxTrackingRange(8)
 	);
-	public static final EntityType<ThrownExperienceBottleEntity> EXPERIENCE_BOTTLE = register(
+	public static final EntityType<StriderEntity> field_23214 = register(
+		"strider", EntityType.Builder.create(StriderEntity::new, SpawnGroup.field_6294).makeFireImmune().setDimensions(0.9F, 1.7F).maxTrackingRange(10)
+	);
+	public static final EntityType<EggEntity> field_6144 = register(
+		"egg", EntityType.Builder.<EggEntity>create(EggEntity::new, SpawnGroup.field_17715).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
+	);
+	public static final EntityType<EnderPearlEntity> field_6082 = register(
+		"ender_pearl",
+		EntityType.Builder.<EnderPearlEntity>create(EnderPearlEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.25F, 0.25F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
+	);
+	public static final EntityType<ExperienceBottleEntity> field_6064 = register(
 		"experience_bottle",
-		EntityType.Builder.<ThrownExperienceBottleEntity>create(ThrownExperienceBottleEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+		EntityType.Builder.<ExperienceBottleEntity>create(ExperienceBottleEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.25F, 0.25F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 	);
-	public static final EntityType<ThrownPotionEntity> POTION = register(
-		"potion", EntityType.Builder.<ThrownPotionEntity>create(ThrownPotionEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<PotionEntity> field_6045 = register(
+		"potion",
+		EntityType.Builder.<PotionEntity>create(PotionEntity::new, SpawnGroup.field_17715).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
 	);
-	public static final EntityType<TridentEntity> TRIDENT = register(
-		"trident", EntityType.Builder.<TridentEntity>create(TridentEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.5F)
+	public static final EntityType<TridentEntity> field_6127 = register(
+		"trident",
+		EntityType.Builder.<TridentEntity>create(TridentEntity::new, SpawnGroup.field_17715).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20)
 	);
-	public static final EntityType<VexEntity> VEX = register(
-		"vex", EntityType.Builder.create(VexEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.4F, 0.8F)
+	public static final EntityType<TraderLlamaEntity> field_17714 = register(
+		"trader_llama", EntityType.Builder.create(TraderLlamaEntity::new, SpawnGroup.field_6294).setDimensions(0.9F, 1.87F).maxTrackingRange(10)
 	);
-	public static final EntityType<VillagerEntity> VILLAGER = register(
-		"villager", EntityType.Builder.<VillagerEntity>create(VillagerEntity::new, EntityCategory.MISC).setDimensions(0.6F, 1.95F)
+	public static final EntityType<TropicalFishEntity> field_6111 = register(
+		"tropical_fish", EntityType.Builder.create(TropicalFishEntity::new, SpawnGroup.field_24460).setDimensions(0.5F, 0.4F).maxTrackingRange(4)
 	);
-	public static final EntityType<IronGolemEntity> IRON_GOLEM = register(
-		"iron_golem", EntityType.Builder.create(IronGolemEntity::new, EntityCategory.MISC).setDimensions(1.4F, 2.7F)
+	public static final EntityType<TurtleEntity> field_6113 = register(
+		"turtle", EntityType.Builder.create(TurtleEntity::new, SpawnGroup.field_6294).setDimensions(1.2F, 0.4F).maxTrackingRange(10)
 	);
-	public static final EntityType<VindicatorEntity> VINDICATOR = register(
-		"vindicator", EntityType.Builder.create(VindicatorEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	public static final EntityType<VexEntity> field_6059 = register(
+		"vex", EntityType.Builder.create(VexEntity::new, SpawnGroup.field_6302).makeFireImmune().setDimensions(0.4F, 0.8F).maxTrackingRange(8)
 	);
-	public static final EntityType<PillagerEntity> PILLAGER = register(
-		"pillager", EntityType.Builder.create(PillagerEntity::new, EntityCategory.MONSTER).spawnableFarFromPlayer().setDimensions(0.6F, 1.95F)
+	public static final EntityType<VillagerEntity> field_6077 = register(
+		"villager", EntityType.Builder.<VillagerEntity>create(VillagerEntity::new, SpawnGroup.field_17715).setDimensions(0.6F, 1.95F).maxTrackingRange(10)
 	);
-	public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = register(
-		"wandering_trader", EntityType.Builder.create(WanderingTraderEntity::new, EntityCategory.CREATURE).setDimensions(0.6F, 1.95F)
+	public static final EntityType<VindicatorEntity> field_6117 = register(
+		"vindicator", EntityType.Builder.create(VindicatorEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<WitchEntity> WITCH = register(
-		"witch", EntityType.Builder.create(WitchEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	public static final EntityType<WanderingTraderEntity> field_17713 = register(
+		"wandering_trader", EntityType.Builder.create(WanderingTraderEntity::new, SpawnGroup.field_6294).setDimensions(0.6F, 1.95F).maxTrackingRange(10)
 	);
-	public static final EntityType<WitherEntity> WITHER = register(
-		"wither", EntityType.Builder.create(WitherEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.9F, 3.5F)
+	public static final EntityType<WitchEntity> field_6145 = register(
+		"witch", EntityType.Builder.create(WitchEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<WitherSkeletonEntity> WITHER_SKELETON = register(
-		"wither_skeleton", EntityType.Builder.create(WitherSkeletonEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.7F, 2.4F)
+	public static final EntityType<WitherEntity> field_6119 = register(
+		"wither",
+		EntityType.Builder.create(WitherEntity::new, SpawnGroup.field_6302)
+			.makeFireImmune()
+			.allowSpawningInside(Blocks.field_10606)
+			.setDimensions(0.9F, 3.5F)
+			.maxTrackingRange(10)
 	);
-	public static final EntityType<WitherSkullEntity> WITHER_SKULL = register(
-		"wither_skull", EntityType.Builder.<WitherSkullEntity>create(WitherSkullEntity::new, EntityCategory.MISC).setDimensions(0.3125F, 0.3125F)
+	public static final EntityType<WitherSkeletonEntity> field_6076 = register(
+		"wither_skeleton",
+		EntityType.Builder.create(WitherSkeletonEntity::new, SpawnGroup.field_6302)
+			.makeFireImmune()
+			.allowSpawningInside(Blocks.field_10606)
+			.setDimensions(0.7F, 2.4F)
+			.maxTrackingRange(8)
 	);
-	public static final EntityType<WolfEntity> WOLF = register(
-		"wolf", EntityType.Builder.create(WolfEntity::new, EntityCategory.CREATURE).setDimensions(0.6F, 0.85F)
+	public static final EntityType<WitherSkullEntity> field_6130 = register(
+		"wither_skull",
+		EntityType.Builder.<WitherSkullEntity>create(WitherSkullEntity::new, SpawnGroup.field_17715)
+			.setDimensions(0.3125F, 0.3125F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 	);
-	public static final EntityType<ZombieEntity> ZOMBIE = register(
-		"zombie", EntityType.Builder.<ZombieEntity>create(ZombieEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	public static final EntityType<WolfEntity> field_6055 = register(
+		"wolf", EntityType.Builder.create(WolfEntity::new, SpawnGroup.field_6294).setDimensions(0.6F, 0.85F).maxTrackingRange(10)
 	);
-	public static final EntityType<ZombieHorseEntity> ZOMBIE_HORSE = register(
-		"zombie_horse", EntityType.Builder.create(ZombieHorseEntity::new, EntityCategory.CREATURE).setDimensions(1.3964844F, 1.6F)
+	public static final EntityType<ZoglinEntity> field_23696 = register(
+		"zoglin", EntityType.Builder.create(ZoglinEntity::new, SpawnGroup.field_6302).makeFireImmune().setDimensions(1.3964844F, 1.4F).maxTrackingRange(8)
 	);
-	public static final EntityType<ZombieVillagerEntity> ZOMBIE_VILLAGER = register(
-		"zombie_villager", EntityType.Builder.create(ZombieVillagerEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	public static final EntityType<ZombieEntity> field_6051 = register(
+		"zombie", EntityType.Builder.<ZombieEntity>create(ZombieEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<PhantomEntity> PHANTOM = register(
-		"phantom", EntityType.Builder.create(PhantomEntity::new, EntityCategory.MONSTER).setDimensions(0.9F, 0.5F)
+	public static final EntityType<ZombieHorseEntity> field_6048 = register(
+		"zombie_horse", EntityType.Builder.create(ZombieHorseEntity::new, SpawnGroup.field_6294).setDimensions(1.3964844F, 1.6F).maxTrackingRange(10)
 	);
-	public static final EntityType<RavagerEntity> RAVAGER = register(
-		"ravager", EntityType.Builder.create(RavagerEntity::new, EntityCategory.MONSTER).setDimensions(1.95F, 2.2F)
+	public static final EntityType<ZombieVillagerEntity> field_6054 = register(
+		"zombie_villager", EntityType.Builder.create(ZombieVillagerEntity::new, SpawnGroup.field_6302).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<LightningEntity> LIGHTNING_BOLT = register(
-		"lightning_bolt", EntityType.Builder.<LightningEntity>create(EntityCategory.MISC).disableSaving().setDimensions(0.0F, 0.0F)
+	public static final EntityType<ZombifiedPiglinEntity> field_6050 = register(
+		"zombified_piglin",
+		EntityType.Builder.create(ZombifiedPiglinEntity::new, SpawnGroup.field_6302).makeFireImmune().setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
-	public static final EntityType<PlayerEntity> PLAYER = register(
-		"player", EntityType.Builder.<PlayerEntity>create(EntityCategory.MISC).disableSaving().disableSummon().setDimensions(0.6F, 1.8F)
+	public static final EntityType<PlayerEntity> field_6097 = register(
+		"player",
+		EntityType.Builder.<PlayerEntity>create(SpawnGroup.field_17715)
+			.disableSaving()
+			.disableSummon()
+			.setDimensions(0.6F, 1.8F)
+			.maxTrackingRange(32)
+			.trackingTickInterval(2)
 	);
-	public static final EntityType<FishingBobberEntity> FISHING_BOBBER = register(
-		"fishing_bobber", EntityType.Builder.<FishingBobberEntity>create(EntityCategory.MISC).disableSaving().disableSummon().setDimensions(0.25F, 0.25F)
+	public static final EntityType<FishingBobberEntity> field_6103 = register(
+		"fishing_bobber",
+		EntityType.Builder.<FishingBobberEntity>create(SpawnGroup.field_17715)
+			.disableSaving()
+			.disableSummon()
+			.setDimensions(0.25F, 0.25F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(5)
 	);
 	private final EntityType.EntityFactory<T> factory;
-	private final EntityCategory category;
+	private final SpawnGroup spawnGroup;
+	private final ImmutableSet<Block> canSpawnInside;
 	private final boolean saveable;
 	private final boolean summonable;
 	private final boolean fireImmune;
 	private final boolean spawnableFarFromPlayer;
+	private final int maxTrackDistance;
+	private final int trackTickInterval;
 	@Nullable
 	private String translationKey;
 	@Nullable
@@ -459,33 +614,45 @@ public class EntityType<T extends Entity> {
 
 	public EntityType(
 		EntityType.EntityFactory<T> factory,
-		EntityCategory category,
+		SpawnGroup spawnGroup,
 		boolean saveable,
 		boolean summonable,
 		boolean fireImmune,
 		boolean spawnableFarFromPlayer,
-		EntityDimensions dimensions
+		ImmutableSet<Block> immutableSet,
+		EntityDimensions entityDimensions,
+		int i,
+		int j
 	) {
 		this.factory = factory;
-		this.category = category;
+		this.spawnGroup = spawnGroup;
 		this.spawnableFarFromPlayer = spawnableFarFromPlayer;
 		this.saveable = saveable;
 		this.summonable = summonable;
 		this.fireImmune = fireImmune;
-		this.dimensions = dimensions;
+		this.canSpawnInside = immutableSet;
+		this.dimensions = entityDimensions;
+		this.maxTrackDistance = i;
+		this.trackTickInterval = j;
 	}
 
 	@Nullable
 	public Entity spawnFromItemStack(
-		World world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnType spawnType, boolean alignPosition, boolean invertY
+		ServerWorld serverWorld,
+		@Nullable ItemStack stack,
+		@Nullable PlayerEntity player,
+		BlockPos pos,
+		SpawnReason spawnReason,
+		boolean alignPosition,
+		boolean invertY
 	) {
 		return this.spawn(
-			world,
+			serverWorld,
 			stack == null ? null : stack.getTag(),
 			stack != null && stack.hasCustomName() ? stack.getName() : null,
 			player,
 			pos,
-			spawnType,
+			spawnReason,
 			alignPosition,
 			invertY
 		);
@@ -493,51 +660,54 @@ public class EntityType<T extends Entity> {
 
 	@Nullable
 	public T spawn(
-		World world,
+		ServerWorld serverWorld,
 		@Nullable CompoundTag itemTag,
 		@Nullable Text name,
 		@Nullable PlayerEntity player,
 		BlockPos pos,
-		SpawnType spawnType,
+		SpawnReason spawnReason,
 		boolean alignPosition,
 		boolean invertY
 	) {
-		T entity = this.create(world, itemTag, name, player, pos, spawnType, alignPosition, invertY);
-		world.spawnEntity(entity);
+		T entity = this.create(serverWorld, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
+		if (entity != null) {
+			serverWorld.spawnEntityAndPassengers(entity);
+		}
+
 		return entity;
 	}
 
 	@Nullable
 	public T create(
-		World world,
+		ServerWorld serverWorld,
 		@Nullable CompoundTag itemTag,
 		@Nullable Text name,
 		@Nullable PlayerEntity player,
 		BlockPos pos,
-		SpawnType spawnType,
+		SpawnReason spawnReason,
 		boolean alignPosition,
 		boolean invertY
 	) {
-		T entity = this.create(world);
+		T entity = this.create(serverWorld);
 		if (entity == null) {
 			return null;
 		} else {
 			double d;
 			if (alignPosition) {
-				entity.setPosition((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5);
-				d = getOriginY(world, pos, invertY, entity.getBoundingBox());
+				entity.updatePosition((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5);
+				d = getOriginY(serverWorld, pos, invertY, entity.getBoundingBox());
 			} else {
 				d = 0.0;
 			}
 
-			entity.setPositionAndAngles(
-				(double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0F), 0.0F
+			entity.refreshPositionAndAngles(
+				(double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(serverWorld.random.nextFloat() * 360.0F), 0.0F
 			);
 			if (entity instanceof MobEntity) {
 				MobEntity mobEntity = (MobEntity)entity;
 				mobEntity.headYaw = mobEntity.yaw;
 				mobEntity.bodyYaw = mobEntity.yaw;
-				mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, itemTag);
+				mobEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemTag);
 				mobEntity.playAmbientSound();
 			}
 
@@ -545,19 +715,19 @@ public class EntityType<T extends Entity> {
 				entity.setCustomName(name);
 			}
 
-			loadFromEntityTag(world, player, entity, itemTag);
+			loadFromEntityTag(serverWorld, player, entity, itemTag);
 			return entity;
 		}
 	}
 
-	protected static double getOriginY(WorldView worldView, BlockPos pos, boolean invertY, Box boundingBox) {
+	protected static double getOriginY(WorldView world, BlockPos pos, boolean invertY, Box boundingBox) {
 		Box box = new Box(pos);
 		if (invertY) {
 			box = box.stretch(0.0, -1.0, 0.0);
 		}
 
-		Stream<VoxelShape> stream = worldView.getCollisions(null, box, Collections.emptySet());
-		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, invertY ? -2.0 : -1.0);
+		Stream<VoxelShape> stream = world.getCollisions(null, box, entity -> true);
+		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.field_11052, boundingBox, stream, invertY ? -2.0 : -1.0);
 	}
 
 	public static void loadFromEntityTag(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable CompoundTag itemTag) {
@@ -591,8 +761,8 @@ public class EntityType<T extends Entity> {
 		return this.spawnableFarFromPlayer;
 	}
 
-	public EntityCategory getCategory() {
-		return this.category;
+	public SpawnGroup getSpawnGroup() {
+		return this.spawnGroup;
 	}
 
 	public String getTranslationKey() {
@@ -609,6 +779,10 @@ public class EntityType<T extends Entity> {
 		}
 
 		return this.name;
+	}
+
+	public String toString() {
+		return this.getTranslationKey();
 	}
 
 	public Identifier getLootTableId() {
@@ -658,6 +832,28 @@ public class EntityType<T extends Entity> {
 		return new Box(feetX - (double)f, feetY, feetZ - (double)f, feetX + (double)f, feetY + (double)this.getHeight(), feetZ + (double)f);
 	}
 
+	/**
+	 * Returns whether the EntityType can spawn inside the given block.
+	 * 
+	 * <p>By default, non-fire-immune mobs can't spawn in/on blocks dealing fire damage.
+	 * Any mob can't spawn in wither roses, sweet berry bush, or cacti.
+	 * 
+	 * <p>This can be overwritten via {@link EntityType.Builder#allowSpawningInside(Block[])}
+	 */
+	public boolean isInvalidSpawn(BlockState blockState) {
+		if (this.canSpawnInside.contains(blockState.getBlock())) {
+			return false;
+		} else {
+			return this.fireImmune
+					|| !blockState.isIn(BlockTags.field_21952)
+						&& !blockState.isOf(Blocks.field_10092)
+						&& !CampfireBlock.isLitCampfire(blockState)
+						&& !blockState.isOf(Blocks.field_10164)
+				? blockState.isOf(Blocks.field_10606) || blockState.isOf(Blocks.field_16999) || blockState.isOf(Blocks.field_10029)
+				: true;
+		}
+	}
+
 	public EntityDimensions getDimensions() {
 		return this.dimensions;
 	}
@@ -693,113 +889,63 @@ public class EntityType<T extends Entity> {
 		}
 	}
 
+	/**
+	 * Returns the tracking distance, <b>in chunks</b>, of this type of entity
+	 * for clients. This will be then modified by the server's tracking
+	 * distance multiplier.
+	 */
 	public int getMaxTrackDistance() {
-		if (this == PLAYER) {
-			return 32;
-		} else if (this == END_CRYSTAL) {
-			return 16;
-		} else if (this == ENDER_DRAGON
-			|| this == TNT
-			|| this == FALLING_BLOCK
-			|| this == ITEM_FRAME
-			|| this == LEASH_KNOT
-			|| this == PAINTING
-			|| this == ARMOR_STAND
-			|| this == EXPERIENCE_ORB
-			|| this == AREA_EFFECT_CLOUD
-			|| this == EVOKER_FANGS) {
-			return 10;
-		} else {
-			return this != FISHING_BOBBER
-					&& this != ARROW
-					&& this != SPECTRAL_ARROW
-					&& this != TRIDENT
-					&& this != SMALL_FIREBALL
-					&& this != DRAGON_FIREBALL
-					&& this != FIREBALL
-					&& this != WITHER_SKULL
-					&& this != SNOWBALL
-					&& this != LLAMA_SPIT
-					&& this != ENDER_PEARL
-					&& this != EYE_OF_ENDER
-					&& this != EGG
-					&& this != POTION
-					&& this != EXPERIENCE_BOTTLE
-					&& this != FIREWORK_ROCKET
-					&& this != ITEM
-				? 5
-				: 4;
-		}
+		return this.maxTrackDistance;
 	}
 
 	public int getTrackTickInterval() {
-		if (this == PLAYER || this == EVOKER_FANGS) {
-			return 2;
-		} else if (this == EYE_OF_ENDER) {
-			return 4;
-		} else if (this == FISHING_BOBBER) {
-			return 5;
-		} else if (this == SMALL_FIREBALL
-			|| this == DRAGON_FIREBALL
-			|| this == FIREBALL
-			|| this == WITHER_SKULL
-			|| this == SNOWBALL
-			|| this == LLAMA_SPIT
-			|| this == ENDER_PEARL
-			|| this == EGG
-			|| this == POTION
-			|| this == EXPERIENCE_BOTTLE
-			|| this == FIREWORK_ROCKET
-			|| this == TNT) {
-			return 10;
-		} else if (this == ARROW || this == SPECTRAL_ARROW || this == TRIDENT || this == ITEM || this == FALLING_BLOCK || this == EXPERIENCE_ORB) {
-			return 20;
-		} else {
-			return this != ITEM_FRAME && this != LEASH_KNOT && this != PAINTING && this != AREA_EFFECT_CLOUD && this != END_CRYSTAL ? 3 : Integer.MAX_VALUE;
-		}
+		return this.trackTickInterval;
 	}
 
 	public boolean alwaysUpdateVelocity() {
-		return this != PLAYER
-			&& this != LLAMA_SPIT
-			&& this != WITHER
-			&& this != BAT
-			&& this != ITEM_FRAME
-			&& this != LEASH_KNOT
-			&& this != PAINTING
-			&& this != END_CRYSTAL
-			&& this != EVOKER_FANGS;
+		return this != field_6097
+			&& this != field_6124
+			&& this != field_6119
+			&& this != field_6108
+			&& this != field_6043
+			&& this != field_6138
+			&& this != field_6120
+			&& this != field_6110
+			&& this != field_6060;
 	}
 
-	public boolean isTaggedWith(Tag<EntityType<?>> tag) {
+	public boolean isIn(Tag<EntityType<?>> tag) {
 		return tag.contains(this);
 	}
 
 	public static class Builder<T extends Entity> {
 		private final EntityType.EntityFactory<T> factory;
-		private final EntityCategory category;
+		private final SpawnGroup spawnGroup;
+		private ImmutableSet<Block> canSpawnInside = ImmutableSet.of();
 		private boolean saveable = true;
 		private boolean summonable = true;
 		private boolean fireImmune;
 		private boolean spawnableFarFromPlayer;
-		private EntityDimensions size = EntityDimensions.changing(0.6F, 1.8F);
+		private int maxTrackingRange = 5;
+		private int trackingTickInterval = 3;
+		private EntityDimensions dimensions = EntityDimensions.changing(0.6F, 1.8F);
 
-		private Builder(EntityType.EntityFactory<T> factory, EntityCategory category) {
+		private Builder(EntityType.EntityFactory<T> factory, SpawnGroup spawnGroup) {
 			this.factory = factory;
-			this.category = category;
-			this.spawnableFarFromPlayer = category == EntityCategory.CREATURE || category == EntityCategory.MISC;
+			this.spawnGroup = spawnGroup;
+			this.spawnableFarFromPlayer = spawnGroup == SpawnGroup.field_6294 || spawnGroup == SpawnGroup.field_17715;
 		}
 
-		public static <T extends Entity> EntityType.Builder<T> create(EntityType.EntityFactory<T> factory, EntityCategory category) {
-			return new EntityType.Builder<>(factory, category);
+		public static <T extends Entity> EntityType.Builder<T> create(EntityType.EntityFactory<T> factory, SpawnGroup spawnGroup) {
+			return new EntityType.Builder<>(factory, spawnGroup);
 		}
 
-		public static <T extends Entity> EntityType.Builder<T> create(EntityCategory category) {
-			return new EntityType.Builder<>((entityType, world) -> null, category);
+		public static <T extends Entity> EntityType.Builder<T> create(SpawnGroup spawnGroup) {
+			return new EntityType.Builder<>((entityType, world) -> null, spawnGroup);
 		}
 
 		public EntityType.Builder<T> setDimensions(float width, float height) {
-			this.size = EntityDimensions.changing(width, height);
+			this.dimensions = EntityDimensions.changing(width, height);
 			return this;
 		}
 
@@ -818,25 +964,53 @@ public class EntityType<T extends Entity> {
 			return this;
 		}
 
+		/**
+		 * Allows this type of entity to spawn inside the given block, bypassing the default
+		 * wither rose, sweet berry bush, cactus, and fire-damage-dealing blocks for
+		 * non-fire-resistant mobs.
+		 * 
+		 * <p>{@code minecraft:prevent_mob_spawning_inside} tag overrides this.
+		 * With this setting, fire resistant mobs can spawn on/in fire damage dealing blocks,
+		 * and wither skeletons can spawn in wither roses. If a block added is not in the default
+		 * blacklist, the addition has no effect.
+		 */
+		public EntityType.Builder<T> allowSpawningInside(Block... blocks) {
+			this.canSpawnInside = ImmutableSet.copyOf(blocks);
+			return this;
+		}
+
 		public EntityType.Builder<T> spawnableFarFromPlayer() {
 			this.spawnableFarFromPlayer = true;
 			return this;
 		}
 
+		public EntityType.Builder<T> maxTrackingRange(int maxTrackingRange) {
+			this.maxTrackingRange = maxTrackingRange;
+			return this;
+		}
+
+		public EntityType.Builder<T> trackingTickInterval(int trackingTickInterval) {
+			this.trackingTickInterval = trackingTickInterval;
+			return this;
+		}
+
 		public EntityType<T> build(String id) {
 			if (this.saveable) {
-				try {
-					Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.ENTITY_TREE, id);
-				} catch (IllegalStateException var3) {
-					if (SharedConstants.isDevelopment) {
-						throw var3;
-					}
-
-					EntityType.LOGGER.warn("No data fixer registered for entity {}", id);
-				}
+				Util.getChoiceType(TypeReferences.ENTITY_TREE, id);
 			}
 
-			return new EntityType<>(this.factory, this.category, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.size);
+			return new EntityType<>(
+				this.factory,
+				this.spawnGroup,
+				this.saveable,
+				this.summonable,
+				this.fireImmune,
+				this.spawnableFarFromPlayer,
+				this.canSpawnInside,
+				this.dimensions,
+				this.maxTrackingRange,
+				this.trackingTickInterval
+			);
 		}
 	}
 

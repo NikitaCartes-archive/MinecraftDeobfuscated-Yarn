@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -31,8 +31,8 @@ public class DataTracker {
 	private boolean empty = true;
 	private boolean dirty;
 
-	public DataTracker(Entity entity) {
-		this.trackedEntity = entity;
+	public DataTracker(Entity trackedEntity) {
+		this.trackedEntity = trackedEntity;
 	}
 
 	public static <T> TrackedData<T> registerData(Class<? extends Entity> entityClass, TrackedDataHandler<T> dataHandler) {

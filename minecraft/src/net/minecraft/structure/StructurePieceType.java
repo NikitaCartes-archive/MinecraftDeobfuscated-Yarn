@@ -9,8 +9,6 @@ public interface StructurePieceType {
 	StructurePieceType MINESHAFT_CROSSING = register(MineshaftGenerator.MineshaftCrossing::new, "MSCrossing");
 	StructurePieceType MINESHAFT_ROOM = register(MineshaftGenerator.MineshaftRoom::new, "MSRoom");
 	StructurePieceType MINESHAFT_STAIRS = register(MineshaftGenerator.MineshaftStairs::new, "MSStairs");
-	StructurePieceType PILLAGER_OUTPOST = register(PillagerOutpostGenerator.Piece::new, "PCP");
-	StructurePieceType VILLAGE = register(VillageGenerator.Piece::new, "NVi");
 	StructurePieceType NETHER_FORTRESS_BRIDGE_CROSSING = register(NetherFortressGenerator.BridgeCrossing::new, "NeBCr");
 	StructurePieceType NETHER_FORTRESS_BRIDGE_END = register(NetherFortressGenerator.BridgeEnd::new, "NeBEF");
 	StructurePieceType NETHER_FORTRESS_BRIDGE = register(NetherFortressGenerator.Bridge::new, "NeBS");
@@ -42,6 +40,7 @@ public interface StructurePieceType {
 	StructurePieceType JUNGLE_TEMPLE = register(JungleTempleGenerator::new, "TeJP");
 	StructurePieceType OCEAN_TEMPLE = register(OceanRuinGenerator.Piece::new, "ORP");
 	StructurePieceType IGLOO = register(IglooGenerator.Piece::new, "Iglu");
+	StructurePieceType RUINED_PORTAL = register(RuinedPortalStructurePiece::new, "RUPO");
 	StructurePieceType SWAMP_HUT = register(SwampHutGenerator::new, "TeSH");
 	StructurePieceType DESERT_TEMPLE = register(DesertTempleGenerator::new, "TeDP");
 	StructurePieceType OCEAN_MONUMENT_BASE = register(OceanMonumentGenerator.Base::new, "OMB");
@@ -60,6 +59,8 @@ public interface StructurePieceType {
 	StructurePieceType WOODLAND_MANSION = register(WoodlandMansionGenerator.Piece::new, "WMP");
 	StructurePieceType BURIED_TREASURE = register(BuriedTreasureGenerator.Piece::new, "BTP");
 	StructurePieceType SHIPWRECK = register(ShipwreckGenerator.Piece::new, "Shipwreck");
+	StructurePieceType NETHER_FOSSIL = register(NetherFossilGenerator.Piece::new, "NeFos");
+	StructurePieceType field_25840 = register(PoolStructurePiece::new, "jigsaw");
 
 	StructurePiece load(StructureManager structureManager, CompoundTag tag);
 

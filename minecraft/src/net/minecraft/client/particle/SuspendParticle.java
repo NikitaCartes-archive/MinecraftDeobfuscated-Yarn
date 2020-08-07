@@ -2,12 +2,12 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SuspendParticle extends SpriteBillboardParticle {
-	private SuspendParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+	private SuspendParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ);
 		float f = this.random.nextFloat() * 0.1F + 0.2F;
 		this.colorRed = f;
@@ -49,17 +49,17 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class DolphinFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17881;
+		private final SpriteProvider spriteProvider;
 
 		public DolphinFactory(SpriteProvider spriteProvider) {
-			this.field_17881 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
+		public Particle method_3110(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setColor(0.3F, 0.5F, 1.0F);
-			suspendParticle.setSprite(this.field_17881);
-			suspendParticle.setColorAlpha(1.0F - world.random.nextFloat() * 0.7F);
+			suspendParticle.setSprite(this.spriteProvider);
+			suspendParticle.setColorAlpha(1.0F - clientWorld.random.nextFloat() * 0.7F);
 			suspendParticle.setMaxAge(suspendParticle.getMaxAge() / 2);
 			return suspendParticle;
 		}
@@ -67,32 +67,32 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17880;
+		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
-			this.field_17880 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
-			suspendParticle.setSprite(this.field_17880);
+		public Particle method_18044(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
+			suspendParticle.setSprite(this.spriteProvider);
 			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
-			suspendParticle.setMaxAge(3 + world.getRandom().nextInt(5));
+			suspendParticle.setMaxAge(3 + clientWorld.getRandom().nextInt(5));
 			return suspendParticle;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class HappyVillagerFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17882;
+		private final SpriteProvider spriteProvider;
 
 		public HappyVillagerFactory(SpriteProvider spriteProvider) {
-			this.field_17882 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
-			suspendParticle.setSprite(this.field_17882);
+		public Particle method_3111(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
+			suspendParticle.setSprite(this.spriteProvider);
 			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
 			return suspendParticle;
 		}
@@ -106,8 +106,8 @@ public class SuspendParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
+		public Particle method_3112(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setSprite(this.spriteProvider);
 			return suspendParticle;
 		}

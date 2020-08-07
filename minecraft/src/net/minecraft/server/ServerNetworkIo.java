@@ -27,14 +27,15 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.DisconnectS2CPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.LegacyQueryHandler;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.PacketEncoder;
+import net.minecraft.network.RateLimitedConnection;
 import net.minecraft.network.SizePrepender;
 import net.minecraft.network.SplitterHandler;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.IntegratedServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
 import net.minecraft.text.LiteralText;
@@ -42,7 +43,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Lazy;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -88,17 +88,18 @@ public class ServerNetworkIo {
 								protected void initChannel(Channel channel) throws Exception {
 									try {
 										channel.config().setOption(ChannelOption.TCP_NODELAY, true);
-									} catch (ChannelException var3) {
+									} catch (ChannelException var4) {
 									}
 
 									channel.pipeline()
 										.addLast("timeout", new ReadTimeoutHandler(30))
 										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this))
 										.addLast("splitter", new SplitterHandler())
-										.addLast("decoder", new DecoderHandler(NetworkSide.SERVERBOUND))
+										.addLast("decoder", new DecoderHandler(NetworkSide.field_11941))
 										.addLast("prepender", new SizePrepender())
-										.addLast("encoder", new PacketEncoder(NetworkSide.CLIENTBOUND));
-									ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
+										.addLast("encoder", new PacketEncoder(NetworkSide.field_11942));
+									int i = ServerNetworkIo.this.server.getRateLimit();
+									ClientConnection clientConnection = (ClientConnection)(i > 0 ? new RateLimitedConnection(i) : new ClientConnection(NetworkSide.field_11941));
 									ServerNetworkIo.this.connections.add(clientConnection);
 									channel.pipeline().addLast("packet_handler", clientConnection);
 									clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
@@ -120,7 +121,7 @@ public class ServerNetworkIo {
 			channelFuture = new ServerBootstrap().channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>() {
 				@Override
 				protected void initChannel(Channel channel) throws Exception {
-					ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
+					ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11941);
 					clientConnection.setPacketListener(new IntegratedServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 					ServerNetworkIo.this.connections.add(clientConnection);
 					channel.pipeline().addLast("packet_handler", clientConnection);
@@ -154,15 +155,12 @@ public class ServerNetworkIo {
 					if (clientConnection.isOpen()) {
 						try {
 							clientConnection.tick();
-						} catch (Exception var8) {
+						} catch (Exception var7) {
 							if (clientConnection.isLocal()) {
-								CrashReport crashReport = CrashReport.create(var8, "Ticking memory connection");
-								CrashReportSection crashReportSection = crashReport.addElement("Ticking connection");
-								crashReportSection.add("Connection", clientConnection::toString);
-								throw new CrashException(crashReport);
+								throw new CrashException(CrashReport.create(var7, "Ticking memory connection"));
 							}
 
-							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddress(), var8);
+							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddress(), var7);
 							Text text = new LiteralText("Internal server error");
 							clientConnection.send(new DisconnectS2CPacket(text), future -> clientConnection.disconnect(text));
 							clientConnection.disableAutoRead();

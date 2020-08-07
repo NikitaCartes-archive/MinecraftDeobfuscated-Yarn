@@ -5,17 +5,18 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class TraderLlamaEntity extends LlamaEntity {
@@ -33,7 +34,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Override
 	protected LlamaEntity createChild() {
-		return EntityType.TRADER_LLAMA.create(this.world);
+		return EntityType.field_17714.create(this.world);
 	}
 
 	@Override
@@ -69,12 +70,12 @@ public class TraderLlamaEntity extends LlamaEntity {
 	public void tickMovement() {
 		super.tickMovement();
 		if (!this.world.isClient) {
-			this.method_20501();
+			this.tryDespawn();
 		}
 	}
 
-	private void method_20501() {
-		if (this.method_20502()) {
+	private void tryDespawn() {
+		if (this.canDespawn()) {
 			this.despawnDelay = this.heldByTrader() ? ((WanderingTraderEntity)this.getHoldingEntity()).getDespawnDelay() - 1 : this.despawnDelay - 1;
 			if (this.despawnDelay <= 0) {
 				this.detachLeash(true, false);
@@ -83,7 +84,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		}
 	}
 
-	private boolean method_20502() {
+	private boolean canDespawn() {
 		return !this.isTame() && !this.leashedByPlayer() && !this.hasPlayerRider();
 	}
 
@@ -97,19 +98,18 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
+	public EntityData initialize(
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		if (spawnType == SpawnType.EVENT) {
+		if (spawnReason == SpawnReason.field_16467) {
 			this.setBreedingAge(0);
 		}
 
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyAllowed(false);
+			entityData = new PassiveEntity.PassiveData(false);
 		}
 
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public class DefendTraderGoal extends TrackTargetGoal {
@@ -120,7 +120,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		public DefendTraderGoal(LlamaEntity llama) {
 			super(llama, false);
 			this.llama = llama;
-			this.setControls(EnumSet.of(Goal.Control.TARGET));
+			this.setControls(EnumSet.of(Goal.Control.field_18408));
 		}
 
 		@Override

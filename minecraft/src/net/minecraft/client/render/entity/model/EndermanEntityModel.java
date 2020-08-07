@@ -36,8 +36,8 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 	}
 
 	@Override
-	public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(livingEntity, f, g, h, i, j);
+	public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
+		super.method_17087(livingEntity, f, g, h, i, j);
 		this.head.visible = true;
 		float k = -14.0F;
 		this.torso.pitch = 0.0F;

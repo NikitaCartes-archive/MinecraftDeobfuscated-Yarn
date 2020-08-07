@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
@@ -18,32 +18,34 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class CookingRecipeJsonFactory {
-	private final Item output;
-	private final Ingredient input;
-	private final float exp;
-	private final int time;
+	private final Item result;
+	private final Ingredient ingredient;
+	private final float experience;
+	private final int cookingTime;
 	private final Advancement.Task builder = Advancement.Task.create();
 	private String group;
 	private final CookingRecipeSerializer<?> serializer;
 
-	private CookingRecipeJsonFactory(ItemConvertible ouptut, Ingredient input, float exp, int time, CookingRecipeSerializer<?> serializer) {
-		this.output = ouptut.asItem();
-		this.input = input;
-		this.exp = exp;
-		this.time = time;
+	private CookingRecipeJsonFactory(ItemConvertible result, Ingredient ingredient, float experience, int cookingTime, CookingRecipeSerializer<?> serializer) {
+		this.result = result.asItem();
+		this.ingredient = ingredient;
+		this.experience = experience;
+		this.cookingTime = cookingTime;
 		this.serializer = serializer;
 	}
 
-	public static CookingRecipeJsonFactory create(Ingredient input, ItemConvertible output, float exp, int time, CookingRecipeSerializer<?> serializer) {
-		return new CookingRecipeJsonFactory(output, input, exp, time, serializer);
+	public static CookingRecipeJsonFactory create(
+		Ingredient ingredient, ItemConvertible result, float experience, int cookingTime, CookingRecipeSerializer<?> serializer
+	) {
+		return new CookingRecipeJsonFactory(result, ingredient, experience, cookingTime, serializer);
 	}
 
-	public static CookingRecipeJsonFactory createBlasting(Ingredient input, ItemConvertible output, float exp, int time) {
-		return create(input, output, exp, time, RecipeSerializer.BLASTING);
+	public static CookingRecipeJsonFactory createBlasting(Ingredient ingredient, ItemConvertible result, float experience, int cookingTime) {
+		return create(ingredient, result, experience, cookingTime, RecipeSerializer.BLASTING);
 	}
 
-	public static CookingRecipeJsonFactory createSmelting(Ingredient input, ItemConvertible output, float exp, int time) {
-		return create(input, output, exp, time, RecipeSerializer.SMELTING);
+	public static CookingRecipeJsonFactory createSmelting(Ingredient ingredient, ItemConvertible result, float experience, int cookingTime) {
+		return create(ingredient, result, experience, cookingTime, RecipeSerializer.SMELTING);
 	}
 
 	public CookingRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {
@@ -52,11 +54,11 @@ public class CookingRecipeJsonFactory {
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> exporter) {
-		this.offerTo(exporter, Registry.ITEM.getId(this.output));
+		this.offerTo(exporter, Registry.ITEM.getId(this.result));
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
-		Identifier identifier = Registry.ITEM.getId(this.output);
+		Identifier identifier = Registry.ITEM.getId(this.result);
 		Identifier identifier2 = new Identifier(recipeIdStr);
 		if (identifier2.equals(identifier)) {
 			throw new IllegalStateException("Recipe " + identifier2 + " should remove its 'save' argument");
@@ -69,19 +71,19 @@ public class CookingRecipeJsonFactory {
 		this.validate(recipeId);
 		this.builder
 			.parent(new Identifier("recipes/root"))
-			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(recipeId))
+			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
-			.criteriaMerger(CriteriaMerger.OR);
+			.criteriaMerger(CriterionMerger.OR);
 		exporter.accept(
 			new CookingRecipeJsonFactory.CookingRecipeJsonProvider(
 				recipeId,
 				this.group == null ? "" : this.group,
-				this.input,
-				this.output,
-				this.exp,
-				this.time,
+				this.ingredient,
+				this.result,
+				this.experience,
+				this.cookingTime,
 				this.builder,
-				new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath()),
+				new Identifier(recipeId.getNamespace(), "recipes/" + this.result.getGroup().getName() + "/" + recipeId.getPath()),
 				(RecipeSerializer<? extends AbstractCookingRecipe>)this.serializer
 			)
 		);
@@ -102,28 +104,28 @@ public class CookingRecipeJsonFactory {
 		private final int cookingTime;
 		private final Advancement.Task builder;
 		private final Identifier advancementId;
-		private final RecipeSerializer<? extends AbstractCookingRecipe> cookingRecipeSerializer;
+		private final RecipeSerializer<? extends AbstractCookingRecipe> serializer;
 
 		public CookingRecipeJsonProvider(
 			Identifier recipeId,
 			String group,
-			Ingredient input,
-			Item output,
-			float exp,
-			int time,
+			Ingredient ingredient,
+			Item result,
+			float experience,
+			int cookingTime,
 			Advancement.Task builder,
 			Identifier advancementId,
 			RecipeSerializer<? extends AbstractCookingRecipe> serializer
 		) {
 			this.recipeId = recipeId;
 			this.group = group;
-			this.ingredient = input;
-			this.result = output;
-			this.experience = exp;
-			this.cookingTime = time;
+			this.ingredient = ingredient;
+			this.result = result;
+			this.experience = experience;
+			this.cookingTime = cookingTime;
 			this.builder = builder;
 			this.advancementId = advancementId;
-			this.cookingRecipeSerializer = serializer;
+			this.serializer = serializer;
 		}
 
 		@Override
@@ -140,7 +142,7 @@ public class CookingRecipeJsonFactory {
 
 		@Override
 		public RecipeSerializer<?> getSerializer() {
-			return this.cookingRecipeSerializer;
+			return this.serializer;
 		}
 
 		@Override

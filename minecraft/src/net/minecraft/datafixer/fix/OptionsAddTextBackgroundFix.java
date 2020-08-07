@@ -22,7 +22,8 @@ public class OptionsAddTextBackgroundFix extends DataFix {
 					dynamic -> DataFixUtils.orElse(
 							dynamic.get("chatOpacity")
 								.asString()
-								.map(string -> dynamic.set("textBackgroundOpacity", dynamic.createDouble(this.convertToTextBackgroundOpacity(string)))),
+								.map(string -> dynamic.set("textBackgroundOpacity", dynamic.createDouble(this.convertToTextBackgroundOpacity(string))))
+								.result(),
 							dynamic
 						)
 				)

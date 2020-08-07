@@ -27,17 +27,29 @@ import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithHead> extends FeatureRenderer<T, M> {
-	public HeadFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	private final float field_24474;
+	private final float field_24475;
+	private final float field_24476;
+
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		this(featureRendererContext, 1.0F, 1.0F, 1.0F);
 	}
 
-	public void render(
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, float f, float g, float h) {
+		super(featureRendererContext);
+		this.field_24474 = f;
+		this.field_24475 = g;
+		this.field_24476 = h;
+	}
+
+	public void method_17159(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
-		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.field_6169);
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			matrixStack.push();
+			matrixStack.scale(this.field_24474, this.field_24475, this.field_24476);
 			boolean bl = livingEntity instanceof VillagerEntity || livingEntity instanceof ZombieVillagerEntity;
 			if (livingEntity.isBaby() && !(livingEntity instanceof VillagerEntity)) {
 				float m = 2.0F;
@@ -73,7 +85,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				SkullBlockEntityRenderer.render(
 					null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, f, matrixStack, vertexConsumerProvider, i
 				);
-			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
+			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.field_6169) {
 				float mx = 0.625F;
 				matrixStack.translate(0.0, -0.25, 0.0);
 				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
@@ -84,7 +96,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 				MinecraftClient.getInstance()
 					.getHeldItemRenderer()
-					.renderItem(livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
+					.renderItem(livingEntity, itemStack, ModelTransformation.Mode.field_4316, false, matrixStack, vertexConsumerProvider, i);
 			}
 
 			matrixStack.pop();

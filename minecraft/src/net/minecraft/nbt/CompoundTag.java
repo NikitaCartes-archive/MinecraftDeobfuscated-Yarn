@@ -3,6 +3,9 @@ package net.minecraft.nbt;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -17,6 +20,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -26,10 +30,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class CompoundTag implements Tag {
+	public static final Codec<CompoundTag> field_25128 = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
+		Tag tag = dynamic.convert(NbtOps.INSTANCE).getValue();
+		return tag instanceof CompoundTag ? DataResult.success((CompoundTag)tag) : DataResult.error("Not a compound tag: " + tag);
+	}, compoundTag -> new Dynamic<>(NbtOps.INSTANCE, compoundTag));
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern PATTERN = Pattern.compile("[A-Za-z0-9._+-]+");
 	public static final TagReader<CompoundTag> READER = new TagReader<CompoundTag>() {
-		public CompoundTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public CompoundTag method_23240(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(384L);
 			if (i > 512) {
 				throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
@@ -62,7 +70,7 @@ public class CompoundTag implements Tag {
 	};
 	private final Map<String, Tag> tags;
 
-	private CompoundTag(Map<String, Tag> tags) {
+	protected CompoundTag(Map<String, Tag> tags) {
 		this.tags = tags;
 	}
 
@@ -119,22 +127,27 @@ public class CompoundTag implements Tag {
 		this.tags.put(key, LongTag.of(value));
 	}
 
-	public void putUuid(String key, UUID uuid) {
-		this.putLong(key + "Most", uuid.getMostSignificantBits());
-		this.putLong(key + "Least", uuid.getLeastSignificantBits());
+	/**
+	 * Writes a {@link UUID} to its NBT representation in this {@code CompoundTag}.
+	 */
+	public void putUuid(String key, UUID value) {
+		this.tags.put(key, NbtHelper.fromUuid(value));
 	}
 
+	/**
+	 * Reads a {@link UUID} from its NBT representation in this {@code CompoundTag}.
+	 */
 	public UUID getUuid(String key) {
-		return new UUID(this.getLong(key + "Most"), this.getLong(key + "Least"));
+		return NbtHelper.toUuid(this.get(key));
 	}
 
+	/**
+	 * Returns {@code true} if this {@code CompoundTag} contains a valid UUID representation associated with the given key.
+	 * A valid UUID is represented by an int array of length 4.
+	 */
 	public boolean containsUuid(String key) {
-		return this.contains(key + "Most", 99) && this.contains(key + "Least", 99);
-	}
-
-	public void removeUuid(String key) {
-		this.remove(key + "Most");
-		this.remove(key + "Least");
+		Tag tag = this.get(key);
+		return tag != null && tag.getReader() == IntArrayTag.READER && ((IntArrayTag)tag).getIntArray().length == 4;
 	}
 
 	public void putFloat(String key, float value) {
@@ -380,7 +393,7 @@ public class CompoundTag implements Tag {
 		return crashReport;
 	}
 
-	public CompoundTag copy() {
+	public CompoundTag method_10553() {
 		Map<String, Tag> map = Maps.<String, Tag>newHashMap(Maps.transformValues(this.tags, Tag::copy));
 		return new CompoundTag(map);
 	}
@@ -459,7 +472,7 @@ public class CompoundTag implements Tag {
 		if (this.tags.isEmpty()) {
 			return new LiteralText("{}");
 		} else {
-			Text text = new LiteralText("{");
+			MutableText mutableText = new LiteralText("{");
 			Collection<String> collection = this.tags.keySet();
 			if (LOGGER.isDebugEnabled()) {
 				List<String> list = Lists.<String>newArrayList(this.tags.keySet());
@@ -468,31 +481,35 @@ public class CompoundTag implements Tag {
 			}
 
 			if (!indent.isEmpty()) {
-				text.append("\n");
+				mutableText.append("\n");
 			}
 
 			Iterator<String> iterator = collection.iterator();
 
 			while (iterator.hasNext()) {
 				String string = (String)iterator.next();
-				Text text2 = new LiteralText(Strings.repeat(indent, depth + 1))
+				MutableText mutableText2 = new LiteralText(Strings.repeat(indent, depth + 1))
 					.append(prettyPrintTagKey(string))
 					.append(String.valueOf(':'))
 					.append(" ")
 					.append(((Tag)this.tags.get(string)).toText(indent, depth + 1));
 				if (iterator.hasNext()) {
-					text2.append(String.valueOf(',')).append(indent.isEmpty() ? " " : "\n");
+					mutableText2.append(String.valueOf(',')).append(indent.isEmpty() ? " " : "\n");
 				}
 
-				text.append(text2);
+				mutableText.append(mutableText2);
 			}
 
 			if (!indent.isEmpty()) {
-				text.append("\n").append(Strings.repeat(indent, depth));
+				mutableText.append("\n").append(Strings.repeat(indent, depth));
 			}
 
-			text.append("}");
-			return text;
+			mutableText.append("}");
+			return mutableText;
 		}
+	}
+
+	protected Map<String, Tag> method_29143() {
+		return Collections.unmodifiableMap(this.tags);
 	}
 }

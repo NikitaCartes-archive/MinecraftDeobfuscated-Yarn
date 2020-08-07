@@ -8,56 +8,60 @@ import net.minecraft.util.Identifier;
 
 public class LootContextTypes {
 	private static final BiMap<Identifier, LootContextType> MAP = HashBiMap.create();
-	public static final LootContextType EMPTY = register("empty", builder -> {
+	public static final LootContextType field_1175 = register("empty", builder -> {
 	});
-	public static final LootContextType CHEST = register(
-		"chest", builder -> builder.require(LootContextParameters.POSITION).allow(LootContextParameters.THIS_ENTITY)
+	public static final LootContextType field_1179 = register(
+		"chest", builder -> builder.require(LootContextParameters.field_24424).allow(LootContextParameters.field_1226)
 	);
-	public static final LootContextType COMMAND = register(
-		"command", builder -> builder.require(LootContextParameters.POSITION).allow(LootContextParameters.THIS_ENTITY)
+	public static final LootContextType field_20761 = register(
+		"command", builder -> builder.require(LootContextParameters.field_24424).allow(LootContextParameters.field_1226)
 	);
-	public static final LootContextType SELECTOR = register(
-		"selector", builder -> builder.require(LootContextParameters.POSITION).require(LootContextParameters.THIS_ENTITY)
+	public static final LootContextType field_20762 = register(
+		"selector", builder -> builder.require(LootContextParameters.field_24424).require(LootContextParameters.field_1226)
 	);
-	public static final LootContextType FISHING = register(
-		"fishing", builder -> builder.require(LootContextParameters.POSITION).require(LootContextParameters.TOOL)
+	public static final LootContextType field_1176 = register(
+		"fishing", builder -> builder.require(LootContextParameters.field_24424).require(LootContextParameters.field_1229).allow(LootContextParameters.field_1226)
 	);
-	public static final LootContextType ENTITY = register(
+	public static final LootContextType field_1173 = register(
 		"entity",
-		builder -> builder.require(LootContextParameters.THIS_ENTITY)
-				.require(LootContextParameters.POSITION)
-				.require(LootContextParameters.DAMAGE_SOURCE)
-				.allow(LootContextParameters.KILLER_ENTITY)
-				.allow(LootContextParameters.DIRECT_KILLER_ENTITY)
-				.allow(LootContextParameters.LAST_DAMAGE_PLAYER)
+		builder -> builder.require(LootContextParameters.field_1226)
+				.require(LootContextParameters.field_24424)
+				.require(LootContextParameters.field_1231)
+				.allow(LootContextParameters.field_1230)
+				.allow(LootContextParameters.field_1227)
+				.allow(LootContextParameters.field_1233)
 	);
-	public static final LootContextType GIFT = register(
-		"gift", builder -> builder.require(LootContextParameters.POSITION).require(LootContextParameters.THIS_ENTITY)
+	public static final LootContextType field_16235 = register(
+		"gift", builder -> builder.require(LootContextParameters.field_24424).require(LootContextParameters.field_1226)
 	);
-	public static final LootContextType ADVANCEMENT_REWARD = register(
-		"advancement_reward", builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.POSITION)
+	public static final LootContextType field_22403 = register("barter", builder -> builder.require(LootContextParameters.field_1226));
+	public static final LootContextType field_1174 = register(
+		"advancement_reward", builder -> builder.require(LootContextParameters.field_1226).require(LootContextParameters.field_24424)
 	);
-	public static final LootContextType GENERIC = register(
+	public static final LootContextType field_24423 = register(
+		"advancement_entity", builder -> builder.require(LootContextParameters.field_1226).require(LootContextParameters.field_24424)
+	);
+	public static final LootContextType field_1177 = register(
 		"generic",
-		builder -> builder.require(LootContextParameters.THIS_ENTITY)
-				.require(LootContextParameters.LAST_DAMAGE_PLAYER)
-				.require(LootContextParameters.DAMAGE_SOURCE)
-				.require(LootContextParameters.KILLER_ENTITY)
-				.require(LootContextParameters.DIRECT_KILLER_ENTITY)
-				.require(LootContextParameters.POSITION)
-				.require(LootContextParameters.BLOCK_STATE)
-				.require(LootContextParameters.BLOCK_ENTITY)
-				.require(LootContextParameters.TOOL)
-				.require(LootContextParameters.EXPLOSION_RADIUS)
+		builder -> builder.require(LootContextParameters.field_1226)
+				.require(LootContextParameters.field_1233)
+				.require(LootContextParameters.field_1231)
+				.require(LootContextParameters.field_1230)
+				.require(LootContextParameters.field_1227)
+				.require(LootContextParameters.field_24424)
+				.require(LootContextParameters.field_1224)
+				.require(LootContextParameters.field_1228)
+				.require(LootContextParameters.field_1229)
+				.require(LootContextParameters.field_1225)
 	);
-	public static final LootContextType BLOCK = register(
+	public static final LootContextType field_1172 = register(
 		"block",
-		builder -> builder.require(LootContextParameters.BLOCK_STATE)
-				.require(LootContextParameters.POSITION)
-				.require(LootContextParameters.TOOL)
-				.allow(LootContextParameters.THIS_ENTITY)
-				.allow(LootContextParameters.BLOCK_ENTITY)
-				.allow(LootContextParameters.EXPLOSION_RADIUS)
+		builder -> builder.require(LootContextParameters.field_1224)
+				.require(LootContextParameters.field_24424)
+				.require(LootContextParameters.field_1229)
+				.allow(LootContextParameters.field_1226)
+				.allow(LootContextParameters.field_1228)
+				.allow(LootContextParameters.field_1225)
 	);
 
 	private static LootContextType register(String name, Consumer<LootContextType.Builder> type) {

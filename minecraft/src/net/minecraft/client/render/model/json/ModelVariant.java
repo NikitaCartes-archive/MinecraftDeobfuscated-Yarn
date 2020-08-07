@@ -10,20 +10,20 @@ import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
 public class ModelVariant implements ModelBakeSettings {
 	private final Identifier location;
-	private final Rotation3 rotation;
+	private final AffineTransformation rotation;
 	private final boolean uvLock;
 	private final int weight;
 
-	public ModelVariant(Identifier location, Rotation3 rotation3, boolean uvLock, int weight) {
+	public ModelVariant(Identifier location, AffineTransformation affineTransformation, boolean uvLock, int weight) {
 		this.location = location;
-		this.rotation = rotation3;
+		this.rotation = affineTransformation;
 		this.uvLock = uvLock;
 		this.weight = weight;
 	}
@@ -33,7 +33,7 @@ public class ModelVariant implements ModelBakeSettings {
 	}
 
 	@Override
-	public Rotation3 getRotation() {
+	public AffineTransformation getRotation() {
 		return this.rotation;
 	}
 
@@ -73,7 +73,7 @@ public class ModelVariant implements ModelBakeSettings {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<ModelVariant> {
-		public ModelVariant deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public ModelVariant method_3513(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Identifier identifier = this.deserializeModel(jsonObject);
 			net.minecraft.client.render.model.ModelRotation modelRotation = this.deserializeRotation(jsonObject);

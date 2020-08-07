@@ -9,17 +9,17 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
-import net.minecraft.server.network.packet.HandshakeC2SPacket;
-import net.minecraft.server.network.packet.LoginHelloC2SPacket;
+import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
+import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Util;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +35,7 @@ public class ConnectScreen extends Screen {
 
 	public ConnectScreen(Screen parent, MinecraftClient client, ServerInfo entry) {
 		super(NarratorManager.EMPTY);
-		this.minecraft = client;
+		this.client = client;
 		this.parent = parent;
 		ServerAddress serverAddress = ServerAddress.parse(entry.address);
 		client.disconnect();
@@ -45,7 +45,7 @@ public class ConnectScreen extends Screen {
 
 	public ConnectScreen(Screen parent, MinecraftClient client, String address, int port) {
 		super(NarratorManager.EMPTY);
-		this.minecraft = client;
+		this.client = client;
 		this.parent = parent;
 		client.disconnect();
 		this.connect(address, port);
@@ -63,25 +63,27 @@ public class ConnectScreen extends Screen {
 					}
 
 					inetAddress = InetAddress.getByName(address);
-					ConnectScreen.this.connection = ClientConnection.connect(inetAddress, port, ConnectScreen.this.minecraft.options.shouldUseNativeTransport());
+					ConnectScreen.this.connection = ClientConnection.connect(inetAddress, port, ConnectScreen.this.client.options.shouldUseNativeTransport());
 					ConnectScreen.this.connection
 						.setPacketListener(
 							new ClientLoginNetworkHandler(
-								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)
+								ConnectScreen.this.connection, ConnectScreen.this.client, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)
 							)
 						);
-					ConnectScreen.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
-					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.minecraft.getSession().getProfile()));
+					ConnectScreen.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.field_20593));
+					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.client.getSession().getProfile()));
 				} catch (UnknownHostException var4) {
 					if (ConnectScreen.this.connectingCancelled) {
 						return;
 					}
 
 					ConnectScreen.LOGGER.error("Couldn't connect to server", (Throwable)var4);
-					ConnectScreen.this.minecraft
+					ConnectScreen.this.client
 						.execute(
-							() -> ConnectScreen.this.minecraft
-									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host")))
+							() -> ConnectScreen.this.client
+									.openScreen(
+										new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", "Unknown host"))
+									)
 						);
 				} catch (Exception var5) {
 					if (ConnectScreen.this.connectingCancelled) {
@@ -90,10 +92,10 @@ public class ConnectScreen extends Screen {
 
 					ConnectScreen.LOGGER.error("Couldn't connect to server", (Throwable)var5);
 					String string = inetAddress == null ? var5.toString() : var5.toString().replaceAll(inetAddress + ":" + port, "");
-					ConnectScreen.this.minecraft
+					ConnectScreen.this.client
 						.execute(
-							() -> ConnectScreen.this.minecraft
-									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", string)))
+							() -> ConnectScreen.this.client
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", string)))
 						);
 				}
 			}
@@ -124,26 +126,26 @@ public class ConnectScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, buttonWidget -> {
 			this.connectingCancelled = true;
 			if (this.connection != null) {
 				this.connection.disconnect(new TranslatableText("connect.aborted"));
 			}
 
-			this.minecraft.openScreen(this.parent);
+			this.client.openScreen(this.parent);
 		}));
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.narratorTimer > 2000L) {
 			this.narratorTimer = l;
 			NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
 		}
 
-		this.drawCenteredString(this.font, this.status.asFormattedString(), this.width / 2, this.height / 2 - 50, 16777215);
-		super.render(mouseX, mouseY, delta);
+		drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

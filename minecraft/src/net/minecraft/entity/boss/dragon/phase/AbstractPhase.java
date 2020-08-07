@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -18,7 +18,7 @@ public abstract class AbstractPhase implements Phase {
 	}
 
 	@Override
-	public boolean method_6848() {
+	public boolean isSittingOrHovering() {
 		return false;
 	}
 
@@ -31,7 +31,7 @@ public abstract class AbstractPhase implements Phase {
 	}
 
 	@Override
-	public void crystalDestroyed(EnderCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
+	public void crystalDestroyed(EndCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public abstract class AbstractPhase implements Phase {
 	}
 
 	@Override
-	public float method_6846() {
+	public float getMaxYAcceleration() {
 		return 0.6F;
 	}
 

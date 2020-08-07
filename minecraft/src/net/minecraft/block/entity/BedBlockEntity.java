@@ -3,19 +3,19 @@ package net.minecraft.block.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BedBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.DyeColor;
 
 public class BedBlockEntity extends BlockEntity {
 	private DyeColor color;
 
 	public BedBlockEntity() {
-		super(BlockEntityType.BED);
+		super(BlockEntityType.field_11910);
 	}
 
-	public BedBlockEntity(DyeColor dyeColor) {
+	public BedBlockEntity(DyeColor color) {
 		this();
-		this.setColor(dyeColor);
+		this.setColor(color);
 	}
 
 	@Override

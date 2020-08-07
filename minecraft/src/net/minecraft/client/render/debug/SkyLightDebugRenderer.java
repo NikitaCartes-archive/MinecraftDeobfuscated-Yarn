@@ -33,16 +33,16 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 		LongSet longSet = new LongOpenHashSet();
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
-			int i = world.getLightLevel(LightType.SKY, blockPos2);
+			int i = world.getLightLevel(LightType.field_9284, blockPos2);
 			float f = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
 			int j = MathHelper.hsvToRgb(f, 0.9F, 0.9F);
-			long l = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
+			long l = ChunkSectionPos.fromBlockPos(blockPos2.asLong());
 			if (longSet.add(l)) {
 				DebugRenderer.drawString(
-					world.getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(l)),
-					(double)(ChunkSectionPos.getX(l) * 16 + 8),
-					(double)(ChunkSectionPos.getY(l) * 16 + 8),
-					(double)(ChunkSectionPos.getZ(l) * 16 + 8),
+					world.getChunkManager().getLightingProvider().displaySectionLevel(LightType.field_9284, ChunkSectionPos.from(l)),
+					(double)(ChunkSectionPos.unpackX(l) * 16 + 8),
+					(double)(ChunkSectionPos.unpackY(l) * 16 + 8),
+					(double)(ChunkSectionPos.unpackZ(l) * 16 + 8),
 					16711680,
 					0.3F
 				);

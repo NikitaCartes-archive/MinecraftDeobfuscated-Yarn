@@ -1,10 +1,11 @@
 package net.minecraft.world.chunk;
 
+import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.IdList;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.collection.IdList;
 
 public class IdListPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
@@ -17,12 +18,12 @@ public class IdListPalette<T> implements Palette<T> {
 
 	@Override
 	public int getIndex(T object) {
-		int i = this.idList.getId(object);
+		int i = this.idList.getRawId(object);
 		return i == -1 ? 0 : i;
 	}
 
 	@Override
-	public boolean accepts(T object) {
+	public boolean accepts(Predicate<T> predicate) {
 		return true;
 	}
 

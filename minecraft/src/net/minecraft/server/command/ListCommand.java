@@ -19,12 +19,14 @@ public class ListCommand {
 		);
 	}
 
-	private static int executeNames(ServerCommandSource serverCommandSource) {
-		return execute(serverCommandSource, PlayerEntity::getDisplayName);
+	private static int executeNames(ServerCommandSource source) {
+		return execute(source, PlayerEntity::getDisplayName);
 	}
 
-	private static int executeUuids(ServerCommandSource serverCommandSource) {
-		return execute(serverCommandSource, PlayerEntity::getNameAndUuid);
+	private static int executeUuids(ServerCommandSource source) {
+		return execute(
+			source, serverPlayerEntity -> new TranslatableText("commands.list.nameAndId", serverPlayerEntity.getName(), serverPlayerEntity.getGameProfile().getId())
+		);
 	}
 
 	private static int execute(ServerCommandSource source, Function<ServerPlayerEntity, Text> nameProvider) {

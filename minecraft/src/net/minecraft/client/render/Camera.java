@@ -81,8 +81,8 @@ public class Camera {
 				this.pos.z - (double)this.horizontalPlane.getZ() * desiredCameraDistance + (double)h
 			);
 			HitResult hitResult = this.area
-				.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.focusedEntity));
-			if (hitResult.getType() != HitResult.Type.MISS) {
+				.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_23142, RayTraceContext.FluidHandling.field_1348, this.focusedEntity));
+			if (hitResult.getType() != HitResult.Type.field_1333) {
 				double d = hitResult.getPos().distanceTo(this.pos);
 				if (d < desiredCameraDistance) {
 					desiredCameraDistance = d;
@@ -157,11 +157,11 @@ public class Camera {
 
 	public FluidState getSubmergedFluidState() {
 		if (!this.ready) {
-			return Fluids.EMPTY.getDefaultState();
+			return Fluids.field_15906.getDefaultState();
 		} else {
 			FluidState fluidState = this.area.getFluidState(this.blockPos);
 			return !fluidState.isEmpty() && this.pos.y >= (double)((float)this.blockPos.getY() + fluidState.getHeight(this.area, this.blockPos))
-				? Fluids.EMPTY.getDefaultState()
+				? Fluids.field_15906.getDefaultState()
 				: fluidState;
 		}
 	}

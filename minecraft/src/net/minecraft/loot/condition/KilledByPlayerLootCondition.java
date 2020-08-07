@@ -8,7 +8,7 @@ import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonSerializer;
 
 public class KilledByPlayerLootCondition implements LootCondition {
 	private static final KilledByPlayerLootCondition INSTANCE = new KilledByPlayerLootCondition();
@@ -17,27 +17,28 @@ public class KilledByPlayerLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.LAST_DAMAGE_PLAYER);
+	public LootConditionType getType() {
+		return LootConditionTypes.field_25240;
 	}
 
-	public boolean test(LootContext lootContext) {
-		return lootContext.hasParameter(LootContextParameters.LAST_DAMAGE_PLAYER);
+	@Override
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1233);
+	}
+
+	public boolean method_938(LootContext lootContext) {
+		return lootContext.hasParameter(LootContextParameters.field_1233);
 	}
 
 	public static LootCondition.Builder builder() {
 		return () -> INSTANCE;
 	}
 
-	public static class Factory extends LootCondition.Factory<KilledByPlayerLootCondition> {
-		protected Factory() {
-			super(new Identifier("killed_by_player"), KilledByPlayerLootCondition.class);
+	public static class Serializer implements JsonSerializer<KilledByPlayerLootCondition> {
+		public void method_942(JsonObject jsonObject, KilledByPlayerLootCondition killedByPlayerLootCondition, JsonSerializationContext jsonSerializationContext) {
 		}
 
-		public void toJson(JsonObject jsonObject, KilledByPlayerLootCondition killedByPlayerLootCondition, JsonSerializationContext jsonSerializationContext) {
-		}
-
-		public KilledByPlayerLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public KilledByPlayerLootCondition method_943(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return KilledByPlayerLootCondition.INSTANCE;
 		}
 	}

@@ -16,7 +16,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.PotionUtil;
-import net.minecraft.util.IdList;
+import net.minecraft.util.collection.IdList;
 import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
@@ -27,42 +27,44 @@ public class ItemColors {
 		ItemColors itemColors = new ItemColors();
 		itemColors.register(
 			(stack, tintIndex) -> tintIndex > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack),
-			Items.LEATHER_HELMET,
-			Items.LEATHER_CHESTPLATE,
-			Items.LEATHER_LEGGINGS,
-			Items.LEATHER_BOOTS,
-			Items.LEATHER_HORSE_ARMOR
+			Items.field_8267,
+			Items.field_8577,
+			Items.field_8570,
+			Items.field_8370,
+			Items.field_18138
 		);
-		itemColors.register((stack, tintIndex) -> GrassColors.getColor(0.5, 1.0), Blocks.TALL_GRASS, Blocks.LARGE_FERN);
+		itemColors.register((stack, tintIndex) -> GrassColors.getColor(0.5, 1.0), Blocks.field_10214, Blocks.field_10313);
 		itemColors.register((stack, tintIndex) -> {
 			if (tintIndex != 1) {
 				return -1;
 			} else {
 				CompoundTag compoundTag = stack.getSubTag("Explosion");
 				int[] is = compoundTag != null && compoundTag.contains("Colors", 11) ? compoundTag.getIntArray("Colors") : null;
-				if (is == null) {
-					return 9079434;
-				} else if (is.length == 1) {
-					return is[0];
-				} else {
-					int i = 0;
-					int j = 0;
-					int k = 0;
+				if (is != null && is.length != 0) {
+					if (is.length == 1) {
+						return is[0];
+					} else {
+						int i = 0;
+						int j = 0;
+						int k = 0;
 
-					for (int l : is) {
-						i += (l & 0xFF0000) >> 16;
-						j += (l & 0xFF00) >> 8;
-						k += (l & 0xFF) >> 0;
+						for (int l : is) {
+							i += (l & 0xFF0000) >> 16;
+							j += (l & 0xFF00) >> 8;
+							k += (l & 0xFF) >> 0;
+						}
+
+						i /= is.length;
+						j /= is.length;
+						k /= is.length;
+						return i << 16 | j << 8 | k;
 					}
-
-					i /= is.length;
-					j /= is.length;
-					k /= is.length;
-					return i << 16 | j << 8 | k;
+				} else {
+					return 9079434;
 				}
 			}
-		}, Items.FIREWORK_STAR);
-		itemColors.register((stack, tintIndex) -> tintIndex > 0 ? -1 : PotionUtil.getColor(stack), Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
+		}, Items.field_8450);
+		itemColors.register((stack, tintIndex) -> tintIndex > 0 ? -1 : PotionUtil.getColor(stack), Items.field_8574, Items.field_8436, Items.field_8150);
 
 		for (SpawnEggItem spawnEggItem : SpawnEggItem.getAll()) {
 			itemColors.register((stack, tintIndex) -> spawnEggItem.getColor(tintIndex), spawnEggItem);
@@ -73,20 +75,20 @@ public class ItemColors {
 				BlockState blockState = ((BlockItem)stack.getItem()).getBlock().getDefaultState();
 				return blockColors.getColor(blockState, null, null, tintIndex);
 			},
-			Blocks.GRASS_BLOCK,
-			Blocks.GRASS,
-			Blocks.FERN,
-			Blocks.VINE,
-			Blocks.OAK_LEAVES,
-			Blocks.SPRUCE_LEAVES,
-			Blocks.BIRCH_LEAVES,
-			Blocks.JUNGLE_LEAVES,
-			Blocks.ACACIA_LEAVES,
-			Blocks.DARK_OAK_LEAVES,
-			Blocks.LILY_PAD
+			Blocks.field_10219,
+			Blocks.field_10479,
+			Blocks.field_10112,
+			Blocks.field_10597,
+			Blocks.field_10503,
+			Blocks.field_9988,
+			Blocks.field_10539,
+			Blocks.field_10335,
+			Blocks.field_10098,
+			Blocks.field_10035,
+			Blocks.field_10588
 		);
-		itemColors.register((stack, tintIndex) -> tintIndex == 0 ? PotionUtil.getColor(stack) : -1, Items.TIPPED_ARROW);
-		itemColors.register((stack, tintIndex) -> tintIndex == 0 ? -1 : FilledMapItem.getMapColor(stack), Items.FILLED_MAP);
+		itemColors.register((stack, tintIndex) -> tintIndex == 0 ? PotionUtil.getColor(stack) : -1, Items.field_8087);
+		itemColors.register((stack, tintIndex) -> tintIndex == 0 ? -1 : FilledMapItem.getMapColor(stack), Items.field_8204);
 		return itemColors;
 	}
 

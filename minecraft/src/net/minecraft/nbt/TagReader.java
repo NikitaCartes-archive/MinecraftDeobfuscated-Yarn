@@ -16,7 +16,7 @@ public interface TagReader<T extends Tag> {
 
 	static TagReader<EndTag> createInvalid(int type) {
 		return new TagReader<EndTag>() {
-			public EndTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+			public EndTag method_23264(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 				throw new IllegalArgumentException("Invalid tag id: " + type);
 			}
 

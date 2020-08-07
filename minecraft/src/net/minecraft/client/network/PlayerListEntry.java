@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -61,6 +61,11 @@ public class PlayerListEntry {
 		this.latency = latency;
 	}
 
+	/**
+	 * Checks if the player represented by this entry has a custom skin.
+	 * 
+	 * <p>If the player has the default skin, this will return false.
+	 */
 	public boolean hasSkinTexture() {
 		return this.getSkinTexture() != null;
 	}

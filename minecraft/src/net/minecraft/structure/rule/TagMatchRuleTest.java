@@ -1,38 +1,30 @@
 package net.minecraft.structure.rule;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
 
-public class TagMatchRuleTest extends AbstractRuleTest {
+public class TagMatchRuleTest extends RuleTest {
+	public static final Codec<TagMatchRuleTest> CODEC = Tag.codec(() -> ServerTagManagerHolder.getTagManager().getBlocks())
+		.fieldOf("tag")
+		.<TagMatchRuleTest>xmap(TagMatchRuleTest::new, tagMatchRuleTest -> tagMatchRuleTest.tag)
+		.codec();
 	private final Tag<Block> tag;
 
 	public TagMatchRuleTest(Tag<Block> tag) {
 		this.tag = tag;
 	}
 
-	public <T> TagMatchRuleTest(Dynamic<T> dynamic) {
-		this(BlockTags.getContainer().get(new Identifier(dynamic.get("tag").asString(""))));
+	@Override
+	public boolean test(BlockState state, Random random) {
+		return state.isIn(this.tag);
 	}
 
 	@Override
-	public boolean test(BlockState blockState, Random random) {
-		return blockState.matches(this.tag);
-	}
-
-	@Override
-	protected RuleTest getRuleTest() {
-		return RuleTest.TAG_MATCH;
-	}
-
-	@Override
-	protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("tag"), dynamicOps.createString(this.tag.getId().toString()))));
+	protected RuleTestType<?> getType() {
+		return RuleTestType.field_16983;
 	}
 }

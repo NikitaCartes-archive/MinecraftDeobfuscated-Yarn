@@ -4,22 +4,22 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
-import net.minecraft.util.ReusableStream;
+import net.minecraft.util.collection.ReusableStream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public abstract class Particle {
 	private static final Box EMPTY_BOUNDING_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	protected final World world;
+	protected final ClientWorld world;
 	protected double prevPosX;
 	protected double prevPosY;
 	protected double prevPosZ;
@@ -47,7 +47,7 @@ public abstract class Particle {
 	protected float angle;
 	protected float prevAngle;
 
-	protected Particle(World world, double x, double y, double z) {
+	protected Particle(ClientWorld world, double x, double y, double z) {
 		this.world = world;
 		this.setBoundingBoxSpacing(0.2F, 0.2F);
 		this.setPos(x, y, z);
@@ -57,7 +57,7 @@ public abstract class Particle {
 		this.maxAge = (int)(4.0F / (this.random.nextFloat() * 0.9F + 0.1F));
 	}
 
-	public Particle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+	public Particle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		this(world, x, y, z);
 		this.velocityX = velocityX + (Math.random() * 2.0 - 1.0) * 0.4F;
 		this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * 0.4F;
@@ -151,9 +151,9 @@ public abstract class Particle {
 			this.spacingXZ = spacingXZ;
 			this.spacingY = spacingY;
 			Box box = this.getBoundingBox();
-			double d = (box.x1 + box.x2 - (double)spacingXZ) / 2.0;
-			double e = (box.z1 + box.z2 - (double)spacingXZ) / 2.0;
-			this.setBoundingBox(new Box(d, box.y1, e, d + (double)this.spacingXZ, box.y1 + (double)this.spacingY, e + (double)this.spacingXZ));
+			double d = (box.minX + box.maxX - (double)spacingXZ) / 2.0;
+			double e = (box.minZ + box.maxZ - (double)spacingXZ) / 2.0;
+			this.setBoundingBox(new Box(d, box.minY, e, d + (double)this.spacingXZ, box.minY + (double)this.spacingY, e + (double)this.spacingXZ));
 		}
 	}
 
@@ -173,7 +173,7 @@ public abstract class Particle {
 			double f = dz;
 			if (this.collidesWithWorld && (dx != 0.0 || dy != 0.0 || dz != 0.0)) {
 				Vec3d vec3d = Entity.adjustMovementForCollisions(
-					null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<>(Stream.empty())
+					null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, ShapeContext.absent(), new ReusableStream<>(Stream.empty())
 				);
 				dx = vec3d.x;
 				dy = vec3d.y;
@@ -202,9 +202,9 @@ public abstract class Particle {
 
 	protected void repositionFromBoundingBox() {
 		Box box = this.getBoundingBox();
-		this.x = (box.x1 + box.x2) / 2.0;
-		this.y = box.y1;
-		this.z = (box.z1 + box.z2) / 2.0;
+		this.x = (box.minX + box.maxX) / 2.0;
+		this.y = box.minY;
+		this.z = (box.minZ + box.maxZ) / 2.0;
 	}
 
 	protected int getColorMultiplier(float tint) {

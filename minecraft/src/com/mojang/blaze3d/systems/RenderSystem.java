@@ -13,8 +13,12 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Matrix4f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -111,61 +115,73 @@ public class RenderSystem {
 		lastDrawTime = e;
 	}
 
+	@Deprecated
 	public static void pushLightingAttributes() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.pushLightingAttributes();
 	}
 
+	@Deprecated
 	public static void pushTextureAttributes() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.pushTextureAttributes();
 	}
 
+	@Deprecated
 	public static void popAttributes() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.popAttributes();
 	}
 
+	@Deprecated
 	public static void disableAlphaTest() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.disableAlphaTest();
 	}
 
+	@Deprecated
 	public static void enableAlphaTest() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.enableAlphaTest();
 	}
 
+	@Deprecated
 	public static void alphaFunc(int func, float ref) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.alphaFunc(func, ref);
 	}
 
+	@Deprecated
 	public static void enableLighting() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.enableLighting();
 	}
 
+	@Deprecated
 	public static void disableLighting() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.disableLighting();
 	}
 
+	@Deprecated
 	public static void enableColorMaterial() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.enableColorMaterial();
 	}
 
+	@Deprecated
 	public static void disableColorMaterial() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.disableColorMaterial();
 	}
 
+	@Deprecated
 	public static void colorMaterial(int face, int mode) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.colorMaterial(face, mode);
 	}
 
+	@Deprecated
 	public static void normal3f(float nx, float ny, float nz) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.normal3f(nx, ny, nz);
@@ -203,7 +219,7 @@ public class RenderSystem {
 
 	public static void blendFunc(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.blendFunc(srcFactor.value, dstFactor.value);
+		GlStateManager.blendFunc(srcFactor.field_22545, dstFactor.field_22528);
 	}
 
 	public static void blendFunc(int srcFactor, int dstFactor) {
@@ -215,7 +231,7 @@ public class RenderSystem {
 		GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor, GlStateManager.SrcFactor srcAlpha, GlStateManager.DstFactor dstAlpha
 	) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.blendFuncSeparate(srcFactor.value, dstFactor.value, srcAlpha.value, dstAlpha.value);
+		GlStateManager.blendFuncSeparate(srcFactor.field_22545, dstFactor.field_22528, srcAlpha.field_22545, dstAlpha.field_22528);
 	}
 
 	public static void blendFuncSeparate(int srcFactorRGB, int dstFactorRGB, int srcFactorAlpha, int dstFactorAlpha) {
@@ -233,49 +249,58 @@ public class RenderSystem {
 		GlStateManager.blendColor(red, green, blue, alpha);
 	}
 
+	@Deprecated
 	public static void enableFog() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.enableFog();
 	}
 
+	@Deprecated
 	public static void disableFog() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.disableFog();
 	}
 
+	@Deprecated
 	public static void fogMode(GlStateManager.FogMode mode) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.fogMode(mode.value);
 	}
 
-	public static void fogMode(int mode) {
+	@Deprecated
+	public static void fogMode(int i) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.fogMode(mode);
+		GlStateManager.fogMode(i);
 	}
 
+	@Deprecated
 	public static void fogDensity(float density) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.fogDensity(density);
 	}
 
+	@Deprecated
 	public static void fogStart(float start) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.fogStart(start);
 	}
 
+	@Deprecated
 	public static void fogEnd(float end) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.fogEnd(end);
 	}
 
+	@Deprecated
 	public static void fog(int pname, float red, float green, float blue, float alpha) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.fog(pname, new float[]{red, green, blue, alpha});
 	}
 
-	public static void fogi(int pname, int param) {
+	@Deprecated
+	public static void fogi(int i, int j) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.fogi(pname, param);
+		GlStateManager.fogi(i, j);
 	}
 
 	public static void enableCull() {
@@ -288,9 +313,9 @@ public class RenderSystem {
 		GlStateManager.disableCull();
 	}
 
-	public static void polygonMode(int face, int mode) {
+	public static void polygonMode(int i, int j) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.polygonMode(face, mode);
+		GlStateManager.polygonMode(i, j);
 	}
 
 	public static void enablePolygonOffset() {
@@ -361,16 +386,19 @@ public class RenderSystem {
 		GlStateManager.bindTexture(texture);
 	}
 
+	@Deprecated
 	public static void shadeModel(int mode) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.shadeModel(mode);
 	}
 
+	@Deprecated
 	public static void enableRescaleNormal() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.enableRescaleNormal();
 	}
 
+	@Deprecated
 	public static void disableRescaleNormal() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.disableRescaleNormal();
@@ -391,9 +419,9 @@ public class RenderSystem {
 		GlStateManager.stencilFunc(func, ref, mask);
 	}
 
-	public static void stencilMask(int mask) {
+	public static void stencilMask(int i) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.stencilMask(mask);
+		GlStateManager.stencilMask(i);
 	}
 
 	public static void stencilOp(int sfail, int dpfail, int dppass) {
@@ -411,9 +439,9 @@ public class RenderSystem {
 		GlStateManager.clearColor(red, green, blue, alpha);
 	}
 
-	public static void clearStencil(int stencil) {
+	public static void clearStencil(int i) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.clearStencil(stencil);
+		GlStateManager.clearStencil(i);
 	}
 
 	public static void clear(int mask, boolean getError) {
@@ -421,71 +449,85 @@ public class RenderSystem {
 		GlStateManager.clear(mask, getError);
 	}
 
+	@Deprecated
 	public static void matrixMode(int mode) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.matrixMode(mode);
 	}
 
+	@Deprecated
 	public static void loadIdentity() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.loadIdentity();
 	}
 
+	@Deprecated
 	public static void pushMatrix() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.pushMatrix();
 	}
 
+	@Deprecated
 	public static void popMatrix() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.popMatrix();
 	}
 
+	@Deprecated
 	public static void ortho(double l, double r, double b, double t, double n, double f) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.ortho(l, r, b, t, n, f);
 	}
 
+	@Deprecated
 	public static void rotatef(float angle, float x, float y, float z) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.rotatef(angle, x, y, z);
 	}
 
+	@Deprecated
 	public static void scalef(float x, float y, float z) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.scalef(x, y, z);
 	}
 
+	@Deprecated
 	public static void scaled(double x, double y, double z) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.scaled(x, y, z);
 	}
 
+	@Deprecated
 	public static void translatef(float x, float y, float z) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.translatef(x, y, z);
 	}
 
+	@Deprecated
 	public static void translated(double x, double y, double z) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.translated(x, y, z);
 	}
 
+	@Deprecated
 	public static void multMatrix(Matrix4f matrix) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.multMatrix(matrix);
 	}
 
+	@Deprecated
 	public static void color4f(float red, float green, float blue, float alpha) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.color4f(red, green, blue, alpha);
 	}
 
+	@Deprecated
 	public static void color3f(float red, float green, float blue) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.color4f(red, green, blue, 1.0F);
 	}
 
+	@Deprecated
 	public static void clearCurrentColor() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.clearCurrentColor();
@@ -506,8 +548,8 @@ public class RenderSystem {
 		GlStateManager.pixelStore(pname, param);
 	}
 
-	public static void pixelTransfer(int pname, float param) {
-		GlStateManager.pixelTransfer(pname, param);
+	public static void pixelTransfer(int i, float f) {
+		GlStateManager.pixelTransfer(i, f);
 	}
 
 	public static void readPixels(int x, int y, int width, int height, int format, int type, ByteBuffer pixels) {
@@ -555,6 +597,7 @@ public class RenderSystem {
 		GLX._setupNvFogDistance();
 	}
 
+	@Deprecated
 	public static void glMultiTexCoord2f(int texture, float s, float t) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.multiTexCoords2f(texture, s, t);
@@ -695,19 +738,19 @@ public class RenderSystem {
 		GlStateManager.teardownOverlayColor();
 	}
 
-	public static void setupLevelDiffuseLighting(Matrix4f modelMatrix) {
+	public static void setupLevelDiffuseLighting(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.setupLevelDiffuseLighting(modelMatrix);
+		GlStateManager.setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
 	}
 
-	public static void setupGuiFlatDiffuseLighting() {
+	public static void setupGuiFlatDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_24221();
+		GlStateManager.setupGuiFlatDiffuseLighting(vector3f, vector3f2);
 	}
 
-	public static void setupGui3DDiffuseLighting() {
+	public static void setupGui3DDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_24222();
+		GlStateManager.setupGui3dDiffuseLighting(vector3f, vector3f2);
 	}
 
 	public static void mulTextureByProjModelView() {
@@ -755,11 +798,25 @@ public class RenderSystem {
 
 	public static void defaultBlendFunc() {
 		blendFuncSeparate(
-			GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
+			GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523, GlStateManager.SrcFactor.field_22534, GlStateManager.DstFactor.field_22527
 		);
 	}
 
 	public static void defaultAlphaFunc() {
 		alphaFunc(516, 0.1F);
+	}
+
+	@Deprecated
+	public static void runAsFancy(Runnable runnable) {
+		boolean bl = MinecraftClient.isFabulousGraphicsOrBetter();
+		if (!bl) {
+			runnable.run();
+		} else {
+			GameOptions gameOptions = MinecraftClient.getInstance().options;
+			GraphicsMode graphicsMode = gameOptions.graphicsMode;
+			gameOptions.graphicsMode = GraphicsMode.field_25428;
+			runnable.run();
+			gameOptions.graphicsMode = graphicsMode;
+		}
 	}
 }

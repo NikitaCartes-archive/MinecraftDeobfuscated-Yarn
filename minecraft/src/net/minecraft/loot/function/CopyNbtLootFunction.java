@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.command.arguments.NbtPathArgumentType;
+import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
@@ -27,7 +27,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.predicate.NbtPredicate;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class CopyNbtLootFunction extends ConditionalLootFunction {
@@ -42,9 +41,14 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		this.operations = ImmutableList.copyOf(operations);
 	}
 
+	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25233;
+	}
+
 	private static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
 		try {
-			return new NbtPathArgumentType().parse(new StringReader(nbtPath));
+			return new NbtPathArgumentType().method_9362(new StringReader(nbtPath));
 		} catch (CommandSyntaxException var2) {
 			throw new IllegalArgumentException("Failed to parse path " + nbtPath, var2);
 		}
@@ -83,42 +87,16 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		}
 
 		public CopyNbtLootFunction.Builder withOperation(String source, String target) {
-			return this.withOperation(source, target, CopyNbtLootFunction.Operator.REPLACE);
+			return this.withOperation(source, target, CopyNbtLootFunction.Operator.field_17032);
 		}
 
-		protected CopyNbtLootFunction.Builder getThisBuilder() {
+		protected CopyNbtLootFunction.Builder method_16855() {
 			return this;
 		}
 
 		@Override
 		public LootFunction build() {
 			return new CopyNbtLootFunction(this.getConditions(), this.source, this.operations);
-		}
-	}
-
-	public static class Factory extends ConditionalLootFunction.Factory<CopyNbtLootFunction> {
-		public Factory() {
-			super(new Identifier("copy_nbt"), CopyNbtLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, copyNbtLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("source", copyNbtLootFunction.source.name);
-			JsonArray jsonArray = new JsonArray();
-			copyNbtLootFunction.operations.stream().map(CopyNbtLootFunction.Operation::toJson).forEach(jsonArray::add);
-			jsonObject.add("ops", jsonArray);
-		}
-
-		public CopyNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			CopyNbtLootFunction.Source source = CopyNbtLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
-			List<CopyNbtLootFunction.Operation> list = Lists.<CopyNbtLootFunction.Operation>newArrayList();
-
-			for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "ops")) {
-				JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "op");
-				list.add(CopyNbtLootFunction.Operation.fromJson(jsonObject2));
-			}
-
-			return new CopyNbtLootFunction(lootConditions, source, list);
 		}
 	}
 
@@ -164,16 +142,16 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	public static enum Operator {
-		REPLACE("replace") {
+		field_17032("replace") {
 			@Override
-			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
-				tragetPath.put(itemTag, Iterables.getLast(sourceTags)::copy);
+			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+				targetPath.put(itemTag, Iterables.getLast(sourceTags)::copy);
 			}
 		},
-		APPEND("append") {
+		field_17033("append") {
 			@Override
-			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
-				List<Tag> list = tragetPath.getOrInit(itemTag, ListTag::new);
+			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+				List<Tag> list = targetPath.getOrInit(itemTag, ListTag::new);
 				list.forEach(foundTag -> {
 					if (foundTag instanceof ListTag) {
 						sourceTags.forEach(listTag -> ((ListTag)foundTag).add(listTag.copy()));
@@ -181,10 +159,10 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 				});
 			}
 		},
-		MERGE("merge") {
+		field_17034("merge") {
 			@Override
-			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
-				List<Tag> list = tragetPath.getOrInit(itemTag, CompoundTag::new);
+			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+				List<Tag> list = targetPath.getOrInit(itemTag, CompoundTag::new);
 				list.forEach(foundTag -> {
 					if (foundTag instanceof CompoundTag) {
 						sourceTags.forEach(compoundTag -> {
@@ -199,7 +177,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		private final String name;
 
-		public abstract void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException;
+		public abstract void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException;
 
 		private Operator(String name) {
 			this.name = name;
@@ -216,11 +194,33 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		}
 	}
 
+	public static class Serializer extends ConditionalLootFunction.Serializer<CopyNbtLootFunction> {
+		public void method_16870(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, copyNbtLootFunction, jsonSerializationContext);
+			jsonObject.addProperty("source", copyNbtLootFunction.source.name);
+			JsonArray jsonArray = new JsonArray();
+			copyNbtLootFunction.operations.stream().map(CopyNbtLootFunction.Operation::toJson).forEach(jsonArray::add);
+			jsonObject.add("ops", jsonArray);
+		}
+
+		public CopyNbtLootFunction method_16871(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+			CopyNbtLootFunction.Source source = CopyNbtLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
+			List<CopyNbtLootFunction.Operation> list = Lists.<CopyNbtLootFunction.Operation>newArrayList();
+
+			for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "ops")) {
+				JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "op");
+				list.add(CopyNbtLootFunction.Operation.fromJson(jsonObject2));
+			}
+
+			return new CopyNbtLootFunction(lootConditions, source, list);
+		}
+	}
+
 	public static enum Source {
-		THIS("this", LootContextParameters.THIS_ENTITY, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		KILLER("killer", LootContextParameters.KILLER_ENTITY, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		BLOCK_ENTITY("block_entity", LootContextParameters.BLOCK_ENTITY, CopyNbtLootFunction.BLOCK_ENTITY_TAG_GETTER);
+		field_17024("this", LootContextParameters.field_1226, CopyNbtLootFunction.ENTITY_TAG_GETTER),
+		field_17025("killer", LootContextParameters.field_1230, CopyNbtLootFunction.ENTITY_TAG_GETTER),
+		field_17026("killer_player", LootContextParameters.field_1233, CopyNbtLootFunction.ENTITY_TAG_GETTER),
+		field_17027("block_entity", LootContextParameters.field_1228, CopyNbtLootFunction.BLOCK_ENTITY_TAG_GETTER);
 
 		public final String name;
 		public final LootContextParameter<?> parameter;

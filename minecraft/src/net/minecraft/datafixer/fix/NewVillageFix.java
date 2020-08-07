@@ -3,19 +3,19 @@ package net.minecraft.datafixer.fix;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.types.templates.CompoundList.CompoundListType;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class NewVillageFix extends DataFix {
 	public NewVillageFix(Schema outputSchema, boolean changesType) {
@@ -54,17 +54,10 @@ public class NewVillageFix extends DataFix {
 															.collect(Collectors.toList())
 												)
 										)
-										.update(
-											DSL.remainderFinder(),
-											dynamic -> dynamic.update(
-													"References",
-													dynamicx -> {
-														Optional<? extends Dynamic<?>> optional = dynamicx.get("New_Village").get();
-														return DataFixUtils.orElse(optional.map(dynamic2 -> dynamicx.remove("New_Village").merge(dynamicx.createString("Village"), dynamic2)), dynamicx)
-															.remove("Village");
-													}
-												)
-										)
+										.update(DSL.remainderFinder(), dynamic -> dynamic.update("References", dynamicx -> {
+												Optional<? extends Dynamic<?>> optional = dynamicx.get("New_Village").result();
+												return DataFixUtils.orElse(optional.map(dynamic2 -> dynamicx.remove("New_Village").set("Village", dynamic2)), dynamicx).remove("Village");
+											}))
 							)
 					)
 			),
@@ -75,7 +68,7 @@ public class NewVillageFix extends DataFix {
 						DSL.remainderFinder(),
 						dynamic -> dynamic.update(
 								"id",
-								dynamicx -> Objects.equals(SchemaIdentifierNormalize.normalize(dynamicx.asString("")), "minecraft:new_village")
+								dynamicx -> Objects.equals(IdentifierNormalizingSchema.normalize(dynamicx.asString("")), "minecraft:new_village")
 										? dynamicx.createString("minecraft:village")
 										: dynamicx
 							)

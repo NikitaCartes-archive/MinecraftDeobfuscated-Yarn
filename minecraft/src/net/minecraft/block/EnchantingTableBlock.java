@@ -6,15 +6,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
-import net.minecraft.client.network.ClientDummyContainerProvider;
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.EnchantingTableContainer;
-import net.minecraft.container.NameableContainerProvider;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.EnchantmentScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 public class EnchantingTableBlock extends BlockWithEntity {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
 
-	protected EnchantingTableBlock(Block.Settings settings) {
+	protected EnchantingTableBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -38,7 +38,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
@@ -56,13 +56,13 @@ public class EnchantingTableBlock extends BlockWithEntity {
 				if (random.nextInt(16) == 0) {
 					for (int k = 0; k <= 1; k++) {
 						BlockPos blockPos = pos.add(i, k, j);
-						if (world.getBlockState(blockPos).getBlock() == Blocks.BOOKSHELF) {
+						if (world.getBlockState(blockPos).isOf(Blocks.field_10504)) {
 							if (!world.isAir(pos.add(i / 2, 0, j / 2))) {
 								break;
 							}
 
 							world.addParticle(
-								ParticleTypes.ENCHANT,
+								ParticleTypes.field_11215,
 								(double)pos.getX() + 0.5,
 								(double)pos.getY() + 2.0,
 								(double)pos.getZ() + 0.5,
@@ -79,11 +79,11 @@ public class EnchantingTableBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new EnchantingTableBlockEntity();
 	}
 
@@ -92,19 +92,19 @@ public class EnchantingTableBlock extends BlockWithEntity {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerProvider(world, pos));
-			return ActionResult.SUCCESS;
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+			return ActionResult.CONSUME;
 		}
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof EnchantingTableBlockEntity) {
 			Text text = ((Nameable)blockEntity).getDisplayName();
-			return new ClientDummyContainerProvider(
-				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, pos)), text
+			return new SimpleNamedScreenHandlerFactory(
+				(i, playerInventory, playerEntity) -> new EnchantmentScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), text
 			);
 		} else {
 			return null;
@@ -122,7 +122,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

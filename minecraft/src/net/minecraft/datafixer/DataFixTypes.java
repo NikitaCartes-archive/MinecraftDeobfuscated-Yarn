@@ -3,16 +3,17 @@ package net.minecraft.datafixer;
 import com.mojang.datafixers.DSL.TypeReference;
 
 public enum DataFixTypes {
-	LEVEL(TypeReferences.LEVEL),
-	PLAYER(TypeReferences.PLAYER),
-	CHUNK(TypeReferences.CHUNK),
-	HOTBAR(TypeReferences.HOTBAR),
-	OPTIONS(TypeReferences.OPTIONS),
-	STRUCTURE(TypeReferences.STRUCTURE),
-	STATS(TypeReferences.STATS),
-	SAVED_DATA(TypeReferences.SAVED_DATA),
-	ADVANCEMENTS(TypeReferences.ADVANCEMENTS),
-	POI_CHUNK(TypeReferences.POI_CHUNK);
+	field_19212(TypeReferences.LEVEL),
+	field_19213(TypeReferences.PLAYER),
+	field_19214(TypeReferences.CHUNK),
+	field_19215(TypeReferences.HOTBAR),
+	field_19216(TypeReferences.OPTIONS),
+	field_19217(TypeReferences.STRUCTURE),
+	field_19218(TypeReferences.STATS),
+	field_19219(TypeReferences.SAVED_DATA),
+	field_19220(TypeReferences.ADVANCEMENTS),
+	field_19221(TypeReferences.POI_CHUNK),
+	field_24640(TypeReferences.CHUNK_GENERATOR_SETTINGS);
 
 	private final TypeReference typeReference;
 

@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.surfacebuilder;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -11,16 +10,16 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
-	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
-	private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
-	private static final BlockState TERACOTTA = Blocks.TERRACOTTA.getDefaultState();
+	private static final BlockState WHITE_TERRACOTTA = Blocks.field_10611.getDefaultState();
+	private static final BlockState ORANGE_TERRACOTTA = Blocks.field_10184.getDefaultState();
+	private static final BlockState TERRACOTTA = Blocks.field_10415.getDefaultState();
 
-	public ErodedBadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public ErodedBadlandsSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+		super(codec);
 	}
 
 	@Override
-	public void generate(
+	public void method_15208(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -51,7 +50,10 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 		int o = i & 15;
 		int p = j & 15;
 		BlockState blockState3 = WHITE_TERRACOTTA;
-		BlockState blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+		SurfaceConfig surfaceConfig = biome.getGenerationSettings().getSurfaceConfig();
+		BlockState blockState4 = surfaceConfig.getUnderMaterial();
+		BlockState blockState5 = surfaceConfig.getTopMaterial();
+		BlockState blockState6 = blockState4;
 		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
 		int r = -1;
@@ -64,18 +66,18 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 				chunk.setBlockState(mutable, blockState, false);
 			}
 
-			BlockState blockState5 = chunk.getBlockState(mutable);
-			if (blockState5.isAir()) {
+			BlockState blockState7 = chunk.getBlockState(mutable);
+			if (blockState7.isAir()) {
 				r = -1;
-			} else if (blockState5.getBlock() == blockState.getBlock()) {
+			} else if (blockState7.isOf(blockState.getBlock())) {
 				if (r == -1) {
 					bl2 = false;
 					if (q <= 0) {
-						blockState3 = Blocks.AIR.getDefaultState();
-						blockState4 = blockState;
+						blockState3 = Blocks.field_10124.getDefaultState();
+						blockState6 = blockState;
 					} else if (s >= l - 4 && s <= l + 1) {
 						blockState3 = WHITE_TERRACOTTA;
-						blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+						blockState6 = blockState4;
 					}
 
 					if (s < l && (blockState3 == null || blockState3.isAir())) {
@@ -85,39 +87,39 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 					r = q + Math.max(0, s - l);
 					if (s >= l - 1) {
 						if (s > l + 3 + q) {
-							BlockState blockState6;
+							BlockState blockState8;
 							if (s < 64 || s > 127) {
-								blockState6 = ORANGE_TERRACOTTA;
+								blockState8 = ORANGE_TERRACOTTA;
 							} else if (bl) {
-								blockState6 = TERACOTTA;
+								blockState8 = TERRACOTTA;
 							} else {
-								blockState6 = this.calculateLayerBlockState(i, s, j);
+								blockState8 = this.calculateLayerBlockState(i, s, j);
 							}
 
-							chunk.setBlockState(mutable, blockState6, false);
+							chunk.setBlockState(mutable, blockState8, false);
 						} else {
-							chunk.setBlockState(mutable, biome.getSurfaceConfig().getTopMaterial(), false);
+							chunk.setBlockState(mutable, blockState5, false);
 							bl2 = true;
 						}
 					} else {
-						chunk.setBlockState(mutable, blockState4, false);
-						Block block = blockState4.getBlock();
-						if (block == Blocks.WHITE_TERRACOTTA
-							|| block == Blocks.ORANGE_TERRACOTTA
-							|| block == Blocks.MAGENTA_TERRACOTTA
-							|| block == Blocks.LIGHT_BLUE_TERRACOTTA
-							|| block == Blocks.YELLOW_TERRACOTTA
-							|| block == Blocks.LIME_TERRACOTTA
-							|| block == Blocks.PINK_TERRACOTTA
-							|| block == Blocks.GRAY_TERRACOTTA
-							|| block == Blocks.LIGHT_GRAY_TERRACOTTA
-							|| block == Blocks.CYAN_TERRACOTTA
-							|| block == Blocks.PURPLE_TERRACOTTA
-							|| block == Blocks.BLUE_TERRACOTTA
-							|| block == Blocks.BROWN_TERRACOTTA
-							|| block == Blocks.GREEN_TERRACOTTA
-							|| block == Blocks.RED_TERRACOTTA
-							|| block == Blocks.BLACK_TERRACOTTA) {
+						chunk.setBlockState(mutable, blockState6, false);
+						Block block = blockState6.getBlock();
+						if (block == Blocks.field_10611
+							|| block == Blocks.field_10184
+							|| block == Blocks.field_10015
+							|| block == Blocks.field_10325
+							|| block == Blocks.field_10143
+							|| block == Blocks.field_10014
+							|| block == Blocks.field_10444
+							|| block == Blocks.field_10349
+							|| block == Blocks.field_10590
+							|| block == Blocks.field_10235
+							|| block == Blocks.field_10570
+							|| block == Blocks.field_10409
+							|| block == Blocks.field_10123
+							|| block == Blocks.field_10526
+							|| block == Blocks.field_10328
+							|| block == Blocks.field_10626) {
 							chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 						}
 					}

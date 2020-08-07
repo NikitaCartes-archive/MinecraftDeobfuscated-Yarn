@@ -1,41 +1,36 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 
 public class DecoratedFeatureConfig implements FeatureConfig {
-	public final ConfiguredFeature<?, ?> feature;
+	public static final Codec<DecoratedFeatureConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					ConfiguredFeature.CODEC.fieldOf("feature").forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.feature),
+					ConfiguredDecorator.CODEC.fieldOf("decorator").forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.decorator)
+				)
+				.apply(instance, DecoratedFeatureConfig::new)
+	);
+	public final Supplier<ConfiguredFeature<?, ?>> feature;
 	public final ConfiguredDecorator<?> decorator;
 
-	public DecoratedFeatureConfig(ConfiguredFeature<?, ?> configuredFeature, ConfiguredDecorator<?> configuredDecorator) {
-		this.feature = configuredFeature;
+	public DecoratedFeatureConfig(Supplier<ConfiguredFeature<?, ?>> supplier, ConfiguredDecorator<?> configuredDecorator) {
+		this.feature = supplier;
 		this.decorator = configuredDecorator;
-	}
-
-	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(
-					ops.createString("feature"), this.feature.serialize(ops).getValue(), ops.createString("decorator"), this.decorator.serialize(ops).getValue()
-				)
-			)
-		);
 	}
 
 	public String toString() {
 		return String.format(
-			"< %s [%s | %s] >", this.getClass().getSimpleName(), Registry.FEATURE.getId(this.feature.feature), Registry.DECORATOR.getId(this.decorator.decorator)
+			"< %s [%s | %s] >", this.getClass().getSimpleName(), Registry.FEATURE.getId(((ConfiguredFeature)this.feature.get()).getFeature()), this.decorator
 		);
 	}
 
-	public static <T> DecoratedFeatureConfig deserialize(Dynamic<T> dynamic) {
-		ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeature.deserialize(dynamic.get("feature").orElseEmptyMap());
-		ConfiguredDecorator<?> configuredDecorator = ConfiguredDecorator.deserialize(dynamic.get("decorator").orElseEmptyMap());
-		return new DecoratedFeatureConfig(configuredFeature, configuredDecorator);
+	@Override
+	public Stream<ConfiguredFeature<?, ?>> method_30649() {
+		return ((ConfiguredFeature)this.feature.get()).method_30648();
 	}
 }

@@ -7,7 +7,6 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.dimension.DimensionType;
 
 public class DifficultyCommand {
 	private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(
@@ -30,7 +29,7 @@ public class DifficultyCommand {
 
 	public static int execute(ServerCommandSource source, Difficulty difficulty) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = source.getMinecraftServer();
-		if (minecraftServer.getWorld(DimensionType.OVERWORLD).getDifficulty() == difficulty) {
+		if (minecraftServer.getSaveProperties().getDifficulty() == difficulty) {
 			throw FAILURE_EXCEPTION.create(difficulty.getName());
 		} else {
 			minecraftServer.setDifficulty(difficulty, true);

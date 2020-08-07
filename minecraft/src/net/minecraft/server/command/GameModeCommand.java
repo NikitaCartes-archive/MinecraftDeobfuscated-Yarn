@@ -5,10 +5,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import java.util.Collection;
 import java.util.Collections;
-import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 
@@ -18,7 +19,7 @@ public class GameModeCommand {
 			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
-			if (gameMode != GameMode.NOT_SET) {
+			if (gameMode != GameMode.field_9218) {
 				literalArgumentBuilder.then(
 					CommandManager.literal(gameMode.getName())
 						.executes(commandContext -> execute(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
@@ -38,8 +39,8 @@ public class GameModeCommand {
 		if (source.getEntity() == player) {
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
 		} else {
-			if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-				player.sendMessage(new TranslatableText("gameMode.changed", text));
+			if (source.getWorld().getGameRules().getBoolean(GameRules.field_19400)) {
+				player.sendSystemMessage(new TranslatableText("gameMode.changed", text), Util.NIL_UUID);
 			}
 
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.other", player.getDisplayName(), text), true);

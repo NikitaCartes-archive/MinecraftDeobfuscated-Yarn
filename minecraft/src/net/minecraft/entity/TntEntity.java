@@ -1,12 +1,12 @@
 package net.minecraft.entity;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
@@ -23,8 +23,8 @@ public class TntEntity extends Entity {
 	}
 
 	public TntEntity(World world, double x, double y, double z, @Nullable LivingEntity igniter) {
-		this(EntityType.TNT, world);
-		this.setPosition(x, y, z);
+		this(EntityType.field_6063, world);
+		this.updatePosition(x, y, z);
 		double d = world.random.nextDouble() * (float) (Math.PI * 2);
 		this.setVelocity(-Math.sin(d) * 0.02, 0.2F, -Math.cos(d) * 0.02);
 		this.setFuse(80);
@@ -55,7 +55,7 @@ public class TntEntity extends Entity {
 			this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 		}
 
-		this.move(MovementType.SELF, this.getVelocity());
+		this.move(MovementType.field_6308, this.getVelocity());
 		this.setVelocity(this.getVelocity().multiply(0.98));
 		if (this.onGround) {
 			this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
@@ -68,16 +68,16 @@ public class TntEntity extends Entity {
 				this.explode();
 			}
 		} else {
-			this.checkWaterState();
+			this.updateWaterState();
 			if (this.world.isClient) {
-				this.world.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
+				this.world.addParticle(ParticleTypes.field_11251, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
 			}
 		}
 	}
 
 	private void explode() {
 		float f = 4.0F;
-		this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0F, Explosion.DestructionType.BREAK);
+		this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0F, Explosion.DestructionType.field_18686);
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class TntEntity extends Entity {
 
 	@Override
 	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.0F;
+		return 0.15F;
 	}
 
 	public void setFuse(int fuse) {

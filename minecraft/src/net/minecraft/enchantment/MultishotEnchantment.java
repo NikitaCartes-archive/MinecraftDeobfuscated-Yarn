@@ -3,27 +3,27 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class MultishotEnchantment extends Enchantment {
-	public MultishotEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.CROSSBOW, slotTypes);
+	public MultishotEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
+		super(weight, EnchantmentTarget.field_9081, slotTypes);
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return 20;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
+	public int getMaxPower(int level) {
 		return 50;
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 1;
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
-		return super.differs(other) && other != Enchantments.PIERCING;
+	public boolean canAccept(Enchantment other) {
+		return super.canAccept(other) && other != Enchantments.field_9132;
 	}
 }

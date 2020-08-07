@@ -5,7 +5,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -16,8 +15,8 @@ public class FluidTagsProvider extends AbstractTagProvider<Fluid> {
 
 	@Override
 	protected void configure() {
-		this.getOrCreateTagBuilder(FluidTags.WATER).add(Fluids.WATER, Fluids.FLOWING_WATER);
-		this.getOrCreateTagBuilder(FluidTags.LAVA).add(Fluids.LAVA, Fluids.FLOWING_LAVA);
+		this.getOrCreateTagBuilder(FluidTags.field_15517).add(Fluids.WATER, Fluids.FLOWING_WATER);
+		this.getOrCreateTagBuilder(FluidTags.field_15518).add(Fluids.LAVA, Fluids.FLOWING_LAVA);
 	}
 
 	@Override
@@ -28,10 +27,5 @@ public class FluidTagsProvider extends AbstractTagProvider<Fluid> {
 	@Override
 	public String getName() {
 		return "Fluid Tags";
-	}
-
-	@Override
-	protected void setContainer(TagContainer<Fluid> tagContainer) {
-		FluidTags.setContainer(tagContainer);
 	}
 }

@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,10 +9,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public class ChunkSection {
-	private static final Palette<BlockState> palette = new IdListPalette<>(Block.STATE_IDS, Blocks.AIR.getDefaultState());
+	private static final Palette<BlockState> palette = new IdListPalette<>(Block.STATE_IDS, Blocks.field_10124.getDefaultState());
 	private final int yOffset;
 	private short nonEmptyBlockCount;
 	private short randomTickableBlockCount;
@@ -27,7 +28,7 @@ public class ChunkSection {
 		this.nonEmptyBlockCount = nonEmptyBlockCount;
 		this.randomTickableBlockCount = randomTickableBlockCount;
 		this.nonEmptyFluidCount = nonEmptyFluidCount;
-		this.container = new PalettedContainer<>(palette, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
+		this.container = new PalettedContainer<>(palette, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.field_10124.getDefaultState());
 	}
 
 	public BlockState getBlockState(int x, int y, int z) {
@@ -150,7 +151,7 @@ public class ChunkSection {
 		return 2 + this.container.getPacketSize();
 	}
 
-	public boolean method_19523(BlockState blockState) {
-		return this.container.method_19526(blockState);
+	public boolean method_19523(Predicate<BlockState> predicate) {
+		return this.container.method_19526(predicate);
 	}
 }

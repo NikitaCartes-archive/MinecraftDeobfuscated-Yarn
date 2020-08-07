@@ -13,6 +13,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -37,19 +38,19 @@ public class MusicDiscItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == Blocks.JUKEBOX && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
+		if (blockState.isOf(Blocks.field_10223) && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
 			ItemStack itemStack = context.getStack();
 			if (!world.isClient) {
-				((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
-				world.playLevelEvent(null, 1010, blockPos, Item.getRawId(this));
+				((JukeboxBlock)Blocks.field_10223).setRecord(world, blockPos, blockState, itemStack);
+				world.syncWorldEvent(null, 1010, blockPos, Item.getRawId(this));
 				itemStack.decrement(1);
 				PlayerEntity playerEntity = context.getPlayer();
 				if (playerEntity != null) {
-					playerEntity.incrementStat(Stats.PLAY_RECORD);
+					playerEntity.incrementStat(Stats.field_15375);
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}
@@ -62,11 +63,11 @@ public class MusicDiscItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(this.getDescription().formatted(Formatting.GRAY));
+		tooltip.add(this.getDescription().formatted(Formatting.field_1080));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text getDescription() {
+	public MutableText getDescription() {
 		return new TranslatableText(this.getTranslationKey() + ".desc");
 	}
 

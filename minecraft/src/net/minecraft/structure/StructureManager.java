@@ -2,7 +2,6 @@ package net.minecraft.structure;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixer;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,26 +20,25 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.util.WorldSavePath;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class StructureManager implements SynchronousResourceReloadListener {
+public class StructureManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<Identifier, Structure> structures = Maps.<Identifier, Structure>newHashMap();
 	private final DataFixer dataFixer;
-	private final MinecraftServer server;
+	private ResourceManager field_25189;
 	private final Path generatedPath;
 
-	public StructureManager(MinecraftServer server, File worldDir, DataFixer dataFixer) {
-		this.server = server;
+	public StructureManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
+		this.field_25189 = resourceManager;
 		this.dataFixer = dataFixer;
-		this.generatedPath = worldDir.toPath().resolve("generated").normalize();
-		server.getDataManager().registerListener(this);
+		this.generatedPath = session.getDirectory(WorldSavePath.field_24185).normalize();
 	}
 
 	public Structure getStructureOrBlank(Identifier id) {
@@ -61,8 +59,8 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		});
 	}
 
-	@Override
-	public void apply(ResourceManager manager) {
+	public void method_29300(ResourceManager resourceManager) {
+		this.field_25189 = resourceManager;
 		this.structures.clear();
 	}
 
@@ -71,7 +69,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
 
 		try {
-			Resource resource = this.server.getDataManager().getResource(identifier);
+			Resource resource = this.field_25189.getResource(identifier);
 			Throwable var4 = null;
 
 			Structure var5;
@@ -155,7 +153,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		}
 
 		Structure structure = new Structure();
-		structure.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, tag, tag.getInt("DataVersion")));
+		structure.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.field_19217, tag, tag.getInt("DataVersion")));
 		return structure;
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.datafixer.fix;
 
+import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.OpticFinder;
@@ -19,9 +20,15 @@ public class MapIdFix extends DataFix {
 	protected TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.SAVED_DATA);
 		OpticFinder<?> opticFinder = type.findField("data");
-		return this.fixTypeEverywhereTyped("Map id fix", type, typed -> {
-			Optional<? extends Typed<?>> optional = typed.getOptionalTyped(opticFinder);
-			return optional.isPresent() ? typed : typed.update(DSL.remainderFinder(), dynamic -> dynamic.emptyMap().merge(dynamic.createString("data"), dynamic));
-		});
+		return this.fixTypeEverywhereTyped(
+			"Map id fix",
+			type,
+			typed -> {
+				Optional<? extends Typed<?>> optional = typed.getOptionalTyped(opticFinder);
+				return optional.isPresent()
+					? typed
+					: typed.update(DSL.remainderFinder(), dynamic -> dynamic.createMap(ImmutableMap.of(dynamic.createString("data"), dynamic)));
+			}
+		);
 	}
 }

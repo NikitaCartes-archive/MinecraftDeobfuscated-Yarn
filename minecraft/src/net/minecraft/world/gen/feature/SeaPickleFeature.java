@@ -1,32 +1,35 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class SeaPickleFeature extends Feature<SeaPickleFeatureConfig> {
-	public SeaPickleFeature(Function<Dynamic<?>, ? extends SeaPickleFeatureConfig> configFactory) {
-		super(configFactory);
+public class SeaPickleFeature extends Feature<CountConfig> {
+	public SeaPickleFeature(Codec<CountConfig> codec) {
+		super(codec);
 	}
 
-	public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockPos blockPos, SeaPickleFeatureConfig seaPickleFeatureConfig) {
+	public boolean method_13876(
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, CountConfig countConfig
+	) {
 		int i = 0;
+		int j = countConfig.getCount().getValue(random);
 
-		for (int j = 0; j < seaPickleFeatureConfig.count; j++) {
-			int k = random.nextInt(8) - random.nextInt(8);
+		for (int k = 0; k < j; k++) {
 			int l = random.nextInt(8) - random.nextInt(8);
-			int m = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
-			BlockPos blockPos2 = new BlockPos(blockPos.getX() + k, m, blockPos.getZ() + l);
-			BlockState blockState = Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1));
-			if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER && blockState.canPlaceAt(iWorld, blockPos2)) {
-				iWorld.setBlockState(blockPos2, blockState, 2);
+			int m = random.nextInt(8) - random.nextInt(8);
+			int n = structureWorldAccess.getTopY(Heightmap.Type.field_13200, blockPos.getX() + l, blockPos.getZ() + m);
+			BlockPos blockPos2 = new BlockPos(blockPos.getX() + l, n, blockPos.getZ() + m);
+			BlockState blockState = Blocks.field_10476.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1));
+			if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.field_10382) && blockState.canPlaceAt(structureWorldAccess, blockPos2)) {
+				structureWorldAccess.setBlockState(blockPos2, blockState, 2);
 				i++;
 			}
 		}

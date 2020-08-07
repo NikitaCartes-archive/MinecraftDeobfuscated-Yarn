@@ -15,8 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class FeatureUpdater {
@@ -79,13 +78,13 @@ public class FeatureUpdater {
 		CompoundTag compoundTag4 = compoundTag3.getCompound("References");
 
 		for (String string : this.field_17659) {
-			StructureFeature<?> structureFeature = (StructureFeature<?>)Feature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
+			StructureFeature<?> structureFeature = (StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
 			if (!compoundTag4.contains(string, 12) && structureFeature != null) {
-				int i = structureFeature.getRadius();
+				int i = 8;
 				LongList longList = new LongArrayList();
 
-				for (int j = chunkPos.x - i; j <= chunkPos.x + i; j++) {
-					for (int k = chunkPos.z - i; k <= chunkPos.z + i; k++) {
+				for (int j = chunkPos.x - 8; j <= chunkPos.x + 8; j++) {
+					for (int k = chunkPos.z - 8; k <= chunkPos.z + 8; k++) {
 						if (this.needsUpdate(j, k, string)) {
 							longList.add(ChunkPos.toLong(j, k));
 						}
@@ -195,21 +194,21 @@ public class FeatureUpdater {
 		}
 	}
 
-	public static FeatureUpdater create(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
-		if (dimensionType == DimensionType.OVERWORLD) {
+	public static FeatureUpdater create(RegistryKey<World> registryKey, @Nullable PersistentStateManager persistentStateManager) {
+		if (registryKey == World.OVERWORLD) {
 			return new FeatureUpdater(
 				persistentStateManager,
 				ImmutableList.of("Monument", "Stronghold", "Village", "Mineshaft", "Temple", "Mansion"),
 				ImmutableList.of("Village", "Mineshaft", "Mansion", "Igloo", "Desert_Pyramid", "Jungle_Pyramid", "Swamp_Hut", "Stronghold", "Monument")
 			);
-		} else if (dimensionType == DimensionType.THE_NETHER) {
+		} else if (registryKey == World.NETHER) {
 			List<String> list = ImmutableList.of("Fortress");
 			return new FeatureUpdater(persistentStateManager, list, list);
-		} else if (dimensionType == DimensionType.THE_END) {
+		} else if (registryKey == World.END) {
 			List<String> list = ImmutableList.of("EndCity");
 			return new FeatureUpdater(persistentStateManager, list, list);
 		} else {
-			throw new RuntimeException(String.format("Unknown dimension type : %s", dimensionType));
+			throw new RuntimeException(String.format("Unknown dimension type : %s", registryKey));
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,9 +14,12 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
 
+/**
+ * Represents a scoped, read-only view of a world like structure that contains biomes, chunks and is bound to a dimension.
+ */
 public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.Storage {
 	@Nullable
 	Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create);
@@ -33,6 +37,16 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		return this.getBiomeAccess().getBiome(pos);
 	}
 
+	default Stream<BlockState> method_29556(Box box) {
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.floor(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.floor(box.maxY);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.floor(box.maxZ);
+		return this.isRegionLoaded(i, k, m, j, l, n) ? this.method_29546(box) : Stream.empty();
+	}
+
 	@Environment(EnvType.CLIENT)
 	@Override
 	default int getColor(BlockPos pos, ColorResolver colorResolver) {
@@ -41,7 +55,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Override
 	default Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		Chunk chunk = this.getChunk(biomeX >> 2, biomeZ >> 2, ChunkStatus.BIOMES, false);
+		Chunk chunk = this.getChunk(biomeX >> 2, biomeZ >> 2, ChunkStatus.field_12794, false);
 		return chunk != null && chunk.getBiomeArray() != null
 			? chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ)
 			: this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
@@ -49,11 +63,17 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ);
 
+	/**
+	 * Checks if this world view is on the logical client.
+	 * 
+	 * <p>If the value returned is false, it is expected that this world is present on a logical server.
+	 */
 	boolean isClient();
 
+	@Deprecated
 	int getSeaLevel();
 
-	Dimension getDimension();
+	DimensionType getDimension();
 
 	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
 		return new BlockPos(pos.getX(), this.getTopY(heightmap, pos.getX(), pos.getZ()), pos.getZ());
@@ -71,7 +91,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 			if (!this.isSkyVisible(blockPos)) {
 				return false;
 			} else {
-				for (BlockPos var4 = blockPos.down(); var4.getY() > pos.getY(); var4 = var4.down()) {
+				for (BlockPos var4 = blockPos.method_10074(); var4.getY() > pos.getY(); var4 = var4.method_10074()) {
 					BlockState blockState = this.getBlockState(var4);
 					if (blockState.getOpacity(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
 						return false;
@@ -85,7 +105,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Deprecated
 	default float getBrightness(BlockPos pos) {
-		return this.getDimension().getBrightness(this.getLightLevel(pos));
+		return this.getDimension().method_28516(this.getLightLevel(pos));
 	}
 
 	default int getStrongRedstonePower(BlockPos pos, Direction direction) {
@@ -97,7 +117,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	}
 
 	default Chunk getChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, true);
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.field_12803, true);
 	}
 
 	default Chunk getChunk(int chunkX, int chunkZ, ChunkStatus status) {
@@ -107,35 +127,34 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	@Nullable
 	@Override
 	default BlockView getExistingChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.field_12798, false);
 	}
 
 	default boolean isWater(BlockPos pos) {
-		return this.getFluidState(pos).matches(FluidTags.WATER);
+		return this.getFluidState(pos).isIn(FluidTags.field_15517);
 	}
 
 	default boolean containsFluid(Box box) {
-		int i = MathHelper.floor(box.x1);
-		int j = MathHelper.ceil(box.x2);
-		int k = MathHelper.floor(box.y1);
-		int l = MathHelper.ceil(box.y2);
-		int m = MathHelper.floor(box.z1);
-		int n = MathHelper.ceil(box.z2);
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.ceil(box.maxY);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int o = i; o < j; o++) {
-				for (int p = k; p < l; p++) {
-					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-						if (!blockState.getFluidState().isEmpty()) {
-							return true;
-						}
+		for (int o = i; o < j; o++) {
+			for (int p = k; p < l; p++) {
+				for (int q = m; q < n; q++) {
+					BlockState blockState = this.getBlockState(mutable.set(o, p, q));
+					if (!blockState.getFluidState().isEmpty()) {
+						return true;
 					}
 				}
 			}
-
-			return false;
 		}
+
+		return false;
 	}
 
 	default int getLightLevel(BlockPos pos) {

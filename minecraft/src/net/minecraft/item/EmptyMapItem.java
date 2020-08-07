@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -20,15 +21,16 @@ public class EmptyMapItem extends NetworkSyncedItem {
 			itemStack2.decrement(1);
 		}
 
+		user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		user.playSound(SoundEvents.field_17484, 1.0F, 1.0F);
 		if (itemStack2.isEmpty()) {
-			return TypedActionResult.success(itemStack);
+			return TypedActionResult.method_29237(itemStack, world.isClient());
 		} else {
 			if (!user.inventory.insertStack(itemStack.copy())) {
 				user.dropItem(itemStack, false);
 			}
 
-			user.incrementStat(Stats.USED.getOrCreateStat(this));
-			return TypedActionResult.success(itemStack2);
+			return TypedActionResult.method_29237(itemStack2, world.isClient());
 		}
 	}
 }

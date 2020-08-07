@@ -15,20 +15,20 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	public static final BooleanProperty LOCKED = Properties.LOCKED;
 	public static final IntProperty DELAY = Properties.DELAY;
 
-	protected RepeaterBlock(Block.Settings settings) {
+	protected RepeaterBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
-				.with(FACING, Direction.NORTH)
+				.with(FACING, Direction.field_11043)
 				.with(DELAY, Integer.valueOf(1))
 				.with(LOCKED, Boolean.valueOf(false))
 				.with(POWERED, Boolean.valueOf(false))
@@ -41,7 +41,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 			return ActionResult.PASS;
 		} else {
 			world.setBlockState(pos, state.cycle(DELAY), 3);
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		}
 	}
 
@@ -57,10 +57,10 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return !world.isClient() && facing.getAxis() != ((Direction)state.get(FACING)).getAxis()
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		return !world.isClient() && direction.getAxis() != ((Direction)state.get(FACING)).getAxis()
 			? state.with(LOCKED, Boolean.valueOf(this.isLocked(world, pos, state)))
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -78,9 +78,9 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(POWERED)) {
 			Direction direction = state.get(FACING);
-			double d = (double)((float)pos.getX() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
-			double e = (double)((float)pos.getY() + 0.4F) + (double)(random.nextFloat() - 0.5F) * 0.2;
-			double f = (double)((float)pos.getZ() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
+			double d = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
+			double e = (double)pos.getY() + 0.4 + (random.nextDouble() - 0.5) * 0.2;
+			double f = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
 			float g = -5.0F;
 			if (random.nextBoolean()) {
 				g = (float)((Integer)state.get(DELAY) * 2 - 1);

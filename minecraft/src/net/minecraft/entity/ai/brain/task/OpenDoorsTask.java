@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
-import net.minecraft.block.Block;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.LivingEntity;
@@ -14,91 +14,143 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.GlobalPos;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 
 public class OpenDoorsTask extends Task<LivingEntity> {
+	@Nullable
+	private PathNode field_26387;
+	private int field_26388;
+
 	public OpenDoorsTask() {
-		super(
-			ImmutableMap.of(
-				MemoryModuleType.PATH,
-				MemoryModuleState.VALUE_PRESENT,
-				MemoryModuleType.INTERACTABLE_DOORS,
-				MemoryModuleState.VALUE_PRESENT,
-				MemoryModuleType.OPENED_DOORS,
-				MemoryModuleState.REGISTERED
-			)
-		);
+		super(ImmutableMap.of(MemoryModuleType.field_18449, MemoryModuleState.field_18456, MemoryModuleType.field_26389, MemoryModuleState.field_18458));
+	}
+
+	@Override
+	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
+		Path path = (Path)entity.getBrain().getOptionalMemory(MemoryModuleType.field_18449).get();
+		if (!path.method_30849() && !path.isFinished()) {
+			if (!Objects.equals(this.field_26387, path.method_29301())) {
+				this.field_26388 = 20;
+				return true;
+			} else {
+				if (this.field_26388 > 0) {
+					this.field_26388--;
+				}
+
+				return this.field_26388 == 0;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		Path path = (Path)brain.getOptionalMemory(MemoryModuleType.PATH).get();
-		List<GlobalPos> list = (List<GlobalPos>)brain.getOptionalMemory(MemoryModuleType.INTERACTABLE_DOORS).get();
-		List<BlockPos> list2 = (List<BlockPos>)path.getNodes()
-			.stream()
-			.map(pathNode -> new BlockPos(pathNode.x, pathNode.y, pathNode.z))
-			.collect(Collectors.toList());
-		Set<BlockPos> set = this.getDoorsOnPath(world, list, list2);
-		int i = path.getCurrentNodeIndex() - 1;
-		this.findAndCloseOpenedDoors(world, list2, set, i, entity, brain);
-	}
-
-	private Set<BlockPos> getDoorsOnPath(ServerWorld world, List<GlobalPos> doors, List<BlockPos> path) {
-		return (Set<BlockPos>)doors.stream()
-			.filter(globalPos -> globalPos.getDimension() == world.getDimension().getType())
-			.map(GlobalPos::getPos)
-			.filter(path::contains)
-			.collect(Collectors.toSet());
-	}
-
-	private void findAndCloseOpenedDoors(ServerWorld world, List<BlockPos> path, Set<BlockPos> doors, int lastNodeIndex, LivingEntity entity, Brain<?> brain) {
-		doors.forEach(blockPos -> {
-			int j = path.indexOf(blockPos);
-			BlockState blockState = world.getBlockState(blockPos);
-			Block block = blockState.getBlock();
-			if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock) {
-				boolean bl = j >= lastNodeIndex;
-				((DoorBlock)block).setOpen(world, blockPos, bl);
-				GlobalPos globalPos = GlobalPos.create(world.getDimension().getType(), blockPos);
-				if (!brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).isPresent() && bl) {
-					brain.putMemory(MemoryModuleType.OPENED_DOORS, Sets.<GlobalPos>newHashSet(globalPos));
-				} else {
-					brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(set -> {
-						if (bl) {
-							set.add(globalPos);
-						} else {
-							set.remove(globalPos);
-						}
-					});
-				}
+		Path path = (Path)entity.getBrain().getOptionalMemory(MemoryModuleType.field_18449).get();
+		this.field_26387 = path.method_29301();
+		PathNode pathNode = path.method_30850();
+		PathNode pathNode2 = path.method_29301();
+		BlockPos blockPos = pathNode.getPos();
+		BlockState blockState = world.getBlockState(blockPos);
+		if (blockState.isIn(BlockTags.field_15494)) {
+			DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
+			if (!doorBlock.method_30841(blockState)) {
+				doorBlock.setOpen(world, blockState, blockPos, true);
 			}
-		});
-		closeOpenedDoors(world, path, lastNodeIndex, entity, brain);
+
+			this.method_30767(world, entity, blockPos);
+		}
+
+		BlockPos blockPos2 = pathNode2.getPos();
+		BlockState blockState2 = world.getBlockState(blockPos2);
+		if (blockState2.isIn(BlockTags.field_15494)) {
+			DoorBlock doorBlock2 = (DoorBlock)blockState2.getBlock();
+			if (!doorBlock2.method_30841(blockState2)) {
+				doorBlock2.setOpen(world, blockState2, blockPos2, true);
+				this.method_30767(world, entity, blockPos2);
+			}
+		}
+
+		method_30760(world, entity, pathNode, pathNode2);
 	}
 
-	public static void closeOpenedDoors(ServerWorld world, List<BlockPos> path, int currentPathIndex, LivingEntity entity, Brain<?> brain) {
-		brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(set -> {
-			Iterator<GlobalPos> iterator = set.iterator();
+	public static void method_30760(ServerWorld serverWorld, LivingEntity livingEntity, @Nullable PathNode pathNode, @Nullable PathNode pathNode2) {
+		Brain<?> brain = livingEntity.getBrain();
+		if (brain.hasMemoryModule(MemoryModuleType.field_26389)) {
+			Iterator<GlobalPos> iterator = ((Set)brain.getOptionalMemory(MemoryModuleType.field_26389).get()).iterator();
 
 			while (iterator.hasNext()) {
 				GlobalPos globalPos = (GlobalPos)iterator.next();
 				BlockPos blockPos = globalPos.getPos();
-				int j = path.indexOf(blockPos);
-				if (world.getDimension().getType() != globalPos.getDimension()) {
-					iterator.remove();
-				} else {
-					BlockState blockState = world.getBlockState(blockPos);
-					Block block = blockState.getBlock();
-					if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock && j < currentPathIndex && blockPos.isWithinDistance(entity.getPos(), 4.0)) {
-						((DoorBlock)block).setOpen(world, blockPos, false);
+				if ((pathNode == null || !pathNode.getPos().equals(blockPos)) && (pathNode2 == null || !pathNode2.getPos().equals(blockPos))) {
+					if (method_30762(serverWorld, livingEntity, globalPos)) {
 						iterator.remove();
+					} else {
+						BlockState blockState = serverWorld.getBlockState(blockPos);
+						if (!blockState.isIn(BlockTags.field_15494)) {
+							iterator.remove();
+						} else {
+							DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
+							if (!doorBlock.method_30841(blockState)) {
+								iterator.remove();
+							} else if (method_30761(serverWorld, livingEntity, blockPos)) {
+								iterator.remove();
+							} else {
+								doorBlock.setOpen(serverWorld, blockState, blockPos, false);
+								iterator.remove();
+							}
+						}
 					}
 				}
 			}
-		});
+		}
+	}
+
+	private static boolean method_30761(ServerWorld serverWorld, LivingEntity livingEntity, BlockPos blockPos) {
+		Brain<?> brain = livingEntity.getBrain();
+		return !brain.hasMemoryModule(MemoryModuleType.field_18441)
+			? false
+			: ((List)brain.getOptionalMemory(MemoryModuleType.field_18441).get())
+				.stream()
+				.filter(livingEntity2 -> livingEntity2.getType() == livingEntity.getType())
+				.filter(livingEntityx -> blockPos.isWithinDistance(livingEntityx.getPos(), 2.0))
+				.anyMatch(livingEntityx -> method_30766(serverWorld, livingEntityx, blockPos));
+	}
+
+	private static boolean method_30766(ServerWorld serverWorld, LivingEntity livingEntity, BlockPos blockPos) {
+		if (!livingEntity.getBrain().hasMemoryModule(MemoryModuleType.field_18449)) {
+			return false;
+		} else {
+			Path path = (Path)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18449).get();
+			if (path.isFinished()) {
+				return false;
+			} else {
+				PathNode pathNode = path.method_30850();
+				if (pathNode == null) {
+					return false;
+				} else {
+					PathNode pathNode2 = path.method_29301();
+					return blockPos.equals(pathNode.getPos()) || blockPos.equals(pathNode2.getPos());
+				}
+			}
+		}
+	}
+
+	private static boolean method_30762(ServerWorld serverWorld, LivingEntity livingEntity, GlobalPos globalPos) {
+		return globalPos.getDimension() != serverWorld.getRegistryKey() || !globalPos.getPos().isWithinDistance(livingEntity.getPos(), 2.0);
+	}
+
+	private void method_30767(ServerWorld serverWorld, LivingEntity livingEntity, BlockPos blockPos) {
+		Brain<?> brain = livingEntity.getBrain();
+		GlobalPos globalPos = GlobalPos.create(serverWorld.getRegistryKey(), blockPos);
+		if (brain.getOptionalMemory(MemoryModuleType.field_26389).isPresent()) {
+			((Set)brain.getOptionalMemory(MemoryModuleType.field_26389).get()).add(globalPos);
+		} else {
+			brain.remember(MemoryModuleType.field_26389, Sets.<GlobalPos>newHashSet(globalPos));
+		}
 	}
 }

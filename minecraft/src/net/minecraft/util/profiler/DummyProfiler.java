@@ -19,11 +19,11 @@ public class DummyProfiler implements ReadableProfiler {
 	}
 
 	@Override
-	public void push(String string) {
+	public void push(String location) {
 	}
 
 	@Override
-	public void push(Supplier<String> supplier) {
+	public void push(Supplier<String> locationGetter) {
 	}
 
 	@Override
@@ -31,24 +31,24 @@ public class DummyProfiler implements ReadableProfiler {
 	}
 
 	@Override
-	public void swap(String string) {
+	public void swap(String location) {
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void swap(Supplier<String> supplier) {
+	public void swap(Supplier<String> locationGetter) {
 	}
 
 	@Override
-	public void method_24270(String string) {
+	public void visit(String marker) {
 	}
 
 	@Override
-	public void method_24271(Supplier<String> supplier) {
+	public void visit(Supplier<String> markerGetter) {
 	}
 
 	@Override
-	public ProfileResult getResults() {
+	public ProfileResult getResult() {
 		return EmptyProfileResult.INSTANCE;
 	}
 }

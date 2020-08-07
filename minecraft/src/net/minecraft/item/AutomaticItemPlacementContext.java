@@ -11,20 +11,18 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 	private final Direction facing;
 
 	public AutomaticItemPlacementContext(World world, BlockPos pos, Direction facing, ItemStack stack, Direction side) {
-		super(
-			world, null, Hand.MAIN_HAND, stack, new BlockHitResult(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5), side, pos, false)
-		);
+		super(world, null, Hand.field_5808, stack, new BlockHitResult(Vec3d.ofBottomCenter(pos), side, pos, false));
 		this.facing = facing;
 	}
 
 	@Override
 	public BlockPos getBlockPos() {
-		return this.hit.getBlockPos();
+		return this.method_30344().getBlockPos();
 	}
 
 	@Override
 	public boolean canPlace() {
-		return this.world.getBlockState(this.hit.getBlockPos()).canReplace(this);
+		return this.getWorld().getBlockState(this.method_30344().getBlockPos()).canReplace(this);
 	}
 
 	@Override
@@ -34,31 +32,43 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 
 	@Override
 	public Direction getPlayerLookDirection() {
-		return Direction.DOWN;
+		return Direction.field_11033;
 	}
 
 	@Override
 	public Direction[] getPlacementDirections() {
 		switch (this.facing) {
-			case DOWN:
+			case field_11033:
 			default:
-				return new Direction[]{Direction.DOWN, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP};
-			case UP:
-				return new Direction[]{Direction.DOWN, Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
-			case NORTH:
-				return new Direction[]{Direction.DOWN, Direction.NORTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.SOUTH};
-			case SOUTH:
-				return new Direction[]{Direction.DOWN, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.NORTH};
-			case WEST:
-				return new Direction[]{Direction.DOWN, Direction.WEST, Direction.SOUTH, Direction.UP, Direction.NORTH, Direction.EAST};
-			case EAST:
-				return new Direction[]{Direction.DOWN, Direction.EAST, Direction.SOUTH, Direction.UP, Direction.NORTH, Direction.WEST};
+				return new Direction[]{
+					Direction.field_11033, Direction.field_11043, Direction.field_11034, Direction.field_11035, Direction.field_11039, Direction.field_11036
+				};
+			case field_11036:
+				return new Direction[]{
+					Direction.field_11033, Direction.field_11036, Direction.field_11043, Direction.field_11034, Direction.field_11035, Direction.field_11039
+				};
+			case field_11043:
+				return new Direction[]{
+					Direction.field_11033, Direction.field_11043, Direction.field_11034, Direction.field_11039, Direction.field_11036, Direction.field_11035
+				};
+			case field_11035:
+				return new Direction[]{
+					Direction.field_11033, Direction.field_11035, Direction.field_11034, Direction.field_11039, Direction.field_11036, Direction.field_11043
+				};
+			case field_11039:
+				return new Direction[]{
+					Direction.field_11033, Direction.field_11039, Direction.field_11035, Direction.field_11036, Direction.field_11043, Direction.field_11034
+				};
+			case field_11034:
+				return new Direction[]{
+					Direction.field_11033, Direction.field_11034, Direction.field_11035, Direction.field_11036, Direction.field_11043, Direction.field_11039
+				};
 		}
 	}
 
 	@Override
 	public Direction getPlayerFacing() {
-		return this.facing.getAxis() == Direction.Axis.Y ? Direction.NORTH : this.facing;
+		return this.facing.getAxis() == Direction.Axis.field_11052 ? Direction.field_11043 : this.facing;
 	}
 
 	@Override

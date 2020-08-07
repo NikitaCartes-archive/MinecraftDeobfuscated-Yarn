@@ -29,19 +29,19 @@ public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity
 		this.field_20816.addChild(modelPart);
 	}
 
-	public void render(BellBlockEntity bellBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void method_17139(BellBlockEntity bellBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		float g = (float)bellBlockEntity.ringTicks + f;
 		float h = 0.0F;
 		float k = 0.0F;
-		if (bellBlockEntity.isRinging) {
+		if (bellBlockEntity.ringing) {
 			float l = MathHelper.sin(g / (float) Math.PI) / (4.0F + g / 3.0F);
-			if (bellBlockEntity.lastSideHit == Direction.NORTH) {
+			if (bellBlockEntity.lastSideHit == Direction.field_11043) {
 				h = -l;
-			} else if (bellBlockEntity.lastSideHit == Direction.SOUTH) {
+			} else if (bellBlockEntity.lastSideHit == Direction.field_11035) {
 				h = l;
-			} else if (bellBlockEntity.lastSideHit == Direction.EAST) {
+			} else if (bellBlockEntity.lastSideHit == Direction.field_11034) {
 				k = -l;
-			} else if (bellBlockEntity.lastSideHit == Direction.WEST) {
+			} else if (bellBlockEntity.lastSideHit == Direction.field_11039) {
 				k = l;
 			}
 		}

@@ -3,20 +3,21 @@ package net.minecraft.block.entity;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Clearable;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Tickable;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -28,7 +29,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	private final int[] cookingTotalTimes = new int[4];
 
 	public CampfireBlockEntity() {
-		super(BlockEntityType.CAMPFIRE);
+		super(BlockEntityType.field_17380);
 	}
 
 	@Override
@@ -58,7 +59,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 			if (!itemStack.isEmpty()) {
 				this.cookingTimes[i]++;
 				if (this.cookingTimes[i] >= this.cookingTotalTimes[i]) {
-					Inventory inventory = new BasicInventory(itemStack);
+					Inventory inventory = new SimpleInventory(itemStack);
 					ItemStack itemStack2 = (ItemStack)this.world
 						.getRecipeManager()
 						.getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, this.world)
@@ -101,7 +102,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 						+ (double)((float)direction.rotateYClockwise().getOffsetZ() * 0.3125F);
 
 					for (int k = 0; k < 4; k++) {
-						world.addParticle(ParticleTypes.SMOKE, d, e, g, 0.0, 5.0E-4, 0.0);
+						world.addParticle(ParticleTypes.field_11251, d, e, g, 0.0, 5.0E-4, 0.0);
 					}
 				}
 			}
@@ -113,8 +114,8 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
 		this.itemsBeingCooked.clear();
 		Inventories.fromTag(tag, this.itemsBeingCooked);
 		if (tag.contains("CookingTimes", 11)) {
@@ -156,7 +157,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {
 		return this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)
 			? Optional.empty()
-			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new BasicInventory(item), this.world);
+			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new SimpleInventory(item), this.world);
 	}
 
 	public boolean addItem(ItemStack item, int integer) {
@@ -185,10 +186,12 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	}
 
 	public void spawnItemsBeingCooked() {
-		if (!this.getWorld().isClient) {
-			ItemScatterer.spawn(this.getWorld(), this.getPos(), this.getItemsBeingCooked());
-		}
+		if (this.world != null) {
+			if (!this.world.isClient) {
+				ItemScatterer.spawn(this.world, this.getPos(), this.getItemsBeingCooked());
+			}
 
-		this.updateListeners();
+			this.updateListeners();
+		}
 	}
 }

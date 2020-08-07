@@ -1,11 +1,11 @@
 package net.minecraft.entity.vehicle;
 
 import javax.annotation.Nullable;
-import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -16,25 +16,27 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
-public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements Inventory, NameableContainerProvider {
+public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements Inventory, NamedScreenHandlerFactory {
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
 	private boolean field_7733 = true;
 	@Nullable
 	private Identifier lootTableId;
 	private long lootSeed;
 
-	protected StorageMinecartEntity(EntityType<?> type, World world) {
-		super(type, world);
+	protected StorageMinecartEntity(EntityType<?> entityType, World world) {
+		super(entityType, world);
 	}
 
 	protected StorageMinecartEntity(EntityType<?> type, double x, double y, double z, World world) {
@@ -44,13 +46,19 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
 			ItemScatterer.spawn(this.world, this, this);
+			if (!this.world.isClient) {
+				Entity entity = damageSource.getSource();
+				if (entity != null && entity.getType() == EntityType.field_6097) {
+					PiglinBrain.onGuardedBlockBroken((PlayerEntity)entity, true);
+				}
+			}
 		}
 	}
 
 	@Override
-	public boolean isInvEmpty() {
+	public boolean isEmpty() {
 		for (ItemStack itemStack : this.inventory) {
 			if (!itemStack.isEmpty()) {
 				return false;
@@ -61,20 +69,20 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
-		this.method_7563(null);
+	public ItemStack getStack(int slot) {
+		this.generateLoot(null);
 		return this.inventory.get(slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
-		this.method_7563(null);
+	public ItemStack removeStack(int slot, int amount) {
+		this.generateLoot(null);
 		return Inventories.splitStack(this.inventory, slot, amount);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
-		this.method_7563(null);
+	public ItemStack removeStack(int slot) {
+		this.generateLoot(null);
 		ItemStack itemStack = this.inventory.get(slot);
 		if (itemStack.isEmpty()) {
 			return ItemStack.EMPTY;
@@ -85,18 +93,18 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
-		this.method_7563(null);
+	public void setStack(int slot, ItemStack stack) {
+		this.generateLoot(null);
 		this.inventory.set(slot, stack);
-		if (!stack.isEmpty() && stack.getCount() > this.getInvMaxStackAmount()) {
-			stack.setCount(this.getInvMaxStackAmount());
+		if (!stack.isEmpty() && stack.getCount() > this.getMaxCountPerStack()) {
+			stack.setCount(this.getMaxCountPerStack());
 		}
 	}
 
 	@Override
 	public boolean equip(int slot, ItemStack item) {
-		if (slot >= 0 && slot < this.getInvSize()) {
-			this.setInvStack(slot, item);
+		if (slot >= 0 && slot < this.size()) {
+			this.setStack(slot, item);
 			return true;
 		} else {
 			return false;
@@ -108,15 +116,15 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUse(PlayerEntity player) {
 		return this.removed ? false : !(player.squaredDistanceTo(this) > 64.0);
 	}
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType newDimension) {
+	public Entity moveToWorld(ServerWorld destination) {
 		this.field_7733 = false;
-		return super.changeDimension(newDimension);
+		return super.moveToWorld(destination);
 	}
 
 	@Override
@@ -144,7 +152,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	protected void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (tag.contains("LootTable", 8)) {
 			this.lootTableId = new Identifier(tag.getString("LootTable"));
 			this.lootSeed = tag.getLong("LootTableSeed");
@@ -154,58 +162,67 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
-		player.openContainer(this);
-		return true;
+	public ActionResult interact(PlayerEntity player, Hand hand) {
+		player.openHandledScreen(this);
+		if (!player.world.isClient) {
+			PiglinBrain.onGuardedBlockBroken(player, true);
+			return ActionResult.CONSUME;
+		} else {
+			return ActionResult.SUCCESS;
+		}
 	}
 
 	@Override
 	protected void applySlowdown() {
 		float f = 0.98F;
 		if (this.lootTableId == null) {
-			int i = 15 - Container.calculateComparatorOutput(this);
+			int i = 15 - ScreenHandler.calculateComparatorOutput(this);
 			f += (float)i * 0.001F;
 		}
 
 		this.setVelocity(this.getVelocity().multiply((double)f, 0.0, (double)f));
 	}
 
-	public void method_7563(@Nullable PlayerEntity playerEntity) {
+	public void generateLoot(@Nullable PlayerEntity player) {
 		if (this.lootTableId != null && this.world.getServer() != null) {
-			LootTable lootTable = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
-			this.lootTableId = null;
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.put(LootContextParameters.POSITION, new BlockPos(this))
-				.setRandom(this.lootSeed);
-			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
+			LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
+			if (player instanceof ServerPlayerEntity) {
+				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test((ServerPlayerEntity)player, this.lootTableId);
 			}
 
-			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
+			this.lootTableId = null;
+			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
+				.parameter(LootContextParameters.field_24424, this.getPos())
+				.random(this.lootSeed);
+			if (player != null) {
+				builder.luck(player.getLuck()).parameter(LootContextParameters.field_1226, player);
+			}
+
+			lootTable.supplyInventory(this, builder.build(LootContextTypes.field_1179));
 		}
 	}
 
 	@Override
 	public void clear() {
-		this.method_7563(null);
+		this.generateLoot(null);
 		this.inventory.clear();
 	}
 
-	public void setLootTable(Identifier id, long l) {
+	public void setLootTable(Identifier id, long lootSeed) {
 		this.lootTableId = id;
-		this.lootSeed = l;
+		this.lootSeed = lootSeed;
 	}
 
 	@Nullable
 	@Override
-	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		if (this.lootTableId != null && playerEntity.isSpectator()) {
 			return null;
 		} else {
-			this.method_7563(playerInventory.player);
-			return this.getContainer(syncId, playerInventory);
+			this.generateLoot(playerInventory.player);
+			return this.getScreenHandler(i, playerInventory);
 		}
 	}
 
-	protected abstract Container getContainer(int syncId, PlayerInventory playerInventory);
+	protected abstract ScreenHandler getScreenHandler(int syncId, PlayerInventory playerInventory);
 }

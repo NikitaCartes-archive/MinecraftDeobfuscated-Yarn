@@ -8,26 +8,23 @@ import net.minecraft.util.math.MathHelper;
 public class ProtectionEnchantment extends Enchantment {
 	public final ProtectionEnchantment.Type protectionType;
 
-	public ProtectionEnchantment(Enchantment.Weight weight, ProtectionEnchantment.Type type, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ARMOR, slotTypes);
+	public ProtectionEnchantment(Enchantment.Rarity weight, ProtectionEnchantment.Type type, EquipmentSlot... equipmentSlots) {
+		super(weight, type == ProtectionEnchantment.Type.field_9140 ? EnchantmentTarget.field_9079 : EnchantmentTarget.field_9068, equipmentSlots);
 		this.protectionType = type;
-		if (type == ProtectionEnchantment.Type.FALL) {
-			this.type = EnchantmentTarget.ARMOR_FEET;
-		}
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return this.protectionType.getBasePower() + (level - 1) * this.protectionType.getPowerPerLevel();
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return this.getMinimumPower(level) + this.protectionType.getPowerPerLevel();
+	public int getMaxPower(int level) {
+		return this.getMinPower(level) + this.protectionType.getPowerPerLevel();
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 4;
 	}
 
@@ -35,33 +32,33 @@ public class ProtectionEnchantment extends Enchantment {
 	public int getProtectionAmount(int level, DamageSource source) {
 		if (source.isOutOfWorld()) {
 			return 0;
-		} else if (this.protectionType == ProtectionEnchantment.Type.ALL) {
+		} else if (this.protectionType == ProtectionEnchantment.Type.field_9138) {
 			return level;
-		} else if (this.protectionType == ProtectionEnchantment.Type.FIRE && source.isFire()) {
+		} else if (this.protectionType == ProtectionEnchantment.Type.field_9139 && source.isFire()) {
 			return level * 2;
-		} else if (this.protectionType == ProtectionEnchantment.Type.FALL && source == DamageSource.FALL) {
+		} else if (this.protectionType == ProtectionEnchantment.Type.field_9140 && source == DamageSource.FALL) {
 			return level * 3;
-		} else if (this.protectionType == ProtectionEnchantment.Type.EXPLOSION && source.isExplosive()) {
+		} else if (this.protectionType == ProtectionEnchantment.Type.field_9141 && source.isExplosive()) {
 			return level * 2;
 		} else {
-			return this.protectionType == ProtectionEnchantment.Type.PROJECTILE && source.isProjectile() ? level * 2 : 0;
+			return this.protectionType == ProtectionEnchantment.Type.field_9142 && source.isProjectile() ? level * 2 : 0;
 		}
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
+	public boolean canAccept(Enchantment other) {
 		if (other instanceof ProtectionEnchantment) {
 			ProtectionEnchantment protectionEnchantment = (ProtectionEnchantment)other;
 			return this.protectionType == protectionEnchantment.protectionType
 				? false
-				: this.protectionType == ProtectionEnchantment.Type.FALL || protectionEnchantment.protectionType == ProtectionEnchantment.Type.FALL;
+				: this.protectionType == ProtectionEnchantment.Type.field_9140 || protectionEnchantment.protectionType == ProtectionEnchantment.Type.field_9140;
 		} else {
-			return super.differs(other);
+			return super.canAccept(other);
 		}
 	}
 
 	public static int transformFireDuration(LivingEntity entity, int duration) {
-		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.FIRE_PROTECTION, entity);
+		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.field_9095, entity);
 		if (i > 0) {
 			duration -= MathHelper.floor((float)duration * (float)i * 0.15F);
 		}
@@ -70,7 +67,7 @@ public class ProtectionEnchantment extends Enchantment {
 	}
 
 	public static double transformExplosionKnockback(LivingEntity entity, double velocity) {
-		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.BLAST_PROTECTION, entity);
+		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.field_9107, entity);
 		if (i > 0) {
 			velocity -= (double)MathHelper.floor(velocity * (double)((float)i * 0.15F));
 		}
@@ -79,11 +76,11 @@ public class ProtectionEnchantment extends Enchantment {
 	}
 
 	public static enum Type {
-		ALL("all", 1, 11),
-		FIRE("fire", 10, 8),
-		FALL("fall", 5, 6),
-		EXPLOSION("explosion", 5, 8),
-		PROJECTILE("projectile", 3, 6);
+		field_9138("all", 1, 11),
+		field_9139("fire", 10, 8),
+		field_9140("fall", 5, 6),
+		field_9141("explosion", 5, 8),
+		field_9142("projectile", 3, 6);
 
 		private final String name;
 		private final int basePower;

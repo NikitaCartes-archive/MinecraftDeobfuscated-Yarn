@@ -25,36 +25,38 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class StructurePiece {
-	protected static final BlockState AIR = Blocks.CAVE_AIR.getDefaultState();
+	protected static final BlockState AIR = Blocks.field_10543.getDefaultState();
 	protected BlockBox boundingBox;
 	@Nullable
 	private Direction facing;
 	private BlockMirror mirror;
 	private BlockRotation rotation;
-	protected int field_15316;
+	protected int length;
 	private final StructurePieceType type;
 	private static final Set<Block> BLOCKS_NEEDING_POST_PROCESSING = ImmutableSet.<Block>builder()
-		.add(Blocks.NETHER_BRICK_FENCE)
-		.add(Blocks.TORCH)
-		.add(Blocks.WALL_TORCH)
-		.add(Blocks.OAK_FENCE)
-		.add(Blocks.SPRUCE_FENCE)
-		.add(Blocks.DARK_OAK_FENCE)
-		.add(Blocks.ACACIA_FENCE)
-		.add(Blocks.BIRCH_FENCE)
-		.add(Blocks.JUNGLE_FENCE)
-		.add(Blocks.LADDER)
-		.add(Blocks.IRON_BARS)
+		.add(Blocks.field_10364)
+		.add(Blocks.field_10336)
+		.add(Blocks.field_10099)
+		.add(Blocks.field_10620)
+		.add(Blocks.field_10020)
+		.add(Blocks.field_10132)
+		.add(Blocks.field_10144)
+		.add(Blocks.field_10299)
+		.add(Blocks.field_10319)
+		.add(Blocks.field_9983)
+		.add(Blocks.field_10576)
 		.build();
 
-	protected StructurePiece(StructurePieceType type, int i) {
+	protected StructurePiece(StructurePieceType type, int length) {
 		this.type = type;
-		this.field_15316 = i;
+		this.length = length;
 	}
 
 	public StructurePiece(StructurePieceType type, CompoundTag tag) {
@@ -73,33 +75,41 @@ public abstract class StructurePiece {
 		compoundTag.put("BB", this.boundingBox.toNbt());
 		Direction direction = this.getFacing();
 		compoundTag.putInt("O", direction == null ? -1 : direction.getHorizontal());
-		compoundTag.putInt("GD", this.field_15316);
+		compoundTag.putInt("GD", this.length);
 		this.toNbt(compoundTag);
 		return compoundTag;
 	}
 
 	protected abstract void toNbt(CompoundTag tag);
 
-	public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+	public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
 	}
 
-	public abstract boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos);
+	public abstract boolean generate(
+		StructureWorldAccess structureWorldAccess,
+		StructureAccessor structureAccessor,
+		ChunkGenerator chunkGenerator,
+		Random random,
+		BlockBox boundingBox,
+		ChunkPos chunkPos,
+		BlockPos blockPos
+	);
 
 	public BlockBox getBoundingBox() {
 		return this.boundingBox;
 	}
 
-	public int method_14923() {
-		return this.field_15316;
+	public int getLength() {
+		return this.length;
 	}
 
-	public boolean method_16654(ChunkPos chunkPos, int i) {
-		int j = chunkPos.x << 4;
-		int k = chunkPos.z << 4;
-		return this.boundingBox.intersectsXZ(j - i, k - i, j + 15 + i, k + 15 + i);
+	public boolean intersectsChunk(ChunkPos chunkPos, int offset) {
+		int i = chunkPos.x << 4;
+		int j = chunkPos.z << 4;
+		return this.boundingBox.intersectsXZ(i - offset, j - offset, i + 15 + offset, j + 15 + offset);
 	}
 
-	public static StructurePiece method_14932(List<StructurePiece> list, BlockBox blockBox) {
+	public static StructurePiece getOverlappingPiece(List<StructurePiece> list, BlockBox blockBox) {
 		for (StructurePiece structurePiece : list) {
 			if (structurePiece.getBoundingBox() != null && structurePiece.getBoundingBox().intersects(blockBox)) {
 				return structurePiece;
@@ -163,12 +173,12 @@ public abstract class StructurePiece {
 			return i;
 		} else {
 			switch (direction) {
-				case NORTH:
-				case SOUTH:
+				case field_11043:
+				case field_11035:
 					return this.boundingBox.minX + i;
-				case WEST:
+				case field_11039:
 					return this.boundingBox.maxX - j;
-				case EAST:
+				case field_11034:
 					return this.boundingBox.minX + j;
 				default:
 					return i;
@@ -186,12 +196,12 @@ public abstract class StructurePiece {
 			return j;
 		} else {
 			switch (direction) {
-				case NORTH:
+				case field_11043:
 					return this.boundingBox.maxZ - j;
-				case SOUTH:
+				case field_11035:
 					return this.boundingBox.minZ + j;
-				case WEST:
-				case EAST:
+				case field_11039:
+				case field_11034:
 					return this.boundingBox.minZ + i;
 				default:
 					return j;
@@ -199,25 +209,25 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void addBlock(IWorld world, BlockState block, int x, int y, int z, BlockBox blockBox) {
+	protected void addBlock(StructureWorldAccess structureWorldAccess, BlockState block, int x, int y, int z, BlockBox blockBox) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
 		if (blockBox.contains(blockPos)) {
-			if (this.mirror != BlockMirror.NONE) {
+			if (this.mirror != BlockMirror.field_11302) {
 				block = block.mirror(this.mirror);
 			}
 
-			if (this.rotation != BlockRotation.NONE) {
+			if (this.rotation != BlockRotation.field_11467) {
 				block = block.rotate(this.rotation);
 			}
 
-			world.setBlockState(blockPos, block, 2);
-			FluidState fluidState = world.getFluidState(blockPos);
+			structureWorldAccess.setBlockState(blockPos, block, 2);
+			FluidState fluidState = structureWorldAccess.getFluidState(blockPos);
 			if (!fluidState.isEmpty()) {
-				world.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
+				structureWorldAccess.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
 			}
 
 			if (BLOCKS_NEEDING_POST_PROCESSING.contains(block.getBlock())) {
-				world.getChunk(blockPos).markBlockForPostProcessing(blockPos);
+				structureWorldAccess.getChunk(blockPos).markBlockForPostProcessing(blockPos);
 			}
 		}
 	}
@@ -227,7 +237,7 @@ public abstract class StructurePiece {
 		int j = this.applyYTransform(y);
 		int k = this.applyZTransform(x, z);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		return !blockBox.contains(blockPos) ? Blocks.AIR.getDefaultState() : blockView.getBlockState(blockPos);
+		return !blockBox.contains(blockPos) ? Blocks.field_10124.getDefaultState() : blockView.getBlockState(blockPos);
 	}
 
 	protected boolean isUnderSeaLevel(WorldView worldView, int x, int z, int y, BlockBox blockBox) {
@@ -235,28 +245,30 @@ public abstract class StructurePiece {
 		int j = this.applyYTransform(z + 1);
 		int k = this.applyZTransform(x, y);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		return !blockBox.contains(blockPos) ? false : j < worldView.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, i, k);
+		return !blockBox.contains(blockPos) ? false : j < worldView.getTopY(Heightmap.Type.field_13195, i, k);
 	}
 
-	protected void fill(IWorld world, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int i) {
+	protected void fill(StructureWorldAccess structureWorldAccess, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int i) {
 		for (int j = minY; j <= maxY; j++) {
 			for (int k = minX; k <= maxX; k++) {
 				for (int l = minZ; l <= i; l++) {
-					this.addBlock(world, Blocks.AIR.getDefaultState(), k, j, l, bounds);
+					this.addBlock(structureWorldAccess, Blocks.field_10124.getDefaultState(), k, j, l, bounds);
 				}
 			}
 		}
 	}
 
-	protected void fillWithOutline(IWorld world, BlockBox blockBox, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState inside, boolean bl) {
+	protected void fillWithOutline(
+		StructureWorldAccess structureWorldAccess, BlockBox blockBox, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState inside, boolean bl
+	) {
 		for (int o = j; o <= m; o++) {
 			for (int p = i; p <= l; p++) {
 				for (int q = k; q <= n; q++) {
-					if (!bl || !this.getBlockAt(world, p, o, q, blockBox).isAir()) {
+					if (!bl || !this.getBlockAt(structureWorldAccess, p, o, q, blockBox).isAir()) {
 						if (o != j && o != m && p != i && p != l && q != k && q != n) {
-							this.addBlock(world, inside, p, o, q, blockBox);
+							this.addBlock(structureWorldAccess, inside, p, o, q, blockBox);
 						} else {
-							this.addBlock(world, blockState, p, o, q, blockBox);
+							this.addBlock(structureWorldAccess, blockState, p, o, q, blockBox);
 						}
 					}
 				}
@@ -265,7 +277,7 @@ public abstract class StructurePiece {
 	}
 
 	protected void fillWithOutline(
-		IWorld iWorld,
+		StructureWorldAccess structureWorldAccess,
 		BlockBox blockBox,
 		int minX,
 		int minY,
@@ -280,17 +292,17 @@ public abstract class StructurePiece {
 		for (int i = minY; i <= maxY; i++) {
 			for (int j = minX; j <= maxX; j++) {
 				for (int k = minZ; k <= maxZ; k++) {
-					if (!replaceBlocks || !this.getBlockAt(iWorld, j, i, k, blockBox).isAir()) {
+					if (!replaceBlocks || !this.getBlockAt(structureWorldAccess, j, i, k, blockBox).isAir()) {
 						blockRandomizer.setBlock(random, j, i, k, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
-						this.addBlock(iWorld, blockRandomizer.getBlock(), j, i, k, blockBox);
+						this.addBlock(structureWorldAccess, blockRandomizer.getBlock(), j, i, k, blockBox);
 					}
 				}
 			}
 		}
 	}
 
-	protected void fillWithOutlineUnderSealevel(
-		IWorld iWorld,
+	protected void fillWithOutlineUnderSeaLevel(
+		StructureWorldAccess structureWorldAccess,
 		BlockBox blockBox,
 		Random random,
 		float f,
@@ -308,13 +320,13 @@ public abstract class StructurePiece {
 		for (int o = j; o <= m; o++) {
 			for (int p = i; p <= l; p++) {
 				for (int q = k; q <= n; q++) {
-					if (!(random.nextFloat() > f) && (!bl || !this.getBlockAt(iWorld, p, o, q, blockBox).isAir()) && (!bl2 || this.isUnderSeaLevel(iWorld, p, o, q, blockBox))
-						)
-					 {
+					if (!(random.nextFloat() > f)
+						&& (!bl || !this.getBlockAt(structureWorldAccess, p, o, q, blockBox).isAir())
+						&& (!bl2 || this.isUnderSeaLevel(structureWorldAccess, p, o, q, blockBox))) {
 						if (o != j && o != m && p != i && p != l && q != k && q != n) {
-							this.addBlock(iWorld, blockState2, p, o, q, blockBox);
+							this.addBlock(structureWorldAccess, blockState2, p, o, q, blockBox);
 						} else {
-							this.addBlock(iWorld, blockState, p, o, q, blockBox);
+							this.addBlock(structureWorldAccess, blockState, p, o, q, blockBox);
 						}
 					}
 				}
@@ -322,13 +334,17 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void addBlockWithRandomThreshold(IWorld world, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState blockState) {
+	protected void addBlockWithRandomThreshold(
+		StructureWorldAccess structureWorldAccess, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState blockState
+	) {
 		if (random.nextFloat() < threshold) {
-			this.addBlock(world, blockState, x, y, z, bounds);
+			this.addBlock(structureWorldAccess, blockState, x, y, z, bounds);
 		}
 	}
 
-	protected void method_14919(IWorld world, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, BlockState block, boolean bl) {
+	protected void method_14919(
+		StructureWorldAccess structureWorldAccess, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, BlockState block, boolean bl
+	) {
 		float f = (float)(maxX - minX + 1);
 		float g = (float)(maxY - minY + 1);
 		float h = (float)(maxZ - minZ + 1);
@@ -343,10 +359,10 @@ public abstract class StructurePiece {
 
 				for (int o = minZ; o <= maxZ; o++) {
 					float p = ((float)o - j) / (h * 0.5F);
-					if (!bl || !this.getBlockAt(world, m, k, o, bounds).isAir()) {
+					if (!bl || !this.getBlockAt(structureWorldAccess, m, k, o, bounds).isAir()) {
 						float q = n * n + l * l + p * p;
 						if (q <= 1.05F) {
-							this.addBlock(world, block, m, k, o, bounds);
+							this.addBlock(structureWorldAccess, block, m, k, o, bounds);
 						}
 					}
 				}
@@ -354,34 +370,34 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void method_14936(IWorld world, BlockState blockState, int x, int y, int z, BlockBox blockBox) {
+	protected void method_14936(StructureWorldAccess structureWorldAccess, BlockState blockState, int x, int y, int z, BlockBox blockBox) {
 		int i = this.applyXTransform(x, z);
 		int j = this.applyYTransform(y);
 		int k = this.applyZTransform(x, z);
 		if (blockBox.contains(new BlockPos(i, j, k))) {
-			while ((world.isAir(new BlockPos(i, j, k)) || world.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > 1) {
-				world.setBlockState(new BlockPos(i, j, k), blockState, 2);
+			while ((structureWorldAccess.isAir(new BlockPos(i, j, k)) || structureWorldAccess.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > 1) {
+				structureWorldAccess.setBlockState(new BlockPos(i, j, k), blockState, 2);
 				j--;
 			}
 		}
 	}
 
-	protected boolean addChest(IWorld world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
+	protected boolean addChest(StructureWorldAccess structureWorldAccess, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
-		return this.addChest(world, boundingBox, random, blockPos, lootTableId, null);
+		return this.addChest(structureWorldAccess, boundingBox, random, blockPos, lootTableId, null);
 	}
 
 	public static BlockState method_14916(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		Direction direction = null;
 
-		for (Direction direction2 : Direction.Type.HORIZONTAL) {
+		for (Direction direction2 : Direction.Type.field_11062) {
 			BlockPos blockPos2 = blockPos.offset(direction2);
 			BlockState blockState2 = blockView.getBlockState(blockPos2);
-			if (blockState2.getBlock() == Blocks.CHEST) {
+			if (blockState2.isOf(Blocks.field_10034)) {
 				return blockState;
 			}
 
-			if (blockState2.isFullOpaque(blockView, blockPos2)) {
+			if (blockState2.isOpaqueFullCube(blockView, blockPos2)) {
 				if (direction != null) {
 					direction = null;
 					break;
@@ -396,17 +412,17 @@ public abstract class StructurePiece {
 		} else {
 			Direction direction3 = blockState.get(HorizontalFacingBlock.FACING);
 			BlockPos blockPos3 = blockPos.offset(direction3);
-			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
+			if (blockView.getBlockState(blockPos3).isOpaqueFullCube(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
 				blockPos3 = blockPos.offset(direction3);
 			}
 
-			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
+			if (blockView.getBlockState(blockPos3).isOpaqueFullCube(blockView, blockPos3)) {
 				direction3 = direction3.rotateYClockwise();
 				blockPos3 = blockPos.offset(direction3);
 			}
 
-			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
+			if (blockView.getBlockState(blockPos3).isOpaqueFullCube(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
 				blockPos3 = blockPos.offset(direction3);
 			}
@@ -415,14 +431,16 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean addChest(IWorld world, BlockBox boundingBox, Random random, BlockPos pos, Identifier lootTableId, @Nullable BlockState block) {
-		if (boundingBox.contains(pos) && world.getBlockState(pos).getBlock() != Blocks.CHEST) {
+	protected boolean addChest(
+		ServerWorldAccess serverWorldAccess, BlockBox boundingBox, Random random, BlockPos pos, Identifier lootTableId, @Nullable BlockState block
+	) {
+		if (boundingBox.contains(pos) && !serverWorldAccess.getBlockState(pos).isOf(Blocks.field_10034)) {
 			if (block == null) {
-				block = method_14916(world, pos, Blocks.CHEST.getDefaultState());
+				block = method_14916(serverWorldAccess, pos, Blocks.field_10034.getDefaultState());
 			}
 
-			world.setBlockState(pos, block, 2);
-			BlockEntity blockEntity = world.getBlockEntity(pos);
+			serverWorldAccess.setBlockState(pos, block, 2);
+			BlockEntity blockEntity = serverWorldAccess.getBlockEntity(pos);
 			if (blockEntity instanceof ChestBlockEntity) {
 				((ChestBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
 			}
@@ -433,13 +451,15 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean addDispenser(IWorld world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTbaleId) {
+	protected boolean addDispenser(
+		StructureWorldAccess structureWorldAccess, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTableId
+	) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
-		if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).getBlock() != Blocks.DISPENSER) {
-			this.addBlock(world, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		if (boundingBox.contains(blockPos) && !structureWorldAccess.getBlockState(blockPos).isOf(Blocks.field_10200)) {
+			this.addBlock(structureWorldAccess, Blocks.field_10200.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
+			BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
-				((DispenserBlockEntity)blockEntity).setLootTable(lootTbaleId, random.nextLong());
+				((DispenserBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
 			}
 
 			return true;
@@ -460,25 +480,25 @@ public abstract class StructurePiece {
 	public void setOrientation(@Nullable Direction orientation) {
 		this.facing = orientation;
 		if (orientation == null) {
-			this.rotation = BlockRotation.NONE;
-			this.mirror = BlockMirror.NONE;
+			this.rotation = BlockRotation.field_11467;
+			this.mirror = BlockMirror.field_11302;
 		} else {
 			switch (orientation) {
-				case SOUTH:
-					this.mirror = BlockMirror.LEFT_RIGHT;
-					this.rotation = BlockRotation.NONE;
+				case field_11035:
+					this.mirror = BlockMirror.field_11300;
+					this.rotation = BlockRotation.field_11467;
 					break;
-				case WEST:
-					this.mirror = BlockMirror.LEFT_RIGHT;
-					this.rotation = BlockRotation.CLOCKWISE_90;
+				case field_11039:
+					this.mirror = BlockMirror.field_11300;
+					this.rotation = BlockRotation.field_11463;
 					break;
-				case EAST:
-					this.mirror = BlockMirror.NONE;
-					this.rotation = BlockRotation.CLOCKWISE_90;
+				case field_11034:
+					this.mirror = BlockMirror.field_11302;
+					this.rotation = BlockRotation.field_11463;
 					break;
 				default:
-					this.mirror = BlockMirror.NONE;
-					this.rotation = BlockRotation.NONE;
+					this.mirror = BlockMirror.field_11302;
+					this.rotation = BlockRotation.field_11467;
 			}
 		}
 	}
@@ -492,7 +512,7 @@ public abstract class StructurePiece {
 	}
 
 	public abstract static class BlockRandomizer {
-		protected BlockState block = Blocks.AIR.getDefaultState();
+		protected BlockState block = Blocks.field_10124.getDefaultState();
 
 		protected BlockRandomizer() {
 		}

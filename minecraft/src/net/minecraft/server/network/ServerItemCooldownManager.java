@@ -1,20 +1,20 @@
 package net.minecraft.server.network;
 
-import net.minecraft.client.network.packet.CooldownUpdateS2CPacket;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.item.Item;
+import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 
 public class ServerItemCooldownManager extends ItemCooldownManager {
 	private final ServerPlayerEntity player;
 
-	public ServerItemCooldownManager(ServerPlayerEntity serverPlayerEntity) {
-		this.player = serverPlayerEntity;
+	public ServerItemCooldownManager(ServerPlayerEntity player) {
+		this.player = player;
 	}
 
 	@Override
-	protected void onCooldownUpdate(Item item, int i) {
-		super.onCooldownUpdate(item, i);
-		this.player.networkHandler.sendPacket(new CooldownUpdateS2CPacket(item, i));
+	protected void onCooldownUpdate(Item item, int duration) {
+		super.onCooldownUpdate(item, duration);
+		this.player.networkHandler.sendPacket(new CooldownUpdateS2CPacket(item, duration));
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package net.minecraft.resource;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class JsonDataLoader extends SinglePreparationResourceReloadListener<Map<Identifier, JsonObject>> {
+public abstract class JsonDataLoader extends SinglePreparationResourceReloadListener<Map<Identifier, JsonElement>> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int FILE_SUFFIX_LENGTH = ".json".length();
 	private final Gson gson;
@@ -28,8 +28,8 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloadList
 		this.dataType = dataType;
 	}
 
-	protected Map<Identifier, JsonObject> prepare(ResourceManager resourceManager, Profiler profiler) {
-		Map<Identifier, JsonObject> map = Maps.<Identifier, JsonObject>newHashMap();
+	protected Map<Identifier, JsonElement> method_20731(ResourceManager resourceManager, Profiler profiler) {
+		Map<Identifier, JsonElement> map = Maps.<Identifier, JsonElement>newHashMap();
 		int i = this.dataType.length() + 1;
 
 		for (Identifier identifier : resourceManager.findResources(this.dataType, stringx -> stringx.endsWith(".json"))) {
@@ -49,10 +49,10 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloadList
 						Throwable var14 = null;
 
 						try {
-							JsonObject jsonObject = JsonHelper.deserialize(this.gson, reader, JsonObject.class);
-							if (jsonObject != null) {
-								JsonObject jsonObject2 = (JsonObject)map.put(identifier2, jsonObject);
-								if (jsonObject2 != null) {
+							JsonElement jsonElement = JsonHelper.deserialize(this.gson, reader, JsonElement.class);
+							if (jsonElement != null) {
+								JsonElement jsonElement2 = (JsonElement)map.put(identifier2, jsonElement);
+								if (jsonElement2 != null) {
 									throw new IllegalStateException("Duplicate data file ignored with ID " + identifier2);
 								}
 							} else {

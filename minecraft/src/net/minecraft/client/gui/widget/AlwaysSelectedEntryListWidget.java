@@ -13,15 +13,15 @@ public abstract class AlwaysSelectedEntryListWidget<E extends EntryListWidget.En
 	}
 
 	@Override
-	public boolean changeFocus(boolean bl) {
+	public boolean changeFocus(boolean lookForwards) {
 		if (!this.inFocus && this.getItemCount() == 0) {
 			return false;
 		} else {
 			this.inFocus = !this.inFocus;
 			if (this.inFocus && this.getSelected() == null && this.getItemCount() > 0) {
-				this.moveSelection(1);
+				this.moveSelection(EntryListWidget.MoveDirection.DOWN);
 			} else if (this.inFocus && this.getSelected() != null) {
-				this.moveSelection(0);
+				this.method_30015();
 			}
 
 			return this.inFocus;
@@ -31,7 +31,7 @@ public abstract class AlwaysSelectedEntryListWidget<E extends EntryListWidget.En
 	@Environment(EnvType.CLIENT)
 	public abstract static class Entry<E extends AlwaysSelectedEntryListWidget.Entry<E>> extends EntryListWidget.Entry<E> {
 		@Override
-		public boolean changeFocus(boolean bl) {
+		public boolean changeFocus(boolean lookForwards) {
 			return false;
 		}
 	}

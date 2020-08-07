@@ -9,7 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.state.StateManager;
 import net.minecraft.tag.Tag;
-import net.minecraft.util.IdList;
+import net.minecraft.util.collection.IdList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -26,7 +26,7 @@ public abstract class Fluid {
 	protected Fluid() {
 		StateManager.Builder<Fluid, FluidState> builder = new StateManager.Builder<>(this);
 		this.appendProperties(builder);
-		this.stateManager = builder.build(FluidStateImpl::new);
+		this.stateManager = builder.build(Fluid::getDefaultState, FluidState::new);
 		this.setDefaultState(this.stateManager.getDefaultState());
 	}
 
@@ -37,8 +37,8 @@ public abstract class Fluid {
 		return this.stateManager;
 	}
 
-	protected final void setDefaultState(FluidState fluidState) {
-		this.defaultState = fluidState;
+	protected final void setDefaultState(FluidState state) {
+		this.defaultState = state;
 	}
 
 	public final FluidState getDefaultState() {
@@ -48,13 +48,13 @@ public abstract class Fluid {
 	public abstract Item getBucketItem();
 
 	@Environment(EnvType.CLIENT)
-	protected void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+	protected void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
 	}
 
 	protected void onScheduledTick(World world, BlockPos pos, FluidState state) {
 	}
 
-	protected void onRandomTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+	protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
 	}
 
 	@Nullable
@@ -63,11 +63,11 @@ public abstract class Fluid {
 		return null;
 	}
 
-	protected abstract boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction);
+	protected abstract boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction);
 
 	protected abstract Vec3d getVelocity(BlockView world, BlockPos pos, FluidState state);
 
-	public abstract int getTickRate(WorldView worldView);
+	public abstract int getTickRate(WorldView world);
 
 	protected boolean hasRandomTicks() {
 		return false;
@@ -79,23 +79,23 @@ public abstract class Fluid {
 
 	protected abstract float getBlastResistance();
 
-	public abstract float getHeight(FluidState fluidState, BlockView blockView, BlockPos blockPos);
+	public abstract float getHeight(FluidState state, BlockView world, BlockPos pos);
 
-	public abstract float getHeight(FluidState fluidState);
+	public abstract float getHeight(FluidState state);
 
-	protected abstract BlockState toBlockState(FluidState fluidState);
+	protected abstract BlockState toBlockState(FluidState state);
 
-	public abstract boolean isStill(FluidState fluidState);
+	public abstract boolean isStill(FluidState state);
 
-	public abstract int getLevel(FluidState fluidState);
+	public abstract int getLevel(FluidState state);
 
 	public boolean matchesType(Fluid fluid) {
 		return fluid == this;
 	}
 
-	public boolean matches(Tag<Fluid> tag) {
+	public boolean isIn(Tag<Fluid> tag) {
 		return tag.contains(this);
 	}
 
-	public abstract VoxelShape getShape(FluidState fluidState, BlockView blockView, BlockPos blockPos);
+	public abstract VoxelShape getShape(FluidState state, BlockView world, BlockPos pos);
 }

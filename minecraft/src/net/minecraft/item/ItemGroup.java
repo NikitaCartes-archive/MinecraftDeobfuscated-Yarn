@@ -7,7 +7,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 
 public abstract class ItemGroup {
@@ -16,86 +18,89 @@ public abstract class ItemGroup {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.BRICKS);
+			return new ItemStack(Blocks.field_10104);
 		}
 	}).setName("building_blocks");
 	public static final ItemGroup DECORATIONS = new ItemGroup(1, "decorations") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.PEONY);
+			return new ItemStack(Blocks.field_10003);
 		}
 	};
 	public static final ItemGroup REDSTONE = new ItemGroup(2, "redstone") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Items.REDSTONE);
+			return new ItemStack(Items.field_8725);
 		}
 	};
 	public static final ItemGroup TRANSPORTATION = new ItemGroup(3, "transportation") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.POWERED_RAIL);
+			return new ItemStack(Blocks.field_10425);
 		}
 	};
 	public static final ItemGroup MISC = new ItemGroup(6, "misc") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Items.LAVA_BUCKET);
+			return new ItemStack(Items.field_8187);
 		}
 	};
 	public static final ItemGroup SEARCH = (new ItemGroup(5, "search") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Items.COMPASS);
+			return new ItemStack(Items.field_8251);
 		}
 	}).setTexture("item_search.png");
 	public static final ItemGroup FOOD = new ItemGroup(7, "food") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Items.APPLE);
+			return new ItemStack(Items.field_8279);
 		}
 	};
 	public static final ItemGroup TOOLS = (new ItemGroup(8, "tools") {
-		@Environment(EnvType.CLIENT)
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Items.IRON_AXE);
-		}
-	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE});
+			@Environment(EnvType.CLIENT)
+			@Override
+			public ItemStack createIcon() {
+				return new ItemStack(Items.field_8475);
+			}
+		})
+		.setEnchantments(
+			new EnchantmentTarget[]{EnchantmentTarget.field_23747, EnchantmentTarget.field_9069, EnchantmentTarget.field_9072, EnchantmentTarget.field_9082}
+		);
 	public static final ItemGroup COMBAT = (new ItemGroup(9, "combat") {
 			@Environment(EnvType.CLIENT)
 			@Override
 			public ItemStack createIcon() {
-				return new ItemStack(Items.GOLDEN_SWORD);
+				return new ItemStack(Items.field_8845);
 			}
 		})
 		.setEnchantments(
 			new EnchantmentTarget[]{
-				EnchantmentTarget.ALL,
-				EnchantmentTarget.ARMOR,
-				EnchantmentTarget.ARMOR_FEET,
-				EnchantmentTarget.ARMOR_HEAD,
-				EnchantmentTarget.ARMOR_LEGS,
-				EnchantmentTarget.ARMOR_CHEST,
-				EnchantmentTarget.BOW,
-				EnchantmentTarget.WEAPON,
-				EnchantmentTarget.WEARABLE,
-				EnchantmentTarget.BREAKABLE,
-				EnchantmentTarget.TRIDENT,
-				EnchantmentTarget.CROSSBOW
+				EnchantmentTarget.field_23747,
+				EnchantmentTarget.field_9068,
+				EnchantmentTarget.field_9079,
+				EnchantmentTarget.field_9080,
+				EnchantmentTarget.field_9076,
+				EnchantmentTarget.field_9071,
+				EnchantmentTarget.field_9070,
+				EnchantmentTarget.field_9074,
+				EnchantmentTarget.field_9078,
+				EnchantmentTarget.field_9082,
+				EnchantmentTarget.field_9073,
+				EnchantmentTarget.field_9081
 			}
 		);
 	public static final ItemGroup BREWING = new ItemGroup(10, "brewing") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+			return PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991);
 		}
 	};
 	public static final ItemGroup MATERIALS = MISC;
@@ -103,7 +108,7 @@ public abstract class ItemGroup {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.BOOKSHELF);
+			return new ItemStack(Blocks.field_10504);
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -122,11 +127,12 @@ public abstract class ItemGroup {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.CHEST);
+			return new ItemStack(Blocks.field_10034);
 		}
 	}).setTexture("inventory.png").setNoScrollbar().setNoTooltip();
 	private final int index;
 	private final String id;
+	private final Text translationKey;
 	private String name;
 	private String texture = "items.png";
 	private boolean scrollbar = true;
@@ -137,6 +143,7 @@ public abstract class ItemGroup {
 	public ItemGroup(int index, String id) {
 		this.index = index;
 		this.id = id;
+		this.translationKey = new TranslatableText("itemGroup." + id);
 		this.icon = ItemStack.EMPTY;
 		GROUPS[index] = this;
 	}
@@ -146,18 +153,13 @@ public abstract class ItemGroup {
 		return this.index;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public String getId() {
-		return this.id;
-	}
-
 	public String getName() {
 		return this.name == null ? this.id : this.name;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String getTranslationKey() {
-		return "itemGroup." + this.getId();
+	public Text getTranslationKey() {
+		return this.translationKey;
 	}
 
 	@Environment(EnvType.CLIENT)

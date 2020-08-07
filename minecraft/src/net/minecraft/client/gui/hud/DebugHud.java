@@ -7,6 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -29,9 +32,10 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -47,25 +51,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
 	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.make(new EnumMap(Heightmap.Type.class), enumMap -> {
-		enumMap.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
-		enumMap.put(Heightmap.Type.WORLD_SURFACE, "S");
-		enumMap.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");
-		enumMap.put(Heightmap.Type.OCEAN_FLOOR, "O");
-		enumMap.put(Heightmap.Type.MOTION_BLOCKING, "M");
-		enumMap.put(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, "ML");
+		enumMap.put(Heightmap.Type.field_13194, "SW");
+		enumMap.put(Heightmap.Type.field_13202, "S");
+		enumMap.put(Heightmap.Type.field_13195, "OW");
+		enumMap.put(Heightmap.Type.field_13200, "O");
+		enumMap.put(Heightmap.Type.field_13197, "M");
+		enumMap.put(Heightmap.Type.field_13203, "ML");
 	});
 	private final MinecraftClient client;
 	private final TextRenderer fontRenderer;
@@ -88,28 +93,28 @@ public class DebugHud extends DrawableHelper {
 		this.chunk = null;
 	}
 
-	public void render() {
+	public void render(MatrixStack matrices) {
 		this.client.getProfiler().push("debug");
 		RenderSystem.pushMatrix();
 		Entity entity = this.client.getCameraEntity();
 		this.blockHit = entity.rayTrace(20.0, 0.0F, false);
 		this.fluidHit = entity.rayTrace(20.0, 0.0F, true);
-		this.renderLeftText();
-		this.renderRightText();
+		this.renderLeftText(matrices);
+		this.renderRightText(matrices);
 		RenderSystem.popMatrix();
 		if (this.client.options.debugTpsEnabled) {
 			int i = this.client.getWindow().getScaledWidth();
-			this.drawMetricsData(this.client.getMetricsData(), 0, i / 2, true);
+			this.drawMetricsData(matrices, this.client.getMetricsData(), 0, i / 2, true);
 			IntegratedServer integratedServer = this.client.getServer();
 			if (integratedServer != null) {
-				this.drawMetricsData(integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
+				this.drawMetricsData(matrices, integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
 			}
 		}
 
 		this.client.getProfiler().pop();
 	}
 
-	protected void renderLeftText() {
+	protected void renderLeftText(MatrixStack matrices) {
 		List<String> list = this.getLeftText();
 		list.add("");
 		boolean bl = this.client.getServer() != null;
@@ -126,27 +131,27 @@ public class DebugHud extends DrawableHelper {
 			String string = (String)list.get(i);
 			if (!Strings.isNullOrEmpty(string)) {
 				int j = 9;
-				int k = this.fontRenderer.getStringWidth(string);
+				int k = this.fontRenderer.getWidth(string);
 				int l = 2;
 				int m = 2 + j * i;
-				fill(1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
-				this.fontRenderer.draw(string, 2.0F, (float)m, 14737632);
+				fill(matrices, 1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
+				this.fontRenderer.draw(matrices, string, 2.0F, (float)m, 14737632);
 			}
 		}
 	}
 
-	protected void renderRightText() {
+	protected void renderRightText(MatrixStack matrices) {
 		List<String> list = this.getRightText();
 
 		for (int i = 0; i < list.size(); i++) {
 			String string = (String)list.get(i);
 			if (!Strings.isNullOrEmpty(string)) {
 				int j = 9;
-				int k = this.fontRenderer.getStringWidth(string);
+				int k = this.fontRenderer.getWidth(string);
 				int l = this.client.getWindow().getScaledWidth() - 2 - k;
 				int m = 2 + j * i;
-				fill(l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
-				this.fontRenderer.draw(string, (float)l, (float)m, 14737632);
+				fill(matrices, l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
+				this.fontRenderer.draw(matrices, string, (float)l, (float)m, 14737632);
 			}
 		}
 	}
@@ -163,7 +168,7 @@ public class DebugHud extends DrawableHelper {
 			string = String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), f, g);
 		}
 
-		BlockPos blockPos = new BlockPos(this.client.getCameraEntity());
+		BlockPos blockPos = this.client.getCameraEntity().getBlockPos();
 		if (this.client.hasReducedDebugInfo()) {
 			return Lists.<String>newArrayList(
 				"Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")",
@@ -181,16 +186,16 @@ public class DebugHud extends DrawableHelper {
 			Direction direction = entity.getHorizontalFacing();
 			String string2;
 			switch (direction) {
-				case NORTH:
+				case field_11043:
 					string2 = "Towards negative Z";
 					break;
-				case SOUTH:
+				case field_11035:
 					string2 = "Towards positive Z";
 					break;
-				case WEST:
+				case field_11039:
 					string2 = "Towards negative X";
 					break;
-				case EAST:
+				case field_11034:
 					string2 = "Towards positive X";
 					break;
 				default:
@@ -221,12 +226,12 @@ public class DebugHud extends DrawableHelper {
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
 				this.client.world.getDebugString()
 			);
-			String string3 = this.getServerWorldDebugString();
+			String string3 = this.method_27871();
 			if (string3 != null) {
 				list.add(string3);
 			}
 
-			list.add(DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()));
+			list.add(this.client.world.getRegistryKey().getValue() + " FC: " + longSet.size());
 			list.add("");
 			list.add(
 				String.format(
@@ -254,18 +259,18 @@ public class DebugHud extends DrawableHelper {
 					if (worldChunk.isEmpty()) {
 						list.add("Waiting for chunk...");
 					} else {
-						int i = this.client.world.getChunkManager().getLightingProvider().getLight(blockPos, 0);
-						int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
-						int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
+						int i = this.client.world.method_2935().getLightingProvider().getLight(blockPos, 0);
+						int j = this.client.world.getLightLevel(LightType.field_9284, blockPos);
+						int k = this.client.world.getLightLevel(LightType.field_9282, blockPos);
 						list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
 						WorldChunk worldChunk2 = this.getChunk();
 						if (worldChunk2 != null) {
 							LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
 							list.add(
 								"Server Light: ("
-									+ lightingProvider.get(LightType.SKY).getLightLevel(blockPos)
+									+ lightingProvider.get(LightType.field_9284).getLightLevel(blockPos)
 									+ " sky, "
-									+ lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos)
+									+ lightingProvider.get(LightType.field_9282).getLightLevel(blockPos)
 									+ " block)"
 							);
 						} else {
@@ -300,7 +305,7 @@ public class DebugHud extends DrawableHelper {
 
 						list.add(stringBuilder.toString());
 						if (blockPos.getY() >= 0 && blockPos.getY() < 256) {
-							list.add("Biome: " + Registry.BIOME.getId(this.client.world.getBiome(blockPos)));
+							list.add("Biome: " + this.client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(this.client.world.getBiome(blockPos)));
 							long l = 0L;
 							float h = 0.0F;
 							if (worldChunk2 != null) {
@@ -327,56 +332,62 @@ public class DebugHud extends DrawableHelper {
 				list.add("Outside of world...");
 			}
 
+			ServerWorld serverWorld = this.getServerWorld();
+			if (serverWorld != null) {
+				SpawnHelper.Info info = serverWorld.method_14178().getSpawnInfo();
+				if (info != null) {
+					Object2IntMap<SpawnGroup> object2IntMap = info.getGroupToCount();
+					int kx = info.getSpawningChunkCount();
+					list.add(
+						"SC: "
+							+ kx
+							+ ", "
+							+ (String)Stream.of(SpawnGroup.values())
+								.map(spawnGroup -> Character.toUpperCase(spawnGroup.getName().charAt(0)) + ": " + object2IntMap.getInt(spawnGroup))
+								.collect(Collectors.joining(", "))
+					);
+				} else {
+					list.add("SC: N/A");
+				}
+			}
+
 			ShaderEffect shaderEffect = this.client.gameRenderer.getShader();
 			if (shaderEffect != null) {
 				list.add("Shader: " + shaderEffect.getName());
 			}
 
-			if (this.blockHit.getType() == HitResult.Type.BLOCK) {
-				BlockPos blockPos2 = ((BlockHitResult)this.blockHit).getBlockPos();
-				list.add(String.format("Looking at block: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
-			}
-
-			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
-				BlockPos blockPos2 = ((BlockHitResult)this.fluidHit).getBlockPos();
-				list.add(String.format("Looking at liquid: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
-			}
-
-			list.add(this.client.getSoundManager().getDebugString());
+			list.add(this.client.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.client.player.getMoodPercentage() * 100.0F)));
 			return list;
 		}
 	}
 
 	@Nullable
-	private String getServerWorldDebugString() {
+	private ServerWorld getServerWorld() {
 		IntegratedServer integratedServer = this.client.getServer();
-		if (integratedServer != null) {
-			ServerWorld serverWorld = integratedServer.getWorld(this.client.world.getDimension().getType());
-			if (serverWorld != null) {
-				return serverWorld.getDebugString();
-			}
-		}
+		return integratedServer != null ? integratedServer.getWorld(this.client.world.getRegistryKey()) : null;
+	}
 
-		return null;
+	@Nullable
+	private String method_27871() {
+		ServerWorld serverWorld = this.getServerWorld();
+		return serverWorld != null ? serverWorld.getDebugString() : null;
 	}
 
 	private World getWorld() {
 		return DataFixUtils.orElse(
-			Optional.ofNullable(this.client.getServer()).map(integratedServer -> integratedServer.getWorld(this.client.world.dimension.getType())), this.client.world
+			Optional.ofNullable(this.client.getServer()).flatMap(integratedServer -> Optional.ofNullable(integratedServer.getWorld(this.client.world.getRegistryKey()))),
+			this.client.world
 		);
 	}
 
 	@Nullable
 	private WorldChunk getChunk() {
 		if (this.chunkFuture == null) {
-			IntegratedServer integratedServer = this.client.getServer();
-			if (integratedServer != null) {
-				ServerWorld serverWorld = integratedServer.getWorld(this.client.world.dimension.getType());
-				if (serverWorld != null) {
-					this.chunkFuture = serverWorld.getChunkManager()
-						.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false)
-						.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
-				}
+			ServerWorld serverWorld = this.getServerWorld();
+			if (serverWorld != null) {
+				this.chunkFuture = serverWorld.method_14178()
+					.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.field_12803, false)
+					.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
 			}
 
 			if (this.chunkFuture == null) {
@@ -389,7 +400,7 @@ public class DebugHud extends DrawableHelper {
 
 	private WorldChunk getClientChunk() {
 		if (this.chunk == null) {
-			this.chunk = this.client.world.getChunk(this.pos.x, this.pos.z);
+			this.chunk = this.client.world.method_8497(this.pos.x, this.pos.z);
 		}
 
 		return this.chunk;
@@ -419,34 +430,34 @@ public class DebugHud extends DrawableHelper {
 		if (this.client.hasReducedDebugInfo()) {
 			return list;
 		} else {
-			if (this.blockHit.getType() == HitResult.Type.BLOCK) {
+			if (this.blockHit.getType() == HitResult.Type.field_1332) {
 				BlockPos blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				list.add("");
-				list.add(Formatting.UNDERLINE + "Targeted Block");
+				list.add(Formatting.field_1073 + "Targeted Block: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
 				list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : blockState.getEntries().entrySet()) {
 					list.add(this.propertyToString(entry));
 				}
 
-				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().blocks().getTagsFor(blockState.getBlock())) {
+				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getBlocks().getTagsFor(blockState.getBlock())) {
 					list.add("#" + identifier);
 				}
 			}
 
-			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
+			if (this.fluidHit.getType() == HitResult.Type.field_1332) {
 				BlockPos blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
 				FluidState fluidState = this.client.world.getFluidState(blockPos);
 				list.add("");
-				list.add(Formatting.UNDERLINE + "Targeted Fluid");
+				list.add(Formatting.field_1073 + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
 				list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : fluidState.getEntries().entrySet()) {
 					list.add(this.propertyToString(entry));
 				}
 
-				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().fluids().getTagsFor(fluidState.getFluid())) {
+				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getFluids().getTagsFor(fluidState.getFluid())) {
 					list.add("#" + identifier);
 				}
 			}
@@ -454,7 +465,7 @@ public class DebugHud extends DrawableHelper {
 			Entity entity = this.client.targetedEntity;
 			if (entity != null) {
 				list.add("");
-				list.add(Formatting.UNDERLINE + "Targeted Entity");
+				list.add(Formatting.field_1073 + "Targeted Entity");
 				list.add(String.valueOf(Registry.ENTITY_TYPE.getId(entity.getType())));
 			}
 
@@ -467,15 +478,15 @@ public class DebugHud extends DrawableHelper {
 		Comparable<?> comparable = (Comparable<?>)propEntry.getValue();
 		String string = Util.getValueAsString(property, comparable);
 		if (Boolean.TRUE.equals(comparable)) {
-			string = Formatting.GREEN + string;
+			string = Formatting.field_1060 + string;
 		} else if (Boolean.FALSE.equals(comparable)) {
-			string = Formatting.RED + string;
+			string = Formatting.field_1061 + string;
 		}
 
 		return property.getName() + ": " + string;
 	}
 
-	private void drawMetricsData(MetricsData metricsData, int i, int j, boolean bl) {
+	private void drawMetricsData(MatrixStack matrixStack, MetricsData metricsData, int i, int j, boolean bl) {
 		RenderSystem.disableDepthTest();
 		int k = metricsData.getStartIndex();
 		int l = metricsData.getCurrentIndex();
@@ -496,14 +507,14 @@ public class DebugHud extends DrawableHelper {
 		}
 
 		int t = this.client.getWindow().getScaledHeight();
-		fill(i, t - 60, i + p, t, -1873784752);
+		fill(matrixStack, i, t - 60, i + p, t, -1873784752);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		RenderSystem.enableBlend();
 		RenderSystem.disableTexture();
 		RenderSystem.defaultBlendFunc();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 
-		for (Matrix4f matrix4f = Rotation3.identity().getMatrix(); m != l; m = metricsData.wrapIndex(m + 1)) {
+		for (Matrix4f matrix4f = AffineTransformation.identity().getMatrix(); m != l; m = metricsData.wrapIndex(m + 1)) {
 			int v = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);
 			int w = bl ? 100 : 60;
 			int x = this.getMetricsLineColor(MathHelper.clamp(v, 0, w), 0, w / 2, w);
@@ -512,9 +523,9 @@ public class DebugHud extends DrawableHelper {
 			int aa = x >> 8 & 0xFF;
 			int ab = x & 0xFF;
 			bufferBuilder.vertex(matrix4f, (float)(n + 1), (float)t, 0.0F).color(z, aa, ab, y).next();
-			bufferBuilder.vertex(matrix4f, (float)n, (float)t, 0.0F).color(z, aa, ab, y).next();
-			bufferBuilder.vertex(matrix4f, (float)n, (float)(t - v + 1), 0.0F).color(z, aa, ab, y).next();
 			bufferBuilder.vertex(matrix4f, (float)(n + 1), (float)(t - v + 1), 0.0F).color(z, aa, ab, y).next();
+			bufferBuilder.vertex(matrix4f, (float)n, (float)(t - v + 1), 0.0F).color(z, aa, ab, y).next();
+			bufferBuilder.vertex(matrix4f, (float)n, (float)t, 0.0F).color(z, aa, ab, y).next();
 			n++;
 		}
 
@@ -523,31 +534,31 @@ public class DebugHud extends DrawableHelper {
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		if (bl) {
-			fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
-			this.fontRenderer.draw("60 FPS", (float)(i + 2), (float)(t - 30 + 2), 14737632);
-			this.hLine(i, i + p - 1, t - 30, -1);
-			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-			this.fontRenderer.draw("30 FPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
-			this.hLine(i, i + p - 1, t - 60, -1);
+			fill(matrixStack, i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
+			this.fontRenderer.draw(matrixStack, "60 FPS", (float)(i + 2), (float)(t - 30 + 2), 14737632);
+			this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 30, -1);
+			fill(matrixStack, i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+			this.fontRenderer.draw(matrixStack, "30 FPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
+			this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 60, -1);
 		} else {
-			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-			this.fontRenderer.draw("20 TPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
-			this.hLine(i, i + p - 1, t - 60, -1);
+			fill(matrixStack, i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+			this.fontRenderer.draw(matrixStack, "20 TPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
+			this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 60, -1);
 		}
 
-		this.hLine(i, i + p - 1, t - 1, -1);
-		this.vLine(i, t - 60, t, -1);
-		this.vLine(i + p - 1, t - 60, t, -1);
+		this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 1, -1);
+		this.drawVerticalLine(matrixStack, i, t - 60, t, -1);
+		this.drawVerticalLine(matrixStack, i + p - 1, t - 60, t, -1);
 		if (bl && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
-			this.hLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
+			this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
 		}
 
 		String string = r + " ms min";
 		String string2 = q / (long)p + " ms avg";
 		String string3 = s + " ms max";
-		this.fontRenderer.drawWithShadow(string, (float)(i + 2), (float)(t - 60 - 9), 14737632);
-		this.fontRenderer.drawWithShadow(string2, (float)(i + p / 2 - this.fontRenderer.getStringWidth(string2) / 2), (float)(t - 60 - 9), 14737632);
-		this.fontRenderer.drawWithShadow(string3, (float)(i + p - this.fontRenderer.getStringWidth(string3)), (float)(t - 60 - 9), 14737632);
+		this.fontRenderer.drawWithShadow(matrixStack, string, (float)(i + 2), (float)(t - 60 - 9), 14737632);
+		this.fontRenderer.drawWithShadow(matrixStack, string2, (float)(i + p / 2 - this.fontRenderer.getWidth(string2) / 2), (float)(t - 60 - 9), 14737632);
+		this.fontRenderer.drawWithShadow(matrixStack, string3, (float)(i + p - this.fontRenderer.getWidth(string3)), (float)(t - 60 - 9), 14737632);
 		RenderSystem.enableDepthTest();
 	}
 

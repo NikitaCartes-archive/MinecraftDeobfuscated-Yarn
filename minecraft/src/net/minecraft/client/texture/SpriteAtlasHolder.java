@@ -29,7 +29,7 @@ public abstract class SpriteAtlasHolder extends SinglePreparationResourceReloadL
 		return new Identifier(objectId.getNamespace(), this.pathPrefix + "/" + objectId.getPath());
 	}
 
-	protected SpriteAtlasTexture.Data prepare(ResourceManager resourceManager, Profiler profiler) {
+	protected SpriteAtlasTexture.Data method_18668(ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("stitching");
 		SpriteAtlasTexture.Data data = this.atlas.stitch(resourceManager, this.getSprites().map(this::toSpriteId), profiler, 0);
@@ -38,7 +38,7 @@ public abstract class SpriteAtlasHolder extends SinglePreparationResourceReloadL
 		return data;
 	}
 
-	protected void apply(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler) {
+	protected void method_18666(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("upload");
 		this.atlas.upload(data);

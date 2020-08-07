@@ -23,21 +23,22 @@ public class ItemEntry extends LeafEntry {
 	}
 
 	@Override
-	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-		itemDropper.accept(new ItemStack(this.item));
+	public LootPoolEntryType getType() {
+		return LootPoolEntryTypes.field_25207;
 	}
 
-	public static LeafEntry.Builder<?> builder(ItemConvertible itemProvider) {
-		return builder((weight, quality, conditions, functions) -> new ItemEntry(itemProvider.asItem(), weight, quality, conditions, functions));
+	@Override
+	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+		lootConsumer.accept(new ItemStack(this.item));
+	}
+
+	public static LeafEntry.Builder<?> builder(ItemConvertible drop) {
+		return builder((weight, quality, conditions, functions) -> new ItemEntry(drop.asItem(), weight, quality, conditions, functions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<ItemEntry> {
-		public Serializer() {
-			super(new Identifier("item"), ItemEntry.class);
-		}
-
-		public void toJson(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, itemEntry, jsonSerializationContext);
+		public void method_412(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
+			super.method_442(jsonObject, itemEntry, jsonSerializationContext);
 			Identifier identifier = Registry.ITEM.getId(itemEntry.item);
 			if (identifier == null) {
 				throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);
@@ -46,7 +47,7 @@ public class ItemEntry extends LeafEntry {
 			}
 		}
 
-		protected ItemEntry fromJson(
+		protected ItemEntry method_413(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Item item = JsonHelper.getItem(jsonObject, "name");

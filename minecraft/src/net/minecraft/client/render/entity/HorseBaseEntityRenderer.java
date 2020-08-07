@@ -10,12 +10,12 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 public abstract class HorseBaseEntityRenderer<T extends HorseBaseEntity, M extends HorseEntityModel<T>> extends MobEntityRenderer<T, M> {
 	private final float scale;
 
-	public HorseBaseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M horseEntityModel, float f) {
-		super(entityRenderDispatcher, horseEntityModel, 0.75F);
-		this.scale = f;
+	public HorseBaseEntityRenderer(EntityRenderDispatcher dispatcher, M model, float scale) {
+		super(dispatcher, model, 0.75F);
+		this.scale = scale;
 	}
 
-	protected void scale(T horseBaseEntity, MatrixStack matrixStack, float f) {
+	protected void method_3874(T horseBaseEntity, MatrixStack matrixStack, float f) {
 		matrixStack.scale(this.scale, this.scale, this.scale);
 		super.scale(horseBaseEntity, matrixStack, f);
 	}

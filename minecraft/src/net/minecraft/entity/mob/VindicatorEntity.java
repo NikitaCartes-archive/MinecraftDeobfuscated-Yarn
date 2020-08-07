@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5493;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -16,7 +17,7 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -24,14 +25,13 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -40,16 +40,16 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class VindicatorEntity extends IllagerEntity {
-	private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL
-			|| difficulty == Difficulty.HARD;
-	private boolean isJohnny;
+	private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.field_5802
+			|| difficulty == Difficulty.field_5807;
+	private boolean johnny;
 
 	public VindicatorEntity(EntityType<? extends VindicatorEntity> entityType, World world) {
 		super(entityType, world);
@@ -75,30 +75,26 @@ public class VindicatorEntity extends IllagerEntity {
 
 	@Override
 	protected void mobTick() {
-		if (!this.isAiDisabled()) {
-			EntityNavigation entityNavigation = this.getNavigation();
-			if (entityNavigation instanceof MobNavigation) {
-				boolean bl = ((ServerWorld)this.world).hasRaidAt(new BlockPos(this));
-				((MobNavigation)entityNavigation).setCanPathThroughDoors(bl);
-			}
+		if (!this.isAiDisabled() && class_5493.method_30955(this)) {
+			boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getBlockPos());
+			((MobNavigation)this.getNavigation()).setCanPathThroughDoors(bl);
 		}
 
 		super.mobTick();
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.35F);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(12.0);
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(24.0);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(5.0);
+	public static DefaultAttributeContainer.Builder createVindicatorAttributes() {
+		return HostileEntity.createHostileAttributes()
+			.add(EntityAttributes.field_23719, 0.35F)
+			.add(EntityAttributes.field_23717, 12.0)
+			.add(EntityAttributes.field_23716, 24.0)
+			.add(EntityAttributes.field_23721, 5.0);
 	}
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		if (this.isJohnny) {
+		if (this.johnny) {
 			tag.putBoolean("Johnny", true);
 		}
 	}
@@ -107,9 +103,9 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	public IllagerEntity.State getState() {
 		if (this.isAttacking()) {
-			return IllagerEntity.State.ATTACKING;
+			return IllagerEntity.State.field_7211;
 		} else {
-			return this.isCelebrating() ? IllagerEntity.State.CELEBRATING : IllagerEntity.State.CROSSED;
+			return this.isCelebrating() ? IllagerEntity.State.field_19012 : IllagerEntity.State.field_7207;
 		}
 	}
 
@@ -117,19 +113,21 @@ public class VindicatorEntity extends IllagerEntity {
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		if (tag.contains("Johnny", 99)) {
-			this.isJohnny = tag.getBoolean("Johnny");
+			this.johnny = tag.getBoolean("Johnny");
 		}
 	}
 
 	@Override
 	public SoundEvent getCelebratingSound() {
-		return SoundEvents.ENTITY_VINDICATOR_CELEBRATE;
+		return SoundEvents.field_19151;
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		EntityData entityData2 = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+	public EntityData initialize(
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
+		EntityData entityData2 = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
@@ -139,7 +137,7 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	protected void initEquipment(LocalDifficulty difficulty) {
 		if (this.getRaid() == null) {
-			this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
+			this.equipStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8475));
 		}
 	}
 
@@ -157,43 +155,43 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	public void setCustomName(@Nullable Text name) {
 		super.setCustomName(name);
-		if (!this.isJohnny && name != null && name.getString().equals("Johnny")) {
-			this.isJohnny = true;
+		if (!this.johnny && name != null && name.getString().equals("Johnny")) {
+			this.johnny = true;
 		}
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_VINDICATOR_AMBIENT;
+		return SoundEvents.field_14735;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_VINDICATOR_DEATH;
+		return SoundEvents.field_14642;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_VINDICATOR_HURT;
+		return SoundEvents.field_14558;
 	}
 
 	@Override
 	public void addBonusForWave(int wave, boolean unused) {
-		ItemStack itemStack = new ItemStack(Items.IRON_AXE);
+		ItemStack itemStack = new ItemStack(Items.field_8475);
 		Raid raid = this.getRaid();
 		int i = 1;
-		if (wave > raid.getMaxWaves(Difficulty.NORMAL)) {
+		if (wave > raid.getMaxWaves(Difficulty.field_5802)) {
 			i = 2;
 		}
 
 		boolean bl = this.random.nextFloat() <= raid.getEnchantmentChance();
 		if (bl) {
 			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
-			map.put(Enchantments.SHARPNESS, i);
+			map.put(Enchantments.field_9118, i);
 			EnchantmentHelper.set(map, itemStack);
 		}
 
-		this.equipStack(EquipmentSlot.MAINHAND, itemStack);
+		this.equipStack(EquipmentSlot.field_6173, itemStack);
 	}
 
 	class AttackGoal extends MeleeAttackGoal {
@@ -215,7 +213,7 @@ public class VindicatorEntity extends IllagerEntity {
 	static class BreakDoorGoal extends net.minecraft.entity.ai.goal.BreakDoorGoal {
 		public BreakDoorGoal(MobEntity mobEntity) {
 			super(mobEntity, 6, VindicatorEntity.DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE);
-			this.setControls(EnumSet.of(Goal.Control.MOVE));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -239,12 +237,12 @@ public class VindicatorEntity extends IllagerEntity {
 
 	static class FollowEntityGoal extends FollowTargetGoal<LivingEntity> {
 		public FollowEntityGoal(VindicatorEntity vindicator) {
-			super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::method_6102);
+			super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::isMobOrPlayer);
 		}
 
 		@Override
 		public boolean canStart() {
-			return ((VindicatorEntity)this.mob).isJohnny && super.canStart();
+			return ((VindicatorEntity)this.mob).johnny && super.canStart();
 		}
 
 		@Override

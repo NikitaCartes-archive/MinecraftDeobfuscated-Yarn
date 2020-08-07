@@ -4,9 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -16,17 +14,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-	public static final BooleanProperty LIT_2 = RedstoneTorchBlock.LIT;
+	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
-	protected WallRedstoneTorchBlock(Block.Settings settings) {
+	protected WallRedstoneTorchBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT_2, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(LIT, Boolean.valueOf(true)));
 	}
 
 	@Override
@@ -35,37 +33,37 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return WallTorchBlock.getBoundingShape(state);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return Blocks.WALL_TORCH.canPlaceAt(state, world, pos);
+		return Blocks.field_10099.canPlaceAt(state, world, pos);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return Blocks.WALL_TORCH.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		return Blocks.field_10099.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		BlockState blockState = Blocks.WALL_TORCH.getPlacementState(ctx);
+		BlockState blockState = Blocks.field_10099.getPlacementState(ctx);
 		return blockState == null ? null : this.getDefaultState().with(FACING, blockState.get(FACING));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		if ((Boolean)state.get(LIT_2)) {
+		if ((Boolean)state.get(LIT)) {
 			Direction direction = ((Direction)state.get(FACING)).getOpposite();
 			double d = 0.27;
 			double e = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
 			double f = (double)pos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
 			double g = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetZ();
-			world.addParticle(DustParticleEffect.RED, e, f, g, 0.0, 0.0, 0.0);
+			world.addParticle(this.particle, e, f, g, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -76,22 +74,22 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return state.get(LIT_2) && state.get(FACING) != facing ? 15 : 0;
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+		return state.get(LIT) && state.get(FACING) != direction ? 15 : 0;
 	}
 
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		return Blocks.WALL_TORCH.rotate(state, rotation);
+		return Blocks.field_10099.rotate(state, rotation);
 	}
 
 	@Override
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
-		return Blocks.WALL_TORCH.mirror(state, mirror);
+		return Blocks.field_10099.mirror(state, mirror);
 	}
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(FACING, LIT_2);
+		builder.add(FACING, LIT);
 	}
 }

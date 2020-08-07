@@ -10,8 +10,8 @@ public class BannedPlayerList extends ServerConfigList<GameProfile, BannedPlayer
 	}
 
 	@Override
-	protected ServerConfigEntry<GameProfile> fromJson(JsonObject jsonObject) {
-		return new BannedPlayerEntry(jsonObject);
+	protected ServerConfigEntry<GameProfile> fromJson(JsonObject json) {
+		return new BannedPlayerEntry(json);
 	}
 
 	public boolean contains(GameProfile gameProfile) {
@@ -30,7 +30,7 @@ public class BannedPlayerList extends ServerConfigList<GameProfile, BannedPlayer
 		return strings;
 	}
 
-	protected String toString(GameProfile gameProfile) {
+	protected String method_14649(GameProfile gameProfile) {
 		return gameProfile.getId().toString();
 	}
 }

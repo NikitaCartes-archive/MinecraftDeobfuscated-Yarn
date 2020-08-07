@@ -11,21 +11,28 @@ import net.minecraft.server.world.ServerWorld;
 
 public class HurtBySensor extends Sensor<LivingEntity> {
 	@Override
-	protected void sense(ServerWorld world, LivingEntity entity) {
-		Brain<?> brain = entity.getBrain();
-		if (entity.getRecentDamageSource() != null) {
-			brain.putMemory(MemoryModuleType.HURT_BY, entity.getRecentDamageSource());
-			Entity entity2 = ((DamageSource)brain.getOptionalMemory(MemoryModuleType.HURT_BY).get()).getAttacker();
-			if (entity2 instanceof LivingEntity) {
-				brain.putMemory(MemoryModuleType.HURT_BY_ENTITY, (LivingEntity)entity2);
-			}
-		} else {
-			brain.forget(MemoryModuleType.HURT_BY);
-		}
+	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
+		return ImmutableSet.of(MemoryModuleType.field_18451, MemoryModuleType.field_18452);
 	}
 
 	@Override
-	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY);
+	protected void sense(ServerWorld world, LivingEntity entity) {
+		Brain<?> brain = entity.getBrain();
+		DamageSource damageSource = entity.getRecentDamageSource();
+		if (damageSource != null) {
+			brain.remember(MemoryModuleType.field_18451, entity.getRecentDamageSource());
+			Entity entity2 = damageSource.getAttacker();
+			if (entity2 instanceof LivingEntity) {
+				brain.remember(MemoryModuleType.field_18452, (LivingEntity)entity2);
+			}
+		} else {
+			brain.forget(MemoryModuleType.field_18451);
+		}
+
+		brain.getOptionalMemory(MemoryModuleType.field_18452).ifPresent(livingEntity -> {
+			if (!livingEntity.isAlive() || livingEntity.world != world) {
+				brain.forget(MemoryModuleType.field_18452);
+			}
+		});
 	}
 }

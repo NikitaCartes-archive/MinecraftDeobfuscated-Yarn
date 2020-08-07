@@ -6,50 +6,77 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Encoder;
+import com.mojang.serialization.MapCodec;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.MapUtil;
 
-public class StateManager<O, S extends State<S>> {
+public class StateManager<O, S extends State<O, S>> {
 	private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-z0-9_]+$");
 	private final O owner;
 	private final ImmutableSortedMap<String, Property<?>> properties;
 	private final ImmutableList<S> states;
 
-	protected <A extends AbstractState<O, S>> StateManager(O owner, StateManager.Factory<O, S, A> factory, Map<String, Property<?>> namedProperties) {
-		this.owner = owner;
-		this.properties = ImmutableSortedMap.copyOf(namedProperties);
-		Map<Map<Property<?>, Comparable<?>>, A> map = Maps.<Map<Property<?>, Comparable<?>>, A>newLinkedHashMap();
-		List<A> list = Lists.<A>newArrayList();
-		Stream<List<Comparable<?>>> stream = Stream.of(Collections.emptyList());
+	protected StateManager(Function<O, S> function, O object, StateManager.Factory<O, S> factory, Map<String, Property<?>> propertiesMap) {
+		this.owner = object;
+		this.properties = ImmutableSortedMap.copyOf(propertiesMap);
+		Supplier<S> supplier = () -> (State)function.apply(object);
+		MapCodec<S> mapCodec = MapCodec.of(Encoder.empty(), Decoder.unit(supplier));
+
+		for (Entry<String, Property<?>> entry : this.properties.entrySet()) {
+			mapCodec = method_30040(mapCodec, supplier, (String)entry.getKey(), (Property)entry.getValue());
+		}
+
+		MapCodec<S> mapCodec2 = mapCodec;
+		Map<Map<Property<?>, Comparable<?>>, S> map = Maps.<Map<Property<?>, Comparable<?>>, S>newLinkedHashMap();
+		List<S> list = Lists.<S>newArrayList();
+		Stream<List<Pair<Property<?>, Comparable<?>>>> stream = Stream.of(Collections.emptyList());
 
 		for (Property<?> property : this.properties.values()) {
 			stream = stream.flatMap(listx -> property.getValues().stream().map(comparable -> {
-					List<Comparable<?>> list2 = Lists.<Comparable<?>>newArrayList(listx);
-					list2.add(comparable);
+					List<Pair<Property<?>, Comparable<?>>> list2 = Lists.<Pair<Property<?>, Comparable<?>>>newArrayList(listx);
+					list2.add(Pair.of(property, comparable));
 					return list2;
 				}));
 		}
 
-		stream.forEach(list2 -> {
-			Map<Property<?>, Comparable<?>> map2 = MapUtil.createMap(this.properties.values(), list2);
-			A abstractStatex = factory.create(owner, ImmutableMap.copyOf(map2));
-			map.put(map2, abstractStatex);
-			list.add(abstractStatex);
-		});
+		stream.forEach(
+			list2 -> {
+				ImmutableMap<Property<?>, Comparable<?>> immutableMap = (ImmutableMap<Property<?>, Comparable<?>>)list2.stream()
+					.collect(ImmutableMap.toImmutableMap(Pair::getFirst, Pair::getSecond));
+				S statex = factory.create(object, immutableMap, mapCodec2);
+				map.put(immutableMap, statex);
+				list.add(statex);
+			}
+		);
 
-		for (A abstractState : list) {
-			abstractState.createWithTable(map);
+		for (S state : list) {
+			state.createWithTable(map);
 		}
 
 		this.states = ImmutableList.copyOf(list);
+	}
+
+	private static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> method_30040(
+		MapCodec<S> mapCodec, Supplier<S> supplier, String string, Property<T> property
+	) {
+		return Codec.mapPair(mapCodec, property.getValueCodec().fieldOf(string).setPartial(() -> property.createValue((State<?, ?>)supplier.get())))
+			.xmap(
+				pair -> (State)((State)pair.getFirst()).with(property, ((Property.Value)pair.getSecond()).getValue()), state -> Pair.of(state, property.createValue(state))
+			);
 	}
 
 	public ImmutableList<S> getStates() {
@@ -80,7 +107,7 @@ public class StateManager<O, S extends State<S>> {
 		return this.properties.get(name);
 	}
 
-	public static class Builder<O, S extends State<S>> {
+	public static class Builder<O, S extends State<O, S>> {
 		private final O owner;
 		private final Map<String, Property<?>> namedProperties = Maps.<String, Property<?>>newHashMap();
 
@@ -120,12 +147,12 @@ public class StateManager<O, S extends State<S>> {
 			}
 		}
 
-		public <A extends AbstractState<O, S>> StateManager<O, S> build(StateManager.Factory<O, S, A> factory) {
-			return new StateManager<>(this.owner, factory, this.namedProperties);
+		public StateManager<O, S> build(Function<O, S> ownerToStateFunction, StateManager.Factory<O, S> factory) {
+			return new StateManager<>(ownerToStateFunction, this.owner, factory, this.namedProperties);
 		}
 	}
 
-	public interface Factory<O, S extends State<S>, A extends AbstractState<O, S>> {
-		A create(O owner, ImmutableMap<Property<?>, Comparable<?>> entries);
+	public interface Factory<O, S> {
+		S create(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> mapCodec);
 	}
 }

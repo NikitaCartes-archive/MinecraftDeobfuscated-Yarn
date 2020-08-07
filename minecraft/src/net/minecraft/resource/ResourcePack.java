@@ -1,6 +1,5 @@
 package net.minecraft.resource;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -12,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 
-public interface ResourcePack extends Closeable {
+public interface ResourcePack extends AutoCloseable {
 	@Environment(EnvType.CLIENT)
 	InputStream openRoot(String fileName) throws IOException;
 
@@ -28,4 +27,6 @@ public interface ResourcePack extends Closeable {
 	<T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException;
 
 	String getName();
+
+	void close();
 }

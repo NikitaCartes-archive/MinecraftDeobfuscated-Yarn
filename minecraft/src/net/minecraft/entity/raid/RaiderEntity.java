@@ -15,7 +15,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
@@ -37,9 +37,11 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.village.raid.Raid;
+import net.minecraft.village.raid.RaidManager;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -48,15 +50,15 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isAlive()
-			&& ItemStack.areEqualIgnoreDamage(itemEntity.getStack(), Raid.getOminousBanner());
+			&& ItemStack.areEqual(itemEntity.getStack(), Raid.getOminousBanner());
 	@Nullable
 	protected Raid raid;
 	private int wave;
 	private boolean ableToJoinRaid;
 	private int outOfRaidCounter;
 
-	protected RaiderEntity(EntityType<? extends RaiderEntity> type, World world) {
-		super(type, world);
+	protected RaiderEntity(EntityType<? extends RaiderEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -91,14 +93,14 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.canJoinRaid()) {
 				if (raid == null) {
 					if (this.world.getTime() % 20L == 0L) {
-						Raid raid2 = ((ServerWorld)this.world).getRaidAt(new BlockPos(this));
+						Raid raid2 = ((ServerWorld)this.world).getRaidAt(this.getBlockPos());
 						if (raid2 != null && RaidManager.isValidRaiderFor(this, raid2)) {
 							raid2.addRaider(raid2.getGroupsSpawned(), this, null, true);
 						}
 					}
 				} else {
 					LivingEntity livingEntity = this.getTarget();
-					if (livingEntity != null && (livingEntity.getType() == EntityType.PLAYER || livingEntity.getType() == EntityType.IRON_GOLEM)) {
+					if (livingEntity != null && (livingEntity.getType() == EntityType.field_6097 || livingEntity.getType() == EntityType.field_6147)) {
 						this.despawnCounter = 0;
 					}
 				}
@@ -123,15 +125,15 @@ public abstract class RaiderEntity extends PatrolEntity {
 					raid.removeLeader(this.getWave());
 				}
 
-				if (entity != null && entity.getType() == EntityType.PLAYER) {
+				if (entity != null && entity.getType() == EntityType.field_6097) {
 					raid.addHero(entity);
 				}
 
 				raid.removeFromWave(this, false);
 			}
 
-			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(new BlockPos(this)) == null) {
-				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
+			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(this.getBlockPos()) == null) {
+				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.field_6169);
 				PlayerEntity playerEntity = null;
 				if (entity instanceof PlayerEntity) {
 					playerEntity = (PlayerEntity)entity;
@@ -143,18 +145,18 @@ public abstract class RaiderEntity extends PatrolEntity {
 					}
 				}
 
-				if (!itemStack.isEmpty() && ItemStack.areEqualIgnoreDamage(itemStack, Raid.getOminousBanner()) && playerEntity != null) {
-					StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.BAD_OMEN);
+				if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.getOminousBanner()) && playerEntity != null) {
+					StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.field_16595);
 					int i = 1;
 					if (statusEffectInstance != null) {
 						i += statusEffectInstance.getAmplifier();
-						playerEntity.removeStatusEffectInternal(StatusEffects.BAD_OMEN);
+						playerEntity.removeStatusEffectInternal(StatusEffects.field_16595);
 					} else {
 						i--;
 					}
 
-					i = MathHelper.clamp(i, 0, 5);
-					StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(StatusEffects.BAD_OMEN, 120000, i, false, false, true);
+					i = MathHelper.clamp(i, 0, 4);
+					StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(StatusEffects.field_16595, 120000, i, false, false, true);
 					if (!this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 						playerEntity.addStatusEffect(statusEffectInstance2);
 					}
@@ -233,14 +235,15 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
 		boolean bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
-		if (this.hasActiveRaid() && !bl && ItemStack.areEqualIgnoreDamage(itemStack, Raid.getOminousBanner())) {
-			EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
+		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.getOminousBanner())) {
+			EquipmentSlot equipmentSlot = EquipmentSlot.field_6169;
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.getDropChance(equipmentSlot);
 			if (!itemStack2.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d) {
 				this.dropStack(itemStack2);
 			}
 
+			this.method_29499(item);
 			this.equipStack(equipmentSlot, itemStack);
 			this.sendPickup(item, itemStack.getCount());
 			item.remove();
@@ -258,7 +261,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 	@Override
 	public boolean cannotDespawn() {
-		return this.getRaid() != null;
+		return super.cannotDespawn() || this.getRaid() != null;
 	}
 
 	public int getOutOfRaidCounter() {
@@ -280,9 +283,11 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		this.setAbleToJoinRaid(this.getType() != EntityType.WITCH || spawnType != SpawnType.NATURAL);
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+	public EntityData initialize(
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
+		this.setAbleToJoinRaid(this.getType() != EntityType.field_6145 || spawnReason != SpawnReason.field_16459);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public abstract SoundEvent getCelebratingSound();
@@ -299,7 +304,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			this.raider = raider;
 			this.speed = speed;
 			this.distance = distance;
-			this.setControls(EnumSet.of(Goal.Control.MOVE));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -314,12 +319,12 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		private boolean tryFindHome() {
 			ServerWorld serverWorld = (ServerWorld)this.raider.world;
-			BlockPos blockPos = new BlockPos(this.raider);
+			BlockPos blockPos = this.raider.getBlockPos();
 			Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
 				.getPosition(
-					pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
+					pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18517,
 					this::canLootHome,
-					PointOfInterestStorage.OccupationStatus.ANY,
+					PointOfInterestStorage.OccupationStatus.field_18489,
 					blockPos,
 					48,
 					this.raider.random
@@ -359,7 +364,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		@Override
 		public void tick() {
 			if (this.raider.getNavigation().isIdle()) {
-				Vec3d vec3d = new Vec3d(this.home);
+				Vec3d vec3d = Vec3d.ofBottomCenter(this.home);
 				Vec3d vec3d2 = TargetFinder.findTargetTowards(this.raider, 16, 7, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
 					vec3d2 = TargetFinder.findTargetTowards(this.raider, 8, 7, vec3d);
@@ -396,7 +401,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		CelebrateGoal(RaiderEntity raider) {
 			this.raider = raider;
-			this.setControls(EnumSet.of(Goal.Control.MOVE));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -445,7 +450,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		public PatrolApproachGoal(IllagerEntity illager, float distance) {
 			this.raider = illager;
 			this.squaredDistance = distance * distance;
-			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 
 		@Override
@@ -455,7 +460,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				&& this.raider.isRaidCenterSet()
 				&& this.raider.getTarget() != null
 				&& !this.raider.isAttacking()
-				&& (livingEntity == null || livingEntity.getType() != EntityType.PLAYER);
+				&& (livingEntity == null || livingEntity.getType() != EntityType.field_6097);
 		}
 
 		@Override
@@ -509,7 +514,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		public PickupBannerAsLeaderGoal(T actor) {
 			this.actor = actor;
-			this.setControls(EnumSet.of(Goal.Control.MOVE));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -518,12 +523,12 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.actor.hasActiveRaid()
 				&& !this.actor.getRaid().isFinished()
 				&& this.actor.canLead()
-				&& !ItemStack.areEqualIgnoreDamage(this.actor.getEquippedStack(EquipmentSlot.HEAD), Raid.getOminousBanner())) {
+				&& !ItemStack.areEqual(this.actor.getEquippedStack(EquipmentSlot.field_6169), Raid.getOminousBanner())) {
 				RaiderEntity raiderEntity = raid.getCaptain(this.actor.getWave());
 				if (raiderEntity == null || !raiderEntity.isAlive()) {
 					List<ItemEntity> list = this.actor
 						.world
-						.getEntities(ItemEntity.class, this.actor.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
+						.getEntitiesByClass(ItemEntity.class, this.actor.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
 					if (!list.isEmpty()) {
 						return this.actor.getNavigation().startMovingTo((Entity)list.get(0), 1.15F);
 					}
@@ -540,7 +545,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.actor.getNavigation().getTargetPos().isWithinDistance(this.actor.getPos(), 1.414)) {
 				List<ItemEntity> list = this.actor
 					.world
-					.getEntities(ItemEntity.class, this.actor.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
+					.getEntitiesByClass(ItemEntity.class, this.actor.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
 				if (!list.isEmpty()) {
 					this.actor.loot((ItemEntity)list.get(0));
 				}

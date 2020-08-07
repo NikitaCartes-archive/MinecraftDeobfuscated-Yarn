@@ -18,11 +18,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.Matrix4f;
 import org.apache.commons.io.IOUtils;
 
 @Environment(EnvType.CLIENT)
@@ -91,8 +91,15 @@ public class ShaderEffect implements AutoCloseable {
 				}
 			}
 		} catch (Exception var18) {
+			String string;
+			if (resource != null) {
+				string = " (" + resource.getResourcePackName() + ")";
+			} else {
+				string = "";
+			}
+
 			ShaderParseException shaderParseException2 = ShaderParseException.wrap(var18);
-			shaderParseException2.addFaultyFile(location.getPath());
+			shaderParseException2.addFaultyFile(location.getPath() + string);
 			throw shaderParseException2;
 		} finally {
 			IOUtils.closeQuietly(resource);
@@ -137,15 +144,29 @@ public class ShaderEffect implements AutoCloseable {
 						JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "auxtarget");
 						String string4 = JsonHelper.getString(jsonObject2, "name");
 						String string5 = JsonHelper.getString(jsonObject2, "id");
-						Framebuffer framebuffer3 = this.getTarget(string5);
+						boolean bl;
+						String string6;
+						if (string5.endsWith(":depth")) {
+							bl = true;
+							string6 = string5.substring(0, string5.lastIndexOf(58));
+						} else {
+							bl = false;
+							string6 = string5;
+						}
+
+						Framebuffer framebuffer3 = this.getTarget(string6);
 						if (framebuffer3 == null) {
-							Identifier identifier = new Identifier("textures/effect/" + string5 + ".png");
+							if (bl) {
+								throw new ShaderParseException("Render target '" + string6 + "' can't be used as depth buffer");
+							}
+
+							Identifier identifier = new Identifier("textures/effect/" + string6 + ".png");
 							Resource resource = null;
 
 							try {
 								resource = this.resourceManager.getResource(identifier);
-							} catch (FileNotFoundException var29) {
-								throw new ShaderParseException("Render target or texture '" + string5 + "' does not exist");
+							} catch (FileNotFoundException var31) {
+								throw new ShaderParseException("Render target or texture '" + string6 + "' does not exist");
 							} finally {
 								IOUtils.closeQuietly(resource);
 							}
@@ -154,8 +175,8 @@ public class ShaderEffect implements AutoCloseable {
 							AbstractTexture abstractTexture = textureManager.getTexture(identifier);
 							int j = JsonHelper.getInt(jsonObject2, "width");
 							int k = JsonHelper.getInt(jsonObject2, "height");
-							boolean bl = JsonHelper.getBoolean(jsonObject2, "bilinear");
-							if (bl) {
+							boolean bl2 = JsonHelper.getBoolean(jsonObject2, "bilinear");
+							if (bl2) {
 								RenderSystem.texParameter(3553, 10241, 9729);
 								RenderSystem.texParameter(3553, 10240, 9729);
 							} else {
@@ -163,12 +184,14 @@ public class ShaderEffect implements AutoCloseable {
 								RenderSystem.texParameter(3553, 10240, 9728);
 							}
 
-							postProcessShader.addAuxTarget(string4, abstractTexture.getGlId(), j, k);
+							postProcessShader.addAuxTarget(string4, abstractTexture::getGlId, j, k);
+						} else if (bl) {
+							postProcessShader.addAuxTarget(string4, framebuffer3::method_30278, framebuffer3.textureWidth, framebuffer3.textureHeight);
 						} else {
-							postProcessShader.addAuxTarget(string4, framebuffer3, framebuffer3.textureWidth, framebuffer3.textureHeight);
+							postProcessShader.addAuxTarget(string4, framebuffer3::method_30277, framebuffer3.textureWidth, framebuffer3.textureHeight);
 						}
-					} catch (Exception var31) {
-						ShaderParseException shaderParseException = ShaderParseException.wrap(var31);
+					} catch (Exception var33) {
+						ShaderParseException shaderParseException = ShaderParseException.wrap(var33);
 						shaderParseException.addFaultyElement("auxtargets[" + i + "]");
 						throw shaderParseException;
 					}
@@ -184,8 +207,8 @@ public class ShaderEffect implements AutoCloseable {
 				for (JsonElement jsonElement2 : jsonArray2) {
 					try {
 						this.parseUniform(jsonElement2);
-					} catch (Exception var28) {
-						ShaderParseException shaderParseException2 = ShaderParseException.wrap(var28);
+					} catch (Exception var30) {
+						ShaderParseException shaderParseException2 = ShaderParseException.wrap(var30);
 						shaderParseException2.addFaultyElement("uniforms[" + l + "]");
 						throw shaderParseException2;
 					}

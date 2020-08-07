@@ -91,16 +91,12 @@ public class ChunkPos {
 		return this.z & 31;
 	}
 
-	public BlockPos toBlockPos(int chunkRelativeX, int chunkRelativeY, int chunkRelativeZ) {
-		return new BlockPos((this.x << 4) + chunkRelativeX, chunkRelativeY, (this.z << 4) + chunkRelativeZ);
-	}
-
 	public String toString() {
 		return "[" + this.x + ", " + this.z + "]";
 	}
 
 	public BlockPos getCenterBlockPos() {
-		return new BlockPos(this.x << 4, 0, this.z << 4);
+		return new BlockPos(this.getStartX(), 0, this.getStartZ());
 	}
 
 	public int method_24022(ChunkPos chunkPos) {

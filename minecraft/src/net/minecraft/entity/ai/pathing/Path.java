@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -34,6 +34,10 @@ public class Path {
 		this.currentNodeIndex++;
 	}
 
+	public boolean method_30849() {
+		return this.currentNodeIndex <= 0;
+	}
+
 	public boolean isFinished() {
 		return this.currentNodeIndex >= this.nodes.size();
 	}
@@ -45,10 +49,6 @@ public class Path {
 
 	public PathNode getNode(int index) {
 		return (PathNode)this.nodes.get(index);
-	}
-
-	public List<PathNode> getNodes() {
-		return this.nodes;
 	}
 
 	public void setLength(int length) {
@@ -81,13 +81,25 @@ public class Path {
 		return new Vec3d(d, e, f);
 	}
 
+	public BlockPos method_31031(int i) {
+		return ((PathNode)this.nodes.get(i)).getPos();
+	}
+
 	public Vec3d getNodePosition(Entity entity) {
 		return this.getNodePosition(entity, this.currentNodeIndex);
 	}
 
-	public Vec3d getCurrentPosition() {
-		PathNode pathNode = (PathNode)this.nodes.get(this.currentNodeIndex);
-		return new Vec3d((double)pathNode.x, (double)pathNode.y, (double)pathNode.z);
+	public BlockPos method_31032() {
+		return ((PathNode)this.nodes.get(this.currentNodeIndex)).getPos();
+	}
+
+	public PathNode method_29301() {
+		return (PathNode)this.nodes.get(this.currentNodeIndex);
+	}
+
+	@Nullable
+	public PathNode method_30850() {
+		return this.currentNodeIndex > 0 ? (PathNode)this.nodes.get(this.currentNodeIndex - 1) : null;
 	}
 
 	public boolean equalsPath(@Nullable Path path) {

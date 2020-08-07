@@ -17,7 +17,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	private final BlockPos.Mutable mutablePos = new BlockPos.Mutable();
 
 	public ChunkBlockLightProvider(ChunkProvider chunkProvider) {
-		super(chunkProvider, LightType.BLOCK, new BlockLightStorage(chunkProvider));
+		super(chunkProvider, LightType.field_9282, new BlockLightStorage(chunkProvider));
 	}
 
 	private int getLightSourceLuminance(long blockPos) {
@@ -60,12 +60,12 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 
 	@Override
 	protected void propagateLevel(long id, int level, boolean decrease) {
-		long l = ChunkSectionPos.fromGlobalPos(id);
+		long l = ChunkSectionPos.fromBlockPos(id);
 
 		for (Direction direction : DIRECTIONS) {
 			long m = BlockPos.offset(id, direction);
-			long n = ChunkSectionPos.fromGlobalPos(m);
-			if (l == n || this.lightStorage.hasLight(n)) {
+			long n = ChunkSectionPos.fromBlockPos(m);
+			if (l == n || this.lightStorage.hasSection(n)) {
 				this.propagateLevel(id, m, level, decrease);
 			}
 		}
@@ -85,22 +85,22 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 			}
 		}
 
-		long l = ChunkSectionPos.fromGlobalPos(id);
-		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getLightArray(l, true);
+		long l = ChunkSectionPos.fromBlockPos(id);
+		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getLightSection(l, true);
 
 		for (Direction direction : DIRECTIONS) {
 			long m = BlockPos.offset(id, direction);
 			if (m != excludedId) {
-				long n = ChunkSectionPos.fromGlobalPos(m);
+				long n = ChunkSectionPos.fromBlockPos(m);
 				ChunkNibbleArray chunkNibbleArray2;
 				if (l == n) {
 					chunkNibbleArray2 = chunkNibbleArray;
 				} else {
-					chunkNibbleArray2 = this.lightStorage.getLightArray(n, true);
+					chunkNibbleArray2 = this.lightStorage.getLightSection(n, true);
 				}
 
 				if (chunkNibbleArray2 != null) {
-					int k = this.getPropagatedLevel(m, id, this.getCurrentLevelFromArray(chunkNibbleArray2, m));
+					int k = this.getPropagatedLevel(m, id, this.getCurrentLevelFromSection(chunkNibbleArray2, m));
 					if (i > k) {
 						i = k;
 					}

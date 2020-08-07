@@ -1,10 +1,9 @@
 package net.minecraft.world.gen.carver;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,12 +12,29 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NetherCaveCarver extends CaveCarver {
-	public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
-		super(function, 128);
+	public NetherCaveCarver(Codec<ProbabilityConfig> codec) {
+		super(codec, 128);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
-			Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.NETHERRACK
+			Blocks.field_10340,
+			Blocks.field_10474,
+			Blocks.field_10508,
+			Blocks.field_10115,
+			Blocks.field_10566,
+			Blocks.field_10253,
+			Blocks.field_10520,
+			Blocks.field_10219,
+			Blocks.field_10515,
+			Blocks.field_10114,
+			Blocks.field_22090,
+			Blocks.field_22120,
+			Blocks.field_22113,
+			Blocks.field_10541,
+			Blocks.field_22115,
+			Blocks.field_22091,
+			Blocks.field_23869
 		);
 		this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
 	}
@@ -46,31 +62,31 @@ public class NetherCaveCarver extends CaveCarver {
 	@Override
 	protected boolean carveAtPoint(
 		Chunk chunk,
-		Function<BlockPos, Biome> function,
-		BitSet bitSet,
+		Function<BlockPos, Biome> posToBiome,
+		BitSet carvingMask,
 		Random random,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
 		BlockPos.Mutable mutable3,
+		int seaLevel,
 		int mainChunkX,
 		int mainChunkZ,
-		int i,
-		int j,
-		int k,
-		int l,
-		int m,
-		int n,
-		AtomicBoolean atomicBoolean
+		int x,
+		int z,
+		int relativeX,
+		int y,
+		int relativeZ,
+		MutableBoolean mutableBoolean
 	) {
-		int o = l | n << 4 | m << 8;
-		if (bitSet.get(o)) {
+		int i = relativeX | relativeZ << 4 | y << 8;
+		if (carvingMask.get(i)) {
 			return false;
 		} else {
-			bitSet.set(o);
-			mutable.set(j, m, k);
+			carvingMask.set(i);
+			mutable.set(x, y, z);
 			if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
 				BlockState blockState;
-				if (m <= 31) {
+				if (y <= 31) {
 					blockState = LAVA.getBlockState();
 				} else {
 					blockState = CAVE_AIR;

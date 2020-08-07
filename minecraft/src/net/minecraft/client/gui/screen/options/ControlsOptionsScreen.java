@@ -3,12 +3,13 @@ package net.minecraft.client.gui.screen.options;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
@@ -31,29 +32,29 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 				18,
 				150,
 				20,
-				I18n.translate("options.mouse_settings"),
-				buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this, this.gameOptions))
+				new TranslatableText("options.mouse_settings"),
+				buttonWidget -> this.client.openScreen(new MouseOptionsScreen(this, this.gameOptions))
 			)
 		);
 		this.addButton(Option.AUTO_JUMP.createButton(this.gameOptions, this.width / 2 - 155 + 160, 18, 150));
-		this.keyBindingListWidget = new ControlsListWidget(this, this.minecraft);
+		this.keyBindingListWidget = new ControlsListWidget(this, this.client);
 		this.children.add(this.keyBindingListWidget);
-		this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, I18n.translate("controls.resetAll"), buttonWidget -> {
-			for (KeyBinding keyBinding : this.gameOptions.keysAll) {
-				keyBinding.setKeyCode(keyBinding.getDefaultKeyCode());
-			}
+		this.resetButton = this.addButton(
+			new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, new TranslatableText("controls.resetAll"), buttonWidget -> {
+				for (KeyBinding keyBinding : this.gameOptions.keysAll) {
+					keyBinding.setBoundKey(keyBinding.getDefaultKey());
+				}
 
-			KeyBinding.updateKeysByCode();
-		}));
-		this.addButton(
-			new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
+				KeyBinding.updateKeysByCode();
+			})
 		);
+		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
 	}
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.focusedBinding != null) {
-			this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(button));
+			this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.Type.field_1672.createFromCode(button));
 			this.focusedBinding = null;
 			KeyBinding.updateKeysByCode();
 			return true;
@@ -66,9 +67,9 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (this.focusedBinding != null) {
 			if (keyCode == 256) {
-				this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEYCODE);
+				this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEY);
 			} else {
-				this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(keyCode, scanCode));
+				this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.fromKeyCode(keyCode, scanCode));
 			}
 
 			this.focusedBinding = null;
@@ -81,10 +82,10 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.keyBindingListWidget.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.keyBindingListWidget.render(matrices, mouseX, mouseY, delta);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		boolean bl = false;
 
 		for (KeyBinding keyBinding : this.gameOptions.keysAll) {
@@ -95,6 +96,6 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 		}
 
 		this.resetButton.active = bl;
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

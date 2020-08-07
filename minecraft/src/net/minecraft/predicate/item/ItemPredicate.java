@@ -21,7 +21,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -89,7 +89,7 @@ public class ItemPredicate {
 			return false;
 		} else {
 			if (this.enchantments.length > 0) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack.getEnchantments());
+				Map<Enchantment, Integer> map = EnchantmentHelper.fromTag(stack.getEnchantments());
 
 				for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
 					if (!enchantmentPredicate.test(map)) {
@@ -99,7 +99,7 @@ public class ItemPredicate {
 			}
 
 			if (this.storedEnchantments.length > 0) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(EnchantedBookItem.getEnchantmentTag(stack));
+				Map<Enchantment, Integer> map = EnchantmentHelper.fromTag(EnchantedBookItem.getEnchantmentTag(stack));
 
 				for (EnchantmentPredicate enchantmentPredicatex : this.storedEnchantments) {
 					if (!enchantmentPredicatex.test(map)) {
@@ -131,7 +131,7 @@ public class ItemPredicate {
 				Tag<Item> tag = null;
 				if (jsonObject.has("tag")) {
 					Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-					tag = ItemTags.getContainer().get(identifier2);
+					tag = ServerTagManagerHolder.getTagManager().getItems().getTag(identifier2);
 					if (tag == null) {
 						throw new JsonSyntaxException("Unknown item tag '" + identifier2 + "'");
 					}
@@ -162,7 +162,7 @@ public class ItemPredicate {
 			}
 
 			if (this.tag != null) {
-				jsonObject.addProperty("tag", this.tag.getId().toString());
+				jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getItems().getTagId(this.tag).toString());
 			}
 
 			jsonObject.add("count", this.count.toJson());
@@ -231,8 +231,8 @@ public class ItemPredicate {
 			return new ItemPredicate.Builder();
 		}
 
-		public ItemPredicate.Builder item(ItemConvertible itemConvertible) {
-			this.item = itemConvertible.asItem();
+		public ItemPredicate.Builder item(ItemConvertible item) {
+			this.item = item.asItem();
 			return this;
 		}
 

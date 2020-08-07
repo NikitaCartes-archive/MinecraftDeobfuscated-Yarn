@@ -1,13 +1,18 @@
 package net.minecraft.world.chunk;
 
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
@@ -39,7 +44,7 @@ public class ChunkCache implements BlockView, CollisionView {
 		for (int k = minPos.getX() >> 4; k <= maxPos.getX() >> 4; k++) {
 			for (int l = minPos.getZ() >> 4; l <= maxPos.getZ() >> 4; l++) {
 				Chunk chunk = this.chunks[k - this.minX][l - this.minZ];
-				if (chunk != null && !chunk.method_12228(minPos.getY(), maxPos.getY())) {
+				if (chunk != null && !chunk.areSectionsEmptyBetween(minPos.getY(), maxPos.getY())) {
 					this.empty = false;
 					return;
 				}
@@ -82,7 +87,7 @@ public class ChunkCache implements BlockView, CollisionView {
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
 		if (World.isHeightInvalid(pos)) {
-			return Blocks.AIR.getDefaultState();
+			return Blocks.field_10124.getDefaultState();
 		} else {
 			Chunk chunk = this.method_22354(pos);
 			return chunk.getBlockState(pos);
@@ -90,9 +95,19 @@ public class ChunkCache implements BlockView, CollisionView {
 	}
 
 	@Override
+	public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
+		return Stream.empty();
+	}
+
+	@Override
+	public Stream<VoxelShape> getCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
+		return this.getBlockCollisions(entity, box);
+	}
+
+	@Override
 	public FluidState getFluidState(BlockPos pos) {
 		if (World.isHeightInvalid(pos)) {
-			return Fluids.EMPTY.getDefaultState();
+			return Fluids.field_15906.getDefaultState();
 		} else {
 			Chunk chunk = this.method_22354(pos);
 			return chunk.getFluidState(pos);

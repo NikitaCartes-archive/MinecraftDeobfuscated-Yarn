@@ -3,8 +3,8 @@ package net.minecraft.util.thread;
 public abstract class ReentrantThreadExecutor<R extends Runnable> extends ThreadExecutor<R> {
 	private int runningTasks;
 
-	public ReentrantThreadExecutor(String name) {
-		super(name);
+	public ReentrantThreadExecutor(String string) {
+		super(string);
 	}
 
 	@Override

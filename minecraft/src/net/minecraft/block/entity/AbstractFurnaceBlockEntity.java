@@ -2,13 +2,15 @@ package net.minecraft.block.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.AbstractFurnaceBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
@@ -24,13 +26,17 @@ import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
+import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockEntity implements SidedInventory, RecipeUnlocker, RecipeInputProvider, Tickable {
 	private static final int[] TOP_SLOTS = new int[]{0};
@@ -43,8 +49,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	private int cookTimeTotal;
 	protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int key) {
-			switch (key) {
+		public int get(int index) {
+			switch (index) {
 				case 0:
 					return AbstractFurnaceBlockEntity.this.burnTime;
 				case 1:
@@ -59,8 +65,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 
 		@Override
-		public void set(int key, int value) {
-			switch (key) {
+		public void set(int index, int value) {
+			switch (index) {
 				case 0:
 					AbstractFurnaceBlockEntity.this.burnTime = value;
 					break;
@@ -80,7 +86,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 			return 4;
 		}
 	};
-	private final Map<Identifier, Integer> recipesUsed = Maps.<Identifier, Integer>newHashMap();
+	private final Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap<>();
 	protected final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
 	protected AbstractFurnaceBlockEntity(BlockEntityType<?> blockEntityType, RecipeType<? extends AbstractCookingRecipe> recipeType) {
@@ -90,77 +96,94 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	public static Map<Item, Integer> createFuelTimeMap() {
 		Map<Item, Integer> map = Maps.<Item, Integer>newLinkedHashMap();
-		addFuel(map, Items.LAVA_BUCKET, 20000);
-		addFuel(map, Blocks.COAL_BLOCK, 16000);
-		addFuel(map, Items.BLAZE_ROD, 2400);
-		addFuel(map, Items.COAL, 1600);
-		addFuel(map, Items.CHARCOAL, 1600);
-		addFuel(map, ItemTags.LOGS, 300);
-		addFuel(map, ItemTags.PLANKS, 300);
-		addFuel(map, ItemTags.WOODEN_STAIRS, 300);
-		addFuel(map, ItemTags.WOODEN_SLABS, 150);
-		addFuel(map, ItemTags.WOODEN_TRAPDOORS, 300);
-		addFuel(map, ItemTags.WOODEN_PRESSURE_PLATES, 300);
-		addFuel(map, Blocks.OAK_FENCE, 300);
-		addFuel(map, Blocks.BIRCH_FENCE, 300);
-		addFuel(map, Blocks.SPRUCE_FENCE, 300);
-		addFuel(map, Blocks.JUNGLE_FENCE, 300);
-		addFuel(map, Blocks.DARK_OAK_FENCE, 300);
-		addFuel(map, Blocks.ACACIA_FENCE, 300);
-		addFuel(map, Blocks.OAK_FENCE_GATE, 300);
-		addFuel(map, Blocks.BIRCH_FENCE_GATE, 300);
-		addFuel(map, Blocks.SPRUCE_FENCE_GATE, 300);
-		addFuel(map, Blocks.JUNGLE_FENCE_GATE, 300);
-		addFuel(map, Blocks.DARK_OAK_FENCE_GATE, 300);
-		addFuel(map, Blocks.ACACIA_FENCE_GATE, 300);
-		addFuel(map, Blocks.NOTE_BLOCK, 300);
-		addFuel(map, Blocks.BOOKSHELF, 300);
-		addFuel(map, Blocks.LECTERN, 300);
-		addFuel(map, Blocks.JUKEBOX, 300);
-		addFuel(map, Blocks.CHEST, 300);
-		addFuel(map, Blocks.TRAPPED_CHEST, 300);
-		addFuel(map, Blocks.CRAFTING_TABLE, 300);
-		addFuel(map, Blocks.DAYLIGHT_DETECTOR, 300);
-		addFuel(map, ItemTags.BANNERS, 300);
-		addFuel(map, Items.BOW, 300);
-		addFuel(map, Items.FISHING_ROD, 300);
-		addFuel(map, Blocks.LADDER, 300);
-		addFuel(map, ItemTags.SIGNS, 200);
-		addFuel(map, Items.WOODEN_SHOVEL, 200);
-		addFuel(map, Items.WOODEN_SWORD, 200);
-		addFuel(map, Items.WOODEN_HOE, 200);
-		addFuel(map, Items.WOODEN_AXE, 200);
-		addFuel(map, Items.WOODEN_PICKAXE, 200);
-		addFuel(map, ItemTags.WOODEN_DOORS, 200);
-		addFuel(map, ItemTags.BOATS, 1200);
-		addFuel(map, ItemTags.WOOL, 100);
-		addFuel(map, ItemTags.WOODEN_BUTTONS, 100);
-		addFuel(map, Items.STICK, 100);
-		addFuel(map, ItemTags.SAPLINGS, 100);
-		addFuel(map, Items.BOWL, 100);
-		addFuel(map, ItemTags.CARPETS, 67);
-		addFuel(map, Blocks.DRIED_KELP_BLOCK, 4001);
-		addFuel(map, Items.CROSSBOW, 300);
-		addFuel(map, Blocks.BAMBOO, 50);
-		addFuel(map, Blocks.DEAD_BUSH, 100);
-		addFuel(map, Blocks.SCAFFOLDING, 400);
-		addFuel(map, Blocks.LOOM, 300);
-		addFuel(map, Blocks.BARREL, 300);
-		addFuel(map, Blocks.CARTOGRAPHY_TABLE, 300);
-		addFuel(map, Blocks.FLETCHING_TABLE, 300);
-		addFuel(map, Blocks.SMITHING_TABLE, 300);
-		addFuel(map, Blocks.COMPOSTER, 300);
+		addFuel(map, Items.field_8187, 20000);
+		addFuel(map, Blocks.field_10381, 16000);
+		addFuel(map, Items.field_8894, 2400);
+		addFuel(map, Items.field_8713, 1600);
+		addFuel(map, Items.field_8665, 1600);
+		addFuel(map, ItemTags.field_15539, 300);
+		addFuel(map, ItemTags.field_15537, 300);
+		addFuel(map, ItemTags.field_15557, 300);
+		addFuel(map, ItemTags.field_15534, 150);
+		addFuel(map, ItemTags.field_15550, 300);
+		addFuel(map, ItemTags.field_15540, 300);
+		addFuel(map, Blocks.field_10620, 300);
+		addFuel(map, Blocks.field_10299, 300);
+		addFuel(map, Blocks.field_10020, 300);
+		addFuel(map, Blocks.field_10319, 300);
+		addFuel(map, Blocks.field_10132, 300);
+		addFuel(map, Blocks.field_10144, 300);
+		addFuel(map, Blocks.field_10188, 300);
+		addFuel(map, Blocks.field_10513, 300);
+		addFuel(map, Blocks.field_10291, 300);
+		addFuel(map, Blocks.field_10041, 300);
+		addFuel(map, Blocks.field_10196, 300);
+		addFuel(map, Blocks.field_10457, 300);
+		addFuel(map, Blocks.field_10179, 300);
+		addFuel(map, Blocks.field_10504, 300);
+		addFuel(map, Blocks.field_16330, 300);
+		addFuel(map, Blocks.field_10223, 300);
+		addFuel(map, Blocks.field_10034, 300);
+		addFuel(map, Blocks.field_10380, 300);
+		addFuel(map, Blocks.field_9980, 300);
+		addFuel(map, Blocks.field_10429, 300);
+		addFuel(map, ItemTags.field_15556, 300);
+		addFuel(map, Items.field_8102, 300);
+		addFuel(map, Items.field_8378, 300);
+		addFuel(map, Blocks.field_9983, 300);
+		addFuel(map, ItemTags.field_15533, 200);
+		addFuel(map, Items.field_8876, 200);
+		addFuel(map, Items.field_8091, 200);
+		addFuel(map, Items.field_8167, 200);
+		addFuel(map, Items.field_8406, 200);
+		addFuel(map, Items.field_8647, 200);
+		addFuel(map, ItemTags.field_15552, 200);
+		addFuel(map, ItemTags.field_15536, 1200);
+		addFuel(map, ItemTags.field_15544, 100);
+		addFuel(map, ItemTags.field_15555, 100);
+		addFuel(map, Items.field_8600, 100);
+		addFuel(map, ItemTags.field_15528, 100);
+		addFuel(map, Items.field_8428, 100);
+		addFuel(map, ItemTags.field_15542, 67);
+		addFuel(map, Blocks.field_10342, 4001);
+		addFuel(map, Items.field_8399, 300);
+		addFuel(map, Blocks.field_10211, 50);
+		addFuel(map, Blocks.field_10428, 100);
+		addFuel(map, Blocks.field_16492, 400);
+		addFuel(map, Blocks.field_10083, 300);
+		addFuel(map, Blocks.field_16328, 300);
+		addFuel(map, Blocks.field_16336, 300);
+		addFuel(map, Blocks.field_16331, 300);
+		addFuel(map, Blocks.field_16329, 300);
+		addFuel(map, Blocks.field_17563, 300);
 		return map;
+	}
+
+	private static boolean isNonFlammableWood(Item item) {
+		return ItemTags.field_23211.contains(item);
 	}
 
 	private static void addFuel(Map<Item, Integer> fuelTimes, Tag<Item> tag, int fuelTime) {
 		for (Item item : tag.values()) {
-			fuelTimes.put(item, fuelTime);
+			if (!isNonFlammableWood(item)) {
+				fuelTimes.put(item, fuelTime);
+			}
 		}
 	}
 
-	private static void addFuel(Map<Item, Integer> fuelTimes, ItemConvertible item, int fuelTime) {
-		fuelTimes.put(item.asItem(), fuelTime);
+	private static void addFuel(Map<Item, Integer> map, ItemConvertible item, int fuelTime) {
+		Item item2 = item.asItem();
+		if (isNonFlammableWood(item2)) {
+			if (SharedConstants.isDevelopment) {
+				throw (IllegalStateException)Util.throwOrPause(
+					new IllegalStateException(
+						"A developer tried to explicitly make fire resistant item " + item2.getName(null).getString() + " a furnace fuel. That will not work!"
+					)
+				);
+			}
+		} else {
+			map.put(item2, fuelTime);
+		}
 	}
 
 	private boolean isBurning() {
@@ -168,20 +191,18 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		Inventories.fromTag(tag, this.inventory);
 		this.burnTime = tag.getShort("BurnTime");
 		this.cookTime = tag.getShort("CookTime");
 		this.cookTimeTotal = tag.getShort("CookTimeTotal");
 		this.fuelTime = this.getFuelTime(this.inventory.get(1));
-		int i = tag.getShort("RecipesUsedSize");
+		CompoundTag compoundTag = tag.getCompound("RecipesUsed");
 
-		for (int j = 0; j < i; j++) {
-			Identifier identifier = new Identifier(tag.getString("RecipeLocation" + j));
-			int k = tag.getInt("RecipeAmount" + j);
-			this.recipesUsed.put(identifier, k);
+		for (String string : compoundTag.getKeys()) {
+			this.recipesUsed.put(new Identifier(string), compoundTag.getInt(string));
 		}
 	}
 
@@ -192,15 +213,9 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		tag.putShort("CookTime", (short)this.cookTime);
 		tag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
 		Inventories.toTag(tag, this.inventory);
-		tag.putShort("RecipesUsedSize", (short)this.recipesUsed.size());
-		int i = 0;
-
-		for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-			tag.putString("RecipeLocation" + i, ((Identifier)entry.getKey()).toString());
-			tag.putInt("RecipeAmount" + i, (Integer)entry.getValue());
-			i++;
-		}
-
+		CompoundTag compoundTag = new CompoundTag();
+		this.recipesUsed.forEach((identifier, integer) -> compoundTag.putInt(identifier.toString(), integer));
+		tag.put("RecipesUsed", compoundTag);
 		return tag;
 	}
 
@@ -270,7 +285,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				} else if (!itemStack2.isItemEqualIgnoreDamage(itemStack)) {
 					return false;
 				} else {
-					return itemStack2.getCount() < this.getInvMaxStackAmount() && itemStack2.getCount() < itemStack2.getMaxCount()
+					return itemStack2.getCount() < this.getMaxCountPerStack() && itemStack2.getCount() < itemStack2.getMaxCount()
 						? true
 						: itemStack2.getCount() < itemStack.getMaxCount();
 				}
@@ -295,8 +310,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				this.setLastRecipe(recipe);
 			}
 
-			if (itemStack.getItem() == Blocks.WET_SPONGE.asItem() && !this.inventory.get(1).isEmpty() && this.inventory.get(1).getItem() == Items.BUCKET) {
-				this.inventory.set(1, new ItemStack(Items.WATER_BUCKET));
+			if (itemStack.getItem() == Blocks.field_10562.asItem() && !this.inventory.get(1).isEmpty() && this.inventory.get(1).getItem() == Items.field_8550) {
+				this.inventory.set(1, new ItemStack(Items.field_8705));
 			}
 
 			itemStack.decrement(1);
@@ -321,24 +336,24 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public int[] getInvAvailableSlots(Direction side) {
-		if (side == Direction.DOWN) {
+	public int[] getAvailableSlots(Direction side) {
+		if (side == Direction.field_11033) {
 			return BOTTOM_SLOTS;
 		} else {
-			return side == Direction.UP ? TOP_SLOTS : SIDE_SLOTS;
+			return side == Direction.field_11036 ? TOP_SLOTS : SIDE_SLOTS;
 		}
 	}
 
 	@Override
-	public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
-		return this.isValidInvStack(slot, stack);
+	public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+		return this.isValid(slot, stack);
 	}
 
 	@Override
-	public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
-		if (dir == Direction.DOWN && slot == 1) {
+	public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+		if (dir == Direction.field_11033 && slot == 1) {
 			Item item = stack.getItem();
-			if (item != Items.WATER_BUCKET && item != Items.BUCKET) {
+			if (item != Items.field_8705 && item != Items.field_8550) {
 				return false;
 			}
 		}
@@ -347,12 +362,12 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return this.inventory.size();
 	}
 
 	@Override
-	public boolean isInvEmpty() {
+	public boolean isEmpty() {
 		for (ItemStack itemStack : this.inventory) {
 			if (!itemStack.isEmpty()) {
 				return false;
@@ -363,27 +378,27 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
+	public ItemStack getStack(int slot) {
 		return this.inventory.get(slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
+	public ItemStack removeStack(int slot, int amount) {
 		return Inventories.splitStack(this.inventory, slot, amount);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
+	public ItemStack removeStack(int slot) {
 		return Inventories.removeStack(this.inventory, slot);
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
+	public void setStack(int slot, ItemStack stack) {
 		ItemStack itemStack = this.inventory.get(slot);
 		boolean bl = !stack.isEmpty() && stack.isItemEqualIgnoreDamage(itemStack) && ItemStack.areTagsEqual(stack, itemStack);
 		this.inventory.set(slot, stack);
-		if (stack.getCount() > this.getInvMaxStackAmount()) {
-			stack.setCount(this.getInvMaxStackAmount());
+		if (stack.getCount() > this.getMaxCountPerStack()) {
+			stack.setCount(this.getMaxCountPerStack());
 		}
 
 		if (slot == 0 && !bl) {
@@ -394,21 +409,21 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUse(PlayerEntity player) {
 		return this.world.getBlockEntity(this.pos) != this
 			? false
 			: player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) <= 64.0;
 	}
 
 	@Override
-	public boolean isValidInvStack(int slot, ItemStack stack) {
+	public boolean isValid(int slot, ItemStack stack) {
 		if (slot == 2) {
 			return false;
 		} else if (slot != 1) {
 			return true;
 		} else {
 			ItemStack itemStack = this.inventory.get(1);
-			return canUseAsFuel(stack) || stack.getItem() == Items.BUCKET && itemStack.getItem() != Items.BUCKET;
+			return canUseAsFuel(stack) || stack.getItem() == Items.field_8550 && itemStack.getItem() != Items.field_8550;
 		}
 	}
 
@@ -420,7 +435,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	@Override
 	public void setLastRecipe(@Nullable Recipe<?> recipe) {
 		if (recipe != null) {
-			this.recipesUsed.compute(recipe.getId(), (identifier, integer) -> 1 + (integer == null ? 0 : integer));
+			Identifier identifier = recipe.getId();
+			this.recipesUsed.addTo(identifier, 1);
 		}
 	}
 
@@ -435,42 +451,42 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	public void dropExperience(PlayerEntity player) {
-		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
-
-		for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-			player.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
-				list.add(recipe);
-				dropExperience(player, (Integer)entry.getValue(), ((AbstractCookingRecipe)recipe).getExperience());
-			});
-		}
-
+		List<Recipe<?>> list = this.method_27354(player.world, player.getPos());
 		player.unlockRecipes(list);
 		this.recipesUsed.clear();
 	}
 
-	private static void dropExperience(PlayerEntity player, int totalExperience, float experienceFraction) {
-		if (experienceFraction == 0.0F) {
-			totalExperience = 0;
-		} else if (experienceFraction < 1.0F) {
-			int i = MathHelper.floor((float)totalExperience * experienceFraction);
-			if (i < MathHelper.ceil((float)totalExperience * experienceFraction) && Math.random() < (double)((float)totalExperience * experienceFraction - (float)i)) {
-				i++;
-			}
+	public List<Recipe<?>> method_27354(World world, Vec3d vec3d) {
+		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 
-			totalExperience = i;
+		for (Entry<Identifier> entry : this.recipesUsed.object2IntEntrySet()) {
+			world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
+				list.add(recipe);
+				dropExperience(world, vec3d, entry.getIntValue(), ((AbstractCookingRecipe)recipe).getExperience());
+			});
 		}
 
-		while (totalExperience > 0) {
-			int i = ExperienceOrbEntity.roundToOrbSize(totalExperience);
-			totalExperience -= i;
-			player.world.spawnEntity(new ExperienceOrbEntity(player.world, player.getX(), player.getY() + 0.5, player.getZ() + 0.5, i));
+		return list;
+	}
+
+	private static void dropExperience(World world, Vec3d vec3d, int i, float f) {
+		int j = MathHelper.floor((float)i * f);
+		float g = MathHelper.fractionalPart((float)i * f);
+		if (g != 0.0F && Math.random() < (double)g) {
+			j++;
+		}
+
+		while (j > 0) {
+			int k = ExperienceOrbEntity.roundToOrbSize(j);
+			j -= k;
+			world.spawnEntity(new ExperienceOrbEntity(world, vec3d.x, vec3d.y, vec3d.z, k));
 		}
 	}
 
 	@Override
-	public void provideRecipeInputs(RecipeFinder recipeFinder) {
+	public void provideRecipeInputs(RecipeFinder finder) {
 		for (ItemStack itemStack : this.inventory) {
-			recipeFinder.addItem(itemStack);
+			finder.addItem(itemStack);
 		}
 	}
 }

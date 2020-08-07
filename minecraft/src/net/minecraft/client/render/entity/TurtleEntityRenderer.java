@@ -10,21 +10,21 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, TurtleEntityModel<TurtleEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/turtle/big_sea_turtle.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/turtle/big_sea_turtle.png");
 
 	public TurtleEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new TurtleEntityModel<>(0.0F), 0.7F);
 	}
 
-	public void render(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void method_4138(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		if (turtleEntity.isBaby()) {
-			this.shadowSize *= 0.5F;
+			this.shadowRadius *= 0.5F;
 		}
 
-		super.render(turtleEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.method_4072(turtleEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(TurtleEntity turtleEntity) {
-		return SKIN;
+	public Identifier method_4139(TurtleEntity turtleEntity) {
+		return TEXTURE;
 	}
 }

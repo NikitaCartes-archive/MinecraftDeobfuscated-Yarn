@@ -9,12 +9,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ChatUtil;
 
 @Environment(EnvType.CLIENT)
 public class AddServerScreen extends Screen {
+	private static final Text field_26541 = new TranslatableText("addServer.enterName");
+	private static final Text field_26542 = new TranslatableText("addServer.enterIp");
 	private ButtonWidget buttonAdd;
 	private final BooleanConsumer callback;
 	private final ServerInfo server;
@@ -55,13 +58,13 @@ public class AddServerScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.minecraft.keyboard.enableRepeatEvents(true);
-		this.serverNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 66, 200, 20, I18n.translate("addServer.enterName"));
+		this.client.keyboard.enableRepeatEvents(true);
+		this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, new TranslatableText("addServer.enterName"));
 		this.serverNameField.setSelected(true);
 		this.serverNameField.setText(this.server.name);
 		this.serverNameField.setChangedListener(this::onClose);
 		this.children.add(this.serverNameField);
-		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp"));
+		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 106, 200, 20, new TranslatableText("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
 		this.addressField.setText(this.server.address);
 		this.addressField.setTextPredicate(this.addressTextFilter);
@@ -73,21 +76,23 @@ public class AddServerScreen extends Screen {
 				this.height / 4 + 72,
 				200,
 				20,
-				I18n.translate("addServer.resourcePack") + ": " + this.server.getResourcePack().getName().asFormattedString(),
+				method_27570(this.server.getResourcePack()),
 				buttonWidget -> {
 					this.server
 						.setResourcePackState(ServerInfo.ResourcePackState.values()[(this.server.getResourcePack().ordinal() + 1) % ServerInfo.ResourcePackState.values().length]);
-					this.resourcePackOptionButton.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.server.getResourcePack().getName().asFormattedString());
+					this.resourcePackOptionButton.setMessage(method_27570(this.server.getResourcePack()));
 				}
 			)
 		);
 		this.buttonAdd = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, I18n.translate("addServer.add"), buttonWidget -> this.addAndClose())
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, new TranslatableText("addServer.add"), buttonWidget -> this.addAndClose())
 		);
-		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.callback.accept(false))
-		);
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
 		this.updateButtonActiveState();
+	}
+
+	private static Text method_27570(ServerInfo.ResourcePackState resourcePackState) {
+		return new TranslatableText("addServer.resourcePack").append(": ").append(resourcePackState.getName());
 	}
 
 	@Override
@@ -105,7 +110,7 @@ public class AddServerScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.minecraft.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.enableRepeatEvents(false);
 	}
 
 	private void addAndClose() {
@@ -117,7 +122,7 @@ public class AddServerScreen extends Screen {
 	@Override
 	public void onClose() {
 		this.updateButtonActiveState();
-		this.minecraft.openScreen(this.parent);
+		this.client.openScreen(this.parent);
 	}
 
 	private void updateButtonActiveState() {
@@ -127,13 +132,13 @@ public class AddServerScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 17, 16777215);
-		this.drawString(this.font, I18n.translate("addServer.enterName"), this.width / 2 - 100, 53, 10526880);
-		this.drawString(this.font, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 94, 10526880);
-		this.serverNameField.render(mouseX, mouseY, delta);
-		this.addressField.render(mouseX, mouseY, delta);
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
+		drawTextWithShadow(matrices, this.textRenderer, field_26541, this.width / 2 - 100, 53, 10526880);
+		drawTextWithShadow(matrices, this.textRenderer, field_26542, this.width / 2 - 100, 94, 10526880);
+		this.serverNameField.render(matrices, mouseX, mouseY, delta);
+		this.addressField.render(matrices, mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

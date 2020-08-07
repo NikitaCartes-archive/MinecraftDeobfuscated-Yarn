@@ -15,11 +15,11 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 	private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
 	private final SheepWoolEntityModel<SheepEntity> model = new SheepWoolEntityModel<>();
 
-	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> context) {
-		super(context);
+	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(
+	public void method_4198(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, SheepEntity sheepEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (!sheepEntity.isSheared() && !sheepEntity.isInvisible()) {

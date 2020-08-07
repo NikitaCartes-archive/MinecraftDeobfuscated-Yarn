@@ -1,15 +1,16 @@
 package net.minecraft.block.entity;
 
 import java.util.Random;
-import net.minecraft.container.Container;
-import net.minecraft.container.Generic3x3Container;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.Generic3x3ContainerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 
 public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	private static final Random RANDOM = new Random();
@@ -20,11 +21,11 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	public DispenserBlockEntity() {
-		this(BlockEntityType.DISPENSER);
+		this(BlockEntityType.field_11887);
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return 9;
 	}
 
@@ -45,7 +46,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	public int addToFirstFreeSlot(ItemStack stack) {
 		for (int i = 0; i < this.inventory.size(); i++) {
 			if (this.inventory.get(i).isEmpty()) {
-				this.setInvStack(i, stack);
+				this.setStack(i, stack);
 				return i;
 			}
 		}
@@ -59,9 +60,9 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(tag)) {
 			Inventories.fromTag(tag, this.inventory);
 		}
@@ -88,7 +89,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return new Generic3x3Container(i, playerInventory, this);
+	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return new Generic3x3ContainerScreenHandler(syncId, playerInventory, this);
 	}
 }

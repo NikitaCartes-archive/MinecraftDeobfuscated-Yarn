@@ -2,6 +2,7 @@ package net.minecraft.client.render.model;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -19,6 +20,7 @@ import net.minecraft.util.profiler.Profiler;
 @Environment(EnvType.CLIENT)
 public class BakedModelManager extends SinglePreparationResourceReloadListener<ModelLoader> implements AutoCloseable {
 	private Map<Identifier, BakedModel> models;
+	@Nullable
 	private SpriteAtlasManager atlasManager;
 	private final BlockModels blockModelCache;
 	private final TextureManager textureManager;
@@ -46,14 +48,14 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 		return this.blockModelCache;
 	}
 
-	protected ModelLoader prepare(ResourceManager resourceManager, Profiler profiler) {
+	protected ModelLoader method_18178(ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		ModelLoader modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmap);
 		profiler.endTick();
 		return modelLoader;
 	}
 
-	protected void apply(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
+	protected void method_18179(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("upload");
 		if (this.atlasManager != null) {
@@ -93,7 +95,9 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 	}
 
 	public void close() {
-		this.atlasManager.close();
+		if (this.atlasManager != null) {
+			this.atlasManager.close();
+		}
 	}
 
 	public void resetMipmapLevels(int i) {

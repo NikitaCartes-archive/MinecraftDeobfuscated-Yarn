@@ -31,9 +31,7 @@ public class CollisionDebugRenderer implements DebugRenderer.Renderer {
 		if (d - this.lastUpdateTime > 1.0E8) {
 			this.lastUpdateTime = d;
 			Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
-			this.collisions = (List<VoxelShape>)entity.world
-				.getCollisions(entity, entity.getBoundingBox().expand(6.0), Collections.emptySet())
-				.collect(Collectors.toList());
+			this.collisions = (List<VoxelShape>)entity.world.getCollisions(entity, entity.getBoundingBox().expand(6.0), entityx -> true).collect(Collectors.toList());
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());

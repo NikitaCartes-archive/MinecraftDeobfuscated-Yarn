@@ -9,7 +9,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.text.Text;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
@@ -18,10 +18,9 @@ public class TippedArrowItem extends ArrowItem {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getStackForRender() {
-		return PotionUtil.setPotion(super.getStackForRender(), Potions.POISON);
+		return PotionUtil.setPotion(super.getStackForRender(), Potions.field_8982);
 	}
 
 	@Override

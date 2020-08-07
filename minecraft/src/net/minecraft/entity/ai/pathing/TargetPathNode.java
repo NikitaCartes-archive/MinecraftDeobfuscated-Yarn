@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.pathing;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public class TargetPathNode extends PathNode {
 	private float nearestNodeDistance = Float.MAX_VALUE;
@@ -14,8 +14,8 @@ public class TargetPathNode extends PathNode {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TargetPathNode(int x, int y, int z) {
-		super(x, y, z);
+	public TargetPathNode(int i, int j, int k) {
+		super(i, j, k);
 	}
 
 	public void updateNearestNode(float distance, PathNode node) {
@@ -31,10 +31,6 @@ public class TargetPathNode extends PathNode {
 
 	public void markReached() {
 		this.reached = true;
-	}
-
-	public boolean isReached() {
-		return this.reached;
 	}
 
 	@Environment(EnvType.CLIENT)

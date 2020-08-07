@@ -192,17 +192,17 @@ public class EntitySelectorReader {
 				this.limit = 1;
 				this.includesNonPlayers = false;
 				this.sorter = NEAREST;
-				this.setEntityType(EntityType.PLAYER);
+				this.setEntityType(EntityType.field_6097);
 			} else if (c == 'a') {
 				this.limit = Integer.MAX_VALUE;
 				this.includesNonPlayers = false;
 				this.sorter = ARBITRARY;
-				this.setEntityType(EntityType.PLAYER);
+				this.setEntityType(EntityType.field_6097);
 			} else if (c == 'r') {
 				this.limit = 1;
 				this.includesNonPlayers = false;
 				this.sorter = RANDOM;
-				this.setEntityType(EntityType.PLAYER);
+				this.setEntityType(EntityType.field_6097);
 			} else if (c == 's') {
 				this.limit = 1;
 				this.includesNonPlayers = true;

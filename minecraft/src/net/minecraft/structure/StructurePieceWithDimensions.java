@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public abstract class StructurePieceWithDimensions extends StructurePiece {
 	protected final int width;
@@ -19,8 +19,8 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
-		this.setOrientation(Direction.Type.HORIZONTAL.random(random));
-		if (this.getFacing().getAxis() == Direction.Axis.Z) {
+		this.setOrientation(Direction.Type.field_11062.random(random));
+		if (this.getFacing().getAxis() == Direction.Axis.field_11051) {
 			this.boundingBox = new BlockBox(x, y, z, x + width - 1, y + height - 1, z + depth - 1);
 		} else {
 			this.boundingBox = new BlockBox(x, y, z, x + depth - 1, y + height - 1, z + width - 1);
@@ -43,7 +43,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		tag.putInt("HPos", this.hPos);
 	}
 
-	protected boolean method_14839(IWorld world, BlockBox boundingBox, int i) {
+	protected boolean method_14839(WorldAccess world, BlockBox boundingBox, int i) {
 		if (this.hPos >= 0) {
 			return true;
 		} else {
@@ -55,7 +55,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 				for (int m = this.boundingBox.minX; m <= this.boundingBox.maxX; m++) {
 					mutable.set(m, 64, l);
 					if (boundingBox.contains(mutable)) {
-						j += world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
+						j += world.getTopPosition(Heightmap.Type.field_13203, mutable).getY();
 						k++;
 					}
 				}

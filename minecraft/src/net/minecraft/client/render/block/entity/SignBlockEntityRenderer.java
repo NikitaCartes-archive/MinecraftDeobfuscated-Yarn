@@ -18,10 +18,9 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.text.Text;
+import net.minecraft.text.OrderedText;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.Direction;
 
@@ -33,7 +32,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void render(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void method_23083(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = signBlockEntity.getCachedState();
 		matrixStack.push();
 		float g = 0.6666667F;
@@ -63,21 +62,20 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		matrixStack.scale(0.010416667F, -0.010416667F, 0.010416667F);
 		int l = signBlockEntity.getTextColor().getSignColor();
 		double d = 0.4;
-		int m = (int)((double)NativeImage.method_24033(l) * 0.4);
-		int n = (int)((double)NativeImage.method_24034(l) * 0.4);
-		int o = (int)((double)NativeImage.method_24035(l) * 0.4);
-		int p = NativeImage.method_24031(0, o, n, m);
+		int m = (int)((double)NativeImage.getRed(l) * 0.4);
+		int n = (int)((double)NativeImage.getGreen(l) * 0.4);
+		int o = (int)((double)NativeImage.getBlue(l) * 0.4);
+		int p = NativeImage.getAbgrColor(0, o, n, m);
+		int q = 20;
 
-		for (int q = 0; q < 4; q++) {
-			String string = signBlockEntity.getTextBeingEditedOnRow(q, text -> {
-				List<Text> list = Texts.wrapLines(text, 90, textRenderer, false, true);
-				return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
+		for (int r = 0; r < 4; r++) {
+			OrderedText orderedText = signBlockEntity.getTextBeingEditedOnRow(r, text -> {
+				List<OrderedText> list = textRenderer.wrapLines(text, 90);
+				return list.isEmpty() ? OrderedText.EMPTY : (OrderedText)list.get(0);
 			});
-			if (string != null) {
-				float r = (float)(-textRenderer.getStringWidth(string) / 2);
-				textRenderer.draw(
-					string, r, (float)(q * 10 - signBlockEntity.text.length * 5), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i
-				);
+			if (orderedText != null) {
+				float s = (float)(-textRenderer.getWidth(orderedText) / 2);
+				textRenderer.draw(orderedText, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
 			}
 		}
 
@@ -108,9 +106,9 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		}
 
 		@Override
-		public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-			this.field.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-			this.foot.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+		public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+			this.field.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+			this.foot.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 		}
 	}
 }

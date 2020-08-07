@@ -3,9 +3,9 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum SlabType implements StringIdentifiable {
-	TOP("top"),
-	BOTTOM("bottom"),
-	DOUBLE("double");
+	field_12679("top"),
+	field_12681("bottom"),
+	field_12682("double");
 
 	private final String name;
 

@@ -4,9 +4,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class BooleanOption extends Option {
@@ -38,13 +39,13 @@ public class BooleanOption extends Option {
 
 	@Override
 	public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
-		return new OptionButtonWidget(x, y, width, 20, this, this.getDisplayString(options), buttonWidget -> {
+		return new OptionButtonWidget(x, y, width, 20, this, this.getDisplayString(options), button -> {
 			this.set(options);
-			buttonWidget.setMessage(this.getDisplayString(options));
+			button.setMessage(this.getDisplayString(options));
 		});
 	}
 
-	public String getDisplayString(GameOptions options) {
-		return this.getDisplayPrefix() + I18n.translate(this.get(options) ? "options.on" : "options.off");
+	public Text getDisplayString(GameOptions options) {
+		return ScreenTexts.method_30619(this.getDisplayPrefix(), this.get(options));
 	}
 }

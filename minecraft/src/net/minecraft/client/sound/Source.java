@@ -133,7 +133,7 @@ public class Source {
 		if (this.stream != null) {
 			try {
 				for (int j = 0; j < i; j++) {
-					ByteBuffer byteBuffer = this.stream.method_19720(this.bufferSize);
+					ByteBuffer byteBuffer = this.stream.getBuffer(this.bufferSize);
 					if (byteBuffer != null) {
 						new StaticSound(byteBuffer, this.stream.getFormat()).takeStreamBufferPointer().ifPresent(ix -> AL10.alSourceQueueBuffers(this.pointer, new int[]{ix}));
 					}

@@ -19,6 +19,6 @@ public class ToolItem extends Item {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return this.material.getRepairIngredient().test(ingredient) || super.canRepair(stack, ingredient);
+		return this.material.getRepairIngredient().method_8093(ingredient) || super.canRepair(stack, ingredient);
 	}
 }

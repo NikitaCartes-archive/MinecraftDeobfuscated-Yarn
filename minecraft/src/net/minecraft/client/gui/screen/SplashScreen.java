@@ -8,8 +8,11 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.BackgroundHelper;
+import net.minecraft.client.resource.metadata.TextureResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadMonitor;
@@ -20,7 +23,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SplashScreen extends Overlay {
-	private static final Identifier LOGO = new Identifier("textures/gui/title/mojang.png");
+	private static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
+	private static final int field_25041 = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
+	private static final int field_25042 = field_25041 & 16777215;
 	private final MinecraftClient client;
 	private final ResourceReloadMonitor reloadMonitor;
 	private final Consumer<Optional<Throwable>> exceptionHandler;
@@ -41,7 +46,7 @@ public class SplashScreen extends Overlay {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		int i = this.client.getWindow().getScaledWidth();
 		int j = this.client.getWindow().getScaledHeight();
 		long l = Util.getMeasuringTimeMs();
@@ -54,35 +59,47 @@ public class SplashScreen extends Overlay {
 		float h;
 		if (f >= 1.0F) {
 			if (this.client.currentScreen != null) {
-				this.client.currentScreen.render(0, 0, delta);
+				this.client.currentScreen.render(matrices, 0, 0, delta);
 			}
 
 			int k = MathHelper.ceil((1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F)) * 255.0F);
-			fill(0, 0, i, j, 16777215 | k << 24);
+			fill(matrices, 0, 0, i, j, field_25042 | k << 24);
 			h = 1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F);
 		} else if (this.reloading) {
 			if (this.client.currentScreen != null && g < 1.0F) {
-				this.client.currentScreen.render(mouseX, mouseY, delta);
+				this.client.currentScreen.render(matrices, mouseX, mouseY, delta);
 			}
 
 			int k = MathHelper.ceil(MathHelper.clamp((double)g, 0.15, 1.0) * 255.0);
-			fill(0, 0, i, j, 16777215 | k << 24);
+			fill(matrices, 0, 0, i, j, field_25042 | k << 24);
 			h = MathHelper.clamp(g, 0.0F, 1.0F);
 		} else {
-			fill(0, 0, i, j, -1);
+			fill(matrices, 0, 0, i, j, field_25041);
 			h = 1.0F;
 		}
 
-		int k = (this.client.getWindow().getScaledWidth() - 256) / 2;
-		int m = (this.client.getWindow().getScaledHeight() - 256) / 2;
+		int k = (int)((double)this.client.getWindow().getScaledWidth() * 0.5);
+		int m = (int)((double)this.client.getWindow().getScaledHeight() * 0.5);
+		double d = Math.min((double)this.client.getWindow().getScaledWidth() * 0.75, (double)this.client.getWindow().getScaledHeight()) * 0.25;
+		int n = (int)(d * 0.5);
+		double e = d * 4.0;
+		int o = (int)(e * 0.5);
 		this.client.getTextureManager().bindTexture(LOGO);
 		RenderSystem.enableBlend();
+		RenderSystem.blendEquation(32774);
+		RenderSystem.blendFunc(770, 1);
+		RenderSystem.alphaFunc(516, 0.0F);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, h);
-		this.blit(k, m, 0, 0, 256, 256);
-		float n = this.reloadMonitor.getProgress();
-		this.progress = MathHelper.clamp(this.progress * 0.95F + n * 0.050000012F, 0.0F, 1.0F);
+		drawTexture(matrices, k - o, m - n, o, (int)d, -0.0625F, 0.0F, 120, 60, 120, 120);
+		drawTexture(matrices, k, m - n, o, (int)d, 0.0625F, 60.0F, 120, 60, 120, 120);
+		RenderSystem.defaultBlendFunc();
+		RenderSystem.defaultAlphaFunc();
+		RenderSystem.disableBlend();
+		int p = (int)((double)this.client.getWindow().getScaledHeight() * 0.8325);
+		float q = this.reloadMonitor.getProgress();
+		this.progress = MathHelper.clamp(this.progress * 0.95F + q * 0.050000012F, 0.0F, 1.0F);
 		if (f < 1.0F) {
-			this.renderProgressBar(i / 2 - 150, j / 4 * 3, i / 2 + 150, j / 4 * 3 + 10, 1.0F - MathHelper.clamp(f, 0.0F, 1.0F));
+			this.renderProgressBar(matrices, i / 2 - o, p - 5, i / 2 + o, p + 5, 1.0F - MathHelper.clamp(f, 0.0F, 1.0F));
 		}
 
 		if (f >= 2.0F) {
@@ -93,8 +110,8 @@ public class SplashScreen extends Overlay {
 			try {
 				this.reloadMonitor.throwExceptions();
 				this.exceptionHandler.accept(Optional.empty());
-			} catch (Throwable var15) {
-				this.exceptionHandler.accept(Optional.of(var15));
+			} catch (Throwable var23) {
+				this.exceptionHandler.accept(Optional.of(var23));
 			}
 
 			this.applyCompleteTime = Util.getMeasuringTimeMs();
@@ -104,26 +121,15 @@ public class SplashScreen extends Overlay {
 		}
 	}
 
-	private void renderProgressBar(int minX, int minY, int maxX, int maxY, float progress) {
-		int i = MathHelper.ceil((float)(maxX - minX - 1) * this.progress);
-		fill(
-			minX - 1,
-			minY - 1,
-			maxX + 1,
-			maxY + 1,
-			0xFF000000 | Math.round((1.0F - progress) * 255.0F) << 16 | Math.round((1.0F - progress) * 255.0F) << 8 | Math.round((1.0F - progress) * 255.0F)
-		);
-		fill(minX, minY, maxX, maxY, -1);
-		fill(
-			minX + 1,
-			minY + 1,
-			minX + i,
-			maxY - 1,
-			0xFF000000
-				| (int)MathHelper.lerp(1.0F - progress, 226.0F, 255.0F) << 16
-				| (int)MathHelper.lerp(1.0F - progress, 40.0F, 255.0F) << 8
-				| (int)MathHelper.lerp(1.0F - progress, 55.0F, 255.0F)
-		);
+	private void renderProgressBar(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
+		int m = MathHelper.ceil((float)(k - i - 2) * this.progress);
+		int n = Math.round(f * 255.0F);
+		int o = BackgroundHelper.ColorMixer.getArgb(n, 255, 255, 255);
+		fill(matrixStack, i + 1, j, k - 1, j + 1, o);
+		fill(matrixStack, i + 1, l, k - 1, l - 1, o);
+		fill(matrixStack, i, j, i + 1, l, o);
+		fill(matrixStack, k, j, k - 1, l, o);
+		fill(matrixStack, i + 2, j + 2, i + m, l - 2, o);
 	}
 
 	@Override
@@ -143,12 +149,12 @@ public class SplashScreen extends Overlay {
 			DefaultResourcePack defaultResourcePack = minecraftClient.getResourcePackDownloader().getPack();
 
 			try {
-				InputStream inputStream = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, SplashScreen.LOGO);
+				InputStream inputStream = defaultResourcePack.open(ResourceType.field_14188, SplashScreen.LOGO);
 				Throwable var5 = null;
 
 				ResourceTexture.TextureData var6;
 				try {
-					var6 = new ResourceTexture.TextureData(null, NativeImage.read(inputStream));
+					var6 = new ResourceTexture.TextureData(new TextureResourceMetadata(true, true), NativeImage.read(inputStream));
 				} catch (Throwable var16) {
 					var5 = var16;
 					throw var16;

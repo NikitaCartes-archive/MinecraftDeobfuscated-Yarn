@@ -3,14 +3,13 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.command.arguments.EntitySummonArgumentType;
-import net.minecraft.command.arguments.NbtCompoundTagArgumentType;
-import net.minecraft.command.arguments.Vec3ArgumentType;
+import net.minecraft.command.argument.EntitySummonArgumentType;
+import net.minecraft.command.argument.NbtCompoundTagArgumentType;
+import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
@@ -18,9 +17,14 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class SummonCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed"));
+	private static final SimpleCommandExceptionType field_26629 = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed.uuid"));
+	private static final SimpleCommandExceptionType INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableText("commands.summon.invalidPosition")
+	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -67,28 +71,30 @@ public class SummonCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize) throws CommandSyntaxException {
-		CompoundTag compoundTag = nbt.copy();
-		compoundTag.putString("id", entity.toString());
-		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(entity)) {
-			LightningEntity lightningEntity = new LightningEntity(source.getWorld(), pos.x, pos.y, pos.z, false);
-			source.getWorld().addLightning(lightningEntity);
-			source.sendFeedback(new TranslatableText("commands.summon.success", lightningEntity.getDisplayName()), true);
-			return 1;
+		BlockPos blockPos = new BlockPos(pos);
+		if (!World.method_25953(blockPos)) {
+			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
+			CompoundTag compoundTag = nbt.method_10553();
+			compoundTag.putString("id", entity.toString());
 			ServerWorld serverWorld = source.getWorld();
 			Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
-				entityx.setPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
-				return !serverWorld.tryLoadEntity(entityx) ? null : entityx;
+				entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
+				return entityx;
 			});
 			if (entity2 == null) {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				if (initialize && entity2 instanceof MobEntity) {
-					((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(new BlockPos(entity2)), SpawnType.COMMAND, null, null);
+					((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity2.getBlockPos()), SpawnReason.field_16462, null, null);
 				}
 
-				source.sendFeedback(new TranslatableText("commands.summon.success", entity2.getDisplayName()), true);
-				return 1;
+				if (!serverWorld.method_30736(entity2)) {
+					throw field_26629.create();
+				} else {
+					source.sendFeedback(new TranslatableText("commands.summon.success", entity2.getDisplayName()), true);
+					return 1;
+				}
 			}
 		}
 	}

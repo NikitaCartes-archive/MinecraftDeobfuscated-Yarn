@@ -2,20 +2,20 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.entity.ai.TargetFinder;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class GoToWalkTargetGoal extends Goal {
-	private final MobEntityWithAi mob;
+	private final PathAwareEntity mob;
 	private double x;
 	private double y;
 	private double z;
 	private final double speed;
 
-	public GoToWalkTargetGoal(MobEntityWithAi mob, double speed) {
+	public GoToWalkTargetGoal(PathAwareEntity mob, double speed) {
 		this.mob = mob;
 		this.speed = speed;
-		this.setControls(EnumSet.of(Goal.Control.MOVE));
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class GoToWalkTargetGoal extends Goal {
 		if (this.mob.isInWalkTargetRange()) {
 			return false;
 		} else {
-			Vec3d vec3d = TargetFinder.findTargetTowards(this.mob, 16, 7, new Vec3d(this.mob.getPositionTarget()));
+			Vec3d vec3d = TargetFinder.findTargetTowards(this.mob, 16, 7, Vec3d.ofBottomCenter(this.mob.getPositionTarget()));
 			if (vec3d == null) {
 				return false;
 			} else {

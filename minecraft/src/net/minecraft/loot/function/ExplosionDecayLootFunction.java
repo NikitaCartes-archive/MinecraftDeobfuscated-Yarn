@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
 
 public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 	private ExplosionDecayLootFunction(LootCondition[] conditions) {
@@ -15,8 +14,13 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25230;
+	}
+
+	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Float float_ = context.get(LootContextParameters.EXPLOSION_RADIUS);
+		Float float_ = context.get(LootContextParameters.field_1225);
 		if (float_ != null) {
 			Random random = context.getRandom();
 			float f = 1.0F / float_;
@@ -39,12 +43,8 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 		return builder(ExplosionDecayLootFunction::new);
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<ExplosionDecayLootFunction> {
-		protected Factory() {
-			super(new Identifier("explosion_decay"), ExplosionDecayLootFunction.class);
-		}
-
-		public ExplosionDecayLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+	public static class Serializer extends ConditionalLootFunction.Serializer<ExplosionDecayLootFunction> {
+		public ExplosionDecayLootFunction method_479(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			return new ExplosionDecayLootFunction(lootConditions);
 		}
 	}

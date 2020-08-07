@@ -14,11 +14,11 @@ import net.minecraft.entity.passive.MooshroomEntity;
 
 @Environment(EnvType.CLIENT)
 public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends FeatureRenderer<T, CowEntityModel<T>> {
-	public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> context) {
-		super(context);
+	public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(
+	public void method_4195(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T mooshroomEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (!mooshroomEntity.isBaby() && !mooshroomEntity.isInvisible()) {

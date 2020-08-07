@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
 
@@ -83,30 +84,30 @@ public class RecipeBookResults {
 		this.prevPageButton.visible = this.pageCount > 1 && this.currentPage > 0;
 	}
 
-	public void draw(int left, int top, int mouseX, int mouseY, float delta) {
+	public void draw(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
 		if (this.pageCount > 1) {
 			String string = this.currentPage + 1 + "/" + this.pageCount;
-			int i = this.client.textRenderer.getStringWidth(string);
-			this.client.textRenderer.draw(string, (float)(left - i / 2 + 73), (float)(top + 141), -1);
+			int m = this.client.textRenderer.getWidth(string);
+			this.client.textRenderer.draw(matrixStack, string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
 		}
 
 		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-			animatedResultButton.render(mouseX, mouseY, delta);
+			animatedResultButton.render(matrixStack, k, l, f);
 			if (animatedResultButton.visible && animatedResultButton.isHovered()) {
 				this.hoveredResultButton = animatedResultButton;
 			}
 		}
 
-		this.prevPageButton.render(mouseX, mouseY, delta);
-		this.nextPageButton.render(mouseX, mouseY, delta);
-		this.alternatesWidget.render(mouseX, mouseY, delta);
+		this.prevPageButton.render(matrixStack, k, l, f);
+		this.nextPageButton.render(matrixStack, k, l, f);
+		this.alternatesWidget.render(matrixStack, k, l, f);
 	}
 
-	public void drawTooltip(int i, int j) {
+	public void drawTooltip(MatrixStack matrixStack, int i, int j) {
 		if (this.client.currentScreen != null && this.hoveredResultButton != null && !this.alternatesWidget.isVisible()) {
-			this.client.currentScreen.renderTooltip(this.hoveredResultButton.getTooltip(this.client.currentScreen), i, j);
+			this.client.currentScreen.method_30901(matrixStack, this.hoveredResultButton.getTooltip(this.client.currentScreen), i, j);
 		}
 	}
 

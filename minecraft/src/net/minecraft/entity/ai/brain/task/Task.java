@@ -1,14 +1,15 @@
 package net.minecraft.entity.ai.brain.task;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public abstract class Task<E extends LivingEntity> {
-	private final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState;
-	private Task.Status status = Task.Status.STOPPED;
+	protected final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryStates;
+	private Task.Status status = Task.Status.field_18337;
 	private long endTime;
 	private final int minRunTime;
 	private final int maxRunTime;
@@ -24,7 +25,7 @@ public abstract class Task<E extends LivingEntity> {
 	public Task(Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState, int minRunTime, int maxRunTime) {
 		this.minRunTime = minRunTime;
 		this.maxRunTime = maxRunTime;
-		this.requiredMemoryState = requiredMemoryState;
+		this.requiredMemoryStates = requiredMemoryState;
 	}
 
 	public Task.Status getStatus() {
@@ -33,7 +34,7 @@ public abstract class Task<E extends LivingEntity> {
 
 	public final boolean tryStarting(ServerWorld world, E entity, long time) {
 		if (this.hasRequiredMemoryState(entity) && this.shouldRun(world, entity)) {
-			this.status = Task.Status.RUNNING;
+			this.status = Task.Status.field_18338;
 			int i = this.minRunTime + world.getRandom().nextInt(this.maxRunTime + 1 - this.minRunTime);
 			this.endTime = time + (long)i;
 			this.run(world, entity, time);
@@ -58,7 +59,7 @@ public abstract class Task<E extends LivingEntity> {
 	}
 
 	public final void stop(ServerWorld world, E entity, long time) {
-		this.status = Task.Status.STOPPED;
+		this.status = Task.Status.field_18337;
 		this.finishRunning(world, entity, time);
 	}
 
@@ -81,16 +82,20 @@ public abstract class Task<E extends LivingEntity> {
 		return this.getClass().getSimpleName();
 	}
 
-	private boolean hasRequiredMemoryState(E entity) {
-		return this.requiredMemoryState.entrySet().stream().allMatch(entry -> {
+	private boolean hasRequiredMemoryState(E livingEntity) {
+		for (Entry<MemoryModuleType<?>, MemoryModuleState> entry : this.requiredMemoryStates.entrySet()) {
 			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)entry.getKey();
 			MemoryModuleState memoryModuleState = (MemoryModuleState)entry.getValue();
-			return entity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState);
-		});
+			if (!livingEntity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public static enum Status {
-		STOPPED,
-		RUNNING;
+		field_18337,
+		field_18338;
 	}
 }

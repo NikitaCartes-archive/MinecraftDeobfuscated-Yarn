@@ -9,12 +9,12 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.GlobalPos;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 
 public class RingBellTask extends Task<LivingEntity> {
 	public RingBellTask() {
-		super(ImmutableMap.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT));
+		super(ImmutableMap.of(MemoryModuleType.field_18440, MemoryModuleState.field_18456));
 	}
 
 	@Override
@@ -25,10 +25,10 @@ public class RingBellTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.MEETING_POINT).get()).getPos();
-		if (blockPos.isWithinDistance(new BlockPos(entity), 3.0)) {
+		BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.field_18440).get()).getPos();
+		if (blockPos.isWithinDistance(entity.getBlockPos(), 3.0)) {
 			BlockState blockState = world.getBlockState(blockPos);
-			if (blockState.getBlock() == Blocks.BELL) {
+			if (blockState.isOf(Blocks.field_16332)) {
 				BellBlock bellBlock = (BellBlock)blockState.getBlock();
 				bellBlock.ring(world, blockPos, null);
 			}

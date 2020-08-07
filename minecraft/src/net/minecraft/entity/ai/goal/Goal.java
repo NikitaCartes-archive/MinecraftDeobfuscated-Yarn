@@ -38,9 +38,9 @@ public abstract class Goal {
 	}
 
 	public static enum Control {
-		MOVE,
-		LOOK,
-		JUMP,
-		TARGET;
+		field_18405,
+		field_18406,
+		field_18407,
+		field_18408;
 	}
 }

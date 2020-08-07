@@ -22,6 +22,7 @@ import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractTraderEntity;
@@ -70,24 +71,23 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	protected void method_20417() {
-		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity) || this.getPrimaryPassenger().getType().isTaggedWith(EntityTypeTags.RAIDERS);
+	protected void updateGoalControls() {
+		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity) || this.getPrimaryPassenger().getType().isIn(EntityTypeTags.field_19168);
 		boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
-		this.goalSelector.setControlEnabled(Goal.Control.MOVE, bl);
-		this.goalSelector.setControlEnabled(Goal.Control.JUMP, bl && bl2);
-		this.goalSelector.setControlEnabled(Goal.Control.LOOK, bl);
-		this.goalSelector.setControlEnabled(Goal.Control.TARGET, bl);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18405, bl);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18407, bl && bl2);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18406, bl);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18408, bl);
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(100.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3);
-		this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(12.0);
-		this.getAttributeInstance(EntityAttributes.ATTACK_KNOCKBACK).setBaseValue(1.5);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(32.0);
+	public static DefaultAttributeContainer.Builder createRavagerAttributes() {
+		return HostileEntity.createHostileAttributes()
+			.add(EntityAttributes.field_23716, 100.0)
+			.add(EntityAttributes.field_23719, 0.3)
+			.add(EntityAttributes.field_23718, 0.75)
+			.add(EntityAttributes.field_23721, 12.0)
+			.add(EntityAttributes.field_23722, 1.5)
+			.add(EntityAttributes.field_23717, 32.0);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	@Override
 	public SoundEvent getCelebratingSound() {
-		return SoundEvents.ENTITY_RAVAGER_CELEBRATE;
+		return SoundEvents.field_19148;
 	}
 
 	@Override
@@ -142,19 +142,24 @@ public class RavagerEntity extends RaiderEntity {
 		super.tickMovement();
 		if (this.isAlive()) {
 			if (this.isImmobile()) {
-				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.0);
+				this.getAttributeInstance(EntityAttributes.field_23719).setBaseValue(0.0);
 			} else {
 				double d = this.getTarget() != null ? 0.35 : 0.3;
-				double e = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getBaseValue();
-				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
+				double e = this.getAttributeInstance(EntityAttributes.field_23719).getBaseValue();
+				this.getAttributeInstance(EntityAttributes.field_23719).setBaseValue(MathHelper.lerp(0.1, e, d));
 			}
 
-			if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+			if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				boolean bl = false;
 				Box box = this.getBoundingBox().expand(0.2);
 
 				for (BlockPos blockPos : BlockPos.iterate(
-					MathHelper.floor(box.x1), MathHelper.floor(box.y1), MathHelper.floor(box.z1), MathHelper.floor(box.x2), MathHelper.floor(box.y2), MathHelper.floor(box.z2)
+					MathHelper.floor(box.minX),
+					MathHelper.floor(box.minY),
+					MathHelper.floor(box.minZ),
+					MathHelper.floor(box.maxX),
+					MathHelper.floor(box.maxY),
+					MathHelper.floor(box.maxZ)
 				)) {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					Block block = blockState.getBlock();
@@ -183,7 +188,7 @@ public class RavagerEntity extends RaiderEntity {
 				this.stunTick--;
 				this.spawnStunnedParticles();
 				if (this.stunTick == 0) {
-					this.playSound(SoundEvents.ENTITY_RAVAGER_ROAR, 1.0F, 1.0F);
+					this.playSound(SoundEvents.field_14733, 1.0F, 1.0F);
 					this.roarTick = 20;
 				}
 			}
@@ -195,7 +200,7 @@ public class RavagerEntity extends RaiderEntity {
 			double d = this.getX() - (double)this.getWidth() * Math.sin((double)(this.bodyYaw * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
 			double e = this.getY() + (double)this.getHeight() - 0.3;
 			double f = this.getZ() + (double)this.getWidth() * Math.cos((double)(this.bodyYaw * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
-			this.world.addParticle(ParticleTypes.ENTITY_EFFECT, d, e, f, 0.4980392156862745, 0.5137254901960784, 0.5725490196078431);
+			this.world.addParticle(ParticleTypes.field_11226, d, e, f, 0.4980392156862745, 0.5137254901960784, 0.5725490196078431);
 		}
 	}
 
@@ -214,7 +219,7 @@ public class RavagerEntity extends RaiderEntity {
 		if (this.roarTick == 0) {
 			if (this.random.nextDouble() < 0.5) {
 				this.stunTick = 40;
-				this.playSound(SoundEvents.ENTITY_RAVAGER_STUNNED, 1.0F, 1.0F);
+				this.playSound(SoundEvents.field_14822, 1.0F, 1.0F);
 				this.world.sendEntityStatus(this, (byte)39);
 				target.pushAwayFrom(this);
 			} else {
@@ -227,7 +232,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	private void roar() {
 		if (this.isAlive()) {
-			for (Entity entity : this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(4.0), IS_NOT_RAVAGER)) {
+			for (Entity entity : this.world.getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), IS_NOT_RAVAGER)) {
 				if (!(entity instanceof IllagerEntity)) {
 					entity.damage(DamageSource.mob(this), 6.0F);
 				}
@@ -241,7 +246,7 @@ public class RavagerEntity extends RaiderEntity {
 				double d = this.random.nextGaussian() * 0.2;
 				double e = this.random.nextGaussian() * 0.2;
 				double f = this.random.nextGaussian() * 0.2;
-				this.world.addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
+				this.world.addParticle(ParticleTypes.field_11203, vec3d.x, vec3d.y, vec3d.z, d, e, f);
 			}
 		}
 	}
@@ -258,7 +263,7 @@ public class RavagerEntity extends RaiderEntity {
 	public void handleStatus(byte status) {
 		if (status == 4) {
 			this.attackTick = 10;
-			this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0F, 1.0F);
+			this.playSound(SoundEvents.field_15240, 1.0F, 1.0F);
 		} else if (status == 39) {
 			this.stunTick = 40;
 		}
@@ -285,29 +290,29 @@ public class RavagerEntity extends RaiderEntity {
 	public boolean tryAttack(Entity target) {
 		this.attackTick = 10;
 		this.world.sendEntityStatus(this, (byte)4);
-		this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0F, 1.0F);
+		this.playSound(SoundEvents.field_15240, 1.0F, 1.0F);
 		return super.tryAttack(target);
 	}
 
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_RAVAGER_AMBIENT;
+		return SoundEvents.field_14639;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_RAVAGER_HURT;
+		return SoundEvents.field_15007;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_RAVAGER_DEATH;
+		return SoundEvents.field_15146;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.ENTITY_RAVAGER_STEP, 0.15F, 1.0F);
+		this.playSound(SoundEvents.field_14929, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -337,14 +342,14 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	static class Navigation extends MobNavigation {
-		public Navigation(MobEntity world, World world2) {
-			super(world, world2);
+		public Navigation(MobEntity mobEntity, World world) {
+			super(mobEntity, world);
 		}
 
 		@Override
-		protected PathNodeNavigator createPathNodeNavigator(int i) {
+		protected PathNodeNavigator createPathNodeNavigator(int range) {
 			this.nodeMaker = new RavagerEntity.PathNodeMaker();
-			return new PathNodeNavigator(this.nodeMaker, i);
+			return new PathNodeNavigator(this.nodeMaker, range);
 		}
 	}
 
@@ -354,7 +359,7 @@ public class RavagerEntity extends RaiderEntity {
 
 		@Override
 		protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
-			return type == PathNodeType.LEAVES ? PathNodeType.OPEN : super.adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, type);
+			return type == PathNodeType.field_6 ? PathNodeType.field_7 : super.adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, type);
 		}
 	}
 }

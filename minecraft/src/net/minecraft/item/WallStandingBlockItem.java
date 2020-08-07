@@ -4,7 +4,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldView;
@@ -26,8 +26,8 @@ public class WallStandingBlockItem extends BlockItem {
 		BlockPos blockPos = context.getBlockPos();
 
 		for (Direction direction : context.getPlacementDirections()) {
-			if (direction != Direction.UP) {
-				BlockState blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(context) : blockState;
+			if (direction != Direction.field_11036) {
+				BlockState blockState3 = direction == Direction.field_11033 ? this.getBlock().getPlacementState(context) : blockState;
 				if (blockState3 != null && blockState3.canPlaceAt(worldView, blockPos)) {
 					blockState2 = blockState3;
 					break;
@@ -35,7 +35,7 @@ public class WallStandingBlockItem extends BlockItem {
 			}
 		}
 
-		return blockState2 != null && worldView.canPlace(blockState2, blockPos, EntityContext.absent()) ? blockState2 : null;
+		return blockState2 != null && worldView.canPlace(blockState2, blockPos, ShapeContext.absent()) ? blockState2 : null;
 	}
 
 	@Override

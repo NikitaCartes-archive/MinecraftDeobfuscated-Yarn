@@ -10,9 +10,9 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public enum FontType {
-	BITMAP("bitmap", TextureFont.Loader::fromJson),
-	TTF("ttf", TrueTypeFontLoader::fromJson),
-	LEGACY_UNICODE("legacy_unicode", UnicodeTextureFont.Loader::fromJson);
+	field_2312("bitmap", BitmapFont.Loader::fromJson),
+	field_2317("ttf", TrueTypeFontLoader::fromJson),
+	field_2313("legacy_unicode", UnicodeTextureFont.Loader::fromJson);
 
 	private static final Map<String, FontType> REGISTRY = Util.make(Maps.<String, FontType>newHashMap(), hashMap -> {
 		for (FontType fontType : values()) {

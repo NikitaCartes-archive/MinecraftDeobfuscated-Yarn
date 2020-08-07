@@ -8,32 +8,33 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class LandingApproachPhase extends AbstractPhase {
 	private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(128.0);
 	private Path field_7047;
-	private Vec3d field_7048;
+	private Vec3d target;
 
-	public LandingApproachPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public LandingApproachPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
 	public PhaseType<LandingApproachPhase> getType() {
-		return PhaseType.LANDING_APPROACH;
+		return PhaseType.field_7071;
 	}
 
 	@Override
 	public void beginPhase() {
 		this.field_7047 = null;
-		this.field_7048 = null;
+		this.target = null;
 	}
 
 	@Override
 	public void serverTick() {
-		double d = this.field_7048 == null ? 0.0 : this.field_7048.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+		double d = this.target == null ? 0.0 : this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 		if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
 			this.method_6844();
 		}
@@ -42,26 +43,26 @@ public class LandingApproachPhase extends AbstractPhase {
 	@Nullable
 	@Override
 	public Vec3d getTarget() {
-		return this.field_7048;
+		return this.target;
 	}
 
 	private void method_6844() {
 		if (this.field_7047 == null || this.field_7047.isFinished()) {
-			int i = this.dragon.method_6818();
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
+			int i = this.dragon.getNearestPathNodeIndex();
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
 			PlayerEntity playerEntity = this.dragon
 				.world
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			int j;
 			if (playerEntity != null) {
 				Vec3d vec3d = new Vec3d(playerEntity.getX(), 0.0, playerEntity.getZ()).normalize();
-				j = this.dragon.method_6822(-vec3d.x * 40.0, 105.0, -vec3d.z * 40.0);
+				j = this.dragon.getNearestPathNodeIndex(-vec3d.x * 40.0, 105.0, -vec3d.z * 40.0);
 			} else {
-				j = this.dragon.method_6822(40.0, (double)blockPos.getY(), 0.0);
+				j = this.dragon.getNearestPathNodeIndex(40.0, (double)blockPos.getY(), 0.0);
 			}
 
 			PathNode pathNode = new PathNode(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-			this.field_7047 = this.dragon.method_6833(i, j, pathNode);
+			this.field_7047 = this.dragon.findPath(i, j, pathNode);
 			if (this.field_7047 != null) {
 				this.field_7047.next();
 			}
@@ -69,23 +70,23 @@ public class LandingApproachPhase extends AbstractPhase {
 
 		this.method_6845();
 		if (this.field_7047 != null && this.field_7047.isFinished()) {
-			this.dragon.getPhaseManager().setPhase(PhaseType.LANDING);
+			this.dragon.getPhaseManager().setPhase(PhaseType.field_7067);
 		}
 	}
 
 	private void method_6845() {
 		if (this.field_7047 != null && !this.field_7047.isFinished()) {
-			Vec3d vec3d = this.field_7047.getCurrentPosition();
+			Vec3i vec3i = this.field_7047.method_31032();
 			this.field_7047.next();
-			double d = vec3d.x;
-			double e = vec3d.z;
+			double d = (double)vec3i.getX();
+			double e = (double)vec3i.getZ();
 
 			double f;
 			do {
-				f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
-			} while (f < vec3d.y);
+				f = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0F);
+			} while (f < (double)vec3i.getY());
 
-			this.field_7048 = new Vec3d(d, f, e);
+			this.target = new Vec3d(d, f, e);
 		}
 	}
 }

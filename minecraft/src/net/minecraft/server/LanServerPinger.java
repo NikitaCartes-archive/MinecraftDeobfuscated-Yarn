@@ -8,17 +8,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Used to send UDP multicasts to notify other clients of a local game on the same network.
+ * 
+ * <p>These multicasts will always be sent to {@code 224.0.2.60:4445} where other clients can listen for local games.
+ */
 @Environment(EnvType.CLIENT)
 public class LanServerPinger extends Thread {
 	private static final AtomicInteger THREAD_ID = new AtomicInteger(0);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final String motd;
 	private final DatagramSocket socket;
-	private boolean isRunning = true;
+	private boolean running = true;
 	private final String addressPort;
 
 	public LanServerPinger(String motd, String addressPort) throws IOException {
@@ -34,7 +39,7 @@ public class LanServerPinger extends Thread {
 		String string = createAnnouncement(this.motd, this.addressPort);
 		byte[] bs = string.getBytes(StandardCharsets.UTF_8);
 
-		while (!this.isInterrupted() && this.isRunning) {
+		while (!this.isInterrupted() && this.running) {
 			try {
 				InetAddress inetAddress = InetAddress.getByName("224.0.2.60");
 				DatagramPacket datagramPacket = new DatagramPacket(bs, bs.length, inetAddress, 4445);
@@ -53,9 +58,27 @@ public class LanServerPinger extends Thread {
 
 	public void interrupt() {
 		super.interrupt();
-		this.isRunning = false;
+		this.running = false;
 	}
 
+	/**
+	 * Creates a server announcement.
+	 * 
+	 * <pre>
+	 * <blockquote>[MOTD]</blockquote> // Specifies the beginning of the message of the day
+	 * <blockquote>A message of the day</blockquote> // The message of the day
+	 * <blockquote>[/MOTD]</blockquote> // Specifies the end of the message of the day.
+	 * <blockquote>[AD]</blockquote> // Specifies the beginning of the address and the port of the local server.
+	 * <blockquote>the address of the local server.</blockquote> // Such as {@code 192.146.2.1:23132}
+	 * <blockquote>[/AD]</blockquote> // Specifies the end of the address and port of the local server.
+	 * </pre>
+	 * 
+	 * <p>An example of a complete announcement:
+	 * {@code [MOTD]A Player's Server[/MOTD][AD]192.168.0.33[/AD]}
+	 * 
+	 * @param motd the message of the day
+	 * @param addressPort the address of the server including the IP address and port
+	 */
 	public static String createAnnouncement(String motd, String addressPort) {
 		return "[MOTD]" + motd + "[/MOTD][AD]" + addressPort + "[/AD]";
 	}

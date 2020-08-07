@@ -1,74 +1,64 @@
 package net.minecraft.util;
 
 public class CuboidBlockIterator {
-	private final int startX;
-	private final int startY;
-	private final int startZ;
-	private final int endX;
-	private final int endY;
-	private final int endZ;
+	private int startX;
+	private int startY;
+	private int startZ;
+	private int sizeX;
+	private int sizeY;
+	private int sizeZ;
+	private int totalSize;
+	private int blocksIterated;
 	private int x;
 	private int y;
 	private int z;
-	private boolean complete;
 
 	public CuboidBlockIterator(int startX, int startY, int startZ, int endX, int endY, int endZ) {
 		this.startX = startX;
 		this.startY = startY;
 		this.startZ = startZ;
-		this.endX = endX;
-		this.endY = endY;
-		this.endZ = endZ;
+		this.sizeX = endX - startX + 1;
+		this.sizeY = endY - startY + 1;
+		this.sizeZ = endZ - startZ + 1;
+		this.totalSize = this.sizeX * this.sizeY * this.sizeZ;
 	}
 
 	public boolean step() {
-		if (!this.complete) {
-			this.x = this.startX;
-			this.y = this.startY;
-			this.z = this.startZ;
-			this.complete = true;
-			return true;
-		} else if (this.x == this.endX && this.y == this.endY && this.z == this.endZ) {
+		if (this.blocksIterated == this.totalSize) {
 			return false;
 		} else {
-			if (this.x < this.endX) {
-				this.x++;
-			} else if (this.y < this.endY) {
-				this.x = this.startX;
-				this.y++;
-			} else if (this.z < this.endZ) {
-				this.x = this.startX;
-				this.y = this.startY;
-				this.z++;
-			}
-
+			this.x = this.blocksIterated % this.sizeX;
+			int i = this.blocksIterated / this.sizeX;
+			this.y = i % this.sizeY;
+			this.z = i / this.sizeY;
+			this.blocksIterated++;
 			return true;
 		}
 	}
 
 	public int getX() {
-		return this.x;
+		return this.startX + this.x;
 	}
 
 	public int getY() {
-		return this.y;
+		return this.startY + this.y;
 	}
 
 	public int getZ() {
-		return this.z;
+		return this.startZ + this.z;
 	}
 
 	public int getEdgeCoordinatesCount() {
 		int i = 0;
-		if (this.x == this.startX || this.x == this.endX) {
+		if (this.x == 0 || this.x == this.sizeX - 1) {
 			i++;
 		}
 
-		if (this.y == this.startY || this.y == this.endY) {
+		if (this.y == 0 || this.y == this.sizeY - 1) {
 			i++;
 		}
 
-		if (this.z == this.startZ || this.z == this.endZ) {
+		if (this.z == 0 || this.z == this.sizeZ - 1) {
 			i++;
 		}
 

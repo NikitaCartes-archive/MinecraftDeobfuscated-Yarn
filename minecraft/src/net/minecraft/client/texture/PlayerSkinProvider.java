@@ -4,6 +4,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;
@@ -11,6 +13,7 @@ import com.mojang.authlib.minecraft.InsecureTextureException;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
+import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.util.Map;
@@ -28,30 +31,31 @@ public class PlayerSkinProvider {
 	private final TextureManager textureManager;
 	private final File skinCacheDir;
 	private final MinecraftSessionService sessionService;
-	private final LoadingCache<GameProfile, Map<Type, MinecraftProfileTexture>> skinCache;
+	private final LoadingCache<String, Map<Type, MinecraftProfileTexture>> skinCache;
 
 	public PlayerSkinProvider(TextureManager textureManager, File skinCacheDir, MinecraftSessionService sessionService) {
 		this.textureManager = textureManager;
 		this.skinCacheDir = skinCacheDir;
 		this.sessionService = sessionService;
-		this.skinCache = CacheBuilder.newBuilder()
-			.expireAfterAccess(15L, TimeUnit.SECONDS)
-			.build(new CacheLoader<GameProfile, Map<Type, MinecraftProfileTexture>>() {
-				public Map<Type, MinecraftProfileTexture> load(GameProfile gameProfile) throws Exception {
-					try {
-						return MinecraftClient.getInstance().getSessionService().getTextures(gameProfile, false);
-					} catch (Throwable var3) {
-						return Maps.<Type, MinecraftProfileTexture>newHashMap();
-					}
+		this.skinCache = CacheBuilder.newBuilder().expireAfterAccess(15L, TimeUnit.SECONDS).build(new CacheLoader<String, Map<Type, MinecraftProfileTexture>>() {
+			public Map<Type, MinecraftProfileTexture> method_30300(String string) {
+				GameProfile gameProfile = new GameProfile(null, "dummy_mcdummyface");
+				gameProfile.getProperties().put("textures", new Property("textures", string, ""));
+
+				try {
+					return sessionService.getTextures(gameProfile, false);
+				} catch (Throwable var4) {
+					return ImmutableMap.of();
 				}
-			});
+			}
+		});
 	}
 
 	public Identifier loadSkin(MinecraftProfileTexture profileTexture, Type type) {
 		return this.loadSkin(profileTexture, type, null);
 	}
 
-	public Identifier loadSkin(MinecraftProfileTexture profileTexture, Type type, @Nullable PlayerSkinProvider.SkinTextureAvailableCallback callback) {
+	private Identifier loadSkin(MinecraftProfileTexture profileTexture, Type type, @Nullable PlayerSkinProvider.SkinTextureAvailableCallback callback) {
 		String string = Hashing.sha1().hashUnencodedChars(profileTexture.getHash()).toString();
 		Identifier identifier = new Identifier("skins/" + string);
 		AbstractTexture abstractTexture = this.textureManager.getTexture(identifier);
@@ -103,11 +107,12 @@ public class PlayerSkinProvider {
 						}
 					})));
 		};
-		Util.getServerWorkerExecutor().execute(runnable);
+		Util.getMainWorkerExecutor().execute(runnable);
 	}
 
-	public Map<Type, MinecraftProfileTexture> getTextures(GameProfile profile) {
-		return this.skinCache.getUnchecked(profile);
+	public Map<Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile) {
+		Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
+		return (Map<Type, MinecraftProfileTexture>)(property == null ? ImmutableMap.of() : this.skinCache.getUnchecked(property.getValue()));
 	}
 
 	@Environment(EnvType.CLIENT)

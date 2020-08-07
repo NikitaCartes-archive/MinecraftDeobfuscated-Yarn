@@ -12,12 +12,14 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.container.AbstractFurnaceContainer;
-import net.minecraft.container.CraftingContainer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeGridAligner;
+import net.minecraft.screen.AbstractFurnaceScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -39,11 +41,11 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	) {
 		this.client = client;
 		this.resultCollection = results;
-		if (client.player.container instanceof AbstractFurnaceContainer) {
+		if (client.player.currentScreenHandler instanceof AbstractFurnaceScreenHandler) {
 			this.furnace = true;
 		}
 
-		boolean bl = client.player.getRecipeBook().isFilteringCraftable((CraftingContainer<?>)client.player.container);
+		boolean bl = client.player.getRecipeBook().isFilteringCraftable((AbstractRecipeScreenHandler<?>)client.player.currentScreenHandler);
 		List<Recipe<?>> list = results.getRecipes(true);
 		List<Recipe<?>> list2 = bl ? Collections.emptyList() : results.getRecipes(false);
 		int i = list.size();
@@ -90,7 +92,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	}
 
 	@Override
-	public boolean changeFocus(boolean bl) {
+	public boolean changeFocus(boolean lookForwards) {
 		return false;
 	}
 
@@ -124,7 +126,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.time += delta;
 			RenderSystem.enableBlend();
@@ -139,91 +141,45 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 			int m = 4;
 			int n = 82;
 			int o = 208;
-			this.renderGrid(j, k, 24, 4, 82, 208);
+			this.renderGrid(matrices, j, k, 24, 4, 82, 208);
 			RenderSystem.disableBlend();
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget alternativeButtonWidget : this.alternativeButtons) {
-				alternativeButtonWidget.render(mouseX, mouseY, delta);
+				alternativeButtonWidget.render(matrices, mouseX, mouseY, delta);
 			}
 
 			RenderSystem.popMatrix();
 		}
 	}
 
-	private void renderGrid(int columns, int rows, int squareSize, int borderSize, int u, int v) {
-		this.blit(this.buttonX, this.buttonY, u, v, borderSize, borderSize);
-		this.blit(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY, u + squareSize + borderSize, v, borderSize, borderSize);
-		this.blit(this.buttonX, this.buttonY + borderSize * 2 + rows * squareSize, u, v + squareSize + borderSize, borderSize, borderSize);
-		this.blit(
-			this.buttonX + borderSize * 2 + columns * squareSize,
-			this.buttonY + borderSize * 2 + rows * squareSize,
-			u + squareSize + borderSize,
-			v + squareSize + borderSize,
-			borderSize,
-			borderSize
-		);
+	private void renderGrid(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n) {
+		this.drawTexture(matrixStack, this.buttonX, this.buttonY, m, n, l, l);
+		this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY, m + k + l, n, l, l);
+		this.drawTexture(matrixStack, this.buttonX, this.buttonY + l * 2 + j * k, m, n + k + l, l, l);
+		this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY + l * 2 + j * k, m + k + l, n + k + l, l, l);
 
-		for (int i = 0; i < columns; i++) {
-			this.blit(this.buttonX + borderSize + i * squareSize, this.buttonY, u + borderSize, v, squareSize, borderSize);
-			this.blit(this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY, u + borderSize, v, borderSize, borderSize);
+		for (int o = 0; o < i; o++) {
+			this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY, m + l, n, k, l);
+			this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k, this.buttonY, m + l, n, l, l);
 
-			for (int j = 0; j < rows; j++) {
-				if (i == 0) {
-					this.blit(this.buttonX, this.buttonY + borderSize + j * squareSize, u, v + borderSize, borderSize, squareSize);
-					this.blit(this.buttonX, this.buttonY + borderSize + (j + 1) * squareSize, u, v + borderSize, borderSize, borderSize);
+			for (int p = 0; p < j; p++) {
+				if (o == 0) {
+					this.drawTexture(matrixStack, this.buttonX, this.buttonY + l + p * k, m, n + l, l, k);
+					this.drawTexture(matrixStack, this.buttonX, this.buttonY + l + (p + 1) * k, m, n + l, l, l);
 				}
 
-				this.blit(this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize + j * squareSize, u + borderSize, v + borderSize, squareSize, squareSize);
-				this.blit(
-					this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY + borderSize + j * squareSize, u + borderSize, v + borderSize, borderSize, squareSize
-				);
-				this.blit(
-					this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize + (j + 1) * squareSize, u + borderSize, v + borderSize, squareSize, borderSize
-				);
-				this.blit(
-					this.buttonX + borderSize + (i + 1) * squareSize - 1,
-					this.buttonY + borderSize + (j + 1) * squareSize - 1,
-					u + borderSize,
-					v + borderSize,
-					borderSize + 1,
-					borderSize + 1
-				);
-				if (i == columns - 1) {
-					this.blit(
-						this.buttonX + borderSize * 2 + columns * squareSize,
-						this.buttonY + borderSize + j * squareSize,
-						u + squareSize + borderSize,
-						v + borderSize,
-						borderSize,
-						squareSize
-					);
-					this.blit(
-						this.buttonX + borderSize * 2 + columns * squareSize,
-						this.buttonY + borderSize + (j + 1) * squareSize,
-						u + squareSize + borderSize,
-						v + borderSize,
-						borderSize,
-						borderSize
-					);
+				this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY + l + p * k, m + l, n + l, k, k);
+				this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k, this.buttonY + l + p * k, m + l, n + l, l, k);
+				this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY + l + (p + 1) * k, m + l, n + l, k, l);
+				this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k - 1, this.buttonY + l + (p + 1) * k - 1, m + l, n + l, l + 1, l + 1);
+				if (o == i - 1) {
+					this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY + l + p * k, m + k + l, n + l, l, k);
+					this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY + l + (p + 1) * k, m + k + l, n + l, l, l);
 				}
 			}
 
-			this.blit(
-				this.buttonX + borderSize + i * squareSize,
-				this.buttonY + borderSize * 2 + rows * squareSize,
-				u + borderSize,
-				v + squareSize + borderSize,
-				squareSize,
-				borderSize
-			);
-			this.blit(
-				this.buttonX + borderSize + (i + 1) * squareSize,
-				this.buttonY + borderSize * 2 + rows * squareSize,
-				u + borderSize,
-				v + squareSize + borderSize,
-				borderSize,
-				borderSize
-			);
+			this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, k, l);
+			this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, l, l);
 		}
 	}
 
@@ -238,15 +194,15 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	@Environment(EnvType.CLIENT)
 	class AlternativeButtonWidget extends AbstractButtonWidget implements RecipeGridAligner<Ingredient> {
 		private final Recipe<?> recipe;
-		private final boolean isCraftable;
+		private final boolean craftable;
 		protected final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> slots = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>newArrayList();
 
-		public AlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean isCraftable) {
-			super(x, y, 200, 20, "");
+		public AlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean craftable) {
+			super(x, y, 200, 20, LiteralText.EMPTY);
 			this.width = 24;
 			this.height = 24;
 			this.recipe = recipe;
-			this.isCraftable = isCraftable;
+			this.craftable = craftable;
 			this.alignRecipe(recipe);
 		}
 
@@ -263,11 +219,11 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		}
 
 		@Override
-		public void renderButton(int mouseX, int mouseY, float delta) {
+		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			RenderSystem.enableAlphaTest();
 			RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(RecipeAlternativesWidget.BG_TEX);
 			int i = 152;
-			if (!this.isCraftable) {
+			if (!this.craftable) {
 				i += 26;
 			}
 
@@ -276,7 +232,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 				j += 26;
 			}
 
-			this.blit(this.x, this.y, i, j, this.width, this.height);
+			this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot inputSlot : this.slots) {
 				RenderSystem.pushMatrix();
@@ -286,7 +242,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 				RenderSystem.scalef(0.42F, 0.42F, 1.0F);
 				RecipeAlternativesWidget.this.client
 					.getItemRenderer()
-					.renderGuiItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], k, l);
+					.renderInGuiWithOverrides(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], k, l);
 				RenderSystem.popMatrix();
 			}
 
@@ -309,8 +265,8 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 
 	@Environment(EnvType.CLIENT)
 	class FurnaceAlternativeButtonWidget extends RecipeAlternativesWidget.AlternativeButtonWidget {
-		public FurnaceAlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean isCraftable) {
-			super(x, y, recipe, isCraftable);
+		public FurnaceAlternativeButtonWidget(int i, int j, Recipe<?> recipe, boolean bl) {
+			super(i, j, recipe, bl);
 		}
 
 		@Override

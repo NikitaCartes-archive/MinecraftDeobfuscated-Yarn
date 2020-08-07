@@ -10,9 +10,10 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.FeatureUpdater;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public class VersionedChunkStorage implements AutoCloseable {
 	private final StorageIoWorker worker;
@@ -20,26 +21,26 @@ public class VersionedChunkStorage implements AutoCloseable {
 	@Nullable
 	private FeatureUpdater featureUpdater;
 
-	public VersionedChunkStorage(File file, DataFixer dataFixer) {
+	public VersionedChunkStorage(File file, DataFixer dataFixer, boolean bl) {
 		this.dataFixer = dataFixer;
-		this.worker = new StorageIoWorker(new RegionBasedStorage(file), "chunk");
+		this.worker = new StorageIoWorker(file, bl, "chunk");
 	}
 
-	public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {
+	public CompoundTag updateChunkTag(RegistryKey<World> registryKey, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {
 		int i = getDataVersion(tag);
 		int j = 1493;
 		if (i < 1493) {
-			tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, i, 1493);
+			tag = NbtHelper.update(this.dataFixer, DataFixTypes.field_19214, tag, i, 1493);
 			if (tag.getCompound("Level").getBoolean("hasLegacyStructureData")) {
 				if (this.featureUpdater == null) {
-					this.featureUpdater = FeatureUpdater.create(dimensionType, (PersistentStateManager)persistentStateManagerFactory.get());
+					this.featureUpdater = FeatureUpdater.create(registryKey, (PersistentStateManager)persistentStateManagerFactory.get());
 				}
 
 				tag = this.featureUpdater.getUpdatedReferences(tag);
 			}
 		}
 
-		tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, Math.max(1493, i));
+		tag = NbtHelper.update(this.dataFixer, DataFixTypes.field_19214, tag, Math.max(1493, i));
 		if (i < SharedConstants.getGameVersion().getWorldVersion()) {
 			tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 		}

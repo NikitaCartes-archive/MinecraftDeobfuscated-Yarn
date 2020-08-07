@@ -3,11 +3,11 @@ package net.minecraft.client.sound;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
@@ -28,30 +28,18 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SoundManager extends SinglePreparationResourceReloadListener<SoundManager.SoundList> {
-	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
+	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.field_5474, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
 		.registerTypeAdapter(SoundEntry.class, new SoundEntryDeserializer())
 		.create();
-	private static final ParameterizedType TYPE = new ParameterizedType() {
-		public Type[] getActualTypeArguments() {
-			return new Type[]{String.class, SoundEntry.class};
-		}
-
-		public Type getRawType() {
-			return Map.class;
-		}
-
-		public Type getOwnerType() {
-			return null;
-		}
+	private static final TypeToken<Map<String, SoundEntry>> TYPE = new TypeToken<Map<String, SoundEntry>>() {
 	};
 	private final Map<Identifier, WeightedSoundSet> sounds = Maps.<Identifier, WeightedSoundSet>newHashMap();
 	private final SoundSystem soundSystem;
@@ -60,7 +48,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		this.soundSystem = new SoundSystem(this, gameOptions, resourceManager);
 	}
 
-	protected SoundManager.SoundList prepare(ResourceManager resourceManager, Profiler profiler) {
+	protected SoundManager.SoundList method_18180(ResourceManager resourceManager, Profiler profiler) {
 		SoundManager.SoundList soundList = new SoundManager.SoundList();
 		profiler.startTick();
 
@@ -72,22 +60,62 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 					profiler.push(resource.getResourcePackName());
 
 					try {
-						profiler.push("parse");
-						Map<String, SoundEntry> map = readSounds(resource.getInputStream());
-						profiler.swap("register");
+						InputStream inputStream = resource.getInputStream();
+						Throwable var10 = null;
 
-						for (Entry<String, SoundEntry> entry : map.entrySet()) {
-							soundList.register(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
+						try {
+							Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+							Throwable var12 = null;
+
+							try {
+								profiler.push("parse");
+								Map<String, SoundEntry> map = JsonHelper.deserialize(GSON, reader, TYPE);
+								profiler.swap("register");
+
+								for (Entry<String, SoundEntry> entry : map.entrySet()) {
+									soundList.register(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
+								}
+
+								profiler.pop();
+							} catch (Throwable var41) {
+								var12 = var41;
+								throw var41;
+							} finally {
+								if (reader != null) {
+									if (var12 != null) {
+										try {
+											reader.close();
+										} catch (Throwable var40) {
+											var12.addSuppressed(var40);
+										}
+									} else {
+										reader.close();
+									}
+								}
+							}
+						} catch (Throwable var43) {
+							var10 = var43;
+							throw var43;
+						} finally {
+							if (inputStream != null) {
+								if (var10 != null) {
+									try {
+										inputStream.close();
+									} catch (Throwable var39) {
+										var10.addSuppressed(var39);
+									}
+								} else {
+									inputStream.close();
+								}
+							}
 						}
-
-						profiler.pop();
-					} catch (RuntimeException var12) {
-						LOGGER.warn("Invalid sounds.json in resourcepack: '{}'", resource.getResourcePackName(), var12);
+					} catch (RuntimeException var45) {
+						LOGGER.warn("Invalid sounds.json in resourcepack: '{}'", resource.getResourcePackName(), var45);
 					}
 
 					profiler.pop();
 				}
-			} catch (IOException var13) {
+			} catch (IOException var46) {
 			}
 
 			profiler.pop();
@@ -97,7 +125,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		return soundList;
 	}
 
-	protected void apply(SoundManager.SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
+	protected void method_18182(SoundManager.SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
 		soundList.addTo(this.sounds, this.soundSystem);
 
 		for (Identifier identifier : this.sounds.keySet()) {
@@ -119,18 +147,6 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		}
 
 		this.soundSystem.reloadSounds();
-	}
-
-	@Nullable
-	protected static Map<String, SoundEntry> readSounds(InputStream inputStream) {
-		Map var1;
-		try {
-			var1 = JsonHelper.deserialize(GSON, new InputStreamReader(inputStream, StandardCharsets.UTF_8), TYPE);
-		} finally {
-			IOUtils.closeQuietly(inputStream);
-		}
-
-		return var1;
 	}
 
 	private static boolean isSoundResourcePresent(Sound sound, Identifier identifier, ResourceManager resourceManager) {
@@ -189,7 +205,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 	}
 
 	public void updateSoundVolume(SoundCategory category, float volume) {
-		if (category == SoundCategory.MASTER && volume <= 0.0F) {
+		if (category == SoundCategory.field_15250 && volume <= 0.0F) {
 			this.stopAll();
 		}
 
@@ -204,12 +220,12 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		return this.soundSystem.isPlaying(soundInstance);
 	}
 
-	public void registerListener(ListenerSoundInstance listenerSoundInstance) {
-		this.soundSystem.registerListener(listenerSoundInstance);
+	public void registerListener(SoundInstanceListener soundInstanceListener) {
+		this.soundSystem.registerListener(soundInstanceListener);
 	}
 
-	public void unregisterListener(ListenerSoundInstance listenerSoundInstance) {
-		this.soundSystem.unregisterListener(listenerSoundInstance);
+	public void unregisterListener(SoundInstanceListener soundInstanceListener) {
+		this.soundSystem.unregisterListener(soundInstanceListener);
 	}
 
 	public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
@@ -243,7 +259,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 				final Identifier identifier = sound.getIdentifier();
 				SoundContainer<Sound> soundContainer;
 				switch (sound.getRegistrationType()) {
-					case FILE:
+					case field_5474:
 						if (!SoundManager.isSoundResourcePresent(sound, id, resourceManager)) {
 							continue;
 						}
@@ -258,18 +274,18 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 								return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
 							}
 
-							public Sound getSound() {
+							public Sound method_4883() {
 								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier);
 								if (weightedSoundSet == null) {
 									return SoundManager.MISSING_SOUND;
 								} else {
-									Sound sound = weightedSoundSet.getSound();
+									Sound sound = weightedSoundSet.method_4887();
 									return new Sound(
 										sound.getIdentifier().toString(),
 										sound.getVolume() * sound.getVolume(),
 										sound.getPitch() * sound.getPitch(),
 										sound.getWeight(),
-										Sound.RegistrationType.FILE,
+										Sound.RegistrationType.field_5474,
 										sound.isStreamed() || sound.isStreamed(),
 										sound.isPreloaded(),
 										sound.getAttenuation()

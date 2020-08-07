@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -14,12 +14,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
@@ -31,44 +31,37 @@ public final class NbtHelper {
 	@Nullable
 	public static GameProfile toGameProfile(CompoundTag tag) {
 		String string = null;
-		String string2 = null;
+		UUID uUID = null;
 		if (tag.contains("Name", 8)) {
 			string = tag.getString("Name");
 		}
 
-		if (tag.contains("Id", 8)) {
-			string2 = tag.getString("Id");
+		if (tag.containsUuid("Id")) {
+			uUID = tag.getUuid("Id");
 		}
 
 		try {
-			UUID uUID;
-			try {
-				uUID = UUID.fromString(string2);
-			} catch (Throwable var12) {
-				uUID = null;
-			}
-
 			GameProfile gameProfile = new GameProfile(uUID, string);
 			if (tag.contains("Properties", 10)) {
 				CompoundTag compoundTag = tag.getCompound("Properties");
 
-				for (String string3 : compoundTag.getKeys()) {
-					ListTag listTag = compoundTag.getList(string3, 10);
+				for (String string2 : compoundTag.getKeys()) {
+					ListTag listTag = compoundTag.getList(string2, 10);
 
 					for (int i = 0; i < listTag.size(); i++) {
 						CompoundTag compoundTag2 = listTag.getCompound(i);
-						String string4 = compoundTag2.getString("Value");
+						String string3 = compoundTag2.getString("Value");
 						if (compoundTag2.contains("Signature", 8)) {
-							gameProfile.getProperties().put(string3, new com.mojang.authlib.properties.Property(string3, string4, compoundTag2.getString("Signature")));
+							gameProfile.getProperties().put(string2, new com.mojang.authlib.properties.Property(string2, string3, compoundTag2.getString("Signature")));
 						} else {
-							gameProfile.getProperties().put(string3, new com.mojang.authlib.properties.Property(string3, string4));
+							gameProfile.getProperties().put(string2, new com.mojang.authlib.properties.Property(string2, string3));
 						}
 					}
 				}
 			}
 
 			return gameProfile;
-		} catch (Throwable var13) {
+		} catch (Throwable var11) {
 			return null;
 		}
 	}
@@ -79,7 +72,7 @@ public final class NbtHelper {
 		}
 
 		if (profile.getId() != null) {
-			tag.putString("Id", profile.getId().toString());
+			tag.putUuid("Id", profile.getId());
 		}
 
 		if (!profile.getProperties().isEmpty()) {
@@ -136,11 +129,11 @@ public final class NbtHelper {
 				return listTag2.isEmpty();
 			} else {
 				for (int i = 0; i < listTag.size(); i++) {
-					Tag tag2 = listTag.get(i);
+					Tag tag2 = listTag.method_10534(i);
 					boolean bl = false;
 
 					for (int j = 0; j < listTag2.size(); j++) {
-						if (matches(tag2, listTag2.get(j), equalValue)) {
+						if (matches(tag2, listTag2.method_10534(j), equalValue)) {
 							bl = true;
 							break;
 						}
@@ -158,15 +151,35 @@ public final class NbtHelper {
 		}
 	}
 
-	public static CompoundTag fromUuid(UUID uuid) {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putLong("M", uuid.getMostSignificantBits());
-		compoundTag.putLong("L", uuid.getLeastSignificantBits());
-		return compoundTag;
+	/**
+	 * Serializes a {@link UUID} into its equivalent NBT representation.
+	 * 
+	 * @since 20w10a
+	 */
+	public static IntArrayTag fromUuid(UUID uuid) {
+		return new IntArrayTag(DynamicSerializableUuid.toIntArray(uuid));
 	}
 
-	public static UUID toUuid(CompoundTag tag) {
-		return new UUID(tag.getLong("M"), tag.getLong("L"));
+	/**
+	 * Deserializes a tag into a {@link UUID}.
+	 * The tag's data must have the same structure as the output of {@link #fromUuid}.
+	 * 
+	 * @throws IllegalArgumentException if {@code tag} is not a valid representation of a UUID
+	 * @since 20w10a
+	 */
+	public static UUID toUuid(Tag tag) {
+		if (tag.getReader() != IntArrayTag.READER) {
+			throw new IllegalArgumentException(
+				"Expected UUID-Tag to be of type " + IntArrayTag.READER.getCrashReportName() + ", but found " + tag.getReader().getCrashReportName() + "."
+			);
+		} else {
+			int[] is = ((IntArrayTag)tag).getIntArray();
+			if (is.length != 4) {
+				throw new IllegalArgumentException("Expected UUID-Array to be of length 4, but found " + is.length + ".");
+			} else {
+				return DynamicSerializableUuid.toUuid(is);
+			}
+		}
 	}
 
 	public static BlockPos toBlockPos(CompoundTag tag) {
@@ -183,7 +196,7 @@ public final class NbtHelper {
 
 	public static BlockState toBlockState(CompoundTag tag) {
 		if (!tag.contains("Name", 8)) {
-			return Blocks.AIR.getDefaultState();
+			return Blocks.field_10124.getDefaultState();
 		} else {
 			Block block = Registry.BLOCK.get(new Identifier(tag.getString("Name")));
 			BlockState blockState = block.getDefaultState();
@@ -203,7 +216,7 @@ public final class NbtHelper {
 		}
 	}
 
-	private static <S extends State<S>, T extends Comparable<T>> S withProperty(
+	private static <S extends State<?, S>, T extends Comparable<T>> S withProperty(
 		S state, Property<T> property, String key, CompoundTag propertiesTag, CompoundTag mainTag
 	) {
 		Optional<T> optional = property.parse(propertiesTag.getString(key));
@@ -237,11 +250,28 @@ public final class NbtHelper {
 		return property.name((T)value);
 	}
 
+	/**
+	 * Uses the data fixer to update a tag to the latest data version.
+	 * 
+	 * @param fixer the data fixer
+	 * @param fixTypes the fix types
+	 * @param tag the tag to fix
+	 * @param oldVersion the data version of the compound tag
+	 */
 	public static CompoundTag update(DataFixer fixer, DataFixTypes fixTypes, CompoundTag tag, int oldVersion) {
 		return update(fixer, fixTypes, tag, oldVersion, SharedConstants.getGameVersion().getWorldVersion());
 	}
 
-	public static CompoundTag update(DataFixer fixer, DataFixTypes fixTypes, CompoundTag tag, int oldVersion, int currentVersion) {
-		return (CompoundTag)fixer.update(fixTypes.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, tag), oldVersion, currentVersion).getValue();
+	/**
+	 * Uses the data fixer to update a tag.
+	 * 
+	 * @param fixer the data fixer
+	 * @param fixTypes the fix types
+	 * @param tag the tag to fix
+	 * @param oldVersion the data version of the compound tag
+	 * @param targetVersion the data version to update the tag to
+	 */
+	public static CompoundTag update(DataFixer fixer, DataFixTypes fixTypes, CompoundTag tag, int oldVersion, int targetVersion) {
+		return (CompoundTag)fixer.update(fixTypes.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, tag), oldVersion, targetVersion).getValue();
 	}
 }

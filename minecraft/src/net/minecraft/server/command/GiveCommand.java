@@ -4,9 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.ItemStackArgument;
-import net.minecraft.command.arguments.ItemStackArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.ItemStackArgument;
+import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -69,12 +69,12 @@ public class GiveCommand {
 							serverPlayerEntity.getX(),
 							serverPlayerEntity.getY(),
 							serverPlayerEntity.getZ(),
-							SoundEvents.ENTITY_ITEM_PICKUP,
-							SoundCategory.PLAYERS,
+							SoundEvents.field_15197,
+							SoundCategory.field_15248,
 							0.2F,
 							((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F
 						);
-					serverPlayerEntity.playerContainer.sendContentUpdates();
+					serverPlayerEntity.playerScreenHandler.sendContentUpdates();
 				} else {
 					ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
 					if (itemEntity != null) {

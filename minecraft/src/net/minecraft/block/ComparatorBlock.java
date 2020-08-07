@@ -27,10 +27,10 @@ import net.minecraft.world.World;
 public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockEntityProvider {
 	public static final EnumProperty<ComparatorMode> MODE = Properties.COMPARATOR_MODE;
 
-	public ComparatorBlock(Block.Settings settings) {
+	public ComparatorBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(MODE, ComparatorMode.COMPARE)
+			this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(MODE, ComparatorMode.field_12576)
 		);
 	}
 
@@ -40,13 +40,13 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	protected int getOutputLevel(BlockView view, BlockPos pos, BlockState state) {
-		BlockEntity blockEntity = view.getBlockEntity(pos);
+	protected int getOutputLevel(BlockView world, BlockPos pos, BlockState state) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		return blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
 	}
 
 	private int calculateOutputSignal(World world, BlockPos pos, BlockState state) {
-		return state.get(MODE) == ComparatorMode.SUBTRACT
+		return state.get(MODE) == ComparatorMode.field_12578
 			? Math.max(this.getPower(world, pos, state) - this.getMaxInputLevelSides(world, pos, state), 0)
 			: this.getPower(world, pos, state);
 	}
@@ -58,7 +58,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			return false;
 		} else {
 			int j = this.getMaxInputLevelSides(world, pos, state);
-			return i > j ? true : i == j && state.get(MODE) == ComparatorMode.COMPARE;
+			return i > j ? true : i == j && state.get(MODE) == ComparatorMode.field_12576;
 		}
 	}
 
@@ -70,16 +70,16 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.hasComparatorOutput()) {
 			i = blockState.getComparatorOutput(world, blockPos);
-		} else if (i < 15 && blockState.isSimpleFullBlock(world, blockPos)) {
+		} else if (i < 15 && blockState.isSolidBlock(world, blockPos)) {
 			blockPos = blockPos.offset(direction);
 			blockState = world.getBlockState(blockPos);
-			if (blockState.hasComparatorOutput()) {
-				i = blockState.getComparatorOutput(world, blockPos);
-			} else if (blockState.isAir()) {
-				ItemFrameEntity itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos);
-				if (itemFrameEntity != null) {
-					i = itemFrameEntity.getComparatorPower();
-				}
+			ItemFrameEntity itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos);
+			int j = Math.max(
+				itemFrameEntity == null ? Integer.MIN_VALUE : itemFrameEntity.getComparatorPower(),
+				blockState.hasComparatorOutput() ? blockState.getComparatorOutput(world, blockPos) : Integer.MIN_VALUE
+			);
+			if (j != Integer.MIN_VALUE) {
+				i = j;
 			}
 		}
 
@@ -88,7 +88,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 
 	@Nullable
 	private ItemFrameEntity getAttachedItemFrame(World world, Direction facing, BlockPos pos) {
-		List<ItemFrameEntity> list = world.getEntities(
+		List<ItemFrameEntity> list = world.getEntitiesByClass(
 			ItemFrameEntity.class,
 			new Box((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), (double)(pos.getX() + 1), (double)(pos.getY() + 1), (double)(pos.getZ() + 1)),
 			itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == facing
@@ -102,11 +102,11 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			return ActionResult.PASS;
 		} else {
 			state = state.cycle(MODE);
-			float f = state.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
-			world.playSound(player, pos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
+			float f = state.get(MODE) == ComparatorMode.field_12578 ? 0.55F : 0.5F;
+			world.playSound(player, pos, SoundEvents.field_14762, SoundCategory.field_15245, 0.3F, f);
 			world.setBlockState(pos, state, 2);
 			this.update(world, pos, state);
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			int j = blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
 			if (i != j || (Boolean)state.get(POWERED) != this.hasPower(world, pos, state)) {
-				TickPriority tickPriority = this.isTargetNotAligned(world, pos, state) ? TickPriority.HIGH : TickPriority.NORMAL;
+				TickPriority tickPriority = this.isTargetNotAligned(world, pos, state) ? TickPriority.field_9310 : TickPriority.field_9314;
 				world.getBlockTickScheduler().schedule(pos, this, 2, tickPriority);
 			}
 		}
@@ -133,7 +133,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			comparatorBlockEntity.setOutputSignal(i);
 		}
 
-		if (j != i || state.get(MODE) == ComparatorMode.COMPARE) {
+		if (j != i || state.get(MODE) == ComparatorMode.field_12576) {
 			boolean bl = this.hasPower(world, pos, state);
 			boolean bl2 = (Boolean)state.get(POWERED);
 			if (bl2 && !bl) {
@@ -152,14 +152,14 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
-		super.onBlockAction(state, world, pos, type, data);
+	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
+		super.onSyncedBlockEvent(state, world, pos, type, data);
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		return blockEntity != null && blockEntity.onBlockAction(type, data);
+		return blockEntity != null && blockEntity.onSyncedBlockEvent(type, data);
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new ComparatorBlockEntity();
 	}
 

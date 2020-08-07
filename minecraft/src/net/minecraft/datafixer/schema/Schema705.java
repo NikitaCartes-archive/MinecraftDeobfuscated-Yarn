@@ -2,21 +2,21 @@ package net.minecraft.datafixer.schema;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
-import com.mojang.datafixers.types.DynamicOps;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import com.mojang.datafixers.types.templates.Hook.HookFunction;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 
-public class Schema705 extends SchemaIdentifierNormalize {
+public class Schema705 extends IdentifierNormalizingSchema {
 	protected static final HookFunction field_5746 = new HookFunction() {
 		@Override
 		public <T> T apply(DynamicOps<T> dynamicOps, T object) {
-			return Schema99.method_5359(new Dynamic<>(dynamicOps, object), Schema704.field_5744, "minecraft:armor_stand");
+			return Schema99.method_5359(new Dynamic<>(dynamicOps, object), Schema704.BLOCK_RENAMES, "minecraft:armor_stand");
 		}
 	};
 
@@ -25,7 +25,7 @@ public class Schema705 extends SchemaIdentifierNormalize {
 	}
 
 	protected static void method_5311(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.method_5196(schema)));
+		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	protected static void method_5330(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
@@ -59,7 +59,7 @@ public class Schema705 extends SchemaIdentifierNormalize {
 			map,
 			"minecraft:donkey",
 			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
-					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)
+					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)
 				))
 		);
 		schema.registerSimple(map, "minecraft:dragon_fireball");
@@ -70,7 +70,7 @@ public class Schema705 extends SchemaIdentifierNormalize {
 		schema.register(
 			map,
 			"minecraft:enderman",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), Schema100.method_5196(schema)))
+			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), Schema100.targetItems(schema)))
 		);
 		method_5311(schema, map, "minecraft:endermite");
 		method_5330(schema, map, "minecraft:ender_pearl");
@@ -103,7 +103,7 @@ public class Schema705 extends SchemaIdentifierNormalize {
 			map,
 			"minecraft:horse",
 			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
-					"ArmorItem", TypeReferences.ITEM_STACK.in(schema), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)
+					"ArmorItem", TypeReferences.ITEM_STACK.in(schema), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)
 				))
 		);
 		method_5311(schema, map, "minecraft:husk");
@@ -119,7 +119,7 @@ public class Schema705 extends SchemaIdentifierNormalize {
 			map,
 			"minecraft:mule",
 			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
-					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)
+					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)
 				))
 		);
 		method_5311(schema, map, "minecraft:ocelot");
@@ -141,7 +141,7 @@ public class Schema705 extends SchemaIdentifierNormalize {
 		schema.register(
 			map,
 			"minecraft:skeleton_horse",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)))
+			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)))
 		);
 		method_5311(schema, map, "minecraft:slime");
 		method_5330(schema, map, "minecraft:small_fireball");
@@ -179,7 +179,7 @@ public class Schema705 extends SchemaIdentifierNormalize {
 							)
 						)
 					),
-					Schema100.method_5196(schema)
+					Schema100.targetItems(schema)
 				))
 		);
 		method_5311(schema, map, "minecraft:villager_golem");
@@ -194,7 +194,7 @@ public class Schema705 extends SchemaIdentifierNormalize {
 		schema.register(
 			map,
 			"minecraft:zombie_horse",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)))
+			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)))
 		);
 		method_5311(schema, map, "minecraft:zombie_pigman");
 		method_5311(schema, map, "minecraft:zombie_villager");
@@ -211,7 +211,7 @@ public class Schema705 extends SchemaIdentifierNormalize {
 					TypeReferences.ITEM_STACK.in(schema),
 					"DecorItem",
 					TypeReferences.ITEM_STACK.in(schema),
-					Schema100.method_5196(schema)
+					Schema100.targetItems(schema)
 				))
 		);
 		schema.registerSimple(map, "minecraft:llama_spit");
@@ -221,9 +221,9 @@ public class Schema705 extends SchemaIdentifierNormalize {
 	}
 
 	@Override
-	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
-		super.registerTypes(schema, map, map2);
-		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), map));
+	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
+		super.registerTypes(schema, entityTypes, blockEntityTypes);
+		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", getIdentifierType(), entityTypes));
 		schema.registerType(
 			true,
 			TypeReferences.ITEM_STACK,

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 
-public class Schema1125 extends SchemaIdentifierNormalize {
+public class Schema1125 extends IdentifierNormalizingSchema {
 	public Schema1125(int i, Schema schema) {
 		super(i, schema);
 	}
@@ -20,8 +20,8 @@ public class Schema1125 extends SchemaIdentifierNormalize {
 	}
 
 	@Override
-	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
-		super.registerTypes(schema, map, map2);
+	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
+		super.registerTypes(schema, entityTypes, blockEntityTypes);
 		schema.registerType(
 			false,
 			TypeReferences.ADVANCEMENTS,
@@ -36,7 +36,7 @@ public class Schema1125 extends SchemaIdentifierNormalize {
 					DSL.optionalFields("criteria", DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.string())))
 				)
 		);
-		schema.registerType(false, TypeReferences.BIOME, () -> DSL.constType(DSL.namespacedString()));
-		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(DSL.namespacedString()));
+		schema.registerType(false, TypeReferences.BIOME, () -> DSL.constType(getIdentifierType()));
+		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(getIdentifierType()));
 	}
 }

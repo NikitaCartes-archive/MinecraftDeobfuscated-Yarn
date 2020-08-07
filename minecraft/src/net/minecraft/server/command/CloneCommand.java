@@ -13,8 +13,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.command.arguments.BlockPosArgumentType;
-import net.minecraft.command.arguments.BlockPredicateArgumentType;
+import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class CloneCommand {
 	private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.overlap"));
-	private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableText("commands.clone.toobig", object, object2)
 	);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.failed"));
@@ -47,7 +47,7 @@ public class CloneCommand {
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 													cachedBlockPosition -> true,
-													CloneCommand.Mode.NORMAL
+													CloneCommand.Mode.field_13499
 												)
 										)
 										.then(
@@ -59,7 +59,7 @@ public class CloneCommand {
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 															cachedBlockPosition -> true,
-															CloneCommand.Mode.NORMAL
+															CloneCommand.Mode.field_13499
 														)
 												)
 												.then(
@@ -71,7 +71,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	cachedBlockPosition -> true,
-																	CloneCommand.Mode.FORCE
+																	CloneCommand.Mode.field_13497
 																)
 														)
 												)
@@ -84,7 +84,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	cachedBlockPosition -> true,
-																	CloneCommand.Mode.MOVE
+																	CloneCommand.Mode.field_13500
 																)
 														)
 												)
@@ -97,7 +97,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	cachedBlockPosition -> true,
-																	CloneCommand.Mode.NORMAL
+																	CloneCommand.Mode.field_13499
 																)
 														)
 												)
@@ -111,7 +111,7 @@ public class CloneCommand {
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 															IS_AIR_PREDICATE,
-															CloneCommand.Mode.NORMAL
+															CloneCommand.Mode.field_13499
 														)
 												)
 												.then(
@@ -123,7 +123,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	IS_AIR_PREDICATE,
-																	CloneCommand.Mode.FORCE
+																	CloneCommand.Mode.field_13497
 																)
 														)
 												)
@@ -136,7 +136,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	IS_AIR_PREDICATE,
-																	CloneCommand.Mode.MOVE
+																	CloneCommand.Mode.field_13500
 																)
 														)
 												)
@@ -149,7 +149,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	IS_AIR_PREDICATE,
-																	CloneCommand.Mode.NORMAL
+																	CloneCommand.Mode.field_13499
 																)
 														)
 												)
@@ -165,7 +165,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
-																	CloneCommand.Mode.NORMAL
+																	CloneCommand.Mode.field_13499
 																)
 														)
 														.then(
@@ -177,7 +177,7 @@ public class CloneCommand {
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																			BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
-																			CloneCommand.Mode.FORCE
+																			CloneCommand.Mode.field_13497
 																		)
 																)
 														)
@@ -190,7 +190,7 @@ public class CloneCommand {
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																			BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
-																			CloneCommand.Mode.MOVE
+																			CloneCommand.Mode.field_13500
 																		)
 																)
 														)
@@ -203,7 +203,7 @@ public class CloneCommand {
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																			BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
-																			CloneCommand.Mode.NORMAL
+																			CloneCommand.Mode.field_13499
 																		)
 																)
 														)
@@ -226,7 +226,7 @@ public class CloneCommand {
 		} else {
 			int i = blockBox.getBlockCountX() * blockBox.getBlockCountY() * blockBox.getBlockCountZ();
 			if (i > 32768) {
-				throw TOOBIG_EXCEPTION.create(32768, i);
+				throw TOO_BIG_EXCEPTION.create(32768, i);
 			} else {
 				ServerWorld serverWorld = source.getWorld();
 				if (serverWorld.isRegionLoaded(begin, end) && serverWorld.isRegionLoaded(destination, blockPos)) {
@@ -249,7 +249,7 @@ public class CloneCommand {
 										CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
 										list2.add(new CloneCommand.BlockInfo(blockPos4, blockState, compoundTag));
 										deque.addLast(blockPos3);
-									} else if (!blockState.isFullOpaque(serverWorld, blockPos3) && !blockState.isFullCube(serverWorld, blockPos3)) {
+									} else if (!blockState.isOpaqueFullCube(serverWorld, blockPos3) && !blockState.isFullCube(serverWorld, blockPos3)) {
 										list3.add(new CloneCommand.BlockInfo(blockPos4, blockState, null));
 										deque.addFirst(blockPos3);
 									} else {
@@ -261,15 +261,15 @@ public class CloneCommand {
 						}
 					}
 
-					if (mode == CloneCommand.Mode.MOVE) {
+					if (mode == CloneCommand.Mode.field_13500) {
 						for (BlockPos blockPos5 : deque) {
 							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos5);
 							Clearable.clear(blockEntity2);
-							serverWorld.setBlockState(blockPos5, Blocks.BARRIER.getDefaultState(), 2);
+							serverWorld.setBlockState(blockPos5, Blocks.field_10499.getDefaultState(), 2);
 						}
 
 						for (BlockPos blockPos5 : deque) {
-							serverWorld.setBlockState(blockPos5, Blocks.AIR.getDefaultState(), 3);
+							serverWorld.setBlockState(blockPos5, Blocks.field_10124.getDefaultState(), 3);
 						}
 					}
 
@@ -282,7 +282,7 @@ public class CloneCommand {
 					for (CloneCommand.BlockInfo blockInfo : list5) {
 						BlockEntity blockEntity3 = serverWorld.getBlockEntity(blockInfo.pos);
 						Clearable.clear(blockEntity3);
-						serverWorld.setBlockState(blockInfo.pos, Blocks.BARRIER.getDefaultState(), 2);
+						serverWorld.setBlockState(blockInfo.pos, Blocks.field_10499.getDefaultState(), 2);
 					}
 
 					int lx = 0;
@@ -299,7 +299,7 @@ public class CloneCommand {
 							blockInfo2x.blockEntityTag.putInt("x", blockInfo2x.pos.getX());
 							blockInfo2x.blockEntityTag.putInt("y", blockInfo2x.pos.getY());
 							blockInfo2x.blockEntityTag.putInt("z", blockInfo2x.pos.getZ());
-							blockEntity4.fromTag(blockInfo2x.blockEntityTag);
+							blockEntity4.fromTag(blockInfo2x.state, blockInfo2x.blockEntityTag);
 							blockEntity4.markDirty();
 						}
 
@@ -310,7 +310,7 @@ public class CloneCommand {
 						serverWorld.updateNeighbors(blockInfo2x.pos, blockInfo2x.state.getBlock());
 					}
 
-					serverWorld.getBlockTickScheduler().copyScheduledTicks(blockBox, blockPos2);
+					serverWorld.method_14196().copyScheduledTicks(blockBox, blockPos2);
 					if (lx == 0) {
 						throw FAILED_EXCEPTION.create();
 					} else {
@@ -338,9 +338,9 @@ public class CloneCommand {
 	}
 
 	static enum Mode {
-		FORCE(true),
-		MOVE(true),
-		NORMAL(false);
+		field_13497(true),
+		field_13500(true),
+		field_13499(false);
 
 		private final boolean allowsOverlap;
 

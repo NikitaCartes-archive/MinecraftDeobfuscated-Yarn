@@ -5,34 +5,37 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Npc;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.Trader;
 import net.minecraft.village.TraderOfferList;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractTraderEntity extends PassiveEntity implements Npc, Trader {
 	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(AbstractTraderEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -40,22 +43,23 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	private PlayerEntity customer;
 	@Nullable
 	protected TraderOfferList offers;
-	private final BasicInventory inventory = new BasicInventory(8);
+	private final SimpleInventory inventory = new SimpleInventory(8);
 
 	public AbstractTraderEntity(EntityType<? extends AbstractTraderEntity> entityType, World world) {
 		super(entityType, world);
+		this.setPathfindingPenalty(PathNodeType.field_9, 16.0F);
+		this.setPathfindingPenalty(PathNodeType.field_3, -1.0F);
 	}
 
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
+	public EntityData initialize(
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyAllowed(false);
+			entityData = new PassiveEntity.PassiveData(false);
 		}
 
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public int getHeadRollingTimeLeft() {
@@ -109,7 +113,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setOffersFromServer(@Nullable TraderOfferList traderOfferList) {
+	public void setOffersFromServer(@Nullable TraderOfferList offers) {
 	}
 
 	@Override
@@ -117,41 +121,41 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public void trade(TradeOffer tradeOffer) {
-		tradeOffer.use();
+	public void trade(TradeOffer offer) {
+		offer.use();
 		this.ambientSoundChance = -this.getMinAmbientSoundDelay();
-		this.afterUsing(tradeOffer);
+		this.afterUsing(offer);
 		if (this.customer instanceof ServerPlayerEntity) {
-			Criterions.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, tradeOffer.getMutableSellItem());
+			Criteria.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, offer.getMutableSellItem());
 		}
 	}
 
 	protected abstract void afterUsing(TradeOffer offer);
 
 	@Override
-	public boolean isLevelledTrader() {
+	public boolean isLeveledTrader() {
 		return true;
 	}
 
 	@Override
-	public void onSellingItem(ItemStack itemStack) {
+	public void onSellingItem(ItemStack stack) {
 		if (!this.world.isClient && this.ambientSoundChance > -this.getMinAmbientSoundDelay() + 20) {
 			this.ambientSoundChance = -this.getMinAmbientSoundDelay();
-			this.playSound(this.getTradingSound(!itemStack.isEmpty()), this.getSoundVolume(), this.getSoundPitch());
+			this.playSound(this.getTradingSound(!stack.isEmpty()), this.getSoundVolume(), this.getSoundPitch());
 		}
 	}
 
 	@Override
 	public SoundEvent getYesSound() {
-		return SoundEvents.ENTITY_VILLAGER_YES;
+		return SoundEvents.field_14815;
 	}
 
 	protected SoundEvent getTradingSound(boolean sold) {
-		return sold ? SoundEvents.ENTITY_VILLAGER_YES : SoundEvents.ENTITY_VILLAGER_NO;
+		return sold ? SoundEvents.field_14815 : SoundEvents.field_15008;
 	}
 
 	public void playCelebrateSound() {
-		this.playSound(SoundEvents.ENTITY_VILLAGER_CELEBRATE, this.getSoundVolume(), this.getSoundPitch());
+		this.playSound(SoundEvents.field_19152, this.getSoundVolume(), this.getSoundPitch());
 	}
 
 	@Override
@@ -162,16 +166,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 			tag.put("Offers", traderOfferList.toTag());
 		}
 
-		ListTag listTag = new ListTag();
-
-		for (int i = 0; i < this.inventory.getInvSize(); i++) {
-			ItemStack itemStack = this.inventory.getInvStack(i);
-			if (!itemStack.isEmpty()) {
-				listTag.add(itemStack.toTag(new CompoundTag()));
-			}
-		}
-
-		tag.put("Inventory", listTag);
+		tag.put("Inventory", this.inventory.getTags());
 	}
 
 	@Override
@@ -181,21 +176,14 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 			this.offers = new TraderOfferList(tag.getCompound("Offers"));
 		}
 
-		ListTag listTag = tag.getList("Inventory", 10);
-
-		for (int i = 0; i < listTag.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
-			if (!itemStack.isEmpty()) {
-				this.inventory.add(itemStack);
-			}
-		}
+		this.inventory.readTags(tag.getList("Inventory", 10));
 	}
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType newDimension) {
+	public Entity moveToWorld(ServerWorld destination) {
 		this.resetCustomer();
-		return super.changeDimension(newDimension);
+		return super.moveToWorld(destination);
 	}
 
 	protected void resetCustomer() {
@@ -223,7 +211,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 		return false;
 	}
 
-	public BasicInventory getInventory() {
+	public SimpleInventory getInventory() {
 		return this.inventory;
 	}
 
@@ -233,8 +221,8 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 			return true;
 		} else {
 			int i = slot - 300;
-			if (i >= 0 && i < this.inventory.getInvSize()) {
-				this.inventory.setInvStack(i, item);
+			if (i >= 0 && i < this.inventory.size()) {
+				this.inventory.setStack(i, item);
 				return true;
 			} else {
 				return false;
@@ -268,5 +256,13 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 				recipeList.add(tradeOffer);
 			}
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_30951(float f) {
+		float g = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * (float) (Math.PI / 180.0);
+		Vec3d vec3d = new Vec3d(0.0, this.getBoundingBox().getYLength() - 1.0, 0.2);
+		return this.method_30950(f).add(vec3d.rotateY(-g));
 	}
 }

@@ -8,18 +8,18 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CaveSpiderEntityRenderer extends SpiderEntityRenderer<CaveSpiderEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/spider/cave_spider.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/spider/cave_spider.png");
 
 	public CaveSpiderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.shadowSize *= 0.7F;
+		this.shadowRadius *= 0.7F;
 	}
 
-	protected void scale(CaveSpiderEntity caveSpiderEntity, MatrixStack matrixStack, float f) {
+	protected void method_3886(CaveSpiderEntity caveSpiderEntity, MatrixStack matrixStack, float f) {
 		matrixStack.scale(0.7F, 0.7F, 0.7F);
 	}
 
-	public Identifier getTexture(CaveSpiderEntity caveSpiderEntity) {
-		return SKIN;
+	public Identifier method_3885(CaveSpiderEntity caveSpiderEntity) {
+		return TEXTURE;
 	}
 }

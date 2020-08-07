@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -18,6 +19,9 @@ public class SpectatorMenu {
 	private static final SpectatorMenuCommand PREVIOUS_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(-1, true);
 	private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);
 	private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, false);
+	private static final Text field_26613 = new TranslatableText("spectatorMenu.close");
+	private static final Text field_26614 = new TranslatableText("spectatorMenu.previous_page");
+	private static final Text field_26615 = new TranslatableText("spectatorMenu.next_page");
 	public static final SpectatorMenuCommand BLANK_COMMAND = new SpectatorMenuCommand() {
 		@Override
 		public void use(SpectatorMenu menu) {
@@ -25,11 +29,11 @@ public class SpectatorMenu {
 
 		@Override
 		public Text getName() {
-			return new LiteralText("");
+			return LiteralText.EMPTY;
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(MatrixStack matrixStack, float f, int i) {
 		}
 
 		@Override
@@ -38,7 +42,6 @@ public class SpectatorMenu {
 		}
 	};
 	private final SpectatorMenuCloseCallback closeCallback;
-	private final List<SpectatorMenuState> stateStack = Lists.<SpectatorMenuState>newArrayList();
 	private SpectatorMenuCommandGroup currentGroup;
 	private int selectedSlot = -1;
 	private int page;
@@ -101,7 +104,6 @@ public class SpectatorMenu {
 	}
 
 	public void selectElement(SpectatorMenuCommandGroup group) {
-		this.stateStack.add(this.getCurrentState());
 		this.currentGroup = group;
 		this.selectedSlot = -1;
 		this.page = 0;
@@ -128,16 +130,16 @@ public class SpectatorMenu {
 
 		@Override
 		public Text getName() {
-			return this.direction < 0 ? new TranslatableText("spectatorMenu.previous_page") : new TranslatableText("spectatorMenu.next_page");
+			return this.direction < 0 ? SpectatorMenu.field_26614 : SpectatorMenu.field_26615;
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(MatrixStack matrixStack, float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 			if (this.direction < 0) {
-				DrawableHelper.blit(0, 0, 144.0F, 0.0F, 16, 16, 256, 256);
+				DrawableHelper.drawTexture(matrixStack, 0, 0, 144.0F, 0.0F, 16, 16, 256, 256);
 			} else {
-				DrawableHelper.blit(0, 0, 160.0F, 0.0F, 16, 16, 256, 256);
+				DrawableHelper.drawTexture(matrixStack, 0, 0, 160.0F, 0.0F, 16, 16, 256, 256);
 			}
 		}
 
@@ -159,13 +161,13 @@ public class SpectatorMenu {
 
 		@Override
 		public Text getName() {
-			return new TranslatableText("spectatorMenu.close");
+			return SpectatorMenu.field_26613;
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(MatrixStack matrixStack, float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-			DrawableHelper.blit(0, 0, 128.0F, 0.0F, 16, 16, 256, 256);
+			DrawableHelper.drawTexture(matrixStack, 0, 0, 128.0F, 0.0F, 16, 16, 256, 256);
 		}
 
 		@Override

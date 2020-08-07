@@ -14,11 +14,11 @@ import net.minecraft.entity.passive.IronGolemEntity;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-	public IronGolemFlowerFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> context) {
-		super(context);
+	public IronGolemFlowerFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(
+	public void method_4188(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,
@@ -42,7 +42,7 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 			matrixStack.translate(-0.5, -0.5, -0.5);
 			MinecraftClient.getInstance()
 				.getBlockRenderManager()
-				.renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
+				.renderBlockAsEntity(Blocks.field_10449.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
 			matrixStack.pop();
 		}
 	}

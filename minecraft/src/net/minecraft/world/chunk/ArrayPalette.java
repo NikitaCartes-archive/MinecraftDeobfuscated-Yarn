@@ -1,14 +1,14 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.IdList;
-import net.minecraft.util.PacketByteBuf;
-import org.apache.commons.lang3.ArrayUtils;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.collection.IdList;
 
 public class ArrayPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
@@ -45,8 +45,14 @@ public class ArrayPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public boolean accepts(T object) {
-		return ArrayUtils.contains(this.array, object);
+	public boolean accepts(Predicate<T> predicate) {
+		for (int i = 0; i < this.size; i++) {
+			if (predicate.test(this.array[i])) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Nullable
@@ -70,7 +76,7 @@ public class ArrayPalette<T> implements Palette<T> {
 		buf.writeVarInt(this.size);
 
 		for (int i = 0; i < this.size; i++) {
-			buf.writeVarInt(this.idList.getId(this.array[i]));
+			buf.writeVarInt(this.idList.getRawId(this.array[i]));
 		}
 	}
 
@@ -79,7 +85,7 @@ public class ArrayPalette<T> implements Palette<T> {
 		int i = PacketByteBuf.getVarIntSizeBytes(this.getSize());
 
 		for (int j = 0; j < this.getSize(); j++) {
-			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getId(this.array[j]));
+			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getRawId(this.array[j]));
 		}
 
 		return i;

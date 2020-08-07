@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 
 public class ByteTag extends AbstractNumberTag {
 	public static final TagReader<ByteTag> READER = new TagReader<ByteTag>() {
-		public ByteTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public ByteTag method_23235(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(72L);
 			return ByteTag.of(dataInput.readByte());
 		}
@@ -64,7 +64,7 @@ public class ByteTag extends AbstractNumberTag {
 		return this.value + "b";
 	}
 
-	public ByteTag copy() {
+	public ByteTag method_10530() {
 		return this;
 	}
 

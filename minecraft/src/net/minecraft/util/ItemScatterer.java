@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,8 +22,8 @@ public class ItemScatterer {
 	}
 
 	private static void spawn(World world, double x, double y, double z, Inventory inventory) {
-		for (int i = 0; i < inventory.getInvSize(); i++) {
-			spawn(world, x, y, z, inventory.getInvStack(i));
+		for (int i = 0; i < inventory.size(); i++) {
+			spawn(world, x, y, z, inventory.getStack(i));
 		}
 	}
 
@@ -31,7 +32,7 @@ public class ItemScatterer {
 	}
 
 	public static void spawn(World world, double x, double y, double z, ItemStack item) {
-		double d = (double)EntityType.ITEM.getWidth();
+		double d = (double)EntityType.field_6052.getWidth();
 		double e = 1.0 - d;
 		double f = d / 2.0;
 		double g = Math.floor(x) + RANDOM.nextDouble() * e + f;

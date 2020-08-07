@@ -32,13 +32,18 @@ public class CopyStateFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25234;
+	}
+
+	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.BLOCK_STATE);
+		return ImmutableSet.of(LootContextParameters.field_1224);
 	}
 
 	@Override
 	protected ItemStack process(ItemStack stack, LootContext context) {
-		BlockState blockState = context.get(LootContextParameters.BLOCK_STATE);
+		BlockState blockState = context.get(LootContextParameters.field_1224);
 		if (blockState != null) {
 			CompoundTag compoundTag = stack.getOrCreateTag();
 			CompoundTag compoundTag2;
@@ -81,7 +86,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 			}
 		}
 
-		protected CopyStateFunction.Builder getThisBuilder() {
+		protected CopyStateFunction.Builder method_21897() {
 			return this;
 		}
 
@@ -91,20 +96,16 @@ public class CopyStateFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<CopyStateFunction> {
-		public Factory() {
-			super(new Identifier("copy_state"), CopyStateFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, CopyStateFunction copyStateFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, copyStateFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<CopyStateFunction> {
+		public void method_21901(JsonObject jsonObject, CopyStateFunction copyStateFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, copyStateFunction, jsonSerializationContext);
 			jsonObject.addProperty("block", Registry.BLOCK.getId(copyStateFunction.block).toString());
 			JsonArray jsonArray = new JsonArray();
 			copyStateFunction.properties.forEach(property -> jsonArray.add(property.getName()));
 			jsonObject.add("properties", jsonArray);
 		}
 
-		public CopyStateFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public CopyStateFunction method_21900(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
 			Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
 			StateManager<Block, BlockState> stateManager = block.getStateManager();

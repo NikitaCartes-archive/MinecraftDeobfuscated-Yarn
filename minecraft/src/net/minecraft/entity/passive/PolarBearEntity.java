@@ -1,17 +1,22 @@
 package net.minecraft.entity.passive;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -20,39 +25,49 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.UniversalAngerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
-public class PolarBearEntity extends AnimalEntity {
+public class PolarBearEntity extends AnimalEntity implements Angerable {
 	private static final TrackedData<Boolean> WARNING = DataTracker.registerData(PolarBearEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private float lastWarningAnimationProgress;
 	private float warningAnimationProgress;
 	private int warningSoundCooldown;
+	private static final IntRange field_25369 = Durations.betweenSeconds(20, 39);
+	private int angerTime;
+	private UUID targetUuid;
 
 	public PolarBearEntity(EntityType<? extends PolarBearEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
 	@Override
-	public PassiveEntity createChild(PassiveEntity mate) {
-		return EntityType.POLAR_BEAR.create(this.world);
+	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.field_6042.create(serverWorld);
 	}
 
 	@Override
@@ -72,49 +87,86 @@ public class PolarBearEntity extends AnimalEntity {
 		this.goalSelector.add(7, new LookAroundGoal(this));
 		this.targetSelector.add(1, new PolarBearEntity.PolarBearRevengeGoal());
 		this.targetSelector.add(2, new PolarBearEntity.FollowPlayersGoal());
-		this.targetSelector.add(3, new FollowTargetGoal(this, FoxEntity.class, 10, true, true, null));
+		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+		this.targetSelector.add(4, new FollowTargetGoal(this, FoxEntity.class, 10, true, true, null));
+		this.targetSelector.add(5, new UniversalAngerGoal<>(this, false));
+	}
+
+	public static DefaultAttributeContainer.Builder createPolarBearAttributes() {
+		return MobEntity.createMobAttributes()
+			.add(EntityAttributes.field_23716, 30.0)
+			.add(EntityAttributes.field_23717, 20.0)
+			.add(EntityAttributes.field_23719, 0.25)
+			.add(EntityAttributes.field_23721, 6.0);
+	}
+
+	public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
+		return !Objects.equals(optional, Optional.of(Biomes.field_9435)) && !Objects.equals(optional, Optional.of(Biomes.field_9418))
+			? isValidNaturalSpawn(type, world, spawnReason, pos, random)
+			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.method_10074()).isOf(Blocks.field_10295);
 	}
 
 	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(30.0);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(20.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.angerFromTag((ServerWorld)this.world, tag);
 	}
 
-	public static boolean canSpawn(EntityType<PolarBearEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		Biome biome = world.getBiome(pos);
-		return biome != Biomes.FROZEN_OCEAN && biome != Biomes.DEEP_FROZEN_OCEAN
-			? isValidNaturalSpawn(type, world, spawnType, pos, random)
-			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.down()).getBlock() == Blocks.ICE;
+	@Override
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		this.angerToTag(tag);
+	}
+
+	@Override
+	public void chooseRandomAngerTime() {
+		this.setAngerTime(field_25369.choose(this.random));
+	}
+
+	@Override
+	public void setAngerTime(int ticks) {
+		this.angerTime = ticks;
+	}
+
+	@Override
+	public int getAngerTime() {
+		return this.angerTime;
+	}
+
+	@Override
+	public void setAngryAt(@Nullable UUID uuid) {
+		this.targetUuid = uuid;
+	}
+
+	@Override
+	public UUID getAngryAt() {
+		return this.targetUuid;
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isBaby() ? SoundEvents.ENTITY_POLAR_BEAR_AMBIENT_BABY : SoundEvents.ENTITY_POLAR_BEAR_AMBIENT;
+		return this.isBaby() ? SoundEvents.field_14605 : SoundEvents.field_15078;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_POLAR_BEAR_HURT;
+		return SoundEvents.field_15107;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_POLAR_BEAR_DEATH;
+		return SoundEvents.field_15209;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.ENTITY_POLAR_BEAR_STEP, 0.15F, 1.0F);
+		this.playSound(SoundEvents.field_15036, 0.15F, 1.0F);
 	}
 
 	protected void playWarningSound() {
 		if (this.warningSoundCooldown <= 0) {
-			this.playSound(SoundEvents.ENTITY_POLAR_BEAR_WARNING, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.field_14937, 1.0F, this.getSoundPitch());
 			this.warningSoundCooldown = 40;
 		}
 	}
@@ -144,6 +196,10 @@ public class PolarBearEntity extends AnimalEntity {
 		if (this.warningSoundCooldown > 0) {
 			this.warningSoundCooldown--;
 		}
+
+		if (!this.world.isClient) {
+			this.tickAngerLogic((ServerWorld)this.world, true);
+		}
 	}
 
 	@Override
@@ -159,7 +215,7 @@ public class PolarBearEntity extends AnimalEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
+		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.field_23721)));
 		if (bl) {
 			this.dealDamage(this, target);
 		}
@@ -186,15 +242,14 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
+	public EntityData initialize(
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyChance(1.0F);
+			entityData = new PassiveEntity.PassiveData(1.0F);
 		}
 
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	class AttackGoal extends MeleeAttackGoal {
@@ -205,22 +260,22 @@ public class PolarBearEntity extends AnimalEntity {
 		@Override
 		protected void attack(LivingEntity target, double squaredDistance) {
 			double d = this.getSquaredMaxAttackDistance(target);
-			if (squaredDistance <= d && this.ticksUntilAttack <= 0) {
-				this.ticksUntilAttack = 20;
+			if (squaredDistance <= d && this.method_28347()) {
+				this.method_28346();
 				this.mob.tryAttack(target);
 				PolarBearEntity.this.setWarning(false);
 			} else if (squaredDistance <= d * 2.0) {
-				if (this.ticksUntilAttack <= 0) {
+				if (this.method_28347()) {
 					PolarBearEntity.this.setWarning(false);
-					this.ticksUntilAttack = 20;
+					this.method_28346();
 				}
 
-				if (this.ticksUntilAttack <= 10) {
+				if (this.method_28348() <= 10) {
 					PolarBearEntity.this.setWarning(true);
 					PolarBearEntity.this.playWarningSound();
 				}
 			} else {
-				this.ticksUntilAttack = 20;
+				this.method_28346();
 				PolarBearEntity.this.setWarning(false);
 			}
 		}

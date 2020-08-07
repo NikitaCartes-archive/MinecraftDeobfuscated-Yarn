@@ -9,7 +9,7 @@ import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonSerializer;
 
 public class SurvivesExplosionLootCondition implements LootCondition {
 	private static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
@@ -18,12 +18,17 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.EXPLOSION_RADIUS);
+	public LootConditionType getType() {
+		return LootConditionTypes.field_25245;
 	}
 
-	public boolean test(LootContext lootContext) {
-		Float float_ = lootContext.get(LootContextParameters.EXPLOSION_RADIUS);
+	@Override
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1225);
+	}
+
+	public boolean method_869(LootContext lootContext) {
+		Float float_ = lootContext.get(LootContextParameters.field_1225);
 		if (float_ != null) {
 			Random random = lootContext.getRandom();
 			float f = 1.0F / float_;
@@ -37,15 +42,13 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 		return () -> INSTANCE;
 	}
 
-	public static class Factory extends LootCondition.Factory<SurvivesExplosionLootCondition> {
-		protected Factory() {
-			super(new Identifier("survives_explosion"), SurvivesExplosionLootCondition.class);
+	public static class Serializer implements JsonSerializer<SurvivesExplosionLootCondition> {
+		public void method_874(
+			JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext
+		) {
 		}
 
-		public void toJson(JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext) {
-		}
-
-		public SurvivesExplosionLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public SurvivesExplosionLootCondition method_873(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return SurvivesExplosionLootCondition.INSTANCE;
 		}
 	}

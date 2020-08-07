@@ -27,16 +27,16 @@ import net.minecraft.util.Util;
 public class Format4ResourcePack implements ResourcePack {
 	private static final Map<String, Pair<ChestType, Identifier>> NEW_TO_OLD_CHEST_TEXTURES = Util.make(
 		Maps.<String, Pair<ChestType, Identifier>>newHashMap(), hashMap -> {
-			hashMap.put("textures/entity/chest/normal_left.png", new Pair<>(ChestType.LEFT, new Identifier("textures/entity/chest/normal_double.png")));
-			hashMap.put("textures/entity/chest/normal_right.png", new Pair<>(ChestType.RIGHT, new Identifier("textures/entity/chest/normal_double.png")));
-			hashMap.put("textures/entity/chest/normal.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/normal.png")));
-			hashMap.put("textures/entity/chest/trapped_left.png", new Pair<>(ChestType.LEFT, new Identifier("textures/entity/chest/trapped_double.png")));
-			hashMap.put("textures/entity/chest/trapped_right.png", new Pair<>(ChestType.RIGHT, new Identifier("textures/entity/chest/trapped_double.png")));
-			hashMap.put("textures/entity/chest/trapped.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/trapped.png")));
-			hashMap.put("textures/entity/chest/christmas_left.png", new Pair<>(ChestType.LEFT, new Identifier("textures/entity/chest/christmas_double.png")));
-			hashMap.put("textures/entity/chest/christmas_right.png", new Pair<>(ChestType.RIGHT, new Identifier("textures/entity/chest/christmas_double.png")));
-			hashMap.put("textures/entity/chest/christmas.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/christmas.png")));
-			hashMap.put("textures/entity/chest/ender.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/ender.png")));
+			hashMap.put("textures/entity/chest/normal_left.png", new Pair<>(ChestType.field_12574, new Identifier("textures/entity/chest/normal_double.png")));
+			hashMap.put("textures/entity/chest/normal_right.png", new Pair<>(ChestType.field_12571, new Identifier("textures/entity/chest/normal_double.png")));
+			hashMap.put("textures/entity/chest/normal.png", new Pair<>(ChestType.field_12569, new Identifier("textures/entity/chest/normal.png")));
+			hashMap.put("textures/entity/chest/trapped_left.png", new Pair<>(ChestType.field_12574, new Identifier("textures/entity/chest/trapped_double.png")));
+			hashMap.put("textures/entity/chest/trapped_right.png", new Pair<>(ChestType.field_12571, new Identifier("textures/entity/chest/trapped_double.png")));
+			hashMap.put("textures/entity/chest/trapped.png", new Pair<>(ChestType.field_12569, new Identifier("textures/entity/chest/trapped.png")));
+			hashMap.put("textures/entity/chest/christmas_left.png", new Pair<>(ChestType.field_12574, new Identifier("textures/entity/chest/christmas_double.png")));
+			hashMap.put("textures/entity/chest/christmas_right.png", new Pair<>(ChestType.field_12571, new Identifier("textures/entity/chest/christmas_double.png")));
+			hashMap.put("textures/entity/chest/christmas.png", new Pair<>(ChestType.field_12569, new Identifier("textures/entity/chest/christmas.png")));
+			hashMap.put("textures/entity/chest/ender.png", new Pair<>(ChestType.field_12569, new Identifier("textures/entity/chest/ender.png")));
 		}
 	);
 	private static final List<String> BANNER_PATTERN_TYPES = Lists.<String>newArrayList(
@@ -151,7 +151,7 @@ public class Format4ResourcePack implements ResourcePack {
 
 							for (int j = 88 * i; j < 200 * i; j++) {
 								for (int k = 56 * i; k < 112 * i; k++) {
-									nativeImage.setPixelRgba(k, j, 0);
+									nativeImage.setPixelColor(k, j, 0);
 								}
 							}
 
@@ -169,15 +169,15 @@ public class Format4ResourcePack implements ResourcePack {
 					if (pair != null) {
 						ChestType chestType = pair.getFirst();
 						InputStream inputStream2 = this.parent.open(type, pair.getSecond());
-						if (chestType == ChestType.SINGLE) {
+						if (chestType == ChestType.field_12569) {
 							return cropSingleChestTexture(inputStream2);
 						}
 
-						if (chestType == ChestType.LEFT) {
+						if (chestType == ChestType.field_12574) {
 							return cropLeftChestTexture(inputStream2);
 						}
 
-						if (chestType == ChestType.RIGHT) {
+						if (chestType == ChestType.field_12571) {
 							return cropRightChestTexture(inputStream2);
 						}
 					}
@@ -206,9 +206,9 @@ public class Format4ResourcePack implements ResourcePack {
 
 				for (int q = k * p; q < m * p; q++) {
 					for (int r = j * p; r < l * p; r++) {
-						int s = NativeImage.method_24033(nativeImage2.getPixelRgba(r, q));
-						int t = nativeImage.getPixelRgba(r, q);
-						nativeImage3.setPixelRgba(r, q, NativeImage.method_24031(s, NativeImage.method_24035(t), NativeImage.method_24034(t), NativeImage.method_24033(t)));
+						int s = NativeImage.getRed(nativeImage2.getPixelColor(r, q));
+						int t = nativeImage.getPixelColor(r, q);
+						nativeImage3.setPixelColor(r, q, NativeImage.getAbgrColor(s, NativeImage.getBlue(t), NativeImage.getGreen(t), NativeImage.getRed(t)));
 					}
 				}
 
@@ -348,7 +348,8 @@ public class Format4ResourcePack implements ResourcePack {
 		return this.parent.getName();
 	}
 
-	public void close() throws IOException {
+	@Override
+	public void close() {
 		this.parent.close();
 	}
 
@@ -362,7 +363,7 @@ public class Format4ResourcePack implements ResourcePack {
 
 		for (int p = 0; p < n; p++) {
 			for (int q = 0; q < m; q++) {
-				target.setPixelRgba(k + q, l + p, source.getPixelRgba(i + (bl ? m - 1 - q : q), j + (bl2 ? n - 1 - p : p)));
+				target.setPixelColor(k + q, l + p, source.getPixelColor(i + (bl ? m - 1 - q : q), j + (bl2 ? n - 1 - p : p)));
 			}
 		}
 	}

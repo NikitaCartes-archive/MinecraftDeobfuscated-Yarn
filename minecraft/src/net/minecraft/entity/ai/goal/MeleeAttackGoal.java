@@ -3,30 +3,29 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 
 public class MeleeAttackGoal extends Goal {
-	protected final MobEntityWithAi mob;
-	protected int ticksUntilAttack;
+	protected final PathAwareEntity mob;
 	private final double speed;
 	private final boolean pauseWhenMobIdle;
 	private Path path;
-	private int updateCountdownTicks;
 	private double targetX;
 	private double targetY;
 	private double targetZ;
-	protected final int attackIntervalTicks = 20;
+	private int updateCountdownTicks;
+	private int field_24667;
+	private final int attackIntervalTicks = 20;
 	private long lastUpdateTime;
 
-	public MeleeAttackGoal(MobEntityWithAi mob, double speed, boolean pauseWhenMobIdle) {
+	public MeleeAttackGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
 		this.mob = mob;
 		this.speed = speed;
 		this.pauseWhenMobIdle = pauseWhenMobIdle;
-		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
@@ -60,7 +59,7 @@ public class MeleeAttackGoal extends Goal {
 		} else if (!this.pauseWhenMobIdle) {
 			return !this.mob.getNavigation().isIdle();
 		} else {
-			return !this.mob.isInWalkTargetRange(new BlockPos(livingEntity))
+			return !this.mob.isInWalkTargetRange(livingEntity.getBlockPos())
 				? false
 				: !(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative();
 		}
@@ -71,6 +70,7 @@ public class MeleeAttackGoal extends Goal {
 		this.mob.getNavigation().startMovingAlong(this.path, this.speed);
 		this.mob.setAttacking(true);
 		this.updateCountdownTicks = 0;
+		this.field_24667 = 0;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class MeleeAttackGoal extends Goal {
 		LivingEntity livingEntity = this.mob.getTarget();
 		this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 		double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
-		this.updateCountdownTicks--;
+		this.updateCountdownTicks = Math.max(this.updateCountdownTicks - 1, 0);
 		if ((this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity))
 			&& this.updateCountdownTicks <= 0
 			&& (
@@ -112,17 +112,33 @@ public class MeleeAttackGoal extends Goal {
 			}
 		}
 
-		this.ticksUntilAttack = Math.max(this.ticksUntilAttack - 1, 0);
+		this.field_24667 = Math.max(this.field_24667 - 1, 0);
 		this.attack(livingEntity, d);
 	}
 
 	protected void attack(LivingEntity target, double squaredDistance) {
 		double d = this.getSquaredMaxAttackDistance(target);
-		if (squaredDistance <= d && this.ticksUntilAttack <= 0) {
-			this.ticksUntilAttack = 20;
-			this.mob.swingHand(Hand.MAIN_HAND);
+		if (squaredDistance <= d && this.field_24667 <= 0) {
+			this.method_28346();
+			this.mob.swingHand(Hand.field_5808);
 			this.mob.tryAttack(target);
 		}
+	}
+
+	protected void method_28346() {
+		this.field_24667 = 20;
+	}
+
+	protected boolean method_28347() {
+		return this.field_24667 <= 0;
+	}
+
+	protected int method_28348() {
+		return this.field_24667;
+	}
+
+	protected int method_28349() {
+		return 20;
 	}
 
 	protected double getSquaredMaxAttackDistance(LivingEntity entity) {

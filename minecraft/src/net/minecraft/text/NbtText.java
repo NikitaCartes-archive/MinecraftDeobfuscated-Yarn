@@ -10,9 +10,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
-import net.minecraft.command.arguments.BlockPosArgumentType;
-import net.minecraft.command.arguments.NbtPathArgumentType;
-import net.minecraft.command.arguments.PosArgument;
+import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.NbtPathArgumentType;
+import net.minecraft.command.argument.PosArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -34,7 +34,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 	@Nullable
 	private static NbtPathArgumentType.NbtPath parsePath(String rawPath) {
 		try {
-			return new NbtPathArgumentType().parse(new StringReader(rawPath));
+			return new NbtPathArgumentType().method_9362(new StringReader(rawPath));
 		} catch (CommandSyntaxException var2) {
 			return null;
 		}
@@ -52,11 +52,6 @@ public abstract class NbtText extends BaseText implements ParsableText {
 
 	protected abstract Stream<CompoundTag> toNbt(ServerCommandSource source) throws CommandSyntaxException;
 
-	@Override
-	public String asString() {
-		return "";
-	}
-
 	public String getPath() {
 		return this.rawPath;
 	}
@@ -66,7 +61,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public Text parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+	public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
 		if (source != null && this.path != null) {
 			Stream<String> stream = this.toNbt(source).flatMap(nbt -> {
 				try {
@@ -75,10 +70,10 @@ public abstract class NbtText extends BaseText implements ParsableText {
 					return Stream.empty();
 				}
 			}).map(Tag::asString);
-			return (Text)(this.interpret ? (Text)stream.flatMap(text -> {
+			return (MutableText)(this.interpret ? (MutableText)stream.flatMap(text -> {
 				try {
-					Text text2 = Text.Serializer.fromJson(text);
-					return Stream.of(Texts.parse(source, text2, sender, depth));
+					MutableText mutableText = Text.Serializer.fromJson(text);
+					return Stream.of(Texts.parse(source, mutableText, sender, depth));
 				} catch (Exception var5) {
 					LOGGER.warn("Failed to parse component: " + text, (Throwable)var5);
 					return Stream.of();
@@ -103,7 +98,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		@Nullable
 		private PosArgument parsePos(String rawPos) {
 			try {
-				return BlockPosArgumentType.blockPos().parse(new StringReader(rawPos));
+				return BlockPosArgumentType.blockPos().method_9699(new StringReader(rawPos));
 			} catch (CommandSyntaxException var3) {
 				return null;
 			}
@@ -120,8 +115,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 			return this.rawPos;
 		}
 
-		@Override
-		public Text copy() {
+		public NbtText.BlockNbtText method_10850() {
 			return new NbtText.BlockNbtText(this.rawPath, this.path, this.interpret, this.rawPos, this.pos);
 		}
 
@@ -142,14 +136,14 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		}
 
 		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
+		public boolean equals(Object object) {
+			if (this == object) {
 				return true;
-			} else if (!(o instanceof NbtText.BlockNbtText)) {
+			} else if (!(object instanceof NbtText.BlockNbtText)) {
 				return false;
 			} else {
-				NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)o;
-				return Objects.equals(this.rawPos, blockNbtText.rawPos) && Objects.equals(this.rawPath, blockNbtText.rawPath) && super.equals(o);
+				NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)object;
+				return Objects.equals(this.rawPos, blockNbtText.rawPos) && Objects.equals(this.rawPath, blockNbtText.rawPath) && super.equals(object);
 			}
 		}
 
@@ -190,8 +184,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 			return this.rawSelector;
 		}
 
-		@Override
-		public Text copy() {
+		public NbtText.EntityNbtText method_27697() {
 			return new NbtText.EntityNbtText(this.rawPath, this.path, this.interpret, this.rawSelector, this.selector);
 		}
 
@@ -206,14 +199,14 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		}
 
 		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
+		public boolean equals(Object object) {
+			if (this == object) {
 				return true;
-			} else if (!(o instanceof NbtText.EntityNbtText)) {
+			} else if (!(object instanceof NbtText.EntityNbtText)) {
 				return false;
 			} else {
-				NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)o;
-				return Objects.equals(this.rawSelector, entityNbtText.rawSelector) && Objects.equals(this.rawPath, entityNbtText.rawPath) && super.equals(o);
+				NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)object;
+				return Objects.equals(this.rawSelector, entityNbtText.rawSelector) && Objects.equals(this.rawPath, entityNbtText.rawPath) && super.equals(object);
 			}
 		}
 
@@ -241,17 +234,16 @@ public abstract class NbtText extends BaseText implements ParsableText {
 			this.id = id;
 		}
 
-		public StorageNbtText(String rawPath, @Nullable NbtPathArgumentType.NbtPath nbtPath, boolean interpret, Identifier id) {
-			super(rawPath, nbtPath, interpret);
+		public StorageNbtText(String rawPath, @Nullable NbtPathArgumentType.NbtPath path, boolean interpret, Identifier id) {
+			super(rawPath, path, interpret);
 			this.id = id;
 		}
 
-		public Identifier method_23728() {
+		public Identifier getId() {
 			return this.id;
 		}
 
-		@Override
-		public Text copy() {
+		public NbtText.StorageNbtText method_27698() {
 			return new NbtText.StorageNbtText(this.rawPath, this.path, this.interpret, this.id);
 		}
 

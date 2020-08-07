@@ -1,0 +1,332 @@
+package net.minecraft.entity.mob;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
+import java.util.List;
+import java.util.Optional;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.Activity;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
+import net.minecraft.entity.ai.brain.task.ConditionalTask;
+import net.minecraft.entity.ai.brain.task.FollowMobTask;
+import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
+import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
+import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookTargetUtil;
+import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
+import net.minecraft.entity.ai.brain.task.RandomTask;
+import net.minecraft.entity.ai.brain.task.RangedApproachTask;
+import net.minecraft.entity.ai.brain.task.StrollTask;
+import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
+import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
+import net.minecraft.entity.ai.brain.task.WaitTask;
+import net.minecraft.entity.ai.brain.task.WanderAroundTask;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.network.DebugInfoSender;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.IntRange;
+import net.minecraft.world.World;
+
+public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
+	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private int movementCooldownTicks;
+	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super ZoglinEntity>>> USED_SENSORS = ImmutableList.of(
+		SensorType.field_18466, SensorType.field_18467
+	);
+	protected static final ImmutableList<? extends MemoryModuleType<?>> USED_MEMORY_MODULES = ImmutableList.of(
+		MemoryModuleType.field_18441,
+		MemoryModuleType.field_18442,
+		MemoryModuleType.field_18444,
+		MemoryModuleType.field_22354,
+		MemoryModuleType.field_18446,
+		MemoryModuleType.field_18445,
+		MemoryModuleType.field_19293,
+		MemoryModuleType.field_18449,
+		MemoryModuleType.field_22355,
+		MemoryModuleType.field_22475
+	);
+
+	public ZoglinEntity(EntityType<? extends ZoglinEntity> entityType, World world) {
+		super(entityType, world);
+		this.experiencePoints = 5;
+	}
+
+	@Override
+	protected Brain.Profile<ZoglinEntity> createBrainProfile() {
+		return Brain.createProfile(USED_MEMORY_MODULES, USED_SENSORS);
+	}
+
+	@Override
+	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+		Brain<ZoglinEntity> brain = this.createBrainProfile().deserialize(dynamic);
+		method_26928(brain);
+		method_26929(brain);
+		method_26930(brain);
+		brain.setCoreActivities(ImmutableSet.of(Activity.field_18594));
+		brain.setDefaultActivity(Activity.field_18595);
+		brain.resetPossibleActivities();
+		return brain;
+	}
+
+	private static void method_26928(Brain<ZoglinEntity> brain) {
+		brain.setTaskList(Activity.field_18594, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
+	}
+
+	private static void method_26929(Brain<ZoglinEntity> brain) {
+		brain.setTaskList(
+			Activity.field_18595,
+			10,
+			ImmutableList.of(
+				new UpdateAttackTargetTask<>(ZoglinEntity::method_26934),
+				new TimeLimitedTask(new FollowMobTask(8.0F), IntRange.between(30, 60)),
+				new RandomTask(ImmutableList.of(Pair.of(new StrollTask(0.4F), 2), Pair.of(new GoTowardsLookTarget(0.4F, 3), 2), Pair.of(new WaitTask(30, 60), 1)))
+			)
+		);
+	}
+
+	private static void method_26930(Brain<ZoglinEntity> brain) {
+		brain.setTaskList(
+			Activity.field_22396,
+			10,
+			ImmutableList.of(
+				new RangedApproachTask(1.0F),
+				new ConditionalTask<>(ZoglinEntity::isAdult, new MeleeAttackTask(40)),
+				new ConditionalTask<>(ZoglinEntity::isBaby, new MeleeAttackTask(15)),
+				new ForgetAttackTargetTask()
+			),
+			MemoryModuleType.field_22355
+		);
+	}
+
+	private Optional<? extends LivingEntity> method_26934() {
+		return ((List)this.getBrain().getOptionalMemory(MemoryModuleType.field_18442).orElse(ImmutableList.of()))
+			.stream()
+			.filter(ZoglinEntity::method_26936)
+			.findFirst();
+	}
+
+	private static boolean method_26936(LivingEntity livingEntity) {
+		EntityType<?> entityType = livingEntity.getType();
+		return entityType != EntityType.field_23696
+			&& entityType != EntityType.field_6046
+			&& EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity);
+	}
+
+	@Override
+	protected void initDataTracker() {
+		super.initDataTracker();
+		this.dataTracker.startTracking(BABY, false);
+	}
+
+	@Override
+	public void onTrackedDataSet(TrackedData<?> data) {
+		super.onTrackedDataSet(data);
+		if (BABY.equals(data)) {
+			this.calculateDimensions();
+		}
+	}
+
+	public static DefaultAttributeContainer.Builder createZoglinAttributes() {
+		return HostileEntity.createHostileAttributes()
+			.add(EntityAttributes.field_23716, 40.0)
+			.add(EntityAttributes.field_23719, 0.3F)
+			.add(EntityAttributes.field_23718, 0.6F)
+			.add(EntityAttributes.field_23722, 1.0)
+			.add(EntityAttributes.field_23721, 6.0);
+	}
+
+	public boolean isAdult() {
+		return !this.isBaby();
+	}
+
+	@Override
+	public boolean tryAttack(Entity target) {
+		if (!(target instanceof LivingEntity)) {
+			return false;
+		} else {
+			this.movementCooldownTicks = 10;
+			this.world.sendEntityStatus(this, (byte)4);
+			this.playSound(SoundEvents.field_23674, 1.0F, this.getSoundPitch());
+			return Hoglin.tryAttack(this, (LivingEntity)target);
+		}
+	}
+
+	@Override
+	public boolean canBeLeashedBy(PlayerEntity player) {
+		return !this.isLeashed();
+	}
+
+	@Override
+	protected void knockback(LivingEntity target) {
+		if (!this.isBaby()) {
+			Hoglin.knockback(this, target);
+		}
+	}
+
+	@Override
+	public double getMountedHeightOffset() {
+		return (double)this.getHeight() - (this.isBaby() ? 0.2 : 0.15);
+	}
+
+	@Override
+	public boolean damage(DamageSource source, float amount) {
+		boolean bl = super.damage(source, amount);
+		if (this.world.isClient) {
+			return false;
+		} else if (bl && source.getAttacker() instanceof LivingEntity) {
+			LivingEntity livingEntity = (LivingEntity)source.getAttacker();
+			if (EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity) && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
+				this.method_26938(livingEntity);
+			}
+
+			return bl;
+		} else {
+			return bl;
+		}
+	}
+
+	private void method_26938(LivingEntity livingEntity) {
+		this.brain.forget(MemoryModuleType.field_19293);
+		this.brain.remember(MemoryModuleType.field_22355, livingEntity, 200L);
+	}
+
+	@Override
+	public Brain<ZoglinEntity> getBrain() {
+		return (Brain<ZoglinEntity>)super.getBrain();
+	}
+
+	protected void method_26931() {
+		Activity activity = (Activity)this.brain.getFirstPossibleNonCoreActivity().orElse(null);
+		this.brain.resetPossibleActivities(ImmutableList.of(Activity.field_22396, Activity.field_18595));
+		Activity activity2 = (Activity)this.brain.getFirstPossibleNonCoreActivity().orElse(null);
+		if (activity2 == Activity.field_22396 && activity != Activity.field_22396) {
+			this.playAngrySound();
+		}
+
+		this.setAttacking(this.brain.hasMemoryModule(MemoryModuleType.field_22355));
+	}
+
+	@Override
+	protected void mobTick() {
+		this.world.getProfiler().push("zoglinBrain");
+		this.getBrain().tick((ServerWorld)this.world, this);
+		this.world.getProfiler().pop();
+		this.method_26931();
+	}
+
+	@Override
+	public void setBaby(boolean baby) {
+		this.getDataTracker().set(BABY, baby);
+		if (!this.world.isClient && baby) {
+			this.getAttributeInstance(EntityAttributes.field_23721).setBaseValue(0.5);
+		}
+	}
+
+	@Override
+	public boolean isBaby() {
+		return this.getDataTracker().get(BABY);
+	}
+
+	@Override
+	public void tickMovement() {
+		if (this.movementCooldownTicks > 0) {
+			this.movementCooldownTicks--;
+		}
+
+		super.tickMovement();
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public void handleStatus(byte status) {
+		if (status == 4) {
+			this.movementCooldownTicks = 10;
+			this.playSound(SoundEvents.field_23674, 1.0F, this.getSoundPitch());
+		} else {
+			super.handleStatus(status);
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public int getMovementCooldownTicks() {
+		return this.movementCooldownTicks;
+	}
+
+	@Override
+	protected SoundEvent getAmbientSound() {
+		if (this.world.isClient) {
+			return null;
+		} else {
+			return this.brain.hasMemoryModule(MemoryModuleType.field_22355) ? SoundEvents.field_23673 : SoundEvents.field_23672;
+		}
+	}
+
+	@Override
+	protected SoundEvent getHurtSound(DamageSource source) {
+		return SoundEvents.field_23676;
+	}
+
+	@Override
+	protected SoundEvent getDeathSound() {
+		return SoundEvents.field_23675;
+	}
+
+	@Override
+	protected void playStepSound(BlockPos pos, BlockState state) {
+		this.playSound(SoundEvents.field_23677, 0.15F, 1.0F);
+	}
+
+	protected void playAngrySound() {
+		this.playSound(SoundEvents.field_23673, 1.0F, this.getSoundPitch());
+	}
+
+	@Override
+	protected void sendAiDebugData() {
+		super.sendAiDebugData();
+		DebugInfoSender.sendBrainDebugData(this);
+	}
+
+	@Override
+	public EntityGroup getGroup() {
+		return EntityGroup.UNDEAD;
+	}
+
+	@Override
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		if (this.isBaby()) {
+			tag.putBoolean("IsBaby", true);
+		}
+	}
+
+	@Override
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.getBoolean("IsBaby")) {
+			this.setBaby(true);
+		}
+	}
+}

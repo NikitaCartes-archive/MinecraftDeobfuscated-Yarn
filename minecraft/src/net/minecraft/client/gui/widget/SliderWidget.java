@@ -4,43 +4,39 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.SoundManager;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class SliderWidget extends AbstractButtonWidget {
-	protected final GameOptions options;
 	protected double value;
 
-	protected SliderWidget(int x, int y, int width, int height, double progress) {
-		this(MinecraftClient.getInstance().options, x, y, width, height, progress);
-	}
-
-	protected SliderWidget(GameOptions options, int x, int y, int width, int height, double value) {
-		super(x, y, width, height, "");
-		this.options = options;
+	public SliderWidget(int x, int y, int width, int height, Text text, double value) {
+		super(x, y, width, height, text);
 		this.value = value;
 	}
 
 	@Override
-	protected int getYImage(boolean isHovered) {
+	protected int getYImage(boolean hovered) {
 		return 0;
 	}
 
 	@Override
-	protected String getNarrationMessage() {
-		return I18n.translate("gui.narrate.slider", this.getMessage());
+	protected MutableText getNarrationMessage() {
+		return new TranslatableText("gui.narrate.slider", this.getMessage());
 	}
 
 	@Override
-	protected void renderBg(MinecraftClient client, int mouseX, int mouseY) {
+	protected void renderBg(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
 		client.getTextureManager().bindTexture(WIDGETS_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int i = (this.isHovered() ? 2 : 1) * 20;
-		this.blit(this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + i, 4, 20);
-		this.blit(this.x + (int)(this.value * (double)(this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
+		this.drawTexture(matrices, this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + i, 4, 20);
+		this.drawTexture(matrices, this.x + (int)(this.value * (double)(this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
 	}
 
 	@Override
@@ -59,8 +55,8 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 		return false;
 	}
 
-	private void setValueFromMouse(double d) {
-		this.setValue((d - (double)(this.x + 4)) / (double)(this.width - 8));
+	private void setValueFromMouse(double mouseX) {
+		this.setValue((mouseX - (double)(this.x + 4)) / (double)(this.width - 8));
 	}
 
 	private void setValue(double mouseX) {

@@ -16,7 +16,6 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +30,11 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 		super(conditions);
 		this.name = name;
 		this.entity = entity;
+	}
+
+	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25222;
 	}
 
 	@Override
@@ -66,13 +70,9 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetNameLootFunction> {
-		public Factory() {
-			super(new Identifier("set_name"), SetNameLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setNameLootFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetNameLootFunction> {
+		public void method_630(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, setNameLootFunction, jsonSerializationContext);
 			if (setNameLootFunction.name != null) {
 				jsonObject.add("name", Text.Serializer.toJsonTree(setNameLootFunction.name));
 			}
@@ -82,7 +82,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public SetNameLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetNameLootFunction method_629(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Text text = Text.Serializer.fromJson(jsonObject.get("name"));
 			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
 			return new SetNameLootFunction(lootConditions, text, entityTarget);

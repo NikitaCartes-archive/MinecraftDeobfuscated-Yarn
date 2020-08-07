@@ -1,30 +1,28 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
-	public IceSpikeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public IceSpikeFeature(Codec<DefaultFeatureConfig> codec) {
+		super(codec);
 	}
 
-	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+	public boolean method_13408(
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
-			blockPos = blockPos.down();
+		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
+			blockPos = blockPos.method_10074();
 		}
 
-		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
+		if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.field_10491)) {
 			return false;
 		} else {
 			blockPos = blockPos.up(random.nextInt(4));
@@ -44,17 +42,17 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 					for (int n = -l; n <= l; n++) {
 						float h = (float)MathHelper.abs(n) - 0.25F;
 						if ((m == 0 && n == 0 || !(g * g + h * h > f * f)) && (m != -l && m != l && n != -l && n != l || !(random.nextFloat() > 0.75F))) {
-							BlockState blockState = iWorld.getBlockState(blockPos.add(m, k, n));
+							BlockState blockState = structureWorldAccess.getBlockState(blockPos.add(m, k, n));
 							Block block = blockState.getBlock();
-							if (blockState.isAir() || isDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
-								this.setBlockState(iWorld, blockPos.add(m, k, n), Blocks.PACKED_ICE.getDefaultState());
+							if (blockState.isAir() || isSoil(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
+								this.setBlockState(structureWorldAccess, blockPos.add(m, k, n), Blocks.field_10225.getDefaultState());
 							}
 
 							if (k != 0 && l > 1) {
-								blockState = iWorld.getBlockState(blockPos.add(m, -k, n));
+								blockState = structureWorldAccess.getBlockState(blockPos.add(m, -k, n));
 								block = blockState.getBlock();
-								if (blockState.isAir() || isDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
-									this.setBlockState(iWorld, blockPos.add(m, -k, n), Blocks.PACKED_ICE.getDefaultState());
+								if (blockState.isAir() || isSoil(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
+									this.setBlockState(structureWorldAccess, blockPos.add(m, -k, n), Blocks.field_10225.getDefaultState());
 								}
 							}
 						}
@@ -78,16 +76,16 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 					}
 
 					while (blockPos2.getY() > 50) {
-						BlockState blockState2 = iWorld.getBlockState(blockPos2);
+						BlockState blockState2 = structureWorldAccess.getBlockState(blockPos2);
 						Block block2 = blockState2.getBlock();
-						if (!blockState2.isAir() && !isDirt(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) {
+						if (!blockState2.isAir() && !isSoil(block2) && block2 != Blocks.field_10491 && block2 != Blocks.field_10295 && block2 != Blocks.field_10225) {
 							break;
 						}
 
-						this.setBlockState(iWorld, blockPos2, Blocks.PACKED_ICE.getDefaultState());
-						blockPos2 = blockPos2.down();
+						this.setBlockState(structureWorldAccess, blockPos2, Blocks.field_10225.getDefaultState());
+						blockPos2 = blockPos2.method_10074();
 						if (--p <= 0) {
-							blockPos2 = blockPos2.down(random.nextInt(5) + 1);
+							blockPos2 = blockPos2.method_10087(random.nextInt(5) + 1);
 							p = random.nextInt(5);
 						}
 					}

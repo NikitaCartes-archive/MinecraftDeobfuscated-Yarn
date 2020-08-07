@@ -16,7 +16,7 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 		super(entityRenderDispatcher);
 	}
 
-	protected void renderBlock(
+	protected void method_4137(
 		TntMinecartEntity tntMinecartEntity, float f, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		int j = tntMinecartEntity.getFuseTicks();
@@ -29,17 +29,23 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 			matrixStack.scale(h, h, h);
 		}
 
-		method_23190(blockState, matrixStack, vertexConsumerProvider, i, j > -1 && j / 5 % 2 == 0);
+		renderFlashingBlock(blockState, matrixStack, vertexConsumerProvider, i, j > -1 && j / 5 % 2 == 0);
 	}
 
-	public static void method_23190(BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, boolean bl) {
-		int j;
-		if (bl) {
-			j = OverlayTexture.packUv(OverlayTexture.getU(1.0F), 10);
+	/**
+	 * Renders a given block state into the given buffers either normally or with a bright white overlay.
+	 * Used for rendering primed TNT either standalone or as part of a TNT minecart.
+	 * 
+	 * @param drawFlash whether a white semi-transparent overlay is added to the block to indicate the flash
+	 */
+	public static void renderFlashingBlock(BlockState blockState, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, boolean drawFlash) {
+		int i;
+		if (drawFlash) {
+			i = OverlayTexture.packUv(OverlayTexture.getU(1.0F), 10);
 		} else {
-			j = OverlayTexture.DEFAULT_UV;
+			i = OverlayTexture.DEFAULT_UV;
 		}
 
-		MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, j);
+		MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vertexConsumers, light, i);
 	}
 }

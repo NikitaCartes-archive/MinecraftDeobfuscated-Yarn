@@ -38,25 +38,25 @@ public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends 
 		}
 	}
 
-	public void animateModel(T mobEntity, float f, float g, float h) {
-		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
-		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
-		ItemStack itemStack = mobEntity.getStackInHand(Hand.MAIN_HAND);
-		if (itemStack.getItem() == Items.BOW && mobEntity.isAttacking()) {
-			if (mobEntity.getMainArm() == Arm.RIGHT) {
-				this.rightArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
+	public void method_19689(T mobEntity, float f, float g, float h) {
+		this.rightArmPose = BipedEntityModel.ArmPose.field_3409;
+		this.leftArmPose = BipedEntityModel.ArmPose.field_3409;
+		ItemStack itemStack = mobEntity.getStackInHand(Hand.field_5808);
+		if (itemStack.getItem() == Items.field_8102 && mobEntity.isAttacking()) {
+			if (mobEntity.getMainArm() == Arm.field_6183) {
+				this.rightArmPose = BipedEntityModel.ArmPose.field_3403;
 			} else {
-				this.leftArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
+				this.leftArmPose = BipedEntityModel.ArmPose.field_3403;
 			}
 		}
 
-		super.animateModel(mobEntity, f, g, h);
+		super.method_17086(mobEntity, f, g, h);
 	}
 
-	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(mobEntity, f, g, h, i, j);
+	public void method_19690(T mobEntity, float f, float g, float h, float i, float j) {
+		super.method_17087(mobEntity, f, g, h, i, j);
 		ItemStack itemStack = mobEntity.getMainHandStack();
-		if (mobEntity.isAttacking() && (itemStack.isEmpty() || itemStack.getItem() != Items.BOW)) {
+		if (mobEntity.isAttacking() && (itemStack.isEmpty() || itemStack.getItem() != Items.field_8102)) {
 			float k = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
 			float l = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 			this.rightArm.roll = 0.0F;
@@ -67,19 +67,16 @@ public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends 
 			this.leftArm.pitch = (float) (-Math.PI / 2);
 			this.rightArm.pitch -= k * 1.2F - l * 0.4F;
 			this.leftArm.pitch -= k * 1.2F - l * 0.4F;
-			this.rightArm.roll = this.rightArm.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
-			this.leftArm.roll = this.leftArm.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
-			this.rightArm.pitch = this.rightArm.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
-			this.leftArm.pitch = this.leftArm.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
+			CrossbowPosing.method_29350(this.rightArm, this.leftArm, h);
 		}
 	}
 
 	@Override
-	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
-		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
+	public void setArmAngle(Arm arm, MatrixStack matrices) {
+		float f = arm == Arm.field_6183 ? 1.0F : -1.0F;
 		ModelPart modelPart = this.getArm(arm);
 		modelPart.pivotX += f;
-		modelPart.rotate(matrixStack);
+		modelPart.rotate(matrices);
 		modelPart.pivotX -= f;
 	}
 }

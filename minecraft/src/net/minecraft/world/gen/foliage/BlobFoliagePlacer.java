@@ -1,43 +1,62 @@
 package net.minecraft.world.gen.foliage;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.Products.P3;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
+import net.minecraft.world.gen.UniformIntDistribution;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class BlobFoliagePlacer extends FoliagePlacer {
-	public BlobFoliagePlacer(int radius, int radiusRandom) {
-		super(radius, radiusRandom, FoliagePlacerType.BLOB_FOLIAGE_PLACER);
+	public static final Codec<BlobFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> method_28838(instance).apply(instance, BlobFoliagePlacer::new));
+	protected final int height;
+
+	protected static <P extends BlobFoliagePlacer> P3<Mu<P>, UniformIntDistribution, UniformIntDistribution, Integer> method_28838(Instance<P> instance) {
+		return method_30411(instance).and(Codec.intRange(0, 16).fieldOf("height").forGetter(blobFoliagePlacer -> blobFoliagePlacer.height));
 	}
 
-	public <T> BlobFoliagePlacer(Dynamic<T> dynamic) {
-		this(dynamic.get("radius").asInt(0), dynamic.get("radius_random").asInt(0));
+	public BlobFoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2, int i) {
+		super(uniformIntDistribution, uniformIntDistribution2);
+		this.height = i;
 	}
 
 	@Override
-	public void generate(
-		ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, int i, int j, int k, BlockPos pos, Set<BlockPos> positions
+	protected FoliagePlacerType<?> getType() {
+		return FoliagePlacerType.field_21299;
+	}
+
+	@Override
+	protected void generate(
+		ModifiableTestableWorld world,
+		Random random,
+		TreeFeatureConfig config,
+		int trunkHeight,
+		FoliagePlacer.TreeNode treeNode,
+		int foliageHeight,
+		int radius,
+		Set<BlockPos> leaves,
+		int i,
+		BlockBox blockBox
 	) {
-		for (int l = i; l >= j; l--) {
-			int m = Math.max(k - 1 - (l - i) / 2, 0);
-			this.generate(world, random, config, i, pos, l, m, positions);
+		for (int j = i; j >= i - foliageHeight; j--) {
+			int k = Math.max(radius + treeNode.getFoliageRadius() - 1 - j / 2, 0);
+			this.generate(world, random, config, treeNode.getCenter(), k, leaves, j, treeNode.isGiantTrunk(), blockBox);
 		}
 	}
 
 	@Override
-	public int getRadius(Random random, int i, int j, BranchedTreeFeatureConfig config) {
-		return this.radius + random.nextInt(this.randomRadius + 1);
+	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
+		return this.height;
 	}
 
 	@Override
-	protected boolean method_23451(Random random, int i, int j, int k, int l, int m) {
-		return Math.abs(j) == m && Math.abs(l) == m && (random.nextInt(2) == 0 || k == i);
-	}
-
-	@Override
-	public int method_23447(int i, int j, int k, int l) {
-		return l == 0 ? 0 : 1;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
+		return baseHeight == dz && dy == dz && (random.nextInt(2) == 0 || dx == 0);
 	}
 }

@@ -5,11 +5,10 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -21,16 +20,17 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public abstract class TameableEntity extends AnimalEntity {
 	protected static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-	protected SitGoal sitGoal;
+	private boolean sitting;
 
-	protected TameableEntity(EntityType<? extends TameableEntity> type, World world) {
-		super(type, world);
+	protected TameableEntity(EntityType<? extends TameableEntity> entityType, World world) {
+		super(entityType, world);
 		this.onTamedChanged();
 	}
 
@@ -44,40 +44,35 @@ public abstract class TameableEntity extends AnimalEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		if (this.getOwnerUuid() == null) {
-			tag.putString("OwnerUUID", "");
-		} else {
-			tag.putString("OwnerUUID", this.getOwnerUuid().toString());
+		if (this.getOwnerUuid() != null) {
+			tag.putUuid("Owner", this.getOwnerUuid());
 		}
 
-		tag.putBoolean("Sitting", this.isSitting());
+		tag.putBoolean("Sitting", this.sitting);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		String string;
-		if (tag.contains("OwnerUUID", 8)) {
-			string = tag.getString("OwnerUUID");
+		UUID uUID;
+		if (tag.containsUuid("Owner")) {
+			uUID = tag.getUuid("Owner");
 		} else {
-			String string2 = tag.getString("Owner");
-			string = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string2);
+			String string = tag.getString("Owner");
+			uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
 		}
 
-		if (!string.isEmpty()) {
+		if (uUID != null) {
 			try {
-				this.setOwnerUuid(UUID.fromString(string));
+				this.setOwnerUuid(uUID);
 				this.setTamed(true);
 			} catch (Throwable var4) {
 				this.setTamed(false);
 			}
 		}
 
-		if (this.sitGoal != null) {
-			this.sitGoal.setEnabledWithOwner(tag.getBoolean("Sitting"));
-		}
-
-		this.setSitting(tag.getBoolean("Sitting"));
+		this.sitting = tag.getBoolean("Sitting");
+		this.setInSittingPose(this.sitting);
 	}
 
 	@Override
@@ -87,9 +82,9 @@ public abstract class TameableEntity extends AnimalEntity {
 
 	@Environment(EnvType.CLIENT)
 	protected void showEmoteParticle(boolean positive) {
-		ParticleEffect particleEffect = ParticleTypes.HEART;
+		ParticleEffect particleEffect = ParticleTypes.field_11201;
 		if (!positive) {
-			particleEffect = ParticleTypes.SMOKE;
+			particleEffect = ParticleTypes.field_11251;
 		}
 
 		for (int i = 0; i < 7; i++) {
@@ -130,13 +125,13 @@ public abstract class TameableEntity extends AnimalEntity {
 	protected void onTamedChanged() {
 	}
 
-	public boolean isSitting() {
+	public boolean isInSittingPose() {
 		return (this.dataTracker.get(TAMEABLE_FLAGS) & 1) != 0;
 	}
 
-	public void setSitting(boolean sitting) {
+	public void setInSittingPose(boolean inSittingPose) {
 		byte b = this.dataTracker.get(TAMEABLE_FLAGS);
-		if (sitting) {
+		if (inSittingPose) {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 1));
 		} else {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -2));
@@ -156,7 +151,7 @@ public abstract class TameableEntity extends AnimalEntity {
 		this.setTamed(true);
 		this.setOwnerUuid(player.getUuid());
 		if (player instanceof ServerPlayerEntity) {
-			Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
+			Criteria.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
 		}
 	}
 
@@ -177,10 +172,6 @@ public abstract class TameableEntity extends AnimalEntity {
 
 	public boolean isOwner(LivingEntity entity) {
 		return entity == this.getOwner();
-	}
-
-	public SitGoal getSitGoal() {
-		return this.sitGoal;
 	}
 
 	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
@@ -217,10 +208,18 @@ public abstract class TameableEntity extends AnimalEntity {
 
 	@Override
 	public void onDeath(DamageSource source) {
-		if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
-			this.getOwner().sendMessage(this.getDamageTracker().getDeathMessage());
+		if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.field_19398) && this.getOwner() instanceof ServerPlayerEntity) {
+			this.getOwner().sendSystemMessage(this.getDamageTracker().getDeathMessage(), Util.NIL_UUID);
 		}
 
 		super.onDeath(source);
+	}
+
+	public boolean isSitting() {
+		return this.sitting;
+	}
+
+	public void setSitting(boolean sitting) {
+		this.sitting = sitting;
 	}
 }

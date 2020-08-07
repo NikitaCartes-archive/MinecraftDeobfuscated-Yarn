@@ -7,10 +7,10 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.WeightedPicker;
+import net.minecraft.util.collection.WeightedPicker;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -36,13 +36,13 @@ public class WeightedBakedModel implements BakedModel {
 	}
 
 	@Override
-	public boolean hasDepthInGui() {
-		return this.defaultModel.hasDepthInGui();
+	public boolean hasDepth() {
+		return this.defaultModel.hasDepth();
 	}
 
 	@Override
-	public boolean method_24304() {
-		return this.defaultModel.method_24304();
+	public boolean isSideLit() {
+		return this.defaultModel.isSideLit();
 	}
 
 	@Override
@@ -61,8 +61,8 @@ public class WeightedBakedModel implements BakedModel {
 	}
 
 	@Override
-	public ModelItemPropertyOverrideList getItemPropertyOverrides() {
-		return this.defaultModel.getItemPropertyOverrides();
+	public ModelOverrideList getOverrides() {
+		return this.defaultModel.getOverrides();
 	}
 
 	@Environment(EnvType.CLIENT)

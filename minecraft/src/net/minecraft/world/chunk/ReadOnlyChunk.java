@@ -14,6 +14,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkTickScheduler;
@@ -21,7 +22,11 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.feature.StructureFeature;
 
+/**
+ * Represents a read only view of a world chunk used in world generation.
+ */
 public class ReadOnlyChunk extends ProtoChunk {
 	private final WorldChunk wrapped;
 
@@ -54,7 +59,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+	public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
 		return null;
 	}
 
@@ -67,7 +72,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setStatus(ChunkStatus chunkStatus) {
+	public void setStatus(ChunkStatus status) {
 	}
 
 	@Override
@@ -86,10 +91,10 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	private Heightmap.Type transformHeightmapType(Heightmap.Type type) {
-		if (type == Heightmap.Type.WORLD_SURFACE_WG) {
-			return Heightmap.Type.WORLD_SURFACE;
+		if (type == Heightmap.Type.field_13194) {
+			return Heightmap.Type.field_13202;
 		} else {
-			return type == Heightmap.Type.OCEAN_FLOOR_WG ? Heightmap.Type.OCEAN_FLOOR : type;
+			return type == Heightmap.Type.field_13195 ? Heightmap.Type.field_13200 : type;
 		}
 	}
 
@@ -109,39 +114,39 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public StructureStart getStructureStart(String structure) {
+	public StructureStart<?> getStructureStart(StructureFeature<?> structure) {
 		return this.wrapped.getStructureStart(structure);
 	}
 
 	@Override
-	public void setStructureStart(String structure, StructureStart start) {
+	public void setStructureStart(StructureFeature<?> structure, StructureStart<?> start) {
 	}
 
 	@Override
-	public Map<String, StructureStart> getStructureStarts() {
+	public Map<StructureFeature<?>, StructureStart<?>> getStructureStarts() {
 		return this.wrapped.getStructureStarts();
 	}
 
 	@Override
-	public void setStructureStarts(Map<String, StructureStart> map) {
+	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
 	}
 
 	@Override
-	public LongSet getStructureReferences(String structure) {
+	public LongSet getStructureReferences(StructureFeature<?> structure) {
 		return this.wrapped.getStructureReferences(structure);
 	}
 
 	@Override
-	public void addStructureReference(String structure, long reference) {
+	public void addStructureReference(StructureFeature<?> structure, long reference) {
 	}
 
 	@Override
-	public Map<String, LongSet> getStructureReferences() {
+	public Map<StructureFeature<?>, LongSet> getStructureReferences() {
 		return this.wrapped.getStructureReferences();
 	}
 
 	@Override
-	public void setStructureReferences(Map<String, LongSet> structureReferences) {
+	public void setStructureReferences(Map<StructureFeature<?>, LongSet> structureReferences) {
 	}
 
 	@Override
@@ -164,31 +169,31 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void removeBlockEntity(BlockPos blockPos) {
+	public void removeBlockEntity(BlockPos pos) {
 	}
 
 	@Override
-	public void markBlockForPostProcessing(BlockPos blockPos) {
+	public void markBlockForPostProcessing(BlockPos pos) {
 	}
 
 	@Override
-	public void addPendingBlockEntityTag(CompoundTag compoundTag) {
-	}
-
-	@Nullable
-	@Override
-	public CompoundTag getBlockEntityTagAt(BlockPos pos) {
-		return this.wrapped.getBlockEntityTagAt(pos);
+	public void addPendingBlockEntityTag(CompoundTag tag) {
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag method_20598(BlockPos blockPos) {
-		return this.wrapped.method_20598(blockPos);
+	public CompoundTag getBlockEntityTag(BlockPos pos) {
+		return this.wrapped.getBlockEntityTag(pos);
+	}
+
+	@Nullable
+	@Override
+	public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+		return this.wrapped.getPackedBlockEntityTag(pos);
 	}
 
 	@Override
-	public void method_22405(BiomeArray biomeArray) {
+	public void setBiomes(BiomeArray biomes) {
 	}
 
 	@Override
@@ -197,18 +202,23 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public ChunkTickScheduler<Block> getBlockTickScheduler() {
+	public ChunkTickScheduler<Block> method_12303() {
 		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), this.getPos());
 	}
 
 	@Override
-	public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
-		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, this.getPos());
+	public ChunkTickScheduler<Fluid> method_12313() {
+		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.field_15906, this.getPos());
 	}
 
 	@Override
 	public BitSet getCarvingMask(GenerationStep.Carver carver) {
-		return this.wrapped.getCarvingMask(carver);
+		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
+	}
+
+	@Override
+	public BitSet getOrCreateCarvingMask(GenerationStep.Carver carver) {
+		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
 	}
 
 	public WorldChunk getWrappedChunk() {

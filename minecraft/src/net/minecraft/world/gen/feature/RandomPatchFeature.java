@@ -1,32 +1,26 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
-	public RandomPatchFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> function) {
-		super(function);
+	public RandomPatchFeature(Codec<RandomPatchFeatureConfig> codec) {
+		super(codec);
 	}
 
-	public boolean generate(
-		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		RandomPatchFeatureConfig randomPatchFeatureConfig
+	public boolean method_23401(
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig
 	) {
 		BlockState blockState = randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
 		BlockPos blockPos2;
 		if (randomPatchFeatureConfig.project) {
-			blockPos2 = iWorld.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, blockPos);
+			blockPos2 = structureWorldAccess.getTopPosition(Heightmap.Type.field_13194, blockPos);
 		} else {
 			blockPos2 = blockPos;
 		}
@@ -35,26 +29,26 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int j = 0; j < randomPatchFeatureConfig.tries; j++) {
-			mutable.set(blockPos2)
-				.setOffset(
-					random.nextInt(randomPatchFeatureConfig.spreadX + 1) - random.nextInt(randomPatchFeatureConfig.spreadX + 1),
-					random.nextInt(randomPatchFeatureConfig.spreadY + 1) - random.nextInt(randomPatchFeatureConfig.spreadY + 1),
-					random.nextInt(randomPatchFeatureConfig.spreadZ + 1) - random.nextInt(randomPatchFeatureConfig.spreadZ + 1)
-				);
-			BlockPos blockPos3 = mutable.down();
-			BlockState blockState2 = iWorld.getBlockState(blockPos3);
-			if ((iWorld.isAir(mutable) || randomPatchFeatureConfig.canReplace && iWorld.getBlockState(mutable).getMaterial().isReplaceable())
-				&& blockState.canPlaceAt(iWorld, mutable)
+			mutable.set(
+				blockPos2,
+				random.nextInt(randomPatchFeatureConfig.spreadX + 1) - random.nextInt(randomPatchFeatureConfig.spreadX + 1),
+				random.nextInt(randomPatchFeatureConfig.spreadY + 1) - random.nextInt(randomPatchFeatureConfig.spreadY + 1),
+				random.nextInt(randomPatchFeatureConfig.spreadZ + 1) - random.nextInt(randomPatchFeatureConfig.spreadZ + 1)
+			);
+			BlockPos blockPos3 = mutable.method_10074();
+			BlockState blockState2 = structureWorldAccess.getBlockState(blockPos3);
+			if ((structureWorldAccess.isAir(mutable) || randomPatchFeatureConfig.canReplace && structureWorldAccess.getBlockState(mutable).getMaterial().isReplaceable())
+				&& blockState.canPlaceAt(structureWorldAccess, mutable)
 				&& (randomPatchFeatureConfig.whitelist.isEmpty() || randomPatchFeatureConfig.whitelist.contains(blockState2.getBlock()))
 				&& !randomPatchFeatureConfig.blacklist.contains(blockState2)
 				&& (
 					!randomPatchFeatureConfig.needsWater
-						|| iWorld.getFluidState(blockPos3.west()).matches(FluidTags.WATER)
-						|| iWorld.getFluidState(blockPos3.east()).matches(FluidTags.WATER)
-						|| iWorld.getFluidState(blockPos3.north()).matches(FluidTags.WATER)
-						|| iWorld.getFluidState(blockPos3.south()).matches(FluidTags.WATER)
+						|| structureWorldAccess.getFluidState(blockPos3.west()).isIn(FluidTags.field_15517)
+						|| structureWorldAccess.getFluidState(blockPos3.east()).isIn(FluidTags.field_15517)
+						|| structureWorldAccess.getFluidState(blockPos3.north()).isIn(FluidTags.field_15517)
+						|| structureWorldAccess.getFluidState(blockPos3.south()).isIn(FluidTags.field_15517)
 				)) {
-				randomPatchFeatureConfig.blockPlacer.method_23403(iWorld, mutable, blockState, random);
+				randomPatchFeatureConfig.blockPlacer.method_23403(structureWorldAccess, mutable, blockState, random);
 				i++;
 			}
 		}

@@ -9,7 +9,7 @@ import net.minecraft.sound.SoundEvents;
 @Environment(EnvType.CLIENT)
 public class PassiveBeeSoundInstance extends AbstractBeeSoundInstance {
 	public PassiveBeeSoundInstance(BeeEntity beeEntity) {
-		super(beeEntity, SoundEvents.ENTITY_BEE_LOOP, SoundCategory.NEUTRAL);
+		super(beeEntity, SoundEvents.field_20605, SoundCategory.field_15254);
 	}
 
 	@Override
@@ -19,6 +19,6 @@ public class PassiveBeeSoundInstance extends AbstractBeeSoundInstance {
 
 	@Override
 	protected boolean shouldReplace() {
-		return this.bee.isAngry();
+		return this.bee.hasAngerTime();
 	}
 }

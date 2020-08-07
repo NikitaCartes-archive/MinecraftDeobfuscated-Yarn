@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -13,8 +13,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SnowBlock extends Block {
@@ -31,19 +31,19 @@ public class SnowBlock extends Block {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
 	};
 
-	protected SnowBlock(Block.Settings settings) {
+	protected SnowBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(LAYERS, Integer.valueOf(1)));
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
-		switch (env) {
-			case LAND:
-				return (Integer)world.get(LAYERS) < 5;
-			case WATER:
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		switch (type) {
+			case field_50:
+				return (Integer)state.get(LAYERS) < 5;
+			case field_48:
 				return false;
-			case AIR:
+			case field_51:
 				return false;
 			default:
 				return false;
@@ -51,13 +51,23 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return LAYERS_TO_SHAPE[state.get(LAYERS)];
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return LAYERS_TO_SHAPE[state.get(LAYERS) - 1];
+	}
+
+	@Override
+	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
+		return LAYERS_TO_SHAPE[state.get(LAYERS)];
+	}
+
+	@Override
+	public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		return LAYERS_TO_SHAPE[state.get(LAYERS)];
 	}
 
 	@Override
@@ -67,37 +77,39 @@ public class SnowBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockState blockState = world.getBlockState(pos.down());
-		Block block = blockState.getBlock();
-		if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER) {
+		BlockState blockState = world.getBlockState(pos.method_10074());
+		if (blockState.isOf(Blocks.field_10295) || blockState.isOf(Blocks.field_10225) || blockState.isOf(Blocks.field_10499)) {
 			return false;
 		} else {
-			return block != Blocks.HONEY_BLOCK && block != Blocks.SOUL_SAND
-				? Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP) || block == this && (Integer)blockState.get(LAYERS) == 8
+			return !blockState.isOf(Blocks.field_21211) && !blockState.isOf(Blocks.field_10114)
+				? Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.method_10074()), Direction.field_11036)
+					|| blockState.getBlock() == this && (Integer)blockState.get(LAYERS) == 8
 				: true;
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		return !state.canPlaceAt(world, pos)
+			? Blocks.field_10124.getDefaultState()
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (world.getLightLevel(LightType.BLOCK, pos) > 11) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (world.getLightLevel(LightType.field_9282, pos) > 11) {
 			dropStacks(state, world, pos);
 			world.removeBlock(pos, false);
 		}
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
+	public boolean canReplace(BlockState state, ItemPlacementContext context) {
 		int i = (Integer)state.get(LAYERS);
-		if (ctx.getStack().getItem() != this.asItem() || i >= 8) {
+		if (context.getStack().getItem() != this.asItem() || i >= 8) {
 			return i == 1;
 		} else {
-			return ctx.canReplaceExisting() ? ctx.getSide() == Direction.UP : true;
+			return context.canReplaceExisting() ? context.getSide() == Direction.field_11036 : true;
 		}
 	}
 
@@ -105,7 +117,7 @@ public class SnowBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
-		if (blockState.getBlock() == this) {
+		if (blockState.isOf(this)) {
 			int i = (Integer)blockState.get(LAYERS);
 			return blockState.with(LAYERS, Integer.valueOf(Math.min(8, i + 1)));
 		} else {

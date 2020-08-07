@@ -7,20 +7,20 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.hit.BlockHitResult;
 
 public class Box {
-	public final double x1;
-	public final double y1;
-	public final double z1;
-	public final double x2;
-	public final double y2;
-	public final double z2;
+	public final double minX;
+	public final double minY;
+	public final double minZ;
+	public final double maxX;
+	public final double maxY;
+	public final double maxZ;
 
 	public Box(double x1, double y1, double z1, double x2, double y2, double z2) {
-		this.x1 = Math.min(x1, x2);
-		this.y1 = Math.min(y1, y2);
-		this.z1 = Math.min(z1, z2);
-		this.x2 = Math.max(x1, x2);
-		this.y2 = Math.max(y1, y2);
-		this.z2 = Math.max(z1, z2);
+		this.minX = Math.min(x1, x2);
+		this.minY = Math.min(y1, y2);
+		this.minZ = Math.min(z1, z2);
+		this.maxX = Math.max(x1, x2);
+		this.maxY = Math.max(y1, y2);
+		this.maxZ = Math.max(z1, z2);
 	}
 
 	public Box(BlockPos pos) {
@@ -41,12 +41,16 @@ public class Box {
 		);
 	}
 
+	public static Box method_29968(Vec3d vec3d) {
+		return new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1.0, vec3d.y + 1.0, vec3d.z + 1.0);
+	}
+
 	public double getMin(Direction.Axis axis) {
-		return axis.choose(this.x1, this.y1, this.z1);
+		return axis.choose(this.minX, this.minY, this.minZ);
 	}
 
 	public double getMax(Direction.Axis axis) {
-		return axis.choose(this.x2, this.y2, this.z2);
+		return axis.choose(this.maxX, this.maxY, this.maxZ);
 	}
 
 	public boolean equals(Object o) {
@@ -56,42 +60,42 @@ public class Box {
 			return false;
 		} else {
 			Box box = (Box)o;
-			if (Double.compare(box.x1, this.x1) != 0) {
+			if (Double.compare(box.minX, this.minX) != 0) {
 				return false;
-			} else if (Double.compare(box.y1, this.y1) != 0) {
+			} else if (Double.compare(box.minY, this.minY) != 0) {
 				return false;
-			} else if (Double.compare(box.z1, this.z1) != 0) {
+			} else if (Double.compare(box.minZ, this.minZ) != 0) {
 				return false;
-			} else if (Double.compare(box.x2, this.x2) != 0) {
+			} else if (Double.compare(box.maxX, this.maxX) != 0) {
 				return false;
 			} else {
-				return Double.compare(box.y2, this.y2) != 0 ? false : Double.compare(box.z2, this.z2) == 0;
+				return Double.compare(box.maxY, this.maxY) != 0 ? false : Double.compare(box.maxZ, this.maxZ) == 0;
 			}
 		}
 	}
 
 	public int hashCode() {
-		long l = Double.doubleToLongBits(this.x1);
+		long l = Double.doubleToLongBits(this.minX);
 		int i = (int)(l ^ l >>> 32);
-		l = Double.doubleToLongBits(this.y1);
+		l = Double.doubleToLongBits(this.minY);
 		i = 31 * i + (int)(l ^ l >>> 32);
-		l = Double.doubleToLongBits(this.z1);
+		l = Double.doubleToLongBits(this.minZ);
 		i = 31 * i + (int)(l ^ l >>> 32);
-		l = Double.doubleToLongBits(this.x2);
+		l = Double.doubleToLongBits(this.maxX);
 		i = 31 * i + (int)(l ^ l >>> 32);
-		l = Double.doubleToLongBits(this.y2);
+		l = Double.doubleToLongBits(this.maxY);
 		i = 31 * i + (int)(l ^ l >>> 32);
-		l = Double.doubleToLongBits(this.z2);
+		l = Double.doubleToLongBits(this.maxZ);
 		return 31 * i + (int)(l ^ l >>> 32);
 	}
 
 	public Box shrink(double x, double y, double z) {
-		double d = this.x1;
-		double e = this.y1;
-		double f = this.z1;
-		double g = this.x2;
-		double h = this.y2;
-		double i = this.z2;
+		double d = this.minX;
+		double e = this.minY;
+		double f = this.minZ;
+		double g = this.maxX;
+		double h = this.maxY;
+		double i = this.maxZ;
 		if (x < 0.0) {
 			d -= x;
 		} else if (x > 0.0) {
@@ -118,12 +122,12 @@ public class Box {
 	}
 
 	public Box stretch(double x, double y, double z) {
-		double d = this.x1;
-		double e = this.y1;
-		double f = this.z1;
-		double g = this.x2;
-		double h = this.y2;
-		double i = this.z2;
+		double d = this.minX;
+		double e = this.minY;
+		double f = this.minZ;
+		double g = this.maxX;
+		double h = this.maxY;
+		double i = this.maxZ;
 		if (x < 0.0) {
 			d += x;
 		} else if (x > 0.0) {
@@ -146,12 +150,12 @@ public class Box {
 	}
 
 	public Box expand(double x, double y, double z) {
-		double d = this.x1 - x;
-		double e = this.y1 - y;
-		double f = this.z1 - z;
-		double g = this.x2 + x;
-		double h = this.y2 + y;
-		double i = this.z2 + z;
+		double d = this.minX - x;
+		double e = this.minY - y;
+		double f = this.minZ - z;
+		double g = this.maxX + x;
+		double h = this.maxY + y;
+		double i = this.maxZ + z;
 		return new Box(d, e, f, g, h, i);
 	}
 
@@ -160,37 +164,37 @@ public class Box {
 	}
 
 	public Box intersection(Box box) {
-		double d = Math.max(this.x1, box.x1);
-		double e = Math.max(this.y1, box.y1);
-		double f = Math.max(this.z1, box.z1);
-		double g = Math.min(this.x2, box.x2);
-		double h = Math.min(this.y2, box.y2);
-		double i = Math.min(this.z2, box.z2);
+		double d = Math.max(this.minX, box.minX);
+		double e = Math.max(this.minY, box.minY);
+		double f = Math.max(this.minZ, box.minZ);
+		double g = Math.min(this.maxX, box.maxX);
+		double h = Math.min(this.maxY, box.maxY);
+		double i = Math.min(this.maxZ, box.maxZ);
 		return new Box(d, e, f, g, h, i);
 	}
 
 	public Box union(Box box) {
-		double d = Math.min(this.x1, box.x1);
-		double e = Math.min(this.y1, box.y1);
-		double f = Math.min(this.z1, box.z1);
-		double g = Math.max(this.x2, box.x2);
-		double h = Math.max(this.y2, box.y2);
-		double i = Math.max(this.z2, box.z2);
+		double d = Math.min(this.minX, box.minX);
+		double e = Math.min(this.minY, box.minY);
+		double f = Math.min(this.minZ, box.minZ);
+		double g = Math.max(this.maxX, box.maxX);
+		double h = Math.max(this.maxY, box.maxY);
+		double i = Math.max(this.maxZ, box.maxZ);
 		return new Box(d, e, f, g, h, i);
 	}
 
 	public Box offset(double x, double y, double z) {
-		return new Box(this.x1 + x, this.y1 + y, this.z1 + z, this.x2 + x, this.y2 + y, this.z2 + z);
+		return new Box(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
 	}
 
 	public Box offset(BlockPos blockPos) {
 		return new Box(
-			this.x1 + (double)blockPos.getX(),
-			this.y1 + (double)blockPos.getY(),
-			this.z1 + (double)blockPos.getZ(),
-			this.x2 + (double)blockPos.getX(),
-			this.y2 + (double)blockPos.getY(),
-			this.z2 + (double)blockPos.getZ()
+			this.minX + (double)blockPos.getX(),
+			this.minY + (double)blockPos.getY(),
+			this.minZ + (double)blockPos.getZ(),
+			this.maxX + (double)blockPos.getX(),
+			this.maxY + (double)blockPos.getY(),
+			this.maxZ + (double)blockPos.getZ()
 		);
 	}
 
@@ -199,11 +203,11 @@ public class Box {
 	}
 
 	public boolean intersects(Box box) {
-		return this.intersects(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2);
+		return this.intersects(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
 	}
 
 	public boolean intersects(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
-		return this.x1 < maxX && this.x2 > minX && this.y1 < maxY && this.y2 > minY && this.z1 < maxZ && this.z2 > minZ;
+		return this.minX < maxX && this.maxX > minX && this.minY < maxY && this.maxY > minY && this.minZ < maxZ && this.maxZ > minZ;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -218,7 +222,7 @@ public class Box {
 	}
 
 	public boolean contains(double x, double y, double z) {
-		return x >= this.x1 && x < this.x2 && y >= this.y1 && y < this.y2 && z >= this.z1 && z < this.z2;
+		return x >= this.minX && x < this.maxX && y >= this.minY && y < this.maxY && z >= this.minZ && z < this.maxZ;
 	}
 
 	public double getAverageSideLength() {
@@ -229,15 +233,15 @@ public class Box {
 	}
 
 	public double getXLength() {
-		return this.x2 - this.x1;
+		return this.maxX - this.minX;
 	}
 
 	public double getYLength() {
-		return this.y2 - this.y1;
+		return this.maxY - this.minY;
 	}
 
 	public double getZLength() {
-		return this.z2 - this.z1;
+		return this.maxZ - this.minZ;
 	}
 
 	public Box contract(double value) {
@@ -289,12 +293,12 @@ public class Box {
 				xDelta,
 				yDelta,
 				zDelta,
-				box.x1,
-				box.y1,
-				box.y2,
-				box.z1,
-				box.z2,
-				Direction.WEST,
+				box.minX,
+				box.minY,
+				box.maxY,
+				box.minZ,
+				box.maxZ,
+				Direction.field_11039,
 				intersectingVector.x,
 				intersectingVector.y,
 				intersectingVector.z
@@ -306,12 +310,12 @@ public class Box {
 				xDelta,
 				yDelta,
 				zDelta,
-				box.x2,
-				box.y1,
-				box.y2,
-				box.z1,
-				box.z2,
-				Direction.EAST,
+				box.maxX,
+				box.minY,
+				box.maxY,
+				box.minZ,
+				box.maxZ,
+				Direction.field_11034,
 				intersectingVector.x,
 				intersectingVector.y,
 				intersectingVector.z
@@ -325,12 +329,12 @@ public class Box {
 				yDelta,
 				zDelta,
 				xDelta,
-				box.y1,
-				box.z1,
-				box.z2,
-				box.x1,
-				box.x2,
-				Direction.DOWN,
+				box.minY,
+				box.minZ,
+				box.maxZ,
+				box.minX,
+				box.maxX,
+				Direction.field_11033,
 				intersectingVector.y,
 				intersectingVector.z,
 				intersectingVector.x
@@ -342,12 +346,12 @@ public class Box {
 				yDelta,
 				zDelta,
 				xDelta,
-				box.y2,
-				box.z1,
-				box.z2,
-				box.x1,
-				box.x2,
-				Direction.UP,
+				box.maxY,
+				box.minZ,
+				box.maxZ,
+				box.minX,
+				box.maxX,
+				Direction.field_11036,
 				intersectingVector.y,
 				intersectingVector.z,
 				intersectingVector.x
@@ -361,12 +365,12 @@ public class Box {
 				zDelta,
 				xDelta,
 				yDelta,
-				box.z1,
-				box.x1,
-				box.x2,
-				box.y1,
-				box.y2,
-				Direction.NORTH,
+				box.minZ,
+				box.minX,
+				box.maxX,
+				box.minY,
+				box.maxY,
+				Direction.field_11043,
 				intersectingVector.z,
 				intersectingVector.x,
 				intersectingVector.y
@@ -378,12 +382,12 @@ public class Box {
 				zDelta,
 				xDelta,
 				yDelta,
-				box.z2,
-				box.x1,
-				box.x2,
-				box.y1,
-				box.y2,
-				Direction.SOUTH,
+				box.maxZ,
+				box.minX,
+				box.maxX,
+				box.minY,
+				box.maxY,
+				Direction.field_11035,
 				intersectingVector.z,
 				intersectingVector.x,
 				intersectingVector.y
@@ -422,15 +426,24 @@ public class Box {
 	}
 
 	public String toString() {
-		return "box[" + this.x1 + ", " + this.y1 + ", " + this.z1 + "] -> [" + this.x2 + ", " + this.y2 + ", " + this.z2 + "]";
+		return "AABB[" + this.minX + ", " + this.minY + ", " + this.minZ + "] -> [" + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean isValid() {
-		return Double.isNaN(this.x1) || Double.isNaN(this.y1) || Double.isNaN(this.z1) || Double.isNaN(this.x2) || Double.isNaN(this.y2) || Double.isNaN(this.z2);
+		return Double.isNaN(this.minX)
+			|| Double.isNaN(this.minY)
+			|| Double.isNaN(this.minZ)
+			|| Double.isNaN(this.maxX)
+			|| Double.isNaN(this.maxY)
+			|| Double.isNaN(this.maxZ);
 	}
 
 	public Vec3d getCenter() {
-		return new Vec3d(MathHelper.lerp(0.5, this.x1, this.x2), MathHelper.lerp(0.5, this.y1, this.y2), MathHelper.lerp(0.5, this.z1, this.z2));
+		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
+	}
+
+	public static Box method_30048(double d, double e, double f) {
+		return new Box(-d / 2.0, -e / 2.0, -f / 2.0, d / 2.0, e / 2.0, f / 2.0);
 	}
 }

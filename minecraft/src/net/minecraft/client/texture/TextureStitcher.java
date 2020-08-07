@@ -243,6 +243,6 @@ public class TextureStitcher {
 
 	@Environment(EnvType.CLIENT)
 	public interface SpriteConsumer {
-		void load(Sprite.Info info, int i, int j, int k, int l);
+		void load(Sprite.Info info, int width, int height, int x, int y);
 	}
 }

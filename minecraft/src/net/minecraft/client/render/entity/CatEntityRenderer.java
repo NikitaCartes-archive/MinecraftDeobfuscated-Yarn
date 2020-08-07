@@ -20,22 +20,22 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 		this.addFeature(new CatCollarFeatureRenderer(this));
 	}
 
-	public Identifier getTexture(CatEntity catEntity) {
+	public Identifier method_4078(CatEntity catEntity) {
 		return catEntity.getTexture();
 	}
 
-	protected void scale(CatEntity catEntity, MatrixStack matrixStack, float f) {
+	protected void method_4079(CatEntity catEntity, MatrixStack matrixStack, float f) {
 		super.scale(catEntity, matrixStack, f);
 		matrixStack.scale(0.8F, 0.8F, 0.8F);
 	}
 
-	protected void setupTransforms(CatEntity catEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void method_16045(CatEntity catEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(catEntity, matrixStack, f, g, h);
 		float i = catEntity.getSleepAnimation(h);
 		if (i > 0.0F) {
 			matrixStack.translate((double)(0.4F * i), (double)(0.15F * i), (double)(0.1F * i));
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerpAngleDegrees(i, 0.0F, 90.0F)));
-			BlockPos blockPos = new BlockPos(catEntity);
+			BlockPos blockPos = catEntity.getBlockPos();
 
 			for (PlayerEntity playerEntity : catEntity.world.getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
 				if (playerEntity.isSleeping()) {

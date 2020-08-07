@@ -2,6 +2,8 @@ package net.minecraft.client.font;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
@@ -31,19 +33,19 @@ public class UnicodeTextureFont implements Font {
 		this.template = template;
 
 		for (int i = 0; i < 256; i++) {
-			char c = (char)(i * 256);
-			Identifier identifier = this.getImageId(c);
+			int j = i * 256;
+			Identifier identifier = this.getImageId(j);
 
 			try {
 				Resource resource = this.resourceManager.getResource(identifier);
 				Throwable var8 = null;
 
-				try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream())) {
+				try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream())) {
 					if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
-						for (int j = 0; j < 256; j++) {
-							byte b = sizes[c + j];
+						for (int k = 0; k < 256; k++) {
+							byte b = sizes[j + k];
 							if (b != 0 && getStart(b) > getEnd(b)) {
-								sizes[c + j] = 0;
+								sizes[j + k] = 0;
 							}
 						}
 						continue;
@@ -67,7 +69,7 @@ public class UnicodeTextureFont implements Font {
 			} catch (IOException var43) {
 			}
 
-			Arrays.fill(sizes, c, c + 256, (byte)0);
+			Arrays.fill(sizes, j, j + 256, (byte)0);
 		}
 	}
 
@@ -76,24 +78,41 @@ public class UnicodeTextureFont implements Font {
 		this.images.values().forEach(NativeImage::close);
 	}
 
-	private Identifier getImageId(char character) {
-		Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", character / 256)));
+	private Identifier getImageId(int codePoint) {
+		Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", codePoint / 256)));
 		return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
 	}
 
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(char character) {
-		byte b = this.sizes[character];
-		if (b != 0) {
-			NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getImageId(character), this::getGlyphImage);
-			if (nativeImage != null) {
-				int i = getStart(b);
-				return new UnicodeTextureFont.UnicodeTextureGlyph(character % 16 * 16 + i, (character & 255) / 16 * 16, getEnd(b) - i, 16, nativeImage);
+	public RenderableGlyph getGlyph(int codePoint) {
+		if (codePoint >= 0 && codePoint <= 65535) {
+			byte b = this.sizes[codePoint];
+			if (b != 0) {
+				NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getImageId(codePoint), this::getGlyphImage);
+				if (nativeImage != null) {
+					int i = getStart(b);
+					return new UnicodeTextureFont.UnicodeTextureGlyph(codePoint % 16 * 16 + i, (codePoint & 0xFF) / 16 * 16, getEnd(b) - i, 16, nativeImage);
+				}
+			}
+
+			return null;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public IntSet getProvidedGlyphs() {
+		IntSet intSet = new IntOpenHashSet();
+
+		for (int i = 0; i < 65535; i++) {
+			if (this.sizes[i] != 0) {
+				intSet.add(i);
 			}
 		}
 
-		return null;
+		return intSet;
 	}
 
 	@Nullable
@@ -104,7 +123,7 @@ public class UnicodeTextureFont implements Font {
 
 			NativeImage var4;
 			try {
-				var4 = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
+				var4 = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
 			} catch (Throwable var14) {
 				var3 = var14;
 				throw var14;

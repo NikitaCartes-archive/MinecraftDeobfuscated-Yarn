@@ -1,20 +1,21 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
-import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 
-public abstract class LockableContainerBlockEntity extends BlockEntity implements Inventory, NameableContainerProvider, Nameable {
+public abstract class LockableContainerBlockEntity extends BlockEntity implements Inventory, NamedScreenHandlerFactory, Nameable {
 	private ContainerLock lock = ContainerLock.EMPTY;
 	private Text customName;
 
@@ -23,8 +24,8 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
 		this.lock = ContainerLock.fromTag(tag);
 		if (tag.contains("CustomName", 8)) {
 			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
@@ -70,8 +71,8 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 
 	public static boolean checkUnlocked(PlayerEntity player, ContainerLock lock, Text containerName) {
 		if (!player.isSpectator() && !lock.canOpen(player.getMainHandStack())) {
-			player.addChatMessage(new TranslatableText("container.isLocked", containerName), true);
-			player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			player.sendMessage(new TranslatableText("container.isLocked", containerName), true);
+			player.playSound(SoundEvents.field_14731, SoundCategory.field_15245, 1.0F, 1.0F);
 			return false;
 		} else {
 			return true;
@@ -80,9 +81,9 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 
 	@Nullable
 	@Override
-	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return this.checkUnlocked(playerEntity) ? this.createContainer(syncId, playerInventory) : null;
+	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+		return this.checkUnlocked(playerEntity) ? this.createScreenHandler(i, playerInventory) : null;
 	}
 
-	protected abstract Container createContainer(int i, PlayerInventory playerInventory);
+	protected abstract ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory);
 }

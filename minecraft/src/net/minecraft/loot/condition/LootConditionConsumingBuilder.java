@@ -1,7 +1,7 @@
 package net.minecraft.loot.condition;
 
 public interface LootConditionConsumingBuilder<T> {
-	T withCondition(LootCondition.Builder builder);
+	T conditionally(LootCondition.Builder condition);
 
 	T getThis();
 }

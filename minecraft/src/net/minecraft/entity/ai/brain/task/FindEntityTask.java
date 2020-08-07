@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -32,14 +32,12 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleState.REGISTERED,
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleState.VALUE_ABSENT,
-				targetModule,
-				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.VISIBLE_MOBS,
-				MemoryModuleState.VALUE_PRESENT
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_18442,
+				MemoryModuleState.field_18456
 			)
 		);
 		this.entityType = entityType;
@@ -59,16 +57,22 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, E entity) {
-		return this.shouldRunPredicate.test(entity)
-			&& ((List)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
-				.stream()
-				.anyMatch(livingEntity -> this.entityType.equals(livingEntity.getType()) && this.predicate.test(livingEntity));
+		return this.shouldRunPredicate.test(entity) && this.method_24582(entity);
+	}
+
+	private boolean method_24582(E livingEntity) {
+		List<LivingEntity> list = (List<LivingEntity>)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get();
+		return list.stream().anyMatch(this::method_24583);
+	}
+
+	private boolean method_24583(LivingEntity livingEntity) {
+		return this.entityType.equals(livingEntity.getType()) && this.predicate.test(livingEntity);
 	}
 
 	@Override
 	protected void run(ServerWorld world, E entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
+		brain.getOptionalMemory(MemoryModuleType.field_18442)
 			.ifPresent(
 				list -> list.stream()
 						.filter(livingEntityx -> this.entityType.equals(livingEntityx.getType()))
@@ -77,9 +81,9 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 						.filter(this.predicate)
 						.findFirst()
 						.ifPresent(livingEntityx -> {
-							brain.putMemory(this.targetModule, (T)livingEntityx);
-							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityx));
-							brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper(livingEntityx), this.speed, this.completionRange));
+							brain.remember(this.targetModule, (T)livingEntityx);
+							brain.remember(MemoryModuleType.field_18446, new EntityLookTarget(livingEntityx, true));
+							brain.remember(MemoryModuleType.field_18445, new WalkTarget(new EntityLookTarget(livingEntityx, false), this.speed, this.completionRange));
 						})
 			);
 	}

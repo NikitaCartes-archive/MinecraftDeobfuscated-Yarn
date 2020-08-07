@@ -1,10 +1,13 @@
 package net.minecraft.client.network;
 
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -12,14 +15,15 @@ import net.minecraft.text.TranslatableText;
 public class ServerInfo {
 	public String name;
 	public String address;
-	public String playerCountLabel;
-	public String label;
+	public Text playerCountLabel;
+	public Text label;
 	public long ping;
 	public int protocolVersion = SharedConstants.getGameVersion().getProtocolVersion();
-	public String version = SharedConstants.getGameVersion().getName();
+	public Text version = new LiteralText(SharedConstants.getGameVersion().getName());
 	public boolean online;
-	public String playerListSummary;
-	private ServerInfo.ResourcePackState resourcePackState = ServerInfo.ResourcePackState.PROMPT;
+	public List<Text> playerListSummary = Collections.emptyList();
+	private ServerInfo.ResourcePackState resourcePackState = ServerInfo.ResourcePackState.field_3767;
+	@Nullable
 	private String icon;
 	private boolean local;
 
@@ -37,9 +41,9 @@ public class ServerInfo {
 			compoundTag.putString("icon", this.icon);
 		}
 
-		if (this.resourcePackState == ServerInfo.ResourcePackState.ENABLED) {
+		if (this.resourcePackState == ServerInfo.ResourcePackState.field_3768) {
 			compoundTag.putBoolean("acceptTextures", true);
-		} else if (this.resourcePackState == ServerInfo.ResourcePackState.DISABLED) {
+		} else if (this.resourcePackState == ServerInfo.ResourcePackState.field_3764) {
 			compoundTag.putBoolean("acceptTextures", false);
 		}
 
@@ -62,12 +66,12 @@ public class ServerInfo {
 
 		if (tag.contains("acceptTextures", 1)) {
 			if (tag.getBoolean("acceptTextures")) {
-				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.ENABLED);
+				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.field_3768);
 			} else {
-				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.DISABLED);
+				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.field_3764);
 			}
 		} else {
-			serverInfo.setResourcePackState(ServerInfo.ResourcePackState.PROMPT);
+			serverInfo.setResourcePackState(ServerInfo.ResourcePackState.field_3767);
 		}
 
 		return serverInfo;
@@ -96,9 +100,9 @@ public class ServerInfo {
 
 	@Environment(EnvType.CLIENT)
 	public static enum ResourcePackState {
-		ENABLED("enabled"),
-		DISABLED("disabled"),
-		PROMPT("prompt");
+		field_3768("enabled"),
+		field_3764("disabled"),
+		field_3767("prompt");
 
 		private final Text name;
 

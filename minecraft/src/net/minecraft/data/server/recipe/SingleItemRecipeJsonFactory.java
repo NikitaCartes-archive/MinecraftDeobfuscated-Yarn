@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
@@ -31,11 +31,11 @@ public class SingleItemRecipeJsonFactory {
 	}
 
 	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output) {
-		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, 1);
+		return new SingleItemRecipeJsonFactory(RecipeSerializer.field_17640, input, output, 1);
 	}
 
 	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output, int outputCount) {
-		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, outputCount);
+		return new SingleItemRecipeJsonFactory(RecipeSerializer.field_17640, input, output, outputCount);
 	}
 
 	public SingleItemRecipeJsonFactory create(String criterionName, CriterionConditions conditions) {
@@ -56,9 +56,9 @@ public class SingleItemRecipeJsonFactory {
 		this.validate(recipeId);
 		this.builder
 			.parent(new Identifier("recipes/root"))
-			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(recipeId))
+			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
-			.criteriaMerger(CriteriaMerger.OR);
+			.criteriaMerger(CriterionMerger.OR);
 		exporter.accept(
 			new SingleItemRecipeJsonFactory.SingleItemRecipeJsonProvider(
 				recipeId,

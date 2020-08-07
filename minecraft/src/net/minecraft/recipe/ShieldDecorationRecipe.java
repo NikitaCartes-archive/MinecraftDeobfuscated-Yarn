@@ -15,12 +15,12 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean method_17732(CraftingInventory craftingInventory, World world) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		ItemStack itemStack2 = ItemStack.EMPTY;
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack3 = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack3 = craftingInventory.getStack(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack3.getItem() instanceof BannerItem) {
 					if (!itemStack2.isEmpty()) {
@@ -29,7 +29,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 
 					itemStack2 = itemStack3;
 				} else {
-					if (itemStack3.getItem() != Items.SHIELD) {
+					if (itemStack3.getItem() != Items.field_8255) {
 						return false;
 					}
 
@@ -49,16 +49,16 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && !itemStack2.isEmpty();
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack method_17731(CraftingInventory craftingInventory) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		ItemStack itemStack2 = ItemStack.EMPTY;
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack3 = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack3 = craftingInventory.getStack(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack3.getItem() instanceof BannerItem) {
 					itemStack = itemStack3;
-				} else if (itemStack3.getItem() == Items.SHIELD) {
+				} else if (itemStack3.getItem() == Items.field_8255) {
 					itemStack2 = itemStack3.copy();
 				}
 			}
@@ -68,7 +68,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 			return itemStack2;
 		} else {
 			CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-			CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.copy();
+			CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.method_10553();
 			compoundTag2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
 			itemStack2.putSubTag("BlockEntityTag", compoundTag2);
 			return itemStack2;

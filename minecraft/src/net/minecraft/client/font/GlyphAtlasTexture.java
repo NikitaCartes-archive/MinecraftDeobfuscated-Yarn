@@ -1,6 +1,5 @@
 package net.minecraft.client.font;
 
-import java.io.Closeable;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,10 +11,10 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
+public class GlyphAtlasTexture extends AbstractTexture {
 	private final Identifier id;
-	private final RenderLayer field_21690;
-	private final RenderLayer field_21691;
+	private final RenderLayer textLayer;
+	private final RenderLayer seeThroughTextLayer;
 	private final boolean hasColor;
 	private final GlyphAtlasTexture.Slot rootSlot;
 
@@ -23,15 +22,16 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 		this.id = id;
 		this.hasColor = hasColor;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
-		TextureUtil.prepareImage(hasColor ? NativeImage.GLFormat.RGBA : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
-		this.field_21690 = RenderLayer.getText(id);
-		this.field_21691 = RenderLayer.getTextSeeThrough(id);
+		TextureUtil.allocate(hasColor ? NativeImage.GLFormat.ABGR : NativeImage.GLFormat.field_5016, this.getGlId(), 256, 256);
+		this.textLayer = RenderLayer.getText(id);
+		this.seeThroughTextLayer = RenderLayer.getTextSeeThrough(id);
 	}
 
 	@Override
 	public void load(ResourceManager manager) {
 	}
 
+	@Override
 	public void close() {
 		this.clearGlId();
 	}
@@ -49,8 +49,8 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 				float g = 256.0F;
 				float h = 0.01F;
 				return new GlyphRenderer(
-					this.field_21690,
-					this.field_21691,
+					this.textLayer,
+					this.seeThroughTextLayer,
 					((float)slot.x + 0.01F) / 256.0F,
 					((float)slot.x - 0.01F + (float)glyph.getWidth()) / 256.0F,
 					((float)slot.y + 0.01F) / 256.0F,
@@ -78,7 +78,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 		private final int height;
 		private GlyphAtlasTexture.Slot subSlot1;
 		private GlyphAtlasTexture.Slot subSlot2;
-		private boolean isOccupied;
+		private boolean occupied;
 
 		private Slot(int x, int y, int width, int height) {
 			this.x = x;
@@ -96,7 +96,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 				}
 
 				return slot;
-			} else if (this.isOccupied) {
+			} else if (this.occupied) {
 				return null;
 			} else {
 				int i = glyph.getWidth();
@@ -104,7 +104,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 				if (i > this.width || j > this.height) {
 					return null;
 				} else if (i == this.width && j == this.height) {
-					this.isOccupied = true;
+					this.occupied = true;
 					return this;
 				} else {
 					int k = this.width - i;

@@ -1,8 +1,6 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.IntArrayTag;
 
 public class BlockBox {
@@ -31,15 +29,19 @@ public class BlockBox {
 		return new BlockBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 
+	public static BlockBox infinite() {
+		return new BlockBox(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+	}
+
 	public static BlockBox rotated(int x, int y, int z, int offsetX, int offsetY, int offsetZ, int sizeX, int sizeY, int sizeZ, Direction facing) {
 		switch (facing) {
-			case NORTH:
+			case field_11043:
 				return new BlockBox(x + offsetX, y + offsetY, z - sizeZ + 1 + offsetZ, x + sizeX - 1 + offsetX, y + sizeY - 1 + offsetY, z + offsetZ);
-			case SOUTH:
+			case field_11035:
 				return new BlockBox(x + offsetX, y + offsetY, z + offsetZ, x + sizeX - 1 + offsetX, y + sizeY - 1 + offsetY, z + sizeZ - 1 + offsetZ);
-			case WEST:
+			case field_11039:
 				return new BlockBox(x - sizeZ + 1 + offsetZ, y + offsetY, z + offsetX, x + offsetZ, y + sizeY - 1 + offsetY, z + sizeX - 1 + offsetX);
-			case EAST:
+			case field_11034:
 				return new BlockBox(x + offsetZ, y + offsetY, z + offsetX, x + sizeZ - 1 + offsetZ, y + sizeY - 1 + offsetY, z + sizeX - 1 + offsetX);
 			default:
 				return new BlockBox(x + offsetX, y + offsetY, z + offsetZ, x + sizeX - 1 + offsetX, y + sizeY - 1 + offsetY, z + sizeZ - 1 + offsetZ);
@@ -121,6 +123,10 @@ public class BlockBox {
 		return new BlockBox(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
 	}
 
+	public void method_29299(Vec3i vec3i) {
+		this.offset(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+	}
+
 	public boolean contains(Vec3i vec) {
 		return vec.getX() >= this.minX
 			&& vec.getX() <= this.maxX
@@ -146,8 +152,10 @@ public class BlockBox {
 		return this.maxZ - this.minZ + 1;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public Vec3i method_22874() {
+	/**
+	 * @implNote Biased toward the minimum bound corner of the box.
+	 */
+	public Vec3i getCenter() {
 		return new BlockPos(this.minX + (this.maxX - this.minX + 1) / 2, this.minY + (this.maxY - this.minY + 1) / 2, this.minZ + (this.maxZ - this.minZ + 1) / 2);
 	}
 

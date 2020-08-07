@@ -2,8 +2,8 @@ package net.minecraft.client.gui.hud;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.entity.boss.BossBar;
+import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
@@ -38,17 +38,17 @@ public class ClientBossBar extends BossBar {
 
 	public void handlePacket(BossBarS2CPacket packet) {
 		switch (packet.getType()) {
-			case UPDATE_NAME:
+			case field_12084:
 				this.setName(packet.getName());
 				break;
-			case UPDATE_PCT:
+			case field_12080:
 				this.setPercent(packet.getPercent());
 				break;
-			case UPDATE_STYLE:
+			case field_12081:
 				this.setColor(packet.getColor());
 				this.setOverlay(packet.getOverlay());
 				break;
-			case UPDATE_PROPERTIES:
+			case field_12083:
 				this.setDarkenSky(packet.shouldDarkenSky());
 				this.setDragonMusic(packet.hasDragonMusic());
 		}

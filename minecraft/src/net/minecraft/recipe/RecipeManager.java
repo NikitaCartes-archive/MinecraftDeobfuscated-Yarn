@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
@@ -24,10 +25,10 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -44,15 +45,15 @@ public class RecipeManager extends JsonDataLoader {
 		super(GSON, "recipes");
 	}
 
-	protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void method_20705(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		this.errored = false;
 		Map<RecipeType<?>, Builder<Identifier, Recipe<?>>> map2 = Maps.<RecipeType<?>, Builder<Identifier, Recipe<?>>>newHashMap();
 
-		for (Entry<Identifier, JsonObject> entry : map.entrySet()) {
+		for (Entry<Identifier, JsonElement> entry : map.entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
 
 			try {
-				Recipe<?> recipe = deserialize(identifier, (JsonObject)entry.getValue());
+				Recipe<?> recipe = deserialize(identifier, JsonHelper.asObject((JsonElement)entry.getValue(), "top element"));
 				((Builder)map2.computeIfAbsent(recipe.getType(), recipeType -> ImmutableMap.builder())).put(identifier, recipe);
 			} catch (IllegalArgumentException | JsonParseException var9) {
 				LOGGER.error("Parsing error loading recipe {}", identifier, var9);
@@ -67,6 +68,14 @@ public class RecipeManager extends JsonDataLoader {
 
 	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> type, C inventory, World world) {
 		return this.getAllOfType(type).values().stream().flatMap(recipe -> Util.stream(type.get(recipe, world, inventory))).findFirst();
+	}
+
+	/**
+	 * Creates a list of all recipes of the given type.
+	 * Modifications to the returned list do not affect the manager.
+	 */
+	public <C extends Inventory, T extends Recipe<C>> List<T> listAllOfType(RecipeType<T> recipeType) {
+		return (List<T>)this.getAllOfType(recipeType).values().stream().map(recipe -> recipe).collect(Collectors.toList());
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> type, C inventory, World world) {
@@ -87,10 +96,10 @@ public class RecipeManager extends JsonDataLoader {
 		if (optional.isPresent()) {
 			return ((Recipe)optional.get()).getRemainingStacks(inventory);
 		} else {
-			DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.getInvSize(), ItemStack.EMPTY);
+			DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
 
 			for (int i = 0; i < defaultedList.size(); i++) {
-				defaultedList.set(i, inventory.getInvStack(i));
+				defaultedList.set(i, inventory.getStack(i));
 			}
 
 			return defaultedList;

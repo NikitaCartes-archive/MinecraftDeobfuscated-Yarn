@@ -11,15 +11,15 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class ObserverBlock extends FacingBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
 
-	public ObserverBlock(Block.Settings settings) {
+	public ObserverBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.SOUTH).with(POWERED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11035).with(POWERED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -43,22 +43,22 @@ public class ObserverBlock extends FacingBlock {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
 		} else {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
-			world.getBlockTickScheduler().schedule(pos, this, 2);
+			world.method_14196().schedule(pos, this, 2);
 		}
 
 		this.updateNeighbors(world, pos, state);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (state.get(FACING) == facing && !(Boolean)state.get(POWERED)) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		if (state.get(FACING) == direction && !(Boolean)state.get(POWERED)) {
 			this.scheduleTick(world, pos);
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
-	private void scheduleTick(IWorld world, BlockPos pos) {
+	private void scheduleTick(WorldAccess world, BlockPos pos) {
 		if (!world.isClient() && !world.getBlockTickScheduler().isScheduled(pos, this)) {
 			world.getBlockTickScheduler().schedule(pos, this, 2);
 		}
@@ -77,18 +77,18 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return state.getWeakRedstonePower(view, pos, facing);
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+		return state.getWeakRedstonePower(world, pos, direction);
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return state.get(POWERED) && state.get(FACING) == facing ? 15 : 0;
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+		return state.get(POWERED) && state.get(FACING) == direction ? 15 : 0;
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-		if (state.getBlock() != oldState.getBlock()) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+		if (!state.isOf(oldState.getBlock())) {
 			if (!world.isClient() && (Boolean)state.get(POWERED) && !world.getBlockTickScheduler().isScheduled(pos, this)) {
 				BlockState blockState = state.with(POWERED, Boolean.valueOf(false));
 				world.setBlockState(pos, blockState, 18);
@@ -98,8 +98,8 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (state.getBlock() != newState.getBlock()) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!state.isOf(newState.getBlock())) {
 			if (!world.isClient && (Boolean)state.get(POWERED) && world.getBlockTickScheduler().isScheduled(pos, this)) {
 				this.updateNeighbors(world, pos, state.with(POWERED, Boolean.valueOf(false)));
 			}

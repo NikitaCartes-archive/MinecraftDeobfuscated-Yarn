@@ -5,12 +5,12 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -22,7 +22,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -38,7 +38,7 @@ public class BlockItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		ActionResult actionResult = this.place(new ItemPlacementContext(context));
-		return actionResult != ActionResult.SUCCESS && this.isFood() ? this.use(context.world, context.player, context.hand).getResult() : actionResult;
+		return !actionResult.isAccepted() && this.isFood() ? this.use(context.getWorld(), context.getPlayer(), context.getHand()).getResult() : actionResult;
 	}
 
 	public ActionResult place(ItemPlacementContext context) {
@@ -66,7 +66,7 @@ public class BlockItem extends Item {
 						this.postPlacement(blockPos, world, playerEntity, itemStack, blockState2);
 						block.onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
 						if (playerEntity instanceof ServerPlayerEntity) {
-							Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+							Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
 						}
 					}
 
@@ -75,12 +75,15 @@ public class BlockItem extends Item {
 						playerEntity,
 						blockPos,
 						this.getPlaceSound(blockState2),
-						SoundCategory.BLOCKS,
+						SoundCategory.field_15245,
 						(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
 						blockSoundGroup.getPitch() * 0.8F
 					);
-					itemStack.decrement(1);
-					return ActionResult.SUCCESS;
+					if (playerEntity == null || !playerEntity.abilities.creativeMode) {
+						itemStack.decrement(1);
+					}
+
+					return ActionResult.success(world.isClient);
 				}
 			}
 		}
@@ -134,9 +137,9 @@ public class BlockItem extends Item {
 
 	protected boolean canPlace(ItemPlacementContext context, BlockState state) {
 		PlayerEntity playerEntity = context.getPlayer();
-		EntityContext entityContext = playerEntity == null ? EntityContext.absent() : EntityContext.of(playerEntity);
+		ShapeContext shapeContext = playerEntity == null ? ShapeContext.absent() : ShapeContext.of(playerEntity);
 		return (!this.checkStatePlacement() || state.canPlaceAt(context.getWorld(), context.getBlockPos()))
-			&& context.getWorld().canPlace(state, context.getBlockPos(), entityContext);
+			&& context.getWorld().canPlace(state, context.getBlockPos(), shapeContext);
 	}
 
 	protected boolean checkStatePlacement() {
@@ -156,18 +159,18 @@ public class BlockItem extends Item {
 			if (compoundTag != null) {
 				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity != null) {
-					if (!world.isClient && blockEntity.shouldNotCopyTagFromItem() && (player == null || !player.isCreativeLevelTwoOp())) {
+					if (!world.isClient && blockEntity.copyItemDataRequiresOperator() && (player == null || !player.isCreativeLevelTwoOp())) {
 						return false;
 					}
 
 					CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
-					CompoundTag compoundTag3 = compoundTag2.copy();
+					CompoundTag compoundTag3 = compoundTag2.method_10553();
 					compoundTag2.copyFrom(compoundTag);
 					compoundTag2.putInt("x", pos.getX());
 					compoundTag2.putInt("y", pos.getY());
 					compoundTag2.putInt("z", pos.getZ());
 					if (!compoundTag2.equals(compoundTag3)) {
-						blockEntity.fromTag(compoundTag2);
+						blockEntity.fromTag(world.getBlockState(pos), compoundTag2);
 						blockEntity.markDirty();
 						return true;
 					}
@@ -194,7 +197,7 @@ public class BlockItem extends Item {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		super.appendTooltip(stack, world, tooltip, context);
-		this.getBlock().buildTooltip(stack, world, tooltip, context);
+		this.getBlock().appendTooltip(stack, world, tooltip, context);
 	}
 
 	public Block getBlock() {

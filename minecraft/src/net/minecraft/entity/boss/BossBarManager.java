@@ -5,18 +5,12 @@ import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class BossBarManager {
-	private final MinecraftServer server;
 	private final Map<Identifier, CommandBossBar> commandBossBars = Maps.<Identifier, CommandBossBar>newHashMap();
-
-	public BossBarManager(MinecraftServer server) {
-		this.server = server;
-	}
 
 	@Nullable
 	public CommandBossBar get(Identifier id) {
@@ -64,7 +58,7 @@ public class BossBarManager {
 		}
 	}
 
-	public void onPlayerDisconnenct(ServerPlayerEntity player) {
+	public void onPlayerDisconnect(ServerPlayerEntity player) {
 		for (CommandBossBar commandBossBar : this.commandBossBars.values()) {
 			commandBossBar.onPlayerDisconnect(player);
 		}

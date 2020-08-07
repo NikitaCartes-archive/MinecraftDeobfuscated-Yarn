@@ -1,27 +1,25 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class RandomFeature extends Feature<RandomFeatureConfig> {
-	public RandomFeature(Function<Dynamic<?>, ? extends RandomFeatureConfig> configFactory) {
-		super(configFactory);
+	public RandomFeature(Codec<RandomFeatureConfig> codec) {
+		super(codec);
 	}
 
-	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, RandomFeatureConfig randomFeatureConfig
+	public boolean method_13798(
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomFeatureConfig randomFeatureConfig
 	) {
-		for (RandomFeatureEntry<?> randomFeatureEntry : randomFeatureConfig.features) {
+		for (RandomFeatureEntry randomFeatureEntry : randomFeatureConfig.features) {
 			if (random.nextFloat() < randomFeatureEntry.chance) {
-				return randomFeatureEntry.generate(iWorld, chunkGenerator, random, blockPos);
+				return randomFeatureEntry.generate(structureWorldAccess, chunkGenerator, random, blockPos);
 			}
 		}
 
-		return randomFeatureConfig.defaultFeature.generate(iWorld, chunkGenerator, random, blockPos);
+		return ((ConfiguredFeature)randomFeatureConfig.defaultFeature.get()).generate(structureWorldAccess, chunkGenerator, random, blockPos);
 	}
 }

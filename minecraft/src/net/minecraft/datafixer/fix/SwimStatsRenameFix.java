@@ -1,16 +1,16 @@
 package net.minecraft.datafixer.fix;
 
-import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class SwimStatsRenameFix extends DataFix {
-	public SwimStatsRenameFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public SwimStatsRenameFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class SwimStatsRenameFix extends DataFix {
 		Type<?> type2 = this.getInputSchema().getType(TypeReferences.STATS);
 		OpticFinder<?> opticFinder = type2.findField("stats");
 		OpticFinder<?> opticFinder2 = opticFinder.type().findField("minecraft:custom");
-		OpticFinder<String> opticFinder3 = DSL.namespacedString().finder();
+		OpticFinder<String> opticFinder3 = IdentifierNormalizingSchema.getIdentifierType().finder();
 		return this.fixTypeEverywhereTyped(
 			"SwimStatsRenameFix",
 			type2,

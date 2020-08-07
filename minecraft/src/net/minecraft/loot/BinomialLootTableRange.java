@@ -44,14 +44,14 @@ public final class BinomialLootTableRange implements LootTableRange {
 	}
 
 	public static class Serializer implements JsonDeserializer<BinomialLootTableRange>, JsonSerializer<BinomialLootTableRange> {
-		public BinomialLootTableRange deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public BinomialLootTableRange method_275(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "value");
 			int i = JsonHelper.getInt(jsonObject, "n");
 			float f = JsonHelper.getFloat(jsonObject, "p");
 			return new BinomialLootTableRange(i, f);
 		}
 
-		public JsonElement serialize(BinomialLootTableRange binomialLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement method_276(BinomialLootTableRange binomialLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("n", binomialLootTableRange.n);
 			jsonObject.addProperty("p", binomialLootTableRange.p);

@@ -7,24 +7,27 @@ import com.mojang.authlib.properties.Property;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.UserCache;
 
 public class SkullBlockEntity extends BlockEntity implements Tickable {
+	@Nullable
+	private static UserCache userCache;
+	@Nullable
+	private static MinecraftSessionService sessionService;
+	@Nullable
 	private GameProfile owner;
 	private int ticksPowered;
-	private boolean isPowered;
-	private static UserCache userCache;
-	private static MinecraftSessionService sessionService;
+	private boolean powered;
 
 	public SkullBlockEntity() {
-		super(BlockEntityType.SKULL);
+		super(BlockEntityType.field_11913);
 	}
 
 	public static void setUserCache(UserCache value) {
@@ -41,17 +44,17 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 		if (this.owner != null) {
 			CompoundTag compoundTag = new CompoundTag();
 			NbtHelper.fromGameProfile(compoundTag, this.owner);
-			tag.put("Owner", compoundTag);
+			tag.put("SkullOwner", compoundTag);
 		}
 
 		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		if (tag.contains("Owner", 10)) {
-			this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("Owner")));
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		if (tag.contains("SkullOwner", 10)) {
+			this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
 		} else if (tag.contains("ExtraType", 8)) {
 			String string = tag.getString("ExtraType");
 			if (!ChatUtil.isEmpty(string)) {
@@ -62,20 +65,20 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 
 	@Override
 	public void tick() {
-		Block block = this.getCachedState().getBlock();
-		if (block == Blocks.DRAGON_HEAD || block == Blocks.DRAGON_WALL_HEAD) {
+		BlockState blockState = this.getCachedState();
+		if (blockState.isOf(Blocks.field_10337) || blockState.isOf(Blocks.field_10472)) {
 			if (this.world.isReceivingRedstonePower(this.pos)) {
-				this.isPowered = true;
+				this.powered = true;
 				this.ticksPowered++;
 			} else {
-				this.isPowered = false;
+				this.powered = false;
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public float getTicksPowered(float tickDelta) {
-		return this.isPowered ? (float)this.ticksPowered + tickDelta : (float)this.ticksPowered;
+		return this.powered ? (float)this.ticksPowered + tickDelta : (float)this.ticksPowered;
 	}
 
 	@Nullable
@@ -105,7 +108,8 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 		this.markDirty();
 	}
 
-	public static GameProfile loadProperties(GameProfile profile) {
+	@Nullable
+	public static GameProfile loadProperties(@Nullable GameProfile profile) {
 		if (profile != null && !ChatUtil.isEmpty(profile.getName())) {
 			if (profile.isComplete() && profile.getProperties().containsKey("textures")) {
 				return profile;

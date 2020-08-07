@@ -1,33 +1,34 @@
 package net.minecraft.entity.ai.pathing;
 
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.DolphinEntity;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class SwimNavigation extends EntityNavigation {
-	private boolean field_6689;
+	private boolean canJumpOutOfWater;
 
-	public SwimNavigation(MobEntity entity, World world) {
-		super(entity, world);
+	public SwimNavigation(MobEntity mobEntity, World world) {
+		super(mobEntity, world);
 	}
 
 	@Override
-	protected PathNodeNavigator createPathNodeNavigator(int i) {
-		this.field_6689 = this.entity instanceof DolphinEntity;
-		this.nodeMaker = new WaterPathNodeMaker(this.field_6689);
-		return new PathNodeNavigator(this.nodeMaker, i);
+	protected PathNodeNavigator createPathNodeNavigator(int range) {
+		this.canJumpOutOfWater = this.entity instanceof DolphinEntity;
+		this.nodeMaker = new WaterPathNodeMaker(this.canJumpOutOfWater);
+		return new PathNodeNavigator(this.nodeMaker, range);
 	}
 
 	@Override
 	protected boolean isAtValidPosition() {
-		return this.field_6689 || this.isInLiquid();
+		return this.canJumpOutOfWater || this.isInLiquid();
 	}
 
 	@Override
@@ -44,17 +45,17 @@ public class SwimNavigation extends EntityNavigation {
 
 		if (!this.isIdle()) {
 			if (this.isAtValidPosition()) {
-				this.method_6339();
-			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
-				Vec3d vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
+				this.continueFollowingPath();
+			} else if (this.currentPath != null && !this.currentPath.isFinished()) {
+				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x)
 					&& MathHelper.floor(this.entity.getY()) == MathHelper.floor(vec3d.y)
 					&& MathHelper.floor(this.entity.getZ()) == MathHelper.floor(vec3d.z)) {
-					this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
+					this.currentPath.next();
 				}
 			}
 
-			DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
+			DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.nodeReachProximity);
 			if (!this.isIdle()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				this.entity.getMoveControl().moveTo(vec3d.x, vec3d.y, vec3d.z, this.speed);
@@ -63,7 +64,7 @@ public class SwimNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected void method_6339() {
+	protected void continueFollowingPath() {
 		if (this.currentPath != null) {
 			Vec3d vec3d = this.getPos();
 			float f = this.entity.getWidth();
@@ -74,9 +75,9 @@ public class SwimNavigation extends EntityNavigation {
 			}
 
 			int i = 6;
-			Vec3d vec3d3 = this.currentPath.getCurrentPosition();
-			if (Math.abs(this.entity.getX() - (vec3d3.x + 0.5)) < (double)g
-				&& Math.abs(this.entity.getZ() - (vec3d3.z + 0.5)) < (double)g
+			Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.method_31032());
+			if (Math.abs(this.entity.getX() - vec3d3.x) < (double)g
+				&& Math.abs(this.entity.getZ() - vec3d3.z) < (double)g
 				&& Math.abs(this.entity.getY() - vec3d3.y) < (double)(g * 2.0F)) {
 				this.currentPath.next();
 			}
@@ -89,52 +90,54 @@ public class SwimNavigation extends EntityNavigation {
 				}
 			}
 
-			this.method_6346(vec3d);
+			this.checkTimeouts(vec3d);
 		}
 	}
 
 	@Override
-	protected void method_6346(Vec3d vec3d) {
-		if (this.tickCount - this.field_6674 > 100) {
-			if (vec3d.squaredDistanceTo(this.field_6672) < 2.25) {
+	protected void checkTimeouts(Vec3d currentPos) {
+		if (this.tickCount - this.pathStartTime > 100) {
+			if (currentPos.squaredDistanceTo(this.pathStartPos) < 2.25) {
 				this.stop();
 			}
 
-			this.field_6674 = this.tickCount;
-			this.field_6672 = vec3d;
+			this.pathStartTime = this.tickCount;
+			this.pathStartPos = currentPos;
 		}
 
 		if (this.currentPath != null && !this.currentPath.isFinished()) {
-			Vec3d vec3d2 = this.currentPath.getCurrentPosition();
-			if (vec3d2.equals(this.field_6680)) {
-				this.field_6670 = this.field_6670 + (Util.getMeasuringTimeMs() - this.field_6669);
+			Vec3i vec3i = this.currentPath.method_31032();
+			if (vec3i.equals(this.lastNodePosition)) {
+				this.currentNodeMs = this.currentNodeMs + (Util.getMeasuringTimeMs() - this.lastActiveTickMs);
 			} else {
-				this.field_6680 = vec3d2;
-				double d = vec3d.distanceTo(this.field_6680);
-				this.field_6682 = this.entity.getMovementSpeed() > 0.0F ? d / (double)this.entity.getMovementSpeed() * 100.0 : 0.0;
+				this.lastNodePosition = vec3i;
+				double d = currentPos.distanceTo(Vec3d.ofCenter(this.lastNodePosition));
+				this.currentNodeTimeout = this.entity.getMovementSpeed() > 0.0F ? d / (double)this.entity.getMovementSpeed() * 100.0 : 0.0;
 			}
 
-			if (this.field_6682 > 0.0 && (double)this.field_6670 > this.field_6682 * 2.0) {
-				this.field_6680 = Vec3d.ZERO;
-				this.field_6670 = 0L;
-				this.field_6682 = 0.0;
+			if (this.currentNodeTimeout > 0.0 && (double)this.currentNodeMs > this.currentNodeTimeout * 2.0) {
+				this.lastNodePosition = Vec3i.ZERO;
+				this.currentNodeMs = 0L;
+				this.currentNodeTimeout = 0.0;
 				this.stop();
 			}
 
-			this.field_6669 = Util.getMeasuringTimeMs();
+			this.lastActiveTickMs = Util.getMeasuringTimeMs();
 		}
 	}
 
 	@Override
 	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target, int sizeX, int sizeY, int sizeZ) {
 		Vec3d vec3d = new Vec3d(target.x, target.y + (double)this.entity.getHeight() * 0.5, target.z);
-		return this.world.rayTrace(new RayTraceContext(origin, vec3d, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.entity)).getType()
-			== HitResult.Type.MISS;
+		return this.world
+				.rayTrace(new RayTraceContext(origin, vec3d, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this.entity))
+				.getType()
+			== HitResult.Type.field_1333;
 	}
 
 	@Override
 	public boolean isValidPosition(BlockPos pos) {
-		return !this.world.getBlockState(pos).isFullOpaque(this.world, pos);
+		return !this.world.getBlockState(pos).isOpaqueFullCube(this.world, pos);
 	}
 
 	@Override

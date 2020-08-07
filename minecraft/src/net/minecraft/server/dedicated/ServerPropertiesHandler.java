@@ -4,9 +4,10 @@ import java.nio.file.Path;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.level.LevelGeneratorType;
+import net.minecraft.world.gen.GeneratorOptions;
 
 public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPropertiesHandler> {
 	public final boolean onlineMode = this.parseBoolean("online-mode", true);
@@ -20,19 +21,13 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final String motd = this.getString("motd", "A Minecraft Server");
 	public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
 	public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
-	public final boolean generateStructures = this.parseBoolean("generate-structures", true);
 	public final Difficulty difficulty = this.get(
-		"difficulty", wrapIntParsingFunction(Difficulty::byOrdinal, Difficulty::byName), Difficulty::getName, Difficulty.EASY
+		"difficulty", combineParser(Difficulty::byOrdinal, Difficulty::byName), Difficulty::getName, Difficulty.field_5805
 	);
-	public final GameMode gameMode = this.get("gamemode", wrapIntParsingFunction(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.SURVIVAL);
+	public final GameMode gameMode = this.get("gamemode", combineParser(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.field_9215);
 	public final String levelName = this.getString("level-name", "world");
-	public final String levelSeed = this.getString("level-seed", "");
-	public final LevelGeneratorType levelType = this.get(
-		"level-type", LevelGeneratorType::getTypeFromName, LevelGeneratorType::getName, LevelGeneratorType.DEFAULT
-	);
-	public final String generatorSettings = this.getString("generator-settings", "");
 	public final int serverPort = this.getInt("server-port", 25565);
-	public final int maxBuildHeight = this.parseIntWithOperation("max-build-height", integer -> MathHelper.clamp((integer + 8) / 16 * 16, 64, 256), 256);
+	public final int maxBuildHeight = this.transformedParseInt("max-build-height", integer -> MathHelper.clamp((integer + 8) / 16 * 16, 64, 256), 256);
 	public final Boolean announcePlayerAchievements = this.getDeprecatedBoolean("announce-player-achievements");
 	public final boolean enableQuery = this.parseBoolean("enable-query", false);
 	public final int queryPort = this.getInt("query.port", 25565);
@@ -51,16 +46,22 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final int opPermissionLevel;
 	public final int functionPermissionLevel;
 	public final long maxTickTime;
+	public final int rateLimit;
 	public final int viewDistance;
 	public final int maxPlayers;
 	public final int networkCompressionThreshold;
 	public final boolean broadcastRconToOps;
 	public final boolean broadcastConsoleToOps;
 	public final int maxWorldSize;
+	public final boolean syncChunkWrites;
+	public final boolean enableJmxMonitoring;
+	public final boolean enableStatus;
+	public final int entityBroadcastRangePercentage;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList;
+	public final GeneratorOptions generatorOptions;
 
-	public ServerPropertiesHandler(Properties properties) {
+	public ServerPropertiesHandler(Properties properties, DynamicRegistryManager dynamicRegistryManager) {
 		super(properties);
 		if (this.parseBoolean("snooper-enabled", true)) {
 		}
@@ -72,21 +73,27 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		this.opPermissionLevel = this.getInt("op-permission-level", 4);
 		this.functionPermissionLevel = this.getInt("function-permission-level", 2);
 		this.maxTickTime = this.parseLong("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
+		this.rateLimit = this.getInt("rate-limit", 0);
 		this.viewDistance = this.getInt("view-distance", 10);
 		this.maxPlayers = this.getInt("max-players", 20);
 		this.networkCompressionThreshold = this.getInt("network-compression-threshold", 256);
 		this.broadcastRconToOps = this.parseBoolean("broadcast-rcon-to-ops", true);
 		this.broadcastConsoleToOps = this.parseBoolean("broadcast-console-to-ops", true);
-		this.maxWorldSize = this.parseIntWithOperation("max-world-size", integer -> MathHelper.clamp(integer, 1, 29999984), 29999984);
+		this.maxWorldSize = this.transformedParseInt("max-world-size", integer -> MathHelper.clamp(integer, 1, 29999984), 29999984);
+		this.syncChunkWrites = this.parseBoolean("sync-chunk-writes", true);
+		this.enableJmxMonitoring = this.parseBoolean("enable-jmx-monitoring", false);
+		this.enableStatus = this.parseBoolean("enable-status", true);
+		this.entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", integer -> MathHelper.clamp(integer, 10, 1000), 100);
 		this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 		this.whiteList = this.booleanAccessor("white-list", false);
+		this.generatorOptions = GeneratorOptions.fromProperties(dynamicRegistryManager, properties);
 	}
 
-	public static ServerPropertiesHandler load(Path path) {
-		return new ServerPropertiesHandler(load(path));
+	public static ServerPropertiesHandler load(DynamicRegistryManager dynamicRegistryManager, Path path) {
+		return new ServerPropertiesHandler(loadProperties(path), dynamicRegistryManager);
 	}
 
-	protected ServerPropertiesHandler create(Properties properties) {
-		return new ServerPropertiesHandler(properties);
+	protected ServerPropertiesHandler method_16713(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
+		return new ServerPropertiesHandler(properties, dynamicRegistryManager);
 	}
 }

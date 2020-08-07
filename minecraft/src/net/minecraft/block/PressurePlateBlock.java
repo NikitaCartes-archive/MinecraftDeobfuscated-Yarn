@@ -10,14 +10,14 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	private final PressurePlateBlock.ActivationRule type;
 
-	protected PressurePlateBlock(PressurePlateBlock.ActivationRule type, Block.Settings settings) {
+	protected PressurePlateBlock(PressurePlateBlock.ActivationRule type, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)));
 		this.type = type;
@@ -34,20 +34,20 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	}
 
 	@Override
-	protected void playPressSound(IWorld world, BlockPos pos) {
-		if (this.material == Material.WOOD) {
-			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.8F);
+	protected void playPressSound(WorldAccess world, BlockPos pos) {
+		if (this.material != Material.WOOD && this.material != Material.NETHER_WOOD) {
+			world.playSound(null, pos, SoundEvents.field_15217, SoundCategory.field_15245, 0.3F, 0.6F);
 		} else {
-			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
+			world.playSound(null, pos, SoundEvents.field_14961, SoundCategory.field_15245, 0.3F, 0.8F);
 		}
 	}
 
 	@Override
-	protected void playDepressSound(IWorld world, BlockPos pos) {
-		if (this.material == Material.WOOD) {
-			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.7F);
+	protected void playDepressSound(WorldAccess world, BlockPos pos) {
+		if (this.material != Material.WOOD && this.material != Material.NETHER_WOOD) {
+			world.playSound(null, pos, SoundEvents.field_15116, SoundCategory.field_15245, 0.3F, 0.5F);
 		} else {
-			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
+			world.playSound(null, pos, SoundEvents.field_15002, SoundCategory.field_15245, 0.3F, 0.7F);
 		}
 	}
 
@@ -56,10 +56,10 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 		Box box = BOX.offset(pos);
 		List<? extends Entity> list;
 		switch (this.type) {
-			case EVERYTHING:
-				list = world.getEntities(null, box);
+			case field_11361:
+				list = world.getOtherEntities(null, box);
 				break;
-			case MOBS:
+			case field_11362:
 				list = world.getNonSpectatingEntities(LivingEntity.class, box);
 				break;
 			default:
@@ -83,7 +83,7 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	}
 
 	public static enum ActivationRule {
-		EVERYTHING,
-		MOBS;
+		field_11361,
+		field_11362;
 	}
 }

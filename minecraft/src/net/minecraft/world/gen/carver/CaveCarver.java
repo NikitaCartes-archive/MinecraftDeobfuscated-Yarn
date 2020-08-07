@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.carver;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
@@ -11,15 +11,15 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
 public class CaveCarver extends Carver<ProbabilityConfig> {
-	public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer, int heightLimit) {
-		super(configDeserializer, heightLimit);
+	public CaveCarver(Codec<ProbabilityConfig> codec, int i) {
+		super(codec, i);
 	}
 
-	public boolean shouldCarve(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
+	public boolean method_12676(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
 		return random.nextFloat() <= probabilityConfig.probability;
 	}
 
-	public boolean carve(
+	public boolean method_12673(
 		Chunk chunk, Function<BlockPos, Biome> function, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig
 	) {
 		int n = (this.getBranchFactor() * 2 - 1) * 16;
@@ -72,67 +72,108 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 	}
 
 	protected void carveCave(
-		Chunk chunk, Function<BlockPos, Biome> function, long l, int i, int j, int k, double d, double e, double f, float g, double h, BitSet bitSet
+		Chunk chunk,
+		Function<BlockPos, Biome> posToBiome,
+		long seed,
+		int seaLevel,
+		int mainChunkX,
+		int mainChunkZ,
+		double x,
+		double y,
+		double z,
+		float yaw,
+		double yawPitchRatio,
+		BitSet carvingMask
 	) {
-		double m = 1.5 + (double)(MathHelper.sin((float) (Math.PI / 2)) * g);
-		double n = m * h;
-		this.carveRegion(chunk, function, l, i, j, k, d + 1.0, e, f, m, n, bitSet);
+		double d = 1.5 + (double)(MathHelper.sin((float) (Math.PI / 2)) * yaw);
+		double e = d * yawPitchRatio;
+		this.carveRegion(chunk, posToBiome, seed, seaLevel, mainChunkX, mainChunkZ, x + 1.0, y, z, d, e, carvingMask);
 	}
 
 	protected void carveTunnels(
 		Chunk chunk,
-		Function<BlockPos, Biome> function,
-		long l,
-		int i,
-		int j,
-		int k,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		float m,
-		int n,
-		int o,
-		double p,
-		BitSet bitSet
+		Function<BlockPos, Biome> postToBiome,
+		long seed,
+		int seaLevel,
+		int mainChunkX,
+		int mainChunkZ,
+		double x,
+		double y,
+		double z,
+		float width,
+		float yaw,
+		float pitch,
+		int branchStartIndex,
+		int branchCount,
+		double yawPitchRatio,
+		BitSet carvingMask
 	) {
-		Random random = new Random(l);
-		int q = random.nextInt(o / 2) + o / 4;
+		Random random = new Random(seed);
+		int i = random.nextInt(branchCount / 2) + branchCount / 4;
 		boolean bl = random.nextInt(6) == 0;
-		float r = 0.0F;
-		float s = 0.0F;
+		float f = 0.0F;
+		float g = 0.0F;
 
-		for (int t = n; t < o; t++) {
-			double u = 1.5 + (double)(MathHelper.sin((float) Math.PI * (float)t / (float)o) * g);
-			double v = u * p;
-			float w = MathHelper.cos(m);
-			d += (double)(MathHelper.cos(h) * w);
-			e += (double)MathHelper.sin(m);
-			f += (double)(MathHelper.sin(h) * w);
-			m *= bl ? 0.92F : 0.7F;
-			m += s * 0.1F;
-			h += r * 0.1F;
-			s *= 0.9F;
-			r *= 0.75F;
-			s += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0F;
-			r += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0F;
-			if (t == q && g > 1.0F) {
+		for (int j = branchStartIndex; j < branchCount; j++) {
+			double d = 1.5 + (double)(MathHelper.sin((float) Math.PI * (float)j / (float)branchCount) * width);
+			double e = d * yawPitchRatio;
+			float h = MathHelper.cos(pitch);
+			x += (double)(MathHelper.cos(yaw) * h);
+			y += (double)MathHelper.sin(pitch);
+			z += (double)(MathHelper.sin(yaw) * h);
+			pitch *= bl ? 0.92F : 0.7F;
+			pitch += g * 0.1F;
+			yaw += f * 0.1F;
+			g *= 0.9F;
+			f *= 0.75F;
+			g += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0F;
+			f += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0F;
+			if (j == i && width > 1.0F) {
 				this.carveTunnels(
-					chunk, function, random.nextLong(), i, j, k, d, e, f, random.nextFloat() * 0.5F + 0.5F, h - (float) (Math.PI / 2), m / 3.0F, t, o, 1.0, bitSet
+					chunk,
+					postToBiome,
+					random.nextLong(),
+					seaLevel,
+					mainChunkX,
+					mainChunkZ,
+					x,
+					y,
+					z,
+					random.nextFloat() * 0.5F + 0.5F,
+					yaw - (float) (Math.PI / 2),
+					pitch / 3.0F,
+					j,
+					branchCount,
+					1.0,
+					carvingMask
 				);
 				this.carveTunnels(
-					chunk, function, random.nextLong(), i, j, k, d, e, f, random.nextFloat() * 0.5F + 0.5F, h + (float) (Math.PI / 2), m / 3.0F, t, o, 1.0, bitSet
+					chunk,
+					postToBiome,
+					random.nextLong(),
+					seaLevel,
+					mainChunkX,
+					mainChunkZ,
+					x,
+					y,
+					z,
+					random.nextFloat() * 0.5F + 0.5F,
+					yaw + (float) (Math.PI / 2),
+					pitch / 3.0F,
+					j,
+					branchCount,
+					1.0,
+					carvingMask
 				);
 				return;
 			}
 
 			if (random.nextInt(4) != 0) {
-				if (!this.canCarveBranch(j, k, d, f, t, o, g)) {
+				if (!this.canCarveBranch(mainChunkX, mainChunkZ, x, z, j, branchCount, width)) {
 					return;
 				}
 
-				this.carveRegion(chunk, function, l, i, j, k, d, e, f, u, v, bitSet);
+				this.carveRegion(chunk, postToBiome, seed, seaLevel, mainChunkX, mainChunkZ, x, y, z, d, e, carvingMask);
 			}
 		}
 	}

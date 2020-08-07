@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
@@ -20,12 +20,12 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 	public FindInteractionTargetTask(EntityType<?> entityType, int maxDistance, Predicate<LivingEntity> shouldRunPredicate, Predicate<LivingEntity> predicate) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleState.REGISTERED,
-				MemoryModuleType.INTERACTION_TARGET,
-				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.VISIBLE_MOBS,
-				MemoryModuleState.VALUE_PRESENT
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18447,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_18442,
+				MemoryModuleState.field_18456
 			)
 		);
 		this.entityType = entityType;
@@ -47,15 +47,15 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 	public void run(ServerWorld world, LivingEntity entity, long time) {
 		super.run(world, entity, time);
 		Brain<?> brain = entity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
+		brain.getOptionalMemory(MemoryModuleType.field_18442)
 			.ifPresent(
 				list -> list.stream()
 						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance)
 						.filter(this::test)
 						.findFirst()
 						.ifPresent(livingEntityx -> {
-							brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntityx);
-							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityx));
+							brain.remember(MemoryModuleType.field_18447, livingEntityx);
+							brain.remember(MemoryModuleType.field_18446, new EntityLookTarget(livingEntityx, true));
 						})
 			);
 	}
@@ -65,6 +65,6 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 	}
 
 	private List<LivingEntity> getVisibleMobs(LivingEntity entity) {
-		return (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
+		return (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get();
 	}
 }

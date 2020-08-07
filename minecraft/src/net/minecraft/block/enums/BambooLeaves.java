@@ -3,9 +3,9 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum BambooLeaves implements StringIdentifiable {
-	NONE("none"),
-	SMALL("small"),
-	LARGE("large");
+	field_12469("none"),
+	field_12466("small"),
+	field_12468("large");
 
 	private final String name;
 

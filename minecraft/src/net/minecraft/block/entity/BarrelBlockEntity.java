@@ -3,19 +3,19 @@ package net.minecraft.block.entity;
 import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.container.Container;
-import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 
@@ -23,12 +23,12 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 	private int viewerCount;
 
-	private BarrelBlockEntity(BlockEntityType<?> blockEntityType) {
-		super(blockEntityType);
+	private BarrelBlockEntity(BlockEntityType<?> type) {
+		super(type);
 	}
 
 	public BarrelBlockEntity() {
-		this(BlockEntityType.BARREL);
+		this(BlockEntityType.field_16411);
 	}
 
 	@Override
@@ -42,16 +42,16 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(tag)) {
 			Inventories.fromTag(tag, this.inventory);
 		}
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return 27;
 	}
 
@@ -71,12 +71,12 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return GenericContainer.createGeneric9x3(i, playerInventory, this);
+	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return GenericContainerScreenHandler.createGeneric9x3(syncId, playerInventory, this);
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity player) {
+	public void onOpen(PlayerEntity player) {
 		if (!player.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
@@ -86,7 +86,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 			BlockState blockState = this.getCachedState();
 			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
 			if (!bl) {
-				this.playSound(blockState, SoundEvents.BLOCK_BARREL_OPEN);
+				this.playSound(blockState, SoundEvents.field_17604);
 				this.setOpen(blockState, true);
 			}
 
@@ -107,21 +107,21 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 			this.scheduleUpdate();
 		} else {
 			BlockState blockState = this.getCachedState();
-			if (blockState.getBlock() != Blocks.BARREL) {
+			if (!blockState.isOf(Blocks.field_16328)) {
 				this.markRemoved();
 				return;
 			}
 
 			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
 			if (bl) {
-				this.playSound(blockState, SoundEvents.BLOCK_BARREL_CLOSE);
+				this.playSound(blockState, SoundEvents.field_17603);
 				this.setOpen(blockState, false);
 			}
 		}
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity player) {
+	public void onClose(PlayerEntity player) {
 		if (!player.isSpectator()) {
 			this.viewerCount--;
 		}
@@ -136,6 +136,6 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 		double d = (double)this.pos.getX() + 0.5 + (double)vec3i.getX() / 2.0;
 		double e = (double)this.pos.getY() + 0.5 + (double)vec3i.getY() / 2.0;
 		double f = (double)this.pos.getZ() + 0.5 + (double)vec3i.getZ() / 2.0;
-		this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+		this.world.playSound(null, d, e, f, soundEvent, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 	}
 }

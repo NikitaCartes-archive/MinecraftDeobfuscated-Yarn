@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
@@ -127,6 +128,12 @@ public class NamespaceResourceManager implements ResourceManager {
 
 		Collections.sort(list);
 		return list;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Stream<ResourcePack> streamResourcePacks() {
+		return this.packList.stream();
 	}
 
 	static Identifier getMetadataPath(Identifier id) {

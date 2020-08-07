@@ -3,13 +3,12 @@ package net.minecraft.loot.function;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import java.util.Optional;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmeltingRecipe;
-import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,11 +20,16 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25218;
+	}
+
+	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isEmpty()) {
 			return stack;
 		} else {
-			Optional<SmeltingRecipe> optional = context.getWorld().getRecipeManager().getFirstMatch(RecipeType.SMELTING, new BasicInventory(stack), context.getWorld());
+			Optional<SmeltingRecipe> optional = context.getWorld().getRecipeManager().getFirstMatch(RecipeType.SMELTING, new SimpleInventory(stack), context.getWorld());
 			if (optional.isPresent()) {
 				ItemStack itemStack = ((SmeltingRecipe)optional.get()).getOutput();
 				if (!itemStack.isEmpty()) {
@@ -44,12 +48,8 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 		return builder(FurnaceSmeltLootFunction::new);
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<FurnaceSmeltLootFunction> {
-		protected Factory() {
-			super(new Identifier("furnace_smelt"), FurnaceSmeltLootFunction.class);
-		}
-
-		public FurnaceSmeltLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+	public static class Serializer extends ConditionalLootFunction.Serializer<FurnaceSmeltLootFunction> {
+		public FurnaceSmeltLootFunction method_29324(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			return new FurnaceSmeltLootFunction(lootConditions);
 		}
 	}

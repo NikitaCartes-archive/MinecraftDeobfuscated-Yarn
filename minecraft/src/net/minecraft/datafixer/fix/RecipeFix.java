@@ -3,9 +3,8 @@ package net.minecraft.datafixer.fix;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.schemas.Schema;
 import java.util.Map;
-import net.minecraft.class_4745;
 
-public class RecipeFix extends class_4745 {
+public class RecipeFix extends RecipeRenameFix {
 	private static final Map<String, String> recipes = ImmutableMap.<String, String>builder()
 		.put("minecraft:acacia_wooden_slab", "minecraft:acacia_slab")
 		.put("minecraft:birch_wooden_slab", "minecraft:birch_slab")

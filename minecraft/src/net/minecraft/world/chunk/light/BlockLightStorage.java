@@ -10,13 +10,13 @@ import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
 
 public class BlockLightStorage extends LightStorage<BlockLightStorage.Data> {
 	protected BlockLightStorage(ChunkProvider chunkProvider) {
-		super(LightType.BLOCK, chunkProvider, new BlockLightStorage.Data(new Long2ObjectOpenHashMap<>()));
+		super(LightType.field_9282, chunkProvider, new BlockLightStorage.Data(new Long2ObjectOpenHashMap<>()));
 	}
 
 	@Override
 	protected int getLight(long blockPos) {
-		long l = ChunkSectionPos.fromGlobalPos(blockPos);
-		ChunkNibbleArray chunkNibbleArray = this.getLightArray(l, false);
+		long l = ChunkSectionPos.fromBlockPos(blockPos);
+		ChunkNibbleArray chunkNibbleArray = this.getLightSection(l, false);
 		return chunkNibbleArray == null
 			? 0
 			: chunkNibbleArray.get(
@@ -27,11 +27,11 @@ public class BlockLightStorage extends LightStorage<BlockLightStorage.Data> {
 	}
 
 	public static final class Data extends ChunkToNibbleArrayMap<BlockLightStorage.Data> {
-		public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> map) {
-			super(map);
+		public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> long2ObjectOpenHashMap) {
+			super(long2ObjectOpenHashMap);
 		}
 
-		public BlockLightStorage.Data copy() {
+		public BlockLightStorage.Data method_15443() {
 			return new BlockLightStorage.Data(this.arrays.clone());
 		}
 	}

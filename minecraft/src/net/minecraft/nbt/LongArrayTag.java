@@ -7,12 +7,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class LongArrayTag extends AbstractListTag<LongTag> {
 	public static final TagReader<LongArrayTag> READER = new TagReader<LongArrayTag>() {
-		public LongArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public LongArrayTag method_23250(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(192L);
 			int j = dataInput.readInt();
 			positionTracker.add(64L * (long)j);
@@ -94,7 +95,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return stringBuilder.append(']').toString();
 	}
 
-	public LongArrayTag copy() {
+	public LongArrayTag method_10618() {
 		long[] ls = new long[this.value.length];
 		System.arraycopy(this.value, 0, ls, 0, this.value.length);
 		return new LongArrayTag(ls);
@@ -111,18 +112,18 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	@Override
 	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("L").formatted(RED);
-		Text text2 = new LiteralText("[").append(text).append(";");
+		MutableText mutableText = new LiteralText("[").append(text).append(";");
 
 		for (int i = 0; i < this.value.length; i++) {
-			Text text3 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
-			text2.append(" ").append(text3).append(text);
+			MutableText mutableText2 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
+			mutableText.append(" ").append(mutableText2).append(text);
 			if (i != this.value.length - 1) {
-				text2.append(",");
+				mutableText.append(",");
 			}
 		}
 
-		text2.append("]");
-		return text2;
+		mutableText.append("]");
+		return mutableText;
 	}
 
 	public long[] getLongArray() {
@@ -133,17 +134,17 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return this.value.length;
 	}
 
-	public LongTag get(int i) {
+	public LongTag method_10616(int i) {
 		return LongTag.of(this.value[i]);
 	}
 
-	public LongTag set(int i, LongTag longTag) {
+	public LongTag method_17810(int i, LongTag longTag) {
 		long l = this.value[i];
 		this.value[i] = longTag.getLong();
 		return LongTag.of(l);
 	}
 
-	public void method_10531(int i, LongTag longTag) {
+	public void method_17812(int i, LongTag longTag) {
 		this.value = ArrayUtils.add(this.value, i, longTag.getLong());
 	}
 
@@ -167,10 +168,15 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		}
 	}
 
-	public LongTag method_10536(int i) {
+	public LongTag method_17811(int i) {
 		long l = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
 		return LongTag.of(l);
+	}
+
+	@Override
+	public byte getElementType() {
+		return 4;
 	}
 
 	public void clear() {

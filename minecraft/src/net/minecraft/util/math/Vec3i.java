@@ -1,19 +1,24 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
+import com.mojang.serialization.Codec;
+import java.util.stream.IntStream;
 import javax.annotation.concurrent.Immutable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.Util;
 
 @Immutable
 public class Vec3i implements Comparable<Vec3i> {
+	public static final Codec<Vec3i> field_25123 = Codec.INT_STREAM
+		.comapFlatMap(
+			intStream -> Util.toIntArray(intStream, 3).map(is -> new Vec3i(is[0], is[1], is[2])),
+			vec3i -> IntStream.of(new int[]{vec3i.getX(), vec3i.getY(), vec3i.getZ()})
+		);
 	public static final Vec3i ZERO = new Vec3i(0, 0, 0);
-	@Deprecated
-	private final int x;
-	@Deprecated
-	private final int y;
-	@Deprecated
-	private final int z;
+	private int x;
+	private int y;
+	private int z;
 
 	public Vec3i(int x, int y, int z) {
 		this.x = x;
@@ -44,7 +49,7 @@ public class Vec3i implements Comparable<Vec3i> {
 		return (this.getY() + this.getZ() * 31) * 31 + this.getX();
 	}
 
-	public int compareTo(Vec3i vec3i) {
+	public int method_10265(Vec3i vec3i) {
 		if (this.getY() == vec3i.getY()) {
 			return this.getZ() == vec3i.getZ() ? this.getX() - vec3i.getX() : this.getZ() - vec3i.getZ();
 		} else {
@@ -64,18 +69,40 @@ public class Vec3i implements Comparable<Vec3i> {
 		return this.z;
 	}
 
+	protected void setX(int x) {
+		this.x = x;
+	}
+
+	protected void setY(int y) {
+		this.y = y;
+	}
+
+	protected void setZ(int z) {
+		this.z = z;
+	}
+
+	public Vec3i up() {
+		return this.up(1);
+	}
+
+	public Vec3i up(int i) {
+		return this.offset(Direction.field_11036, i);
+	}
+
 	public Vec3i down() {
 		return this.down(1);
 	}
 
 	public Vec3i down(int i) {
-		return this.offset(Direction.DOWN, i);
+		return this.offset(Direction.field_11033, i);
 	}
 
-	public Vec3i offset(Direction direction, int i) {
-		return i == 0
+	public Vec3i offset(Direction direction, int distance) {
+		return distance == 0
 			? this
-			: new Vec3i(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
+			: new Vec3i(
+				this.getX() + direction.getOffsetX() * distance, this.getY() + direction.getOffsetY() * distance, this.getZ() + direction.getOffsetZ() * distance
+			);
 	}
 
 	public Vec3i crossProduct(Vec3i vec) {
@@ -115,6 +142,10 @@ public class Vec3i implements Comparable<Vec3i> {
 		float g = (float)Math.abs(vec.getY() - this.getY());
 		float h = (float)Math.abs(vec.getZ() - this.getZ());
 		return (int)(f + g + h);
+	}
+
+	public int method_30558(Direction.Axis axis) {
+		return axis.choose(this.x, this.y, this.z);
 	}
 
 	public String toString() {

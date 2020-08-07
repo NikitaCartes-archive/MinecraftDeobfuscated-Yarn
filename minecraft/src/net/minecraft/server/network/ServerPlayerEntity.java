@@ -6,53 +6,23 @@ import com.mojang.datafixers.util.Either;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
+import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.class_5459;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
-import net.minecraft.client.network.packet.ChatMessageS2CPacket;
-import net.minecraft.client.network.packet.CombatEventS2CPacket;
-import net.minecraft.client.network.packet.DifficultyS2CPacket;
-import net.minecraft.client.network.packet.EntitiesDestroyS2CPacket;
-import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
-import net.minecraft.client.network.packet.EntityPotionEffectS2CPacket;
-import net.minecraft.client.network.packet.EntityStatusS2CPacket;
-import net.minecraft.client.network.packet.ExperienceBarUpdateS2CPacket;
-import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
-import net.minecraft.client.network.packet.GuiCloseS2CPacket;
-import net.minecraft.client.network.packet.GuiOpenS2CPacket;
-import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
-import net.minecraft.client.network.packet.GuiUpdateS2CPacket;
-import net.minecraft.client.network.packet.HealthUpdateS2CPacket;
-import net.minecraft.client.network.packet.InventoryS2CPacket;
-import net.minecraft.client.network.packet.LookAtS2CPacket;
-import net.minecraft.client.network.packet.OpenContainerS2CPacket;
-import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
-import net.minecraft.client.network.packet.PlaySoundS2CPacket;
-import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
-import net.minecraft.client.network.packet.PlayerRespawnS2CPacket;
-import net.minecraft.client.network.packet.PlayerSpawnS2CPacket;
-import net.minecraft.client.network.packet.RemoveEntityEffectS2CPacket;
-import net.minecraft.client.network.packet.ResourcePackSendS2CPacket;
-import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
-import net.minecraft.client.network.packet.SetTradeOffersS2CPacket;
-import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
-import net.minecraft.client.network.packet.UnloadChunkS2CPacket;
-import net.minecraft.client.network.packet.WorldEventS2CPacket;
 import net.minecraft.client.options.ChatVisibility;
-import net.minecraft.command.arguments.EntityAnchorArgumentType;
-import net.minecraft.container.Container;
-import net.minecraft.container.ContainerListener;
-import net.minecraft.container.CraftingResultSlot;
-import net.minecraft.container.HorseContainer;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -60,10 +30,13 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.Angerable;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -71,16 +44,52 @@ import net.minecraft.item.Items;
 import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
+import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
+import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
+import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
+import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.screen.HorseScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -92,31 +101,35 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.TeleportTarget;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
+import net.minecraft.world.biome.source.BiomeAccess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerPlayerEntity extends PlayerEntity implements ContainerListener {
+public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private String clientLanguage = "en_US";
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
 	public final ServerPlayerInteractionManager interactionManager;
@@ -133,31 +146,35 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private int syncedFoodLevel = -99999999;
 	private boolean syncedSaturationIsZero = true;
 	private int syncedExperience = -99999999;
-	private int field_13998 = 60;
+	private int joinInvulnerabilityTicks = 60;
 	private ChatVisibility clientChatVisibility;
-	private boolean field_13971 = true;
+	private boolean clientChatColorsEnabled = true;
 	private long lastActionTime = Util.getMeasuringTimeMs();
 	private Entity cameraEntity;
 	private boolean inTeleportationState;
 	private boolean seenCredits;
-	private final ServerRecipeBook recipeBook;
+	private final ServerRecipeBook recipeBook = new ServerRecipeBook();
 	private Vec3d levitationStartPos;
 	private int levitationStartTick;
-	private boolean field_13964;
+	private boolean disconnected;
 	@Nullable
 	private Vec3d enteredNetherPos;
 	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
-	private int containerSyncId;
-	public boolean field_13991;
+	private RegistryKey<World> spawnPointDimension = World.OVERWORLD;
+	@Nullable
+	private BlockPos spawnPointPosition;
+	private boolean spawnPointSet;
+	private float spawnAngle;
+	private int screenHandlerSyncId;
+	public boolean skipPacketSlotUpdates;
 	public int pingMilliseconds;
 	public boolean notInAnyWorld;
 
 	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, ServerPlayerInteractionManager interactionManager) {
-		super(world, profile);
+		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
 		interactionManager.player = this;
 		this.interactionManager = interactionManager;
 		this.server = server;
-		this.recipeBook = new ServerRecipeBook(server.getRecipeManager());
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
 		this.stepHeight = 1.0F;
@@ -166,7 +183,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	private void moveToSpawn(ServerWorld world) {
 		BlockPos blockPos = world.getSpawnPos();
-		if (world.dimension.hasSkyLight() && world.getLevelProperties().getGameMode() != GameMode.ADVENTURE) {
+		if (world.getDimension().hasSkyLight() && world.getServer().getSaveProperties().getGameMode() != GameMode.field_9216) {
 			int i = Math.max(0, this.server.getSpawnRadius(world));
 			int j = MathHelper.floor(world.getWorldBorder().getDistanceInsideBorder((double)blockPos.getX(), (double)blockPos.getZ()));
 			if (j < i) {
@@ -180,32 +197,32 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			long l = (long)(i * 2 + 1);
 			long m = l * l;
 			int k = m > 2147483647L ? Integer.MAX_VALUE : (int)m;
-			int n = this.method_14244(k);
+			int n = this.calculateSpawnOffsetMultiplier(k);
 			int o = new Random().nextInt(k);
 
 			for (int p = 0; p < k; p++) {
 				int q = (o + n * p) % k;
 				int r = q % (i * 2 + 1);
 				int s = q / (i * 2 + 1);
-				BlockPos blockPos2 = world.getDimension().getTopSpawningBlockPosition(blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
+				BlockPos blockPos2 = SpawnLocating.findOverworldSpawn(world, blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
 				if (blockPos2 != null) {
-					this.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
+					this.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
 					if (world.doesNotCollide(this)) {
 						break;
 					}
 				}
 			}
 		} else {
-			this.setPositionAndAngles(blockPos, 0.0F, 0.0F);
+			this.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
 
 			while (!world.doesNotCollide(this) && this.getY() < 255.0) {
-				this.setPosition(this.getX(), this.getY() + 1.0, this.getZ());
+				this.updatePosition(this.getX(), this.getY() + 1.0, this.getZ());
 			}
 		}
 	}
 
-	private int method_14244(int i) {
-		return i <= 16 ? i - 1 : 17;
+	private int calculateSpawnOffsetMultiplier(int horizontalSpawnArea) {
+		return horizontalSpawnArea <= 16 ? horizontalSpawnArea - 1 : 17;
 	}
 
 	@Override
@@ -213,9 +230,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		super.readCustomDataFromTag(tag);
 		if (tag.contains("playerGameType", 99)) {
 			if (this.getServer().shouldForceGameMode()) {
-				this.interactionManager.setGameMode(this.getServer().getDefaultGameMode());
+				this.interactionManager.setGameMode(this.getServer().getDefaultGameMode(), GameMode.field_9218);
 			} else {
-				this.interactionManager.setGameMode(GameMode.byId(tag.getInt("playerGameType")));
+				this.interactionManager
+					.setGameMode(
+						GameMode.byId(tag.getInt("playerGameType")),
+						tag.contains("previousPlayerGameType", 3) ? GameMode.byId(tag.getInt("previousPlayerGameType")) : GameMode.field_9218
+					);
 			}
 		}
 
@@ -226,11 +247,23 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 		this.seenCredits = tag.getBoolean("seenCredits");
 		if (tag.contains("recipeBook", 10)) {
-			this.recipeBook.fromTag(tag.getCompound("recipeBook"));
+			this.recipeBook.fromTag(tag.getCompound("recipeBook"), this.server.getRecipeManager());
 		}
 
 		if (this.isSleeping()) {
 			this.wakeUp();
+		}
+
+		if (tag.contains("SpawnX", 99) && tag.contains("SpawnY", 99) && tag.contains("SpawnZ", 99)) {
+			this.spawnPointPosition = new BlockPos(tag.getInt("SpawnX"), tag.getInt("SpawnY"), tag.getInt("SpawnZ"));
+			this.spawnPointSet = tag.getBoolean("SpawnForced");
+			this.spawnAngle = tag.getFloat("SpawnAngle");
+			if (tag.contains("SpawnDimension")) {
+				this.spawnPointDimension = (RegistryKey<World>)World.CODEC
+					.parse(NbtOps.INSTANCE, tag.get("SpawnDimension"))
+					.resultOrPartial(LOGGER::error)
+					.orElse(World.OVERWORLD);
+			}
 		}
 	}
 
@@ -238,6 +271,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		tag.putInt("playerGameType", this.interactionManager.getGameMode().getId());
+		tag.putInt("previousPlayerGameType", this.interactionManager.method_30119().getId());
 		tag.putBoolean("seenCredits", this.seenCredits);
 		if (this.enteredNetherPos != null) {
 			CompoundTag compoundTag = new CompoundTag();
@@ -259,6 +293,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 
 		tag.put("recipeBook", this.recipeBook.toTag());
+		tag.putString("Dimension", this.world.getRegistryKey().getValue().toString());
+		if (this.spawnPointPosition != null) {
+			tag.putInt("SpawnX", this.spawnPointPosition.getX());
+			tag.putInt("SpawnY", this.spawnPointPosition.getY());
+			tag.putInt("SpawnZ", this.spawnPointPosition.getZ());
+			tag.putBoolean("SpawnForced", this.spawnPointSet);
+			tag.putFloat("SpawnAngle", this.spawnAngle);
+			Identifier.CODEC
+				.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue())
+				.resultOrPartial(LOGGER::error)
+				.ifPresent(tagx -> tag.put("SpawnDimension", tagx));
+		}
 	}
 
 	public void setExperiencePoints(int i) {
@@ -285,25 +331,25 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.syncedExperience = -1;
 	}
 
-	public void method_14235() {
-		this.container.addListener(this);
+	public void onSpawn() {
+		this.currentScreenHandler.addListener(this);
 	}
 
 	@Override
 	public void enterCombat() {
 		super.enterCombat();
-		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTER_COMBAT));
+		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12352));
 	}
 
 	@Override
 	public void endCombat() {
 		super.endCombat();
-		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.END_COMBAT));
+		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12353));
 	}
 
 	@Override
 	protected void onBlockCollision(BlockState state) {
-		Criterions.ENTER_BLOCK.trigger(this, state);
+		Criteria.ENTER_BLOCK.trigger(this, state);
 	}
 
 	@Override
@@ -314,15 +360,15 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void tick() {
 		this.interactionManager.update();
-		this.field_13998--;
+		this.joinInvulnerabilityTicks--;
 		if (this.timeUntilRegen > 0) {
 			this.timeUntilRegen--;
 		}
 
-		this.container.sendContentUpdates();
-		if (!this.world.isClient && !this.container.canUse(this)) {
-			this.closeContainer();
-			this.container = this.playerContainer;
+		this.currentScreenHandler.sendContentUpdates();
+		if (!this.world.isClient && !this.currentScreenHandler.canUse(this)) {
+			this.closeHandledScreen();
+			this.currentScreenHandler = this.playerScreenHandler;
 		}
 
 		while (!this.removedEntities.isEmpty()) {
@@ -342,8 +388,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		Entity entity = this.getCameraEntity();
 		if (entity != this) {
 			if (entity.isAlive()) {
-				this.setPositionAnglesAndUpdate(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
-				this.getServerWorld().getChunkManager().updateCameraPosition(this);
+				this.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
+				this.getServerWorld().method_14178().updateCameraPosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
 				}
@@ -352,9 +398,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 		}
 
-		Criterions.TICK.trigger(this);
+		Criteria.TICK.trigger(this);
 		if (this.levitationStartPos != null) {
-			Criterions.LEVITATION.trigger(this, this.levitationStartPos, this.age - this.levitationStartTick);
+			Criteria.LEVITATION.trigger(this, this.levitationStartPos, this.age - this.levitationStartTick);
 		}
 
 		this.advancementTracker.sendUpdate(this);
@@ -362,12 +408,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	public void playerTick() {
 		try {
-			if (!this.isSpectator() || this.world.isChunkLoaded(new BlockPos(this))) {
+			if (!this.isSpectator() || this.world.isChunkLoaded(this.getBlockPos())) {
 				super.tick();
 			}
 
-			for (int i = 0; i < this.inventory.getInvSize(); i++) {
-				ItemStack itemStack = this.inventory.getInvStack(i);
+			for (int i = 0; i < this.inventory.size(); i++) {
+				ItemStack itemStack = this.inventory.getStack(i);
 				if (itemStack.getItem().isNetworkSynced()) {
 					Packet<?> packet = ((NetworkSyncedItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, this);
 					if (packet != null) {
@@ -387,32 +433,32 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 			if (this.getHealth() + this.getAbsorptionAmount() != this.lastHealthScore) {
 				this.lastHealthScore = this.getHealth() + this.getAbsorptionAmount();
-				this.updateScores(ScoreboardCriterion.HEALTH, MathHelper.ceil(this.lastHealthScore));
+				this.updateScores(ScoreboardCriterion.field_1453, MathHelper.ceil(this.lastHealthScore));
 			}
 
 			if (this.hungerManager.getFoodLevel() != this.lastFoodScore) {
 				this.lastFoodScore = this.hungerManager.getFoodLevel();
-				this.updateScores(ScoreboardCriterion.FOOD, MathHelper.ceil((float)this.lastFoodScore));
+				this.updateScores(ScoreboardCriterion.field_1464, MathHelper.ceil((float)this.lastFoodScore));
 			}
 
 			if (this.getAir() != this.lastAirScore) {
 				this.lastAirScore = this.getAir();
-				this.updateScores(ScoreboardCriterion.AIR, MathHelper.ceil((float)this.lastAirScore));
+				this.updateScores(ScoreboardCriterion.field_1459, MathHelper.ceil((float)this.lastAirScore));
 			}
 
 			if (this.getArmor() != this.lastArmorScore) {
 				this.lastArmorScore = this.getArmor();
-				this.updateScores(ScoreboardCriterion.ARMOR, MathHelper.ceil((float)this.lastArmorScore));
+				this.updateScores(ScoreboardCriterion.field_1452, MathHelper.ceil((float)this.lastArmorScore));
 			}
 
 			if (this.totalExperience != this.lastExperienceScore) {
 				this.lastExperienceScore = this.totalExperience;
-				this.updateScores(ScoreboardCriterion.XP, MathHelper.ceil((float)this.lastExperienceScore));
+				this.updateScores(ScoreboardCriterion.field_1460, MathHelper.ceil((float)this.lastExperienceScore));
 			}
 
 			if (this.experienceLevel != this.lastLevelScore) {
 				this.lastLevelScore = this.experienceLevel;
-				this.updateScores(ScoreboardCriterion.LEVEL, MathHelper.ceil((float)this.lastLevelScore));
+				this.updateScores(ScoreboardCriterion.field_1465, MathHelper.ceil((float)this.lastLevelScore));
 			}
 
 			if (this.totalExperience != this.syncedExperience) {
@@ -421,7 +467,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 
 			if (this.age % 20 == 0) {
-				Criterions.LOCATION.trigger(this);
+				Criteria.LOCATION.trigger(this);
 			}
 		} catch (Throwable var4) {
 			CrashReport crashReport = CrashReport.create(var4, "Ticking player");
@@ -437,55 +483,68 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void onDeath(DamageSource source) {
-		boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
+		boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19398);
 		if (bl) {
 			Text text = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
 				.sendPacket(
-					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text),
+					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, text),
 					future -> {
 						if (!future.isSuccess()) {
 							int i = 256;
 							String string = text.asTruncatedString(256);
-							Text text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.YELLOW));
+							Text text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.field_1054));
 							Text text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName())
-								.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
-							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text3));
+								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, text2)));
+							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, text3));
 						}
 					}
 				);
 			AbstractTeam abstractTeam = this.getScoreboardTeam();
-			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
-				this.server.getPlayerManager().sendToAll(text);
-			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS) {
+			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1442) {
+				this.server.getPlayerManager().broadcastChatMessage(text, MessageType.field_11735, Util.NIL_UUID);
+			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1444) {
 				this.server.getPlayerManager().sendToTeam(this, text);
-			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM) {
+			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1446) {
 				this.server.getPlayerManager().sendToOtherTeams(this, text);
 			}
 		} else {
-			this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED));
+			this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350));
 		}
 
 		this.dropShoulderEntities();
+		if (this.world.getGameRules().getBoolean(GameRules.field_25401)) {
+			this.forgiveMobAnger();
+		}
+
 		if (!this.isSpectator()) {
 			this.drop(source);
 		}
 
-		this.getScoreboard().forEachScore(ScoreboardCriterion.DEATH_COUNT, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
+		this.getScoreboard().forEachScore(ScoreboardCriterion.field_1456, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
 		LivingEntity livingEntity = this.getPrimeAdversary();
 		if (livingEntity != null) {
-			this.incrementStat(Stats.KILLED_BY.getOrCreateStat(livingEntity.getType()));
+			this.incrementStat(Stats.field_15411.getOrCreateStat(livingEntity.getType()));
 			livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
 			this.onKilledBy(livingEntity);
 		}
 
 		this.world.sendEntityStatus(this, (byte)3);
-		this.incrementStat(Stats.DEATHS);
-		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
-		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
+		this.incrementStat(Stats.field_15421);
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15400));
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
 		this.extinguish();
 		this.setFlag(0, false);
 		this.getDamageTracker().update();
+	}
+
+	private void forgiveMobAnger() {
+		Box box = new Box(this.getBlockPos()).expand(32.0, 10.0, 32.0);
+		this.world
+			.getEntitiesIncludingUngeneratedChunks(MobEntity.class, box)
+			.stream()
+			.filter(mobEntity -> mobEntity instanceof Angerable)
+			.forEach(mobEntity -> ((Angerable)mobEntity).forgive(this));
 	}
 
 	@Override
@@ -495,17 +554,17 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.addScore(score);
 			String string = this.getEntityName();
 			String string2 = killer.getEntityName();
-			this.getScoreboard().forEachScore(ScoreboardCriterion.TOTAL_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
+			this.getScoreboard().forEachScore(ScoreboardCriterion.field_1457, string, ScoreboardPlayerScore::incrementScore);
 			if (killer instanceof PlayerEntity) {
-				this.incrementStat(Stats.PLAYER_KILLS);
-				this.getScoreboard().forEachScore(ScoreboardCriterion.PLAYER_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
+				this.incrementStat(Stats.field_15404);
+				this.getScoreboard().forEachScore(ScoreboardCriterion.field_1463, string, ScoreboardPlayerScore::incrementScore);
 			} else {
-				this.incrementStat(Stats.MOB_KILLS);
+				this.incrementStat(Stats.field_15414);
 			}
 
 			this.updateScoreboardScore(string, string2, ScoreboardCriterion.TEAM_KILLS);
 			this.updateScoreboardScore(string2, string, ScoreboardCriterion.KILLED_BY_TEAMS);
-			Criterions.PLAYER_KILLED_ENTITY.trigger(this, killer, damageSource);
+			Criteria.PLAYER_KILLED_ENTITY.trigger(this, killer, damageSource);
 		}
 	}
 
@@ -525,7 +584,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			return false;
 		} else {
 			boolean bl = this.server.isDedicated() && this.isPvpEnabled() && "fall".equals(source.name);
-			if (!bl && this.field_13998 > 0 && source != DamageSource.OUT_OF_WORLD) {
+			if (!bl && this.joinInvulnerabilityTicks > 0 && source != DamageSource.OUT_OF_WORLD) {
 				return false;
 			} else {
 				if (source instanceof EntityDamageSource) {
@@ -534,9 +593,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 						return false;
 					}
 
-					if (entity instanceof ProjectileEntity) {
-						ProjectileEntity projectileEntity = (ProjectileEntity)entity;
-						Entity entity2 = projectileEntity.getOwner();
+					if (entity instanceof PersistentProjectileEntity) {
+						PersistentProjectileEntity persistentProjectileEntity = (PersistentProjectileEntity)entity;
+						Entity entity2 = persistentProjectileEntity.getOwner();
 						if (entity2 instanceof PlayerEntity && !this.shouldDamagePlayer((PlayerEntity)entity2)) {
 							return false;
 						}
@@ -559,126 +618,129 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType newDimension) {
+	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
+		TeleportTarget teleportTarget = super.getTeleportTarget(destination);
+		if (teleportTarget != null && this.world.getRegistryKey() == World.OVERWORLD && destination.getRegistryKey() == World.END) {
+			Vec3d vec3d = teleportTarget.position.add(0.0, -1.0, 0.0);
+			return new TeleportTarget(vec3d, Vec3d.ZERO, 90.0F, 0.0F);
+		} else {
+			return teleportTarget;
+		}
+	}
+
+	@Nullable
+	@Override
+	public Entity moveToWorld(ServerWorld destination) {
 		this.inTeleportationState = true;
-		DimensionType dimensionType = this.dimension;
-		if (dimensionType == DimensionType.THE_END && newDimension == DimensionType.OVERWORLD) {
+		ServerWorld serverWorld = this.getServerWorld();
+		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
+		if (registryKey == World.END && destination.getRegistryKey() == World.OVERWORLD) {
 			this.detach();
 			this.getServerWorld().removePlayer(this);
 			if (!this.notInAnyWorld) {
 				this.notInAnyWorld = true;
-				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(4, this.seenCredits ? 0.0F : 1.0F));
+				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, this.seenCredits ? 0.0F : 1.0F));
 				this.seenCredits = true;
 			}
 
 			return this;
 		} else {
-			ServerWorld serverWorld = this.server.getWorld(dimensionType);
-			this.dimension = newDimension;
-			ServerWorld serverWorld2 = this.server.getWorld(newDimension);
-			LevelProperties levelProperties = serverWorld2.getLevelProperties();
+			WorldProperties worldProperties = destination.getLevelProperties();
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						newDimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), this.interactionManager.getGameMode()
+						destination.getDimension(),
+						destination.getRegistryKey(),
+						BiomeAccess.hashSeed(destination.getSeed()),
+						this.interactionManager.getGameMode(),
+						this.interactionManager.method_30119(),
+						destination.isDebugWorld(),
+						destination.isFlat(),
+						true
 					)
 				);
-			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.sendCommandTree(this);
 			serverWorld.removePlayer(this);
 			this.removed = false;
-			double d = this.getX();
-			double e = this.getY();
-			double f = this.getZ();
-			float g = this.pitch;
-			float h = this.yaw;
-			double i = 8.0;
-			float j = h;
-			serverWorld.getProfiler().push("moving");
-			if (dimensionType == DimensionType.OVERWORLD && newDimension == DimensionType.THE_NETHER) {
-				this.enteredNetherPos = this.getPos();
-				d /= 8.0;
-				f /= 8.0;
-			} else if (dimensionType == DimensionType.THE_NETHER && newDimension == DimensionType.OVERWORLD) {
-				d *= 8.0;
-				f *= 8.0;
-			} else if (dimensionType == DimensionType.OVERWORLD && newDimension == DimensionType.THE_END) {
-				BlockPos blockPos = serverWorld2.getForcedSpawnPoint();
-				d = (double)blockPos.getX();
-				e = (double)blockPos.getY();
-				f = (double)blockPos.getZ();
-				h = 90.0F;
-				g = 0.0F;
-			}
-
-			this.setPositionAndAngles(d, e, f, h, g);
-			serverWorld.getProfiler().pop();
-			serverWorld.getProfiler().push("placing");
-			double k = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundWest() + 16.0);
-			double l = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundNorth() + 16.0);
-			double m = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
-			double n = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
-			d = MathHelper.clamp(d, k, m);
-			f = MathHelper.clamp(f, l, n);
-			this.setPositionAndAngles(d, e, f, h, g);
-			if (newDimension == DimensionType.THE_END) {
-				int o = MathHelper.floor(this.getX());
-				int p = MathHelper.floor(this.getY()) - 1;
-				int q = MathHelper.floor(this.getZ());
-				int r = 1;
-				int s = 0;
-
-				for (int t = -2; t <= 2; t++) {
-					for (int u = -2; u <= 2; u++) {
-						for (int v = -1; v < 3; v++) {
-							int w = o + u * 1 + t * 0;
-							int x = p + v;
-							int y = q + u * 0 - t * 1;
-							boolean bl = v < 0;
-							serverWorld2.setBlockState(new BlockPos(w, x, y), bl ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState());
-						}
-					}
+			TeleportTarget teleportTarget = this.getTeleportTarget(destination);
+			if (teleportTarget != null) {
+				serverWorld.getProfiler().push("moving");
+				if (registryKey == World.OVERWORLD && destination.getRegistryKey() == World.NETHER) {
+					this.enteredNetherPos = this.getPos();
+				} else if (destination.getRegistryKey() == World.END) {
+					this.createEndSpawnPlatform(destination, new BlockPos(teleportTarget.position));
 				}
 
-				this.setPositionAndAngles((double)o, (double)p, (double)q, h, 0.0F);
-				this.setVelocity(Vec3d.ZERO);
-			} else if (!serverWorld2.getPortalForcer().usePortal(this, j)) {
-				serverWorld2.getPortalForcer().createPortal(this);
-				serverWorld2.getPortalForcer().usePortal(this, j);
+				serverWorld.getProfiler().pop();
+				serverWorld.getProfiler().push("placing");
+				this.setWorld(destination);
+				destination.onPlayerChangeDimension(this);
+				this.setRotation(teleportTarget.yaw, teleportTarget.pitch);
+				this.refreshPositionAfterTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z);
+				serverWorld.getProfiler().pop();
+				this.worldChanged(serverWorld);
+				this.interactionManager.setWorld(destination);
+				this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
+				playerManager.sendWorldInfo(this, destination);
+				playerManager.sendPlayerStatus(this);
+
+				for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
+					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), statusEffectInstance));
+				}
+
+				this.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
+				this.syncedExperience = -1;
+				this.syncedHealth = -1.0F;
+				this.syncedFoodLevel = -1;
 			}
 
-			serverWorld.getProfiler().pop();
-			this.setWorld(serverWorld2);
-			serverWorld2.onPlayerChangeDimension(this);
-			this.dimensionChanged(serverWorld);
-			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), h, g);
-			this.interactionManager.setWorld(serverWorld2);
-			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
-			playerManager.sendWorldInfo(this, serverWorld2);
-			playerManager.method_14594(this);
-
-			for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-				this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
-			}
-
-			this.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
-			this.syncedExperience = -1;
-			this.syncedHealth = -1.0F;
-			this.syncedFoodLevel = -1;
 			return this;
 		}
 	}
 
-	private void dimensionChanged(ServerWorld targetWorld) {
-		DimensionType dimensionType = targetWorld.dimension.getType();
-		DimensionType dimensionType2 = this.world.dimension.getType();
-		Criterions.CHANGED_DIMENSION.trigger(this, dimensionType, dimensionType2);
-		if (dimensionType == DimensionType.THE_NETHER && dimensionType2 == DimensionType.OVERWORLD && this.enteredNetherPos != null) {
-			Criterions.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
+	private void createEndSpawnPlatform(ServerWorld world, BlockPos centerPos) {
+		BlockPos.Mutable mutable = centerPos.mutableCopy();
+
+		for (int i = -2; i <= 2; i++) {
+			for (int j = -2; j <= 2; j++) {
+				for (int k = -1; k < 3; k++) {
+					BlockState blockState = k == -1 ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState();
+					world.setBlockState(mutable.set(centerPos).move(j, k, i), blockState);
+				}
+			}
+		}
+	}
+
+	@Override
+	protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
+		Optional<class_5459.class_5460> optional = super.method_30330(serverWorld, blockPos, bl);
+		if (optional.isPresent()) {
+			return optional;
+		} else {
+			Direction.Axis axis = (Direction.Axis)this.world
+				.getBlockState(this.lastNetherPortalPosition)
+				.method_28500(NetherPortalBlock.AXIS)
+				.orElse(Direction.Axis.field_11048);
+			Optional<class_5459.class_5460> optional2 = serverWorld.getPortalForcer().method_30482(blockPos, axis);
+			if (!optional2.isPresent()) {
+				LOGGER.error("Unable to create a portal, likely target out of worldborder");
+			}
+
+			return optional2;
+		}
+	}
+
+	private void worldChanged(ServerWorld origin) {
+		RegistryKey<World> registryKey = origin.getRegistryKey();
+		RegistryKey<World> registryKey2 = this.world.getRegistryKey();
+		Criteria.CHANGED_DIMENSION.trigger(this, registryKey, registryKey2);
+		if (registryKey == World.NETHER && registryKey2 == World.OVERWORLD && this.enteredNetherPos != null) {
+			Criteria.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
 		}
 
-		if (dimensionType2 != DimensionType.THE_NETHER) {
+		if (registryKey2 != World.NETHER) {
 			this.enteredNetherPos = null;
 		}
 	}
@@ -704,24 +766,77 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void sendPickup(Entity item, int count) {
 		super.sendPickup(item, count);
-		this.container.sendContentUpdates();
+		this.currentScreenHandler.sendContentUpdates();
 	}
 
 	@Override
 	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos pos) {
-		return super.trySleep(pos).ifRight(unit -> {
-			this.incrementStat(Stats.SLEEP_IN_BED);
-			Criterions.SLEPT_IN_BED.trigger(this);
-		});
+		Direction direction = this.world.getBlockState(pos).get(HorizontalFacingBlock.FACING);
+		if (this.isSleeping() || !this.isAlive()) {
+			return Either.left(PlayerEntity.SleepFailureReason.field_7531);
+		} else if (!this.world.getDimension().isNatural()) {
+			return Either.left(PlayerEntity.SleepFailureReason.field_7528);
+		} else if (!this.isBedTooFarAway(pos, direction)) {
+			return Either.left(PlayerEntity.SleepFailureReason.field_7530);
+		} else if (this.isBedObstructed(pos, direction)) {
+			return Either.left(PlayerEntity.SleepFailureReason.field_18592);
+		} else {
+			this.setSpawnPoint(this.world.getRegistryKey(), pos, this.yaw, false, true);
+			if (this.world.isDay()) {
+				return Either.left(PlayerEntity.SleepFailureReason.field_7529);
+			} else {
+				if (!this.isCreative()) {
+					double d = 8.0;
+					double e = 5.0;
+					Vec3d vec3d = Vec3d.ofBottomCenter(pos);
+					List<HostileEntity> list = this.world
+						.getEntitiesByClass(
+							HostileEntity.class,
+							new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0),
+							hostileEntity -> hostileEntity.isAngryAt(this)
+						);
+					if (!list.isEmpty()) {
+						return Either.left(PlayerEntity.SleepFailureReason.field_7532);
+					}
+				}
+
+				Either<PlayerEntity.SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> {
+					this.incrementStat(Stats.field_15381);
+					Criteria.SLEPT_IN_BED.trigger(this);
+				});
+				((ServerWorld)this.world).updateSleepingPlayers();
+				return either;
+			}
+		}
 	}
 
 	@Override
-	public void wakeUp(boolean bl, boolean bl2) {
+	public void sleep(BlockPos pos) {
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
+		super.sleep(pos);
+	}
+
+	private boolean isBedTooFarAway(BlockPos pos, Direction direction) {
+		return this.isBedTooFarAway(pos) || this.isBedTooFarAway(pos.offset(direction.getOpposite()));
+	}
+
+	private boolean isBedTooFarAway(BlockPos pos) {
+		Vec3d vec3d = Vec3d.ofBottomCenter(pos);
+		return Math.abs(this.getX() - vec3d.getX()) <= 3.0 && Math.abs(this.getY() - vec3d.getY()) <= 2.0 && Math.abs(this.getZ() - vec3d.getZ()) <= 3.0;
+	}
+
+	private boolean isBedObstructed(BlockPos pos, Direction direction) {
+		BlockPos blockPos = pos.up();
+		return !this.doesNotSuffocate(blockPos) || !this.doesNotSuffocate(blockPos.offset(direction.getOpposite()));
+	}
+
+	@Override
+	public void wakeUp(boolean bl, boolean updateSleepingPlayers) {
 		if (this.isSleeping()) {
-			this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, 2));
+			this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, 2));
 		}
 
-		super.wakeUp(bl, bl2);
+		super.wakeUp(bl, updateSleepingPlayers);
 		if (this.networkHandler != null) {
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		}
@@ -762,52 +877,51 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	protected void applyFrostWalker(BlockPos pos) {
+	protected void applyMovementEffects(BlockPos pos) {
 		if (!this.isSpectator()) {
-			super.applyFrostWalker(pos);
+			super.applyMovementEffects(pos);
 		}
 	}
 
 	public void handleFall(double heightDifference, boolean onGround) {
 		BlockPos blockPos = this.getLandingPos();
 		if (this.world.isChunkLoaded(blockPos)) {
-			BlockState blockState = this.world.getBlockState(blockPos);
-			super.fall(heightDifference, onGround, blockState, blockPos);
+			super.fall(heightDifference, onGround, this.world.getBlockState(blockPos), blockPos);
 		}
 	}
 
 	@Override
-	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
-		signBlockEntity.setEditor(this);
-		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(signBlockEntity.getPos()));
+	public void openEditSignScreen(SignBlockEntity sign) {
+		sign.setEditor(this);
+		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(sign.getPos()));
 	}
 
-	private void incrementContainerSyncId() {
-		this.containerSyncId = this.containerSyncId % 100 + 1;
+	private void incrementScreenHandlerSyncId() {
+		this.screenHandlerSyncId = this.screenHandlerSyncId % 100 + 1;
 	}
 
 	@Override
-	public OptionalInt openContainer(@Nullable NameableContainerProvider nameableContainerProvider) {
-		if (nameableContainerProvider == null) {
+	public OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory) {
+		if (factory == null) {
 			return OptionalInt.empty();
 		} else {
-			if (this.container != this.playerContainer) {
-				this.closeContainer();
+			if (this.currentScreenHandler != this.playerScreenHandler) {
+				this.closeHandledScreen();
 			}
 
-			this.incrementContainerSyncId();
-			Container container = nameableContainerProvider.createMenu(this.containerSyncId, this.inventory, this);
-			if (container == null) {
+			this.incrementScreenHandlerSyncId();
+			ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.inventory, this);
+			if (screenHandler == null) {
 				if (this.isSpectator()) {
-					this.addChatMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
+					this.sendMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.field_1061), true);
 				}
 
 				return OptionalInt.empty();
 			} else {
-				this.networkHandler.sendPacket(new OpenContainerS2CPacket(container.syncId, container.getType(), nameableContainerProvider.getDisplayName()));
-				container.addListener(this);
-				this.container = container;
-				return OptionalInt.of(this.containerSyncId);
+				this.networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandler.syncId, screenHandler.getType(), factory.getDisplayName()));
+				screenHandler.addListener(this);
+				this.currentScreenHandler = screenHandler;
+				return OptionalInt.of(this.screenHandlerSyncId);
 			}
 		}
 	}
@@ -818,23 +932,23 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
-		if (this.container != this.playerContainer) {
-			this.closeContainer();
+	public void openHorseInventory(HorseBaseEntity horse, Inventory inventory) {
+		if (this.currentScreenHandler != this.playerScreenHandler) {
+			this.closeHandledScreen();
 		}
 
-		this.incrementContainerSyncId();
-		this.networkHandler.sendPacket(new GuiOpenS2CPacket(this.containerSyncId, inventory.getInvSize(), horseBaseEntity.getEntityId()));
-		this.container = new HorseContainer(this.containerSyncId, this.inventory, inventory, horseBaseEntity);
-		this.container.addListener(this);
+		this.incrementScreenHandlerSyncId();
+		this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), horse.getEntityId()));
+		this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.inventory, inventory, horse);
+		this.currentScreenHandler.addListener(this);
 	}
 
 	@Override
 	public void openEditBookScreen(ItemStack book, Hand hand) {
 		Item item = book.getItem();
-		if (item == Items.WRITTEN_BOOK) {
+		if (item == Items.field_8360) {
 			if (WrittenBookItem.resolve(book, this.getCommandSource(), this)) {
-				this.container.sendContentUpdates();
+				this.currentScreenHandler.sendContentUpdates();
 			}
 
 			this.networkHandler.sendPacket(new OpenWrittenBookS2CPacket(hand));
@@ -842,54 +956,54 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
-		commandBlockBlockEntity.setNeedsUpdatePacket(true);
-		this.sendBlockEntityUpdate(commandBlockBlockEntity);
+	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
+		commandBlock.setNeedsUpdatePacket(true);
+		this.sendBlockEntityUpdate(commandBlock);
 	}
 
 	@Override
-	public void onContainerSlotUpdate(Container container, int slotId, ItemStack itemStack) {
-		if (!(container.getSlot(slotId) instanceof CraftingResultSlot)) {
-			if (container == this.playerContainer) {
-				Criterions.INVENTORY_CHANGED.trigger(this, this.inventory);
+	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+		if (!(handler.getSlot(slotId) instanceof CraftingResultSlot)) {
+			if (handler == this.playerScreenHandler) {
+				Criteria.INVENTORY_CHANGED.trigger(this, this.inventory, stack);
 			}
 
-			if (!this.field_13991) {
-				this.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(container.syncId, slotId, itemStack));
+			if (!this.skipPacketSlotUpdates) {
+				this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slotId, stack));
 			}
 		}
 	}
 
-	public void openContainer(Container container) {
-		this.onContainerRegistered(container, container.getStacks());
+	public void openHandledScreen(ScreenHandler handler) {
+		this.onHandlerRegistered(handler, handler.getStacks());
 	}
 
 	@Override
-	public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
-		this.networkHandler.sendPacket(new InventoryS2CPacket(container.syncId, defaultedList));
-		this.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
+	public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
+		this.networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, stacks));
+		this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 	}
 
 	@Override
-	public void onContainerPropertyUpdate(Container container, int propertyId, int i) {
-		this.networkHandler.sendPacket(new GuiUpdateS2CPacket(container.syncId, propertyId, i));
+	public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+		this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, property, value));
 	}
 
 	@Override
-	public void closeContainer() {
-		this.networkHandler.sendPacket(new GuiCloseS2CPacket(this.container.syncId));
-		this.method_14247();
+	public void closeHandledScreen() {
+		this.networkHandler.sendPacket(new CloseScreenS2CPacket(this.currentScreenHandler.syncId));
+		this.closeCurrentScreen();
 	}
 
-	public void method_14241() {
-		if (!this.field_13991) {
-			this.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
+	public void updateCursorStack() {
+		if (!this.skipPacketSlotUpdates) {
+			this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 		}
 	}
 
-	public void method_14247() {
-		this.container.close(this);
-		this.container = this.playerContainer;
+	public void closeCurrentScreen() {
+		this.currentScreenHandler.close(this);
+		this.currentScreenHandler = this.playerScreenHandler;
 	}
 
 	public void method_14218(float f, float g, boolean bl, boolean bl2) {
@@ -946,16 +1060,16 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.syncedExperience = -1;
 	}
 
-	public void method_14231() {
-		this.field_13964 = true;
+	public void onDisconnect() {
+		this.disconnected = true;
 		this.removeAllPassengers();
 		if (this.isSleeping()) {
 			this.wakeUp(true, false);
 		}
 	}
 
-	public boolean method_14239() {
-		return this.field_13964;
+	public boolean isDisconnected() {
+		return this.disconnected;
 	}
 
 	public void markHealthDirty() {
@@ -963,8 +1077,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void addChatMessage(Text message, boolean bl) {
-		this.networkHandler.sendPacket(new ChatMessageS2CPacket(message, bl ? MessageType.GAME_INFO : MessageType.CHAT));
+	public void sendMessage(Text message, boolean actionBar) {
+		this.networkHandler.sendPacket(new GameMessageS2CPacket(message, actionBar ? MessageType.field_11733 : MessageType.field_11737, Util.NIL_UUID));
 	}
 
 	@Override
@@ -997,8 +1111,6 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.experienceProgress = oldPlayer.experienceProgress;
 			this.setScore(oldPlayer.getScore());
 			this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
-			this.lastNetherPortalDirectionVector = oldPlayer.lastNetherPortalDirectionVector;
-			this.lastNetherPortalDirection = oldPlayer.lastNetherPortalDirection;
 		} else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 			this.inventory.clone(oldPlayer.inventory);
 			this.experienceLevel = oldPlayer.experienceLevel;
@@ -1024,31 +1136,31 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	protected void onStatusEffectApplied(StatusEffectInstance effect) {
 		super.onStatusEffectApplied(effect);
-		this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), effect));
-		if (effect.getEffectType() == StatusEffects.LEVITATION) {
+		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), effect));
+		if (effect.getEffectType() == StatusEffects.field_5902) {
 			this.levitationStartTick = this.age;
 			this.levitationStartPos = this.getPos();
 		}
 
-		Criterions.EFFECTS_CHANGED.trigger(this);
+		Criteria.EFFECTS_CHANGED.trigger(this);
 	}
 
 	@Override
 	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect) {
 		super.onStatusEffectUpgraded(effect, reapplyEffect);
-		this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), effect));
-		Criterions.EFFECTS_CHANGED.trigger(this);
+		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), effect));
+		Criteria.EFFECTS_CHANGED.trigger(this);
 	}
 
 	@Override
 	protected void onStatusEffectRemoved(StatusEffectInstance effect) {
 		super.onStatusEffectRemoved(effect);
-		this.networkHandler.sendPacket(new RemoveEntityEffectS2CPacket(this.getEntityId(), effect.getEffectType()));
-		if (effect.getEffectType() == StatusEffects.LEVITATION) {
+		this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getEntityId(), effect.getEffectType()));
+		if (effect.getEffectType() == StatusEffects.field_5902) {
 			this.levitationStartPos = null;
 		}
 
-		Criterions.EFFECTS_CHANGED.trigger(this);
+		Criteria.EFFECTS_CHANGED.trigger(this);
 	}
 
 	@Override
@@ -1057,19 +1169,19 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void positAfterTeleport(double x, double y, double z) {
-		this.networkHandler.requestTeleport(x, y, z, this.yaw, this.pitch);
+	public void refreshPositionAfterTeleport(double x, double y, double z) {
+		this.requestTeleport(x, y, z);
 		this.networkHandler.syncWithPlayerPosition();
 	}
 
 	@Override
 	public void addCritParticles(Entity target) {
-		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 4));
+		this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 4));
 	}
 
 	@Override
 	public void addEnchantedHitParticles(Entity target) {
-		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 5));
+		this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 5));
 	}
 
 	@Override
@@ -1086,9 +1198,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void setGameMode(GameMode gameMode) {
-		this.interactionManager.setGameMode(gameMode);
-		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(3, (float)gameMode.getId()));
-		if (gameMode == GameMode.SPECTATOR) {
+		this.interactionManager.method_30118(gameMode);
+		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_MODE_CHANGED, (float)gameMode.getId()));
+		if (gameMode == GameMode.field_9219) {
 			this.dropShoulderEntities();
 			this.stopRiding();
 		} else {
@@ -1101,48 +1213,51 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public boolean isSpectator() {
-		return this.interactionManager.getGameMode() == GameMode.SPECTATOR;
+		return this.interactionManager.getGameMode() == GameMode.field_9219;
 	}
 
 	@Override
 	public boolean isCreative() {
-		return this.interactionManager.getGameMode() == GameMode.CREATIVE;
+		return this.interactionManager.getGameMode() == GameMode.field_9220;
 	}
 
 	@Override
-	public void sendMessage(Text message) {
-		this.sendChatMessage(message, MessageType.SYSTEM);
+	public void sendSystemMessage(Text message, UUID senderUuid) {
+		this.sendMessage(message, MessageType.field_11735, senderUuid);
 	}
 
-	public void sendChatMessage(Text text, MessageType messageType) {
+	public void sendMessage(Text message, MessageType type, UUID senderUuid) {
 		this.networkHandler
 			.sendPacket(
-				new ChatMessageS2CPacket(text, messageType),
+				new GameMessageS2CPacket(message, type, senderUuid),
 				future -> {
-					if (!future.isSuccess() && (messageType == MessageType.GAME_INFO || messageType == MessageType.SYSTEM)) {
+					if (!future.isSuccess() && (type == MessageType.field_11733 || type == MessageType.field_11735)) {
 						int i = 256;
-						String string = text.asTruncatedString(256);
-						Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
+						String string = message.asTruncatedString(256);
+						Text text2 = new LiteralText(string).formatted(Formatting.field_1054);
 						this.networkHandler
-							.sendPacket(new ChatMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM));
+							.sendPacket(
+								new GameMessageS2CPacket(
+									new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.field_1061), MessageType.field_11735, senderUuid
+								)
+							);
 					}
 				}
 			);
 	}
 
-	public String getServerBrand() {
-		String string = this.networkHandler.client.getAddress().toString();
+	public String getIp() {
+		String string = this.networkHandler.connection.getAddress().toString();
 		string = string.substring(string.indexOf("/") + 1);
 		return string.substring(0, string.indexOf(":"));
 	}
 
-	public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
-		this.clientLanguage = clientSettingsC2SPacket.getLanguage();
-		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
-		this.field_13971 = clientSettingsC2SPacket.hasChatColors();
-		this.field_21869 = clientSettingsC2SPacket.method_24343();
-		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
-		this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() == Arm.LEFT ? 0 : 1));
+	public void setClientSettings(ClientSettingsC2SPacket packet) {
+		this.clientChatVisibility = packet.getChatVisibility();
+		this.clientChatColorsEnabled = packet.hasChatColors();
+		this.field_26762 = packet.method_31228();
+		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)packet.getPlayerModelBitMask());
+		this.getDataTracker().set(MAIN_ARM, (byte)(packet.getMainArm() == Arm.field_6182 ? 0 : 1));
 	}
 
 	public ChatVisibility getClientChatVisibility() {
@@ -1207,14 +1322,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	protected void tickNetherPortalCooldown() {
-		if (this.netherPortalCooldown > 0 && !this.inTeleportationState) {
-			this.netherPortalCooldown--;
+		if (!this.inTeleportationState) {
+			super.tickNetherPortalCooldown();
 		}
 	}
 
 	@Override
 	public void attack(Entity target) {
-		if (this.interactionManager.getGameMode() == GameMode.SPECTATOR) {
+		if (this.interactionManager.getGameMode() == GameMode.field_9219) {
 			this.setCameraEntity(target);
 		} else {
 			super.attack(target);
@@ -1226,7 +1341,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Nullable
-	public Text method_14206() {
+	public Text getPlayerListName() {
 		return null;
 	}
 
@@ -1254,26 +1369,68 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 		} else {
 			ServerWorld serverWorld = this.getServerWorld();
-			this.dimension = targetWorld.dimension.getType();
-			LevelProperties levelProperties = targetWorld.getLevelProperties();
+			WorldProperties worldProperties = targetWorld.getLevelProperties();
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						this.dimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), this.interactionManager.getGameMode()
+						targetWorld.getDimension(),
+						targetWorld.getRegistryKey(),
+						BiomeAccess.hashSeed(targetWorld.getSeed()),
+						this.interactionManager.getGameMode(),
+						this.interactionManager.method_30119(),
+						targetWorld.isDebugWorld(),
+						targetWorld.isFlat(),
+						true
 					)
 				);
-			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			this.server.getPlayerManager().sendCommandTree(this);
 			serverWorld.removePlayer(this);
 			this.removed = false;
-			this.setPositionAndAngles(x, y, z, yaw, pitch);
+			this.refreshPositionAndAngles(x, y, z, yaw, pitch);
 			this.setWorld(targetWorld);
 			targetWorld.onPlayerTeleport(this);
-			this.dimensionChanged(serverWorld);
+			this.worldChanged(serverWorld);
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 			this.interactionManager.setWorld(targetWorld);
 			this.server.getPlayerManager().sendWorldInfo(this, targetWorld);
-			this.server.getPlayerManager().method_14594(this);
+			this.server.getPlayerManager().sendPlayerStatus(this);
+		}
+	}
+
+	@Nullable
+	public BlockPos getSpawnPointPosition() {
+		return this.spawnPointPosition;
+	}
+
+	public float getSpawnAngle() {
+		return this.spawnAngle;
+	}
+
+	public RegistryKey<World> getSpawnPointDimension() {
+		return this.spawnPointDimension;
+	}
+
+	public boolean isSpawnPointSet() {
+		return this.spawnPointSet;
+	}
+
+	public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean spawnPointSet, boolean bl) {
+		if (pos != null) {
+			boolean bl2 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
+			if (bl && !bl2) {
+				this.sendSystemMessage(new TranslatableText("block.minecraft.set_spawn"), Util.NIL_UUID);
+			}
+
+			this.spawnPointPosition = pos;
+			this.spawnPointDimension = dimension;
+			this.spawnAngle = angle;
+			this.spawnPointSet = spawnPointSet;
+		} else {
+			this.spawnPointPosition = null;
+			this.spawnPointDimension = World.OVERWORLD;
+			this.spawnAngle = 0.0F;
+			this.spawnPointSet = false;
 		}
 	}
 
@@ -1307,19 +1464,19 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public ItemEntity dropItem(ItemStack stack, boolean bl, boolean bl2) {
-		ItemEntity itemEntity = super.dropItem(stack, bl, bl2);
+	public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
+		ItemEntity itemEntity = super.dropItem(stack, throwRandomly, retainOwnership);
 		if (itemEntity == null) {
 			return null;
 		} else {
 			this.world.spawnEntity(itemEntity);
 			ItemStack itemStack = itemEntity.getStack();
-			if (bl2) {
+			if (retainOwnership) {
 				if (!itemStack.isEmpty()) {
-					this.increaseStat(Stats.DROPPED.getOrCreateStat(itemStack.getItem()), stack.getCount());
+					this.increaseStat(Stats.field_15405.getOrCreateStat(itemStack.getItem()), stack.getCount());
 				}
 
-				this.incrementStat(Stats.DROP);
+				this.incrementStat(Stats.field_15406);
 			}
 
 			return itemEntity;

@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.BlockItem;
@@ -20,8 +20,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -44,18 +44,18 @@ public class CauldronBlock extends Block {
 		BooleanBiFunction.ONLY_FIRST
 	);
 
-	public CauldronBlock(Block.Settings settings) {
+	public CauldronBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return OUTLINE_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
 		return RAY_TRACE_SHAPE;
 	}
 
@@ -77,78 +77,78 @@ public class CauldronBlock extends Block {
 		} else {
 			int i = (Integer)state.get(LEVEL);
 			Item item = itemStack.getItem();
-			if (item == Items.WATER_BUCKET) {
+			if (item == Items.field_8705) {
 				if (i < 3 && !world.isClient) {
 					if (!player.abilities.creativeMode) {
-						player.setStackInHand(hand, new ItemStack(Items.BUCKET));
+						player.setStackInHand(hand, new ItemStack(Items.field_8550));
 					}
 
-					player.incrementStat(Stats.FILL_CAULDRON);
+					player.incrementStat(Stats.field_15430);
 					this.setLevel(world, pos, state, 3);
-					world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					world.playSound(null, pos, SoundEvents.field_14834, SoundCategory.field_15245, 1.0F, 1.0F);
 				}
 
-				return ActionResult.SUCCESS;
-			} else if (item == Items.BUCKET) {
+				return ActionResult.success(world.isClient);
+			} else if (item == Items.field_8550) {
 				if (i == 3 && !world.isClient) {
 					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
-							player.setStackInHand(hand, new ItemStack(Items.WATER_BUCKET));
-						} else if (!player.inventory.insertStack(new ItemStack(Items.WATER_BUCKET))) {
-							player.dropItem(new ItemStack(Items.WATER_BUCKET), false);
+							player.setStackInHand(hand, new ItemStack(Items.field_8705));
+						} else if (!player.inventory.insertStack(new ItemStack(Items.field_8705))) {
+							player.dropItem(new ItemStack(Items.field_8705), false);
 						}
 					}
 
-					player.incrementStat(Stats.USE_CAULDRON);
+					player.incrementStat(Stats.field_15373);
 					this.setLevel(world, pos, state, 0);
-					world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					world.playSound(null, pos, SoundEvents.field_15126, SoundCategory.field_15245, 1.0F, 1.0F);
 				}
 
-				return ActionResult.SUCCESS;
-			} else if (item == Items.GLASS_BOTTLE) {
+				return ActionResult.success(world.isClient);
+			} else if (item == Items.field_8469) {
 				if (i > 0 && !world.isClient) {
 					if (!player.abilities.creativeMode) {
-						ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER);
-						player.incrementStat(Stats.USE_CAULDRON);
+						ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991);
+						player.incrementStat(Stats.field_15373);
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
 							player.setStackInHand(hand, itemStack2);
 						} else if (!player.inventory.insertStack(itemStack2)) {
 							player.dropItem(itemStack2, false);
 						} else if (player instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)player).openContainer(player.playerContainer);
+							((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
 						}
 					}
 
-					world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					world.playSound(null, pos, SoundEvents.field_14779, SoundCategory.field_15245, 1.0F, 1.0F);
 					this.setLevel(world, pos, state, i - 1);
 				}
 
-				return ActionResult.SUCCESS;
-			} else if (item == Items.POTION && PotionUtil.getPotion(itemStack) == Potions.WATER) {
+				return ActionResult.success(world.isClient);
+			} else if (item == Items.field_8574 && PotionUtil.getPotion(itemStack) == Potions.field_8991) {
 				if (i < 3 && !world.isClient) {
 					if (!player.abilities.creativeMode) {
-						ItemStack itemStack2 = new ItemStack(Items.GLASS_BOTTLE);
-						player.incrementStat(Stats.USE_CAULDRON);
+						ItemStack itemStack2 = new ItemStack(Items.field_8469);
+						player.incrementStat(Stats.field_15373);
 						player.setStackInHand(hand, itemStack2);
 						if (player instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)player).openContainer(player.playerContainer);
+							((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
 						}
 					}
 
-					world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					world.playSound(null, pos, SoundEvents.field_14826, SoundCategory.field_15245, 1.0F, 1.0F);
 					this.setLevel(world, pos, state, i + 1);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.success(world.isClient);
 			} else {
 				if (i > 0 && item instanceof DyeableItem) {
 					DyeableItem dyeableItem = (DyeableItem)item;
 					if (dyeableItem.hasColor(itemStack) && !world.isClient) {
 						dyeableItem.removeColor(itemStack);
 						this.setLevel(world, pos, state, i - 1);
-						player.incrementStat(Stats.CLEAN_ARMOR);
+						player.incrementStat(Stats.field_15382);
 						return ActionResult.SUCCESS;
 					}
 				}
@@ -158,7 +158,7 @@ public class CauldronBlock extends Block {
 						ItemStack itemStack2 = itemStack.copy();
 						itemStack2.setCount(1);
 						BannerBlockEntity.loadFromItemStack(itemStack2);
-						player.incrementStat(Stats.CLEAN_BANNER);
+						player.incrementStat(Stats.field_15390);
 						if (!player.abilities.creativeMode) {
 							itemStack.decrement(1);
 							this.setLevel(world, pos, state, i - 1);
@@ -169,22 +169,22 @@ public class CauldronBlock extends Block {
 						} else if (!player.inventory.insertStack(itemStack2)) {
 							player.dropItem(itemStack2, false);
 						} else if (player instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)player).openContainer(player.playerContainer);
+							((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
 						}
 					}
 
-					return ActionResult.SUCCESS;
+					return ActionResult.success(world.isClient);
 				} else if (i > 0 && item instanceof BlockItem) {
 					Block block = ((BlockItem)item).getBlock();
 					if (block instanceof ShulkerBoxBlock && !world.isClient()) {
-						ItemStack itemStack3 = new ItemStack(Blocks.SHULKER_BOX, 1);
+						ItemStack itemStack3 = new ItemStack(Blocks.field_10603, 1);
 						if (itemStack.hasTag()) {
-							itemStack3.setTag(itemStack.getTag().copy());
+							itemStack3.setTag(itemStack.getTag().method_10553());
 						}
 
 						player.setStackInHand(hand, itemStack3);
 						this.setLevel(world, pos, state, i - 1);
-						player.incrementStat(Stats.CLEAN_SHULKER_BOX);
+						player.incrementStat(Stats.field_15398);
 						return ActionResult.SUCCESS;
 					} else {
 						return ActionResult.CONSUME;
@@ -198,7 +198,7 @@ public class CauldronBlock extends Block {
 
 	public void setLevel(World world, BlockPos pos, BlockState state, int level) {
 		world.setBlockState(pos, state.with(LEVEL, Integer.valueOf(MathHelper.clamp(level, 0, 3))), 2);
-		world.updateHorizontalAdjacent(pos, this);
+		world.updateComparators(pos, this);
 	}
 
 	@Override
@@ -230,7 +230,7 @@ public class CauldronBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

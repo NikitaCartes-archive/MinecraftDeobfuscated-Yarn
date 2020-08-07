@@ -10,7 +10,6 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class SetNbtLootFunction extends ConditionalLootFunction {
@@ -19,6 +18,11 @@ public class SetNbtLootFunction extends ConditionalLootFunction {
 	private SetNbtLootFunction(LootCondition[] conditions, CompoundTag tag) {
 		super(conditions);
 		this.tag = tag;
+	}
+
+	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25217;
 	}
 
 	@Override
@@ -31,17 +35,13 @@ public class SetNbtLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new SetNbtLootFunction(conditions, tag));
 	}
 
-	public static class Builder extends ConditionalLootFunction.Factory<SetNbtLootFunction> {
-		public Builder() {
-			super(new Identifier("set_nbt"), SetNbtLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, SetNbtLootFunction setNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setNbtLootFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetNbtLootFunction> {
+		public void method_678(JsonObject jsonObject, SetNbtLootFunction setNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, setNbtLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("tag", setNbtLootFunction.tag.toString());
 		}
 
-		public SetNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetNbtLootFunction method_679(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			try {
 				CompoundTag compoundTag = StringNbtReader.parse(JsonHelper.getString(jsonObject, "tag"));
 				return new SetNbtLootFunction(lootConditions, compoundTag);

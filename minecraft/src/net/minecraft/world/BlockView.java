@@ -2,17 +2,23 @@ package net.minecraft.world;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
+/**
+ * Represents a scoped, read-only view of block states, fluid states and block entities.
+ */
 public interface BlockView {
 	@Nullable
 	BlockEntity getBlockEntity(BlockPos pos);
@@ -31,6 +37,10 @@ public interface BlockView {
 
 	default int getHeight() {
 		return 256;
+	}
+
+	default Stream<BlockState> method_29546(Box box) {
+		return BlockPos.method_29715(box).map(this::getBlockState);
 	}
 
 	default BlockHitResult rayTrace(RayTraceContext context) {
@@ -65,11 +75,27 @@ public interface BlockView {
 		return blockHitResult;
 	}
 
-	static <T> T rayTrace(RayTraceContext rayTraceContext, BiFunction<RayTraceContext, BlockPos, T> context, Function<RayTraceContext, T> blockRaytracer) {
+	default double getDismountHeight(VoxelShape blockCollisionShape, Supplier<VoxelShape> belowBlockCollisionShapeGetter) {
+		if (!blockCollisionShape.isEmpty()) {
+			return blockCollisionShape.getMax(Direction.Axis.field_11052);
+		} else {
+			double d = ((VoxelShape)belowBlockCollisionShapeGetter.get()).getMax(Direction.Axis.field_11052);
+			return d >= 1.0 ? d - 1.0 : Double.NEGATIVE_INFINITY;
+		}
+	}
+
+	default double getDismountHeight(BlockPos pos) {
+		return this.getDismountHeight(this.getBlockState(pos).getCollisionShape(this, pos), () -> {
+			BlockPos blockPos2 = pos.method_10074();
+			return this.getBlockState(blockPos2).getCollisionShape(this, blockPos2);
+		});
+	}
+
+	static <T> T rayTrace(RayTraceContext rayTraceContext, BiFunction<RayTraceContext, BlockPos, T> context, Function<RayTraceContext, T> blockRayTracer) {
 		Vec3d vec3d = rayTraceContext.getStart();
 		Vec3d vec3d2 = rayTraceContext.getEnd();
 		if (vec3d.equals(vec3d2)) {
-			return (T)blockRaytracer.apply(rayTraceContext);
+			return (T)blockRayTracer.apply(rayTraceContext);
 		} else {
 			double d = MathHelper.lerp(-1.0E-7, vec3d2.x, vec3d.x);
 			double e = MathHelper.lerp(-1.0E-7, vec3d2.y, vec3d.y);
@@ -121,7 +147,7 @@ public interface BlockView {
 					}
 				}
 
-				return (T)blockRaytracer.apply(rayTraceContext);
+				return (T)blockRayTracer.apply(rayTraceContext);
 			}
 		}
 	}

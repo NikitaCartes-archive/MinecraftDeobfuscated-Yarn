@@ -1,36 +1,27 @@
 package net.minecraft.structure.rule;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 
-public class BlockStateMatchRuleTest extends AbstractRuleTest {
+public class BlockStateMatchRuleTest extends RuleTest {
+	public static final Codec<BlockStateMatchRuleTest> CODEC = BlockState.CODEC
+		.fieldOf("block_state")
+		.<BlockStateMatchRuleTest>xmap(BlockStateMatchRuleTest::new, blockStateMatchRuleTest -> blockStateMatchRuleTest.blockState)
+		.codec();
 	private final BlockState blockState;
 
 	public BlockStateMatchRuleTest(BlockState blockState) {
 		this.blockState = blockState;
 	}
 
-	public <T> BlockStateMatchRuleTest(Dynamic<T> dynamic) {
-		this(BlockState.deserialize(dynamic.get("blockstate").orElseEmptyMap()));
+	@Override
+	public boolean test(BlockState state, Random random) {
+		return state == this.blockState;
 	}
 
 	@Override
-	public boolean test(BlockState blockState, Random random) {
-		return blockState == this.blockState;
-	}
-
-	@Override
-	protected RuleTest getRuleTest() {
-		return RuleTest.BLOCKSTATE_MATCH;
-	}
-
-	@Override
-	protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(
-			dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("blockstate"), BlockState.serialize(dynamicOps, this.blockState).getValue()))
-		);
+	protected RuleTestType<?> getType() {
+		return RuleTestType.field_16985;
 	}
 }

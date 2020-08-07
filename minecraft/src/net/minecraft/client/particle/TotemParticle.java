@@ -2,12 +2,12 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class TotemParticle extends AnimatedParticle {
-	private TotemParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+	private TotemParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
 		super(world, x, y, z, spriteProvider, -0.05F);
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
@@ -32,8 +32,8 @@ public class TotemParticle extends AnimatedParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new TotemParticle(world, d, e, f, g, h, i, this.spriteProvider);
+		public Particle method_3113(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new TotemParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 }

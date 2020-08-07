@@ -14,23 +14,23 @@ public class DamageEnchantment extends Enchantment {
 	private static final int[] field_9064 = new int[]{20, 20, 20};
 	public final int typeIndex;
 
-	public DamageEnchantment(Enchantment.Weight weight, int typeIndex, EquipmentSlot... slots) {
-		super(weight, EnchantmentTarget.WEAPON, slots);
+	public DamageEnchantment(Enchantment.Rarity weight, int typeIndex, EquipmentSlot... slots) {
+		super(weight, EnchantmentTarget.field_9074, slots);
 		this.typeIndex = typeIndex;
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return field_9063[this.typeIndex] + (level - 1) * field_9066[this.typeIndex];
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return this.getMinimumPower(level) + field_9064[this.typeIndex];
+	public int getMaxPower(int level) {
+		return this.getMinPower(level) + field_9064[this.typeIndex];
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 5;
 	}
 
@@ -46,7 +46,7 @@ public class DamageEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
+	public boolean canAccept(Enchantment other) {
 		return !(other instanceof DamageEnchantment);
 	}
 
@@ -56,7 +56,7 @@ public class DamageEnchantment extends Enchantment {
 			LivingEntity livingEntity = (LivingEntity)target;
 			if (this.typeIndex == 2 && livingEntity.getGroup() == EntityGroup.ARTHROPOD) {
 				int i = 20 + user.getRandom().nextInt(10 * level);
-				livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, i, 3));
+				livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5909, i, 3));
 			}
 		}
 	}

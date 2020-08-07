@@ -29,12 +29,12 @@ public class AdvancementsProvider implements DataProvider {
 		new StoryTabAdvancementGenerator()
 	);
 
-	public AdvancementsProvider(DataGenerator dataGenerator) {
-		this.root = dataGenerator;
+	public AdvancementsProvider(DataGenerator root) {
+		this.root = root;
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void run(DataCache cache) throws IOException {
 		Path path = this.root.getOutput();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		Consumer<Advancement> consumer = advancement -> {
@@ -44,7 +44,7 @@ public class AdvancementsProvider implements DataProvider {
 				Path path2 = getOutput(path, advancement);
 
 				try {
-					DataProvider.writeToPath(GSON, dataCache, advancement.createTask().toJson(), path2);
+					DataProvider.writeToPath(GSON, cache, advancement.createTask().toJson(), path2);
 				} catch (IOException var6x) {
 					LOGGER.error("Couldn't save advancement {}", path2, var6x);
 				}

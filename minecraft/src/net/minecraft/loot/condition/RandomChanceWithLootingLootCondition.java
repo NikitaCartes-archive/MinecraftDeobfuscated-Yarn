@@ -11,8 +11,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializer;
 
 public class RandomChanceWithLootingLootCondition implements LootCondition {
 	private final float chance;
@@ -24,12 +24,17 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.KILLER_ENTITY);
+	public LootConditionType getType() {
+		return LootConditionTypes.field_25238;
 	}
 
-	public boolean test(LootContext lootContext) {
-		Entity entity = lootContext.get(LootContextParameters.KILLER_ENTITY);
+	@Override
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1230);
+	}
+
+	public boolean method_950(LootContext lootContext) {
+		Entity entity = lootContext.get(LootContextParameters.field_1230);
 		int i = 0;
 		if (entity instanceof LivingEntity) {
 			i = EnchantmentHelper.getLooting((LivingEntity)entity);
@@ -42,19 +47,15 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 		return () -> new RandomChanceWithLootingLootCondition(chance, lootingMultiplier);
 	}
 
-	public static class Factory extends LootCondition.Factory<RandomChanceWithLootingLootCondition> {
-		protected Factory() {
-			super(new Identifier("random_chance_with_looting"), RandomChanceWithLootingLootCondition.class);
-		}
-
-		public void toJson(
+	public static class Serializer implements JsonSerializer<RandomChanceWithLootingLootCondition> {
+		public void method_955(
 			JsonObject jsonObject, RandomChanceWithLootingLootCondition randomChanceWithLootingLootCondition, JsonSerializationContext jsonSerializationContext
 		) {
 			jsonObject.addProperty("chance", randomChanceWithLootingLootCondition.chance);
 			jsonObject.addProperty("looting_multiplier", randomChanceWithLootingLootCondition.lootingMultiplier);
 		}
 
-		public RandomChanceWithLootingLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public RandomChanceWithLootingLootCondition method_956(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return new RandomChanceWithLootingLootCondition(JsonHelper.getFloat(jsonObject, "chance"), JsonHelper.getFloat(jsonObject, "looting_multiplier"));
 		}
 	}

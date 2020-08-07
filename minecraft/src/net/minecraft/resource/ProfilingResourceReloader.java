@@ -28,8 +28,8 @@ public class ProfilingResourceReloader extends ResourceReloader<ProfilingResourc
 			(synchronizer, resourceManager, resourceReloadListener, prepareExecutorx, applyExecutorx) -> {
 				AtomicLong atomicLong = new AtomicLong();
 				AtomicLong atomicLong2 = new AtomicLong();
-				ProfilerSystem profilerSystem = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0, false);
-				ProfilerSystem profilerSystem2 = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0, false);
+				ProfilerSystem profilerSystem = new ProfilerSystem(Util.nanoTimeSupplier, () -> 0, false);
+				ProfilerSystem profilerSystem2 = new ProfilerSystem(Util.nanoTimeSupplier, () -> 0, false);
 				CompletableFuture<Void> completableFuturex = resourceReloadListener.reload(
 					synchronizer, resourceManager, profilerSystem, profilerSystem2, runnable -> prepareExecutorx.execute(() -> {
 							long l = Util.getMeasuringTimeNano();
@@ -43,7 +43,7 @@ public class ProfilingResourceReloader extends ResourceReloader<ProfilingResourc
 				);
 				return completableFuturex.thenApplyAsync(
 					void_ -> new ProfilingResourceReloader.Summary(
-							resourceReloadListener.getName(), profilerSystem.getResults(), profilerSystem2.getResults(), atomicLong, atomicLong2
+							resourceReloadListener.getName(), profilerSystem.getResult(), profilerSystem2.getResult(), atomicLong, atomicLong2
 						),
 					applyExecutor
 				);

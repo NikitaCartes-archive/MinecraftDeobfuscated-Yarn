@@ -27,13 +27,13 @@ public class BoatItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.ANY);
-		if (hitResult.getType() == HitResult.Type.MISS) {
+		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.field_1347);
+		if (hitResult.getType() == HitResult.Type.field_1333) {
 			return TypedActionResult.pass(itemStack);
 		} else {
 			Vec3d vec3d = user.getRotationVec(1.0F);
 			double d = 5.0;
-			List<Entity> list = world.getEntities(user, user.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), RIDERS);
+			List<Entity> list = world.getOtherEntities(user, user.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), RIDERS);
 			if (!list.isEmpty()) {
 				Vec3d vec3d2 = user.getCameraPosVec(1.0F);
 
@@ -45,7 +45,7 @@ public class BoatItem extends Item {
 				}
 			}
 
-			if (hitResult.getType() == HitResult.Type.BLOCK) {
+			if (hitResult.getType() == HitResult.Type.field_1332) {
 				BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = user.yaw;
@@ -59,8 +59,8 @@ public class BoatItem extends Item {
 						}
 					}
 
-					user.incrementStat(Stats.USED.getOrCreateStat(this));
-					return TypedActionResult.success(itemStack);
+					user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+					return TypedActionResult.method_29237(itemStack, world.isClient());
 				}
 			} else {
 				return TypedActionResult.pass(itemStack);

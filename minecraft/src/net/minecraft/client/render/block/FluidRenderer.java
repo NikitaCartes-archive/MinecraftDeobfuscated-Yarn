@@ -5,7 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.StainedGlassBlock;
+import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.VertexConsumer;
@@ -31,9 +32,9 @@ public class FluidRenderer {
 	private Sprite waterOverlaySprite;
 
 	protected void onResourceReload() {
-		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.LAVA.getDefaultState()).getSprite();
+		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.field_10164.getDefaultState()).getSprite();
 		this.lavaSprites[1] = ModelLoader.LAVA_FLOW.getSprite();
-		this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getSprite();
+		this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.field_10382.getDefaultState()).getSprite();
 		this.waterSprites[1] = ModelLoader.WATER_FLOW.getSprite();
 		this.waterOverlaySprite = ModelLoader.WATER_OVERLAY.getSprite();
 	}
@@ -44,39 +45,52 @@ public class FluidRenderer {
 		return fluidState.getFluid().matchesType(state.getFluid());
 	}
 
-	private static boolean isSideCovered(BlockView world, BlockPos pos, Direction direction, float maxDeviation) {
-		BlockPos blockPos = pos.offset(direction);
-		BlockState blockState = world.getBlockState(blockPos);
+	private static boolean method_29710(BlockView blockView, Direction direction, float f, BlockPos blockPos, BlockState blockState) {
 		if (blockState.isOpaque()) {
-			VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)maxDeviation, 1.0);
-			VoxelShape voxelShape2 = blockState.getCullingShape(world, blockPos);
+			VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)f, 1.0);
+			VoxelShape voxelShape2 = blockState.getCullingShape(blockView, blockPos);
 			return VoxelShapes.isSideCovered(voxelShape, voxelShape2, direction);
 		} else {
 			return false;
 		}
 	}
 
+	private static boolean isSideCovered(BlockView world, BlockPos pos, Direction direction, float maxDeviation) {
+		BlockPos blockPos = pos.offset(direction);
+		BlockState blockState = world.getBlockState(blockPos);
+		return method_29710(world, direction, maxDeviation, blockPos, blockState);
+	}
+
+	private static boolean method_29709(BlockView blockView, BlockPos blockPos, BlockState blockState, Direction direction) {
+		return method_29710(blockView, direction.getOpposite(), 1.0F, blockPos, blockState);
+	}
+
+	public static boolean method_29708(BlockRenderView blockRenderView, BlockPos blockPos, FluidState fluidState, BlockState blockState, Direction direction) {
+		return !method_29709(blockRenderView, blockPos, blockState, direction) && !isSameFluid(blockRenderView, blockPos, direction, fluidState);
+	}
+
 	public boolean render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state) {
-		boolean bl = state.matches(FluidTags.LAVA);
+		boolean bl = state.isIn(FluidTags.field_15518);
 		Sprite[] sprites = bl ? this.lavaSprites : this.waterSprites;
+		BlockState blockState = world.getBlockState(pos);
 		int i = bl ? 16777215 : BiomeColors.getWaterColor(world, pos);
 		float f = (float)(i >> 16 & 0xFF) / 255.0F;
 		float g = (float)(i >> 8 & 0xFF) / 255.0F;
 		float h = (float)(i & 0xFF) / 255.0F;
-		boolean bl2 = !isSameFluid(world, pos, Direction.UP, state);
-		boolean bl3 = !isSameFluid(world, pos, Direction.DOWN, state) && !isSideCovered(world, pos, Direction.DOWN, 0.8888889F);
-		boolean bl4 = !isSameFluid(world, pos, Direction.NORTH, state);
-		boolean bl5 = !isSameFluid(world, pos, Direction.SOUTH, state);
-		boolean bl6 = !isSameFluid(world, pos, Direction.WEST, state);
-		boolean bl7 = !isSameFluid(world, pos, Direction.EAST, state);
+		boolean bl2 = !isSameFluid(world, pos, Direction.field_11036, state);
+		boolean bl3 = method_29708(world, pos, state, blockState, Direction.field_11033) && !isSideCovered(world, pos, Direction.field_11033, 0.8888889F);
+		boolean bl4 = method_29708(world, pos, state, blockState, Direction.field_11043);
+		boolean bl5 = method_29708(world, pos, state, blockState, Direction.field_11035);
+		boolean bl6 = method_29708(world, pos, state, blockState, Direction.field_11039);
+		boolean bl7 = method_29708(world, pos, state, blockState, Direction.field_11034);
 		if (!bl2 && !bl3 && !bl7 && !bl6 && !bl4 && !bl5) {
 			return false;
 		} else {
 			boolean bl8 = false;
-			float j = 0.5F;
-			float k = 1.0F;
-			float l = 0.8F;
-			float m = 0.6F;
+			float j = world.getBrightness(Direction.field_11033, true);
+			float k = world.getBrightness(Direction.field_11036, true);
+			float l = world.getBrightness(Direction.field_11043, true);
+			float m = world.getBrightness(Direction.field_11039, true);
 			float n = this.getNorthWestCornerFluidHeight(world, pos, state.getFluid());
 			float o = this.getNorthWestCornerFluidHeight(world, pos.south(), state.getFluid());
 			float p = this.getNorthWestCornerFluidHeight(world, pos.east().south(), state.getFluid());
@@ -86,7 +100,7 @@ public class FluidRenderer {
 			double r = (double)(pos.getZ() & 15);
 			float s = 0.001F;
 			float t = bl3 ? 0.001F : 0.0F;
-			if (bl2 && !isSideCovered(world, pos, Direction.UP, Math.min(Math.min(n, o), Math.min(p, q)))) {
+			if (bl2 && !isSideCovered(world, pos, Direction.field_11036, Math.min(Math.min(n, o), Math.min(p, q)))) {
 				bl8 = true;
 				n -= 0.001F;
 				o -= 0.001F;
@@ -141,9 +155,9 @@ public class FluidRenderer {
 				z = MathHelper.lerp(af, z, ac);
 				ab = MathHelper.lerp(af, ab, ac);
 				int ah = this.getLight(world, pos);
-				float ai = 1.0F * f;
-				float aj = 1.0F * g;
-				float ak = 1.0F * h;
+				float ai = k * f;
+				float aj = k * g;
+				float ak = k * h;
 				this.vertex(vertexConsumer, d + 0.0, e + (double)n, r + 0.0, ai, aj, ak, u, v, ah);
 				this.vertex(vertexConsumer, d + 0.0, e + (double)o, r + 1.0, ai, aj, ak, w, x, ah);
 				this.vertex(vertexConsumer, d + 1.0, e + (double)p, r + 1.0, ai, aj, ak, y, z, ah);
@@ -161,10 +175,10 @@ public class FluidRenderer {
 				float wx = sprites[0].getMaxU();
 				float yx = sprites[0].getMinV();
 				float aax = sprites[0].getMaxV();
-				int al = this.getLight(world, pos.down());
-				float xx = 0.5F * f;
-				float zx = 0.5F * g;
-				float abx = 0.5F * h;
+				int al = this.getLight(world, pos.method_10074());
+				float xx = j * f;
+				float zx = j * g;
+				float abx = j * h;
 				this.vertex(vertexConsumer, d, e + (double)t, r + 1.0, xx, zx, abx, ux, aax, al);
 				this.vertex(vertexConsumer, d, e + (double)t, r, xx, zx, abx, ux, yx, al);
 				this.vertex(vertexConsumer, d + 1.0, e + (double)t, r, xx, zx, abx, wx, yx, al);
@@ -188,7 +202,7 @@ public class FluidRenderer {
 					ao = d + 1.0;
 					ap = r + 0.001F;
 					aq = r + 0.001F;
-					direction = Direction.NORTH;
+					direction = Direction.field_11043;
 					bl9 = bl4;
 				} else if (am == 1) {
 					wx = p;
@@ -197,7 +211,7 @@ public class FluidRenderer {
 					ao = d;
 					ap = r + 1.0 - 0.001F;
 					aq = r + 1.0 - 0.001F;
-					direction = Direction.SOUTH;
+					direction = Direction.field_11035;
 					bl9 = bl5;
 				} else if (am == 2) {
 					wx = o;
@@ -206,7 +220,7 @@ public class FluidRenderer {
 					ao = d + 0.001F;
 					ap = r + 1.0;
 					aq = r;
-					direction = Direction.WEST;
+					direction = Direction.field_11039;
 					bl9 = bl6;
 				} else {
 					wx = q;
@@ -215,7 +229,7 @@ public class FluidRenderer {
 					ao = d + 1.0 - 0.001F;
 					ap = r;
 					aq = r + 1.0;
-					direction = Direction.EAST;
+					direction = Direction.field_11034;
 					bl9 = bl7;
 				}
 
@@ -225,7 +239,7 @@ public class FluidRenderer {
 					Sprite sprite2 = sprites[1];
 					if (!bl) {
 						Block block = world.getBlockState(blockPos).getBlock();
-						if (block == Blocks.GLASS || block instanceof StainedGlassBlock) {
+						if (block instanceof TransparentBlock || block instanceof LeavesBlock) {
 							sprite2 = this.waterOverlaySprite;
 						}
 					}
@@ -236,10 +250,10 @@ public class FluidRenderer {
 					float ar = sprite2.getFrameV((double)((1.0F - yx) * 16.0F * 0.5F));
 					float as = sprite2.getFrameV(8.0);
 					int at = this.getLight(world, blockPos);
-					float au = am < 2 ? 0.8F : 0.6F;
-					float av = 1.0F * au * f;
-					float aw = 1.0F * au * g;
-					float ax = 1.0F * au * h;
+					float au = am < 2 ? l : m;
+					float av = k * au * f;
+					float aw = k * au * g;
+					float ax = k * au * h;
 					this.vertex(vertexConsumer, an, e + (double)wx, ap, av, aw, ax, ai, ak, at);
 					this.vertex(vertexConsumer, ao, e + (double)yx, aq, av, aw, ax, aj, ar, at);
 					this.vertex(vertexConsumer, ao, e + (double)t, aq, av, aw, ax, aj, as, at);

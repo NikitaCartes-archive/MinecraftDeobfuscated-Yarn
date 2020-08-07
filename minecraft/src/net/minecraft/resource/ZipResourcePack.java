@@ -76,7 +76,7 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 					if (string2.equals(string2.toLowerCase(Locale.ROOT))) {
 						set.add(string2);
 					} else {
-						this.warnNonLowercaseNamespace(string2);
+						this.warnNonLowerCaseNamespace(string2);
 					}
 				}
 			}
@@ -90,6 +90,7 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 		super.finalize();
 	}
 
+	@Override
 	public void close() {
 		if (this.file != null) {
 			IOUtils.closeQuietly(this.file);

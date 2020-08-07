@@ -11,7 +11,7 @@ import net.minecraft.loot.LootChoice;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -27,8 +27,13 @@ public class TagEntry extends LeafEntry {
 	}
 
 	@Override
-	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-		this.name.values().forEach(item -> itemDropper.accept(new ItemStack(item)));
+	public LootPoolEntryType getType() {
+		return LootPoolEntryTypes.field_25210;
+	}
+
+	@Override
+	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+		this.name.values().forEach(item -> lootConsumer.accept(new ItemStack(item)));
 	}
 
 	private boolean grow(LootContext context, Consumer<LootChoice> lootChoiceExpander) {
@@ -38,8 +43,8 @@ public class TagEntry extends LeafEntry {
 			for (final Item item : this.name.values()) {
 				lootChoiceExpander.accept(new LeafEntry.Choice() {
 					@Override
-					public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-						itemDropper.accept(new ItemStack(item));
+					public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+						lootConsumer.accept(new ItemStack(item));
 					}
 				});
 			}
@@ -58,21 +63,17 @@ public class TagEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<TagEntry> {
-		public Serializer() {
-			super(new Identifier("tag"), TagEntry.class);
-		}
-
-		public void toJson(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, tagEntry, jsonSerializationContext);
-			jsonObject.addProperty("name", tagEntry.name.getId().toString());
+		public void method_451(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
+			super.method_442(jsonObject, tagEntry, jsonSerializationContext);
+			jsonObject.addProperty("name", ServerTagManagerHolder.getTagManager().getItems().getTagId(tagEntry.name).toString());
 			jsonObject.addProperty("expand", tagEntry.expand);
 		}
 
-		protected TagEntry fromJson(
+		protected TagEntry method_450(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			Tag<Item> tag = ItemTags.getContainer().get(identifier);
+			Tag<Item> tag = ServerTagManagerHolder.getTagManager().getItems().getTag(identifier);
 			if (tag == null) {
 				throw new JsonParseException("Can't find tag: " + identifier);
 			} else {

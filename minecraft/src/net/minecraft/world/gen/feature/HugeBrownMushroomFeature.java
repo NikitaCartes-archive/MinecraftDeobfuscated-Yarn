@@ -1,41 +1,40 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class HugeBrownMushroomFeature extends HugeMushroomFeature {
-	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> configFactory) {
-		super(configFactory);
+	public HugeBrownMushroomFeature(Codec<HugeMushroomFeatureConfig> codec) {
+		super(codec);
 	}
 
 	@Override
-	protected void generate(IWorld world, Random random, BlockPos blockPos, int i, BlockPos.Mutable pos, HugeMushroomFeatureConfig config) {
-		int j = config.capSize;
+	protected void generateCap(WorldAccess world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
+		int i = config.capSize;
 
-		for (int k = -j; k <= j; k++) {
-			for (int l = -j; l <= j; l++) {
-				boolean bl = k == -j;
-				boolean bl2 = k == j;
-				boolean bl3 = l == -j;
-				boolean bl4 = l == j;
+		for (int j = -i; j <= i; j++) {
+			for (int k = -i; k <= i; k++) {
+				boolean bl = j == -i;
+				boolean bl2 = j == i;
+				boolean bl3 = k == -i;
+				boolean bl4 = k == i;
 				boolean bl5 = bl || bl2;
 				boolean bl6 = bl3 || bl4;
 				if (!bl5 || !bl6) {
-					pos.set(blockPos).setOffset(k, i, l);
-					if (!world.getBlockState(pos).isFullOpaque(world, pos)) {
-						boolean bl7 = bl || bl6 && k == 1 - j;
-						boolean bl8 = bl2 || bl6 && k == j - 1;
-						boolean bl9 = bl3 || bl5 && l == 1 - j;
-						boolean bl10 = bl4 || bl5 && l == j - 1;
+					mutable.set(start, j, y, k);
+					if (!world.getBlockState(mutable).isOpaqueFullCube(world, mutable)) {
+						boolean bl7 = bl || bl6 && j == 1 - i;
+						boolean bl8 = bl2 || bl6 && j == i - 1;
+						boolean bl9 = bl3 || bl5 && k == 1 - i;
+						boolean bl10 = bl4 || bl5 && k == i - 1;
 						this.setBlockState(
 							world,
-							pos,
+							mutable,
 							config.capProvider
-								.getBlockState(random, blockPos)
+								.getBlockState(random, start)
 								.with(MushroomBlock.WEST, Boolean.valueOf(bl7))
 								.with(MushroomBlock.EAST, Boolean.valueOf(bl8))
 								.with(MushroomBlock.NORTH, Boolean.valueOf(bl9))
@@ -48,7 +47,7 @@ public class HugeBrownMushroomFeature extends HugeMushroomFeature {
 	}
 
 	@Override
-	protected int method_23372(int i, int j, int k, int l) {
-		return l <= 3 ? 0 : k;
+	protected int getCapSize(int i, int j, int capSize, int y) {
+		return y <= 3 ? 0 : capSize;
 	}
 }

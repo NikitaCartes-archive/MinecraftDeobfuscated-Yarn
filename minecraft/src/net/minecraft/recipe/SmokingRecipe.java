@@ -14,7 +14,7 @@ public class SmokingRecipe extends AbstractCookingRecipe {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.SMOKER);
+		return new ItemStack(Blocks.field_16334);
 	}
 
 	@Override

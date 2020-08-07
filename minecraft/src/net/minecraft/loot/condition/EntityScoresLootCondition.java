@@ -16,8 +16,8 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializer;
 
 public class EntityScoresLootCondition implements LootCondition {
 	private final Map<String, UniformLootTableRange> scores;
@@ -29,11 +29,16 @@ public class EntityScoresLootCondition implements LootCondition {
 	}
 
 	@Override
+	public LootConditionType getType() {
+		return LootConditionTypes.field_25241;
+	}
+
+	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
 		return ImmutableSet.of(this.target.getParameter());
 	}
 
-	public boolean test(LootContext lootContext) {
+	public boolean method_864(LootContext lootContext) {
 		Entity entity = lootContext.get(this.target.getParameter());
 		if (entity == null) {
 			return false;
@@ -62,12 +67,8 @@ public class EntityScoresLootCondition implements LootCondition {
 		}
 	}
 
-	public static class Factory extends LootCondition.Factory<EntityScoresLootCondition> {
-		protected Factory() {
-			super(new Identifier("entity_scores"), EntityScoresLootCondition.class);
-		}
-
-		public void toJson(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
+	public static class Serializer implements JsonSerializer<EntityScoresLootCondition> {
+		public void method_868(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject2 = new JsonObject();
 
 			for (Entry<String, UniformLootTableRange> entry : entityScoresLootCondition.scores.entrySet()) {
@@ -78,7 +79,7 @@ public class EntityScoresLootCondition implements LootCondition {
 			jsonObject.add("entity", jsonSerializationContext.serialize(entityScoresLootCondition.target));
 		}
 
-		public EntityScoresLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public EntityScoresLootCondition method_867(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Set<Entry<String, JsonElement>> set = JsonHelper.getObject(jsonObject, "scores").entrySet();
 			Map<String, UniformLootTableRange> map = Maps.<String, UniformLootTableRange>newLinkedHashMap();
 

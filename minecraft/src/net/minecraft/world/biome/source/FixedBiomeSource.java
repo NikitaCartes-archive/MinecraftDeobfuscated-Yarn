@@ -1,35 +1,63 @@
 package net.minecraft.world.biome.source;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import java.util.List;
+import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
 public class FixedBiomeSource extends BiomeSource {
-	private final Biome biome;
+	public static final Codec<FixedBiomeSource> field_24717 = Biome.REGISTRY_CODEC
+		.fieldOf("biome")
+		.<FixedBiomeSource>xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome)
+		.stable()
+		.codec();
+	private final Supplier<Biome> biome;
 
-	public FixedBiomeSource(FixedBiomeSourceConfig config) {
-		super(ImmutableSet.of(config.getBiome()));
-		this.biome = config.getBiome();
+	public FixedBiomeSource(Biome biome) {
+		this(() -> biome);
+	}
+
+	public FixedBiomeSource(Supplier<Biome> supplier) {
+		super(ImmutableList.of((Biome)supplier.get()));
+		this.biome = supplier;
+	}
+
+	@Override
+	protected Codec<? extends BiomeSource> method_28442() {
+		return field_24717;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public BiomeSource withSeed(long seed) {
+		return this;
 	}
 
 	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		return this.biome;
+		return (Biome)this.biome.get();
 	}
 
 	@Nullable
 	@Override
-	public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> list, Random random) {
-		return list.contains(this.biome) ? new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1)) : null;
+	public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl) {
+		if (predicate.test(this.biome.get())) {
+			return bl ? new BlockPos(x, y, z) : new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1));
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
-		return Sets.<Biome>newHashSet(this.biome);
+		return Sets.<Biome>newHashSet((Biome)this.biome.get());
 	}
 }

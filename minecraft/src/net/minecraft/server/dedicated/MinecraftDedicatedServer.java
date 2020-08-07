@@ -2,14 +2,11 @@ package net.minecraft.server.dedicated;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -19,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -29,31 +25,33 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.network.NetworkEncryptionUtils;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
-import net.minecraft.server.rcon.RconServer;
-import net.minecraft.util.DefaultedList;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.UncaughtExceptionHandler;
-import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.server.rcon.RconCommandOutput;
+import net.minecraft.server.rcon.RconListener;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.logging.UncaughtExceptionHandler;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.snooper.Snooper;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelGeneratorType;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,54 +60,42 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
 	private final List<PendingServerCommand> commandQueue = Collections.synchronizedList(Lists.newArrayList());
 	private QueryResponseHandler queryResponseHandler;
-	private final ServerCommandOutput rconCommandOutput;
-	private RconServer rconServer;
+	private final RconCommandOutput rconCommandOutput;
+	private RconListener rconServer;
 	private final ServerPropertiesLoader propertiesLoader;
-	private GameMode defaultGameMode;
 	@Nullable
 	private DedicatedServerGui gui;
 
 	public MinecraftDedicatedServer(
-		File file,
+		Thread thread,
+		DynamicRegistryManager.Impl impl,
+		LevelStorage.Session session,
+		ResourcePackManager resourcePackManager,
+		ServerResourceManager serverResourceManager,
+		SaveProperties saveProperties,
 		ServerPropertiesLoader serverPropertiesLoader,
 		DataFixer dataFixer,
-		YggdrasilAuthenticationService yggdrasilAuthenticationService,
 		MinecraftSessionService minecraftSessionService,
 		GameProfileRepository gameProfileRepository,
 		UserCache userCache,
-		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory,
-		String string
+		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
-			file,
+			thread,
+			impl,
+			session,
+			saveProperties,
+			resourcePackManager,
 			Proxy.NO_PROXY,
 			dataFixer,
-			new CommandManager(true),
-			yggdrasilAuthenticationService,
+			serverResourceManager,
 			minecraftSessionService,
 			gameProfileRepository,
 			userCache,
-			worldGenerationProgressListenerFactory,
-			string
+			worldGenerationProgressListenerFactory
 		);
 		this.propertiesLoader = serverPropertiesLoader;
-		this.rconCommandOutput = new ServerCommandOutput(this);
-		new Thread("Server Infinisleeper") {
-			{
-				this.setDaemon(true);
-				this.setUncaughtExceptionHandler(new UncaughtExceptionLogger(MinecraftDedicatedServer.LOGGER));
-				this.start();
-			}
-
-			public void run() {
-				while (true) {
-					try {
-						Thread.sleep(2147483647L);
-					} catch (InterruptedException var2) {
-					}
-				}
-			}
-		};
+		this.rconCommandOutput = new RconCommandOutput(this);
 	}
 
 	@Override
@@ -146,8 +132,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			this.setServerIp(serverPropertiesHandler.serverIp);
 		}
 
-		this.setSpawnAnimals(serverPropertiesHandler.spawnAnimals);
-		this.setSpawnNpcs(serverPropertiesHandler.spawnNpcs);
 		this.setPvpEnabled(serverPropertiesHandler.pvp);
 		this.setFlightEnabled(serverPropertiesHandler.allowFlight);
 		this.setResourcePack(serverPropertiesHandler.resourcePack, this.createResourcePackHash());
@@ -155,8 +139,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		this.setForceGameMode(serverPropertiesHandler.forceGameMode);
 		super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
 		this.setEnforceWhitelist(serverPropertiesHandler.enforceWhitelist);
-		this.defaultGameMode = serverPropertiesHandler.gameMode;
-		LOGGER.info("Default game type: {}", this.defaultGameMode);
+		this.saveProperties.setGameMode(serverPropertiesHandler.gameMode);
+		LOGGER.info("Default game type: {}", serverPropertiesHandler.gameMode);
 		InetAddress inetAddress = null;
 		if (!this.getServerIp().isEmpty()) {
 			inetAddress = InetAddress.getByName(this.getServerIp());
@@ -172,9 +156,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 		try {
 			this.getNetworkIo().bind(inetAddress, this.getServerPort());
-		} catch (IOException var17) {
+		} catch (IOException var10) {
 			LOGGER.warn("**** FAILED TO BIND TO PORT!");
-			LOGGER.warn("The exception was: {}", var17.toString());
+			LOGGER.warn("The exception was: {}", var10.toString());
 			LOGGER.warn("Perhaps a server is already running on that port?");
 			return false;
 		}
@@ -195,53 +179,29 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (!ServerConfigHandler.checkSuccess(this)) {
 			return false;
 		} else {
-			this.setPlayerManager(new DedicatedPlayerManager(this));
+			this.setPlayerManager(new DedicatedPlayerManager(this, this.registryManager, this.saveHandler));
 			long l = Util.getMeasuringTimeNano();
-			String string = serverPropertiesHandler.levelSeed;
-			String string2 = serverPropertiesHandler.generatorSettings;
-			long m = new Random().nextLong();
-			if (!string.isEmpty()) {
-				try {
-					long n = Long.parseLong(string);
-					if (n != 0L) {
-						m = n;
-					}
-				} catch (NumberFormatException var16) {
-					m = (long)string.hashCode();
-				}
-			}
-
-			LevelGeneratorType levelGeneratorType = serverPropertiesHandler.levelType;
 			this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
 			SkullBlockEntity.setUserCache(this.getUserCache());
 			SkullBlockEntity.setSessionService(this.getSessionService());
 			UserCache.setUseRemote(this.isOnlineMode());
 			LOGGER.info("Preparing level \"{}\"", this.getLevelName());
-			JsonObject jsonObject = new JsonObject();
-			if (levelGeneratorType == LevelGeneratorType.FLAT) {
-				jsonObject.addProperty("flat_world_options", string2);
-			} else if (!string2.isEmpty()) {
-				jsonObject = JsonHelper.deserialize(string2);
-			}
-
-			this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorType, jsonObject);
-			long o = Util.getMeasuringTimeNano() - l;
-			String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
-			LOGGER.info("Done ({})! For help, type \"help\"", string3);
+			this.loadWorld();
+			long m = Util.getMeasuringTimeNano() - l;
+			String string = String.format(Locale.ROOT, "%.3fs", (double)m / 1.0E9);
+			LOGGER.info("Done ({})! For help, type \"help\"", string);
 			if (serverPropertiesHandler.announcePlayerAchievements != null) {
 				this.getGameRules().get(GameRules.ANNOUNCE_ADVANCEMENTS).set(serverPropertiesHandler.announcePlayerAchievements, this);
 			}
 
 			if (serverPropertiesHandler.enableQuery) {
 				LOGGER.info("Starting GS4 status listener");
-				this.queryResponseHandler = new QueryResponseHandler(this);
-				this.queryResponseHandler.start();
+				this.queryResponseHandler = QueryResponseHandler.method_30737(this);
 			}
 
 			if (serverPropertiesHandler.enableRcon) {
 				LOGGER.info("Starting remote control listener");
-				this.rconServer = new RconServer(this);
-				this.rconServer.start();
+				this.rconServer = RconListener.method_30738(this);
 			}
 
 			if (this.getMaxTickTime() > 0L) {
@@ -253,8 +213,27 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			}
 
 			Items.AIR.appendStacks(ItemGroup.SEARCH, DefaultedList.of());
+			if (serverPropertiesHandler.enableJmxMonitoring) {
+				ServerMBean.register(this);
+			}
+
 			return true;
 		}
+	}
+
+	@Override
+	public boolean shouldSpawnAnimals() {
+		return this.getProperties().spawnAnimals && super.shouldSpawnAnimals();
+	}
+
+	@Override
+	public boolean isMonsterSpawningEnabled() {
+		return this.propertiesLoader.getPropertiesHandler().spawnMonsters && super.isMonsterSpawningEnabled();
+	}
+
+	@Override
+	public boolean shouldSpawnNpcs() {
+		return this.propertiesLoader.getPropertiesHandler().spawnNpcs && super.shouldSpawnNpcs();
 	}
 
 	public String createResourcePackHash() {
@@ -284,29 +263,13 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public void setDefaultGameMode(GameMode gameMode) {
-		super.setDefaultGameMode(gameMode);
-		this.defaultGameMode = gameMode;
-	}
-
-	@Override
 	public ServerPropertiesHandler getProperties() {
 		return this.propertiesLoader.getPropertiesHandler();
 	}
 
 	@Override
-	public boolean shouldGenerateStructures() {
-		return this.getProperties().generateStructures;
-	}
-
-	@Override
-	public GameMode getDefaultGameMode() {
-		return this.defaultGameMode;
-	}
-
-	@Override
-	public Difficulty getDefaultDifficulty() {
-		return this.getProperties().difficulty;
+	public void method_27731() {
+		this.setDifficulty(this.getProperties().difficulty, true);
 	}
 
 	@Override
@@ -315,15 +278,15 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public CrashReport populateCrashReport(CrashReport crashReport) {
-		crashReport = super.populateCrashReport(crashReport);
-		crashReport.getSystemDetailsSection().add("Is Modded", (CrashCallable<String>)(() -> (String)this.method_24307().orElse("Unknown (can't tell)")));
-		crashReport.getSystemDetailsSection().add("Type", (CrashCallable<String>)(() -> "Dedicated Server (map_server.txt)"));
-		return crashReport;
+	public CrashReport populateCrashReport(CrashReport report) {
+		report = super.populateCrashReport(report);
+		report.getSystemDetailsSection().add("Is Modded", (CrashCallable<String>)(() -> (String)this.getModdedStatusMessage().orElse("Unknown (can't tell)")));
+		report.getSystemDetailsSection().add("Type", (CrashCallable<String>)(() -> "Dedicated Server (map_server.txt)"));
+		return report;
 	}
 
 	@Override
-	public Optional<String> method_24307() {
+	public Optional<String> getModdedStatusMessage() {
 		String string = this.getServerModName();
 		return !"vanilla".equals(string) ? Optional.of("Definitely; Server brand changed to '" + string + "'") : Optional.empty();
 	}
@@ -355,14 +318,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean isMonsterSpawningEnabled() {
-		return this.getProperties().spawnMonsters;
-	}
-
-	@Override
 	public void addSnooperInfo(Snooper snooper) {
-		snooper.addInfo("whitelist_enabled", this.getPlayerManager().isWhitelistEnabled());
-		snooper.addInfo("whitelist_count", this.getPlayerManager().getWhitelistedNames().length);
+		snooper.addInfo("whitelist_enabled", this.method_13949().isWhitelistEnabled());
+		snooper.addInfo("whitelist_count", this.method_13949().getWhitelistedNames().length);
 		super.addSnooperInfo(snooper);
 	}
 
@@ -383,11 +341,16 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
+	public int getRateLimit() {
+		return this.getProperties().rateLimit;
+	}
+
+	@Override
 	public boolean isUsingNativeTransport() {
 		return this.getProperties().useNativeTransport;
 	}
 
-	public DedicatedPlayerManager getPlayerManager() {
+	public DedicatedPlayerManager method_13949() {
 		return (DedicatedPlayerManager)super.getPlayerManager();
 	}
 
@@ -438,22 +401,27 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean isSpawnProtected(World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		if (world.dimension.getType() != DimensionType.OVERWORLD) {
+	public boolean isSpawnProtected(ServerWorld world, BlockPos pos, PlayerEntity player) {
+		if (world.getRegistryKey() != World.OVERWORLD) {
 			return false;
-		} else if (this.getPlayerManager().getOpList().isEmpty()) {
+		} else if (this.method_13949().getOpList().isEmpty()) {
 			return false;
-		} else if (this.getPlayerManager().isOperator(playerEntity.getGameProfile())) {
+		} else if (this.method_13949().isOperator(player.getGameProfile())) {
 			return false;
 		} else if (this.getSpawnProtectionRadius() <= 0) {
 			return false;
 		} else {
-			BlockPos blockPos2 = world.getSpawnPos();
-			int i = MathHelper.abs(blockPos.getX() - blockPos2.getX());
-			int j = MathHelper.abs(blockPos.getZ() - blockPos2.getZ());
+			BlockPos blockPos = world.getSpawnPos();
+			int i = MathHelper.abs(pos.getX() - blockPos.getX());
+			int j = MathHelper.abs(pos.getZ() - blockPos.getZ());
 			int k = Math.max(i, j);
 			return k <= this.getSpawnProtectionRadius();
 		}
+	}
+
+	@Override
+	public boolean acceptsStatusQuery() {
+		return this.getProperties().enableStatus;
 	}
 
 	@Override
@@ -469,7 +437,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public void setPlayerIdleTimeout(int playerIdleTimeout) {
 		super.setPlayerIdleTimeout(playerIdleTimeout);
-		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.playerIdleTimeout.set(playerIdleTimeout));
+		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.playerIdleTimeout.set(this.getRegistryManager(), playerIdleTimeout));
 	}
 
 	@Override
@@ -568,24 +536,39 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public String executeRconCommand(String string) {
+	public String executeRconCommand(String command) {
 		this.rconCommandOutput.clear();
-		this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string));
+		this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createRconCommandSource(), command));
 		return this.rconCommandOutput.asString();
 	}
 
 	public void setUseWhitelist(boolean bl) {
-		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.whiteList.set(bl));
+		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.whiteList.set(this.getRegistryManager(), bl));
 	}
 
 	@Override
 	public void shutdown() {
 		super.shutdown();
-		Util.shutdownServerWorkerExecutor();
+		Util.shutdownExecutors();
 	}
 
 	@Override
-	public boolean isOwner(GameProfile profile) {
+	public boolean isHost(GameProfile profile) {
 		return false;
+	}
+
+	@Override
+	public int adjustTrackingDistance(int initialDistance) {
+		return this.getProperties().entityBroadcastRangePercentage * initialDistance / 100;
+	}
+
+	@Override
+	public String getLevelName() {
+		return this.session.getDirectoryName();
+	}
+
+	@Override
+	public boolean syncChunkWrites() {
+		return this.propertiesLoader.getPropertiesHandler().syncChunkWrites;
 	}
 }

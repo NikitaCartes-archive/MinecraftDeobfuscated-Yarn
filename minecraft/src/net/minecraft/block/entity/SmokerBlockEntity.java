@@ -1,16 +1,16 @@
 package net.minecraft.block.entity;
 
-import net.minecraft.container.Container;
-import net.minecraft.container.SmokerContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.SmokerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
 	public SmokerBlockEntity() {
-		super(BlockEntityType.SMOKER, RecipeType.SMOKING);
+		super(BlockEntityType.field_16414, RecipeType.SMOKING);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return new SmokerContainer(i, playerInventory, this, this.propertyDelegate);
+	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return new SmokerScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
 	}
 }

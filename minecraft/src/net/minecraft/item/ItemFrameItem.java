@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 public class ItemFrameItem extends DecorationItem {
 	public ItemFrameItem(Item.Settings settings) {
-		super(EntityType.ITEM_FRAME, settings);
+		super(EntityType.field_6043, settings);
 	}
 
 	@Override

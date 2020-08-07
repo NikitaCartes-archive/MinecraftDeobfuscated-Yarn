@@ -1,12 +1,18 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.util.math.BlockPos;
 
 public class EndGatewayFeatureConfig implements FeatureConfig {
+	public static final Codec<EndGatewayFeatureConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					BlockPos.field_25064.optionalFieldOf("exit").forGetter(endGatewayFeatureConfig -> endGatewayFeatureConfig.exitPos),
+					Codec.BOOL.fieldOf("exact").forGetter(endGatewayFeatureConfig -> endGatewayFeatureConfig.exact)
+				)
+				.apply(instance, EndGatewayFeatureConfig::new)
+	);
 	private final Optional<BlockPos> exitPos;
 	private final boolean exact;
 
@@ -29,40 +35,5 @@ public class EndGatewayFeatureConfig implements FeatureConfig {
 
 	public boolean isExact() {
 		return this.exact;
-	}
-
-	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			(T)this.exitPos
-				.map(
-					blockPos -> ops.createMap(
-							ImmutableMap.of(
-								ops.createString("exit_x"),
-								ops.createInt(blockPos.getX()),
-								ops.createString("exit_y"),
-								ops.createInt(blockPos.getY()),
-								ops.createString("exit_z"),
-								ops.createInt(blockPos.getZ()),
-								ops.createString("exact"),
-								ops.createBoolean(this.exact)
-							)
-						)
-				)
-				.orElse(ops.emptyMap())
-		);
-	}
-
-	public static <T> EndGatewayFeatureConfig deserialize(Dynamic<T> dynamic) {
-		Optional<BlockPos> optional = dynamic.get("exit_x")
-			.asNumber()
-			.flatMap(
-				number -> dynamic.get("exit_y")
-						.asNumber()
-						.flatMap(number2 -> dynamic.get("exit_z").asNumber().map(number3 -> new BlockPos(number.intValue(), number2.intValue(), number3.intValue())))
-			);
-		boolean bl = dynamic.get("exact").asBoolean(false);
-		return new EndGatewayFeatureConfig(optional, bl);
 	}
 }

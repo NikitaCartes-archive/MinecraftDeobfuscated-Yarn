@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializer;
 
 public class AlternativeLootCondition implements LootCondition {
 	private final LootCondition[] terms;
@@ -17,19 +17,24 @@ public class AlternativeLootCondition implements LootCondition {
 
 	private AlternativeLootCondition(LootCondition[] terms) {
 		this.terms = terms;
-		this.predicate = LootConditions.joinOr(terms);
+		this.predicate = LootConditionTypes.joinOr(terms);
 	}
 
-	public final boolean test(LootContext lootContext) {
+	@Override
+	public LootConditionType getType() {
+		return LootConditionTypes.field_25236;
+	}
+
+	public final boolean method_825(LootContext lootContext) {
 		return this.predicate.test(lootContext);
 	}
 
 	@Override
-	public void check(LootTableReporter reporter) {
-		LootCondition.super.check(reporter);
+	public void validate(LootTableReporter reporter) {
+		LootCondition.super.validate(reporter);
 
 		for (int i = 0; i < this.terms.length; i++) {
-			this.terms[i].check(reporter.makeChild(".term[" + i + "]"));
+			this.terms[i].validate(reporter.makeChild(".term[" + i + "]"));
 		}
 	}
 
@@ -47,7 +52,7 @@ public class AlternativeLootCondition implements LootCondition {
 		}
 
 		@Override
-		public AlternativeLootCondition.Builder withCondition(LootCondition.Builder condition) {
+		public AlternativeLootCondition.Builder or(LootCondition.Builder condition) {
 			this.terms.add(condition.build());
 			return this;
 		}
@@ -58,16 +63,12 @@ public class AlternativeLootCondition implements LootCondition {
 		}
 	}
 
-	public static class Factory extends LootCondition.Factory<AlternativeLootCondition> {
-		public Factory() {
-			super(new Identifier("alternative"), AlternativeLootCondition.class);
-		}
-
-		public void toJson(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
+	public static class Serializer implements JsonSerializer<AlternativeLootCondition> {
+		public void method_828(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
 		}
 
-		public AlternativeLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public AlternativeLootCondition method_829(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "terms", jsonDeserializationContext, LootCondition[].class);
 			return new AlternativeLootCondition(lootConditions);
 		}

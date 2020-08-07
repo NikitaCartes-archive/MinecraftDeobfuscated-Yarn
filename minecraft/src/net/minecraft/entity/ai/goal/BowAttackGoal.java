@@ -2,9 +2,9 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
 
@@ -24,7 +24,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 		this.speed = speed;
 		this.attackInterval = attackInterval;
 		this.squaredRange = range * range;
-		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	public void setAttackInterval(int attackInterval) {
@@ -37,7 +37,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	}
 
 	protected boolean isHoldingBow() {
-		return this.actor.isHolding(Items.BOW);
+		return this.actor.isHolding(Items.field_8102);
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 					}
 				}
 			} else if (--this.cooldown <= 0 && this.targetSeeingTicker >= -60) {
-				this.actor.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.BOW));
+				this.actor.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.field_8102));
 			}
 		}
 	}

@@ -7,11 +7,11 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 public enum VillageGossipType {
-	MAJOR_NEGATIVE("major_negative", -5, 100, 10, 10),
-	MINOR_NEGATIVE("minor_negative", -1, 200, 20, 20),
-	MINOR_POSITIVE("minor_positive", 1, 200, 1, 5),
-	MAJOR_POSITIVE("major_positive", 5, 100, 0, 100),
-	TRADING("trading", 1, 25, 2, 20);
+	field_18424("major_negative", -5, 100, 10, 10),
+	field_18425("minor_negative", -1, 200, 20, 20),
+	field_18426("minor_positive", 1, 200, 1, 5),
+	field_18427("major_positive", 5, 100, 0, 100),
+	field_18428("trading", 1, 25, 2, 20);
 
 	public final String key;
 	public final int multiplier;

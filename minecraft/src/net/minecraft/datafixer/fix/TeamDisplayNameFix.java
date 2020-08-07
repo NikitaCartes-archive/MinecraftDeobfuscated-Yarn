@@ -3,11 +3,11 @@ package net.minecraft.datafixer.fix;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.text.LiteralText;
@@ -31,7 +31,7 @@ public class TeamDisplayNameFix extends DataFix {
 							dynamic -> dynamic.update(
 									"DisplayName",
 									dynamic2 -> DataFixUtils.orElse(
-											dynamic2.asString().map(string -> Text.Serializer.toJson(new LiteralText(string))).map(dynamic::createString), dynamic2
+											dynamic2.asString().map(string -> Text.Serializer.toJson(new LiteralText(string))).map(dynamic::createString).result(), dynamic2
 										)
 								)
 						)

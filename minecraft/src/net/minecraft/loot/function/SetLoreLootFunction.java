@@ -19,7 +19,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class SetLoreLootFunction extends ConditionalLootFunction {
@@ -33,6 +32,11 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 		this.replace = replace;
 		this.lore = ImmutableList.copyOf(lore);
 		this.entity = entity;
+	}
+
+	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25231;
 	}
 
 	@Override
@@ -92,13 +96,9 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetLoreLootFunction> {
-		public Factory() {
-			super(new Identifier("set_lore"), SetLoreLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setLoreLootFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetLoreLootFunction> {
+		public void method_15969(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, setLoreLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("replace", setLoreLootFunction.replace);
 			JsonArray jsonArray = new JsonArray();
 
@@ -112,7 +112,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public SetLoreLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetLoreLootFunction method_15968(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
 			List<Text> list = (List<Text>)Streams.stream(JsonHelper.getArray(jsonObject, "lore"))
 				.map(Text.Serializer::fromJson)

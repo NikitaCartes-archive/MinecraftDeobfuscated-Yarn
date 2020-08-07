@@ -45,18 +45,18 @@ public class ModelElement {
 
 	private float[] getRotatedMatrix(Direction direction) {
 		switch (direction) {
-			case DOWN:
+			case field_11033:
 				return new float[]{this.from.getX(), 16.0F - this.to.getZ(), this.to.getX(), 16.0F - this.from.getZ()};
-			case UP:
+			case field_11036:
 				return new float[]{this.from.getX(), this.from.getZ(), this.to.getX(), this.to.getZ()};
-			case NORTH:
+			case field_11043:
 			default:
 				return new float[]{16.0F - this.to.getX(), 16.0F - this.to.getY(), 16.0F - this.from.getX(), 16.0F - this.from.getY()};
-			case SOUTH:
+			case field_11035:
 				return new float[]{this.from.getX(), 16.0F - this.to.getY(), this.to.getX(), 16.0F - this.from.getY()};
-			case WEST:
+			case field_11039:
 				return new float[]{this.from.getZ(), 16.0F - this.to.getY(), this.to.getZ(), 16.0F - this.from.getY()};
-			case EAST:
+			case field_11034:
 				return new float[]{16.0F - this.to.getZ(), 16.0F - this.to.getY(), 16.0F - this.from.getZ(), 16.0F - this.from.getY()};
 		}
 	}
@@ -66,12 +66,12 @@ public class ModelElement {
 		protected Deserializer() {
 		}
 
-		public ModelElement deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-			JsonObject jsonObject = element.getAsJsonObject();
+		public ModelElement method_3406(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Vector3f vector3f = this.deserializeFrom(jsonObject);
 			Vector3f vector3f2 = this.deserializeTo(jsonObject);
 			ModelRotation modelRotation = this.deserializeRotation(jsonObject);
-			Map<Direction, ModelElementFace> map = this.deserializeFacesValidating(context, jsonObject);
+			Map<Direction, ModelElementFace> map = this.deserializeFacesValidating(jsonDeserializationContext, jsonObject);
 			if (jsonObject.has("shade") && !JsonHelper.hasBoolean(jsonObject, "shade")) {
 				throw new JsonParseException("Expected shade to be a Boolean");
 			} else {

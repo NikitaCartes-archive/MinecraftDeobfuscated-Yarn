@@ -33,7 +33,7 @@ public class FollowOwnerGoal extends Goal {
 		this.minDistance = minDistance;
 		this.maxDistance = maxDistance;
 		this.leavesAllowed = leavesAllowed;
-		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		if (!(tameable.getNavigation() instanceof MobNavigation) && !(tameable.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
 		}
@@ -68,15 +68,15 @@ public class FollowOwnerGoal extends Goal {
 	@Override
 	public void start() {
 		this.updateCountdownTicks = 0;
-		this.oldWaterPathfindingPenalty = this.tameable.getPathfindingPenalty(PathNodeType.WATER);
-		this.tameable.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
+		this.oldWaterPathfindingPenalty = this.tameable.getPathfindingPenalty(PathNodeType.field_18);
+		this.tameable.setPathfindingPenalty(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override
 	public void stop() {
 		this.owner = null;
 		this.navigation.stop();
-		this.tameable.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterPathfindingPenalty);
+		this.tameable.setPathfindingPenalty(PathNodeType.field_18, this.oldWaterPathfindingPenalty);
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class FollowOwnerGoal extends Goal {
 	}
 
 	private void tryTeleport() {
-		BlockPos blockPos = new BlockPos(this.owner);
+		BlockPos blockPos = this.owner.getBlockPos();
 
 		for (int i = 0; i < 10; i++) {
 			int j = this.getRandomInt(-3, 3);
@@ -114,22 +114,22 @@ public class FollowOwnerGoal extends Goal {
 		} else if (!this.canTeleportTo(new BlockPos(x, y, z))) {
 			return false;
 		} else {
-			this.tameable.setPositionAndAngles((double)((float)x + 0.5F), (double)y, (double)((float)z + 0.5F), this.tameable.yaw, this.tameable.pitch);
+			this.tameable.refreshPositionAndAngles((double)x + 0.5, (double)y, (double)z + 0.5, this.tameable.yaw, this.tameable.pitch);
 			this.navigation.stop();
 			return true;
 		}
 	}
 
 	private boolean canTeleportTo(BlockPos pos) {
-		PathNodeType pathNodeType = LandPathNodeMaker.getPathNodeType(this.world, pos.getX(), pos.getY(), pos.getZ());
-		if (pathNodeType != PathNodeType.WALKABLE) {
+		PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(this.world, pos.mutableCopy());
+		if (pathNodeType != PathNodeType.field_12) {
 			return false;
 		} else {
-			BlockState blockState = this.world.getBlockState(pos.down());
+			BlockState blockState = this.world.getBlockState(pos.method_10074());
 			if (!this.leavesAllowed && blockState.getBlock() instanceof LeavesBlock) {
 				return false;
 			} else {
-				BlockPos blockPos = pos.subtract(new BlockPos(this.tameable));
+				BlockPos blockPos = pos.subtract(this.tameable.getBlockPos());
 				return this.world.doesNotCollide(this.tameable, this.tameable.getBoundingBox().offset(blockPos));
 			}
 		}

@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 public class MagmaCubeEntityModel<T extends SlimeEntity> extends CompositeEntityModel<T> {
 	private final ModelPart[] field_3427 = new ModelPart[8];
 	private final ModelPart innerCube;
-	private final ImmutableList<ModelPart> field_20934;
+	private final ImmutableList<ModelPart> parts;
 
 	public MagmaCubeEntityModel() {
 		for (int i = 0; i < this.field_3427.length; i++) {
@@ -36,13 +36,13 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends CompositeEntity
 		Builder<ModelPart> builder = ImmutableList.builder();
 		builder.add(this.innerCube);
 		builder.addAll(Arrays.asList(this.field_3427));
-		this.field_20934 = builder.build();
+		this.parts = builder.build();
 	}
 
-	public void setAngles(T slimeEntity, float f, float g, float h, float i, float j) {
+	public void method_22958(T slimeEntity, float f, float g, float h, float i, float j) {
 	}
 
-	public void animateModel(T slimeEntity, float f, float g, float h) {
+	public void method_17098(T slimeEntity, float f, float g, float h) {
 		float i = MathHelper.lerp(h, slimeEntity.lastStretch, slimeEntity.stretch);
 		if (i < 0.0F) {
 			i = 0.0F;
@@ -53,7 +53,7 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends CompositeEntity
 		}
 	}
 
-	public ImmutableList<ModelPart> getParts() {
-		return this.field_20934;
+	public ImmutableList<ModelPart> method_22959() {
+		return this.parts;
 	}
 }

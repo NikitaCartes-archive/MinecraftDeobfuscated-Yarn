@@ -6,12 +6,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
-import net.minecraft.client.recipe.book.ClientRecipeBook;
-import net.minecraft.client.recipe.book.RecipeBookGroup;
+import net.minecraft.client.recipebook.ClientRecipeBook;
+import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.container.CraftingContainer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 
 @Environment(EnvType.CLIENT)
 public class RecipeGroupButtonWidget extends ToggleButtonWidget {
@@ -27,9 +28,11 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	public void checkForNewRecipes(MinecraftClient client) {
 		ClientRecipeBook clientRecipeBook = client.player.getRecipeBook();
 		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
-		if (client.player.container instanceof CraftingContainer) {
+		if (client.player.currentScreenHandler instanceof AbstractRecipeScreenHandler) {
 			for (RecipeResultCollection recipeResultCollection : list) {
-				for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)client.player.container))) {
+				for (Recipe<?> recipe : recipeResultCollection.getResults(
+					clientRecipeBook.isFilteringCraftable((AbstractRecipeScreenHandler<?>)client.player.currentScreenHandler)
+				)) {
 					if (clientRecipeBook.shouldDisplay(recipe)) {
 						this.bounce = 15.0F;
 						return;
@@ -40,7 +43,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	}
 
 	@Override
-	public void renderButton(int mouseX, int mouseY, float delta) {
+	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.bounce > 0.0F) {
 			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
 			RenderSystem.pushMatrix();
@@ -68,7 +71,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		}
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.blit(k, this.y, i, j, this.width, this.height);
+		this.drawTexture(matrices, k, this.y, i, j, this.width, this.height);
 		RenderSystem.enableDepthTest();
 		this.renderIcons(minecraftClient.getItemRenderer());
 		if (this.bounce > 0.0F) {
@@ -81,10 +84,10 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		List<ItemStack> list = this.category.getIcons();
 		int i = this.toggled ? -2 : 0;
 		if (list.size() == 1) {
-			itemRenderer.renderGuiItem((ItemStack)list.get(0), this.x + 9 + i, this.y + 5);
+			itemRenderer.renderInGui((ItemStack)list.get(0), this.x + 9 + i, this.y + 5);
 		} else if (list.size() == 2) {
-			itemRenderer.renderGuiItem((ItemStack)list.get(0), this.x + 3 + i, this.y + 5);
-			itemRenderer.renderGuiItem((ItemStack)list.get(1), this.x + 14 + i, this.y + 5);
+			itemRenderer.renderInGui((ItemStack)list.get(0), this.x + 3 + i, this.y + 5);
+			itemRenderer.renderInGui((ItemStack)list.get(1), this.x + 14 + i, this.y + 5);
 		}
 	}
 

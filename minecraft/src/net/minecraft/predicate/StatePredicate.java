@@ -46,7 +46,7 @@ public class StatePredicate {
 		this.conditions = ImmutableList.copyOf(testers);
 	}
 
-	public <S extends State<S>> boolean test(StateManager<?, S> stateManager, S container) {
+	public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S container) {
 		for (StatePredicate.Condition condition : this.conditions) {
 			if (!condition.test(stateManager, container)) {
 				return false;
@@ -97,7 +97,7 @@ public class StatePredicate {
 	}
 
 	public static class Builder {
-		private final List<StatePredicate.Condition> conditons = Lists.<StatePredicate.Condition>newArrayList();
+		private final List<StatePredicate.Condition> conditions = Lists.<StatePredicate.Condition>newArrayList();
 
 		private Builder() {
 		}
@@ -107,7 +107,7 @@ public class StatePredicate {
 		}
 
 		public StatePredicate.Builder exactMatch(Property<?> property, String valueName) {
-			this.conditons.add(new StatePredicate.ExactValueCondition(property.getName(), valueName));
+			this.conditions.add(new StatePredicate.ExactValueCondition(property.getName(), valueName));
 			return this;
 		}
 
@@ -124,7 +124,7 @@ public class StatePredicate {
 		}
 
 		public StatePredicate build() {
-			return new StatePredicate(this.conditons);
+			return new StatePredicate(this.conditions);
 		}
 	}
 
@@ -135,12 +135,12 @@ public class StatePredicate {
 			this.key = key;
 		}
 
-		public <S extends State<S>> boolean test(StateManager<?, S> stateManager, S state) {
+		public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S state) {
 			Property<?> property = stateManager.getProperty(this.key);
 			return property == null ? false : this.test(state, property);
 		}
 
-		protected abstract <T extends Comparable<T>> boolean test(State<?> state, Property<T> property);
+		protected abstract <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property);
 
 		public abstract JsonElement toJson();
 
@@ -165,7 +165,7 @@ public class StatePredicate {
 		}
 
 		@Override
-		protected <T extends Comparable<T>> boolean test(State<?> state, Property<T> property) {
+		protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
 			T comparable = state.get(property);
 			Optional<T> optional = property.parse(this.value);
 			return optional.isPresent() && comparable.compareTo(optional.get()) == 0;
@@ -190,7 +190,7 @@ public class StatePredicate {
 		}
 
 		@Override
-		protected <T extends Comparable<T>> boolean test(State<?> state, Property<T> property) {
+		protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
 			T comparable = state.get(property);
 			if (this.min != null) {
 				Optional<T> optional = property.parse(this.min);

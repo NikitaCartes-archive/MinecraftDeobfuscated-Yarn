@@ -57,7 +57,7 @@ public abstract class AbstractFileResourcePack implements ResourcePack {
 
 	protected abstract boolean containsFile(String name);
 
-	protected void warnNonLowercaseNamespace(String namespace) {
+	protected void warnNonLowerCaseNamespace(String namespace) {
 		LOGGER.warn("ResourcePack: ignored non-lowercase namespace: {} in {}", namespace, this.base);
 	}
 

@@ -13,27 +13,44 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 
 public class Texts {
-	public static Text setStyleIfAbsent(Text text, Style style) {
+	public static MutableText setStyleIfAbsent(MutableText text, Style style) {
 		if (style.isEmpty()) {
 			return text;
 		} else {
-			return text.getStyle().isEmpty() ? text.setStyle(style.deepCopy()) : new LiteralText("").append(text).setStyle(style.deepCopy());
+			Style style2 = text.getStyle();
+			if (style2.isEmpty()) {
+				return text.setStyle(style);
+			} else {
+				return style2.equals(style) ? text : text.setStyle(style2.withParent(style));
+			}
 		}
 	}
 
-	public static Text parse(@Nullable ServerCommandSource source, Text text, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+	public static MutableText parse(@Nullable ServerCommandSource source, Text text, @Nullable Entity sender, int depth) throws CommandSyntaxException {
 		if (depth > 100) {
-			return text;
+			return text.shallowCopy();
 		} else {
-			depth++;
-			Text text2 = text instanceof ParsableText ? ((ParsableText)text).parse(source, sender, depth) : text.copy();
+			MutableText mutableText = text instanceof ParsableText ? ((ParsableText)text).parse(source, sender, depth + 1) : text.copy();
 
-			for (Text text3 : text.getSiblings()) {
-				text2.append(parse(source, text3, sender, depth));
+			for (Text text2 : text.getSiblings()) {
+				mutableText.append(parse(source, text2, sender, depth + 1));
 			}
 
-			return setStyleIfAbsent(text2, text.getStyle());
+			return mutableText.fillStyle(method_27663(source, text.getStyle(), sender, depth));
 		}
+	}
+
+	private static Style method_27663(@Nullable ServerCommandSource serverCommandSource, Style style, @Nullable Entity entity, int i) throws CommandSyntaxException {
+		HoverEvent hoverEvent = style.getHoverEvent();
+		if (hoverEvent != null) {
+			Text text = hoverEvent.getValue(HoverEvent.Action.field_24342);
+			if (text != null) {
+				HoverEvent hoverEvent2 = new HoverEvent(HoverEvent.Action.field_24342, parse(serverCommandSource, text, entity, i + 1));
+				return style.withHoverEvent(hoverEvent2);
+			}
+		}
+
+		return style;
 	}
 
 	public static Text toText(GameProfile profile) {
@@ -45,12 +62,12 @@ public class Texts {
 	}
 
 	public static Text joinOrdered(Collection<String> strings) {
-		return joinOrdered(strings, string -> new LiteralText(string).formatted(Formatting.GREEN));
+		return joinOrdered(strings, string -> new LiteralText(string).formatted(Formatting.field_1060));
 	}
 
 	public static <T extends Comparable<T>> Text joinOrdered(Collection<T> elements, Function<T, Text> transformer) {
 		if (elements.isEmpty()) {
-			return new LiteralText("");
+			return LiteralText.EMPTY;
 		} else if (elements.size() == 1) {
 			return (Text)transformer.apply(elements.iterator().next());
 		} else {
@@ -60,30 +77,30 @@ public class Texts {
 		}
 	}
 
-	public static <T> Text join(Collection<T> elements, Function<T, Text> transformer) {
+	public static <T> MutableText join(Collection<T> elements, Function<T, Text> transformer) {
 		if (elements.isEmpty()) {
 			return new LiteralText("");
 		} else if (elements.size() == 1) {
-			return (Text)transformer.apply(elements.iterator().next());
+			return ((Text)transformer.apply(elements.iterator().next())).shallowCopy();
 		} else {
-			Text text = new LiteralText("");
+			MutableText mutableText = new LiteralText("");
 			boolean bl = true;
 
 			for (T object : elements) {
 				if (!bl) {
-					text.append(new LiteralText(", ").formatted(Formatting.GRAY));
+					mutableText.append(new LiteralText(", ").formatted(Formatting.field_1080));
 				}
 
-				text.append((Text)transformer.apply(object));
+				mutableText.append((Text)transformer.apply(object));
 				bl = false;
 			}
 
-			return text;
+			return mutableText;
 		}
 	}
 
-	public static Text bracketed(Text text) {
-		return new LiteralText("[").append(text).append("]");
+	public static MutableText bracketed(Text text) {
+		return new TranslatableText("chat.square_brackets", text);
 	}
 
 	public static Text toText(Message message) {

@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -15,6 +15,7 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractTraderEntity;
@@ -23,6 +24,7 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
@@ -59,12 +61,11 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, false));
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(12.0);
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(24.0);
+	public static DefaultAttributeContainer.Builder createEvokerAttributes() {
+		return HostileEntity.createHostileAttributes()
+			.add(EntityAttributes.field_23719, 0.5)
+			.add(EntityAttributes.field_23717, 12.0)
+			.add(EntityAttributes.field_23716, 24.0);
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 	@Override
 	public SoundEvent getCelebratingSound() {
-		return SoundEvents.ENTITY_EVOKER_CELEBRATE;
+		return SoundEvents.field_19147;
 	}
 
 	@Override
@@ -111,17 +112,17 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_EVOKER_AMBIENT;
+		return SoundEvents.field_14782;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_EVOKER_DEATH;
+		return SoundEvents.field_14599;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_EVOKER_HURT;
+		return SoundEvents.field_15111;
 	}
 
 	private void setWololoTarget(@Nullable SheepEntity sheep) {
@@ -135,7 +136,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 	@Override
 	protected SoundEvent getCastSpellSound() {
-		return SoundEvents.ENTITY_EVOKER_CAST_SPELL;
+		return SoundEvents.field_14858;
 	}
 
 	@Override
@@ -181,20 +182,20 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			}
 		}
 
-		private void conjureFangs(double x, double z, double maxY, double y, float f, int warmup) {
+		private void conjureFangs(double x, double z, double maxY, double y, float yaw, int warmup) {
 			BlockPos blockPos = new BlockPos(x, y, z);
 			boolean bl = false;
 			double d = 0.0;
 
 			do {
-				BlockPos blockPos2 = blockPos.down();
+				BlockPos blockPos2 = blockPos.method_10074();
 				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
-				if (blockState.isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.UP)) {
+				if (blockState.isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.field_11036)) {
 					if (!EvokerEntity.this.world.isAir(blockPos)) {
 						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
 						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);
 						if (!voxelShape.isEmpty()) {
-							d = voxelShape.getMaximum(Direction.Axis.Y);
+							d = voxelShape.getMax(Direction.Axis.field_11052);
 						}
 					}
 
@@ -202,22 +203,22 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 					break;
 				}
 
-				blockPos = blockPos.down();
+				blockPos = blockPos.method_10074();
 			} while (blockPos.getY() >= MathHelper.floor(maxY) - 1);
 
 			if (bl) {
-				EvokerEntity.this.world.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.world, x, (double)blockPos.getY() + d, z, f, warmup, EvokerEntity.this));
+				EvokerEntity.this.world.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.world, x, (double)blockPos.getY() + d, z, yaw, warmup, EvokerEntity.this));
 			}
 		}
 
 		@Override
 		protected SoundEvent getSoundPrepare() {
-			return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
+			return SoundEvents.field_14908;
 		}
 
 		@Override
 		protected SpellcastingIllagerEntity.Spell getSpell() {
-			return SpellcastingIllagerEntity.Spell.FANGS;
+			return SpellcastingIllagerEntity.Spell.field_7380;
 		}
 	}
 
@@ -272,34 +273,36 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 		@Override
 		protected void castSpell() {
+			ServerWorld serverWorld = (ServerWorld)EvokerEntity.this.world;
+
 			for (int i = 0; i < 3; i++) {
-				BlockPos blockPos = new BlockPos(EvokerEntity.this).add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
-				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
-				vexEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				vexEntity.initialize(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.MOB_SUMMONED, null, null);
+				BlockPos blockPos = EvokerEntity.this.getBlockPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
+				VexEntity vexEntity = EntityType.field_6059.create(EvokerEntity.this.world);
+				vexEntity.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
+				vexEntity.initialize(serverWorld, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.field_16471, null, null);
 				vexEntity.setOwner(EvokerEntity.this);
 				vexEntity.setBounds(blockPos);
 				vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
-				EvokerEntity.this.world.spawnEntity(vexEntity);
+				serverWorld.spawnEntityAndPassengers(vexEntity);
 			}
 		}
 
 		@Override
 		protected SoundEvent getSoundPrepare() {
-			return SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON;
+			return SoundEvents.field_15193;
 		}
 
 		@Override
 		protected SpellcastingIllagerEntity.Spell getSpell() {
-			return SpellcastingIllagerEntity.Spell.SUMMON_VEX;
+			return SpellcastingIllagerEntity.Spell.field_7379;
 		}
 	}
 
 	public class WololoGoal extends SpellcastingIllagerEntity.CastSpellGoal {
-		private final TargetPredicate purpleSheepPredicate = new TargetPredicate()
+		private final TargetPredicate convertibleSheepPredicate = new TargetPredicate()
 			.setBaseMaxDistance(16.0)
 			.includeInvulnerable()
-			.setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.BLUE);
+			.setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.field_7966);
 
 		@Override
 		public boolean canStart() {
@@ -309,11 +312,11 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				return false;
 			} else if (EvokerEntity.this.age < this.startTime) {
 				return false;
-			} else if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+			} else if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				return false;
 			} else {
 				List<SheepEntity> list = EvokerEntity.this.world
-					.getTargets(SheepEntity.class, this.purpleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
+					.getTargets(SheepEntity.class, this.convertibleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
 				if (list.isEmpty()) {
 					return false;
 				} else {
@@ -338,7 +341,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		protected void castSpell() {
 			SheepEntity sheepEntity = EvokerEntity.this.getWololoTarget();
 			if (sheepEntity != null && sheepEntity.isAlive()) {
-				sheepEntity.setColor(DyeColor.RED);
+				sheepEntity.setColor(DyeColor.field_7964);
 			}
 		}
 
@@ -359,12 +362,12 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 		@Override
 		protected SoundEvent getSoundPrepare() {
-			return SoundEvents.ENTITY_EVOKER_PREPARE_WOLOLO;
+			return SoundEvents.field_15058;
 		}
 
 		@Override
 		protected SpellcastingIllagerEntity.Spell getSpell() {
-			return SpellcastingIllagerEntity.Spell.WOLOLO;
+			return SpellcastingIllagerEntity.Spell.field_7381;
 		}
 	}
 }

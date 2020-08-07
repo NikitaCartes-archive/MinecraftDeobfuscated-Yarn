@@ -19,8 +19,9 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
@@ -85,18 +86,11 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 		private ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
-			DimensionType dimensionType = ChunkLoadingDebugRenderer.this.client.world.dimension.getType();
-			ServerWorld serverWorld;
-			if (integratedServer.getWorld(dimensionType) != null) {
-				serverWorld = integratedServer.getWorld(dimensionType);
-			} else {
-				serverWorld = null;
-			}
-
+			RegistryKey<World> registryKey = clientWorld.getRegistryKey();
 			int i = (int)d >> 4;
 			int j = (int)e >> 4;
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();
-			ClientChunkManager clientChunkManager = clientWorld.getChunkManager();
+			ClientChunkManager clientChunkManager = clientWorld.method_2935();
 
 			for (int k = i - 12; k <= i + 12; k++) {
 				for (int l = j - 12; l <= j + 12; l++) {
@@ -117,17 +111,22 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 			this.clientStates = builder.build();
 			this.serverStates = integratedServer.submit(() -> {
-				Builder<ChunkPos, String> builderx = ImmutableMap.builder();
-				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+				ServerWorld serverWorld = integratedServer.getWorld(registryKey);
+				if (serverWorld == null) {
+					return ImmutableMap.of();
+				} else {
+					Builder<ChunkPos, String> builderx = ImmutableMap.builder();
+					ServerChunkManager serverChunkManager = serverWorld.method_14178();
 
-				for (int kx = i - 12; kx <= i + 12; kx++) {
-					for (int lx = j - 12; lx <= j + 12; lx++) {
-						ChunkPos chunkPosx = new ChunkPos(kx, lx);
-						builderx.put(chunkPosx, "Server: " + serverChunkManager.method_23273(chunkPosx));
+					for (int kx = i - 12; kx <= i + 12; kx++) {
+						for (int lx = j - 12; lx <= j + 12; lx++) {
+							ChunkPos chunkPosx = new ChunkPos(kx, lx);
+							builderx.put(chunkPosx, "Server: " + serverChunkManager.getChunkLoadingDebugInfo(chunkPosx));
+						}
 					}
-				}
 
-				return builderx.build();
+					return builderx.build();
+				}
 			});
 		}
 	}

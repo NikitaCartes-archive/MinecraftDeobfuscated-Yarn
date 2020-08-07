@@ -3,9 +3,9 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum ChestType implements StringIdentifiable {
-	SINGLE("single", 0),
-	LEFT("left", 2),
-	RIGHT("right", 1);
+	field_12569("single", 0),
+	field_12574("left", 2),
+	field_12571("right", 1);
 
 	public static final ChestType[] VALUES = values();
 	private final String name;

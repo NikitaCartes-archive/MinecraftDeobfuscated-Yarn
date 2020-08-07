@@ -28,18 +28,9 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	public void addNeighborUpdate(long time, BlockPos pos) {
-		Map<BlockPos, Integer> map = (Map<BlockPos, Integer>)this.neighborUpdates.get(time);
-		if (map == null) {
-			map = Maps.<BlockPos, Integer>newHashMap();
-			this.neighborUpdates.put(time, map);
-		}
-
-		Integer integer = (Integer)map.get(pos);
-		if (integer == null) {
-			integer = 0;
-		}
-
-		map.put(pos, integer + 1);
+		Map<BlockPos, Integer> map = (Map<BlockPos, Integer>)this.neighborUpdates.computeIfAbsent(time, long_ -> Maps.newHashMap());
+		int i = (Integer)map.getOrDefault(pos, 0);
+		map.put(pos, i + 1);
 	}
 
 	@Override
@@ -69,7 +60,7 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 							.contract(0.0025 * (double)m)
 							.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
 							.offset(-cameraX, -cameraY, -cameraZ);
-						WorldRenderer.drawBox(vertexConsumer, box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, 1.0F, 1.0F, 1.0F, 1.0F);
+						WorldRenderer.drawBox(matrices, vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1.0F, 1.0F, 1.0F, 1.0F);
 						map.put(blockPos, integer);
 					}
 				}

@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -16,8 +15,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class ScaffoldingBlock extends Block implements Waterloggable {
@@ -29,7 +28,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty BOTTOM = Properties.BOTTOM;
 
-	protected ScaffoldingBlock(Block.Settings settings) {
+	protected ScaffoldingBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(WATERLOGGED, Boolean.valueOf(false)).with(BOTTOM, Boolean.valueOf(false))
@@ -42,8 +41,8 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		if (!ePos.isHolding(state.getBlock().asItem())) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		if (!context.isHolding(state.getBlock().asItem())) {
 			return state.get(BOTTOM) ? BOTTOM_OUTLINE_SHAPE : NORMAL_OUTLINE_SHAPE;
 		} else {
 			return VoxelShapes.fullCube();
@@ -51,13 +50,13 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.fullCube();
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-		return ctx.getStack().getItem() == this.asItem();
+	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+		return context.getStack().getItem() == this.asItem();
 	}
 
 	@Override
@@ -72,14 +71,14 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!world.isClient) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
@@ -114,11 +113,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		if (ePos.isAbove(VoxelShapes.fullCube(), pos, true) && !ePos.isDescending()) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		if (context.isAbove(VoxelShapes.fullCube(), pos, true) && !context.isDescending()) {
 			return NORMAL_OUTLINE_SHAPE;
 		} else {
-			return state.get(DISTANCE) != 0 && state.get(BOTTOM) && ePos.isAbove(OUTLINE_SHAPE, pos, true) ? COLLISION_SHAPE : VoxelShapes.empty();
+			return state.get(DISTANCE) != 0 && state.get(BOTTOM) && context.isAbove(OUTLINE_SHAPE, pos, true) ? COLLISION_SHAPE : VoxelShapes.empty();
 		}
 	}
 
@@ -128,22 +127,22 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	private boolean shouldBeBottom(BlockView world, BlockPos pos, int distance) {
-		return distance > 0 && world.getBlockState(pos.down()).getBlock() != this;
+		return distance > 0 && !world.getBlockState(pos.method_10074()).isOf(this);
 	}
 
 	public static int calculateDistance(BlockView world, BlockPos pos) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(pos).setOffset(Direction.DOWN);
+		BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.field_11033);
 		BlockState blockState = world.getBlockState(mutable);
 		int i = 7;
-		if (blockState.getBlock() == Blocks.SCAFFOLDING) {
+		if (blockState.isOf(Blocks.field_16492)) {
 			i = (Integer)blockState.get(DISTANCE);
-		} else if (blockState.isSideSolidFullSquare(world, mutable, Direction.UP)) {
+		} else if (blockState.isSideSolidFullSquare(world, mutable, Direction.field_11036)) {
 			return 0;
 		}
 
-		for (Direction direction : Direction.Type.HORIZONTAL) {
-			BlockState blockState2 = world.getBlockState(mutable.set(pos).setOffset(direction));
-			if (blockState2.getBlock() == Blocks.SCAFFOLDING) {
+		for (Direction direction : Direction.Type.field_11062) {
+			BlockState blockState2 = world.getBlockState(mutable.set(pos, direction));
+			if (blockState2.isOf(Blocks.field_16492)) {
 				i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
 				if (i == 1) {
 					break;

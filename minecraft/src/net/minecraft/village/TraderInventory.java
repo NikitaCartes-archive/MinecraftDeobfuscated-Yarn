@@ -7,7 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 
 public class TraderInventory implements Inventory {
 	private final Trader trader;
@@ -22,12 +22,12 @@ public class TraderInventory implements Inventory {
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return this.inventory.size();
 	}
 
 	@Override
-	public boolean isInvEmpty() {
+	public boolean isEmpty() {
 		for (ItemStack itemStack : this.inventory) {
 			if (!itemStack.isEmpty()) {
 				return false;
@@ -38,12 +38,12 @@ public class TraderInventory implements Inventory {
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
+	public ItemStack getStack(int slot) {
 		return this.inventory.get(slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
+	public ItemStack removeStack(int slot, int amount) {
 		ItemStack itemStack = this.inventory.get(slot);
 		if (slot == 2 && !itemStack.isEmpty()) {
 			return Inventories.splitStack(this.inventory, slot, itemStack.getCount());
@@ -62,15 +62,15 @@ public class TraderInventory implements Inventory {
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
+	public ItemStack removeStack(int slot) {
 		return Inventories.removeStack(this.inventory, slot);
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
+	public void setStack(int slot, ItemStack stack) {
 		this.inventory.set(slot, stack);
-		if (!stack.isEmpty() && stack.getCount() > this.getInvMaxStackAmount()) {
-			stack.setCount(this.getInvMaxStackAmount());
+		if (!stack.isEmpty() && stack.getCount() > this.getMaxCountPerStack()) {
+			stack.setCount(this.getMaxCountPerStack());
 		}
 
 		if (this.needRecipeUpdate(slot)) {
@@ -79,7 +79,7 @@ public class TraderInventory implements Inventory {
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUse(PlayerEntity player) {
 		return this.trader.getCurrentCustomer() == player;
 	}
 
@@ -101,7 +101,7 @@ public class TraderInventory implements Inventory {
 		}
 
 		if (itemStack.isEmpty()) {
-			this.setInvStack(2, ItemStack.EMPTY);
+			this.setStack(2, ItemStack.EMPTY);
 			this.traderRewardedExperience = 0;
 		} else {
 			TraderOfferList traderOfferList = this.trader.getOffers();
@@ -114,15 +114,15 @@ public class TraderInventory implements Inventory {
 
 				if (tradeOffer != null && !tradeOffer.isDisabled()) {
 					this.traderRecipe = tradeOffer;
-					this.setInvStack(2, tradeOffer.getSellItem());
+					this.setStack(2, tradeOffer.getSellItem());
 					this.traderRewardedExperience = tradeOffer.getTraderExperience();
 				} else {
-					this.setInvStack(2, ItemStack.EMPTY);
+					this.setStack(2, ItemStack.EMPTY);
 					this.traderRewardedExperience = 0;
 				}
 			}
 
-			this.trader.onSellingItem(this.getInvStack(2));
+			this.trader.onSellingItem(this.getStack(2));
 		}
 	}
 

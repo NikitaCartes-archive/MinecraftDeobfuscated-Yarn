@@ -1,6 +1,6 @@
 package net.minecraft.entity.data;
 
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public interface TrackedDataHandler<T> {
 	void write(PacketByteBuf data, T object);

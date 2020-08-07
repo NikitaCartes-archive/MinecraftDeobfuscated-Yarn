@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,19 +23,19 @@ public class HoneyBottleItem extends Item {
 		super.finishUsing(stack, world, user);
 		if (user instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)user;
-			Criterions.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
-			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+			Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
+			serverPlayerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		}
 
 		if (!world.isClient) {
-			user.removeStatusEffect(StatusEffects.POISON);
+			user.removeStatusEffect(StatusEffects.field_5899);
 		}
 
 		if (stack.isEmpty()) {
-			return new ItemStack(Items.GLASS_BOTTLE);
+			return new ItemStack(Items.field_8469);
 		} else {
 			if (user instanceof PlayerEntity && !((PlayerEntity)user).abilities.creativeMode) {
-				ItemStack itemStack = new ItemStack(Items.GLASS_BOTTLE);
+				ItemStack itemStack = new ItemStack(Items.field_8469);
 				PlayerEntity playerEntity = (PlayerEntity)user;
 				if (!playerEntity.inventory.insertStack(itemStack)) {
 					playerEntity.dropItem(itemStack, false);
@@ -53,22 +53,21 @@ public class HoneyBottleItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.DRINK;
+		return UseAction.field_8946;
 	}
 
 	@Override
 	public SoundEvent getDrinkSound() {
-		return SoundEvents.ITEM_HONEY_BOTTLE_DRINK;
+		return SoundEvents.field_20615;
 	}
 
 	@Override
 	public SoundEvent getEatSound() {
-		return SoundEvents.ITEM_HONEY_BOTTLE_DRINK;
+		return SoundEvents.field_20615;
 	}
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		user.setCurrentHand(hand);
-		return TypedActionResult.success(user.getStackInHand(hand));
+		return ItemUsage.consumeHeldItem(world, user, hand);
 	}
 }

@@ -1,13 +1,16 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javax.annotation.Nullable;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensionCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("changed_dimension");
@@ -17,45 +20,49 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		return ID;
 	}
 
-	public ChangedDimensionCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		DimensionType dimensionType = jsonObject.has("from") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
-		DimensionType dimensionType2 = jsonObject.has("to") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
-		return new ChangedDimensionCriterion.Conditions(dimensionType, dimensionType2);
+	public ChangedDimensionCriterion.Conditions method_8793(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
+		RegistryKey<World> registryKey = jsonObject.has("from")
+			? RegistryKey.of(Registry.field_25298, new Identifier(JsonHelper.getString(jsonObject, "from")))
+			: null;
+		RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(Registry.field_25298, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
+		return new ChangedDimensionCriterion.Conditions(extended, registryKey, registryKey2);
 	}
 
-	public void trigger(ServerPlayerEntity player, DimensionType from, DimensionType to) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(from, to));
+	public void trigger(ServerPlayerEntity player, RegistryKey<World> from, RegistryKey<World> to) {
+		this.test(player, conditions -> conditions.matches(from, to));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		@Nullable
-		private final DimensionType from;
+		private final RegistryKey<World> from;
 		@Nullable
-		private final DimensionType to;
+		private final RegistryKey<World> to;
 
-		public Conditions(@Nullable DimensionType from, @Nullable DimensionType to) {
-			super(ChangedDimensionCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, @Nullable RegistryKey<World> from, @Nullable RegistryKey<World> to) {
+			super(ChangedDimensionCriterion.ID, player);
 			this.from = from;
 			this.to = to;
 		}
 
-		public static ChangedDimensionCriterion.Conditions to(DimensionType to) {
-			return new ChangedDimensionCriterion.Conditions(null, to);
+		public static ChangedDimensionCriterion.Conditions to(RegistryKey<World> to) {
+			return new ChangedDimensionCriterion.Conditions(EntityPredicate.Extended.EMPTY, null, to);
 		}
 
-		public boolean matches(DimensionType from, DimensionType to) {
+		public boolean matches(RegistryKey<World> from, RegistryKey<World> to) {
 			return this.from != null && this.from != from ? false : this.to == null || this.to == to;
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			if (this.from != null) {
-				jsonObject.addProperty("from", DimensionType.getId(this.from).toString());
+				jsonObject.addProperty("from", this.from.getValue().toString());
 			}
 
 			if (this.to != null) {
-				jsonObject.addProperty("to", DimensionType.getId(this.to).toString());
+				jsonObject.addProperty("to", this.to.getValue().toString());
 			}
 
 			return jsonObject;

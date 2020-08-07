@@ -1,24 +1,26 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.DynamicDeserializer;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public abstract class PoolStructurePiece extends StructurePiece {
+public class PoolStructurePiece extends StructurePiece {
+	private static final Logger field_24991 = LogManager.getLogger();
 	protected final StructurePoolElement poolElement;
 	protected BlockPos pos;
 	private final int groundLevelDelta;
@@ -27,36 +29,31 @@ public abstract class PoolStructurePiece extends StructurePiece {
 	private final StructureManager structureManager;
 
 	public PoolStructurePiece(
-		StructurePieceType type,
-		StructureManager manager,
-		StructurePoolElement poolElement,
-		BlockPos pos,
-		int groundLevelDelta,
-		BlockRotation rotation,
-		BlockBox boundingBox
+		StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox
 	) {
-		super(type, 0);
-		this.structureManager = manager;
-		this.poolElement = poolElement;
-		this.pos = pos;
-		this.groundLevelDelta = groundLevelDelta;
-		this.rotation = rotation;
-		this.boundingBox = boundingBox;
+		super(StructurePieceType.field_25840, 0);
+		this.structureManager = structureManager;
+		this.poolElement = structurePoolElement;
+		this.pos = blockPos;
+		this.groundLevelDelta = i;
+		this.rotation = blockRotation;
+		this.boundingBox = blockBox;
 	}
 
-	public PoolStructurePiece(StructureManager manager, CompoundTag tag, StructurePieceType type) {
-		super(type, tag);
+	public PoolStructurePiece(StructureManager manager, CompoundTag tag) {
+		super(StructurePieceType.field_25840, tag);
 		this.structureManager = manager;
 		this.pos = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
 		this.groundLevelDelta = tag.getInt("ground_level_delta");
-		this.poolElement = DynamicDeserializer.deserialize(
-			new Dynamic<>(NbtOps.INSTANCE, tag.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyPoolElement.INSTANCE
-		);
+		this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC
+			.parse(NbtOps.INSTANCE, tag.getCompound("pool_element"))
+			.resultOrPartial(field_24991::error)
+			.orElse(EmptyPoolElement.INSTANCE);
 		this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
 		this.boundingBox = this.poolElement.getBoundingBox(manager, this.pos, this.rotation);
 		ListTag listTag = tag.getList("junctions", 10);
 		this.junctions.clear();
-		listTag.forEach(tagx -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<>(NbtOps.INSTANCE, tagx))));
+		listTag.forEach(tagx -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<>(NbtOps.INSTANCE, tagx))));
 	}
 
 	@Override
@@ -65,7 +62,10 @@ public abstract class PoolStructurePiece extends StructurePiece {
 		tag.putInt("PosY", this.pos.getY());
 		tag.putInt("PosZ", this.pos.getZ());
 		tag.putInt("ground_level_delta", this.groundLevelDelta);
-		tag.put("pool_element", this.poolElement.method_16755(NbtOps.INSTANCE).getValue());
+		StructurePoolElement.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.poolElement)
+			.resultOrPartial(field_24991::error)
+			.ifPresent(tagx -> tag.put("pool_element", tagx));
 		tag.putString("rotation", this.rotation.name());
 		ListTag listTag = new ListTag();
 
@@ -77,8 +77,29 @@ public abstract class PoolStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-		return this.poolElement.generate(this.structureManager, world, chunkGenerator, this.pos, this.rotation, blockBox, random);
+	public boolean generate(
+		StructureWorldAccess structureWorldAccess,
+		StructureAccessor structureAccessor,
+		ChunkGenerator chunkGenerator,
+		Random random,
+		BlockBox boundingBox,
+		ChunkPos chunkPos,
+		BlockPos blockPos
+	) {
+		return this.method_27236(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, blockPos, false);
+	}
+
+	public boolean method_27236(
+		StructureWorldAccess structureWorldAccess,
+		StructureAccessor structureAccessor,
+		ChunkGenerator chunkGenerator,
+		Random random,
+		BlockBox blockBox,
+		BlockPos blockPos,
+		boolean keepJigsaws
+	) {
+		return this.poolElement
+			.generate(this.structureManager, structureWorldAccess, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random, keepJigsaws);
 	}
 
 	@Override

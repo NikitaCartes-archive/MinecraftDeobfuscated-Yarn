@@ -86,13 +86,13 @@ public abstract class BossBar {
 	}
 
 	public static enum Color {
-		PINK("pink", Formatting.RED),
-		BLUE("blue", Formatting.BLUE),
-		RED("red", Formatting.DARK_RED),
-		GREEN("green", Formatting.GREEN),
-		YELLOW("yellow", Formatting.YELLOW),
-		PURPLE("purple", Formatting.DARK_BLUE),
-		WHITE("white", Formatting.WHITE);
+		field_5788("pink", Formatting.field_1061),
+		field_5780("blue", Formatting.field_1078),
+		field_5784("red", Formatting.field_1079),
+		field_5785("green", Formatting.field_1060),
+		field_5782("yellow", Formatting.field_1054),
+		field_5783("purple", Formatting.field_1058),
+		field_5786("white", Formatting.field_1068);
 
 		private final String name;
 		private final Formatting format;
@@ -117,16 +117,16 @@ public abstract class BossBar {
 				}
 			}
 
-			return WHITE;
+			return field_5786;
 		}
 	}
 
 	public static enum Style {
-		PROGRESS("progress"),
-		NOTCHED_6("notched_6"),
-		NOTCHED_10("notched_10"),
-		NOTCHED_12("notched_12"),
-		NOTCHED_20("notched_20");
+		field_5795("progress"),
+		field_5796("notched_6"),
+		field_5791("notched_10"),
+		field_5793("notched_12"),
+		field_5790("notched_20");
 
 		private final String name;
 
@@ -145,7 +145,7 @@ public abstract class BossBar {
 				}
 			}
 
-			return PROGRESS;
+			return field_5795;
 		}
 	}
 }

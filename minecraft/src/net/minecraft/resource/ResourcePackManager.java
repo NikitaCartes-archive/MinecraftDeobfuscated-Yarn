@@ -1,92 +1,103 @@
 package net.minecraft.resource;
 
 import com.google.common.base.Functions;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
-public class ResourcePackManager<T extends ResourcePackProfile> implements AutoCloseable {
-	private final Set<ResourcePackProvider> providers = Sets.<ResourcePackProvider>newHashSet();
-	private final Map<String, T> profiles = Maps.<String, T>newLinkedHashMap();
-	private final List<T> enabled = Lists.<T>newLinkedList();
-	private final ResourcePackProfile.Factory<T> profileFactory;
+public class ResourcePackManager implements AutoCloseable {
+	private final Set<ResourcePackProvider> providers;
+	private Map<String, ResourcePackProfile> profiles = ImmutableMap.of();
+	private List<ResourcePackProfile> enabled = ImmutableList.of();
+	private final ResourcePackProfile.Factory profileFactory;
 
-	public ResourcePackManager(ResourcePackProfile.Factory<T> factory) {
-		this.profileFactory = factory;
+	public ResourcePackManager(ResourcePackProfile.Factory profileFactory, ResourcePackProvider... providers) {
+		this.profileFactory = profileFactory;
+		this.providers = ImmutableSet.copyOf(providers);
+	}
+
+	public ResourcePackManager(ResourcePackProvider... resourcePackProviders) {
+		this(ResourcePackProfile::new, resourcePackProviders);
 	}
 
 	public void scanPacks() {
+		List<String> list = (List<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList());
 		this.close();
-		Set<String> set = (Set<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(Collectors.toCollection(LinkedHashSet::new));
-		this.profiles.clear();
-		this.enabled.clear();
+		this.profiles = this.providePackProfiles();
+		this.enabled = this.buildEnabledProfiles(list);
+	}
+
+	private Map<String, ResourcePackProfile> providePackProfiles() {
+		Map<String, ResourcePackProfile> map = Maps.newTreeMap();
 
 		for (ResourcePackProvider resourcePackProvider : this.providers) {
-			resourcePackProvider.register(this.profiles, this.profileFactory);
+			resourcePackProvider.register(resourcePackProfile -> {
+				ResourcePackProfile var10000 = (ResourcePackProfile)map.put(resourcePackProfile.getName(), resourcePackProfile);
+			}, this.profileFactory);
 		}
 
-		this.sort();
-		this.enabled.addAll((Collection)set.stream().map(this.profiles::get).filter(Objects::nonNull).collect(Collectors.toCollection(LinkedHashSet::new)));
+		return ImmutableMap.copyOf(map);
+	}
 
-		for (T resourcePackProfile : this.profiles.values()) {
-			if (resourcePackProfile.isAlwaysEnabled() && !this.enabled.contains(resourcePackProfile)) {
-				resourcePackProfile.getInitialPosition().insert(this.enabled, resourcePackProfile, Functions.identity(), false);
+	public void setEnabledProfiles(Collection<String> enabled) {
+		this.enabled = this.buildEnabledProfiles(enabled);
+	}
+
+	private List<ResourcePackProfile> buildEnabledProfiles(Collection<String> enabledNames) {
+		List<ResourcePackProfile> list = (List<ResourcePackProfile>)this.streamProfilesByName(enabledNames).collect(Collectors.toList());
+
+		for (ResourcePackProfile resourcePackProfile : this.profiles.values()) {
+			if (resourcePackProfile.isAlwaysEnabled() && !list.contains(resourcePackProfile)) {
+				resourcePackProfile.getInitialPosition().insert(list, resourcePackProfile, Functions.identity(), false);
 			}
 		}
+
+		return ImmutableList.copyOf(list);
 	}
 
-	private void sort() {
-		List<Entry<String, T>> list = Lists.<Entry<String, T>>newArrayList(this.profiles.entrySet());
-		this.profiles.clear();
-		list.stream().sorted(Entry.comparingByKey()).forEachOrdered(entry -> {
-			ResourcePackProfile var10000 = (ResourcePackProfile)this.profiles.put(entry.getKey(), entry.getValue());
-		});
+	private Stream<ResourcePackProfile> streamProfilesByName(Collection<String> names) {
+		return names.stream().map(this.profiles::get).filter(Objects::nonNull);
 	}
 
-	public void setEnabledProfiles(Collection<T> enabled) {
-		this.enabled.clear();
-		this.enabled.addAll(enabled);
-
-		for (T resourcePackProfile : this.profiles.values()) {
-			if (resourcePackProfile.isAlwaysEnabled() && !this.enabled.contains(resourcePackProfile)) {
-				resourcePackProfile.getInitialPosition().insert(this.enabled, resourcePackProfile, Functions.identity(), false);
-			}
-		}
+	public Collection<String> getNames() {
+		return this.profiles.keySet();
 	}
 
-	public Collection<T> getProfiles() {
+	public Collection<ResourcePackProfile> getProfiles() {
 		return this.profiles.values();
 	}
 
-	public Collection<T> getDisabledProfiles() {
-		Collection<T> collection = Lists.<T>newArrayList(this.profiles.values());
-		collection.removeAll(this.enabled);
-		return collection;
+	public Collection<String> getEnabledNames() {
+		return (Collection<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableSet.toImmutableSet());
 	}
 
-	public Collection<T> getEnabledProfiles() {
+	public Collection<ResourcePackProfile> getEnabledProfiles() {
 		return this.enabled;
 	}
 
 	@Nullable
-	public T getProfile(String name) {
-		return (T)this.profiles.get(name);
-	}
-
-	public void registerProvider(ResourcePackProvider provider) {
-		this.providers.add(provider);
+	public ResourcePackProfile getProfile(String name) {
+		return (ResourcePackProfile)this.profiles.get(name);
 	}
 
 	public void close() {
 		this.profiles.values().forEach(ResourcePackProfile::close);
+	}
+
+	public boolean hasProfile(String name) {
+		return this.profiles.containsKey(name);
+	}
+
+	public List<ResourcePack> createResourcePacks() {
+		return (List<ResourcePack>)this.enabled.stream().map(ResourcePackProfile::createResourcePack).collect(ImmutableList.toImmutableList());
 	}
 }

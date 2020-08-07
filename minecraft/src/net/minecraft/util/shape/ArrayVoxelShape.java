@@ -39,11 +39,11 @@ public final class ArrayVoxelShape extends VoxelShape {
 	@Override
 	protected DoubleList getPointPositions(Direction.Axis axis) {
 		switch (axis) {
-			case X:
+			case field_11048:
 				return this.xPoints;
-			case Y:
+			case field_11052:
 				return this.yPoints;
-			case Z:
+			case field_11051:
 				return this.zPoints;
 			default:
 				throw new IllegalArgumentException();

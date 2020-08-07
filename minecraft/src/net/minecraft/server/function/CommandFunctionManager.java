@@ -1,69 +1,36 @@
 package net.minecraft.server.function;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import javax.annotation.Nullable;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceImpl;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainer;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-public class CommandFunctionManager implements SynchronousResourceReloadListener {
-	private static final Logger LOGGER = LogManager.getLogger();
+public class CommandFunctionManager {
 	private static final Identifier TICK_FUNCTION = new Identifier("tick");
 	private static final Identifier LOAD_FUNCTION = new Identifier("load");
-	public static final int PATH_PREFIX_LENGTH = "functions/".length();
-	public static final int EXTENSION_LENGTH = ".mcfunction".length();
 	private final MinecraftServer server;
-	private final Map<Identifier, CommandFunction> idMap = Maps.<Identifier, CommandFunction>newHashMap();
 	private boolean executing;
 	private final ArrayDeque<CommandFunctionManager.Entry> chain = new ArrayDeque();
 	private final List<CommandFunctionManager.Entry> pending = Lists.<CommandFunctionManager.Entry>newArrayList();
-	private final TagContainer<CommandFunction> tags = new TagContainer<>(this::getFunction, "tags/functions", true, "function");
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
 	private boolean needToRunLoadFunctions;
+	private FunctionLoader field_25333;
 
-	public CommandFunctionManager(MinecraftServer server) {
-		this.server = server;
-	}
-
-	public Optional<CommandFunction> getFunction(Identifier identifier) {
-		return Optional.ofNullable(this.idMap.get(identifier));
-	}
-
-	public MinecraftServer getServer() {
-		return this.server;
+	public CommandFunctionManager(MinecraftServer minecraftServer, FunctionLoader functionLoader) {
+		this.server = minecraftServer;
+		this.field_25333 = functionLoader;
+		this.method_29773(functionLoader);
 	}
 
 	public int getMaxCommandChainLength() {
-		return this.server.getGameRules().getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH);
-	}
-
-	public Map<Identifier, CommandFunction> getFunctions() {
-		return this.idMap;
+		return this.server.getGameRules().getInt(GameRules.field_19408);
 	}
 
 	public CommandDispatcher<ServerCommandSource> getDispatcher() {
@@ -71,24 +38,22 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	}
 
 	public void tick() {
-		this.server.getProfiler().push(TICK_FUNCTION::toString);
+		this.method_29460(this.tickFunctions, TICK_FUNCTION);
+		if (this.needToRunLoadFunctions) {
+			this.needToRunLoadFunctions = false;
+			Collection<CommandFunction> collection = this.field_25333.getTags().getTagOrEmpty(LOAD_FUNCTION).values();
+			this.method_29460(collection, LOAD_FUNCTION);
+		}
+	}
 
-		for (CommandFunction commandFunction : this.tickFunctions) {
+	private void method_29460(Collection<CommandFunction> collection, Identifier identifier) {
+		this.server.getProfiler().push(identifier::toString);
+
+		for (CommandFunction commandFunction : collection) {
 			this.execute(commandFunction, this.getTaggedFunctionSource());
 		}
 
 		this.server.getProfiler().pop();
-		if (this.needToRunLoadFunctions) {
-			this.needToRunLoadFunctions = false;
-			Collection<CommandFunction> collection = this.getTags().getOrCreate(LOAD_FUNCTION).values();
-			this.server.getProfiler().push(LOAD_FUNCTION::toString);
-
-			for (CommandFunction commandFunction2 : collection) {
-				this.execute(commandFunction2, this.getTaggedFunctionSource());
-			}
-
-			this.server.getProfiler().pop();
-		}
 	}
 
 	public int execute(CommandFunction function, ServerCommandSource source) {
@@ -139,89 +104,35 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		}
 	}
 
-	@Override
-	public void apply(ResourceManager manager) {
-		this.idMap.clear();
+	public void method_29461(FunctionLoader functionLoader) {
+		this.field_25333 = functionLoader;
+		this.method_29773(functionLoader);
+	}
+
+	private void method_29773(FunctionLoader functionLoader) {
 		this.tickFunctions.clear();
-		Collection<Identifier> collection = manager.findResources("functions", stringx -> stringx.endsWith(".mcfunction"));
-		List<CompletableFuture<CommandFunction>> list = Lists.<CompletableFuture<CommandFunction>>newArrayList();
-
-		for (Identifier identifier : collection) {
-			String string = identifier.getPath();
-			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
-			list.add(
-				CompletableFuture.supplyAsync(() -> readLines(manager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR)
-					.thenApplyAsync(listx -> CommandFunction.create(identifier2, this, listx), this.server.getWorkerExecutor())
-					.handle((commandFunction, throwable) -> this.load(commandFunction, throwable, identifier))
-			);
-		}
-
-		CompletableFuture.allOf((CompletableFuture[])list.toArray(new CompletableFuture[0])).join();
-		if (!this.idMap.isEmpty()) {
-			LOGGER.info("Loaded {} custom command functions", this.idMap.size());
-		}
-
-		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(manager, this.server.getWorkerExecutor()).join());
-		this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
+		this.tickFunctions.addAll(functionLoader.getTags().getTagOrEmpty(TICK_FUNCTION).values());
 		this.needToRunLoadFunctions = true;
-	}
-
-	@Nullable
-	private CommandFunction load(CommandFunction function, @Nullable Throwable exception, Identifier identifier) {
-		if (exception != null) {
-			LOGGER.error("Couldn't load function at {}", identifier, exception);
-			return null;
-		} else {
-			synchronized (this.idMap) {
-				this.idMap.put(function.getId(), function);
-				return function;
-			}
-		}
-	}
-
-	private static List<String> readLines(ResourceManager resourceManager, Identifier identifier) {
-		try {
-			Resource resource = resourceManager.getResource(identifier);
-			Throwable var3 = null;
-
-			List var4;
-			try {
-				var4 = IOUtils.readLines(resource.getInputStream(), StandardCharsets.UTF_8);
-			} catch (Throwable var14) {
-				var3 = var14;
-				throw var14;
-			} finally {
-				if (resource != null) {
-					if (var3 != null) {
-						try {
-							resource.close();
-						} catch (Throwable var13) {
-							var3.addSuppressed(var13);
-						}
-					} else {
-						resource.close();
-					}
-				}
-			}
-
-			return var4;
-		} catch (IOException var16) {
-			throw new CompletionException(var16);
-		}
 	}
 
 	public ServerCommandSource getTaggedFunctionSource() {
 		return this.server.getCommandSource().withLevel(2).withSilent();
 	}
 
-	public ServerCommandSource getCommandFunctionSource() {
-		return new ServerCommandSource(
-			CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.server.getFunctionPermissionLevel(), "", new LiteralText(""), this.server, null
-		);
+	public Optional<CommandFunction> getFunction(Identifier id) {
+		return this.field_25333.get(id);
 	}
 
-	public TagContainer<CommandFunction> getTags() {
-		return this.tags;
+	public Tag<CommandFunction> method_29462(Identifier identifier) {
+		return this.field_25333.getOrCreateTag(identifier);
+	}
+
+	public Iterable<Identifier> method_29463() {
+		return this.field_25333.getFunctions().keySet();
+	}
+
+	public Iterable<Identifier> method_29464() {
+		return this.field_25333.getTags().getTagIds();
 	}
 
 	public static class Entry {
@@ -229,15 +140,15 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		private final ServerCommandSource source;
 		private final CommandFunction.Element element;
 
-		public Entry(CommandFunctionManager manger, ServerCommandSource source, CommandFunction.Element element) {
-			this.manager = manger;
+		public Entry(CommandFunctionManager manager, ServerCommandSource source, CommandFunction.Element element) {
+			this.manager = manager;
 			this.source = source;
 			this.element = element;
 		}
 
-		public void execute(ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i) {
+		public void execute(ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) {
 			try {
-				this.element.execute(this.manager, this.source, arrayDeque, i);
+				this.element.execute(this.manager, this.source, stack, maxChainLength);
 			} catch (Throwable var4) {
 			}
 		}

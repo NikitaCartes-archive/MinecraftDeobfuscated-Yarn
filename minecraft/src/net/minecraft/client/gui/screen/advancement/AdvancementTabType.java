@@ -4,14 +4,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 enum AdvancementTabType {
-	ABOVE(0, 0, 28, 32, 8),
-	BELOW(84, 0, 28, 32, 8),
-	LEFT(0, 64, 32, 28, 5),
-	RIGHT(96, 64, 32, 28, 5);
+	field_2678(0, 0, 28, 32, 8),
+	field_2673(84, 0, 28, 32, 8),
+	field_2675(0, 64, 32, 28, 5),
+	field_2677(96, 64, 32, 28, 5);
 
 	private final int u;
 	private final int v;
@@ -31,53 +32,53 @@ enum AdvancementTabType {
 		return this.tabCount;
 	}
 
-	public void drawBackground(DrawableHelper drawable, int x, int y, boolean selected, int index) {
-		int i = this.u;
-		if (index > 0) {
-			i += this.width;
+	public void drawBackground(MatrixStack matrixStack, DrawableHelper drawableHelper, int i, int j, boolean bl, int k) {
+		int l = this.u;
+		if (k > 0) {
+			l += this.width;
 		}
 
-		if (index == this.tabCount - 1) {
-			i += this.width;
+		if (k == this.tabCount - 1) {
+			l += this.width;
 		}
 
-		int j = selected ? this.v + this.height : this.v;
-		drawable.blit(x + this.getTabX(index), y + this.getTabY(index), i, j, this.width, this.height);
+		int m = bl ? this.v + this.height : this.v;
+		drawableHelper.drawTexture(matrixStack, i + this.getTabX(k), j + this.getTabY(k), l, m, this.width, this.height);
 	}
 
 	public void drawIcon(int x, int y, int index, ItemRenderer itemRenderer, ItemStack icon) {
 		int i = x + this.getTabX(index);
 		int j = y + this.getTabY(index);
 		switch (this) {
-			case ABOVE:
+			case field_2678:
 				i += 6;
 				j += 9;
 				break;
-			case BELOW:
+			case field_2673:
 				i += 6;
 				j += 6;
 				break;
-			case LEFT:
+			case field_2675:
 				i += 10;
 				j += 5;
 				break;
-			case RIGHT:
+			case field_2677:
 				i += 6;
 				j += 5;
 		}
 
-		itemRenderer.renderGuiItem(null, icon, i, j);
+		itemRenderer.renderInGui(icon, i, j);
 	}
 
 	public int getTabX(int index) {
 		switch (this) {
-			case ABOVE:
+			case field_2678:
 				return (this.width + 4) * index;
-			case BELOW:
+			case field_2673:
 				return (this.width + 4) * index;
-			case LEFT:
+			case field_2675:
 				return -this.width + 4;
-			case RIGHT:
+			case field_2677:
 				return 248;
 			default:
 				throw new UnsupportedOperationException("Don't know what this tab type is!" + this);
@@ -86,13 +87,13 @@ enum AdvancementTabType {
 
 	public int getTabY(int index) {
 		switch (this) {
-			case ABOVE:
+			case field_2678:
 				return -this.height + 4;
-			case BELOW:
+			case field_2673:
 				return 136;
-			case LEFT:
+			case field_2675:
 				return this.height * index;
-			case RIGHT:
+			case field_2677:
 				return this.height * index;
 			default:
 				throw new UnsupportedOperationException("Don't know what this tab type is!" + this);

@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 
-public class Schema1451v3 extends SchemaIdentifierNormalize {
+public class Schema1451v3 extends IdentifierNormalizingSchema {
 	public Schema1451v3(int i, Schema schema) {
 		super(i, schema);
 	}
@@ -28,7 +28,7 @@ public class Schema1451v3 extends SchemaIdentifierNormalize {
 		schema.register(
 			map,
 			"minecraft:enderman",
-			(Supplier<TypeTemplate>)(() -> DSL.optionalFields("carriedBlockState", TypeReferences.BLOCK_STATE.in(schema), Schema100.method_5196(schema)))
+			(Supplier<TypeTemplate>)(() -> DSL.optionalFields("carriedBlockState", TypeReferences.BLOCK_STATE.in(schema), Schema100.targetItems(schema)))
 		);
 		schema.register(
 			map,

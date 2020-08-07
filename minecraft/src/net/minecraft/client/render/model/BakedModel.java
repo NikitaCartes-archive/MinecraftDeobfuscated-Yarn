@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
@@ -17,9 +17,16 @@ public interface BakedModel {
 
 	boolean useAmbientOcclusion();
 
-	boolean hasDepthInGui();
+	boolean hasDepth();
 
-	boolean method_24304();
+	/**
+	 * Allows control of the lighting when rendering a model in a GUI.
+	 * <p>
+	 * True, the model will be lit from the side, like a block.
+	 * <p>
+	 * False, the model will be lit from the front, like an item.
+	 */
+	boolean isSideLit();
 
 	boolean isBuiltin();
 
@@ -27,5 +34,5 @@ public interface BakedModel {
 
 	ModelTransformation getTransformation();
 
-	ModelItemPropertyOverrideList getItemPropertyOverrides();
+	ModelOverrideList getOverrides();
 }

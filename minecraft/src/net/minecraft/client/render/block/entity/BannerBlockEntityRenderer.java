@@ -25,24 +25,24 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEntity> {
-	private final ModelPart field = createField();
-	private final ModelPart verticalBar = new ModelPart(64, 64, 44, 0);
-	private final ModelPart topBar;
+	private final ModelPart banner = createBanner();
+	private final ModelPart pillar = new ModelPart(64, 64, 44, 0);
+	private final ModelPart crossbar;
 
-	public BannerBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
-		super(dispatcher);
-		this.verticalBar.addCuboid(-1.0F, -30.0F, -1.0F, 2.0F, 42.0F, 2.0F, 0.0F);
-		this.topBar = new ModelPart(64, 64, 0, 42);
-		this.topBar.addCuboid(-10.0F, -32.0F, -1.0F, 20.0F, 2.0F, 2.0F, 0.0F);
+	public BannerBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+		super(blockEntityRenderDispatcher);
+		this.pillar.addCuboid(-1.0F, -30.0F, -1.0F, 2.0F, 42.0F, 2.0F, 0.0F);
+		this.crossbar = new ModelPart(64, 64, 0, 42);
+		this.crossbar.addCuboid(-10.0F, -32.0F, -1.0F, 20.0F, 2.0F, 2.0F, 0.0F);
 	}
 
-	public static ModelPart createField() {
+	public static ModelPart createBanner() {
 		ModelPart modelPart = new ModelPart(64, 64, 0, 0);
 		modelPart.addCuboid(-10.0F, 0.0F, -2.0F, 20.0F, 40.0F, 1.0F, 0.0F);
 		return modelPart;
 	}
 
-	public void render(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void method_3546(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		List<Pair<BannerPattern, DyeColor>> list = bannerBlockEntity.getPatterns();
 		if (list != null) {
 			float g = 0.6666667F;
@@ -52,7 +52,7 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 			if (bl) {
 				l = 0L;
 				matrixStack.translate(0.5, 0.5, 0.5);
-				this.verticalBar.visible = true;
+				this.pillar.visible = true;
 			} else {
 				l = bannerBlockEntity.getWorld().getTime();
 				BlockState blockState = bannerBlockEntity.getCachedState();
@@ -60,32 +60,32 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 					matrixStack.translate(0.5, 0.5, 0.5);
 					float h = (float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F;
 					matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
-					this.verticalBar.visible = true;
+					this.pillar.visible = true;
 				} else {
 					matrixStack.translate(0.5, -0.16666667F, 0.5);
 					float h = -((Direction)blockState.get(WallBannerBlock.FACING)).asRotation();
 					matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
 					matrixStack.translate(0.0, -0.3125, -0.4375);
-					this.verticalBar.visible = false;
+					this.pillar.visible = false;
 				}
 			}
 
 			matrixStack.push();
 			matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
 			VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-			this.verticalBar.render(matrixStack, vertexConsumer, i, j);
-			this.topBar.render(matrixStack, vertexConsumer, i, j);
+			this.pillar.render(matrixStack, vertexConsumer, i, j);
+			this.crossbar.render(matrixStack, vertexConsumer, i, j);
 			BlockPos blockPos = bannerBlockEntity.getPos();
 			float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
-			this.field.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
-			this.field.pivotY = -32.0F;
-			method_23802(matrixStack, vertexConsumerProvider, i, j, this.field, ModelLoader.BANNER_BASE, true, list);
+			this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
+			this.banner.pivotY = -32.0F;
+			method_29999(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
 			matrixStack.pop();
 			matrixStack.pop();
 		}
 	}
 
-	public static void method_23802(
+	public static void method_29999(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,
@@ -95,15 +95,29 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		boolean bl,
 		List<Pair<BannerPattern, DyeColor>> list
 	) {
-		modelPart.render(matrixStack, spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid), i, j);
+		renderCanvas(matrixStack, vertexConsumerProvider, i, j, modelPart, spriteIdentifier, bl, list, false);
+	}
 
-		for (int k = 0; k < 17 && k < list.size(); k++) {
-			Pair<BannerPattern, DyeColor> pair = (Pair<BannerPattern, DyeColor>)list.get(k);
+	public static void renderCanvas(
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		int overlay,
+		ModelPart canvas,
+		SpriteIdentifier baseSprite,
+		boolean isBanner,
+		List<Pair<BannerPattern, DyeColor>> patterns,
+		boolean bl
+	) {
+		canvas.render(matrices, baseSprite.method_30001(vertexConsumers, RenderLayer::getEntitySolid, bl), light, overlay);
+
+		for (int i = 0; i < 17 && i < patterns.size(); i++) {
+			Pair<BannerPattern, DyeColor> pair = (Pair<BannerPattern, DyeColor>)patterns.get(i);
 			float[] fs = pair.getSecond().getColorComponents();
-			SpriteIdentifier spriteIdentifier2 = new SpriteIdentifier(
-				bl ? TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE : TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, pair.getFirst().getSpriteId(bl)
+			SpriteIdentifier spriteIdentifier = new SpriteIdentifier(
+				isBanner ? TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE : TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, pair.getFirst().getSpriteId(isBanner)
 			);
-			modelPart.render(matrixStack, spriteIdentifier2.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityNoOutline), i, j, fs[0], fs[1], fs[2], 1.0F);
+			canvas.render(matrices, spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0F);
 		}
 	}
 }

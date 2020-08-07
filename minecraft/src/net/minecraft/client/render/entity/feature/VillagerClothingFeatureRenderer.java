@@ -42,14 +42,14 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	private final ReloadableResourceManager resourceManager;
 	private final String entityType;
 
-	public VillagerClothingFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, ReloadableResourceManager reloadableResourceManager, String string) {
-		super(featureRendererContext);
-		this.resourceManager = reloadableResourceManager;
-		this.entityType = string;
-		reloadableResourceManager.registerListener(this);
+	public VillagerClothingFeatureRenderer(FeatureRendererContext<T, M> context, ReloadableResourceManager resourceManager, String entityType) {
+		super(context);
+		this.resourceManager = resourceManager;
+		this.entityType = entityType;
+		resourceManager.registerListener(this);
 	}
 
-	public void render(
+	public void method_17151(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (!livingEntity.isInvisible()) {
@@ -60,16 +60,16 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 			VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
 			M entityModel = this.getContextModel();
 			entityModel.setHatVisible(
-				hatType2 == VillagerResourceMetadata.HatType.NONE
-					|| hatType2 == VillagerResourceMetadata.HatType.PARTIAL && hatType != VillagerResourceMetadata.HatType.FULL
+				hatType2 == VillagerResourceMetadata.HatType.field_17160
+					|| hatType2 == VillagerResourceMetadata.HatType.field_17161 && hatType != VillagerResourceMetadata.HatType.field_17162
 			);
 			Identifier identifier = this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType));
 			renderModel(entityModel, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, 1.0F, 1.0F, 1.0F);
 			entityModel.setHatVisible(true);
-			if (villagerProfession != VillagerProfession.NONE && !livingEntity.isBaby()) {
+			if (villagerProfession != VillagerProfession.field_17051 && !livingEntity.isBaby()) {
 				Identifier identifier2 = this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession));
 				renderModel(entityModel, identifier2, matrixStack, vertexConsumerProvider, i, livingEntity, 1.0F, 1.0F, 1.0F);
-				if (villagerProfession != VillagerProfession.NITWIT) {
+				if (villagerProfession != VillagerProfession.field_17062) {
 					Identifier identifier3 = this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size())));
 					renderModel(entityModel, identifier3, matrixStack, vertexConsumerProvider, i, livingEntity, 1.0F, 1.0F, 1.0F);
 				}
@@ -93,7 +93,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 				try {
 					VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
 					if (villagerResourceMetadata == null) {
-						return VillagerResourceMetadata.HatType.NONE;
+						return VillagerResourceMetadata.HatType.field_17160;
 					}
 
 					var8 = villagerResourceMetadata.getHatType();
@@ -116,7 +116,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 
 				return var8;
 			} catch (IOException var21) {
-				return VillagerResourceMetadata.HatType.NONE;
+				return VillagerResourceMetadata.HatType.field_17160;
 			}
 		});
 	}

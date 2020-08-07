@@ -8,28 +8,27 @@ import net.minecraft.loot.LootChoice;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
-public abstract class CombinedEntry extends LootEntry {
-	protected final LootEntry[] children;
+public abstract class CombinedEntry extends LootPoolEntry {
+	protected final LootPoolEntry[] children;
 	private final EntryCombiner predicate;
 
-	protected CombinedEntry(LootEntry[] children, LootCondition[] conditions) {
+	protected CombinedEntry(LootPoolEntry[] children, LootCondition[] conditions) {
 		super(conditions);
 		this.children = children;
 		this.predicate = this.combine(children);
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter) {
-		super.check(lootTableReporter);
+	public void validate(LootTableReporter reporter) {
+		super.validate(reporter);
 		if (this.children.length == 0) {
-			lootTableReporter.report("Empty children list");
+			reporter.report("Empty children list");
 		}
 
 		for (int i = 0; i < this.children.length; i++) {
-			this.children[i].check(lootTableReporter.makeChild(".entry[" + i + "]"));
+			this.children[i].validate(reporter.makeChild(".entry[" + i + "]"));
 		}
 	}
 
@@ -40,34 +39,21 @@ public abstract class CombinedEntry extends LootEntry {
 		return !this.test(lootContext) ? false : this.predicate.expand(lootContext, consumer);
 	}
 
-	public static <T extends CombinedEntry> CombinedEntry.Serializer<T> createSerializer(Identifier id, Class<T> type, CombinedEntry.Factory<T> entry) {
-		return new CombinedEntry.Serializer<T>(id, type) {
-			@Override
-			protected T fromJson(JsonObject json, JsonDeserializationContext context, LootEntry[] children, LootCondition[] conditions) {
-				return entry.create(children, conditions);
+	public static <T extends CombinedEntry> LootPoolEntry.Serializer<T> createSerializer(CombinedEntry.Factory<T> factory) {
+		return new LootPoolEntry.Serializer<T>() {
+			public void method_29314(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
+				jsonObject.add("children", jsonSerializationContext.serialize(combinedEntry.children));
+			}
+
+			public final T method_29313(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+				LootPoolEntry[] lootPoolEntrys = JsonHelper.deserialize(jsonObject, "children", jsonDeserializationContext, LootPoolEntry[].class);
+				return factory.create(lootPoolEntrys, lootConditions);
 			}
 		};
 	}
 
 	@FunctionalInterface
 	public interface Factory<T extends CombinedEntry> {
-		T create(LootEntry[] children, LootCondition[] conditions);
-	}
-
-	public abstract static class Serializer<T extends CombinedEntry> extends LootEntry.Serializer<T> {
-		public Serializer(Identifier identifier, Class<T> class_) {
-			super(identifier, class_);
-		}
-
-		public void toJson(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.add("children", jsonSerializationContext.serialize(combinedEntry.children));
-		}
-
-		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			LootEntry[] lootEntrys = JsonHelper.deserialize(jsonObject, "children", jsonDeserializationContext, LootEntry[].class);
-			return this.fromJson(jsonObject, jsonDeserializationContext, lootEntrys, lootConditions);
-		}
-
-		protected abstract T fromJson(JsonObject json, JsonDeserializationContext context, LootEntry[] children, LootCondition[] conditions);
+		T create(LootPoolEntry[] children, LootCondition[] conditions);
 	}
 }

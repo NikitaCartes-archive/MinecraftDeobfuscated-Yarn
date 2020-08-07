@@ -1,13 +1,14 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.predicate.StatePredicate;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -21,7 +22,9 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 		return ID;
 	}
 
-	public EnterBlockCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public EnterBlockCriterion.Conditions method_8883(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
@@ -30,7 +33,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 			});
 		}
 
-		return new EnterBlockCriterion.Conditions(block, statePredicate);
+		return new EnterBlockCriterion.Conditions(extended, block, statePredicate);
 	}
 
 	@Nullable
@@ -44,26 +47,26 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 	}
 
 	public void trigger(ServerPlayerEntity player, BlockState state) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(state));
+		this.test(player, conditions -> conditions.matches(state));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Block block;
 		private final StatePredicate state;
 
-		public Conditions(@Nullable Block block, StatePredicate state) {
-			super(EnterBlockCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, @Nullable Block block, StatePredicate state) {
+			super(EnterBlockCriterion.ID, player);
 			this.block = block;
 			this.state = state;
 		}
 
 		public static EnterBlockCriterion.Conditions block(Block block) {
-			return new EnterBlockCriterion.Conditions(block, StatePredicate.ANY);
+			return new EnterBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, StatePredicate.ANY);
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			if (this.block != null) {
 				jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
 			}
@@ -73,7 +76,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 		}
 
 		public boolean matches(BlockState state) {
-			return this.block != null && state.getBlock() != this.block ? false : this.state.test(state);
+			return this.block != null && !state.isOf(this.block) ? false : this.state.test(state);
 		}
 	}
 }

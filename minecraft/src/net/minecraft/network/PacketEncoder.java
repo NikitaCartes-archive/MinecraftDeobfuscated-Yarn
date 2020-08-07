@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import java.io.IOException;
-import net.minecraft.util.PacketByteBuf;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -15,11 +14,11 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 	private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.MARKER_NETWORK_PACKETS);
 	private final NetworkSide side;
 
-	public PacketEncoder(NetworkSide networkSide) {
-		this.side = networkSide;
+	public PacketEncoder(NetworkSide side) {
+		this.side = side;
 	}
 
-	protected void encode(ChannelHandlerContext channelHandlerContext, Packet<?> packet, ByteBuf byteBuf) throws Exception {
+	protected void method_10838(ChannelHandlerContext channelHandlerContext, Packet<?> packet, ByteBuf byteBuf) throws Exception {
 		NetworkState networkState = channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get();
 		if (networkState == null) {
 			throw new RuntimeException("ConnectionProtocol unknown: " + packet);
@@ -41,7 +40,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 					packet.write(packetByteBuf);
 				} catch (Throwable var8) {
 					LOGGER.error(var8);
-					if (packet.isErrorFatal()) {
+					if (packet.isWritingErrorSkippable()) {
 						throw new PacketEncoderException(var8);
 					} else {
 						throw var8;

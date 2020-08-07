@@ -5,14 +5,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.HopperBlockEntity;
-import net.minecraft.container.Container;
-import net.minecraft.container.HopperContainer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.screen.HopperScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -27,17 +27,17 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	public HopperMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.HOPPER_MINECART, x, y, z, world);
+		super(EntityType.field_6058, x, y, z, world);
 	}
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.HOPPER;
+		return AbstractMinecartEntity.Type.field_7677;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.HOPPER.getDefaultState();
+		return Blocks.field_10312.getDefaultState();
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return 5;
 	}
 
@@ -90,7 +90,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	public void tick() {
 		super.tick();
 		if (!this.world.isClient && this.isAlive() && this.isEnabled()) {
-			BlockPos blockPos = new BlockPos(this);
+			BlockPos blockPos = this.getBlockPos();
 			if (blockPos.equals(this.currentBlockPos)) {
 				this.transferCooldown--;
 			} else {
@@ -111,7 +111,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 		if (HopperBlockEntity.extract(this)) {
 			return true;
 		} else {
-			List<ItemEntity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
+			List<ItemEntity> list = this.world.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
 			if (!list.isEmpty()) {
 				HopperBlockEntity.extract(this, (ItemEntity)list.get(0));
 			}
@@ -123,8 +123,8 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			this.dropItem(Blocks.HOPPER);
+		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+			this.dropItem(Blocks.field_10312);
 		}
 	}
 
@@ -151,7 +151,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	public Container getContainer(int syncId, PlayerInventory playerInventory) {
-		return new HopperContainer(syncId, playerInventory, this);
+	public ScreenHandler getScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return new HopperScreenHandler(syncId, playerInventory, this);
 	}
 }

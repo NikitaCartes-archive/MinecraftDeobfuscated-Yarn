@@ -14,7 +14,7 @@ public class BlastingRecipe extends AbstractCookingRecipe {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.BLAST_FURNACE);
+		return new ItemStack(Blocks.field_16333);
 	}
 
 	@Override

@@ -10,7 +10,7 @@ interface EntryCombiner {
 	EntryCombiner ALWAYS_FALSE = (lootContext, consumer) -> false;
 	EntryCombiner ALWAYS_TRUE = (lootContext, consumer) -> true;
 
-	boolean expand(LootContext lootContext, Consumer<LootChoice> consumer);
+	boolean expand(LootContext context, Consumer<LootChoice> choiceConsumer);
 
 	default EntryCombiner and(EntryCombiner other) {
 		Objects.requireNonNull(other);

@@ -6,16 +6,15 @@ import net.minecraft.entity.passive.TameableEntity;
 
 public class SitGoal extends Goal {
 	private final TameableEntity tameable;
-	private boolean enabledWithOwner;
 
 	public SitGoal(TameableEntity tameable) {
 		this.tameable = tameable;
-		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
+		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return this.enabledWithOwner;
+		return this.tameable.isSitting();
 	}
 
 	@Override
@@ -24,14 +23,14 @@ public class SitGoal extends Goal {
 			return false;
 		} else if (this.tameable.isInsideWaterOrBubbleColumn()) {
 			return false;
-		} else if (!this.tameable.onGround) {
+		} else if (!this.tameable.isOnGround()) {
 			return false;
 		} else {
 			LivingEntity livingEntity = this.tameable.getOwner();
 			if (livingEntity == null) {
 				return true;
 			} else {
-				return this.tameable.squaredDistanceTo(livingEntity) < 144.0 && livingEntity.getAttacker() != null ? false : this.enabledWithOwner;
+				return this.tameable.squaredDistanceTo(livingEntity) < 144.0 && livingEntity.getAttacker() != null ? false : this.tameable.isSitting();
 			}
 		}
 	}
@@ -39,15 +38,11 @@ public class SitGoal extends Goal {
 	@Override
 	public void start() {
 		this.tameable.getNavigation().stop();
-		this.tameable.setSitting(true);
+		this.tameable.setInSittingPose(true);
 	}
 
 	@Override
 	public void stop() {
-		this.tameable.setSitting(false);
-	}
-
-	public void setEnabledWithOwner(boolean enabledWithOwner) {
-		this.enabledWithOwner = enabledWithOwner;
+		this.tameable.setInSittingPose(false);
 	}
 }

@@ -7,15 +7,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -30,7 +32,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	private static final Uniform dummyUniform = new Uniform();
 	private static JsonGlProgram activeProgram;
 	private static int activeProgramRef = -1;
-	private final Map<String, Object> samplerBinds = Maps.<String, Object>newHashMap();
+	private final Map<String, IntSupplier> samplerBinds = Maps.<String, IntSupplier>newHashMap();
 	private final List<String> samplerNames = Lists.<String>newArrayList();
 	private final List<Integer> samplerShaderLocs = Lists.<Integer>newArrayList();
 	private final List<GlUniform> uniformData = Lists.<GlUniform>newArrayList();
@@ -38,7 +40,6 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	private final Map<String, GlUniform> uniformByName = Maps.<String, GlUniform>newHashMap();
 	private final int programRef;
 	private final String name;
-	private final boolean useCullFace;
 	private boolean uniformStateDirty;
 	private final GlBlendState blendState;
 	private final List<Integer> attribLocs;
@@ -113,7 +114,6 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 			}
 
 			this.blendState = deserializeBlendState(JsonHelper.getObject(jsonObject, "blend", null));
-			this.useCullFace = JsonHelper.getBoolean(jsonObject, "cull", true);
 			this.vertexShader = getShader(resource, GlShader.Type.VERTEX, string);
 			this.fragmentShader = getShader(resource, GlShader.Type.FRAGMENT, string2);
 			this.programRef = GlProgramManager.createProgram();
@@ -126,8 +126,15 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 				}
 			}
 		} catch (Exception var25) {
+			String string2x;
+			if (resource2 != null) {
+				string2x = " (" + resource2.getResourcePackName() + ")";
+			} else {
+				string2x = "";
+			}
+
 			ShaderParseException shaderParseException4 = ShaderParseException.wrap(var25);
-			shaderParseException4.addFaultyFile(identifier.getPath());
+			shaderParseException4.addFaultyFile(identifier.getPath() + string2x);
 			throw shaderParseException4;
 		} finally {
 			IOUtils.closeQuietly(resource2);
@@ -143,7 +150,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 			Resource resource = resourceManager.getResource(identifier);
 
 			try {
-				glShader = GlShader.createFromResource(type, name, resource.getInputStream());
+				glShader = GlShader.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName());
 			} finally {
 				IOUtils.closeQuietly(resource);
 			}
@@ -227,6 +234,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		for (int i = 0; i < this.samplerShaderLocs.size(); i++) {
 			if (this.samplerBinds.get(this.samplerNames.get(i)) != null) {
 				GlStateManager.activeTexture(33984 + i);
+				GlStateManager.disableTexture();
 				GlStateManager.bindTexture(0);
 			}
 		}
@@ -242,29 +250,16 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 			activeProgramRef = this.programRef;
 		}
 
-		if (this.useCullFace) {
-			RenderSystem.enableCull();
-		} else {
-			RenderSystem.disableCull();
-		}
-
 		for (int i = 0; i < this.samplerShaderLocs.size(); i++) {
-			if (this.samplerBinds.get(this.samplerNames.get(i)) != null) {
+			String string = (String)this.samplerNames.get(i);
+			IntSupplier intSupplier = (IntSupplier)this.samplerBinds.get(string);
+			if (intSupplier != null) {
 				RenderSystem.activeTexture(33984 + i);
 				RenderSystem.enableTexture();
-				Object object = this.samplerBinds.get(this.samplerNames.get(i));
-				int j = -1;
-				if (object instanceof Framebuffer) {
-					j = ((Framebuffer)object).colorAttachment;
-				} else if (object instanceof AbstractTexture) {
-					j = ((AbstractTexture)object).getGlId();
-				} else if (object instanceof Integer) {
-					j = (Integer)object;
-				}
-
+				int j = intSupplier.getAsInt();
 				if (j != -1) {
 					RenderSystem.bindTexture(j);
-					GlUniform.uniform1(GlUniform.getUniformLocation(this.programRef, (CharSequence)this.samplerNames.get(i)), i);
+					GlUniform.uniform1((Integer)this.samplerShaderLocs.get(i), i);
 				}
 			}
 		}
@@ -293,32 +288,33 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 
 	private void finalizeUniformsAndSamplers() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		int i = 0;
+		IntList intList = new IntArrayList();
 
-		for (int j = 0; i < this.samplerNames.size(); j++) {
+		for (int i = 0; i < this.samplerNames.size(); i++) {
 			String string = (String)this.samplerNames.get(i);
-			int k = GlUniform.getUniformLocation(this.programRef, string);
-			if (k == -1) {
-				LOGGER.warn("Shader {}could not find sampler named {} in the specified shader program.", this.name, string);
+			int j = GlUniform.getUniformLocation(this.programRef, string);
+			if (j == -1) {
+				LOGGER.warn("Shader {} could not find sampler named {} in the specified shader program.", this.name, string);
 				this.samplerBinds.remove(string);
-				this.samplerNames.remove(j);
-				j--;
+				intList.add(i);
 			} else {
-				this.samplerShaderLocs.add(k);
+				this.samplerShaderLocs.add(j);
 			}
+		}
 
-			i++;
+		for (int ix = intList.size() - 1; ix >= 0; ix--) {
+			this.samplerNames.remove(intList.getInt(ix));
 		}
 
 		for (GlUniform glUniform : this.uniformData) {
-			String string = glUniform.getName();
-			int k = GlUniform.getUniformLocation(this.programRef, string);
+			String string2 = glUniform.getName();
+			int k = GlUniform.getUniformLocation(this.programRef, string2);
 			if (k == -1) {
-				LOGGER.warn("Could not find uniform named {} in the specified shader program.", string);
+				LOGGER.warn("Could not find uniform named {} in the specified shader program.", string2);
 			} else {
 				this.uniformLocs.add(k);
 				glUniform.setLoc(k);
-				this.uniformByName.put(string, glUniform);
+				this.uniformByName.put(string2, glUniform);
 			}
 		}
 	}
@@ -334,12 +330,12 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		}
 	}
 
-	public void bindSampler(String samplerName, Object object) {
+	public void bindSampler(String samplerName, IntSupplier intSupplier) {
 		if (this.samplerBinds.containsKey(samplerName)) {
 			this.samplerBinds.remove(samplerName);
 		}
 
-		this.samplerBinds.put(samplerName, object);
+		this.samplerBinds.put(samplerName, intSupplier);
 		this.markUniformsDirty();
 	}
 

@@ -1,10 +1,14 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.entity.Entity;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -17,33 +21,41 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 		return ID;
 	}
 
-	public ChanneledLightningCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate[] entityPredicates = EntityPredicate.fromJsonArray(jsonObject.get("victims"));
-		return new ChanneledLightningCriterion.Conditions(entityPredicates);
+	public ChanneledLightningCriterion.Conditions method_8801(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
+		EntityPredicate.Extended[] extendeds = EntityPredicate.Extended.requireInJson(jsonObject, "victims", advancementEntityPredicateDeserializer);
+		return new ChanneledLightningCriterion.Conditions(extended, extendeds);
 	}
 
 	public void trigger(ServerPlayerEntity player, Collection<? extends Entity> victims) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, victims));
+		List<LootContext> list = (List<LootContext>)victims.stream()
+			.map(entity -> EntityPredicate.createAdvancementEntityLootContext(player, entity))
+			.collect(Collectors.toList());
+		this.test(player, conditions -> conditions.matches(list));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate[] victims;
+		private final EntityPredicate.Extended[] victims;
 
-		public Conditions(EntityPredicate[] victims) {
-			super(ChanneledLightningCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, EntityPredicate.Extended[] victims) {
+			super(ChanneledLightningCriterion.ID, player);
 			this.victims = victims;
 		}
 
 		public static ChanneledLightningCriterion.Conditions create(EntityPredicate... victims) {
-			return new ChanneledLightningCriterion.Conditions(victims);
+			return new ChanneledLightningCriterion.Conditions(
+				EntityPredicate.Extended.EMPTY,
+				(EntityPredicate.Extended[])Stream.of(victims).map(EntityPredicate.Extended::ofLegacy).toArray(EntityPredicate.Extended[]::new)
+			);
 		}
 
-		public boolean matches(ServerPlayerEntity player, Collection<? extends Entity> victims) {
-			for (EntityPredicate entityPredicate : this.victims) {
+		public boolean matches(Collection<? extends LootContext> victims) {
+			for (EntityPredicate.Extended extended : this.victims) {
 				boolean bl = false;
 
-				for (Entity entity : victims) {
-					if (entityPredicate.test(player, entity)) {
+				for (LootContext lootContext : victims) {
+					if (extended.test(lootContext)) {
 						bl = true;
 						break;
 					}
@@ -58,9 +70,9 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("victims", EntityPredicate.serializeAll(this.victims));
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
+			jsonObject.add("victims", EntityPredicate.Extended.toPredicatesJsonArray(this.victims, predicateSerializer));
 			return jsonObject;
 		}
 	}

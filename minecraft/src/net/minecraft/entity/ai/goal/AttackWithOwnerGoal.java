@@ -13,7 +13,7 @@ public class AttackWithOwnerGoal extends TrackTargetGoal {
 	public AttackWithOwnerGoal(TameableEntity tameable) {
 		super(tameable, false);
 		this.tameable = tameable;
-		this.setControls(EnumSet.of(Goal.Control.TARGET));
+		this.setControls(EnumSet.of(Goal.Control.field_18408));
 	}
 
 	@Override

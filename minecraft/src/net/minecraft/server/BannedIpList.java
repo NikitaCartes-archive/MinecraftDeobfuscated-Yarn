@@ -10,8 +10,8 @@ public class BannedIpList extends ServerConfigList<String, BannedIpEntry> {
 	}
 
 	@Override
-	protected ServerConfigEntry<String> fromJson(JsonObject jsonObject) {
-		return new BannedIpEntry(jsonObject);
+	protected ServerConfigEntry<String> fromJson(JsonObject json) {
+		return new BannedIpEntry(json);
 	}
 
 	public boolean isBanned(SocketAddress ip) {

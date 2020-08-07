@@ -9,12 +9,12 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class CoralBlockBlock extends Block {
 	private final Block deadCoralBlock;
 
-	public CoralBlockBlock(Block deadCoralBlock, Block.Settings settings) {
+	public CoralBlockBlock(Block deadCoralBlock, AbstractBlock.Settings settings) {
 		super(settings);
 		this.deadCoralBlock = deadCoralBlock;
 	}
@@ -27,18 +27,18 @@ public class CoralBlockBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (!this.isInWater(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 60 + world.getRandom().nextInt(40));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	protected boolean isInWater(BlockView world, BlockPos pos) {
 		for (Direction direction : Direction.values()) {
 			FluidState fluidState = world.getFluidState(pos.offset(direction));
-			if (fluidState.matches(FluidTags.WATER)) {
+			if (fluidState.isIn(FluidTags.field_15517)) {
 				return true;
 			}
 		}

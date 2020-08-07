@@ -9,8 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
-import net.minecraft.container.Container;
-import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.DoubleInventory;
@@ -18,13 +16,15 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Tickable;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -48,11 +48,11 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	public ChestBlockEntity() {
-		this(BlockEntityType.CHEST);
+		this(BlockEntityType.field_11914);
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return 27;
 	}
 
@@ -62,9 +62,9 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(tag)) {
 			Inventories.fromTag(tag, this.inventory);
 		}
@@ -90,7 +90,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		this.lastAnimationAngle = this.animationAngle;
 		float f = 0.1F;
 		if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
-			this.playSound(SoundEvents.BLOCK_CHEST_OPEN);
+			this.playSound(SoundEvents.field_14982);
 		}
 
 		if (this.viewerCount == 0 && this.animationAngle > 0.0F || this.viewerCount > 0 && this.animationAngle < 1.0F) {
@@ -107,7 +107,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 			float h = 0.5F;
 			if (this.animationAngle < 0.5F && g >= 0.5F) {
-				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE);
+				this.playSound(SoundEvents.field_14823);
 			}
 
 			if (this.animationAngle < 0.0F) {
@@ -139,8 +139,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 				(double)((float)(y + 1) + 5.0F)
 			)
 		)) {
-			if (playerEntity.container instanceof GenericContainer) {
-				Inventory inventory = ((GenericContainer)playerEntity.container).getInventory();
+			if (playerEntity.currentScreenHandler instanceof GenericContainerScreenHandler) {
+				Inventory inventory = ((GenericContainerScreenHandler)playerEntity.currentScreenHandler).getInventory();
 				if (inventory == container || inventory instanceof DoubleInventory && ((DoubleInventory)inventory).isPart(container)) {
 					i++;
 				}
@@ -152,32 +152,32 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 	private void playSound(SoundEvent soundEvent) {
 		ChestType chestType = this.getCachedState().get(ChestBlock.CHEST_TYPE);
-		if (chestType != ChestType.LEFT) {
+		if (chestType != ChestType.field_12574) {
 			double d = (double)this.pos.getX() + 0.5;
 			double e = (double)this.pos.getY() + 0.5;
 			double f = (double)this.pos.getZ() + 0.5;
-			if (chestType == ChestType.RIGHT) {
+			if (chestType == ChestType.field_12571) {
 				Direction direction = ChestBlock.getFacing(this.getCachedState());
 				d += (double)direction.getOffsetX() * 0.5;
 				f += (double)direction.getOffsetZ() * 0.5;
 			}
 
-			this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+			this.world.playSound(null, d, e, f, soundEvent, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 		}
 	}
 
 	@Override
-	public boolean onBlockAction(int i, int j) {
-		if (i == 1) {
-			this.viewerCount = j;
+	public boolean onSyncedBlockEvent(int type, int data) {
+		if (type == 1) {
+			this.viewerCount = data;
 			return true;
 		} else {
-			return super.onBlockAction(i, j);
+			return super.onSyncedBlockEvent(type, data);
 		}
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity player) {
+	public void onOpen(PlayerEntity player) {
 		if (!player.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
@@ -189,7 +189,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity player) {
+	public void onClose(PlayerEntity player) {
 		if (!player.isSpectator()) {
 			this.viewerCount--;
 			this.onInvOpenOrClose();
@@ -199,7 +199,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	protected void onInvOpenOrClose() {
 		Block block = this.getCachedState().getBlock();
 		if (block instanceof ChestBlock) {
-			this.world.addBlockAction(this.pos, block, 1, this.viewerCount);
+			this.world.addSyncedBlockEvent(this.pos, block, 1, this.viewerCount);
 			this.world.updateNeighborsAlways(this.pos, block);
 		}
 	}
@@ -216,8 +216,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float getAnimationProgress(float f) {
-		return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);
+	public float getAnimationProgress(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastAnimationAngle, this.animationAngle);
 	}
 
 	public static int getPlayersLookingInChestCount(BlockView world, BlockPos pos) {
@@ -239,7 +239,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return GenericContainer.createGeneric9x3(i, playerInventory, this);
+	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return GenericContainerScreenHandler.createGeneric9x3(syncId, playerInventory, this);
 	}
 }

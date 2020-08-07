@@ -1,84 +1,82 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
 import java.util.List;
-import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.NetherFortressGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.SpawnSettings;
+import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(
-		new Biome.SpawnEntry(EntityType.BLAZE, 10, 2, 3),
-		new Biome.SpawnEntry(EntityType.ZOMBIE_PIGMAN, 5, 4, 4),
-		new Biome.SpawnEntry(EntityType.WITHER_SKELETON, 8, 5, 5),
-		new Biome.SpawnEntry(EntityType.SKELETON, 2, 5, 5),
-		new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
+	private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(
+		new SpawnSettings.SpawnEntry(EntityType.field_6099, 10, 2, 3),
+		new SpawnSettings.SpawnEntry(EntityType.field_6050, 5, 4, 4),
+		new SpawnSettings.SpawnEntry(EntityType.field_6076, 8, 5, 5),
+		new SpawnSettings.SpawnEntry(EntityType.field_6137, 2, 5, 5),
+		new SpawnSettings.SpawnEntry(EntityType.field_6102, 3, 4, 4)
 	);
 
-	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public NetherFortressFeature(Codec<DefaultFeatureConfig> codec) {
+		super(codec);
+	}
+
+	protected boolean method_28640(
+		ChunkGenerator chunkGenerator,
+		BiomeSource biomeSource,
+		long l,
+		ChunkRandom chunkRandom,
+		int i,
+		int j,
+		Biome biome,
+		ChunkPos chunkPos,
+		DefaultFeatureConfig defaultFeatureConfig
+	) {
+		return chunkRandom.nextInt(5) < 2;
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
-		int j = chunkZ >> 4;
-		int k = i >> 4;
-		random.setSeed((long)(j ^ k << 4) ^ chunkGenerator.getSeed());
-		random.nextInt();
-		if (random.nextInt(3) != 0) {
-			return false;
-		} else if (chunkZ != (j << 4) + 4 + random.nextInt(8)) {
-			return false;
-		} else {
-			return i != (k << 4) + 4 + random.nextInt(8) ? false : chunkGenerator.hasStructure(biome, this);
-		}
-	}
-
-	@Override
-	public StructureFeature.StructureStartFactory getStructureStartFactory() {
+	public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
 		return NetherFortressFeature.Start::new;
 	}
 
 	@Override
-	public String getName() {
-		return "Fortress";
-	}
-
-	@Override
-	public int getRadius() {
-		return 8;
-	}
-
-	@Override
-	public List<Biome.SpawnEntry> getMonsterSpawns() {
+	public List<SpawnSettings.SpawnEntry> getMonsterSpawns() {
 		return MONSTER_SPAWNS;
 	}
 
-	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+	public static class Start extends StructureStart<DefaultFeatureConfig> {
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
+		public void method_28641(
+			DynamicRegistryManager dynamicRegistryManager,
+			ChunkGenerator chunkGenerator,
+			StructureManager structureManager,
+			int i,
+			int j,
+			Biome biome,
+			DefaultFeatureConfig defaultFeatureConfig
+		) {
+			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
 			this.children.add(start);
-			start.method_14918(start, this.children, this.random);
+			start.placeJigsaw(start, this.children, this.random);
 			List<StructurePiece> list = start.field_14505;
 
 			while (!list.isEmpty()) {
-				int i = this.random.nextInt(list.size());
-				StructurePiece structurePiece = (StructurePiece)list.remove(i);
-				structurePiece.method_14918(start, this.children, this.random);
+				int k = this.random.nextInt(list.size());
+				StructurePiece structurePiece = (StructurePiece)list.remove(k);
+				structurePiece.placeJigsaw(start, this.children, this.random);
 			}
 
 			this.setBoundingBoxFromChildren();

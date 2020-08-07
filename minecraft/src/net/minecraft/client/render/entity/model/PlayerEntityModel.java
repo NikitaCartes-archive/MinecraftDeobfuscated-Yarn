@@ -11,6 +11,7 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
 
@@ -78,29 +79,39 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.leftPantLeg, this.rightPantLeg, this.leftSleeve, this.rightSleeve, this.jacket));
 	}
 
-	public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
+	public void renderEars(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
 		this.ears.copyPositionAndRotation(this.head);
 		this.ears.pivotX = 0.0F;
 		this.ears.pivotY = 0.0F;
-		this.ears.render(matrixStack, vertexConsumer, i, j);
+		this.ears.render(matrices, vertices, light, overlay);
 	}
 
-	public void renderCape(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
-		this.cape.render(matrixStack, vertexConsumer, i, j);
+	public void renderCape(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
+		this.cape.render(matrices, vertices, light, overlay);
 	}
 
 	@Override
-	public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(livingEntity, f, g, h, i, j);
+	public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
+		super.method_17087(livingEntity, f, g, h, i, j);
 		this.leftPantLeg.copyPositionAndRotation(this.leftLeg);
 		this.rightPantLeg.copyPositionAndRotation(this.rightLeg);
 		this.leftSleeve.copyPositionAndRotation(this.leftArm);
 		this.rightSleeve.copyPositionAndRotation(this.rightArm);
 		this.jacket.copyPositionAndRotation(this.torso);
-		if (livingEntity.isInSneakingPose()) {
-			this.cape.pivotY = 2.0F;
+		if (livingEntity.getEquippedStack(EquipmentSlot.field_6174).isEmpty()) {
+			if (livingEntity.isInSneakingPose()) {
+				this.cape.pivotZ = 1.4F;
+				this.cape.pivotY = 1.85F;
+			} else {
+				this.cape.pivotZ = 0.0F;
+				this.cape.pivotY = 0.0F;
+			}
+		} else if (livingEntity.isInSneakingPose()) {
+			this.cape.pivotZ = 0.3F;
+			this.cape.pivotY = 0.8F;
 		} else {
-			this.cape.pivotY = 0.0F;
+			this.cape.pivotZ = -1.1F;
+			this.cape.pivotY = -0.85F;
 		}
 	}
 
@@ -117,15 +128,15 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(Arm arm, MatrixStack matrices) {
 		ModelPart modelPart = this.getArm(arm);
 		if (this.thinArms) {
-			float f = 0.5F * (float)(arm == Arm.RIGHT ? 1 : -1);
+			float f = 0.5F * (float)(arm == Arm.field_6183 ? 1 : -1);
 			modelPart.pivotX += f;
-			modelPart.rotate(matrixStack);
+			modelPart.rotate(matrices);
 			modelPart.pivotX -= f;
 		} else {
-			modelPart.rotate(matrixStack);
+			modelPart.rotate(matrices);
 		}
 	}
 
@@ -134,7 +145,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void accept(ModelPart modelPart) {
+	public void method_22696(ModelPart modelPart) {
 		if (this.parts == null) {
 			this.parts = Lists.<ModelPart>newArrayList();
 		}

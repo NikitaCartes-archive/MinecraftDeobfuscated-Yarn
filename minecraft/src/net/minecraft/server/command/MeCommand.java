@@ -2,7 +2,10 @@ package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import net.minecraft.entity.Entity;
+import net.minecraft.network.MessageType;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Util;
 
 public class MeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -12,12 +15,16 @@ public class MeCommand {
 					CommandManager.argument("action", StringArgumentType.greedyString())
 						.executes(
 							commandContext -> {
-								commandContext.getSource()
-									.getMinecraftServer()
-									.getPlayerManager()
-									.sendToAll(
-										new TranslatableText("chat.type.emote", commandContext.getSource().getDisplayName(), StringArgumentType.getString(commandContext, "action"))
-									);
+								TranslatableText translatableText = new TranslatableText(
+									"chat.type.emote", commandContext.getSource().getDisplayName(), StringArgumentType.getString(commandContext, "action")
+								);
+								Entity entity = commandContext.getSource().getEntity();
+								if (entity != null) {
+									commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(translatableText, MessageType.field_11737, entity.getUuid());
+								} else {
+									commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(translatableText, MessageType.field_11735, Util.NIL_UUID);
+								}
+
 								return 1;
 							}
 						)

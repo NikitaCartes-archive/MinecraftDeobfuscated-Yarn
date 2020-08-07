@@ -14,7 +14,7 @@ public class AmbientSoundLoops {
 		private final ClientPlayerEntity player;
 
 		protected MusicLoop(ClientPlayerEntity player, SoundEvent soundEvent) {
-			super(soundEvent, SoundCategory.AMBIENT);
+			super(soundEvent, SoundCategory.field_15256);
 			this.player = player;
 			this.repeat = false;
 			this.repeatDelay = 0;
@@ -25,8 +25,8 @@ public class AmbientSoundLoops {
 
 		@Override
 		public void tick() {
-			if (this.player.removed || !this.player.isInWater()) {
-				this.done = true;
+			if (this.player.removed || !this.player.isSubmergedInWater()) {
+				this.setDone();
 			}
 		}
 	}
@@ -37,7 +37,7 @@ public class AmbientSoundLoops {
 		private int transitionTimer;
 
 		public Underwater(ClientPlayerEntity clientPlayerEntity) {
-			super(SoundEvents.AMBIENT_UNDERWATER_LOOP, SoundCategory.AMBIENT);
+			super(SoundEvents.field_14951, SoundCategory.field_15256);
 			this.player = clientPlayerEntity;
 			this.repeat = true;
 			this.repeatDelay = 0;
@@ -49,7 +49,7 @@ public class AmbientSoundLoops {
 		@Override
 		public void tick() {
 			if (!this.player.removed && this.transitionTimer >= 0) {
-				if (this.player.isInWater()) {
+				if (this.player.isSubmergedInWater()) {
 					this.transitionTimer++;
 				} else {
 					this.transitionTimer -= 2;
@@ -58,7 +58,7 @@ public class AmbientSoundLoops {
 				this.transitionTimer = Math.min(this.transitionTimer, 40);
 				this.volume = Math.max(0.0F, Math.min((float)this.transitionTimer / 40.0F, 1.0F));
 			} else {
-				this.done = true;
+				this.setDone();
 			}
 		}
 	}

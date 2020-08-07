@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class GhastEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	private final ModelPart[] field_3372 = new ModelPart[9];
-	private final ImmutableList<ModelPart> field_20929;
+	private final ImmutableList<ModelPart> parts;
 
 	public GhastEntityModel() {
 		Builder<ModelPart> builder = ImmutableList.builder();
@@ -34,18 +34,18 @@ public class GhastEntityModel<T extends Entity> extends CompositeEntityModel<T> 
 			builder.add(this.field_3372[i]);
 		}
 
-		this.field_20929 = builder.build();
+		this.parts = builder.build();
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		for (int i = 0; i < this.field_3372.length; i++) {
-			this.field_3372[i].pitch = 0.2F * MathHelper.sin(customAngle * 0.3F + (float)i) + 0.4F;
+			this.field_3372[i].pitch = 0.2F * MathHelper.sin(animationProgress * 0.3F + (float)i) + 0.4F;
 		}
 	}
 
 	@Override
 	public Iterable<ModelPart> getParts() {
-		return this.field_20929;
+		return this.parts;
 	}
 }

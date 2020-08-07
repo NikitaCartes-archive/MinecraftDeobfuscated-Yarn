@@ -1,5 +1,9 @@
 package net.minecraft.client;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Element;
@@ -9,6 +13,7 @@ import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.SmoothUtil;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFWDropCallback;
 
 @Environment(EnvType.CLIENT)
 public class Mouse {
@@ -96,50 +101,63 @@ public class Mouse {
 					this.rightButtonClicked = bl;
 				}
 
-				KeyBinding.setKeyPressed(InputUtil.Type.MOUSE.createFromCode(i), bl);
+				KeyBinding.setKeyPressed(InputUtil.Type.field_1672.createFromCode(i), bl);
 				if (bl) {
 					if (this.client.player.isSpectator() && i == 2) {
 						this.client.inGameHud.getSpectatorHud().useSelectedCommand();
 					} else {
-						KeyBinding.onKeyPressed(InputUtil.Type.MOUSE.createFromCode(i));
+						KeyBinding.onKeyPressed(InputUtil.Type.field_1672.createFromCode(i));
 					}
 				}
 			}
 		}
 	}
 
-	private void onMouseScroll(long window, double d, double e) {
+	/**
+	 * Called when a mouse is used to scroll.
+	 * 
+	 * @param window the window handle
+	 * @param horizontal the horizontal scroll distance
+	 * @param vertical the vertical scroll distance
+	 */
+	private void onMouseScroll(long window, double horizontal, double vertical) {
 		if (window == MinecraftClient.getInstance().getWindow().getHandle()) {
-			double f = (this.client.options.discreteMouseScroll ? Math.signum(e) : e) * this.client.options.mouseWheelSensitivity;
+			double d = (this.client.options.discreteMouseScroll ? Math.signum(vertical) : vertical) * this.client.options.mouseWheelSensitivity;
 			if (this.client.overlay == null) {
 				if (this.client.currentScreen != null) {
-					double g = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
-					double h = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
-					this.client.currentScreen.mouseScrolled(g, h, f);
+					double e = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
+					double f = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
+					this.client.currentScreen.mouseScrolled(e, f, d);
 				} else if (this.client.player != null) {
-					if (this.eventDeltaWheel != 0.0 && Math.signum(f) != Math.signum(this.eventDeltaWheel)) {
+					if (this.eventDeltaWheel != 0.0 && Math.signum(d) != Math.signum(this.eventDeltaWheel)) {
 						this.eventDeltaWheel = 0.0;
 					}
 
-					this.eventDeltaWheel += f;
-					float i = (float)((int)this.eventDeltaWheel);
-					if (i == 0.0F) {
+					this.eventDeltaWheel += d;
+					float g = (float)((int)this.eventDeltaWheel);
+					if (g == 0.0F) {
 						return;
 					}
 
-					this.eventDeltaWheel -= (double)i;
+					this.eventDeltaWheel -= (double)g;
 					if (this.client.player.isSpectator()) {
 						if (this.client.inGameHud.getSpectatorHud().isOpen()) {
-							this.client.inGameHud.getSpectatorHud().cycleSlot((double)(-i));
+							this.client.inGameHud.getSpectatorHud().cycleSlot((double)(-g));
 						} else {
-							float j = MathHelper.clamp(this.client.player.abilities.getFlySpeed() + i * 0.005F, 0.0F, 0.2F);
-							this.client.player.abilities.setFlySpeed(j);
+							float h = MathHelper.clamp(this.client.player.abilities.getFlySpeed() + g * 0.005F, 0.0F, 0.2F);
+							this.client.player.abilities.setFlySpeed(h);
 						}
 					} else {
-						this.client.player.inventory.scrollInHotbar((double)i);
+						this.client.player.inventory.scrollInHotbar((double)g);
 					}
 				}
 			}
+		}
+	}
+
+	private void method_29616(long l, List<Path> list) {
+		if (this.client.currentScreen != null) {
+			this.client.currentScreen.filesDragged(list);
 		}
 	}
 
@@ -148,7 +166,16 @@ public class Mouse {
 			l,
 			(lx, d, e) -> this.client.execute(() -> this.onCursorPos(lx, d, e)),
 			(lx, i, j, k) -> this.client.execute(() -> this.onMouseButton(lx, i, j, k)),
-			(lx, d, e) -> this.client.execute(() -> this.onMouseScroll(lx, d, e))
+			(lx, d, e) -> this.client.execute(() -> this.onMouseScroll(lx, d, e)),
+			(lx, i, m) -> {
+				Path[] paths = new Path[i];
+
+				for (int j = 0; j < i; j++) {
+					paths[j] = Paths.get(GLFWDropCallback.getName(m, j));
+				}
+
+				this.client.execute(() -> this.method_29616(lx, Arrays.asList(paths)));
+			}
 		);
 	}
 
@@ -272,5 +299,9 @@ public class Mouse {
 			this.y = (double)(this.client.getWindow().getHeight() / 2);
 			InputUtil.setCursorParameters(this.client.getWindow().getHandle(), 212993, this.x, this.y);
 		}
+	}
+
+	public void method_30134() {
+		this.hasResolutionChanged = true;
 	}
 }

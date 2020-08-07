@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.pathing;
 
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -14,10 +14,10 @@ public class BirdNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected PathNodeNavigator createPathNodeNavigator(int i) {
+	protected PathNodeNavigator createPathNodeNavigator(int range) {
 		this.nodeMaker = new BirdPathNodeMaker();
 		this.nodeMaker.setCanEnterOpenDoors(true);
-		return new PathNodeNavigator(this.nodeMaker, i);
+		return new PathNodeNavigator(this.nodeMaker, range);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class BirdNavigation extends EntityNavigation {
 
 	@Override
 	public Path findPathTo(Entity entity, int distance) {
-		return this.findPathTo(new BlockPos(entity), distance);
+		return this.findPathTo(entity.getBlockPos(), distance);
 	}
 
 	@Override
@@ -44,17 +44,17 @@ public class BirdNavigation extends EntityNavigation {
 
 		if (!this.isIdle()) {
 			if (this.isAtValidPosition()) {
-				this.method_6339();
-			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
-				Vec3d vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
+				this.continueFollowingPath();
+			} else if (this.currentPath != null && !this.currentPath.isFinished()) {
+				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x)
 					&& MathHelper.floor(this.entity.getY()) == MathHelper.floor(vec3d.y)
 					&& MathHelper.floor(this.entity.getZ()) == MathHelper.floor(vec3d.z)) {
-					this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
+					this.currentPath.next();
 				}
 			}
 
-			DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
+			DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.nodeReachProximity);
 			if (!this.isIdle()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				this.entity.getMoveControl().moveTo(vec3d.x, vec3d.y, vec3d.z, this.speed);

@@ -21,15 +21,5 @@ public interface DedicatedServer {
 
 	String getPlugins();
 
-	String executeRconCommand(String string);
-
-	boolean isDebuggingEnabled();
-
-	void info(String string);
-
-	void warn(String string);
-
-	void logError(String string);
-
-	void log(String string);
+	String executeRconCommand(String command);
 }

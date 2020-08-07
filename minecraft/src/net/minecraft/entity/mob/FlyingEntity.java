@@ -4,13 +4,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class FlyingEntity extends MobEntity {
-	protected FlyingEntity(EntityType<? extends FlyingEntity> type, World world) {
-		super(type, world);
+	protected FlyingEntity(EntityType<? extends FlyingEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -24,13 +23,13 @@ public abstract class FlyingEntity extends MobEntity {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.isInsideWater()) {
+		if (this.isTouchingWater()) {
 			this.updateVelocity(0.02F, movementInput);
-			this.move(MovementType.SELF, this.getVelocity());
+			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.8F));
 		} else if (this.isInLava()) {
 			this.updateVelocity(0.02F, movementInput);
-			this.move(MovementType.SELF, this.getVelocity());
+			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.5));
 		} else {
 			float f = 0.91F;
@@ -45,20 +44,11 @@ public abstract class FlyingEntity extends MobEntity {
 			}
 
 			this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, movementInput);
-			this.move(MovementType.SELF, this.getVelocity());
+			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply((double)f));
 		}
 
-		this.lastLimbDistance = this.limbDistance;
-		double d = this.getX() - this.prevX;
-		double e = this.getZ() - this.prevZ;
-		float h = MathHelper.sqrt(d * d + e * e) * 4.0F;
-		if (h > 1.0F) {
-			h = 1.0F;
-		}
-
-		this.limbDistance = this.limbDistance + (h - this.limbDistance) * 0.4F;
-		this.limbAngle = this.limbAngle + this.limbDistance;
+		this.method_29242(this, false);
 	}
 
 	@Override

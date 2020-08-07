@@ -4,14 +4,14 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -21,11 +21,13 @@ import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -34,18 +36,22 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class OcelotEntity extends AnimalEntity {
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
+	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.field_8429, Items.field_8209);
 	private static final TrackedData<Boolean> TRUSTING = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private OcelotEntity.FleeGoal<PlayerEntity> fleeGoal;
 	private OcelotEntity.OcelotTemptGoal temptGoal;
@@ -101,17 +107,17 @@ public class OcelotEntity extends AnimalEntity {
 		if (this.getMoveControl().isMoving()) {
 			double d = this.getMoveControl().getSpeed();
 			if (d == 0.6) {
-				this.setPose(EntityPose.CROUCHING);
+				this.setPose(EntityPose.field_18081);
 				this.setSprinting(false);
 			} else if (d == 1.33) {
-				this.setPose(EntityPose.STANDING);
+				this.setPose(EntityPose.field_18076);
 				this.setSprinting(true);
 			} else {
-				this.setPose(EntityPose.STANDING);
+				this.setPose(EntityPose.field_18076);
 				this.setSprinting(false);
 			}
 		} else {
-			this.setPose(EntityPose.STANDING);
+			this.setPose(EntityPose.field_18076);
 			this.setSprinting(false);
 		}
 	}
@@ -121,12 +127,8 @@ public class OcelotEntity extends AnimalEntity {
 		return !this.isTrusting() && this.age > 2400;
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
+	public static DefaultAttributeContainer.Builder createOcelotAttributes() {
+		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 10.0).add(EntityAttributes.field_23719, 0.3F).add(EntityAttributes.field_23721, 3.0);
 	}
 
 	@Override
@@ -137,7 +139,7 @@ public class OcelotEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_OCELOT_AMBIENT;
+		return SoundEvents.field_16437;
 	}
 
 	@Override
@@ -147,21 +149,21 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_OCELOT_HURT;
+		return SoundEvents.field_16441;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_OCELOT_DEATH;
+		return SoundEvents.field_16442;
 	}
 
-	private float method_22329() {
-		return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
+	private float getAttackDamage() {
+		return (float)this.getAttributeValue(EntityAttributes.field_23721);
 	}
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		return target.damage(DamageSource.mob(this), this.method_22329());
+		return target.damage(DamageSource.mob(this), this.getAttackDamage());
 	}
 
 	@Override
@@ -170,7 +172,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if ((this.temptGoal == null || this.temptGoal.isActive()) && !this.isTrusting() && this.isBreedingItem(itemStack) && player.squaredDistanceTo(this) < 9.0) {
 			this.eat(player, itemStack);
@@ -185,7 +187,7 @@ public class OcelotEntity extends AnimalEntity {
 				}
 			}
 
-			return true;
+			return ActionResult.success(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -204,9 +206,9 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	private void showEmoteParticle(boolean positive) {
-		ParticleEffect particleEffect = ParticleTypes.HEART;
+		ParticleEffect particleEffect = ParticleTypes.field_11201;
 		if (!positive) {
-			particleEffect = ParticleTypes.SMOKE;
+			particleEffect = ParticleTypes.field_11251;
 		}
 
 		for (int i = 0; i < 7; i++) {
@@ -228,30 +230,29 @@ public class OcelotEntity extends AnimalEntity {
 		}
 	}
 
-	public OcelotEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.OCELOT.create(this.world);
+	public OcelotEntity method_16104(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.field_6081.create(serverWorld);
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return TAMING_INGREDIENT.test(stack);
+		return TAMING_INGREDIENT.method_8093(stack);
 	}
 
-	public static boolean canSpawn(EntityType<OcelotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<OcelotEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return random.nextInt(3) != 0;
 	}
 
 	@Override
 	public boolean canSpawn(WorldView world) {
 		if (world.intersectsEntities(this) && !world.containsFluid(this.getBoundingBox())) {
-			BlockPos blockPos = new BlockPos(this);
+			BlockPos blockPos = this.getBlockPos();
 			if (blockPos.getY() < world.getSeaLevel()) {
 				return false;
 			}
 
-			BlockState blockState = world.getBlockState(blockPos.down());
-			Block block = blockState.getBlock();
-			if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
+			BlockState blockState = world.getBlockState(blockPos.method_10074());
+			if (blockState.isOf(Blocks.field_10219) || blockState.isIn(BlockTags.field_15503)) {
 				return true;
 			}
 		}
@@ -261,15 +262,20 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
+	public EntityData initialize(
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyChance(1.0F);
+			entityData = new PassiveEntity.PassiveData(1.0F);
 		}
 
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, (double)(0.5F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 
 	static class FleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

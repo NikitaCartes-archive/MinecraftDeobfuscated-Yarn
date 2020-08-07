@@ -2,7 +2,6 @@ package net.minecraft.entity.passive;
 
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
@@ -20,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -80,7 +80,7 @@ public class PufferfishEntity extends FishEntity {
 
 	@Override
 	protected ItemStack getFishBucketItem() {
-		return new ItemStack(Items.PUFFERFISH_BUCKET);
+		return new ItemStack(Items.field_8108);
 	}
 
 	@Override
@@ -94,20 +94,20 @@ public class PufferfishEntity extends FishEntity {
 		if (!this.world.isClient && this.isAlive() && this.canMoveVoluntarily()) {
 			if (this.inflateTicks > 0) {
 				if (this.getPuffState() == 0) {
-					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP, this.getSoundVolume(), this.getSoundPitch());
+					this.playSound(SoundEvents.field_15235, this.getSoundVolume(), this.getSoundPitch());
 					this.setPuffState(1);
 				} else if (this.inflateTicks > 40 && this.getPuffState() == 1) {
-					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP, this.getSoundVolume(), this.getSoundPitch());
+					this.playSound(SoundEvents.field_15235, this.getSoundVolume(), this.getSoundPitch());
 					this.setPuffState(2);
 				}
 
 				this.inflateTicks++;
 			} else if (this.getPuffState() != 0) {
 				if (this.deflateTicks > 60 && this.getPuffState() == 2) {
-					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT, this.getSoundVolume(), this.getSoundPitch());
+					this.playSound(SoundEvents.field_15133, this.getSoundVolume(), this.getSoundPitch());
 					this.setPuffState(1);
 				} else if (this.deflateTicks > 100 && this.getPuffState() == 1) {
-					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT, this.getSoundVolume(), this.getSoundPitch());
+					this.playSound(SoundEvents.field_15133, this.getSoundVolume(), this.getSoundPitch());
 					this.setPuffState(0);
 				}
 
@@ -122,7 +122,7 @@ public class PufferfishEntity extends FishEntity {
 	public void tickMovement() {
 		super.tickMovement();
 		if (this.isAlive() && this.getPuffState() > 0) {
-			for (MobEntity mobEntity : this.world.getEntities(MobEntity.class, this.getBoundingBox().expand(0.3), BLOW_UP_FILTER)) {
+			for (MobEntity mobEntity : this.world.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), BLOW_UP_FILTER)) {
 				if (mobEntity.isAlive()) {
 					this.sting(mobEntity);
 				}
@@ -133,8 +133,8 @@ public class PufferfishEntity extends FishEntity {
 	private void sting(MobEntity mob) {
 		int i = this.getPuffState();
 		if (mob.damage(DamageSource.mob(this), (float)(1 + i))) {
-			mob.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
-			this.playSound(SoundEvents.ENTITY_PUFFER_FISH_STING, 1.0F, 1.0F);
+			mob.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5899, 60 * i, 0));
+			this.playSound(SoundEvents.field_14848, 1.0F, 1.0F);
 		}
 	}
 
@@ -142,29 +142,32 @@ public class PufferfishEntity extends FishEntity {
 	public void onPlayerCollision(PlayerEntity player) {
 		int i = this.getPuffState();
 		if (player instanceof ServerPlayerEntity && i > 0 && player.damage(DamageSource.mob(this), (float)(1 + i))) {
-			((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0F));
-			player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
+			if (!this.isSilent()) {
+				((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PUFFERFISH_STING, 0.0F));
+			}
+
+			player.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5899, 60 * i, 0));
 		}
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_PUFFER_FISH_AMBIENT;
+		return SoundEvents.field_14553;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_PUFFER_FISH_DEATH;
+		return SoundEvents.field_14888;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_PUFFER_FISH_HURT;
+		return SoundEvents.field_14748;
 	}
 
 	@Override
 	protected SoundEvent getFlopSound() {
-		return SoundEvents.ENTITY_PUFFER_FISH_FLOP;
+		return SoundEvents.field_15004;
 	}
 
 	@Override
@@ -194,7 +197,7 @@ public class PufferfishEntity extends FishEntity {
 		public boolean canStart() {
 			List<LivingEntity> list = this.pufferfish
 				.world
-				.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), PufferfishEntity.BLOW_UP_FILTER);
+				.getEntitiesByClass(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), PufferfishEntity.BLOW_UP_FILTER);
 			return !list.isEmpty();
 		}
 
@@ -213,7 +216,7 @@ public class PufferfishEntity extends FishEntity {
 		public boolean shouldContinue() {
 			List<LivingEntity> list = this.pufferfish
 				.world
-				.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), PufferfishEntity.BLOW_UP_FILTER);
+				.getEntitiesByClass(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), PufferfishEntity.BLOW_UP_FILTER);
 			return !list.isEmpty();
 		}
 	}

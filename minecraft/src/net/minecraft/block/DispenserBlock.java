@@ -8,13 +8,13 @@ import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.DropperBlockEntity;
-import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -36,7 +36,6 @@ import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class DispenserBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = FacingBlock.FACING;
@@ -49,14 +48,9 @@ public class DispenserBlock extends BlockWithEntity {
 		BEHAVIORS.put(provider.asItem(), behavior);
 	}
 
-	protected DispenserBlock(Block.Settings settings) {
+	protected DispenserBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(TRIGGERED, Boolean.valueOf(false)));
-	}
-
-	@Override
-	public int getTickRate(WorldView worldView) {
-		return 4;
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(TRIGGERED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -66,29 +60,29 @@ public class DispenserBlock extends BlockWithEntity {
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof DispenserBlockEntity) {
-				player.openContainer((DispenserBlockEntity)blockEntity);
+				player.openHandledScreen((DispenserBlockEntity)blockEntity);
 				if (blockEntity instanceof DropperBlockEntity) {
-					player.incrementStat(Stats.INSPECT_DROPPER);
+					player.incrementStat(Stats.field_15367);
 				} else {
-					player.incrementStat(Stats.INSPECT_DISPENSER);
+					player.incrementStat(Stats.field_15371);
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 
-	protected void dispense(World world, BlockPos pos) {
-		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
+	protected void dispense(ServerWorld serverWorld, BlockPos pos) {
+		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(serverWorld, pos);
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.playLevelEvent(1001, pos, 0);
+			serverWorld.syncWorldEvent(1001, pos, 0);
 		} else {
-			ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
+			ItemStack itemStack = dispenserBlockEntity.getStack(i);
 			DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);
 			if (dispenserBehavior != DispenserBehavior.NOOP) {
-				dispenserBlockEntity.setInvStack(i, dispenserBehavior.dispense(blockPointerImpl, itemStack));
+				dispenserBlockEntity.setStack(i, dispenserBehavior.dispense(blockPointerImpl, itemStack));
 			}
 		}
 	}
@@ -98,11 +92,11 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
 		boolean bl2 = (Boolean)state.get(TRIGGERED);
 		if (bl && !bl2) {
-			world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+			world.getBlockTickScheduler().schedule(pos, this, 4);
 			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(true)), 4);
 		} else if (!bl && bl2) {
 			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(false)), 4);
@@ -115,7 +109,7 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new DispenserBlockEntity();
 	}
 
@@ -135,15 +129,15 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (state.getBlock() != newState.getBlock()) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof DispenserBlockEntity) {
 				ItemScatterer.spawn(world, pos, (DispenserBlockEntity)blockEntity);
-				world.updateHorizontalAdjacent(pos, this);
+				world.updateComparators(pos, this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 
@@ -162,12 +156,12 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return Container.calculateComparatorOutput(world.getBlockEntity(pos));
+		return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
+		return BlockRenderType.field_11458;
 	}
 
 	@Override

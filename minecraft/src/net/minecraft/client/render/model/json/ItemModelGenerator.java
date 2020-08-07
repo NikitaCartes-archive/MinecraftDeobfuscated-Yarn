@@ -35,7 +35,7 @@ public class ItemModelGenerator {
 
 		map.put("particle", blockModel.textureExists("particle") ? Either.left(blockModel.resolveSprite("particle")) : (Either)map.get("layer0"));
 		JsonUnbakedModel jsonUnbakedModel = new JsonUnbakedModel(
-			null, list, map, false, blockModel.method_24298(), blockModel.getTransformations(), blockModel.getOverrides()
+			null, list, map, false, blockModel.getGuiLight(), blockModel.getTransformations(), blockModel.getOverrides()
 		);
 		jsonUnbakedModel.id = blockModel.id;
 		return jsonUnbakedModel;
@@ -43,8 +43,8 @@ public class ItemModelGenerator {
 
 	private List<ModelElement> addLayerElements(int layer, String key, Sprite sprite) {
 		Map<Direction, ModelElementFace> map = Maps.<Direction, ModelElementFace>newHashMap();
-		map.put(Direction.SOUTH, new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
-		map.put(Direction.NORTH, new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
+		map.put(Direction.field_11035, new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
+		map.put(Direction.field_11043, new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
 		List<ModelElement> list = Lists.<ModelElement>newArrayList();
 		list.add(new ModelElement(new Vector3f(0.0F, 0.0F, 7.5F), new Vector3f(16.0F, 16.0F, 8.5F), map, null, true));
 		list.addAll(this.addSubComponents(sprite, key, layer));
@@ -72,7 +72,7 @@ public class ItemModelGenerator {
 			float t = (float)frame.getLevel();
 			ItemModelGenerator.Side side = frame.getSide();
 			switch (side) {
-				case UP:
+				case field_4281:
 					l = r;
 					h = r;
 					j = m = s + 1.0F;
@@ -81,7 +81,7 @@ public class ItemModelGenerator {
 					k = t;
 					o = t + 1.0F;
 					break;
-				case DOWN:
+				case field_4277:
 					n = t;
 					o = t + 1.0F;
 					l = r;
@@ -90,7 +90,7 @@ public class ItemModelGenerator {
 					i = t + 1.0F;
 					k = t + 1.0F;
 					break;
-				case LEFT:
+				case field_4278:
 					l = t;
 					h = t;
 					j = t;
@@ -99,7 +99,7 @@ public class ItemModelGenerator {
 					i = r;
 					k = n = s + 1.0F;
 					break;
-				case RIGHT:
+				case field_4283:
 					l = t;
 					m = t + 1.0F;
 					h = t + 1.0F;
@@ -122,16 +122,16 @@ public class ItemModelGenerator {
 			Map<Direction, ModelElementFace> map = Maps.<Direction, ModelElementFace>newHashMap();
 			map.put(side.getDirection(), new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{l, n, m, o}, 0)));
 			switch (side) {
-				case UP:
+				case field_4281:
 					list.add(new ModelElement(new Vector3f(h, i, 7.5F), new Vector3f(j, i, 8.5F), map, null, true));
 					break;
-				case DOWN:
+				case field_4277:
 					list.add(new ModelElement(new Vector3f(h, k, 7.5F), new Vector3f(j, k, 8.5F), map, null, true));
 					break;
-				case LEFT:
+				case field_4278:
 					list.add(new ModelElement(new Vector3f(h, i, 7.5F), new Vector3f(h, k, 8.5F), map, null, true));
 					break;
-				case RIGHT:
+				case field_4283:
 					list.add(new ModelElement(new Vector3f(j, i, 7.5F), new Vector3f(j, k, 8.5F), map, null, true));
 			}
 		}
@@ -148,10 +148,10 @@ public class ItemModelGenerator {
 			for (int l = 0; l < j; l++) {
 				for (int m = 0; m < i; m++) {
 					boolean bl = !this.isPixelTransparent(sprite, k, m, l, i, j);
-					this.buildCube(ItemModelGenerator.Side.UP, list, sprite, k, m, l, i, j, bl);
-					this.buildCube(ItemModelGenerator.Side.DOWN, list, sprite, k, m, l, i, j, bl);
-					this.buildCube(ItemModelGenerator.Side.LEFT, list, sprite, k, m, l, i, j, bl);
-					this.buildCube(ItemModelGenerator.Side.RIGHT, list, sprite, k, m, l, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.field_4281, list, sprite, k, m, l, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.field_4277, list, sprite, k, m, l, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.field_4278, list, sprite, k, m, l, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.field_4283, list, sprite, k, m, l, i, j, bl);
 				}
 			}
 		}
@@ -233,10 +233,10 @@ public class ItemModelGenerator {
 
 	@Environment(EnvType.CLIENT)
 	static enum Side {
-		UP(Direction.UP, 0, -1),
-		DOWN(Direction.DOWN, 0, 1),
-		LEFT(Direction.EAST, -1, 0),
-		RIGHT(Direction.WEST, 1, 0);
+		field_4281(Direction.field_11036, 0, -1),
+		field_4277(Direction.field_11033, 0, 1),
+		field_4278(Direction.field_11034, -1, 0),
+		field_4283(Direction.field_11039, 1, 0);
 
 		private final Direction direction;
 		private final int offsetX;
@@ -261,7 +261,7 @@ public class ItemModelGenerator {
 		}
 
 		private boolean isVertical() {
-			return this == DOWN || this == UP;
+			return this == field_4277 || this == field_4281;
 		}
 	}
 }

@@ -25,7 +25,7 @@ public class MapBannerMarker {
 
 	public static MapBannerMarker fromNbt(CompoundTag tag) {
 		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
-		DyeColor dyeColor = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
+		DyeColor dyeColor = DyeColor.byName(tag.getString("Color"), DyeColor.field_7952);
 		Text text = tag.contains("Name") ? Text.Serializer.fromJson(tag.getString("Name")) : null;
 		return new MapBannerMarker(blockPos, dyeColor, text);
 	}
@@ -49,39 +49,39 @@ public class MapBannerMarker {
 
 	public MapIcon.Type getIconType() {
 		switch (this.color) {
-			case WHITE:
-				return MapIcon.Type.BANNER_WHITE;
-			case ORANGE:
-				return MapIcon.Type.BANNER_ORANGE;
-			case MAGENTA:
-				return MapIcon.Type.BANNER_MAGENTA;
-			case LIGHT_BLUE:
-				return MapIcon.Type.BANNER_LIGHT_BLUE;
-			case YELLOW:
-				return MapIcon.Type.BANNER_YELLOW;
-			case LIME:
-				return MapIcon.Type.BANNER_LIME;
-			case PINK:
-				return MapIcon.Type.BANNER_PINK;
-			case GRAY:
-				return MapIcon.Type.BANNER_GRAY;
-			case LIGHT_GRAY:
-				return MapIcon.Type.BANNER_LIGHT_GRAY;
-			case CYAN:
-				return MapIcon.Type.BANNER_CYAN;
-			case PURPLE:
-				return MapIcon.Type.BANNER_PURPLE;
-			case BLUE:
-				return MapIcon.Type.BANNER_BLUE;
-			case BROWN:
-				return MapIcon.Type.BANNER_BROWN;
-			case GREEN:
-				return MapIcon.Type.BANNER_GREEN;
-			case RED:
-				return MapIcon.Type.BANNER_RED;
-			case BLACK:
+			case field_7952:
+				return MapIcon.Type.field_96;
+			case field_7946:
+				return MapIcon.Type.field_92;
+			case field_7958:
+				return MapIcon.Type.field_97;
+			case field_7951:
+				return MapIcon.Type.field_90;
+			case field_7947:
+				return MapIcon.Type.field_93;
+			case field_7961:
+				return MapIcon.Type.field_94;
+			case field_7954:
+				return MapIcon.Type.field_100;
+			case field_7944:
+				return MapIcon.Type.field_101;
+			case field_7967:
+				return MapIcon.Type.field_107;
+			case field_7955:
+				return MapIcon.Type.field_108;
+			case field_7945:
+				return MapIcon.Type.field_104;
+			case field_7966:
+				return MapIcon.Type.field_105;
+			case field_7957:
+				return MapIcon.Type.field_106;
+			case field_7942:
+				return MapIcon.Type.field_102;
+			case field_7964:
+				return MapIcon.Type.field_99;
+			case field_7963:
 			default:
-				return MapIcon.Type.BANNER_BLACK;
+				return MapIcon.Type.field_103;
 		}
 	}
 

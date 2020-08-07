@@ -10,12 +10,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 public interface CommandSource {
 	Collection<String> getPlayerNames();
@@ -40,6 +44,10 @@ public interface CommandSource {
 		return Collections.singleton(CommandSource.RelativePosition.ZERO_WORLD);
 	}
 
+	Set<RegistryKey<World>> getWorldKeys();
+
+	DynamicRegistryManager getRegistryManager();
+
 	boolean hasPermissionLevel(int level);
 
 	static <T> void forEachMatching(Iterable<T> candidates, String string, Function<T, Identifier> identifier, Consumer<T> action) {
@@ -49,10 +57,12 @@ public interface CommandSource {
 			Identifier identifier2 = (Identifier)identifier.apply(object);
 			if (bl) {
 				String string2 = identifier2.toString();
-				if (string2.startsWith(string)) {
+				if (method_27136(string, string2)) {
 					action.accept(object);
 				}
-			} else if (identifier2.getNamespace().startsWith(string) || identifier2.getNamespace().equals("minecraft") && identifier2.getPath().startsWith(string)) {
+			} else if (method_27136(string, identifier2.getNamespace()) || identifier2.getNamespace().equals("minecraft") && method_27136(string, identifier2.getPath())
+				)
+			 {
 				action.accept(object);
 			}
 		}
@@ -70,9 +80,9 @@ public interface CommandSource {
 		}
 	}
 
-	static CompletableFuture<Suggestions> suggestIdentifiers(Iterable<Identifier> candiates, SuggestionsBuilder builder, String string) {
+	static CompletableFuture<Suggestions> suggestIdentifiers(Iterable<Identifier> candidates, SuggestionsBuilder builder, String string) {
 		String string2 = builder.getRemaining().toLowerCase(Locale.ROOT);
-		forEachMatching(candiates, string2, string, identifier -> identifier, identifier -> builder.suggest(string + identifier));
+		forEachMatching(candidates, string2, string, identifier -> identifier, identifier -> builder.suggest(string + identifier));
 		return builder.buildFuture();
 	}
 
@@ -90,8 +100,8 @@ public interface CommandSource {
 		return builder.buildFuture();
 	}
 
-	static CompletableFuture<Suggestions> suggestIdentifiers(Stream<Identifier> stream, SuggestionsBuilder suggestionsBuilder) {
-		return suggestIdentifiers(stream::iterator, suggestionsBuilder);
+	static CompletableFuture<Suggestions> suggestIdentifiers(Stream<Identifier> stream, SuggestionsBuilder builder) {
+		return suggestIdentifiers(stream::iterator, builder);
 	}
 
 	static <T> CompletableFuture<Suggestions> suggestFromIdentifier(
@@ -101,7 +111,7 @@ public interface CommandSource {
 	}
 
 	static CompletableFuture<Suggestions> suggestPositions(
-		String string, Collection<CommandSource.RelativePosition> candidates, SuggestionsBuilder suggestionsBuilder, Predicate<String> predicate
+		String string, Collection<CommandSource.RelativePosition> candidates, SuggestionsBuilder builder, Predicate<String> predicate
 	) {
 		List<String> list = Lists.<String>newArrayList();
 		if (Strings.isNullOrEmpty(string)) {
@@ -133,7 +143,7 @@ public interface CommandSource {
 			}
 		}
 
-		return suggestMatching(list, suggestionsBuilder);
+		return suggestMatching(list, builder);
 	}
 
 	static CompletableFuture<Suggestions> suggestColumnPositions(
@@ -167,7 +177,7 @@ public interface CommandSource {
 		String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
 
 		for (String string2 : iterable) {
-			if (string2.toLowerCase(Locale.ROOT).startsWith(string)) {
+			if (method_27136(string, string2.toLowerCase(Locale.ROOT))) {
 				suggestionsBuilder.suggest(string2);
 			}
 		}
@@ -177,7 +187,7 @@ public interface CommandSource {
 
 	static CompletableFuture<Suggestions> suggestMatching(Stream<String> stream, SuggestionsBuilder suggestionsBuilder) {
 		String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
-		stream.filter(string2 -> string2.toLowerCase(Locale.ROOT).startsWith(string)).forEach(suggestionsBuilder::suggest);
+		stream.filter(string2 -> method_27136(string, string2.toLowerCase(Locale.ROOT))).forEach(suggestionsBuilder::suggest);
 		return suggestionsBuilder.buildFuture();
 	}
 
@@ -185,12 +195,23 @@ public interface CommandSource {
 		String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
 
 		for (String string2 : strings) {
-			if (string2.toLowerCase(Locale.ROOT).startsWith(string)) {
+			if (method_27136(string, string2.toLowerCase(Locale.ROOT))) {
 				suggestionsBuilder.suggest(string2);
 			}
 		}
 
 		return suggestionsBuilder.buildFuture();
+	}
+
+	static boolean method_27136(String string, String string2) {
+		for (int i = 0; !string2.startsWith(string, i); i++) {
+			i = string2.indexOf(95, i);
+			if (i < 0) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public static class RelativePosition {

@@ -6,12 +6,12 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class ModelPart {
@@ -31,18 +31,27 @@ public class ModelPart {
 	private final ObjectList<ModelPart> children = new ObjectArrayList<>();
 
 	public ModelPart(Model model) {
-		model.accept(this);
+		model.method_22696(this);
 		this.setTextureSize(model.textureWidth, model.textureHeight);
 	}
 
 	public ModelPart(Model model, int textureOffsetU, int textureOffsetV) {
 		this(model.textureWidth, model.textureHeight, textureOffsetU, textureOffsetV);
-		model.accept(this);
+		model.method_22696(this);
 	}
 
 	public ModelPart(int textureWidth, int textureHeight, int textureOffsetU, int textureOffsetV) {
 		this.setTextureSize(textureWidth, textureHeight);
 		this.setTextureOffset(textureOffsetU, textureOffsetV);
+	}
+
+	private ModelPart() {
+	}
+
+	public ModelPart method_29991() {
+		ModelPart modelPart = new ModelPart();
+		modelPart.copyPositionAndRotation(this);
+		return modelPart;
 	}
 
 	public void copyPositionAndRotation(ModelPart modelPart) {
@@ -104,19 +113,19 @@ public class ModelPart {
 		this.pivotZ = z;
 	}
 
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
-		this.render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
+		this.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
 		if (this.visible) {
 			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
 				matrices.push();
 				this.rotate(matrices);
-				this.renderCuboids(matrices.peek(), vertexConsumer, light, overlay, red, green, blue, alpha);
+				this.renderCuboids(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
 
 				for (ModelPart modelPart : this.children) {
-					modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+					modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 				}
 
 				matrices.pop();
@@ -240,20 +249,22 @@ public class ModelPart {
 			float q = (float)v + sizeZ;
 			float r = (float)v + sizeZ + sizeY;
 			this.sides[2] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex6, vertex5, vertex, vertex2}, k, p, l, q, textureWidth, textureHeight, mirror, Direction.DOWN
+				new ModelPart.Vertex[]{vertex6, vertex5, vertex, vertex2}, k, p, l, q, textureWidth, textureHeight, mirror, Direction.field_11033
 			);
-			this.sides[3] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, l, q, m, p, textureWidth, textureHeight, mirror, Direction.UP);
+			this.sides[3] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, l, q, m, p, textureWidth, textureHeight, mirror, Direction.field_11036
+			);
 			this.sides[1] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex, vertex5, vertex8, vertex4}, j, q, k, r, textureWidth, textureHeight, mirror, Direction.WEST
+				new ModelPart.Vertex[]{vertex, vertex5, vertex8, vertex4}, j, q, k, r, textureWidth, textureHeight, mirror, Direction.field_11039
 			);
 			this.sides[4] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex2, vertex, vertex4, vertex3}, k, q, l, r, textureWidth, textureHeight, mirror, Direction.NORTH
+				new ModelPart.Vertex[]{vertex2, vertex, vertex4, vertex3}, k, q, l, r, textureWidth, textureHeight, mirror, Direction.field_11043
 			);
 			this.sides[0] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex6, vertex2, vertex3, vertex7}, l, q, n, r, textureWidth, textureHeight, mirror, Direction.EAST
+				new ModelPart.Vertex[]{vertex6, vertex2, vertex3, vertex7}, l, q, n, r, textureWidth, textureHeight, mirror, Direction.field_11034
 			);
 			this.sides[5] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, n, q, o, r, textureWidth, textureHeight, mirror, Direction.SOUTH
+				new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, n, q, o, r, textureWidth, textureHeight, mirror, Direction.field_11035
 			);
 		}
 	}
@@ -302,8 +313,8 @@ public class ModelPart {
 			return new ModelPart.Vertex(this.pos, u, v);
 		}
 
-		public Vertex(Vector3f vector3f, float u, float v) {
-			this.pos = vector3f;
+		public Vertex(Vector3f pos, float u, float v) {
+			this.pos = pos;
 			this.u = u;
 			this.v = v;
 		}

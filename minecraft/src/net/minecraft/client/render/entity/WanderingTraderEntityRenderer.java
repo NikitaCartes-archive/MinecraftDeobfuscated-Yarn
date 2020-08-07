@@ -19,11 +19,11 @@ public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTr
 		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 
-	public Identifier getTexture(WanderingTraderEntity wanderingTraderEntity) {
+	public Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {
 		return TEXTURE;
 	}
 
-	protected void scale(WanderingTraderEntity wanderingTraderEntity, MatrixStack matrixStack, float f) {
+	protected void method_18046(WanderingTraderEntity wanderingTraderEntity, MatrixStack matrixStack, float f) {
 		float g = 0.9375F;
 		matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
 	}

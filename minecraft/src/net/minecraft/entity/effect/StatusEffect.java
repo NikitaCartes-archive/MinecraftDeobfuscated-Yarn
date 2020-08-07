@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
+import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -41,36 +41,36 @@ public class StatusEffect {
 		this.color = color;
 	}
 
-	public void applyUpdateEffect(LivingEntity entity, int i) {
-		if (this == StatusEffects.REGENERATION) {
-			if (entity.getHealth() < entity.getMaximumHealth()) {
+	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+		if (this == StatusEffects.field_5924) {
+			if (entity.getHealth() < entity.getMaxHealth()) {
 				entity.heal(1.0F);
 			}
-		} else if (this == StatusEffects.POISON) {
+		} else if (this == StatusEffects.field_5899) {
 			if (entity.getHealth() > 1.0F) {
 				entity.damage(DamageSource.MAGIC, 1.0F);
 			}
-		} else if (this == StatusEffects.WITHER) {
+		} else if (this == StatusEffects.field_5920) {
 			entity.damage(DamageSource.WITHER, 1.0F);
-		} else if (this == StatusEffects.HUNGER && entity instanceof PlayerEntity) {
-			((PlayerEntity)entity).addExhaustion(0.005F * (float)(i * i * 5 + 1));
-		} else if (this == StatusEffects.SATURATION && entity instanceof PlayerEntity) {
+		} else if (this == StatusEffects.field_5903 && entity instanceof PlayerEntity) {
+			((PlayerEntity)entity).addExhaustion(0.005F * (float)(amplifier * amplifier * 5 + 1));
+		} else if (this == StatusEffects.field_5922 && entity instanceof PlayerEntity) {
 			if (!entity.world.isClient) {
-				((PlayerEntity)entity).getHungerManager().add(i + 1, 1.0F);
+				((PlayerEntity)entity).getHungerManager().add(amplifier + 1, 1.0F);
 			}
-		} else if ((this != StatusEffects.INSTANT_HEALTH || entity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !entity.isUndead())) {
-			if (this == StatusEffects.INSTANT_DAMAGE && !entity.isUndead() || this == StatusEffects.INSTANT_HEALTH && entity.isUndead()) {
-				entity.damage(DamageSource.MAGIC, (float)(6 << i));
+		} else if ((this != StatusEffects.field_5915 || entity.isUndead()) && (this != StatusEffects.field_5921 || !entity.isUndead())) {
+			if (this == StatusEffects.field_5921 && !entity.isUndead() || this == StatusEffects.field_5915 && entity.isUndead()) {
+				entity.damage(DamageSource.MAGIC, (float)(6 << amplifier));
 			}
 		} else {
-			entity.heal((float)Math.max(4 << i, 0));
+			entity.heal((float)Math.max(4 << amplifier, 0));
 		}
 	}
 
-	public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double d) {
-		if ((this != StatusEffects.INSTANT_HEALTH || target.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !target.isUndead())) {
-			if (this == StatusEffects.INSTANT_DAMAGE && !target.isUndead() || this == StatusEffects.INSTANT_HEALTH && target.isUndead()) {
-				int i = (int)(d * (double)(6 << amplifier) + 0.5);
+	public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
+		if ((this != StatusEffects.field_5915 || target.isUndead()) && (this != StatusEffects.field_5921 || !target.isUndead())) {
+			if (this == StatusEffects.field_5921 && !target.isUndead() || this == StatusEffects.field_5915 && target.isUndead()) {
+				int i = (int)(proximity * (double)(6 << amplifier) + 0.5);
 				if (source == null) {
 					target.damage(DamageSource.MAGIC, (float)i);
 				} else {
@@ -80,23 +80,23 @@ public class StatusEffect {
 				this.applyUpdateEffect(target, amplifier);
 			}
 		} else {
-			int i = (int)(d * (double)(4 << amplifier) + 0.5);
+			int i = (int)(proximity * (double)(4 << amplifier) + 0.5);
 			target.heal((float)i);
 		}
 	}
 
-	public boolean canApplyUpdateEffect(int duration, int i) {
-		if (this == StatusEffects.REGENERATION) {
-			int j = 50 >> i;
-			return j > 0 ? duration % j == 0 : true;
-		} else if (this == StatusEffects.POISON) {
-			int j = 25 >> i;
-			return j > 0 ? duration % j == 0 : true;
-		} else if (this == StatusEffects.WITHER) {
-			int j = 40 >> i;
-			return j > 0 ? duration % j == 0 : true;
+	public boolean canApplyUpdateEffect(int duration, int amplifier) {
+		if (this == StatusEffects.field_5924) {
+			int i = 50 >> amplifier;
+			return i > 0 ? duration % i == 0 : true;
+		} else if (this == StatusEffects.field_5899) {
+			int i = 25 >> amplifier;
+			return i > 0 ? duration % i == 0 : true;
+		} else if (this == StatusEffects.field_5920) {
+			int i = 40 >> amplifier;
+			return i > 0 ? duration % i == 0 : true;
 		} else {
-			return this == StatusEffects.HUNGER;
+			return this == StatusEffects.field_5903;
 		}
 	}
 
@@ -140,22 +140,22 @@ public class StatusEffect {
 		return this.attributeModifiers;
 	}
 
-	public void onRemoved(LivingEntity entity, AbstractEntityAttributeContainer attributes, int amplifier) {
+	public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
 		for (Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
-			EntityAttributeInstance entityAttributeInstance = attributes.get((EntityAttribute)entry.getKey());
+			EntityAttributeInstance entityAttributeInstance = attributes.getCustomInstance((EntityAttribute)entry.getKey());
 			if (entityAttributeInstance != null) {
 				entityAttributeInstance.removeModifier((EntityAttributeModifier)entry.getValue());
 			}
 		}
 	}
 
-	public void onApplied(LivingEntity entity, AbstractEntityAttributeContainer attributes, int amplifier) {
+	public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
 		for (Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
-			EntityAttributeInstance entityAttributeInstance = attributes.get((EntityAttribute)entry.getKey());
+			EntityAttributeInstance entityAttributeInstance = attributes.getCustomInstance((EntityAttribute)entry.getKey());
 			if (entityAttributeInstance != null) {
 				EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
 				entityAttributeInstance.removeModifier(entityAttributeModifier);
-				entityAttributeInstance.addModifier(
+				entityAttributeInstance.addPersistentModifier(
 					new EntityAttributeModifier(
 						entityAttributeModifier.getId(),
 						this.getTranslationKey() + " " + amplifier,
@@ -168,11 +168,11 @@ public class StatusEffect {
 	}
 
 	public double adjustModifierAmount(int amplifier, EntityAttributeModifier modifier) {
-		return modifier.getAmount() * (double)(amplifier + 1);
+		return modifier.getValue() * (double)(amplifier + 1);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean isBeneficial() {
-		return this.type == StatusEffectType.BENEFICIAL;
+		return this.type == StatusEffectType.field_18271;
 	}
 }

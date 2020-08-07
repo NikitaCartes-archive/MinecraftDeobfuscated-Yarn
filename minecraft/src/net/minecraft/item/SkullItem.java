@@ -10,8 +10,8 @@ import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.StringUtils;
 
 public class SkullItem extends WallStandingBlockItem {
-	public SkullItem(Block standingBlock, Block wallBlock, Item.Settings settings) {
-		super(standingBlock, wallBlock, settings);
+	public SkullItem(Block block, Block block2, Item.Settings settings) {
+		super(block, block2, settings);
 	}
 
 	@Override

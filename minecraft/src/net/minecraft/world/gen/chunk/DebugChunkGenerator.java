@@ -1,49 +1,73 @@
 package net.minecraft.world.gen.chunk;
 
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.class_5505;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.StructureAccessor;
 
-public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfig> {
+public class DebugChunkGenerator extends ChunkGenerator {
+	public static final Codec<DebugChunkGenerator> field_24768 = class_5505.method_31148(Registry.BIOME_KEY)
+		.<DebugChunkGenerator>xmap(DebugChunkGenerator::new, DebugChunkGenerator::method_31169)
+		.stable()
+		.codec();
 	private static final List<BlockState> BLOCK_STATES = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
 		.flatMap(block -> block.getStateManager().getStates().stream())
 		.collect(Collectors.toList());
 	private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt((float)BLOCK_STATES.size()));
 	private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
-	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
-	protected static final BlockState BARRIER = Blocks.BARRIER.getDefaultState();
+	protected static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	protected static final BlockState BARRIER = Blocks.field_10499.getDefaultState();
+	private final Registry<Biome> field_26747;
 
-	public DebugChunkGenerator(IWorld world, BiomeSource biomeSource, DebugChunkGeneratorConfig config) {
-		super(world, biomeSource, config);
+	public DebugChunkGenerator(Registry<Biome> registry) {
+		super(new FixedBiomeSource(registry.method_31140(Biomes.field_9451)), new StructuresConfig(false));
+		this.field_26747 = registry;
+	}
+
+	public Registry<Biome> method_31169() {
+		return this.field_26747;
 	}
 
 	@Override
-	public void buildSurface(ChunkRegion chunkRegion, Chunk chunk) {
+	protected Codec<? extends ChunkGenerator> getCodec() {
+		return field_24768;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public ChunkGenerator withSeed(long seed) {
+		return this;
 	}
 
 	@Override
-	public void carve(BiomeAccess biomeAccess, Chunk chunk, GenerationStep.Carver carver) {
+	public void buildSurface(ChunkRegion region, Chunk chunk) {
 	}
 
 	@Override
-	public int getSpawnHeight() {
-		return this.world.getSeaLevel() + 1;
+	public void carve(long seed, BiomeAccess access, Chunk chunk, GenerationStep.Carver carver) {
 	}
 
 	@Override
-	public void generateFeatures(ChunkRegion region) {
+	public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int i = region.getCenterChunkX();
 		int j = region.getCenterChunkZ();
@@ -62,12 +86,17 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 	}
 
 	@Override
-	public void populateNoise(IWorld world, Chunk chunk) {
+	public void populateNoise(WorldAccess world, StructureAccessor accessor, Chunk chunk) {
 	}
 
 	@Override
-	public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
+	public int getHeight(int x, int z, Heightmap.Type heightmapType) {
 		return 0;
+	}
+
+	@Override
+	public BlockView getColumnSample(int x, int z) {
+		return new VerticalBlockSample(new BlockState[0]);
 	}
 
 	public static BlockState getBlockState(int x, int z) {

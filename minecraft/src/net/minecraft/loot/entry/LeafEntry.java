@@ -14,21 +14,20 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
-import net.minecraft.loot.function.LootFunctions;
-import net.minecraft.util.Identifier;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
 
-public abstract class LeafEntry extends LootEntry {
+public abstract class LeafEntry extends LootPoolEntry {
 	protected final int weight;
 	protected final int quality;
 	protected final LootFunction[] functions;
 	private final BiFunction<ItemStack, LootContext, ItemStack> compiledFunctions;
 	private final LootChoice choice = new LeafEntry.Choice() {
 		@Override
-		public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-			LeafEntry.this.drop(LootFunction.apply(LeafEntry.this.compiledFunctions, itemDropper, context), context);
+		public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+			LeafEntry.this.generateLoot(LootFunction.apply(LeafEntry.this.compiledFunctions, lootConsumer, context), context);
 		}
 	};
 
@@ -37,19 +36,19 @@ public abstract class LeafEntry extends LootEntry {
 		this.weight = weight;
 		this.quality = quality;
 		this.functions = functions;
-		this.compiledFunctions = LootFunctions.join(functions);
+		this.compiledFunctions = LootFunctionTypes.join(functions);
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter) {
-		super.check(lootTableReporter);
+	public void validate(LootTableReporter reporter) {
+		super.validate(reporter);
 
 		for (int i = 0; i < this.functions.length; i++) {
-			this.functions[i].check(lootTableReporter.makeChild(".functions[" + i + "]"));
+			this.functions[i].validate(reporter.makeChild(".functions[" + i + "]"));
 		}
 	}
 
-	protected abstract void drop(Consumer<ItemStack> itemDropper, LootContext context);
+	protected abstract void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context);
 
 	@Override
 	public boolean expand(LootContext lootContext, Consumer<LootChoice> consumer) {
@@ -72,22 +71,22 @@ public abstract class LeafEntry extends LootEntry {
 			this.factory = factory;
 		}
 
-		protected LeafEntry.BasicBuilder getThisBuilder() {
+		protected LeafEntry.BasicBuilder method_440() {
 			return this;
 		}
 
 		@Override
-		public LootEntry build() {
+		public LootPoolEntry build() {
 			return this.factory.build(this.weight, this.quality, this.getConditions(), this.getFunctions());
 		}
 	}
 
-	public abstract static class Builder<T extends LeafEntry.Builder<T>> extends LootEntry.Builder<T> implements LootFunctionConsumingBuilder<T> {
+	public abstract static class Builder<T extends LeafEntry.Builder<T>> extends LootPoolEntry.Builder<T> implements LootFunctionConsumingBuilder<T> {
 		protected int weight = 1;
 		protected int quality = 0;
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
 
-		public T withFunction(LootFunction.Builder builder) {
+		public T method_438(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this.getThisBuilder();
 		}
@@ -96,12 +95,12 @@ public abstract class LeafEntry extends LootEntry {
 			return (LootFunction[])this.functions.toArray(new LootFunction[0]);
 		}
 
-		public T setWeight(int weight) {
+		public T weight(int weight) {
 			this.weight = weight;
 			return this.getThisBuilder();
 		}
 
-		public T setQuality(int quality) {
+		public T quality(int quality) {
 			this.quality = quality;
 			return this.getThisBuilder();
 		}
@@ -122,12 +121,8 @@ public abstract class LeafEntry extends LootEntry {
 		LeafEntry build(int weight, int quality, LootCondition[] conditions, LootFunction[] functions);
 	}
 
-	public abstract static class Serializer<T extends LeafEntry> extends LootEntry.Serializer<T> {
-		public Serializer(Identifier identifier, Class<T> class_) {
-			super(identifier, class_);
-		}
-
-		public void toJson(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
+	public abstract static class Serializer<T extends LeafEntry> extends LootPoolEntry.Serializer<T> {
+		public void method_442(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
 			if (leafEntry.weight != 1) {
 				jsonObject.addProperty("weight", leafEntry.weight);
 			}
@@ -141,7 +136,7 @@ public abstract class LeafEntry extends LootEntry {
 			}
 		}
 
-		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public final T method_441(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			int i = JsonHelper.getInt(jsonObject, "weight", 1);
 			int j = JsonHelper.getInt(jsonObject, "quality", 0);
 			LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);

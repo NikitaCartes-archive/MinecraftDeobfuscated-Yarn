@@ -5,7 +5,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 
 public class GlazedTerracottaBlock extends HorizontalFacingBlock {
-	public GlazedTerracottaBlock(Block.Settings settings) {
+	public GlazedTerracottaBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -21,6 +21,6 @@ public class GlazedTerracottaBlock extends HorizontalFacingBlock {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.PUSH_ONLY;
+		return PistonBehavior.field_15970;
 	}
 }

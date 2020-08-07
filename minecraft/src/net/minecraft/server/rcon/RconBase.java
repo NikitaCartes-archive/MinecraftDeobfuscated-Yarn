@@ -1,40 +1,34 @@
 package net.minecraft.server.rcon;
 
-import com.google.common.collect.Lists;
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.util.UncaughtExceptionHandler;
+import javax.annotation.Nullable;
+import net.minecraft.util.logging.UncaughtExceptionHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class RconBase implements Runnable {
-	private static final Logger field_14430 = LogManager.getLogger();
-	private static final AtomicInteger field_14428 = new AtomicInteger(0);
-	protected boolean running;
-	protected final DedicatedServer server;
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final AtomicInteger THREAD_COUNTER = new AtomicInteger(0);
+	protected volatile boolean running;
 	protected final String description;
+	@Nullable
 	protected Thread thread;
-	protected final int field_14427 = 5;
-	protected final List<DatagramSocket> sockets = Lists.<DatagramSocket>newArrayList();
-	protected final List<ServerSocket> serverSockets = Lists.<ServerSocket>newArrayList();
 
-	protected RconBase(DedicatedServer dedicatedServer, String string) {
-		this.server = dedicatedServer;
-		this.description = string;
-		if (this.server.isDebuggingEnabled()) {
-			this.warn("Debugging is enabled, performance maybe reduced!");
-		}
+	protected RconBase(String description) {
+		this.description = description;
 	}
 
-	public synchronized void start() {
-		this.thread = new Thread(this, this.description + " #" + field_14428.incrementAndGet());
-		this.thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(field_14430));
-		this.thread.start();
-		this.running = true;
+	public synchronized boolean start() {
+		if (this.running) {
+			return true;
+		} else {
+			this.running = true;
+			this.thread = new Thread(this, this.description + " #" + THREAD_COUNTER.incrementAndGet());
+			this.thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOGGER));
+			this.thread.start();
+			LOGGER.info("Thread {} started", this.description);
+			return true;
+		}
 	}
 
 	public synchronized void stop() {
@@ -45,128 +39,22 @@ public abstract class RconBase implements Runnable {
 			while (this.thread.isAlive()) {
 				try {
 					this.thread.join(1000L);
-					if (5 <= ++i) {
-						this.warn("Waited " + i + " seconds attempting force stop!");
-						this.forceClose(true);
+					if (++i >= 5) {
+						LOGGER.warn("Waited {} seconds attempting force stop!", i);
 					} else if (this.thread.isAlive()) {
-						this.warn("Thread " + this + " (" + this.thread.getState() + ") failed to exit after " + i + " second(s)");
-						this.warn("Stack:");
-
-						for (StackTraceElement stackTraceElement : this.thread.getStackTrace()) {
-							this.warn(stackTraceElement.toString());
-						}
-
+						LOGGER.warn("Thread {} ({}) failed to exit after {} second(s)", this, this.thread.getState(), i, new Exception("Stack:"));
 						this.thread.interrupt();
 					}
-				} catch (InterruptedException var6) {
+				} catch (InterruptedException var3) {
 				}
 			}
 
-			this.forceClose(true);
+			LOGGER.info("Thread {} stopped", this.description);
 			this.thread = null;
 		}
 	}
 
 	public boolean isRunning() {
 		return this.running;
-	}
-
-	protected void log(String string) {
-		this.server.log(string);
-	}
-
-	protected void info(String string) {
-		this.server.info(string);
-	}
-
-	protected void warn(String string) {
-		this.server.warn(string);
-	}
-
-	protected void logError(String string) {
-		this.server.logError(string);
-	}
-
-	protected int getCurrentPlayerCount() {
-		return this.server.getCurrentPlayerCount();
-	}
-
-	protected void registerSocket(DatagramSocket datagramSocket) {
-		this.log("registerSocket: " + datagramSocket);
-		this.sockets.add(datagramSocket);
-	}
-
-	protected boolean closeSocket(DatagramSocket socket, boolean bl) {
-		this.log("closeSocket: " + socket);
-		if (null == socket) {
-			return false;
-		} else {
-			boolean bl2 = false;
-			if (!socket.isClosed()) {
-				socket.close();
-				bl2 = true;
-			}
-
-			if (bl) {
-				this.sockets.remove(socket);
-			}
-
-			return bl2;
-		}
-	}
-
-	protected boolean closeSocket(ServerSocket serverSocket) {
-		return this.closeSocket(serverSocket, true);
-	}
-
-	protected boolean closeSocket(ServerSocket socket, boolean bl) {
-		this.log("closeSocket: " + socket);
-		if (null == socket) {
-			return false;
-		} else {
-			boolean bl2 = false;
-
-			try {
-				if (!socket.isClosed()) {
-					socket.close();
-					bl2 = true;
-				}
-			} catch (IOException var5) {
-				this.warn("IO: " + var5.getMessage());
-			}
-
-			if (bl) {
-				this.serverSockets.remove(socket);
-			}
-
-			return bl2;
-		}
-	}
-
-	protected void forceClose() {
-		this.forceClose(false);
-	}
-
-	protected void forceClose(boolean bl) {
-		int i = 0;
-
-		for (DatagramSocket datagramSocket : this.sockets) {
-			if (this.closeSocket(datagramSocket, false)) {
-				i++;
-			}
-		}
-
-		this.sockets.clear();
-
-		for (ServerSocket serverSocket : this.serverSockets) {
-			if (this.closeSocket(serverSocket, false)) {
-				i++;
-			}
-		}
-
-		this.serverSockets.clear();
-		if (bl && 0 < i) {
-			this.warn("Force closed " + i + " sockets");
-		}
 	}
 }

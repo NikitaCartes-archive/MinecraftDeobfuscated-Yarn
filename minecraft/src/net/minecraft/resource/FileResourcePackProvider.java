@@ -2,7 +2,7 @@ package net.minecraft.resource;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class FileResourcePackProvider implements ResourcePackProvider {
@@ -12,13 +12,15 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 		return bl || bl2;
 	};
 	private final File packsFolder;
+	private final ResourcePackSource field_25345;
 
-	public FileResourcePackProvider(File packsFolder) {
+	public FileResourcePackProvider(File packsFolder, ResourcePackSource resourcePackSource) {
 		this.packsFolder = packsFolder;
+		this.field_25345 = resourcePackSource;
 	}
 
 	@Override
-	public <T extends ResourcePackProfile> void register(Map<String, T> registry, ResourcePackProfile.Factory<T> factory) {
+	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
 		if (!this.packsFolder.isDirectory()) {
 			this.packsFolder.mkdirs();
 		}
@@ -27,9 +29,11 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 		if (files != null) {
 			for (File file : files) {
 				String string = "file/" + file.getName();
-				T resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP);
+				ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
+					string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.field_14280, this.field_25345
+				);
 				if (resourcePackProfile != null) {
-					registry.put(string, resourcePackProfile);
+					consumer.accept(resourcePackProfile);
 				}
 			}
 		}

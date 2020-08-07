@@ -22,7 +22,7 @@ public class FoliageColormapResourceSupplier extends SinglePreparationResourceRe
 		}
 	}
 
-	protected void apply(int[] is, ResourceManager resourceManager, Profiler profiler) {
+	protected void method_18659(int[] is, ResourceManager resourceManager, Profiler profiler) {
 		FoliageColors.setColorMap(is);
 	}
 }

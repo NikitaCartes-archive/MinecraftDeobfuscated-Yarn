@@ -17,10 +17,10 @@ public class OverlayTexture implements AutoCloseable {
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < 16; j++) {
 				if (i < 8) {
-					nativeImage.setPixelRgba(j, i, -1308622593);
+					nativeImage.setPixelColor(j, i, -1308622593);
 				} else {
 					int k = (int)((1.0F - (float)j / 15.0F * 0.75F) * 255.0F);
-					nativeImage.setPixelRgba(j, i, k << 24 | 16777215);
+					nativeImage.setPixelColor(j, i, k << 24 | 16777215);
 				}
 			}
 		}

@@ -1,5 +1,8 @@
 package net.minecraft.entity;
 
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+
 public class EntityDimensions {
 	public final float width;
 	public final float height;
@@ -9,6 +12,16 @@ public class EntityDimensions {
 		this.width = width;
 		this.height = height;
 		this.fixed = fixed;
+	}
+
+	public Box method_30757(Vec3d vec3d) {
+		return this.method_30231(vec3d.x, vec3d.y, vec3d.z);
+	}
+
+	public Box method_30231(double d, double e, double f) {
+		float g = this.width / 2.0F;
+		float h = this.height;
+		return new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g);
 	}
 
 	public EntityDimensions scaled(float ratio) {

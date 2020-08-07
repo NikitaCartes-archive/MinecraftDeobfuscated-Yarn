@@ -1,10 +1,10 @@
 package net.minecraft.item;
 
-import java.util.List;
 import java.util.Random;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -13,6 +13,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ArmorStandItem extends Item {
@@ -23,39 +24,36 @@ public class ArmorStandItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		Direction direction = context.getSide();
-		if (direction == Direction.DOWN) {
+		if (direction == Direction.field_11033) {
 			return ActionResult.FAIL;
 		} else {
 			World world = context.getWorld();
 			ItemPlacementContext itemPlacementContext = new ItemPlacementContext(context);
 			BlockPos blockPos = itemPlacementContext.getBlockPos();
-			BlockPos blockPos2 = blockPos.up();
-			if (itemPlacementContext.canPlace() && world.getBlockState(blockPos2).canReplace(itemPlacementContext)) {
-				double d = (double)blockPos.getX();
-				double e = (double)blockPos.getY();
-				double f = (double)blockPos.getZ();
-				List<Entity> list = world.getEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
-				if (!list.isEmpty()) {
-					return ActionResult.FAIL;
-				} else {
-					ItemStack itemStack = context.getStack();
-					if (!world.isClient) {
-						world.removeBlock(blockPos, false);
-						world.removeBlock(blockPos2, false);
-						ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, d + 0.5, e, f + 0.5);
-						float g = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
-						armorStandEntity.setPositionAndAngles(d + 0.5, e, f + 0.5, g, 0.0F);
-						this.setRotations(armorStandEntity, world.random);
-						EntityType.loadFromEntityTag(world, context.getPlayer(), armorStandEntity, itemStack.getTag());
-						world.spawnEntity(armorStandEntity);
-						world.playSound(
-							null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75F, 0.8F
-						);
+			ItemStack itemStack = context.getStack();
+			Vec3d vec3d = Vec3d.ofBottomCenter(blockPos);
+			Box box = EntityType.field_6131.getDimensions().method_30231(vec3d.getX(), vec3d.getY(), vec3d.getZ());
+			if (world.doesNotCollide(null, box, entity -> true) && world.getOtherEntities(null, box).isEmpty()) {
+				if (world instanceof ServerWorld) {
+					ServerWorld serverWorld = (ServerWorld)world;
+					ArmorStandEntity armorStandEntity = EntityType.field_6131
+						.create(serverWorld, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.field_16465, true, true);
+					if (armorStandEntity == null) {
+						return ActionResult.FAIL;
 					}
 
-					itemStack.decrement(1);
-					return ActionResult.SUCCESS;
+					serverWorld.spawnEntityAndPassengers(armorStandEntity);
+					float f = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
+					armorStandEntity.refreshPositionAndAngles(armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), f, 0.0F);
+					this.setRotations(armorStandEntity, world.random);
+					world.spawnEntity(armorStandEntity);
+					world.playSound(
+						null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.field_14969, SoundCategory.field_15245, 0.75F, 0.8F
+					);
 				}
+
+				itemStack.decrement(1);
+				return ActionResult.success(world.isClient);
 			} else {
 				return ActionResult.FAIL;
 			}

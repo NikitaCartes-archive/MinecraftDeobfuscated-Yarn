@@ -14,12 +14,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>> extends StuckObjectsFeatureRenderer<T, M> {
-	private final EntityRenderDispatcher field_17153;
-	private ArrowEntity field_20528;
+	private final EntityRenderDispatcher dispatcher;
+	private ArrowEntity arrow;
 
 	public StuckArrowsFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
 		super(livingEntityRenderer);
-		this.field_17153 = livingEntityRenderer.getRenderManager();
+		this.dispatcher = livingEntityRenderer.getRenderManager();
 	}
 
 	@Override
@@ -28,13 +28,15 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Player
 	}
 
 	@Override
-	protected void renderObject(MatrixStack matrix, VertexConsumerProvider vertexConsumers, int i, Entity entity, float tickDelta, float f, float g, float h) {
-		float j = MathHelper.sqrt(tickDelta * tickDelta + g * g);
-		this.field_20528 = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
-		this.field_20528.yaw = (float)(Math.atan2((double)tickDelta, (double)g) * 180.0F / (float)Math.PI);
-		this.field_20528.pitch = (float)(Math.atan2((double)f, (double)j) * 180.0F / (float)Math.PI);
-		this.field_20528.prevYaw = this.field_20528.yaw;
-		this.field_20528.prevPitch = this.field_20528.pitch;
-		this.field_17153.render(this.field_20528, 0.0, 0.0, 0.0, 0.0F, h, matrix, vertexConsumers, i);
+	protected void renderObject(
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta
+	) {
+		float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
+		this.arrow = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
+		this.arrow.yaw = (float)(Math.atan2((double)directionX, (double)directionZ) * 180.0F / (float)Math.PI);
+		this.arrow.pitch = (float)(Math.atan2((double)directionY, (double)f) * 180.0F / (float)Math.PI);
+		this.arrow.prevYaw = this.arrow.yaw;
+		this.arrow.prevPitch = this.arrow.pitch;
+		this.dispatcher.render(this.arrow, 0.0, 0.0, 0.0, 0.0F, tickDelta, matrices, vertexConsumers, light);
 	}
 }

@@ -1,52 +1,27 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
-	private final Block ICE = Blocks.PACKED_ICE;
-
-	public IcePatchFeature(Function<Dynamic<?>, ? extends IcePatchFeatureConfig> configFactory) {
-		super(configFactory);
+public class IcePatchFeature extends DiskFeature {
+	public IcePatchFeature(Codec<DiskFeatureConfig> codec) {
+		super(codec);
 	}
 
-	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig
+	@Override
+	public boolean method_13005(
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig
 	) {
-		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
-			blockPos = blockPos.down();
+		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
+			blockPos = blockPos.method_10074();
 		}
 
-		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
-			return false;
-		} else {
-			int i = random.nextInt(icePatchFeatureConfig.radius) + 2;
-			int j = 1;
-
-			for (int k = blockPos.getX() - i; k <= blockPos.getX() + i; k++) {
-				for (int l = blockPos.getZ() - i; l <= blockPos.getZ() + i; l++) {
-					int m = k - blockPos.getX();
-					int n = l - blockPos.getZ();
-					if (m * m + n * n <= i * i) {
-						for (int o = blockPos.getY() - 1; o <= blockPos.getY() + 1; o++) {
-							BlockPos blockPos2 = new BlockPos(k, o, l);
-							Block block = iWorld.getBlockState(blockPos2).getBlock();
-							if (isDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
-								iWorld.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
-							}
-						}
-					}
-				}
-			}
-
-			return true;
-		}
+		return !structureWorldAccess.getBlockState(blockPos).isOf(Blocks.field_10491)
+			? false
+			: super.method_13005(structureWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig);
 	}
 }

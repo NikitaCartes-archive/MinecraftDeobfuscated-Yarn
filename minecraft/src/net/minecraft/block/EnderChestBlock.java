@@ -7,20 +7,22 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
-import net.minecraft.client.network.ClientDummyContainerProvider;
-import net.minecraft.container.GenericContainer;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -31,18 +33,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> implements Waterloggable {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
-	public static final TranslatableText CONTAINER_NAME = new TranslatableText("container.enderchest");
+	private static final Text CONTAINER_NAME = new TranslatableText("container.enderchest");
 
-	protected EnderChestBlock(Block.Settings settings) {
-		super(settings, () -> BlockEntityType.ENDER_CHEST);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
+	protected EnderChestBlock(AbstractBlock.Settings settings) {
+		super(settings, () -> BlockEntityType.field_11901);
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -54,13 +56,13 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.ENTITYBLOCK_ANIMATED;
+		return BlockRenderType.field_11456;
 	}
 
 	@Override
@@ -75,28 +77,29 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {
 			BlockPos blockPos = pos.up();
-			if (world.getBlockState(blockPos).isSimpleFullBlock(world, blockPos)) {
-				return ActionResult.SUCCESS;
+			if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
+				return ActionResult.success(world.isClient);
 			} else if (world.isClient) {
 				return ActionResult.SUCCESS;
 			} else {
 				EnderChestBlockEntity enderChestBlockEntity = (EnderChestBlockEntity)blockEntity;
-				enderChestInventory.setCurrentBlockEntity(enderChestBlockEntity);
-				player.openContainer(
-					new ClientDummyContainerProvider(
-						(i, playerInventory, playerEntity) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
+				enderChestInventory.setActiveBlockEntity(enderChestBlockEntity);
+				player.openHandledScreen(
+					new SimpleNamedScreenHandlerFactory(
+						(i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
 					)
 				);
-				player.incrementStat(Stats.OPEN_ENDERCHEST);
-				return ActionResult.SUCCESS;
+				player.incrementStat(Stats.field_15424);
+				PiglinBrain.onGuardedBlockBroken(player, true);
+				return ActionResult.CONSUME;
 			}
 		} else {
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		}
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new EnderChestBlockEntity();
 	}
 
@@ -112,7 +115,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 			double g = (double)(random.nextFloat() * (float)j);
 			double h = ((double)random.nextFloat() - 0.5) * 0.125;
 			double l = (double)(random.nextFloat() * (float)k);
-			world.addParticle(ParticleTypes.PORTAL, d, e, f, g, h, l);
+			world.addParticle(ParticleTypes.field_11214, d, e, f, g, h, l);
 		}
 	}
 
@@ -137,16 +140,16 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

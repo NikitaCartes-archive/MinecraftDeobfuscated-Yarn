@@ -7,11 +7,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.FlowerFeature;
 
 public class GrassBlock extends SpreadableBlock implements Fertilizable {
-	public GrassBlock(Block.Settings settings) {
+	public GrassBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -28,7 +27,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.up();
-		BlockState blockState = Blocks.GRASS.getDefaultState();
+		BlockState blockState = Blocks.field_10479.getDefaultState();
 
 		label48:
 		for (int i = 0; i < 128; i++) {
@@ -36,26 +35,27 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 
 			for (int j = 0; j < i / 16; j++) {
 				blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
-				if (world.getBlockState(blockPos2.down()).getBlock() != this || world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
+				if (!world.getBlockState(blockPos2.method_10074()).isOf(this) || world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
 					continue label48;
 				}
 			}
 
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			if (blockState2.getBlock() == blockState.getBlock() && random.nextInt(10) == 0) {
+			if (blockState2.isOf(blockState.getBlock()) && random.nextInt(10) == 0) {
 				((Fertilizable)blockState.getBlock()).grow(world, random, blockPos2, blockState2);
 			}
 
 			if (blockState2.isAir()) {
 				BlockState blockState3;
 				if (random.nextInt(8) == 0) {
-					List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).getFlowerFeatures();
+					List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).getGenerationSettings().getFlowerFeatures();
 					if (list.isEmpty()) {
 						continue;
 					}
 
-					ConfiguredFeature<?, ?> configuredFeature = ((DecoratedFeatureConfig)((ConfiguredFeature)list.get(0)).config).feature;
-					blockState3 = ((FlowerFeature)configuredFeature.feature).getFlowerToPlace(random, blockPos2, configuredFeature.config);
+					ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)list.get(0);
+					FlowerFeature flowerFeature = (FlowerFeature)configuredFeature.feature;
+					blockState3 = flowerFeature.getFlowerState(random, blockPos2, configuredFeature.getConfig());
 				} else {
 					blockState3 = blockState;
 				}

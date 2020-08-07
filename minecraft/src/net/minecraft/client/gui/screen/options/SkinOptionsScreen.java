@@ -3,12 +3,14 @@ package net.minecraft.client.gui.screen.options;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
@@ -54,27 +56,18 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 		}
 
 		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent)
-			)
+			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent))
 		);
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private String getPlayerModelPartDisplayString(PlayerModelPart part) {
-		String string;
-		if (this.gameOptions.getEnabledPlayerModelParts().contains(part)) {
-			string = I18n.translate("options.on");
-		} else {
-			string = I18n.translate("options.off");
-		}
-
-		return part.getOptionName().asFormattedString() + ": " + string;
+	private Text getPlayerModelPartDisplayString(PlayerModelPart part) {
+		return ScreenTexts.method_30619(part.getOptionName(), this.gameOptions.getEnabledPlayerModelParts().contains(part));
 	}
 }

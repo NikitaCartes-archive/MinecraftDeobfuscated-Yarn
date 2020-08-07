@@ -1,91 +1,103 @@
 package net.minecraft.client.resource.language;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import org.apache.commons.io.IOUtils;
+import net.minecraft.util.Language;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class TranslationStorage {
-	private static final Gson GSON = new Gson();
+public class TranslationStorage extends Language {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Pattern PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
-	protected final Map<String, String> translations = Maps.<String, String>newHashMap();
+	private final Map<String, String> translations;
+	private final boolean rightToLeft;
 
-	public synchronized void load(ResourceManager container, List<String> list) {
-		this.translations.clear();
+	private TranslationStorage(Map<String, String> translations, boolean rightToLeft) {
+		this.translations = translations;
+		this.rightToLeft = rightToLeft;
+	}
 
-		for (String string : list) {
-			String string2 = String.format("lang/%s.json", string);
+	public static TranslationStorage load(ResourceManager resourceManager, List<LanguageDefinition> definitions) {
+		Map<String, String> map = Maps.<String, String>newHashMap();
+		boolean bl = false;
 
-			for (String string3 : container.getAllNamespaces()) {
+		for (LanguageDefinition languageDefinition : definitions) {
+			bl |= languageDefinition.isRightToLeft();
+			String string = String.format("lang/%s.json", languageDefinition.getCode());
+
+			for (String string2 : resourceManager.getAllNamespaces()) {
 				try {
-					Identifier identifier = new Identifier(string3, string2);
-					this.load(container.getAllResources(identifier));
-				} catch (FileNotFoundException var9) {
-				} catch (Exception var10) {
-					LOGGER.warn("Skipped language file: {}:{} ({})", string3, string2, var10.toString());
+					Identifier identifier = new Identifier(string2, string);
+					load(resourceManager.getAllResources(identifier), map);
+				} catch (FileNotFoundException var10) {
+				} catch (Exception var11) {
+					LOGGER.warn("Skipped language file: {}:{} ({})", string2, string, var11.toString());
 				}
 			}
 		}
+
+		return new TranslationStorage(ImmutableMap.copyOf(map), bl);
 	}
 
-	private void load(List<Resource> list) {
-		for (Resource resource : list) {
-			InputStream inputStream = resource.getInputStream();
-
+	private static void load(List<Resource> resources, Map<String, String> translationMap) {
+		for (Resource resource : resources) {
 			try {
-				this.load(inputStream);
-			} finally {
-				IOUtils.closeQuietly(inputStream);
+				InputStream inputStream = resource.getInputStream();
+				Throwable var5 = null;
+
+				try {
+					Language.load(inputStream, translationMap::put);
+				} catch (Throwable var15) {
+					var5 = var15;
+					throw var15;
+				} finally {
+					if (inputStream != null) {
+						if (var5 != null) {
+							try {
+								inputStream.close();
+							} catch (Throwable var14) {
+								var5.addSuppressed(var14);
+							}
+						} else {
+							inputStream.close();
+						}
+					}
+				}
+			} catch (IOException var17) {
+				LOGGER.warn("Failed to load translations from {}", resource, var17);
 			}
 		}
 	}
 
-	private void load(InputStream inputStream) {
-		JsonElement jsonElement = GSON.fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), JsonElement.class);
-		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "strings");
-
-		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-			String string = PARAM_PATTERN.matcher(JsonHelper.asString((JsonElement)entry.getValue(), (String)entry.getKey())).replaceAll("%$1s");
-			this.translations.put(entry.getKey(), string);
-		}
+	@Override
+	public String get(String key) {
+		return (String)this.translations.getOrDefault(key, key);
 	}
 
-	private String get(String string) {
-		String string2 = (String)this.translations.get(string);
-		return string2 == null ? string : string2;
+	@Override
+	public boolean hasTranslation(String key) {
+		return this.translations.containsKey(key);
 	}
 
-	public String translate(String key, Object[] objects) {
-		String string = this.get(key);
-
-		try {
-			return String.format(string, objects);
-		} catch (IllegalFormatException var5) {
-			return "Format error: " + string;
-		}
+	@Override
+	public boolean isRightToLeft() {
+		return this.rightToLeft;
 	}
 
-	public boolean containsKey(String string) {
-		return this.translations.containsKey(string);
+	@Override
+	public OrderedText reorder(StringVisitable text) {
+		return ReorderingUtil.reorder(text, this.rightToLeft);
 	}
 }

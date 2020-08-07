@@ -20,15 +20,15 @@ public class CachingLayerContext implements LayerSampleContext<CachingLayerSampl
 		this.cacheCapacity = cacheCapacity;
 	}
 
-	public CachingLayerSampler createSampler(LayerOperator layerOperator) {
+	public CachingLayerSampler method_15837(LayerOperator layerOperator) {
 		return new CachingLayerSampler(this.cache, this.cacheCapacity, layerOperator);
 	}
 
-	public CachingLayerSampler createSampler(LayerOperator layerOperator, CachingLayerSampler cachingLayerSampler) {
+	public CachingLayerSampler method_15838(LayerOperator layerOperator, CachingLayerSampler cachingLayerSampler) {
 		return new CachingLayerSampler(this.cache, Math.min(1024, cachingLayerSampler.getCapacity() * 4), layerOperator);
 	}
 
-	public CachingLayerSampler createSampler(LayerOperator layerOperator, CachingLayerSampler cachingLayerSampler, CachingLayerSampler cachingLayerSampler2) {
+	public CachingLayerSampler method_15836(LayerOperator layerOperator, CachingLayerSampler cachingLayerSampler, CachingLayerSampler cachingLayerSampler2) {
 		return new CachingLayerSampler(this.cache, Math.min(1024, Math.max(cachingLayerSampler.getCapacity(), cachingLayerSampler2.getCapacity()) * 4), layerOperator);
 	}
 

@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class Schema701 extends Schema {
-	public Schema701(int i, Schema schema) {
-		super(i, schema);
+	public Schema701(int versionKey, Schema parent) {
+		super(versionKey, parent);
 	}
 
 	protected static void method_5294(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.method_5196(schema)));
+		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	@Override

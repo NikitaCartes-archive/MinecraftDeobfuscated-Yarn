@@ -1,96 +1,95 @@
 package net.minecraft.util;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.ProfileLookupCallback;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
-import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class UserCache {
-	public static final SimpleDateFormat EXPIRATION_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+	private static final Logger field_25805 = LogManager.getLogger();
 	private static boolean useRemote;
-	private final Map<String, UserCache.Entry> byName = Maps.<String, UserCache.Entry>newHashMap();
-	private final Map<UUID, UserCache.Entry> byUuid = Maps.<UUID, UserCache.Entry>newHashMap();
-	private final Deque<GameProfile> byAccessTime = Lists.<GameProfile>newLinkedList();
+	private final Map<String, UserCache.Entry> byName = Maps.<String, UserCache.Entry>newConcurrentMap();
+	private final Map<UUID, UserCache.Entry> byUuid = Maps.<UUID, UserCache.Entry>newConcurrentMap();
 	private final GameProfileRepository profileRepository;
-	protected final Gson gson;
+	private final Gson gson = new GsonBuilder().create();
 	private final File cacheFile;
-	private static final ParameterizedType ENTRY_LIST_TYPE = new ParameterizedType() {
-		public Type[] getActualTypeArguments() {
-			return new Type[]{UserCache.Entry.class};
-		}
+	private final AtomicLong field_25724 = new AtomicLong();
 
-		public Type getRawType() {
-			return List.class;
-		}
-
-		public Type getOwnerType() {
-			return null;
-		}
-	};
-
-	public UserCache(GameProfileRepository profileRepository, File file) {
+	public UserCache(GameProfileRepository profileRepository, File cacheFile) {
 		this.profileRepository = profileRepository;
-		this.cacheFile = file;
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeHierarchyAdapter(UserCache.Entry.class, new UserCache.JsonConverter());
-		this.gson = gsonBuilder.create();
-		this.load();
+		this.cacheFile = cacheFile;
+		Lists.reverse(this.load()).forEach(this::method_30164);
 	}
 
+	private void method_30164(UserCache.Entry entry) {
+		GameProfile gameProfile = entry.getProfile();
+		entry.method_30171(this.method_30169());
+		String string = gameProfile.getName();
+		if (string != null) {
+			this.byName.put(string.toLowerCase(Locale.ROOT), entry);
+		}
+
+		UUID uUID = gameProfile.getId();
+		if (uUID != null) {
+			this.byUuid.put(uUID, entry);
+		}
+	}
+
+	@Nullable
 	private static GameProfile findProfileByName(GameProfileRepository repository, String name) {
-		final GameProfile[] gameProfiles = new GameProfile[1];
+		final AtomicReference<GameProfile> atomicReference = new AtomicReference();
 		ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 			@Override
 			public void onProfileLookupSucceeded(GameProfile profile) {
-				gameProfiles[0] = profile;
+				atomicReference.set(profile);
 			}
 
 			@Override
 			public void onProfileLookupFailed(GameProfile profile, Exception exception) {
-				gameProfiles[0] = null;
+				atomicReference.set(null);
 			}
 		};
 		repository.findProfilesByNames(new String[]{name}, Agent.MINECRAFT, profileLookupCallback);
-		if (!shouldUseRemote() && gameProfiles[0] == null) {
+		GameProfile gameProfile = (GameProfile)atomicReference.get();
+		if (!shouldUseRemote() && gameProfile == null) {
 			UUID uUID = PlayerEntity.getUuidFromProfile(new GameProfile(null, name));
-			GameProfile gameProfile = new GameProfile(uUID, name);
-			profileLookupCallback.onProfileLookupSucceeded(gameProfile);
+			gameProfile = new GameProfile(uUID, name);
 		}
 
-		return gameProfiles[0];
+		return gameProfile;
 	}
 
 	public static void setUseRemote(boolean value) {
@@ -102,130 +101,200 @@ public class UserCache {
 	}
 
 	public void add(GameProfile gameProfile) {
-		this.add(gameProfile, null);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(2, 1);
+		Date date = calendar.getTime();
+		UserCache.Entry entry = new UserCache.Entry(gameProfile, date);
+		this.method_30164(entry);
+		this.save();
 	}
 
-	private void add(GameProfile profile, Date date) {
-		UUID uUID = profile.getId();
-		if (date == null) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(new Date());
-			calendar.add(2, 1);
-			date = calendar.getTime();
-		}
-
-		UserCache.Entry entry = new UserCache.Entry(profile, date);
-		if (this.byUuid.containsKey(uUID)) {
-			UserCache.Entry entry2 = (UserCache.Entry)this.byUuid.get(uUID);
-			this.byName.remove(entry2.getProfile().getName().toLowerCase(Locale.ROOT));
-			this.byAccessTime.remove(profile);
-		}
-
-		this.byName.put(profile.getName().toLowerCase(Locale.ROOT), entry);
-		this.byUuid.put(uUID, entry);
-		this.byAccessTime.addFirst(profile);
-		this.save();
+	private long method_30169() {
+		return this.field_25724.incrementAndGet();
 	}
 
 	@Nullable
 	public GameProfile findByName(String string) {
 		String string2 = string.toLowerCase(Locale.ROOT);
 		UserCache.Entry entry = (UserCache.Entry)this.byName.get(string2);
+		boolean bl = false;
 		if (entry != null && new Date().getTime() >= entry.expirationDate.getTime()) {
 			this.byUuid.remove(entry.getProfile().getId());
 			this.byName.remove(entry.getProfile().getName().toLowerCase(Locale.ROOT));
-			this.byAccessTime.remove(entry.getProfile());
+			bl = true;
 			entry = null;
 		}
 
+		GameProfile gameProfile;
 		if (entry != null) {
-			GameProfile gameProfile = entry.getProfile();
-			this.byAccessTime.remove(gameProfile);
-			this.byAccessTime.addFirst(gameProfile);
+			entry.method_30171(this.method_30169());
+			gameProfile = entry.getProfile();
 		} else {
-			GameProfile gameProfile = findProfileByName(this.profileRepository, string2);
+			gameProfile = findProfileByName(this.profileRepository, string2);
 			if (gameProfile != null) {
 				this.add(gameProfile);
-				entry = (UserCache.Entry)this.byName.get(string2);
+				bl = false;
 			}
 		}
 
-		this.save();
-		return entry == null ? null : entry.getProfile();
+		if (bl) {
+			this.save();
+		}
+
+		return gameProfile;
 	}
 
 	@Nullable
 	public GameProfile getByUuid(UUID uUID) {
 		UserCache.Entry entry = (UserCache.Entry)this.byUuid.get(uUID);
-		return entry == null ? null : entry.getProfile();
-	}
-
-	private UserCache.Entry getEntry(UUID uUID) {
-		UserCache.Entry entry = (UserCache.Entry)this.byUuid.get(uUID);
-		if (entry != null) {
-			GameProfile gameProfile = entry.getProfile();
-			this.byAccessTime.remove(gameProfile);
-			this.byAccessTime.addFirst(gameProfile);
+		if (entry == null) {
+			return null;
+		} else {
+			entry.method_30171(this.method_30169());
+			return entry.getProfile();
 		}
-
-		return entry;
 	}
 
-	public void load() {
-		BufferedReader bufferedReader = null;
+	private static DateFormat method_30170() {
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+	}
+
+	public List<UserCache.Entry> load() {
+		List<UserCache.Entry> list = Lists.<UserCache.Entry>newArrayList();
 
 		try {
-			bufferedReader = Files.newReader(this.cacheFile, StandardCharsets.UTF_8);
-			List<UserCache.Entry> list = JsonHelper.deserialize(this.gson, bufferedReader, ENTRY_LIST_TYPE);
-			this.byName.clear();
-			this.byUuid.clear();
-			this.byAccessTime.clear();
-			if (list != null) {
-				for (UserCache.Entry entry : Lists.reverse(list)) {
-					if (entry != null) {
-						this.add(entry.getProfile(), entry.getExpirationDate());
+			Reader reader = Files.newReader(this.cacheFile, StandardCharsets.UTF_8);
+			Throwable var3 = null;
+
+			Object dateFormat;
+			try {
+				JsonArray jsonArray = this.gson.fromJson(reader, JsonArray.class);
+				if (jsonArray != null) {
+					DateFormat dateFormatx = method_30170();
+					jsonArray.forEach(jsonElement -> {
+						UserCache.Entry entry = method_30167(jsonElement, dateFormat);
+						if (entry != null) {
+							list.add(entry);
+						}
+					});
+					return list;
+				}
+
+				dateFormat = list;
+			} catch (Throwable var17) {
+				var3 = var17;
+				throw var17;
+			} finally {
+				if (reader != null) {
+					if (var3 != null) {
+						try {
+							reader.close();
+						} catch (Throwable var16) {
+							var3.addSuppressed(var16);
+						}
+					} else {
+						reader.close();
 					}
 				}
 			}
-		} catch (FileNotFoundException var9) {
-		} catch (JsonParseException var10) {
-		} finally {
-			IOUtils.closeQuietly(bufferedReader);
-		}
-	}
 
-	public void save() {
-		String string = this.gson.toJson(this.getLastAccessedEntries(1000));
-		BufferedWriter bufferedWriter = null;
-
-		try {
-			bufferedWriter = Files.newWriter(this.cacheFile, StandardCharsets.UTF_8);
-			bufferedWriter.write(string);
-			return;
-		} catch (FileNotFoundException var8) {
-			return;
-		} catch (IOException var9) {
-		} finally {
-			IOUtils.closeQuietly(bufferedWriter);
-		}
-	}
-
-	private List<UserCache.Entry> getLastAccessedEntries(int i) {
-		List<UserCache.Entry> list = Lists.<UserCache.Entry>newArrayList();
-
-		for (GameProfile gameProfile : Lists.newArrayList(Iterators.limit(this.byAccessTime.iterator(), i))) {
-			UserCache.Entry entry = this.getEntry(gameProfile.getId());
-			if (entry != null) {
-				list.add(entry);
-			}
+			return (List<UserCache.Entry>)dateFormat;
+		} catch (FileNotFoundException var19) {
+		} catch (JsonParseException | IOException var20) {
+			field_25805.warn("Failed to load profile cache {}", this.cacheFile, var20);
 		}
 
 		return list;
 	}
 
-	class Entry {
+	public void save() {
+		JsonArray jsonArray = new JsonArray();
+		DateFormat dateFormat = method_30170();
+		this.getLastAccessedEntries(1000).forEach(entry -> jsonArray.add(method_30165(entry, dateFormat)));
+		String string = this.gson.toJson((JsonElement)jsonArray);
+
+		try {
+			Writer writer = Files.newWriter(this.cacheFile, StandardCharsets.UTF_8);
+			Throwable var5 = null;
+
+			try {
+				writer.write(string);
+			} catch (Throwable var15) {
+				var5 = var15;
+				throw var15;
+			} finally {
+				if (writer != null) {
+					if (var5 != null) {
+						try {
+							writer.close();
+						} catch (Throwable var14) {
+							var5.addSuppressed(var14);
+						}
+					} else {
+						writer.close();
+					}
+				}
+			}
+		} catch (IOException var17) {
+		}
+	}
+
+	private Stream<UserCache.Entry> getLastAccessedEntries(int i) {
+		return ImmutableList.copyOf(this.byUuid.values()).stream().sorted(Comparator.comparing(UserCache.Entry::method_30172).reversed()).limit((long)i);
+	}
+
+	private static JsonElement method_30165(UserCache.Entry entry, DateFormat dateFormat) {
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("name", entry.getProfile().getName());
+		UUID uUID = entry.getProfile().getId();
+		jsonObject.addProperty("uuid", uUID == null ? "" : uUID.toString());
+		jsonObject.addProperty("expiresOn", dateFormat.format(entry.getExpirationDate()));
+		return jsonObject;
+	}
+
+	@Nullable
+	private static UserCache.Entry method_30167(JsonElement jsonElement, DateFormat dateFormat) {
+		if (jsonElement.isJsonObject()) {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			JsonElement jsonElement2 = jsonObject.get("name");
+			JsonElement jsonElement3 = jsonObject.get("uuid");
+			JsonElement jsonElement4 = jsonObject.get("expiresOn");
+			if (jsonElement2 != null && jsonElement3 != null) {
+				String string = jsonElement3.getAsString();
+				String string2 = jsonElement2.getAsString();
+				Date date = null;
+				if (jsonElement4 != null) {
+					try {
+						date = dateFormat.parse(jsonElement4.getAsString());
+					} catch (ParseException var12) {
+					}
+				}
+
+				if (string2 != null && string != null && date != null) {
+					UUID uUID;
+					try {
+						uUID = UUID.fromString(string);
+					} catch (Throwable var11) {
+						return null;
+					}
+
+					return new UserCache.Entry(new GameProfile(uUID, string2), date);
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	static class Entry {
 		private final GameProfile profile;
 		private final Date expirationDate;
+		private volatile long field_25726;
 
 		private Entry(GameProfile gameProfile, Date date) {
 			this.profile = gameProfile;
@@ -239,57 +308,13 @@ public class UserCache {
 		public Date getExpirationDate() {
 			return this.expirationDate;
 		}
-	}
 
-	class JsonConverter implements JsonDeserializer<UserCache.Entry>, JsonSerializer<UserCache.Entry> {
-		private JsonConverter() {
+		public void method_30171(long l) {
+			this.field_25726 = l;
 		}
 
-		public JsonElement serialize(UserCache.Entry entry, Type type, JsonSerializationContext jsonSerializationContext) {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("name", entry.getProfile().getName());
-			UUID uUID = entry.getProfile().getId();
-			jsonObject.addProperty("uuid", uUID == null ? "" : uUID.toString());
-			jsonObject.addProperty("expiresOn", UserCache.EXPIRATION_DATE_FORMAT.format(entry.getExpirationDate()));
-			return jsonObject;
-		}
-
-		public UserCache.Entry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			if (jsonElement.isJsonObject()) {
-				JsonObject jsonObject = jsonElement.getAsJsonObject();
-				JsonElement jsonElement2 = jsonObject.get("name");
-				JsonElement jsonElement3 = jsonObject.get("uuid");
-				JsonElement jsonElement4 = jsonObject.get("expiresOn");
-				if (jsonElement2 != null && jsonElement3 != null) {
-					String string = jsonElement3.getAsString();
-					String string2 = jsonElement2.getAsString();
-					Date date = null;
-					if (jsonElement4 != null) {
-						try {
-							date = UserCache.EXPIRATION_DATE_FORMAT.parse(jsonElement4.getAsString());
-						} catch (ParseException var14) {
-							date = null;
-						}
-					}
-
-					if (string2 != null && string != null) {
-						UUID uUID;
-						try {
-							uUID = UUID.fromString(string);
-						} catch (Throwable var13) {
-							return null;
-						}
-
-						return UserCache.this.new Entry(new GameProfile(uUID, string2), date);
-					} else {
-						return null;
-					}
-				} else {
-					return null;
-				}
-			} else {
-				return null;
-			}
+		public long method_30172() {
+			return this.field_25726;
 		}
 	}
 }

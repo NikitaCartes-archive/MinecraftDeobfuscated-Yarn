@@ -6,7 +6,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -14,6 +14,7 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,8 +23,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class EndermiteEntity extends HostileEntity {
 	private int lifeTime;
@@ -47,15 +48,14 @@ public class EndermiteEntity extends HostileEntity {
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.1F;
+		return 0.13F;
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
+	public static DefaultAttributeContainer.Builder createEndermiteAttributes() {
+		return HostileEntity.createHostileAttributes()
+			.add(EntityAttributes.field_23716, 8.0)
+			.add(EntityAttributes.field_23719, 0.25)
+			.add(EntityAttributes.field_23721, 2.0);
 	}
 
 	@Override
@@ -65,22 +65,22 @@ public class EndermiteEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_ENDERMITE_AMBIENT;
+		return SoundEvents.field_15137;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_ENDERMITE_HURT;
+		return SoundEvents.field_14582;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_ENDERMITE_DEATH;
+		return SoundEvents.field_15230;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15F, 1.0F);
+		this.playSound(SoundEvents.field_14678, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class EndermiteEntity extends HostileEntity {
 			for (int i = 0; i < 2; i++) {
 				this.world
 					.addParticle(
-						ParticleTypes.PORTAL,
+						ParticleTypes.field_11214,
 						this.getParticleX(0.5),
 						this.getRandomBodyY(),
 						this.getParticleZ(0.5),
@@ -149,8 +149,8 @@ public class EndermiteEntity extends HostileEntity {
 		}
 	}
 
-	public static boolean canSpawn(EntityType<EndermiteEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		if (canSpawnIgnoreLightLevel(type, world, spawnType, pos, random)) {
+	public static boolean canSpawn(EntityType<EndermiteEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		if (canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random)) {
 			PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0, true);
 			return playerEntity == null;
 		} else {

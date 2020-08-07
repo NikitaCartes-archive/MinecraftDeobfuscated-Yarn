@@ -21,9 +21,9 @@ import net.minecraft.command.BlockDataObject;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.EntityDataObject;
 import net.minecraft.command.StorageDataObject;
-import net.minecraft.command.arguments.NbtCompoundTagArgumentType;
-import net.minecraft.command.arguments.NbtPathArgumentType;
-import net.minecraft.command.arguments.NbtTagArgumentType;
+import net.minecraft.command.argument.NbtCompoundTagArgumentType;
+import net.minecraft.command.argument.NbtPathArgumentType;
+import net.minecraft.command.argument.NbtTagArgumentType;
 import net.minecraft.nbt.AbstractListTag;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.CompoundTag;
@@ -152,7 +152,7 @@ public class DataCommand {
 										}
 
 										CompoundTag compoundTag2 = (CompoundTag)tag;
-										CompoundTag compoundTag3 = compoundTag2.copy();
+										CompoundTag compoundTag3 = compoundTag2.method_10553();
 
 										for (Tag tag2 : list) {
 											if (!(tag2 instanceof CompoundTag)) {
@@ -326,7 +326,7 @@ public class DataCommand {
 
 	private static int executeMerge(ServerCommandSource source, DataCommandObject object, CompoundTag tag) throws CommandSyntaxException {
 		CompoundTag compoundTag = object.getTag();
-		CompoundTag compoundTag2 = compoundTag.copy().copyFrom(tag);
+		CompoundTag compoundTag2 = compoundTag.method_10553().copyFrom(tag);
 		if (compoundTag.equals(compoundTag2)) {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {

@@ -36,29 +36,29 @@ public class BlazeEntityModel<T extends Entity> extends CompositeEntityModel<T> 
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
-		float f = customAngle * (float) Math.PI * -0.1F;
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+		float f = animationProgress * (float) Math.PI * -0.1F;
 
 		for (int i = 0; i < 4; i++) {
-			this.rods[i].pivotY = -2.0F + MathHelper.cos(((float)(i * 2) + customAngle) * 0.25F);
+			this.rods[i].pivotY = -2.0F + MathHelper.cos(((float)(i * 2) + animationProgress) * 0.25F);
 			this.rods[i].pivotX = MathHelper.cos(f) * 9.0F;
 			this.rods[i].pivotZ = MathHelper.sin(f) * 9.0F;
 			f++;
 		}
 
-		f = (float) (Math.PI / 4) + customAngle * (float) Math.PI * 0.03F;
+		f = (float) (Math.PI / 4) + animationProgress * (float) Math.PI * 0.03F;
 
 		for (int i = 4; i < 8; i++) {
-			this.rods[i].pivotY = 2.0F + MathHelper.cos(((float)(i * 2) + customAngle) * 0.25F);
+			this.rods[i].pivotY = 2.0F + MathHelper.cos(((float)(i * 2) + animationProgress) * 0.25F);
 			this.rods[i].pivotX = MathHelper.cos(f) * 7.0F;
 			this.rods[i].pivotZ = MathHelper.sin(f) * 7.0F;
 			f++;
 		}
 
-		f = 0.47123894F + customAngle * (float) Math.PI * -0.05F;
+		f = 0.47123894F + animationProgress * (float) Math.PI * -0.05F;
 
 		for (int i = 8; i < 12; i++) {
-			this.rods[i].pivotY = 11.0F + MathHelper.cos(((float)i * 1.5F + customAngle) * 0.5F);
+			this.rods[i].pivotY = 11.0F + MathHelper.cos(((float)i * 1.5F + animationProgress) * 0.5F);
 			this.rods[i].pivotX = MathHelper.cos(f) * 5.0F;
 			this.rods[i].pivotZ = MathHelper.sin(f) * 5.0F;
 			f++;

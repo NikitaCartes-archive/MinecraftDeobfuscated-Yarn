@@ -10,8 +10,10 @@ import java.nio.IntBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.util.concurrent.ThreadLocalRandom;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
@@ -21,49 +23,61 @@ import org.lwjgl.system.MemoryUtil;
 public class TextureUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static int generateTextureId() {
+	public static int generateId() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		return GlStateManager.getTexLevelParameter();
+		if (SharedConstants.isDevelopment) {
+			int[] is = new int[ThreadLocalRandom.current().nextInt(15) + 1];
+			GlStateManager.method_30498(is);
+			int i = GlStateManager.genTextures();
+			GlStateManager.method_30499(is);
+			return i;
+		} else {
+			return GlStateManager.genTextures();
+		}
 	}
 
-	public static void releaseTextureId(int i) {
+	public static void deleteId(int id) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		GlStateManager.deleteTexture(i);
+		GlStateManager.deleteTexture(id);
 	}
 
-	public static void prepareImage(int i, int j, int k) {
-		prepareImage(NativeImage.GLFormat.RGBA, i, 0, j, k);
+	public static void allocate(int id, int width, int height) {
+		allocate(NativeImage.GLFormat.ABGR, id, 0, width, height);
 	}
 
-	public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k) {
-		prepareImage(gLFormat, i, 0, j, k);
+	public static void allocate(NativeImage.GLFormat internalFormat, int id, int width, int height) {
+		allocate(internalFormat, id, 0, width, height);
 	}
 
-	public static void prepareImage(int i, int j, int k, int l) {
-		prepareImage(NativeImage.GLFormat.RGBA, i, j, k, l);
+	public static void allocate(int id, int maxLevel, int width, int height) {
+		allocate(NativeImage.GLFormat.ABGR, id, maxLevel, width, height);
 	}
 
-	public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k, int l) {
+	/**
+	 * Allocate uninitialized backing memory for {@code maxLevel+1}
+	 * mip levels to texture {@code id}.
+	 */
+	public static void allocate(NativeImage.GLFormat internalFormat, int id, int maxLevel, int width, int height) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		bind(i);
-		if (j >= 0) {
-			GlStateManager.texParameter(3553, 33085, j);
+		bind(id);
+		if (maxLevel >= 0) {
+			GlStateManager.texParameter(3553, 33085, maxLevel);
 			GlStateManager.texParameter(3553, 33082, 0);
-			GlStateManager.texParameter(3553, 33083, j);
+			GlStateManager.texParameter(3553, 33083, maxLevel);
 			GlStateManager.texParameter(3553, 34049, 0.0F);
 		}
 
-		for (int m = 0; m <= j; m++) {
-			GlStateManager.texImage2D(3553, m, gLFormat.getGlConstant(), k >> m, l >> m, 0, 6408, 5121, null);
+		for (int i = 0; i <= maxLevel; i++) {
+			GlStateManager.texImage2D(3553, i, internalFormat.getGlConstant(), width >> i, height >> i, 0, 6408, 5121, null);
 		}
 	}
 
-	private static void bind(int i) {
+	private static void bind(int id) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		GlStateManager.bindTexture(i);
+		GlStateManager.bindTexture(id);
 	}
 
-	public static ByteBuffer readResource(InputStream inputStream) throws IOException {
+	public static ByteBuffer readAllToByteBuffer(InputStream inputStream) throws IOException {
 		ByteBuffer byteBuffer;
 		if (inputStream instanceof FileInputStream) {
 			FileInputStream fileInputStream = (FileInputStream)inputStream;
@@ -86,12 +100,12 @@ public class TextureUtil {
 		return byteBuffer;
 	}
 
-	public static String readResourceAsString(InputStream inputStream) {
+	public static String readAllToString(InputStream inputStream) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		ByteBuffer byteBuffer = null;
 
 		try {
-			byteBuffer = readResource(inputStream);
+			byteBuffer = readAllToByteBuffer(inputStream);
 			int i = byteBuffer.position();
 			byteBuffer.rewind();
 			return MemoryUtil.memASCII(byteBuffer, i);
@@ -105,7 +119,11 @@ public class TextureUtil {
 		return null;
 	}
 
-	public static void initTexture(IntBuffer intBuffer, int i, int j) {
+	/**
+	 * Uploads {@code imageData} to the bound texture.
+	 * Each integer is interpreted as 0xAARRGGBB.
+	 */
+	public static void uploadImage(IntBuffer imageData, int width, int height) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		GL11.glPixelStorei(3312, 0);
 		GL11.glPixelStorei(3313, 0);
@@ -113,7 +131,7 @@ public class TextureUtil {
 		GL11.glPixelStorei(3315, 0);
 		GL11.glPixelStorei(3316, 0);
 		GL11.glPixelStorei(3317, 4);
-		GL11.glTexImage2D(3553, 0, 6408, i, j, 0, 32993, 33639, intBuffer);
+		GL11.glTexImage2D(3553, 0, 6408, width, height, 0, 32993, 33639, imageData);
 		GL11.glTexParameteri(3553, 10242, 10497);
 		GL11.glTexParameteri(3553, 10243, 10497);
 		GL11.glTexParameteri(3553, 10240, 9728);

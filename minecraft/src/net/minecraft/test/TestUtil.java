@@ -7,7 +7,6 @@ import com.google.common.collect.Streams;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
@@ -15,48 +14,56 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.Structure;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 public class TestUtil {
 	public static TestCompletionListener field_20573 = new FailureLoggingTestCompletionListener();
 
-	public static void startTest(GameTest gameTest, TestManager testManager) {
+	public static void startTest(GameTest gameTest, BlockPos blockPos, TestManager testManager) {
 		gameTest.startCountdown();
 		testManager.start(gameTest);
 		gameTest.addListener(new TestListener() {
 			@Override
 			public void onStarted(GameTest test) {
-				TestUtil.createBeacon(test, Blocks.LIGHT_GRAY_STAINED_GLASS);
+				TestUtil.createBeacon(test, Blocks.field_9996);
 			}
 
 			@Override
 			public void onFailed(GameTest test) {
-				TestUtil.createBeacon(test, test.isRequired() ? Blocks.RED_STAINED_GLASS : Blocks.ORANGE_STAINED_GLASS);
+				TestUtil.createBeacon(test, test.isRequired() ? Blocks.field_10272 : Blocks.field_10227);
 				TestUtil.createLectern(test, Util.getInnermostMessage(test.getThrowable()));
 				TestUtil.handleTestFail(test);
 			}
 		});
-		gameTest.init(2);
+		gameTest.init(blockPos, 2);
 	}
 
-	public static Collection<GameTest> runTestBatches(Collection<GameTestBatch> batches, BlockPos pos, ServerWorld world, TestManager testManager) {
-		TestRunner testRunner = new TestRunner(batches, pos, world, testManager);
+	public static Collection<GameTest> runTestBatches(
+		Collection<GameTestBatch> batches, BlockPos pos, BlockRotation blockRotation, ServerWorld serverWorld, TestManager testManager, int i
+	) {
+		TestRunner testRunner = new TestRunner(batches, pos, blockRotation, serverWorld, testManager, i);
 		testRunner.run();
 		return testRunner.getTests();
 	}
 
-	public static Collection<GameTest> runTestFunctions(Collection<TestFunction> testFunctions, BlockPos pos, ServerWorld world, TestManager testManager) {
-		return runTestBatches(createBatches(testFunctions), pos, world, testManager);
+	public static Collection<GameTest> runTestFunctions(
+		Collection<TestFunction> testFunctions, BlockPos pos, BlockRotation blockRotation, ServerWorld serverWorld, TestManager testManager, int i
+	) {
+		return runTestBatches(createBatches(testFunctions), pos, blockRotation, serverWorld, testManager, i);
 	}
 
 	public static Collection<GameTestBatch> createBatches(Collection<TestFunction> testFunctions) {
@@ -72,9 +79,9 @@ public class TestUtil {
 				string -> {
 					Collection<TestFunction> collection = (Collection<TestFunction>)map.get(string);
 					Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(string);
-					AtomicInteger atomicInteger = new AtomicInteger();
+					MutableInt mutableInt = new MutableInt();
 					return Streams.stream(Iterables.partition(collection, 100))
-						.map(list -> new GameTestBatch(string + ":" + atomicInteger.incrementAndGet(), collection, consumer));
+						.map(list -> new GameTestBatch(string + ":" + mutableInt.incrementAndGet(), collection, consumer));
 				}
 			)
 			.collect(Collectors.toList());
@@ -82,8 +89,8 @@ public class TestUtil {
 
 	private static void handleTestFail(GameTest test) {
 		Throwable throwable = test.getThrowable();
-		String string = test.getStructurePath() + " failed! " + Util.getInnermostMessage(throwable);
-		sendMessage(test.getWorld(), Formatting.RED, string);
+		String string = (test.isRequired() ? "" : "(optional) ") + test.getStructurePath() + " failed! " + Util.getInnermostMessage(throwable);
+		sendMessage(test.getWorld(), test.isRequired() ? Formatting.field_1061 : Formatting.field_1054, string);
 		if (throwable instanceof PositionedException) {
 			PositionedException positionedException = (PositionedException)throwable;
 			addDebugMarker(test.getWorld(), positionedException.getPos(), positionedException.getDebugMessage());
@@ -95,15 +102,16 @@ public class TestUtil {
 	private static void createBeacon(GameTest test, Block glass) {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
-		BlockPos blockPos2 = blockPos.add(-1, -1, -1);
-		serverWorld.setBlockState(blockPos2, Blocks.BEACON.getDefaultState());
-		BlockPos blockPos3 = blockPos2.add(0, 1, 0);
-		serverWorld.setBlockState(blockPos3, glass.getDefaultState());
+		BlockPos blockPos2 = new BlockPos(-1, -1, -1);
+		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.field_11302, test.method_29402(), blockPos);
+		serverWorld.setBlockState(blockPos3, Blocks.field_10327.getDefaultState().rotate(test.method_29402()));
+		BlockPos blockPos4 = blockPos3.add(0, 1, 0);
+		serverWorld.setBlockState(blockPos4, glass.getDefaultState());
 
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
-				BlockPos blockPos4 = blockPos2.add(i, -1, j);
-				serverWorld.setBlockState(blockPos4, Blocks.IRON_BLOCK.getDefaultState());
+				BlockPos blockPos5 = blockPos3.add(i, -1, j);
+				serverWorld.setBlockState(blockPos5, Blocks.field_10085.getDefaultState());
 			}
 		}
 	}
@@ -111,15 +119,16 @@ public class TestUtil {
 	private static void createLectern(GameTest test, String message) {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
-		BlockPos blockPos2 = blockPos.add(-1, 1, -1);
-		serverWorld.setBlockState(blockPos2, Blocks.LECTERN.getDefaultState());
-		BlockState blockState = serverWorld.getBlockState(blockPos2);
+		BlockPos blockPos2 = new BlockPos(-1, 1, -1);
+		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.field_11302, test.method_29402(), blockPos);
+		serverWorld.setBlockState(blockPos3, Blocks.field_16330.getDefaultState().rotate(test.method_29402()));
+		BlockState blockState = serverWorld.getBlockState(blockPos3);
 		ItemStack itemStack = createBook(test.getStructurePath(), test.isRequired(), message);
-		LecternBlock.putBookIfAbsent(serverWorld, blockPos2, blockState, itemStack);
+		LecternBlock.putBookIfAbsent(serverWorld, blockPos3, blockState, itemStack);
 	}
 
 	private static ItemStack createBook(String structureName, boolean required, String message) {
-		ItemStack itemStack = new ItemStack(Items.WRITABLE_BOOK);
+		ItemStack itemStack = new ItemStack(Items.field_8674);
 		ListTag listTag = new ListTag();
 		StringBuffer stringBuffer = new StringBuffer();
 		Arrays.stream(structureName.split("\\.")).forEach(string -> stringBuffer.append(string).append('\n'));
@@ -134,25 +143,26 @@ public class TestUtil {
 	}
 
 	private static void sendMessage(ServerWorld world, Formatting formatting, String message) {
-		world.getPlayers(serverPlayerEntity -> true).forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText(message).formatted(formatting)));
+		world.getPlayers(serverPlayerEntity -> true)
+			.forEach(serverPlayerEntity -> serverPlayerEntity.sendSystemMessage(new LiteralText(message).formatted(formatting), Util.NIL_UUID));
 	}
 
 	public static void clearDebugMarkers(ServerWorld world) {
-		DebugRendererInfoManager.clearGameTestMarkers(world);
+		DebugInfoSender.clearGameTestMarkers(world);
 	}
 
 	private static void addDebugMarker(ServerWorld world, BlockPos pos, String message) {
-		DebugRendererInfoManager.addGameTestMarker(world, pos, message, -2130771968, Integer.MAX_VALUE);
+		DebugInfoSender.addGameTestMarker(world, pos, message, -2130771968, Integer.MAX_VALUE);
 	}
 
 	public static void clearTests(ServerWorld world, BlockPos pos, TestManager testManager, int radius) {
 		testManager.clear();
 		BlockPos blockPos = pos.add(-radius, 0, -radius);
 		BlockPos blockPos2 = pos.add(radius, 0, radius);
-		BlockPos.stream(blockPos, blockPos2).filter(blockPosx -> world.getBlockState(blockPosx).getBlock() == Blocks.STRUCTURE_BLOCK).forEach(blockPosx -> {
+		BlockPos.stream(blockPos, blockPos2).filter(blockPosx -> world.getBlockState(blockPosx).isOf(Blocks.field_10465)).forEach(blockPosx -> {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(blockPosx);
 			BlockPos blockPos2x = structureBlockBlockEntity.getPos();
-			BlockBox blockBox = StructureTestUtil.method_23646(blockPos2x, structureBlockBlockEntity.getSize(), 2);
+			BlockBox blockBox = StructureTestUtil.method_29410(structureBlockBlockEntity);
 			StructureTestUtil.clearArea(blockBox, blockPos2x.getY(), world);
 		});
 	}

@@ -1,13 +1,18 @@
 package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.util.List;
+import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class RepairItemRecipe extends SpecialCraftingRecipe {
@@ -15,11 +20,11 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean method_20808(CraftingInventory craftingInventory, World world) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				list.add(itemStack);
 				if (list.size() > 1) {
@@ -34,11 +39,11 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		return list.size() == 2;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack method_20807(CraftingInventory craftingInventory) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				list.add(itemStack);
 				if (list.size() > 1) {
@@ -65,6 +70,19 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 
 				ItemStack itemStack4 = new ItemStack(itemStack3.getItem());
 				itemStack4.setDamage(m);
+				Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
+				Map<Enchantment, Integer> map2 = EnchantmentHelper.get(itemStack3);
+				Map<Enchantment, Integer> map3 = EnchantmentHelper.get(itemStack);
+				Registry.ENCHANTMENT.stream().filter(Enchantment::isCursed).forEach(enchantment -> {
+					int ix = Math.max((Integer)map2.getOrDefault(enchantment, 0), (Integer)map3.getOrDefault(enchantment, 0));
+					if (ix > 0) {
+						map.put(enchantment, ix);
+					}
+				});
+				if (!map.isEmpty()) {
+					EnchantmentHelper.set(map, itemStack4);
+				}
+
 				return itemStack4;
 			}
 		}
