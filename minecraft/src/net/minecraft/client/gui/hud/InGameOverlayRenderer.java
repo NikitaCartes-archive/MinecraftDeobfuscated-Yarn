@@ -13,7 +13,6 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,6 +20,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class InGameOverlayRenderer {
@@ -37,7 +37,7 @@ public class InGameOverlayRenderer {
 		}
 
 		if (!minecraftClient.player.isSpectator()) {
-			if (minecraftClient.player.isInFluid(FluidTags.WATER)) {
+			if (minecraftClient.player.isSubmergedIn(FluidTags.field_15517)) {
 				renderUnderwaterOverlay(minecraftClient, matrixStack);
 			}
 
@@ -59,7 +59,7 @@ public class InGameOverlayRenderer {
 			double f = playerEntity.getZ() + (double)(((float)((i >> 2) % 2) - 0.5F) * playerEntity.getWidth() * 0.8F);
 			mutable.set(d, e, f);
 			BlockState blockState = playerEntity.world.getBlockState(mutable);
-			if (blockState.getRenderType() != BlockRenderType.INVISIBLE && blockState.hasInWallOverlay(playerEntity.world, mutable)) {
+			if (blockState.getRenderType() != BlockRenderType.field_11455 && blockState.shouldBlockVision(playerEntity.world, mutable)) {
 				return blockState;
 			}
 		}
@@ -91,6 +91,7 @@ public class InGameOverlayRenderer {
 	}
 
 	private static void renderUnderwaterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack) {
+		RenderSystem.enableTexture();
 		minecraftClient.getTextureManager().bindTexture(UNDERWATER_TEX);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		float f = minecraftClient.player.getBrightnessAtEyes();
@@ -121,6 +122,7 @@ public class InGameOverlayRenderer {
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
+		RenderSystem.enableTexture();
 		Sprite sprite = ModelLoader.FIRE_1.getSprite();
 		minecraftClient.getTextureManager().bindTexture(sprite.getAtlas().getId());
 		float f = sprite.getMinU();

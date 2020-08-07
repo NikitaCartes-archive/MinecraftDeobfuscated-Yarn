@@ -1,9 +1,9 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.Random;
 import net.minecraft.datafixer.TypeReferences;
 
@@ -14,21 +14,21 @@ public class EntityZombieVillagerTypeFix extends ChoiceFix {
 		super(outputSchema, changesType, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
 	}
 
-	public Dynamic<?> fixZombieType(Dynamic<?> tag) {
-		if (tag.get("IsVillager").asBoolean(false)) {
-			if (!tag.get("ZombieType").get().isPresent()) {
-				int i = this.clampType(tag.get("VillagerProfession").asInt(-1));
+	public Dynamic<?> fixZombieType(Dynamic<?> dynamic) {
+		if (dynamic.get("IsVillager").asBoolean(false)) {
+			if (!dynamic.get("ZombieType").result().isPresent()) {
+				int i = this.clampType(dynamic.get("VillagerProfession").asInt(-1));
 				if (i == -1) {
 					i = this.clampType(RANDOM.nextInt(6));
 				}
 
-				tag = tag.set("ZombieType", tag.createInt(i));
+				dynamic = dynamic.set("ZombieType", dynamic.createInt(i));
 			}
 
-			tag = tag.remove("IsVillager");
+			dynamic = dynamic.remove("IsVillager");
 		}
 
-		return tag;
+		return dynamic;
 	}
 
 	private int clampType(int type) {
@@ -36,7 +36,7 @@ public class EntityZombieVillagerTypeFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::fixZombieType);
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), this::fixZombieType);
 	}
 }

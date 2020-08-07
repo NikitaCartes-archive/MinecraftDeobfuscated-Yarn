@@ -31,11 +31,11 @@ public class DecorationItem extends Item {
 		} else {
 			World world = context.getWorld();
 			AbstractDecorationEntity abstractDecorationEntity;
-			if (this.entityType == EntityType.PAINTING) {
+			if (this.entityType == EntityType.field_6120) {
 				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
 			} else {
-				if (this.entityType != EntityType.ITEM_FRAME) {
-					return ActionResult.SUCCESS;
+				if (this.entityType != EntityType.field_6043) {
+					return ActionResult.success(world.isClient);
 				}
 
 				abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
@@ -46,14 +46,14 @@ public class DecorationItem extends Item {
 				EntityType.loadFromEntityTag(world, playerEntity, abstractDecorationEntity, compoundTag);
 			}
 
-			if (abstractDecorationEntity.method_6888()) {
+			if (abstractDecorationEntity.canStayAttached()) {
 				if (!world.isClient) {
 					abstractDecorationEntity.onPlace();
 					world.spawnEntity(abstractDecorationEntity);
 				}
 
 				itemStack.decrement(1);
-				return ActionResult.SUCCESS;
+				return ActionResult.success(world.isClient);
 			} else {
 				return ActionResult.CONSUME;
 			}

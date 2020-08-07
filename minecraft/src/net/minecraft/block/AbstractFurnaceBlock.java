@@ -2,14 +2,15 @@ package net.minecraft.block;
 
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -18,20 +19,16 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
+	public static final BooleanProperty LIT = Properties.LIT;
 
-	protected AbstractFurnaceBlock(Block.Settings settings) {
+	protected AbstractFurnaceBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT, Boolean.valueOf(false)));
-	}
-
-	@Override
-	public int getLuminance(BlockState state) {
-		return state.get(LIT) ? super.getLuminance(state) : 0;
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(LIT, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -39,12 +36,12 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			this.openContainer(world, pos, player);
-			return ActionResult.SUCCESS;
+			this.openScreen(world, pos, player);
+			return ActionResult.CONSUME;
 		}
 	}
 
-	protected abstract void openContainer(World world, BlockPos pos, PlayerEntity player);
+	protected abstract void openScreen(World world, BlockPos pos, PlayerEntity player);
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
@@ -62,15 +59,16 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (state.getBlock() != newState.getBlock()) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof AbstractFurnaceBlockEntity) {
 				ItemScatterer.spawn(world, pos, (AbstractFurnaceBlockEntity)blockEntity);
-				world.updateHorizontalAdjacent(pos, this);
+				((AbstractFurnaceBlockEntity)blockEntity).method_27354(world, Vec3d.ofCenter(pos));
+				world.updateComparators(pos, this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 
@@ -81,12 +79,12 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return Container.calculateComparatorOutput(world.getBlockEntity(pos));
+		return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
+		return BlockRenderType.field_11458;
 	}
 
 	@Override

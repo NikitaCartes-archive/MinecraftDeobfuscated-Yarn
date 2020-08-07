@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -18,16 +19,15 @@ public class GiantEntity extends HostileEntity {
 		return 10.440001F;
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(100.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(50.0);
+	public static DefaultAttributeContainer.Builder createGiantAttributes() {
+		return HostileEntity.createHostileAttributes()
+			.add(EntityAttributes.field_23716, 100.0)
+			.add(EntityAttributes.field_23719, 0.5)
+			.add(EntityAttributes.field_23721, 50.0);
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		return worldView.getBrightness(pos) - 0.5F;
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
+		return world.getBrightness(pos) - 0.5F;
 	}
 }

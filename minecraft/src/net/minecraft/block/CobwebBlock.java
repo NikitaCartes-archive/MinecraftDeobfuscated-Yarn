@@ -6,7 +6,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CobwebBlock extends Block {
-	public CobwebBlock(Block.Settings settings) {
+	public CobwebBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

@@ -12,7 +12,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class DynamicEntry extends LeafEntry {
-	public static final Identifier instance = new Identifier("dynamic");
 	private final Identifier name;
 
 	private DynamicEntry(Identifier name, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
@@ -21,8 +20,13 @@ public class DynamicEntry extends LeafEntry {
 	}
 
 	@Override
-	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-		context.drop(this.name, itemDropper);
+	public LootPoolEntryType getType() {
+		return LootPoolEntryTypes.field_25209;
+	}
+
+	@Override
+	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+		context.drop(this.name, lootConsumer);
 	}
 
 	public static LeafEntry.Builder<?> builder(Identifier name) {
@@ -30,16 +34,12 @@ public class DynamicEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<DynamicEntry> {
-		public Serializer() {
-			super(new Identifier("dynamic"), DynamicEntry.class);
-		}
-
-		public void toJson(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, dynamicEntry, jsonSerializationContext);
+		public void method_393(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
+			super.method_442(jsonObject, dynamicEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", dynamicEntry.name.toString());
 		}
 
-		protected DynamicEntry fromJson(
+		protected DynamicEntry method_392(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));

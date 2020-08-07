@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -15,11 +14,22 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 
 	@Override
 	protected void configure() {
-		this.getOrCreateTagBuilder(EntityTypeTags.SKELETONS).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON);
-		this.getOrCreateTagBuilder(EntityTypeTags.RAIDERS)
-			.add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);
-		this.getOrCreateTagBuilder(EntityTypeTags.BEEHIVE_INHABITORS).add(EntityType.BEE);
-		this.getOrCreateTagBuilder(EntityTypeTags.ARROWS).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
+		this.getOrCreateTagBuilder(EntityTypeTags.field_15507).add(EntityType.field_6137, EntityType.field_6098, EntityType.field_6076);
+		this.getOrCreateTagBuilder(EntityTypeTags.field_19168)
+			.add(EntityType.field_6090, EntityType.field_6105, EntityType.field_6134, EntityType.field_6117, EntityType.field_6065, EntityType.field_6145);
+		this.getOrCreateTagBuilder(EntityTypeTags.field_20631).add(EntityType.field_20346);
+		this.getOrCreateTagBuilder(EntityTypeTags.field_21508).add(EntityType.field_6122, EntityType.field_6135);
+		this.getOrCreateTagBuilder(EntityTypeTags.field_22415)
+			.addTag(EntityTypeTags.field_21508)
+			.add(
+				EntityType.field_6068,
+				EntityType.field_6066,
+				EntityType.field_6049,
+				EntityType.field_6144,
+				EntityType.field_6127,
+				EntityType.field_6129,
+				EntityType.field_6130
+			);
 	}
 
 	@Override
@@ -30,10 +40,5 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 	@Override
 	public String getName() {
 		return "Entity Type Tags";
-	}
-
-	@Override
-	protected void setContainer(TagContainer<EntityType<?>> tagContainer) {
-		EntityTypeTags.setContainer(tagContainer);
 	}
 }

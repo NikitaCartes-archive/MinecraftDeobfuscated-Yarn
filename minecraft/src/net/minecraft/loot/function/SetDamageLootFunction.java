@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +19,11 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 	private SetDamageLootFunction(LootCondition[] contents, UniformLootTableRange durabilityRange) {
 		super(contents);
 		this.durabilityRange = durabilityRange;
+	}
+
+	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25220;
 	}
 
 	@Override
@@ -38,17 +42,13 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new SetDamageLootFunction(conditions, durabilityRange));
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetDamageLootFunction> {
-		protected Factory() {
-			super(new Identifier("set_damage"), SetDamageLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setDamageLootFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetDamageLootFunction> {
+		public void method_636(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, setDamageLootFunction, jsonSerializationContext);
 			jsonObject.add("damage", jsonSerializationContext.serialize(setDamageLootFunction.durabilityRange));
 		}
 
-		public SetDamageLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetDamageLootFunction method_635(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			return new SetDamageLootFunction(lootConditions, JsonHelper.deserialize(jsonObject, "damage", jsonDeserializationContext, UniformLootTableRange.class));
 		}
 	}

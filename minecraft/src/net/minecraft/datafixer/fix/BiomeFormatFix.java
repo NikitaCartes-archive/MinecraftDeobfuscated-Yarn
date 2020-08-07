@@ -2,20 +2,20 @@ package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.Dynamic;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import net.minecraft.datafixer.TypeReferences;
 
 public class BiomeFormatFix extends DataFix {
-	public BiomeFormatFix(Schema schema, boolean changesType) {
-		super(schema, changesType);
+	public BiomeFormatFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class BiomeFormatFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK);
 		OpticFinder<?> opticFinder = type.findField("Level");
 		return this.fixTypeEverywhereTyped("Leaves fix", type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> {
-					Optional<IntStream> optional = dynamic.get("Biomes").asIntStreamOpt();
+					Optional<IntStream> optional = dynamic.get("Biomes").asIntStreamOpt().result();
 					if (!optional.isPresent()) {
 						return dynamic;
 					} else {

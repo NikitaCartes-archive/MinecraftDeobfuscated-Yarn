@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 
 public class ShortTag extends AbstractNumberTag {
 	public static final TagReader<ShortTag> READER = new TagReader<ShortTag>() {
-		public ShortTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public ShortTag method_23255(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(80L);
 			return ShortTag.of(dataInput.readShort());
 		}
@@ -58,7 +58,7 @@ public class ShortTag extends AbstractNumberTag {
 		return this.value + "s";
 	}
 
-	public ShortTag copy() {
+	public ShortTag method_10704() {
 		return this;
 	}
 

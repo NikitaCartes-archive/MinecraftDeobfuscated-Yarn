@@ -12,8 +12,8 @@ public class LightPredicate {
 	public static final LightPredicate ANY = new LightPredicate(NumberRange.IntRange.ANY);
 	private final NumberRange.IntRange range;
 
-	private LightPredicate(NumberRange.IntRange intRange) {
-		this.range = intRange;
+	private LightPredicate(NumberRange.IntRange range) {
+		this.range = range;
 	}
 
 	public boolean test(ServerWorld world, BlockPos pos) {

@@ -4,36 +4,38 @@ import java.util.Random;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 public class OreBlock extends Block {
-	public OreBlock(Block.Settings settings) {
+	public OreBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	protected int getExperienceWhenMined(Random random) {
-		if (this == Blocks.COAL_ORE) {
+		if (this == Blocks.field_10418) {
 			return MathHelper.nextInt(random, 0, 2);
-		} else if (this == Blocks.DIAMOND_ORE) {
+		} else if (this == Blocks.field_10442) {
 			return MathHelper.nextInt(random, 3, 7);
-		} else if (this == Blocks.EMERALD_ORE) {
+		} else if (this == Blocks.field_10013) {
 			return MathHelper.nextInt(random, 3, 7);
-		} else if (this == Blocks.LAPIS_ORE) {
+		} else if (this == Blocks.field_10090) {
+			return MathHelper.nextInt(random, 2, 5);
+		} else if (this == Blocks.field_10213) {
 			return MathHelper.nextInt(random, 2, 5);
 		} else {
-			return this == Blocks.NETHER_QUARTZ_ORE ? MathHelper.nextInt(random, 2, 5) : 0;
+			return this == Blocks.field_23077 ? MathHelper.nextInt(random, 0, 1) : 0;
 		}
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, world, pos, stack);
-		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
-			int i = this.getExperienceWhenMined(world.random);
+	public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
+		super.onStacksDropped(state, serverWorld, pos, stack);
+		if (EnchantmentHelper.getLevel(Enchantments.field_9099, stack) == 0) {
+			int i = this.getExperienceWhenMined(serverWorld.random);
 			if (i > 0) {
-				this.dropExperience(world, pos, i);
+				this.dropExperience(serverWorld, pos, i);
 			}
 		}
 	}

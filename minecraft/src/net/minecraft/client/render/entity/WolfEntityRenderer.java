@@ -11,36 +11,36 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
-	private static final Identifier WILD_SKIN = new Identifier("textures/entity/wolf/wolf.png");
-	private static final Identifier TAMED_SKIN = new Identifier("textures/entity/wolf/wolf_tame.png");
-	private static final Identifier ANGRY_SKIN = new Identifier("textures/entity/wolf/wolf_angry.png");
+	private static final Identifier WILD_TEXTURE = new Identifier("textures/entity/wolf/wolf.png");
+	private static final Identifier TAMED_TEXTURE = new Identifier("textures/entity/wolf/wolf_tame.png");
+	private static final Identifier ANGRY_TEXTURE = new Identifier("textures/entity/wolf/wolf_angry.png");
 
 	public WolfEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new WolfEntityModel<>(), 0.5F);
 		this.addFeature(new WolfCollarFeatureRenderer(this));
 	}
 
-	protected float getCustomAngle(WolfEntity wolfEntity, float f) {
-		return wolfEntity.method_6714();
+	protected float method_4167(WolfEntity wolfEntity, float f) {
+		return wolfEntity.getTailAngle();
 	}
 
-	public void render(WolfEntity wolfEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		if (wolfEntity.isWet()) {
-			float h = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(g);
+	public void method_4166(WolfEntity wolfEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		if (wolfEntity.isFurWet()) {
+			float h = wolfEntity.getFurWetBrightnessMultiplier(g);
 			this.model.setColorMultiplier(h, h, h);
 		}
 
-		super.render(wolfEntity, f, g, matrixStack, vertexConsumerProvider, i);
-		if (wolfEntity.isWet()) {
+		super.method_4072(wolfEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		if (wolfEntity.isFurWet()) {
 			this.model.setColorMultiplier(1.0F, 1.0F, 1.0F);
 		}
 	}
 
-	public Identifier getTexture(WolfEntity wolfEntity) {
+	public Identifier method_4165(WolfEntity wolfEntity) {
 		if (wolfEntity.isTamed()) {
-			return TAMED_SKIN;
+			return TAMED_TEXTURE;
 		} else {
-			return wolfEntity.isAngry() ? ANGRY_SKIN : WILD_SKIN;
+			return wolfEntity.hasAngerTime() ? ANGRY_TEXTURE : WILD_TEXTURE;
 		}
 	}
 }

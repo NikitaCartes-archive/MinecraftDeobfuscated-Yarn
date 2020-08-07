@@ -4,8 +4,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
@@ -29,7 +29,7 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 
 	@Override
 	public boolean matches(Inventory inv, World world) {
-		return this.input.test(inv.getInvStack(0));
+		return this.input.method_8093(inv.getStack(0));
 	}
 
 	@Override

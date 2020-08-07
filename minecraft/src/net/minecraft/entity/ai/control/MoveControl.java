@@ -21,14 +21,14 @@ public class MoveControl {
 	protected double speed;
 	protected float forwardMovement;
 	protected float sidewaysMovement;
-	protected MoveControl.State state = MoveControl.State.WAIT;
+	protected MoveControl.State state = MoveControl.State.field_6377;
 
 	public MoveControl(MobEntity entity) {
 		this.entity = entity;
 	}
 
 	public boolean isMoving() {
-		return this.state == MoveControl.State.MOVE_TO;
+		return this.state == MoveControl.State.field_6378;
 	}
 
 	public double getSpeed() {
@@ -40,21 +40,21 @@ public class MoveControl {
 		this.targetY = y;
 		this.targetZ = z;
 		this.speed = speed;
-		if (this.state != MoveControl.State.JUMPING) {
-			this.state = MoveControl.State.MOVE_TO;
+		if (this.state != MoveControl.State.field_6379) {
+			this.state = MoveControl.State.field_6378;
 		}
 	}
 
 	public void strafeTo(float forward, float sideways) {
-		this.state = MoveControl.State.STRAFE;
+		this.state = MoveControl.State.field_6376;
 		this.forwardMovement = forward;
 		this.sidewaysMovement = sideways;
 		this.speed = 0.25;
 	}
 
 	public void tick() {
-		if (this.state == MoveControl.State.STRAFE) {
-			float f = (float)this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
+		if (this.state == MoveControl.State.field_6376) {
+			float f = (float)this.entity.getAttributeValue(EntityAttributes.field_23719);
 			float g = (float)this.speed * f;
 			float h = this.forwardMovement;
 			float i = this.sidewaysMovement;
@@ -70,29 +70,17 @@ public class MoveControl {
 			float l = MathHelper.cos(this.entity.yaw * (float) (Math.PI / 180.0));
 			float m = h * l - i * k;
 			float n = i * l + h * k;
-			EntityNavigation entityNavigation = this.entity.getNavigation();
-			if (entityNavigation != null) {
-				PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
-				if (pathNodeMaker != null
-					&& pathNodeMaker.getNodeType(
-							this.entity.world,
-							MathHelper.floor(this.entity.getX() + (double)m),
-							MathHelper.floor(this.entity.getY()),
-							MathHelper.floor(this.entity.getZ() + (double)n)
-						)
-						!= PathNodeType.WALKABLE) {
-					this.forwardMovement = 1.0F;
-					this.sidewaysMovement = 0.0F;
-					g = f;
-				}
+			if (!this.method_25946(m, n)) {
+				this.forwardMovement = 1.0F;
+				this.sidewaysMovement = 0.0F;
 			}
 
 			this.entity.setMovementSpeed(g);
 			this.entity.setForwardSpeed(this.forwardMovement);
 			this.entity.setSidewaysSpeed(this.sidewaysMovement);
-			this.state = MoveControl.State.WAIT;
-		} else if (this.state == MoveControl.State.MOVE_TO) {
-			this.state = MoveControl.State.WAIT;
+			this.state = MoveControl.State.field_6377;
+		} else if (this.state == MoveControl.State.field_6378) {
+			this.state = MoveControl.State.field_6377;
 			double d = this.targetX - this.entity.getX();
 			double e = this.targetZ - this.entity.getZ();
 			double o = this.targetY - this.entity.getY();
@@ -104,27 +92,46 @@ public class MoveControl {
 
 			float n = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 			this.entity.yaw = this.changeAngle(this.entity.yaw, n, 90.0F);
-			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
-			BlockPos blockPos = new BlockPos(this.entity);
+			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.field_23719)));
+			BlockPos blockPos = this.entity.getBlockPos();
 			BlockState blockState = this.entity.world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			VoxelShape voxelShape = blockState.getCollisionShape(this.entity.world, blockPos);
 			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())
 				|| !voxelShape.isEmpty()
-					&& this.entity.getY() < voxelShape.getMaximum(Direction.Axis.Y) + (double)blockPos.getY()
-					&& !block.matches(BlockTags.DOORS)
-					&& !block.matches(BlockTags.FENCES)) {
+					&& this.entity.getY() < voxelShape.getMax(Direction.Axis.field_11052) + (double)blockPos.getY()
+					&& !block.isIn(BlockTags.field_15495)
+					&& !block.isIn(BlockTags.field_16584)) {
 				this.entity.getJumpControl().setActive();
-				this.state = MoveControl.State.JUMPING;
+				this.state = MoveControl.State.field_6379;
 			}
-		} else if (this.state == MoveControl.State.JUMPING) {
-			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
-			if (this.entity.onGround) {
-				this.state = MoveControl.State.WAIT;
+		} else if (this.state == MoveControl.State.field_6379) {
+			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.field_23719)));
+			if (this.entity.isOnGround()) {
+				this.state = MoveControl.State.field_6377;
 			}
 		} else {
 			this.entity.setForwardSpeed(0.0F);
 		}
+	}
+
+	private boolean method_25946(float f, float g) {
+		EntityNavigation entityNavigation = this.entity.getNavigation();
+		if (entityNavigation != null) {
+			PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
+			if (pathNodeMaker != null
+				&& pathNodeMaker.getDefaultNodeType(
+						this.entity.world,
+						MathHelper.floor(this.entity.getX() + (double)f),
+						MathHelper.floor(this.entity.getY()),
+						MathHelper.floor(this.entity.getZ() + (double)g)
+					)
+					!= PathNodeType.field_12) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	protected float changeAngle(float from, float to, float max) {
@@ -160,9 +167,9 @@ public class MoveControl {
 	}
 
 	public static enum State {
-		WAIT,
-		MOVE_TO,
-		STRAFE,
-		JUMPING;
+		field_6377,
+		field_6378,
+		field_6376,
+		field_6379;
 	}
 }

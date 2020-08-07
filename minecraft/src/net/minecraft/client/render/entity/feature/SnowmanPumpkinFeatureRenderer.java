@@ -15,11 +15,11 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
-	public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> context) {
-		super(context);
+	public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(
+	public void method_4201(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,
@@ -33,18 +33,18 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 	) {
 		if (!snowGolemEntity.isInvisible() && snowGolemEntity.hasPumpkin()) {
 			matrixStack.push();
-			this.getContextModel().method_2834().rotate(matrixStack);
+			this.getContextModel().getTopSnowball().rotate(matrixStack);
 			float m = 0.625F;
 			matrixStack.translate(0.0, -0.34375, 0.0);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			matrixStack.scale(0.625F, -0.625F, -0.625F);
-			ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
+			ItemStack itemStack = new ItemStack(Blocks.field_10147);
 			MinecraftClient.getInstance()
 				.getItemRenderer()
 				.renderItem(
 					snowGolemEntity,
 					itemStack,
-					ModelTransformation.Mode.HEAD,
+					ModelTransformation.Mode.field_4316,
 					false,
 					matrixStack,
 					vertexConsumerProvider,

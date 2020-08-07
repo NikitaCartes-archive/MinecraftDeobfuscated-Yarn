@@ -1,13 +1,11 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.util.Identifier;
 
 public interface CriterionConditions {
 	Identifier getId();
 
-	default JsonElement toJson() {
-		return JsonNull.INSTANCE;
-	}
+	JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer);
 }

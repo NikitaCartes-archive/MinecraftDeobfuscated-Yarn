@@ -8,7 +8,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.GlobalPos;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -22,12 +22,12 @@ public class HideInHomeTask extends Task<LivingEntity> {
 	public HideInHomeTask(int maxDistance, float walkSpeed, int preferredDistance) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.HOME,
-				MemoryModuleState.REGISTERED,
-				MemoryModuleType.HIDING_PLACE,
-				MemoryModuleState.REGISTERED
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_18438,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_19008,
+				MemoryModuleState.field_18458
 			)
 		);
 		this.maxDistance = maxDistance;
@@ -39,11 +39,11 @@ public class HideInHomeTask extends Task<LivingEntity> {
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
 		Optional<BlockPos> optional = world.getPointOfInterestStorage()
 			.getPosition(
-				pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
+				pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18517,
 				blockPos -> true,
-				new BlockPos(entity),
+				entity.getBlockPos(),
 				this.preferredDistance + 1,
-				PointOfInterestStorage.OccupationStatus.ANY
+				PointOfInterestStorage.OccupationStatus.field_18489
 			);
 		if (optional.isPresent() && ((BlockPos)optional.get()).isWithinDistance(entity.getPos(), (double)this.preferredDistance)) {
 			this.homePosition = optional;
@@ -61,15 +61,15 @@ public class HideInHomeTask extends Task<LivingEntity> {
 		if (!optional.isPresent()) {
 			optional = world.getPointOfInterestStorage()
 				.getPosition(
-					pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
+					pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18517,
 					blockPos -> true,
-					PointOfInterestStorage.OccupationStatus.ANY,
-					new BlockPos(entity),
+					PointOfInterestStorage.OccupationStatus.field_18489,
+					entity.getBlockPos(),
 					this.maxDistance,
 					entity.getRandom()
 				);
 			if (!optional.isPresent()) {
-				Optional<GlobalPos> optional2 = brain.getOptionalMemory(MemoryModuleType.HOME);
+				Optional<GlobalPos> optional2 = brain.getOptionalMemory(MemoryModuleType.field_18438);
 				if (optional2.isPresent()) {
 					optional = Optional.of(((GlobalPos)optional2.get()).getPos());
 				}
@@ -77,13 +77,13 @@ public class HideInHomeTask extends Task<LivingEntity> {
 		}
 
 		if (optional.isPresent()) {
-			brain.forget(MemoryModuleType.PATH);
-			brain.forget(MemoryModuleType.LOOK_TARGET);
-			brain.forget(MemoryModuleType.BREED_TARGET);
-			brain.forget(MemoryModuleType.INTERACTION_TARGET);
-			brain.putMemory(MemoryModuleType.HIDING_PLACE, GlobalPos.create(world.getDimension().getType(), (BlockPos)optional.get()));
+			brain.forget(MemoryModuleType.field_18449);
+			brain.forget(MemoryModuleType.field_18446);
+			brain.forget(MemoryModuleType.field_18448);
+			brain.forget(MemoryModuleType.field_18447);
+			brain.remember(MemoryModuleType.field_19008, GlobalPos.create(world.getRegistryKey(), (BlockPos)optional.get()));
 			if (!((BlockPos)optional.get()).isWithinDistance(entity.getPos(), (double)this.preferredDistance)) {
-				brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget((BlockPos)optional.get(), this.walkSpeed, this.preferredDistance));
+				brain.remember(MemoryModuleType.field_18445, new WalkTarget((BlockPos)optional.get(), this.walkSpeed, this.preferredDistance));
 			}
 		}
 	}

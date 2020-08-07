@@ -6,8 +6,8 @@ import com.google.gson.JsonSerializationContext;
 import javax.annotation.Nullable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializer;
 
 public class WeatherCheckLootCondition implements LootCondition {
 	@Nullable
@@ -20,7 +20,12 @@ public class WeatherCheckLootCondition implements LootCondition {
 		this.thundering = thundering;
 	}
 
-	public boolean test(LootContext lootContext) {
+	@Override
+	public LootConditionType getType() {
+		return LootConditionTypes.field_25248;
+	}
+
+	public boolean method_957(LootContext lootContext) {
 		ServerWorld serverWorld = lootContext.getWorld();
 		if (this.raining != null && this.raining != serverWorld.isRaining()) {
 			return false;
@@ -29,17 +34,13 @@ public class WeatherCheckLootCondition implements LootCondition {
 		}
 	}
 
-	public static class Factory extends LootCondition.Factory<WeatherCheckLootCondition> {
-		public Factory() {
-			super(new Identifier("weather_check"), WeatherCheckLootCondition.class);
-		}
-
-		public void toJson(JsonObject jsonObject, WeatherCheckLootCondition weatherCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+	public static class Serializer implements JsonSerializer<WeatherCheckLootCondition> {
+		public void method_960(JsonObject jsonObject, WeatherCheckLootCondition weatherCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("raining", weatherCheckLootCondition.raining);
 			jsonObject.addProperty("thundering", weatherCheckLootCondition.thundering);
 		}
 
-		public WeatherCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public WeatherCheckLootCondition method_961(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Boolean boolean_ = jsonObject.has("raining") ? JsonHelper.getBoolean(jsonObject, "raining") : null;
 			Boolean boolean2 = jsonObject.has("thundering") ? JsonHelper.getBoolean(jsonObject, "thundering") : null;
 			return new WeatherCheckLootCondition(boolean_, boolean2);

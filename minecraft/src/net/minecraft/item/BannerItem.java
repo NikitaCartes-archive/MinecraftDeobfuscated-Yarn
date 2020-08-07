@@ -18,10 +18,10 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 
 public class BannerItem extends WallStandingBlockItem {
-	public BannerItem(Block standingBlock, Block wallBlock, Item.Settings settings) {
-		super(standingBlock, wallBlock, settings);
-		Validate.isInstanceOf(AbstractBannerBlock.class, standingBlock);
-		Validate.isInstanceOf(AbstractBannerBlock.class, wallBlock);
+	public BannerItem(Block block, Block block2, Item.Settings settings) {
+		super(block, block2, settings);
+		Validate.isInstanceOf(AbstractBannerBlock.class, block);
+		Validate.isInstanceOf(AbstractBannerBlock.class, block2);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -35,7 +35,7 @@ public class BannerItem extends WallStandingBlockItem {
 				DyeColor dyeColor = DyeColor.byId(compoundTag2.getInt("Color"));
 				BannerPattern bannerPattern = BannerPattern.byId(compoundTag2.getString("Pattern"));
 				if (bannerPattern != null) {
-					tooltip.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).formatted(Formatting.GRAY));
+					tooltip.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).formatted(Formatting.field_1080));
 				}
 			}
 		}

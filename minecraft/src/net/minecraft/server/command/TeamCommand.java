@@ -11,10 +11,10 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import java.util.Collections;
-import net.minecraft.command.arguments.ColorArgumentType;
-import net.minecraft.command.arguments.ScoreHolderArgumentType;
-import net.minecraft.command.arguments.TeamArgumentType;
-import net.minecraft.command.arguments.TextArgumentType;
+import net.minecraft.command.argument.ColorArgumentType;
+import net.minecraft.command.argument.ScoreHolderArgumentType;
+import net.minecraft.command.argument.TeamArgumentType;
+import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
@@ -26,7 +26,7 @@ import net.minecraft.util.Formatting;
 
 public class TeamCommand {
 	private static final SimpleCommandExceptionType ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.team.add.duplicate"));
-	private static final DynamicCommandExceptionType ADD_LONGNAME_EXCEPTION = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType ADD_LONG_NAME_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("commands.team.add.longName", object)
 	);
 	private static final SimpleCommandExceptionType EMPTY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
@@ -38,25 +38,25 @@ public class TeamCommand {
 	private static final SimpleCommandExceptionType OPTION_COLOR_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.team.option.color.unchanged")
 	);
-	private static final SimpleCommandExceptionType OPTION_FRIENDLYFIRE_ALREADYENABLED_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType OPTION_FRIENDLY_FIRE_ALREADY_ENABLED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.team.option.friendlyfire.alreadyEnabled")
 	);
-	private static final SimpleCommandExceptionType OPTION_FRIENDLYFIRE_ALREADYDISABLED_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType OPTION_FRIENDLY_FIRE_ALREADY_DISABLED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.team.option.friendlyfire.alreadyDisabled")
 	);
-	private static final SimpleCommandExceptionType OPTION_SEEFRIENDLYINVISIBLES_ALREADYENABLED_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType OPTION_SEE_FRIENDLY_INVISIBLES_ALREADY_ENABLED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.team.option.seeFriendlyInvisibles.alreadyEnabled")
 	);
-	private static final SimpleCommandExceptionType SEEFRIENDLYINVISIBLES_ALREADYDSISABLED_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType OPTION_SEE_FRIENDLY_INVISIBLES_ALREADY_DISABLED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.team.option.seeFriendlyInvisibles.alreadyDisabled")
 	);
-	private static final SimpleCommandExceptionType OPTION_NAMETAGEVISIBILITY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType OPTION_NAMETAG_VISIBILITY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.team.option.nametagVisibility.unchanged")
 	);
-	private static final SimpleCommandExceptionType OPTION_DEATHMESSAGEVISIBILITY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType OPTION_DEATH_MESSAGE_VISIBILITY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.team.option.deathMessageVisibility.unchanged")
 	);
-	private static final SimpleCommandExceptionType OPTION_COLLISIONRULE_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType OPTION_COLLISION_RULE_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.team.option.collisionRule.unchanged")
 	);
 
@@ -191,7 +191,7 @@ public class TeamCommand {
 															CommandManager.literal("never")
 																.executes(
 																	commandContext -> executeModifyNametagVisibility(
-																			commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.NEVER
+																			commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1443
 																		)
 																)
 														)
@@ -199,7 +199,7 @@ public class TeamCommand {
 															CommandManager.literal("hideForOtherTeams")
 																.executes(
 																	commandContext -> executeModifyNametagVisibility(
-																			commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS
+																			commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1444
 																		)
 																)
 														)
@@ -207,7 +207,7 @@ public class TeamCommand {
 															CommandManager.literal("hideForOwnTeam")
 																.executes(
 																	commandContext -> executeModifyNametagVisibility(
-																			commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM
+																			commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1446
 																		)
 																)
 														)
@@ -215,7 +215,7 @@ public class TeamCommand {
 															CommandManager.literal("always")
 																.executes(
 																	commandContext -> executeModifyNametagVisibility(
-																			commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.ALWAYS
+																			commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1442
 																		)
 																)
 														)
@@ -226,7 +226,7 @@ public class TeamCommand {
 														CommandManager.literal("never")
 															.executes(
 																commandContext -> executeModifyDeathMessageVisibility(
-																		commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.NEVER
+																		commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1443
 																	)
 															)
 													)
@@ -234,7 +234,7 @@ public class TeamCommand {
 														CommandManager.literal("hideForOtherTeams")
 															.executes(
 																commandContext -> executeModifyDeathMessageVisibility(
-																		commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS
+																		commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1444
 																	)
 															)
 													)
@@ -242,7 +242,7 @@ public class TeamCommand {
 														CommandManager.literal("hideForOwnTeam")
 															.executes(
 																commandContext -> executeModifyDeathMessageVisibility(
-																		commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM
+																		commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1446
 																	)
 															)
 													)
@@ -250,7 +250,7 @@ public class TeamCommand {
 														CommandManager.literal("always")
 															.executes(
 																commandContext -> executeModifyDeathMessageVisibility(
-																		commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.ALWAYS
+																		commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1442
 																	)
 															)
 													)
@@ -261,7 +261,7 @@ public class TeamCommand {
 													CommandManager.literal("never")
 														.executes(
 															commandContext -> executeModifyCollisionRule(
-																	commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.NEVER
+																	commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1435
 																)
 														)
 												)
@@ -269,7 +269,7 @@ public class TeamCommand {
 													CommandManager.literal("pushOwnTeam")
 														.executes(
 															commandContext -> executeModifyCollisionRule(
-																	commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.PUSH_OWN_TEAM
+																	commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1440
 																)
 														)
 												)
@@ -277,7 +277,7 @@ public class TeamCommand {
 													CommandManager.literal("pushOtherTeams")
 														.executes(
 															commandContext -> executeModifyCollisionRule(
-																	commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS
+																	commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1434
 																)
 														)
 												)
@@ -285,7 +285,7 @@ public class TeamCommand {
 													CommandManager.literal("always")
 														.executes(
 															commandContext -> executeModifyCollisionRule(
-																	commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.ALWAYS
+																	commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1437
 																)
 														)
 												)
@@ -351,7 +351,7 @@ public class TeamCommand {
 
 	private static int executeModifyNametagVisibility(ServerCommandSource source, Team team, AbstractTeam.VisibilityRule visibility) throws CommandSyntaxException {
 		if (team.getNameTagVisibilityRule() == visibility) {
-			throw OPTION_NAMETAGEVISIBILITY_UNCHANGED_EXCEPTION.create();
+			throw OPTION_NAMETAG_VISIBILITY_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setNameTagVisibilityRule(visibility);
 			source.sendFeedback(new TranslatableText("commands.team.option.nametagVisibility.success", team.getFormattedName(), visibility.getTranslationKey()), true);
@@ -361,7 +361,7 @@ public class TeamCommand {
 
 	private static int executeModifyDeathMessageVisibility(ServerCommandSource source, Team team, AbstractTeam.VisibilityRule visibility) throws CommandSyntaxException {
 		if (team.getDeathMessageVisibilityRule() == visibility) {
-			throw OPTION_DEATHMESSAGEVISIBILITY_UNCHANGED_EXCEPTION.create();
+			throw OPTION_DEATH_MESSAGE_VISIBILITY_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setDeathMessageVisibilityRule(visibility);
 			source.sendFeedback(
@@ -373,7 +373,7 @@ public class TeamCommand {
 
 	private static int executeModifyCollisionRule(ServerCommandSource source, Team team, AbstractTeam.CollisionRule collisionRule) throws CommandSyntaxException {
 		if (team.getCollisionRule() == collisionRule) {
-			throw OPTION_COLLISIONRULE_UNCHANGED_EXCEPTION.create();
+			throw OPTION_COLLISION_RULE_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setCollisionRule(collisionRule);
 			source.sendFeedback(new TranslatableText("commands.team.option.collisionRule.success", team.getFormattedName(), collisionRule.getTranslationKey()), true);
@@ -384,9 +384,9 @@ public class TeamCommand {
 	private static int executeModifySeeFriendlyInvisibles(ServerCommandSource source, Team team, boolean allowed) throws CommandSyntaxException {
 		if (team.shouldShowFriendlyInvisibles() == allowed) {
 			if (allowed) {
-				throw OPTION_SEEFRIENDLYINVISIBLES_ALREADYENABLED_EXCEPTION.create();
+				throw OPTION_SEE_FRIENDLY_INVISIBLES_ALREADY_ENABLED_EXCEPTION.create();
 			} else {
-				throw SEEFRIENDLYINVISIBLES_ALREADYDSISABLED_EXCEPTION.create();
+				throw OPTION_SEE_FRIENDLY_INVISIBLES_ALREADY_DISABLED_EXCEPTION.create();
 			}
 		} else {
 			team.setShowFriendlyInvisibles(allowed);
@@ -398,9 +398,9 @@ public class TeamCommand {
 	private static int executeModifyFriendlyFire(ServerCommandSource source, Team team, boolean allowed) throws CommandSyntaxException {
 		if (team.isFriendlyFireAllowed() == allowed) {
 			if (allowed) {
-				throw OPTION_FRIENDLYFIRE_ALREADYENABLED_EXCEPTION.create();
+				throw OPTION_FRIENDLY_FIRE_ALREADY_ENABLED_EXCEPTION.create();
 			} else {
-				throw OPTION_FRIENDLYFIRE_ALREADYDISABLED_EXCEPTION.create();
+				throw OPTION_FRIENDLY_FIRE_ALREADY_DISABLED_EXCEPTION.create();
 			}
 		} else {
 			team.setFriendlyFireAllowed(allowed);
@@ -460,7 +460,7 @@ public class TeamCommand {
 		if (scoreboard.getTeam(team) != null) {
 			throw ADD_DUPLICATE_EXCEPTION.create();
 		} else if (team.length() > 16) {
-			throw ADD_LONGNAME_EXCEPTION.create(16);
+			throw ADD_LONG_NAME_EXCEPTION.create(16);
 		} else {
 			Team team2 = scoreboard.addTeam(team);
 			team2.setDisplayName(displayName);

@@ -25,7 +25,7 @@ public abstract class EyesFeatureRenderer<T extends Entity, M extends EntityMode
 		float limbAngle,
 		float limbDistance,
 		float tickDelta,
-		float customAngle,
+		float animationProgress,
 		float headYaw,
 		float headPitch
 	) {

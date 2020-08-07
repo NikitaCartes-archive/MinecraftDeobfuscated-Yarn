@@ -11,21 +11,21 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/fish/cod.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/fish/cod.png");
 
 	public CodEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new CodEntityModel<>(), 0.3F);
 	}
 
-	public Identifier getTexture(CodEntity codEntity) {
-		return SKIN;
+	public Identifier method_3897(CodEntity codEntity) {
+		return TEXTURE;
 	}
 
-	protected void setupTransforms(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void method_3896(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(codEntity, matrixStack, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(i));
-		if (!codEntity.isInsideWater()) {
+		if (!codEntity.isTouchingWater()) {
 			matrixStack.translate(0.1F, 0.1F, -0.1F);
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 		}

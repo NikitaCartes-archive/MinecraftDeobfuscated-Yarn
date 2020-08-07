@@ -147,7 +147,7 @@ public class SoundEngine {
 
 	@Nullable
 	public Source createSource(SoundEngine.RunMode mode) {
-		return (mode == SoundEngine.RunMode.STREAMING ? this.staticSources : this.streamingSources).createSource();
+		return (mode == SoundEngine.RunMode.field_18353 ? this.staticSources : this.streamingSources).createSource();
 	}
 
 	public void release(Source source) {
@@ -168,8 +168,8 @@ public class SoundEngine {
 
 	@Environment(EnvType.CLIENT)
 	public static enum RunMode {
-		STATIC,
-		STREAMING;
+		field_18352,
+		field_18353;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -199,6 +199,7 @@ public class SoundEngine {
 		@Override
 		public Source createSource() {
 			if (this.sources.size() >= this.maxSourceCount) {
+				SoundEngine.LOGGER.warn("Maximum sound pool size {} reached", this.maxSourceCount);
 				return null;
 			} else {
 				Source source = Source.create();

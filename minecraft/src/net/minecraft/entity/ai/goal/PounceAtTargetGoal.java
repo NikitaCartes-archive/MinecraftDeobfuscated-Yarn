@@ -10,10 +10,10 @@ public class PounceAtTargetGoal extends Goal {
 	private LivingEntity target;
 	private final float velocity;
 
-	public PounceAtTargetGoal(MobEntity rmob, float velocity) {
-		this.mob = rmob;
+	public PounceAtTargetGoal(MobEntity mob, float velocity) {
+		this.mob = mob;
 		this.velocity = velocity;
-		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
+		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class PounceAtTargetGoal extends Goal {
 				double d = this.mob.squaredDistanceTo(this.target);
 				if (d < 4.0 || d > 16.0) {
 					return false;
-				} else if (!this.mob.onGround) {
+				} else if (!this.mob.isOnGround()) {
 					return false;
 				} else {
 					return this.mob.getRandom().nextInt(5) == 0;
@@ -39,7 +39,7 @@ public class PounceAtTargetGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.mob.onGround;
+		return !this.mob.isOnGround();
 	}
 
 	@Override

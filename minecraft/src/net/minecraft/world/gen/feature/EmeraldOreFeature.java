@@ -1,27 +1,21 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
-	public EmeraldOreFeature(Function<Dynamic<?>, ? extends EmeraldOreFeatureConfig> configFactory) {
-		super(configFactory);
+	public EmeraldOreFeature(Codec<EmeraldOreFeatureConfig> codec) {
+		super(codec);
 	}
 
-	public boolean generate(
-		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		EmeraldOreFeatureConfig emeraldOreFeatureConfig
+	public boolean method_13811(
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EmeraldOreFeatureConfig emeraldOreFeatureConfig
 	) {
-		if (iWorld.getBlockState(blockPos).getBlock() == emeraldOreFeatureConfig.target.getBlock()) {
-			iWorld.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);
+		if (structureWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
+			structureWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);
 		}
 
 		return true;

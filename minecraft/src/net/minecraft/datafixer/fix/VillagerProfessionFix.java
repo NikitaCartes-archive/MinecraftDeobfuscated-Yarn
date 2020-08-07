@@ -3,20 +3,20 @@ package net.minecraft.datafixer.fix;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class VillagerProfessionFix extends ChoiceFix {
-	public VillagerProfessionFix(Schema outputSchema, String string) {
-		super(outputSchema, false, "Villager profession data fix (" + string + ")", TypeReferences.ENTITY, string);
+	public VillagerProfessionFix(Schema outputSchema, String entity) {
+		super(outputSchema, false, "Villager profession data fix (" + entity + ")", TypeReferences.ENTITY, entity);
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
-		return typed.set(
+	protected Typed<?> transform(Typed<?> inputType) {
+		Dynamic<?> dynamic = inputType.get(DSL.remainderFinder());
+		return inputType.set(
 			DSL.remainderFinder(),
 			dynamic.remove("Profession")
 				.remove("Career")
@@ -30,7 +30,7 @@ public class VillagerProfessionFix extends ChoiceFix {
 							dynamic.createString("profession"),
 							dynamic.createString(convertProfessionId(dynamic.get("Profession").asInt(0), dynamic.get("Career").asInt(0))),
 							dynamic.createString("level"),
-							DataFixUtils.orElse(dynamic.get("CareerLevel").get(), dynamic.createInt(1))
+							DataFixUtils.orElse(dynamic.get("CareerLevel").result(), dynamic.createInt(1))
 						)
 					)
 				)

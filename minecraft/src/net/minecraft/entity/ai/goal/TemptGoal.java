@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
@@ -16,7 +16,7 @@ public class TemptGoal extends Goal {
 		.includeTeammates()
 		.ignoreEntityTargetRules()
 		.includeHidden();
-	protected final MobEntityWithAi mob;
+	protected final PathAwareEntity mob;
 	private final double speed;
 	private double lastPlayerX;
 	private double lastPlayerY;
@@ -29,16 +29,16 @@ public class TemptGoal extends Goal {
 	private final Ingredient food;
 	private final boolean canBeScared;
 
-	public TemptGoal(MobEntityWithAi mob, double speed, Ingredient food, boolean canBeScared) {
+	public TemptGoal(PathAwareEntity mob, double speed, Ingredient food, boolean canBeScared) {
 		this(mob, speed, canBeScared, food);
 	}
 
-	public TemptGoal(MobEntityWithAi mob, double speed, boolean canBeScared, Ingredient food) {
+	public TemptGoal(PathAwareEntity mob, double speed, boolean canBeScared, Ingredient food) {
 		this.mob = mob;
 		this.speed = speed;
 		this.food = food;
 		this.canBeScared = canBeScared;
-		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		if (!(mob.getNavigation() instanceof MobNavigation) && !(mob.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
 		}
@@ -54,13 +54,13 @@ public class TemptGoal extends Goal {
 			if (this.closestPlayer == null) {
 				return false;
 			} else {
-				return this.isTempedBy(this.closestPlayer.getMainHandStack()) || this.isTempedBy(this.closestPlayer.getOffHandStack());
+				return this.isTemptedBy(this.closestPlayer.getMainHandStack()) || this.isTemptedBy(this.closestPlayer.getOffHandStack());
 			}
 		}
 	}
 
-	protected boolean isTempedBy(ItemStack stack) {
-		return this.food.test(stack);
+	protected boolean isTemptedBy(ItemStack stack) {
+		return this.food.method_8093(stack);
 	}
 
 	@Override

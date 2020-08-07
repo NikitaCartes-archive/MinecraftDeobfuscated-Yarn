@@ -12,7 +12,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
@@ -72,10 +71,10 @@ public class WrittenBookItem extends Item {
 			CompoundTag compoundTag = stack.getTag();
 			String string = compoundTag.getString("author");
 			if (!ChatUtil.isEmpty(string)) {
-				tooltip.add(new TranslatableText("book.byAuthor", string).formatted(Formatting.GRAY));
+				tooltip.add(new TranslatableText("book.byAuthor", string).formatted(Formatting.field_1080));
 			}
 
-			tooltip.add(new TranslatableText("book.generation." + compoundTag.getInt("generation")).formatted(Formatting.GRAY));
+			tooltip.add(new TranslatableText("book.generation." + compoundTag.getInt("generation")).formatted(Formatting.field_1080));
 		}
 	}
 
@@ -84,8 +83,8 @@ public class WrittenBookItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == Blocks.LECTERN) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+		if (blockState.isOf(Blocks.field_16330)) {
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.success(world.isClient) : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
 		}
@@ -95,8 +94,8 @@ public class WrittenBookItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		user.openEditBookScreen(itemStack, hand);
-		user.incrementStat(Stats.USED.getOrCreateStat(this));
-		return TypedActionResult.success(itemStack);
+		user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		return TypedActionResult.method_29237(itemStack, world.isClient());
 	}
 
 	public static boolean resolve(ItemStack book, @Nullable ServerCommandSource commandSource, @Nullable PlayerEntity player) {
@@ -119,7 +118,7 @@ public class WrittenBookItem extends Item {
 						text = new LiteralText(string);
 					}
 
-					listTag.set(i, (Tag)StringTag.of(Text.Serializer.toJson(text)));
+					listTag.method_10606(i, StringTag.of(Text.Serializer.toJson(text)));
 				}
 
 				compoundTag.put("pages", listTag);
@@ -131,7 +130,7 @@ public class WrittenBookItem extends Item {
 	}
 
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack stack) {
+	public boolean hasGlint(ItemStack stack) {
 		return true;
 	}
 }

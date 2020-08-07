@@ -14,6 +14,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.CommandBlockExecutor;
@@ -30,14 +31,14 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public CommandBlockMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.COMMAND_BLOCK_MINECART, world, x, y, z);
+		super(EntityType.field_6136, world, x, y, z);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.getDataTracker().startTracking(COMMAND, "");
-		this.getDataTracker().startTracking(LAST_OUTPUT, new LiteralText(""));
+		this.getDataTracker().startTracking(LAST_OUTPUT, LiteralText.EMPTY);
 	}
 
 	@Override
@@ -56,12 +57,12 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.COMMAND_BLOCK;
+		return AbstractMinecartEntity.Type.field_7681;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.COMMAND_BLOCK.getDefaultState();
+		return Blocks.field_10525.getDefaultState();
 	}
 
 	public CommandBlockExecutor getCommandExecutor() {
@@ -77,9 +78,8 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
-		this.commandExecutor.interact(player);
-		return true;
+	public ActionResult interact(PlayerEntity player, Hand hand) {
+		return this.commandExecutor.interact(player);
 	}
 
 	@Override

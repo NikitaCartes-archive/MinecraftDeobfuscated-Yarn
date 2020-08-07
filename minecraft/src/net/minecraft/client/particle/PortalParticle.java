@@ -2,8 +2,8 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class PortalParticle extends SpriteBillboardParticle {
@@ -11,22 +11,22 @@ public class PortalParticle extends SpriteBillboardParticle {
 	private final double startY;
 	private final double startZ;
 
-	private PortalParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(world, x, y, z);
-		this.velocityX = velocityX;
-		this.velocityY = velocityY;
-		this.velocityZ = velocityZ;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+	protected PortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		super(clientWorld, d, e, f);
+		this.velocityX = g;
+		this.velocityY = h;
+		this.velocityZ = i;
+		this.x = d;
+		this.y = e;
+		this.z = f;
 		this.startX = this.x;
 		this.startY = this.y;
 		this.startZ = this.z;
 		this.scale = 0.1F * (this.random.nextFloat() * 0.2F + 0.5F);
-		float f = this.random.nextFloat() * 0.6F + 0.4F;
-		this.colorRed = f * 0.9F;
-		this.colorGreen = f * 0.3F;
-		this.colorBlue = f;
+		float j = this.random.nextFloat() * 0.6F + 0.4F;
+		this.colorRed = j * 0.9F;
+		this.colorGreen = j * 0.3F;
+		this.colorBlue = j;
 		this.maxAge = (int)(Math.random() * 10.0) + 40;
 	}
 
@@ -85,15 +85,15 @@ public class PortalParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17865;
+		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
-			this.field_17865 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			PortalParticle portalParticle = new PortalParticle(world, d, e, f, g, h, i);
-			portalParticle.setSprite(this.field_17865);
+		public Particle method_3094(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			PortalParticle portalParticle = new PortalParticle(clientWorld, d, e, f, g, h, i);
+			portalParticle.setSprite(this.spriteProvider);
 			return portalParticle;
 		}
 	}

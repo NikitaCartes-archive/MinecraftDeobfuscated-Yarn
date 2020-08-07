@@ -7,27 +7,27 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum ResourcePackCompatibility {
-	TOO_OLD("old"),
-	TOO_NEW("new"),
-	COMPATIBLE("compatible");
+	field_14223("old"),
+	field_14220("new"),
+	field_14224("compatible");
 
 	private final Text notification;
 	private final Text confirmMessage;
 
 	private ResourcePackCompatibility(String translationSuffix) {
-		this.notification = new TranslatableText("resourcePack.incompatible." + translationSuffix);
-		this.confirmMessage = new TranslatableText("resourcePack.incompatible.confirm." + translationSuffix);
+		this.notification = new TranslatableText("pack.incompatible." + translationSuffix);
+		this.confirmMessage = new TranslatableText("pack.incompatible.confirm." + translationSuffix);
 	}
 
 	public boolean isCompatible() {
-		return this == COMPATIBLE;
+		return this == field_14224;
 	}
 
 	public static ResourcePackCompatibility from(int packVersion) {
 		if (packVersion < SharedConstants.getGameVersion().getPackVersion()) {
-			return TOO_OLD;
+			return field_14223;
 		} else {
-			return packVersion > SharedConstants.getGameVersion().getPackVersion() ? TOO_NEW : COMPATIBLE;
+			return packVersion > SharedConstants.getGameVersion().getPackVersion() ? field_14220 : field_14224;
 		}
 	}
 

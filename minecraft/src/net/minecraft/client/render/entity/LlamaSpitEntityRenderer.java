@@ -14,26 +14,26 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/llama/spit.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/llama/spit.png");
 	private final LlamaSpitEntityModel<LlamaSpitEntity> model = new LlamaSpitEntityModel<>();
 
 	public LlamaSpitEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(LlamaSpitEntity llamaSpitEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void method_4061(LlamaSpitEntity llamaSpitEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.translate(0.0, 0.15F, 0.0);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0F));
 		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch)));
 		this.model.setAngles(llamaSpitEntity, g, 0.0F, -0.1F, 0.0F, 0.0F);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 		super.render(llamaSpitEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(LlamaSpitEntity llamaSpitEntity) {
-		return SKIN;
+	public Identifier method_4062(LlamaSpitEntity llamaSpitEntity) {
+		return TEXTURE;
 	}
 }

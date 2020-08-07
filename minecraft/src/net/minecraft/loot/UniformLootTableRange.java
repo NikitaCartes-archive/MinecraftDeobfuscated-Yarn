@@ -59,7 +59,7 @@ public class UniformLootTableRange implements LootTableRange {
 	}
 
 	public static class Serializer implements JsonDeserializer<UniformLootTableRange>, JsonSerializer<UniformLootTableRange> {
-		public UniformLootTableRange deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public UniformLootTableRange method_381(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (JsonHelper.isNumber(jsonElement)) {
 				return new UniformLootTableRange(JsonHelper.asFloat(jsonElement, "value"));
 			} else {
@@ -70,7 +70,7 @@ public class UniformLootTableRange implements LootTableRange {
 			}
 		}
 
-		public JsonElement serialize(UniformLootTableRange uniformLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement method_382(UniformLootTableRange uniformLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
 			if (uniformLootTableRange.min == uniformLootTableRange.max) {
 				return new JsonPrimitive(uniformLootTableRange.min);
 			} else {

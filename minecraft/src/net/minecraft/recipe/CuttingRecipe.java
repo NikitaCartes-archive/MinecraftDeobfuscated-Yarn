@@ -5,10 +5,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 
 public abstract class CuttingRecipe implements Recipe<Inventory> {
@@ -79,7 +79,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 			this.recipeFactory = recipeFactory;
 		}
 
-		public T read(Identifier identifier, JsonObject jsonObject) {
+		public T method_17881(Identifier identifier, JsonObject jsonObject) {
 			String string = JsonHelper.getString(jsonObject, "group", "");
 			Ingredient ingredient;
 			if (JsonHelper.hasArray(jsonObject, "ingredient")) {
@@ -94,14 +94,14 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 			return this.recipeFactory.create(identifier, string, ingredient, itemStack);
 		}
 
-		public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
+		public T method_17882(Identifier identifier, PacketByteBuf packetByteBuf) {
 			String string = packetByteBuf.readString(32767);
 			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 			ItemStack itemStack = packetByteBuf.readItemStack();
 			return this.recipeFactory.create(identifier, string, ingredient, itemStack);
 		}
 
-		public void write(PacketByteBuf packetByteBuf, T cuttingRecipe) {
+		public void method_17880(PacketByteBuf packetByteBuf, T cuttingRecipe) {
 			packetByteBuf.writeString(cuttingRecipe.group);
 			cuttingRecipe.input.write(packetByteBuf);
 			packetByteBuf.writeItemStack(cuttingRecipe.output);

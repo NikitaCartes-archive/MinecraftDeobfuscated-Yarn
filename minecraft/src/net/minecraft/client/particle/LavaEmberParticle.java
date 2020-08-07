@@ -2,13 +2,13 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class LavaEmberParticle extends SpriteBillboardParticle {
-	private LavaEmberParticle(World world, double x, double y, double z) {
+	private LavaEmberParticle(ClientWorld world, double x, double y, double z) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.velocityX *= 0.8F;
 		this.velocityY *= 0.8F;
@@ -44,7 +44,7 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 		this.prevPosZ = this.z;
 		float f = (float)this.age / (float)this.maxAge;
 		if (this.random.nextFloat() > f) {
-			this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ);
+			this.world.addParticle(ParticleTypes.field_11251, this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ);
 		}
 
 		if (this.age++ >= this.maxAge) {
@@ -64,15 +64,15 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17818;
+		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
-			this.field_17818 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			LavaEmberParticle lavaEmberParticle = new LavaEmberParticle(world, d, e, f);
-			lavaEmberParticle.setSprite(this.field_17818);
+		public Particle method_3039(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			LavaEmberParticle lavaEmberParticle = new LavaEmberParticle(clientWorld, d, e, f);
+			lavaEmberParticle.setSprite(this.spriteProvider);
 			return lavaEmberParticle;
 		}
 	}

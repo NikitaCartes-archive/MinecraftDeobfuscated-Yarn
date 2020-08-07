@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-public class IntProperty extends AbstractProperty<Integer> {
+public class IntProperty extends Property<Integer> {
 	private final ImmutableSet<Integer> values;
 
 	protected IntProperty(String name, int min, int max) {
@@ -32,11 +32,11 @@ public class IntProperty extends AbstractProperty<Integer> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o instanceof IntProperty && super.equals(o)) {
-			IntProperty intProperty = (IntProperty)o;
+		} else if (object instanceof IntProperty && super.equals(object)) {
+			IntProperty intProperty = (IntProperty)object;
 			return this.values.equals(intProperty.values);
 		} else {
 			return false;
@@ -62,7 +62,7 @@ public class IntProperty extends AbstractProperty<Integer> {
 		}
 	}
 
-	public String name(Integer integer) {
+	public String method_11868(Integer integer) {
 		return integer.toString();
 	}
 }

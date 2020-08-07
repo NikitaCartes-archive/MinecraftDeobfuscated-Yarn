@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.pathing;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
@@ -19,7 +19,7 @@ public class PathNode {
 	public boolean visited;
 	public float pathLength;
 	public float penalty;
-	public PathNodeType type = PathNodeType.BLOCKED;
+	public PathNodeType type = PathNodeType.field_22;
 
 	public PathNode(int x, int y, int z) {
 		this.x = x;
@@ -74,7 +74,6 @@ public class PathNode {
 		return f + g + h;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BlockPos getPos() {
 		return new BlockPos(this.x, this.y, this.z);
 	}

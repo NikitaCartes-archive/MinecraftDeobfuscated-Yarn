@@ -2,6 +2,9 @@ package net.minecraft.server.world;
 
 import java.util.Objects;
 
+/**
+ * Represents a chunk ticket, which specifies the reason a chunk has been loaded.
+ */
 public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 	private final ChunkTicketType<T> type;
 	private final int level;
@@ -14,7 +17,7 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 		this.argument = argument;
 	}
 
-	public int compareTo(ChunkTicket<?> chunkTicket) {
+	public int method_14285(ChunkTicket<?> chunkTicket) {
 		int i = Integer.compare(this.level, chunkTicket.level);
 		if (i != 0) {
 			return i;

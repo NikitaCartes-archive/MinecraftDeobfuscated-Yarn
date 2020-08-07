@@ -4,7 +4,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.BambooLeaves;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -16,30 +15,30 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class BambooSaplingBlock extends Block implements Fertilizable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 12.0, 12.0);
 
-	public BambooSaplingBlock(Block.Settings settings) {
+	public BambooSaplingBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XZ;
+	public AbstractBlock.OffsetType getOffsetType() {
+		return AbstractBlock.OffsetType.field_10657;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		Vec3d vec3d = state.getOffsetPos(view, pos);
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		Vec3d vec3d = state.getModelOffset(world, pos);
 		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (random.nextInt(3) == 0 && world.isAir(pos.up()) && world.getBaseLightLevel(pos.up(), 0) >= 9) {
 			this.grow(world, pos);
 		}
@@ -47,19 +46,19 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos.down()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
+		return world.getBlockState(pos.method_10074()).isIn(BlockTags.field_15497);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (!state.canPlaceAt(world, pos)) {
-			return Blocks.AIR.getDefaultState();
+			return Blocks.field_10124.getDefaultState();
 		} else {
-			if (facing == Direction.UP && neighborState.getBlock() == Blocks.BAMBOO) {
-				world.setBlockState(pos, Blocks.BAMBOO.getDefaultState(), 2);
+			if (direction == Direction.field_11036 && newState.isOf(Blocks.field_10211)) {
+				world.setBlockState(pos, Blocks.field_10211.getDefaultState(), 2);
 			}
 
-			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		}
 	}
 
@@ -90,6 +89,6 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	}
 
 	protected void grow(World world, BlockPos pos) {
-		world.setBlockState(pos.up(), Blocks.BAMBOO.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.SMALL), 3);
+		world.setBlockState(pos.up(), Blocks.field_10211.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.field_12466), 3);
 	}
 }

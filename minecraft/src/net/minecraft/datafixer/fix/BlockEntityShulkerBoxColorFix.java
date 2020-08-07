@@ -1,9 +1,9 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class BlockEntityShulkerBoxColorFix extends ChoiceFix {
@@ -12,7 +12,7 @@ public class BlockEntityShulkerBoxColorFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), dynamic -> dynamic.remove("Color"));
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), dynamic -> dynamic.remove("Color"));
 	}
 }

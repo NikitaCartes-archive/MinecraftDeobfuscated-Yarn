@@ -15,7 +15,7 @@ public class CatEntityModel<T extends CatEntity> extends OcelotEntityModel<T> {
 		super(f);
 	}
 
-	public void animateModel(T catEntity, float f, float g, float h) {
+	public void method_17074(T catEntity, float f, float g, float h) {
 		this.sleepAnimation = catEntity.getSleepAnimation(h);
 		this.tailCurlAnimation = catEntity.getTailCurlAnimation(h);
 		this.headDownAnimation = catEntity.getHeadDownAnimation(h);
@@ -35,7 +35,7 @@ public class CatEntityModel<T extends CatEntity> extends OcelotEntityModel<T> {
 		}
 
 		super.animateModel(catEntity, f, g, h);
-		if (catEntity.isSitting()) {
+		if (catEntity.isInSittingPose()) {
 			this.torso.pitch = (float) (Math.PI / 4);
 			this.torso.pivotY += -4.0F;
 			this.torso.pivotZ += 5.0F;
@@ -63,7 +63,7 @@ public class CatEntityModel<T extends CatEntity> extends OcelotEntityModel<T> {
 		}
 	}
 
-	public void setAngles(T catEntity, float f, float g, float h, float i, float j) {
+	public void method_17075(T catEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(catEntity, f, g, h, i, j);
 		if (this.sleepAnimation > 0.0F) {
 			this.head.roll = ModelUtil.interpolateAngle(this.head.roll, -1.2707963F, this.sleepAnimation);

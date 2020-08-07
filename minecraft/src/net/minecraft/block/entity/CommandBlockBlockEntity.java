@@ -7,8 +7,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -24,8 +24,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	private boolean needsUpdatePacket;
 	private final CommandBlockExecutor commandExecutor = new CommandBlockExecutor() {
 		@Override
-		public void setCommand(String string) {
-			super.setCommand(string);
+		public void setCommand(String command) {
+			super.setCommand(command);
 			CommandBlockBlockEntity.this.markDirty();
 		}
 
@@ -43,22 +43,14 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public Vec3d getPos() {
-			return new Vec3d(
-				(double)CommandBlockBlockEntity.this.pos.getX() + 0.5,
-				(double)CommandBlockBlockEntity.this.pos.getY() + 0.5,
-				(double)CommandBlockBlockEntity.this.pos.getZ() + 0.5
-			);
+			return Vec3d.ofCenter(CommandBlockBlockEntity.this.pos);
 		}
 
 		@Override
 		public ServerCommandSource getSource() {
 			return new ServerCommandSource(
 				this,
-				new Vec3d(
-					(double)CommandBlockBlockEntity.this.pos.getX() + 0.5,
-					(double)CommandBlockBlockEntity.this.pos.getY() + 0.5,
-					(double)CommandBlockBlockEntity.this.pos.getZ() + 0.5
-				),
+				Vec3d.ofCenter(CommandBlockBlockEntity.this.pos),
 				Vec2f.ZERO,
 				this.getWorld(),
 				2,
@@ -71,7 +63,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	};
 
 	public CommandBlockBlockEntity() {
-		super(BlockEntityType.COMMAND_BLOCK);
+		super(BlockEntityType.field_11904);
 	}
 
 	@Override
@@ -85,8 +77,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
 		this.commandExecutor.deserialize(tag);
 		this.powered = tag.getBoolean("powered");
 		this.conditionMet = tag.getBoolean("conditionMet");
@@ -106,7 +98,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public boolean shouldNotCopyTagFromItem() {
+	public boolean copyItemDataRequiresOperator() {
 		return true;
 	}
 
@@ -114,8 +106,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		return this.commandExecutor;
 	}
 
-	public void setPowered(boolean bl) {
-		this.powered = bl;
+	public void setPowered(boolean powered) {
+		this.powered = powered;
 	}
 
 	public boolean isPowered() {
@@ -126,17 +118,17 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		return this.auto;
 	}
 
-	public void setAuto(boolean bl) {
-		boolean bl2 = this.auto;
-		this.auto = bl;
-		if (!bl2 && bl && !this.powered && this.world != null && this.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
+	public void setAuto(boolean auto) {
+		boolean bl = this.auto;
+		this.auto = auto;
+		if (!bl && auto && !this.powered && this.world != null && this.getCommandBlockType() != CommandBlockBlockEntity.Type.field_11922) {
 			this.method_23360();
 		}
 	}
 
 	public void method_23359() {
 		CommandBlockBlockEntity.Type type = this.getCommandBlockType();
-		if (type == CommandBlockBlockEntity.Type.AUTO && (this.powered || this.auto) && this.world != null) {
+		if (type == CommandBlockBlockEntity.Type.field_11923 && (this.powered || this.auto) && this.world != null) {
 			this.method_23360();
 		}
 	}
@@ -145,7 +137,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		Block block = this.getCachedState().getBlock();
 		if (block instanceof CommandBlock) {
 			this.updateConditionMet();
-			this.world.getBlockTickScheduler().schedule(this.pos, block, block.getTickRate(this.world));
+			this.world.getBlockTickScheduler().schedule(this.pos, block, 1);
 		}
 	}
 
@@ -177,13 +169,13 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public CommandBlockBlockEntity.Type getCommandBlockType() {
-		Block block = this.getCachedState().getBlock();
-		if (block == Blocks.COMMAND_BLOCK) {
-			return CommandBlockBlockEntity.Type.REDSTONE;
-		} else if (block == Blocks.REPEATING_COMMAND_BLOCK) {
-			return CommandBlockBlockEntity.Type.AUTO;
+		BlockState blockState = this.getCachedState();
+		if (blockState.isOf(Blocks.field_10525)) {
+			return CommandBlockBlockEntity.Type.field_11924;
+		} else if (blockState.isOf(Blocks.field_10263)) {
+			return CommandBlockBlockEntity.Type.field_11923;
 		} else {
-			return block == Blocks.CHAIN_COMMAND_BLOCK ? CommandBlockBlockEntity.Type.SEQUENCE : CommandBlockBlockEntity.Type.REDSTONE;
+			return blockState.isOf(Blocks.field_10395) ? CommandBlockBlockEntity.Type.field_11922 : CommandBlockBlockEntity.Type.field_11924;
 		}
 	}
 
@@ -199,8 +191,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public static enum Type {
-		SEQUENCE,
-		AUTO,
-		REDSTONE;
+		field_11922,
+		field_11923,
+		field_11924;
 	}
 }

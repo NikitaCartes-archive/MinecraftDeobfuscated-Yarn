@@ -2,10 +2,10 @@ package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.datafixer.TypeReferences;
@@ -23,7 +23,7 @@ public class EntityStringUuidFix extends DataFix {
 			typed -> typed.update(
 					DSL.remainderFinder(),
 					dynamic -> {
-						Optional<String> optional = dynamic.get("UUID").asString();
+						Optional<String> optional = dynamic.get("UUID").asString().result();
 						if (optional.isPresent()) {
 							UUID uUID = UUID.fromString((String)optional.get());
 							return dynamic.remove("UUID")

@@ -8,8 +8,8 @@ import net.minecraft.world.World;
 public abstract class TameableShoulderEntity extends TameableEntity {
 	private int ticks;
 
-	protected TameableShoulderEntity(EntityType<? extends TameableShoulderEntity> type, World world) {
-		super(type, world);
+	protected TameableShoulderEntity(EntityType<? extends TameableShoulderEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public boolean mountOnto(ServerPlayerEntity player) {

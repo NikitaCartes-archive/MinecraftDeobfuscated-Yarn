@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/iron_golem/iron_golem.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/iron_golem/iron_golem.png");
 
 	public IronGolemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new IronGolemEntityModel<>(), 0.7F);
@@ -20,11 +20,11 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 		this.addFeature(new IronGolemFlowerFeatureRenderer(this));
 	}
 
-	public Identifier getTexture(IronGolemEntity ironGolemEntity) {
-		return SKIN;
+	public Identifier method_3987(IronGolemEntity ironGolemEntity) {
+		return TEXTURE;
 	}
 
-	protected void setupTransforms(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void method_3986(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(ironGolemEntity, matrixStack, f, g, h);
 		if (!((double)ironGolemEntity.limbDistance < 0.01)) {
 			float i = 13.0F;

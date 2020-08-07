@@ -7,7 +7,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class DoubleBlockProperties {
 	public static <S extends BlockEntity> DoubleBlockProperties.PropertySource<S> toPropertySource(
@@ -16,9 +16,9 @@ public class DoubleBlockProperties {
 		Function<BlockState, Direction> function,
 		DirectionProperty directionProperty,
 		BlockState state,
-		IWorld world,
+		WorldAccess world,
 		BlockPos pos,
-		BiPredicate<IWorld, BlockPos> fallbackTester
+		BiPredicate<WorldAccess, BlockPos> fallbackTester
 	) {
 		S blockEntity = blockEntityType.get(world, pos);
 		if (blockEntity == null) {
@@ -27,16 +27,16 @@ public class DoubleBlockProperties {
 			return DoubleBlockProperties.PropertyRetriever::getFallback;
 		} else {
 			DoubleBlockProperties.Type type = (DoubleBlockProperties.Type)typeMapper.apply(state);
-			boolean bl = type == DoubleBlockProperties.Type.SINGLE;
-			boolean bl2 = type == DoubleBlockProperties.Type.FIRST;
+			boolean bl = type == DoubleBlockProperties.Type.field_21783;
+			boolean bl2 = type == DoubleBlockProperties.Type.field_21784;
 			if (bl) {
 				return new DoubleBlockProperties.PropertySource.Single<>(blockEntity);
 			} else {
 				BlockPos blockPos = pos.offset((Direction)function.apply(state));
 				BlockState blockState = world.getBlockState(blockPos);
-				if (blockState.getBlock() == state.getBlock()) {
+				if (blockState.isOf(state.getBlock())) {
 					DoubleBlockProperties.Type type2 = (DoubleBlockProperties.Type)typeMapper.apply(blockState);
-					if (type2 != DoubleBlockProperties.Type.SINGLE && type != type2 && blockState.get(directionProperty) == state.get(directionProperty)) {
+					if (type2 != DoubleBlockProperties.Type.field_21783 && type != type2 && blockState.get(directionProperty) == state.get(directionProperty)) {
 						if (fallbackTester.test(world, blockPos)) {
 							return DoubleBlockProperties.PropertyRetriever::getFallback;
 						}
@@ -96,8 +96,8 @@ public class DoubleBlockProperties {
 	}
 
 	public static enum Type {
-		SINGLE,
-		FIRST,
-		SECOND;
+		field_21783,
+		field_21784,
+		field_21785;
 	}
 }

@@ -1,17 +1,17 @@
 package net.minecraft.block;
 
 public class MelonBlock extends GourdBlock {
-	protected MelonBlock(Block.Settings settings) {
+	protected MelonBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
 	public StemBlock getStem() {
-		return (StemBlock)Blocks.MELON_STEM;
+		return (StemBlock)Blocks.field_10168;
 	}
 
 	@Override
 	public AttachedStemBlock getAttachedStem() {
-		return (AttachedStemBlock)Blocks.ATTACHED_MELON_STEM;
+		return (AttachedStemBlock)Blocks.field_10150;
 	}
 }

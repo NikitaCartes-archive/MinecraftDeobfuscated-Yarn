@@ -3,8 +3,8 @@ package net.minecraft.util.crash;
 public class CrashException extends RuntimeException {
 	private final CrashReport report;
 
-	public CrashException(CrashReport crashReport) {
-		this.report = crashReport;
+	public CrashException(CrashReport report) {
+		this.report = report;
 	}
 
 	public CrashReport getReport() {

@@ -13,13 +13,14 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class MapRenderer implements AutoCloseable {
@@ -91,9 +92,9 @@ public class MapRenderer implements AutoCloseable {
 					int k = j + i * 128;
 					int l = this.mapState.colors[k] & 255;
 					if (l / 4 == 0) {
-						this.texture.getImage().setPixelRgba(j, i, 0);
+						this.texture.getImage().setPixelColor(j, i, 0);
 					} else {
-						this.texture.getImage().setPixelRgba(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
+						this.texture.getImage().setPixelColor(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
 					}
 				}
 			}
@@ -135,8 +136,8 @@ public class MapRenderer implements AutoCloseable {
 					matrixStack.pop();
 					if (mapIcon.getText() != null) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-						String string = mapIcon.getText().asFormattedString();
-						float p = (float)textRenderer.getStringWidth(string);
+						Text text = mapIcon.getText();
+						float p = (float)textRenderer.getWidth(text);
 						float q = MathHelper.clamp(25.0F / p, 0.0F, 6.0F / 9.0F);
 						matrixStack.push();
 						matrixStack.translate(
@@ -144,7 +145,7 @@ public class MapRenderer implements AutoCloseable {
 						);
 						matrixStack.scale(q, q, 1.0F);
 						matrixStack.translate(0.0, 0.0, -0.1F);
-						textRenderer.draw(string, 0.0F, 0.0F, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
+						textRenderer.draw(text, 0.0F, 0.0F, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
 						matrixStack.pop();
 					}
 

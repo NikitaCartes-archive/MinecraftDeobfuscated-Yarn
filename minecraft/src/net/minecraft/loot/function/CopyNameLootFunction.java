@@ -10,7 +10,6 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Nameable;
 
@@ -20,6 +19,11 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 	private CopyNameLootFunction(LootCondition[] conditions, CopyNameLootFunction.Source source) {
 		super(conditions);
 		this.source = source;
+	}
+
+	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25225;
 	}
 
 	@Override
@@ -44,27 +48,23 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new CopyNameLootFunction(conditions, source));
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<CopyNameLootFunction> {
-		public Factory() {
-			super(new Identifier("copy_name"), CopyNameLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, CopyNameLootFunction copyNameLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, copyNameLootFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<CopyNameLootFunction> {
+		public void method_476(JsonObject jsonObject, CopyNameLootFunction copyNameLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, copyNameLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("source", copyNameLootFunction.source.name);
 		}
 
-		public CopyNameLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public CopyNameLootFunction method_477(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			CopyNameLootFunction.Source source = CopyNameLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
 			return new CopyNameLootFunction(lootConditions, source);
 		}
 	}
 
 	public static enum Source {
-		THIS("this", LootContextParameters.THIS_ENTITY),
-		KILLER("killer", LootContextParameters.KILLER_ENTITY),
-		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER),
-		BLOCK_ENTITY("block_entity", LootContextParameters.BLOCK_ENTITY);
+		field_1022("this", LootContextParameters.field_1226),
+		field_1019("killer", LootContextParameters.field_1230),
+		field_1020("killer_player", LootContextParameters.field_1233),
+		field_1023("block_entity", LootContextParameters.field_1228);
 
 		public final String name;
 		public final LootContextParameter<?> parameter;

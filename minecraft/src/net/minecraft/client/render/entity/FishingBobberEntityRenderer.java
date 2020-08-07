@@ -7,8 +7,6 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,37 +16,41 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/fishing_hook.png");
-	private static final RenderLayer field_21742 = RenderLayer.getEntityCutout(SKIN);
+	private static final Identifier TEXTURE = new Identifier("textures/entity/fishing_hook.png");
+	private static final RenderLayer LAYER = RenderLayer.getEntityCutout(TEXTURE);
 
 	public FishingBobberEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void method_3974(
+		FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
+	) {
 		PlayerEntity playerEntity = fishingBobberEntity.getOwner();
 		if (playerEntity != null) {
 			matrixStack.push();
 			matrixStack.push();
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			matrixStack.multiply(this.renderManager.getRotation());
+			matrixStack.multiply(this.dispatcher.getRotation());
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			MatrixStack.Entry entry = matrixStack.peek();
 			Matrix4f matrix4f = entry.getModel();
 			Matrix3f matrix3f = entry.getNormal();
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21742);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 0, 0, 1);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 0, 1, 1);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 1, 1, 0);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 1, 0, 0);
 			matrixStack.pop();
-			int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
+			int j = playerEntity.getMainArm() == Arm.field_6183 ? 1 : -1;
 			ItemStack itemStack = playerEntity.getMainHandStack();
-			if (itemStack.getItem() != Items.FISHING_ROD) {
+			if (itemStack.getItem() != Items.field_8378) {
 				j = -j;
 			}
 
@@ -63,8 +65,9 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			double p;
 			double q;
 			float r;
-			if ((this.renderManager.gameOptions == null || this.renderManager.gameOptions.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
-				double s = this.renderManager.gameOptions.fov;
+			if ((this.dispatcher.gameOptions == null || this.dispatcher.gameOptions.getPerspective().isFirstPerson())
+				&& playerEntity == MinecraftClient.getInstance().player) {
+				double s = this.dispatcher.gameOptions.fov;
 				s /= 100.0;
 				Vec3d vec3d = new Vec3d((double)j * -0.36 * s, -0.045 * s, 0.4);
 				vec3d = vec3d.rotateX(-MathHelper.lerp(g, playerEntity.prevPitch, playerEntity.pitch) * (float) (Math.PI / 180.0));
@@ -120,7 +123,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		vertexConsumer.vertex(matrix4f, f * i, g * (i * i + i) * 0.5F + 0.25F, h * i).color(0, 0, 0, 255).next();
 	}
 
-	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
-		return SKIN;
+	public Identifier method_3975(FishingBobberEntity fishingBobberEntity) {
+		return TEXTURE;
 	}
 }

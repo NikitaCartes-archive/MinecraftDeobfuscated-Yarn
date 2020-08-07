@@ -10,8 +10,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
@@ -20,6 +18,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
@@ -27,13 +27,13 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void method_4075(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
 		PaintingMotive paintingMotive = paintingEntity.motive;
 		float h = 0.0625F;
 		matrixStack.scale(0.0625F, 0.0625F, 0.0625F);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.getTexture(paintingEntity)));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.method_4077(paintingEntity)));
 		PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
 		this.method_4074(
 			matrixStack,
@@ -48,7 +48,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		super.render(paintingEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(PaintingEntity paintingEntity) {
+	public Identifier method_4077(PaintingEntity paintingEntity) {
 		return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlas().getId();
 	}
 
@@ -86,19 +86,19 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 				int af = MathHelper.floor(paintingEntity.getY() + (double)((ac + ad) / 2.0F / 16.0F));
 				int ag = MathHelper.floor(paintingEntity.getZ());
 				Direction direction = paintingEntity.getHorizontalFacing();
-				if (direction == Direction.NORTH) {
+				if (direction == Direction.field_11043) {
 					ae = MathHelper.floor(paintingEntity.getX() + (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
-				if (direction == Direction.WEST) {
+				if (direction == Direction.field_11039) {
 					ag = MathHelper.floor(paintingEntity.getZ() - (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
-				if (direction == Direction.SOUTH) {
+				if (direction == Direction.field_11035) {
 					ae = MathHelper.floor(paintingEntity.getX() - (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
-				if (direction == Direction.EAST) {
+				if (direction == Direction.field_11034) {
 					ag = MathHelper.floor(paintingEntity.getZ() + (double)((aa + ab) / 2.0F / 16.0F));
 				}
 

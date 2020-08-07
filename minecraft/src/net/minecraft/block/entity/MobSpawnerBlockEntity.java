@@ -3,8 +3,8 @@ package net.minecraft.block.entity;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.MobSpawnerEntry;
@@ -15,7 +15,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
 		public void sendStatus(int status) {
-			MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, status, 0);
+			MobSpawnerBlockEntity.this.world.addSyncedBlockEvent(MobSpawnerBlockEntity.this.pos, Blocks.field_10260, status, 0);
 		}
 
 		@Override
@@ -39,19 +39,19 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	};
 
 	public MobSpawnerBlockEntity() {
-		super(BlockEntityType.MOB_SPAWNER);
+		super(BlockEntityType.field_11889);
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.logic.deserialize(tag);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.logic.fromTag(tag);
 	}
 
 	@Override
 	public CompoundTag toTag(CompoundTag tag) {
 		super.toTag(tag);
-		this.logic.serialize(tag);
+		this.logic.toTag(tag);
 		return tag;
 	}
 
@@ -74,12 +74,12 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public boolean onBlockAction(int i, int j) {
-		return this.logic.method_8275(i) ? true : super.onBlockAction(i, j);
+	public boolean onSyncedBlockEvent(int type, int data) {
+		return this.logic.method_8275(type) ? true : super.onSyncedBlockEvent(type, data);
 	}
 
 	@Override
-	public boolean shouldNotCopyTagFromItem() {
+	public boolean copyItemDataRequiresOperator() {
 		return true;
 	}
 

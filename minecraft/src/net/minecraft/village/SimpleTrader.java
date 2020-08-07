@@ -37,17 +37,17 @@ public class SimpleTrader implements Trader {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setOffersFromServer(@Nullable TraderOfferList traderOfferList) {
-		this.recipeList = traderOfferList;
+	public void setOffersFromServer(@Nullable TraderOfferList offers) {
+		this.recipeList = offers;
 	}
 
 	@Override
-	public void trade(TradeOffer tradeOffer) {
-		tradeOffer.use();
+	public void trade(TradeOffer offer) {
+		offer.use();
 	}
 
 	@Override
-	public void onSellingItem(ItemStack itemStack) {
+	public void onSellingItem(ItemStack stack) {
 	}
 
 	@Override
@@ -66,12 +66,12 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public boolean isLevelledTrader() {
+	public boolean isLeveledTrader() {
 		return true;
 	}
 
 	@Override
 	public SoundEvent getYesSound() {
-		return SoundEvents.ENTITY_VILLAGER_YES;
+		return SoundEvents.field_14815;
 	}
 }

@@ -1,28 +1,24 @@
 package net.minecraft.structure.rule;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 
-public class AlwaysTrueRuleTest extends AbstractRuleTest {
+public class AlwaysTrueRuleTest extends RuleTest {
+	public static final Codec<AlwaysTrueRuleTest> CODEC = Codec.unit((Supplier<AlwaysTrueRuleTest>)(() -> AlwaysTrueRuleTest.INSTANCE));
 	public static final AlwaysTrueRuleTest INSTANCE = new AlwaysTrueRuleTest();
 
 	private AlwaysTrueRuleTest() {
 	}
 
 	@Override
-	public boolean test(BlockState blockState, Random random) {
+	public boolean test(BlockState state, Random random) {
 		return true;
 	}
 
 	@Override
-	protected RuleTest getRuleTest() {
-		return RuleTest.ALWAYS_TRUE;
-	}
-
-	@Override
-	protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.emptyMap());
+	protected RuleTestType<?> getType() {
+		return RuleTestType.field_16982;
 	}
 }

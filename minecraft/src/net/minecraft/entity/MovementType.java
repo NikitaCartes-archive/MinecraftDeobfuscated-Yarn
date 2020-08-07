@@ -1,9 +1,9 @@
 package net.minecraft.entity;
 
 public enum MovementType {
-	SELF,
-	PLAYER,
-	PISTON,
-	SHULKER_BOX,
-	SHULKER;
+	field_6308,
+	field_6305,
+	field_6310,
+	field_6306,
+	field_6309;
 }

@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Util;
@@ -24,21 +24,21 @@ public class MultipartBakedModel implements BakedModel {
 	private final List<Pair<Predicate<BlockState>, BakedModel>> components;
 	protected final boolean ambientOcclusion;
 	protected final boolean depthGui;
-	protected final boolean field_21863;
+	protected final boolean sideLit;
 	protected final Sprite sprite;
 	protected final ModelTransformation transformations;
-	protected final ModelItemPropertyOverrideList itemPropertyOverrides;
+	protected final ModelOverrideList itemPropertyOverrides;
 	private final Map<BlockState, BitSet> stateCache = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
 
 	public MultipartBakedModel(List<Pair<Predicate<BlockState>, BakedModel>> components) {
 		this.components = components;
 		BakedModel bakedModel = (BakedModel)((Pair)components.iterator().next()).getRight();
 		this.ambientOcclusion = bakedModel.useAmbientOcclusion();
-		this.depthGui = bakedModel.hasDepthInGui();
-		this.field_21863 = bakedModel.method_24304();
+		this.depthGui = bakedModel.hasDepth();
+		this.sideLit = bakedModel.isSideLit();
 		this.sprite = bakedModel.getSprite();
 		this.transformations = bakedModel.getTransformation();
-		this.itemPropertyOverrides = bakedModel.getItemPropertyOverrides();
+		this.itemPropertyOverrides = bakedModel.getOverrides();
 	}
 
 	@Override
@@ -79,13 +79,13 @@ public class MultipartBakedModel implements BakedModel {
 	}
 
 	@Override
-	public boolean hasDepthInGui() {
+	public boolean hasDepth() {
 		return this.depthGui;
 	}
 
 	@Override
-	public boolean method_24304() {
-		return this.field_21863;
+	public boolean isSideLit() {
+		return this.sideLit;
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class MultipartBakedModel implements BakedModel {
 	}
 
 	@Override
-	public ModelItemPropertyOverrideList getItemPropertyOverrides() {
+	public ModelOverrideList getOverrides() {
 		return this.itemPropertyOverrides;
 	}
 

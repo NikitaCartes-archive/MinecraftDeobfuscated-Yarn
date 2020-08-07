@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.hud;
 
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -16,7 +17,13 @@ public class ChatListenerHud implements ClientChatListener {
 	}
 
 	@Override
-	public void onChatMessage(MessageType messageType, Text message) {
-		this.client.inGameHud.getChatHud().addMessage(message);
+	public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
+		if (!this.client.shouldBlockMessages(senderUuid)) {
+			if (messageType != MessageType.field_11737) {
+				this.client.inGameHud.getChatHud().addMessage(message);
+			} else {
+				this.client.inGameHud.getChatHud().method_27147(message);
+			}
+		}
 	}
 }

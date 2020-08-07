@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializer;
 
 public class TimeCheckLootCondition implements LootCondition {
 	@Nullable
@@ -20,7 +20,12 @@ public class TimeCheckLootCondition implements LootCondition {
 		this.value = value;
 	}
 
-	public boolean test(LootContext lootContext) {
+	@Override
+	public LootConditionType getType() {
+		return LootConditionTypes.field_25250;
+	}
+
+	public boolean method_22587(LootContext lootContext) {
 		ServerWorld serverWorld = lootContext.getWorld();
 		long l = serverWorld.getTimeOfDay();
 		if (this.period != null) {
@@ -30,17 +35,13 @@ public class TimeCheckLootCondition implements LootCondition {
 		return this.value.contains((int)l);
 	}
 
-	public static class Factory extends LootCondition.Factory<TimeCheckLootCondition> {
-		public Factory() {
-			super(new Identifier("time_check"), TimeCheckLootCondition.class);
-		}
-
-		public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+	public static class Serializer implements JsonSerializer<TimeCheckLootCondition> {
+		public void method_22591(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("period", timeCheckLootCondition.period);
 			jsonObject.add("value", jsonSerializationContext.serialize(timeCheckLootCondition.value));
 		}
 
-		public TimeCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public TimeCheckLootCondition method_22590(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Long long_ = jsonObject.has("period") ? JsonHelper.getLong(jsonObject, "period") : null;
 			UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, UniformLootTableRange.class);
 			return new TimeCheckLootCondition(long_, uniformLootTableRange);

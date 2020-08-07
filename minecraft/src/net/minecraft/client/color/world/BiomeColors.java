@@ -13,19 +13,19 @@ public class BiomeColors {
 	public static final ColorResolver FOLIAGE_COLOR = (biome, d, e) -> biome.getFoliageColor();
 	public static final ColorResolver WATER_COLOR = (biome, d, e) -> biome.getWaterColor();
 
-	private static int getColor(BlockRenderView blockRenderView, BlockPos blockPos, ColorResolver colorResolver) {
-		return blockRenderView.getColor(blockPos, colorResolver);
+	private static int getColor(BlockRenderView world, BlockPos pos, ColorResolver resolver) {
+		return world.getColor(pos, resolver);
 	}
 
-	public static int getGrassColor(BlockRenderView view, BlockPos pos) {
-		return getColor(view, pos, GRASS_COLOR);
+	public static int getGrassColor(BlockRenderView world, BlockPos pos) {
+		return getColor(world, pos, GRASS_COLOR);
 	}
 
-	public static int getFoliageColor(BlockRenderView view, BlockPos pos) {
-		return getColor(view, pos, FOLIAGE_COLOR);
+	public static int getFoliageColor(BlockRenderView world, BlockPos pos) {
+		return getColor(world, pos, FOLIAGE_COLOR);
 	}
 
-	public static int getWaterColor(BlockRenderView view, BlockPos pos) {
-		return getColor(view, pos, WATER_COLOR);
+	public static int getWaterColor(BlockRenderView world, BlockPos pos) {
+		return getColor(world, pos, WATER_COLOR);
 	}
 }

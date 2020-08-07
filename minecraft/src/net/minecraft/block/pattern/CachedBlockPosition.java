@@ -15,8 +15,8 @@ public class CachedBlockPosition {
 	private BlockEntity blockEntity;
 	private boolean cachedEntity;
 
-	public CachedBlockPosition(WorldView worldView, BlockPos pos, boolean forceLoad) {
-		this.world = worldView;
+	public CachedBlockPosition(WorldView world, BlockPos pos, boolean forceLoad) {
+		this.world = world;
 		this.pos = pos.toImmutable();
 		this.forceLoad = forceLoad;
 	}

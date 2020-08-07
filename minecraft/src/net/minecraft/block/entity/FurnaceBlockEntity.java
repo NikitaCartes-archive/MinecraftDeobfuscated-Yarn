@@ -1,15 +1,15 @@
 package net.minecraft.block.entity;
 
-import net.minecraft.container.Container;
-import net.minecraft.container.FurnaceContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.screen.FurnaceScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class FurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	public FurnaceBlockEntity() {
-		super(BlockEntityType.FURNACE, RecipeType.SMELTING);
+		super(BlockEntityType.field_11903, RecipeType.SMELTING);
 	}
 
 	@Override
@@ -18,7 +18,7 @@ public class FurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return new FurnaceContainer(i, playerInventory, this, this.propertyDelegate);
+	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return new FurnaceScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
 	}
 }

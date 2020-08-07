@@ -11,23 +11,23 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/witch.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/witch.png");
 
 	public WitchEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new WitchEntityModel<>(0.0F), 0.5F);
 		this.addFeature(new WitchHeldItemFeatureRenderer<>(this));
 	}
 
-	public void render(WitchEntity witchEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void method_4155(WitchEntity witchEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		this.model.setLiftingNose(!witchEntity.getMainHandStack().isEmpty());
-		super.render(witchEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.method_4072(witchEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(WitchEntity witchEntity) {
-		return SKIN;
+	public Identifier method_4154(WitchEntity witchEntity) {
+		return TEXTURE;
 	}
 
-	protected void scale(WitchEntity witchEntity, MatrixStack matrixStack, float f) {
+	protected void method_4157(WitchEntity witchEntity, MatrixStack matrixStack, float f) {
 		float g = 0.9375F;
 		matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
 	}

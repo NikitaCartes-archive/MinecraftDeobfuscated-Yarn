@@ -1,7 +1,7 @@
 package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.thrown.ThrownPotionEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -16,17 +16,17 @@ public class ThrowablePotionItem extends PotionItem {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (!world.isClient) {
-			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, user);
-			thrownPotionEntity.setItemStack(itemStack);
-			thrownPotionEntity.setProperties(user, user.pitch, user.yaw, -20.0F, 0.5F, 1.0F);
-			world.spawnEntity(thrownPotionEntity);
+			PotionEntity potionEntity = new PotionEntity(world, user);
+			potionEntity.setItem(itemStack);
+			potionEntity.setProperties(user, user.pitch, user.yaw, -20.0F, 0.5F, 1.0F);
+			world.spawnEntity(potionEntity);
 		}
 
-		user.incrementStat(Stats.USED.getOrCreateStat(this));
+		user.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		if (!user.abilities.creativeMode) {
 			itemStack.decrement(1);
 		}
 
-		return TypedActionResult.success(itemStack);
+		return TypedActionResult.method_29237(itemStack, world.isClient());
 	}
 }

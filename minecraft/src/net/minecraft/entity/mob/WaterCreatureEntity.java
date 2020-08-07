@@ -8,10 +8,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public abstract class WaterCreatureEntity extends MobEntityWithAi {
-	protected WaterCreatureEntity(EntityType<? extends WaterCreatureEntity> type, World world) {
-		super(type, world);
-		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
+public abstract class WaterCreatureEntity extends PathAwareEntity {
+	protected WaterCreatureEntity(EntityType<? extends WaterCreatureEntity> entityType, World world) {
+		super(entityType, world);
+		this.setPathfindingPenalty(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override

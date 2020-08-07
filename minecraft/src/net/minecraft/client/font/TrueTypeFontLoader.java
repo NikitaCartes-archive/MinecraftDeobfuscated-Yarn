@@ -90,7 +90,7 @@ public class TrueTypeFontLoader implements FontLoader {
 			try {
 				LOGGER.debug("Loading font {}", this.filename);
 				sTBTTFontinfo = STBTTFontinfo.malloc();
-				byteBuffer = TextureUtil.readResource(resource.getInputStream());
+				byteBuffer = TextureUtil.readAllToByteBuffer(resource.getInputStream());
 				byteBuffer.flip();
 				LOGGER.debug("Reading font {}", this.filename);
 				if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, byteBuffer)) {

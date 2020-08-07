@@ -8,17 +8,17 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, EndermiteEntityModel<EndermiteEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/endermite.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/endermite.png");
 
 	public EndermiteEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new EndermiteEntityModel<>(), 0.3F);
 	}
 
-	protected float getLyingAngle(EndermiteEntity endermiteEntity) {
+	protected float method_3919(EndermiteEntity endermiteEntity) {
 		return 180.0F;
 	}
 
-	public Identifier getTexture(EndermiteEntity endermiteEntity) {
-		return SKIN;
+	public Identifier method_3920(EndermiteEntity endermiteEntity) {
+		return TEXTURE;
 	}
 }

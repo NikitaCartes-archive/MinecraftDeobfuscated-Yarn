@@ -6,28 +6,31 @@ import com.google.gson.JsonSerializationContext;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.LocationPredicate;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class LocationCheckLootCondition implements LootCondition {
 	private final LocationPredicate predicate;
 	private final BlockPos offset;
 
-	public LocationCheckLootCondition(LocationPredicate predicate, BlockPos offset) {
+	private LocationCheckLootCondition(LocationPredicate predicate, BlockPos offset) {
 		this.predicate = predicate;
 		this.offset = offset;
 	}
 
-	public boolean test(LootContext lootContext) {
-		BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
-		return blockPos != null
+	@Override
+	public LootConditionType getType() {
+		return LootConditionTypes.field_25247;
+	}
+
+	public boolean method_881(LootContext lootContext) {
+		Vec3d vec3d = lootContext.get(LootContextParameters.field_24424);
+		return vec3d != null
 			&& this.predicate
 				.test(
-					lootContext.getWorld(),
-					(float)(blockPos.getX() + this.offset.getX()),
-					(float)(blockPos.getY() + this.offset.getY()),
-					(float)(blockPos.getZ() + this.offset.getZ())
+					lootContext.getWorld(), vec3d.getX() + (double)this.offset.getX(), vec3d.getY() + (double)this.offset.getY(), vec3d.getZ() + (double)this.offset.getZ()
 				);
 	}
 
@@ -35,12 +38,12 @@ public class LocationCheckLootCondition implements LootCondition {
 		return () -> new LocationCheckLootCondition(predicateBuilder.build(), BlockPos.ORIGIN);
 	}
 
-	public static class Factory extends LootCondition.Factory<LocationCheckLootCondition> {
-		public Factory() {
-			super(new Identifier("location_check"), LocationCheckLootCondition.class);
-		}
+	public static LootCondition.Builder method_30151(LocationPredicate.Builder builder, BlockPos blockPos) {
+		return () -> new LocationCheckLootCondition(builder.build(), blockPos);
+	}
 
-		public void toJson(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+	public static class Serializer implements JsonSerializer<LocationCheckLootCondition> {
+		public void method_886(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("predicate", locationCheckLootCondition.predicate.toJson());
 			if (locationCheckLootCondition.offset.getX() != 0) {
 				jsonObject.addProperty("offsetX", locationCheckLootCondition.offset.getX());
@@ -55,7 +58,7 @@ public class LocationCheckLootCondition implements LootCondition {
 			}
 		}
 
-		public LocationCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public LocationCheckLootCondition method_885(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("predicate"));
 			int i = JsonHelper.getInt(jsonObject, "offsetX", 0);
 			int j = JsonHelper.getInt(jsonObject, "offsetY", 0);

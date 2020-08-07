@@ -81,10 +81,10 @@ public abstract class LevelPropagator {
 		}
 	}
 
-	public void method_24206(LongPredicate longPredicate) {
+	public void removePendingUpdateIf(LongPredicate predicate) {
 		LongList longList = new LongArrayList();
 		this.pendingUpdates.keySet().forEach(l -> {
-			if (longPredicate.test(l)) {
+			if (predicate.test(l)) {
 				longList.add(l);
 			}
 		});
@@ -207,7 +207,7 @@ public abstract class LevelPropagator {
 		}
 	}
 
-	public int method_24208() {
+	public int getPendingUpdateCount() {
 		return this.pendingUpdates.size();
 	}
 

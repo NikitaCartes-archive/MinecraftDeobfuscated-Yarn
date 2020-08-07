@@ -23,6 +23,11 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25229;
+	}
+
+	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isEmpty()) {
 			return stack;
@@ -39,34 +44,30 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public void check(LootTableReporter reporter) {
-		if (reporter.hasSupplier(this.id)) {
+	public void validate(LootTableReporter reporter) {
+		if (reporter.hasTable(this.id)) {
 			reporter.report("Table " + this.id + " is recursively called");
 		} else {
-			super.check(reporter);
-			LootTable lootTable = reporter.getSupplier(this.id);
+			super.validate(reporter);
+			LootTable lootTable = reporter.getTable(this.id);
 			if (lootTable == null) {
 				reporter.report("Unknown loot table called " + this.id);
 			} else {
-				lootTable.check(reporter.withSupplier("->{" + this.id + "}", this.id));
+				lootTable.validate(reporter.withTable("->{" + this.id + "}", this.id));
 			}
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetLootTableLootFunction> {
-		protected Factory() {
-			super(new Identifier("set_loot_table"), SetLootTableLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetLootTableLootFunction> {
+		public void method_626(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, setLootTableLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("name", setLootTableLootFunction.id.toString());
 			if (setLootTableLootFunction.seed != 0L) {
 				jsonObject.addProperty("seed", setLootTableLootFunction.seed);
 			}
 		}
 
-		public SetLootTableLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetLootTableLootFunction method_627(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
 			long l = JsonHelper.getLong(jsonObject, "seed", 0L);
 			return new SetLootTableLootFunction(lootConditions, identifier, l);

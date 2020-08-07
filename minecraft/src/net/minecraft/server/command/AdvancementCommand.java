@@ -11,8 +11,8 @@ import java.util.List;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.IdentifierArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 
@@ -39,8 +39,8 @@ public class AdvancementCommand {
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
-															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.ONLY)
+															AdvancementCommand.Operation.field_13457,
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
 														)
 												)
 												.then(
@@ -54,7 +54,7 @@ public class AdvancementCommand {
 															commandContext -> executeCriterion(
 																	commandContext.getSource(),
 																	EntityArgumentType.getPlayers(commandContext, "targets"),
-																	AdvancementCommand.Operation.GRANT,
+																	AdvancementCommand.Operation.field_13457,
 																	IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"),
 																	StringArgumentType.getString(commandContext, "criterion")
 																)
@@ -71,8 +71,8 @@ public class AdvancementCommand {
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
-															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.FROM)
+															AdvancementCommand.Operation.field_13457,
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
 														)
 												)
 										)
@@ -86,8 +86,8 @@ public class AdvancementCommand {
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
-															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.UNTIL)
+															AdvancementCommand.Operation.field_13457,
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
 														)
 												)
 										)
@@ -101,8 +101,8 @@ public class AdvancementCommand {
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
-															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.THROUGH)
+															AdvancementCommand.Operation.field_13457,
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
 														)
 												)
 										)
@@ -113,7 +113,7 @@ public class AdvancementCommand {
 											commandContext -> executeAdvancement(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
-													AdvancementCommand.Operation.GRANT,
+													AdvancementCommand.Operation.field_13457,
 													commandContext.getSource().getMinecraftServer().getAdvancementLoader().getAdvancements()
 												)
 										)
@@ -133,8 +133,8 @@ public class AdvancementCommand {
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
-															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.ONLY)
+															AdvancementCommand.Operation.field_13456,
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
 														)
 												)
 												.then(
@@ -148,7 +148,7 @@ public class AdvancementCommand {
 															commandContext -> executeCriterion(
 																	commandContext.getSource(),
 																	EntityArgumentType.getPlayers(commandContext, "targets"),
-																	AdvancementCommand.Operation.REVOKE,
+																	AdvancementCommand.Operation.field_13456,
 																	IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"),
 																	StringArgumentType.getString(commandContext, "criterion")
 																)
@@ -165,8 +165,8 @@ public class AdvancementCommand {
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
-															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.FROM)
+															AdvancementCommand.Operation.field_13456,
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
 														)
 												)
 										)
@@ -180,8 +180,8 @@ public class AdvancementCommand {
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
-															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.UNTIL)
+															AdvancementCommand.Operation.field_13456,
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
 														)
 												)
 										)
@@ -195,8 +195,8 @@ public class AdvancementCommand {
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
-															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.THROUGH)
+															AdvancementCommand.Operation.field_13456,
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
 														)
 												)
 										)
@@ -207,7 +207,7 @@ public class AdvancementCommand {
 											commandContext -> executeAdvancement(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
-													AdvancementCommand.Operation.REVOKE,
+													AdvancementCommand.Operation.field_13456,
 													commandContext.getSource().getMinecraftServer().getAdvancementLoader().getAdvancements()
 												)
 										)
@@ -356,15 +356,15 @@ public class AdvancementCommand {
 	}
 
 	static enum Operation {
-		GRANT("grant") {
+		field_13457("grant") {
 			@Override
-			protected boolean processEach(ServerPlayerEntity serverPlayerEntity, Advancement advancement) {
-				AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementTracker().getProgress(advancement);
+			protected boolean processEach(ServerPlayerEntity player, Advancement advancement) {
+				AdvancementProgress advancementProgress = player.getAdvancementTracker().getProgress(advancement);
 				if (advancementProgress.isDone()) {
 					return false;
 				} else {
 					for(String string : advancementProgress.getUnobtainedCriteria()) {
-						serverPlayerEntity.getAdvancementTracker().grantCriterion(advancement, string);
+						player.getAdvancementTracker().grantCriterion(advancement, string);
 					}
 
 					return true;
@@ -372,19 +372,19 @@ public class AdvancementCommand {
 			}
 
 			@Override
-			protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String criterion) {
-				return serverPlayerEntity.getAdvancementTracker().grantCriterion(advancement, criterion);
+			protected boolean processEachCriterion(ServerPlayerEntity player, Advancement advancement, String criterion) {
+				return player.getAdvancementTracker().grantCriterion(advancement, criterion);
 			}
 		},
-		REVOKE("revoke") {
+		field_13456("revoke") {
 			@Override
-			protected boolean processEach(ServerPlayerEntity serverPlayerEntity, Advancement advancement) {
-				AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementTracker().getProgress(advancement);
+			protected boolean processEach(ServerPlayerEntity player, Advancement advancement) {
+				AdvancementProgress advancementProgress = player.getAdvancementTracker().getProgress(advancement);
 				if (!advancementProgress.isAnyObtained()) {
 					return false;
 				} else {
 					for(String string : advancementProgress.getObtainedCriteria()) {
-						serverPlayerEntity.getAdvancementTracker().revokeCriterion(advancement, string);
+						player.getAdvancementTracker().revokeCriterion(advancement, string);
 					}
 
 					return true;
@@ -392,22 +392,22 @@ public class AdvancementCommand {
 			}
 
 			@Override
-			protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String criterion) {
-				return serverPlayerEntity.getAdvancementTracker().revokeCriterion(advancement, criterion);
+			protected boolean processEachCriterion(ServerPlayerEntity player, Advancement advancement, String criterion) {
+				return player.getAdvancementTracker().revokeCriterion(advancement, criterion);
 			}
 		};
 
 		private final String commandPrefix;
 
-		private Operation(String string2) {
-			this.commandPrefix = "commands.advancement." + string2;
+		private Operation(String name) {
+			this.commandPrefix = "commands.advancement." + name;
 		}
 
-		public int processAll(ServerPlayerEntity serverPlayerEntity, Iterable<Advancement> iterable) {
+		public int processAll(ServerPlayerEntity player, Iterable<Advancement> advancements) {
 			int i = 0;
 
-			for(Advancement advancement : iterable) {
-				if (this.processEach(serverPlayerEntity, advancement)) {
+			for(Advancement advancement : advancements) {
+				if (this.processEach(player, advancement)) {
 					++i;
 				}
 			}
@@ -415,9 +415,9 @@ public class AdvancementCommand {
 			return i;
 		}
 
-		protected abstract boolean processEach(ServerPlayerEntity serverPlayerEntity, Advancement advancement);
+		protected abstract boolean processEach(ServerPlayerEntity player, Advancement advancement);
 
-		protected abstract boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String criterion);
+		protected abstract boolean processEachCriterion(ServerPlayerEntity player, Advancement advancement, String criterion);
 
 		protected String getCommandPrefix() {
 			return this.commandPrefix;
@@ -425,18 +425,18 @@ public class AdvancementCommand {
 	}
 
 	static enum Selection {
-		ONLY(false, false),
-		THROUGH(true, true),
-		FROM(false, true),
-		UNTIL(true, false),
-		EVERYTHING(true, true);
+		field_13464(false, false),
+		field_13462(true, true),
+		field_13458(false, true),
+		field_13465(true, false),
+		field_13461(true, true);
 
 		private final boolean before;
 		private final boolean after;
 
-		private Selection(boolean bl, boolean bl2) {
-			this.before = bl;
-			this.after = bl2;
+		private Selection(boolean before, boolean after) {
+			this.before = before;
+			this.after = after;
 		}
 	}
 }

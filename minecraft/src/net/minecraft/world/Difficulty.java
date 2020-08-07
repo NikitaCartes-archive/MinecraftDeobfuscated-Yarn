@@ -3,14 +3,16 @@ package net.minecraft.world;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum Difficulty {
-	PEACEFUL(0, "peaceful"),
-	EASY(1, "easy"),
-	NORMAL(2, "normal"),
-	HARD(3, "hard");
+	field_5801(0, "peaceful"),
+	field_5805(1, "easy"),
+	field_5802(2, "normal"),
+	field_5807(3, "hard");
 
 	private static final Difficulty[] BY_NAME = (Difficulty[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(Difficulty::getId))
@@ -48,5 +50,10 @@ public enum Difficulty {
 
 	public String getName() {
 		return this.name;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Difficulty cycle() {
+		return BY_NAME[(this.id + 1) % BY_NAME.length];
 	}
 }

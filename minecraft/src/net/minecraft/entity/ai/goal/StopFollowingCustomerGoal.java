@@ -9,16 +9,16 @@ public class StopFollowingCustomerGoal extends Goal {
 
 	public StopFollowingCustomerGoal(AbstractTraderEntity trader) {
 		this.trader = trader;
-		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
+		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
 		if (!this.trader.isAlive()) {
 			return false;
-		} else if (this.trader.isInsideWater()) {
+		} else if (this.trader.isTouchingWater()) {
 			return false;
-		} else if (!this.trader.onGround) {
+		} else if (!this.trader.isOnGround()) {
 			return false;
 		} else if (this.trader.velocityModified) {
 			return false;
@@ -29,7 +29,7 @@ public class StopFollowingCustomerGoal extends Goal {
 			} else if (this.trader.squaredDistanceTo(playerEntity) > 16.0) {
 				return false;
 			} else {
-				return playerEntity.container != null;
+				return playerEntity.currentScreenHandler != null;
 			}
 		}
 	}

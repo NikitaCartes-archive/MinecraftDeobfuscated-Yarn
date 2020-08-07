@@ -7,14 +7,14 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 
-public class Schema1451v6 extends SchemaIdentifierNormalize {
+public class Schema1451v6 extends IdentifierNormalizingSchema {
 	public Schema1451v6(int i, Schema schema) {
 		super(i, schema);
 	}
 
 	@Override
-	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
-		super.registerTypes(schema, map, map2);
+	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
+		super.registerTypes(schema, entityTypes, blockEntityTypes);
 		Supplier<TypeTemplate> supplier = () -> DSL.compoundList(TypeReferences.ITEM_NAME.in(schema), DSL.constType(DSL.intType()));
 		schema.registerType(
 			false,
@@ -40,7 +40,7 @@ public class Schema1451v6 extends SchemaIdentifierNormalize {
 							"minecraft:killed_by",
 							DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.intType())),
 							"minecraft:custom",
-							DSL.compoundList(DSL.constType(DSL.namespacedString()), DSL.constType(DSL.intType()))
+							DSL.compoundList(DSL.constType(getIdentifierType()), DSL.constType(DSL.intType()))
 						)
 					)
 				)

@@ -3,7 +3,6 @@ package net.minecraft.block;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -14,27 +13,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class WallBannerBlock extends AbstractBannerBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.NORTH,
+			Direction.field_11043,
 			Block.createCuboidShape(0.0, 0.0, 14.0, 16.0, 12.5, 16.0),
-			Direction.SOUTH,
+			Direction.field_11035,
 			Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.5, 2.0),
-			Direction.WEST,
+			Direction.field_11039,
 			Block.createCuboidShape(14.0, 0.0, 0.0, 16.0, 12.5, 16.0),
-			Direction.EAST,
+			Direction.field_11034,
 			Block.createCuboidShape(0.0, 0.0, 0.0, 2.0, 12.5, 16.0)
 		)
 	);
 
-	public WallBannerBlock(DyeColor dyeColor, Block.Settings settings) {
+	public WallBannerBlock(DyeColor dyeColor, AbstractBlock.Settings settings) {
 		super(dyeColor, settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043));
 	}
 
 	@Override
@@ -48,14 +47,14 @@ public class WallBannerBlock extends AbstractBannerBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing == ((Direction)state.get(FACING)).getOpposite() && !state.canPlaceAt(world, pos)
-			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		return direction == ((Direction)state.get(FACING)).getOpposite() && !state.canPlaceAt(world, pos)
+			? Blocks.field_10124.getDefaultState()
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return (VoxelShape)FACING_TO_SHAPE.get(state.get(FACING));
 	}
 

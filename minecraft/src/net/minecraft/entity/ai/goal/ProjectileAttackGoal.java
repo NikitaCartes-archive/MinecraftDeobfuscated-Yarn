@@ -33,7 +33,7 @@ public class ProjectileAttackGoal extends Goal {
 			this.maxIntervalTicks = maxIntervalTicks;
 			this.maxShootRange = maxShootRange;
 			this.squaredMaxShootRange = maxShootRange * maxShootRange;
-			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 	}
 

@@ -2,33 +2,28 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerClothingFeatureRenderer;
 import net.minecraft.client.render.entity.model.ZombieVillagerEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
 
-	public ZombieVillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager reloadableResourceManager) {
-		super(entityRenderDispatcher, new ZombieVillagerEntityModel<>(0.0F, false), 0.5F);
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new ZombieVillagerEntityModel(0.5F, true), new ZombieVillagerEntityModel(1.0F, true)));
+	public ZombieVillagerEntityRenderer(EntityRenderDispatcher dispatcher, ReloadableResourceManager reloadableResourceManager) {
+		super(dispatcher, new ZombieVillagerEntityModel<>(0.0F, false), 0.5F);
+		this.addFeature(new ArmorFeatureRenderer<>(this, new ZombieVillagerEntityModel(0.5F, true), new ZombieVillagerEntityModel(1.0F, true)));
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "zombie_villager"));
 	}
 
-	public Identifier getTexture(ZombieVillagerEntity zombieVillagerEntity) {
-		return SKIN;
+	public Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {
+		return TEXTURE;
 	}
 
-	protected void setupTransforms(ZombieVillagerEntity zombieVillagerEntity, MatrixStack matrixStack, float f, float g, float h) {
-		if (zombieVillagerEntity.isConverting()) {
-			g += (float)(Math.cos((double)zombieVillagerEntity.age * 3.25) * Math.PI * 0.25);
-		}
-
-		super.setupTransforms(zombieVillagerEntity, matrixStack, f, g, h);
+	protected boolean method_25452(ZombieVillagerEntity zombieVillagerEntity) {
+		return zombieVillagerEntity.isConverting();
 	}
 }

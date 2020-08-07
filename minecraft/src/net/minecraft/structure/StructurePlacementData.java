@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -15,8 +14,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 
 public class StructurePlacementData {
-	private BlockMirror mirror = BlockMirror.NONE;
-	private BlockRotation rotation = BlockRotation.NONE;
+	private BlockMirror mirror = BlockMirror.field_11302;
+	private BlockRotation rotation = BlockRotation.field_11467;
 	private BlockPos position = BlockPos.ORIGIN;
 	private boolean ignoreEntities;
 	@Nullable
@@ -29,7 +28,8 @@ public class StructurePlacementData {
 	@Nullable
 	private int field_15575;
 	private final List<StructureProcessor> processors = Lists.<StructureProcessor>newArrayList();
-	private boolean field_16587;
+	private boolean updateNeighbors;
+	private boolean field_24043;
 
 	public StructurePlacementData copy() {
 		StructurePlacementData structurePlacementData = new StructurePlacementData();
@@ -43,17 +43,18 @@ public class StructurePlacementData {
 		structurePlacementData.random = this.random;
 		structurePlacementData.field_15575 = this.field_15575;
 		structurePlacementData.processors.addAll(this.processors);
-		structurePlacementData.field_16587 = this.field_16587;
+		structurePlacementData.updateNeighbors = this.updateNeighbors;
+		structurePlacementData.field_24043 = this.field_24043;
 		return structurePlacementData;
 	}
 
-	public StructurePlacementData setMirrored(BlockMirror blockMirror) {
-		this.mirror = blockMirror;
+	public StructurePlacementData setMirror(BlockMirror mirror) {
+		this.mirror = mirror;
 		return this;
 	}
 
-	public StructurePlacementData setRotation(BlockRotation blockRotation) {
-		this.rotation = blockRotation;
+	public StructurePlacementData setRotation(BlockRotation rotation) {
+		this.rotation = rotation;
 		return this;
 	}
 
@@ -62,8 +63,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setIgnoreEntities(boolean bl) {
-		this.ignoreEntities = bl;
+	public StructurePlacementData setIgnoreEntities(boolean ignoreEntities) {
+		this.ignoreEntities = ignoreEntities;
 		return this;
 	}
 
@@ -82,8 +83,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData method_15131(boolean bl) {
-		this.field_16587 = bl;
+	public StructurePlacementData setUpdateNeighbors(boolean updateNeighbors) {
+		this.updateNeighbors = updateNeighbors;
 		return this;
 	}
 
@@ -127,25 +128,25 @@ public class StructurePlacementData {
 	}
 
 	@Nullable
-	public BlockBox method_15124() {
+	public BlockBox getBoundingBox() {
 		if (this.boundingBox == null && this.chunkPosition != null) {
-			this.method_15132();
+			this.calculateBoundingBox();
 		}
 
 		return this.boundingBox;
 	}
 
-	public boolean method_16444() {
-		return this.field_16587;
+	public boolean shouldUpdateNeighbors() {
+		return this.updateNeighbors;
 	}
 
 	public List<StructureProcessor> getProcessors() {
 		return this.processors;
 	}
 
-	void method_15132() {
+	void calculateBoundingBox() {
 		if (this.chunkPosition != null) {
-			this.boundingBox = this.method_15117(this.chunkPosition);
+			this.boundingBox = this.getChunkBlockBox(this.chunkPosition);
 		}
 	}
 
@@ -153,19 +154,32 @@ public class StructurePlacementData {
 		return this.placeFluids;
 	}
 
-	public List<Structure.StructureBlockInfo> method_15121(List<List<Structure.StructureBlockInfo>> list, @Nullable BlockPos blockPos) {
+	public Structure.PalettedBlockInfoList getRandomBlockInfos(List<Structure.PalettedBlockInfoList> list, @Nullable BlockPos pos) {
 		int i = list.size();
-		return i > 0 ? (List)list.get(this.getRandom(blockPos).nextInt(i)) : Collections.emptyList();
+		if (i == 0) {
+			throw new IllegalStateException("No palettes");
+		} else {
+			return (Structure.PalettedBlockInfoList)list.get(this.getRandom(pos).nextInt(i));
+		}
 	}
 
 	@Nullable
-	private BlockBox method_15117(@Nullable ChunkPos chunkPos) {
-		if (chunkPos == null) {
+	private BlockBox getChunkBlockBox(@Nullable ChunkPos pos) {
+		if (pos == null) {
 			return this.boundingBox;
 		} else {
-			int i = chunkPos.x * 16;
-			int j = chunkPos.z * 16;
+			int i = pos.x * 16;
+			int j = pos.z * 16;
 			return new BlockBox(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
 		}
+	}
+
+	public StructurePlacementData method_27264(boolean bl) {
+		this.field_24043 = bl;
+		return this;
+	}
+
+	public boolean method_27265() {
+		return this.field_24043;
 	}
 }

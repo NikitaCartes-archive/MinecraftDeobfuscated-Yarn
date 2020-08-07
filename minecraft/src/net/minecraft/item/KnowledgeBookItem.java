@@ -49,10 +49,10 @@ public class KnowledgeBookItem extends Item {
 				}
 
 				user.unlockRecipes(list);
-				user.incrementStat(Stats.USED.getOrCreateStat(this));
+				user.incrementStat(Stats.field_15372.getOrCreateStat(this));
 			}
 
-			return TypedActionResult.success(itemStack);
+			return TypedActionResult.method_29237(itemStack, world.isClient());
 		} else {
 			LOGGER.error("Tag not valid: {}", compoundTag);
 			return TypedActionResult.fail(itemStack);

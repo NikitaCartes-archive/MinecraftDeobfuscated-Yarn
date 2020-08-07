@@ -1,33 +1,23 @@
 package net.minecraft.world.level;
 
-import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
+import java.util.UUID;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.SaveProperties;
+import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.timer.Timer;
 
-public class UnmodifiableLevelProperties extends LevelProperties {
-	private final LevelProperties properties;
+public class UnmodifiableLevelProperties implements ServerWorldProperties {
+	private final SaveProperties field_24179;
+	private final ServerWorldProperties properties;
 
-	public UnmodifiableLevelProperties(LevelProperties levelProperties) {
-		this.properties = levelProperties;
-	}
-
-	@Override
-	public CompoundTag cloneWorldTag(@Nullable CompoundTag playerTag) {
-		return this.properties.cloneWorldTag(playerTag);
-	}
-
-	@Override
-	public long getSeed() {
-		return this.properties.getSeed();
+	public UnmodifiableLevelProperties(SaveProperties saveProperties, ServerWorldProperties serverWorldProperties) {
+		this.field_24179 = saveProperties;
+		this.properties = serverWorldProperties;
 	}
 
 	@Override
@@ -46,6 +36,11 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
+	public float getSpawnAngle() {
+		return this.properties.getSpawnAngle();
+	}
+
+	@Override
 	public long getTime() {
 		return this.properties.getTime();
 	}
@@ -56,24 +51,17 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public CompoundTag getPlayerData() {
-		return this.properties.getPlayerData();
-	}
-
-	@Override
 	public String getLevelName() {
-		return this.properties.getLevelName();
+		return this.field_24179.getLevelName();
 	}
 
 	@Override
-	public int getVersion() {
-		return this.properties.getVersion();
+	public int getClearWeatherTime() {
+		return this.properties.getClearWeatherTime();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
-	public long getLastPlayed() {
-		return this.properties.getLastPlayed();
+	public void setClearWeatherTime(int clearWeatherTime) {
 	}
 
 	@Override
@@ -98,22 +86,23 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 
 	@Override
 	public GameMode getGameMode() {
-		return this.properties.getGameMode();
+		return this.field_24179.getGameMode();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void setSpawnX(int spawnX) {
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void setSpawnY(int spawnY) {
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void setSpawnZ(int spawnZ) {
+	}
+
+	@Override
+	public void setSpawnAngle(float angle) {
 	}
 
 	@Override
@@ -125,15 +114,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setSpawnPos(BlockPos blockPos) {
-	}
-
-	@Override
-	public void setLevelName(String levelName) {
-	}
-
-	@Override
-	public void setVersion(int version) {
+	public void setSpawnPos(BlockPos pos, float angle) {
 	}
 
 	@Override
@@ -153,31 +134,17 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public boolean hasStructures() {
-		return this.properties.hasStructures();
+	public void setGameMode(GameMode gameMode) {
 	}
 
 	@Override
 	public boolean isHardcore() {
-		return this.properties.isHardcore();
-	}
-
-	@Override
-	public LevelGeneratorType getGeneratorType() {
-		return this.properties.getGeneratorType();
-	}
-
-	@Override
-	public void setGeneratorType(LevelGeneratorType levelGeneratorType) {
+		return this.field_24179.isHardcore();
 	}
 
 	@Override
 	public boolean areCommandsAllowed() {
-		return this.properties.areCommandsAllowed();
-	}
-
-	@Override
-	public void setCommandsAllowed(boolean commandsAllowed) {
+		return this.field_24179.areCommandsAllowed();
 	}
 
 	@Override
@@ -191,25 +158,26 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 
 	@Override
 	public GameRules getGameRules() {
-		return this.properties.getGameRules();
+		return this.field_24179.getGameRules();
+	}
+
+	@Override
+	public WorldBorder.Properties getWorldBorder() {
+		return this.properties.getWorldBorder();
+	}
+
+	@Override
+	public void setWorldBorder(WorldBorder.Properties properties) {
 	}
 
 	@Override
 	public Difficulty getDifficulty() {
-		return this.properties.getDifficulty();
-	}
-
-	@Override
-	public void setDifficulty(Difficulty difficulty) {
+		return this.field_24179.getDifficulty();
 	}
 
 	@Override
 	public boolean isDifficultyLocked() {
-		return this.properties.isDifficultyLocked();
-	}
-
-	@Override
-	public void setDifficultyLocked(boolean difficultyLocked) {
+		return this.field_24179.isDifficultyLocked();
 	}
 
 	@Override
@@ -218,18 +186,30 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setWorldData(DimensionType type, CompoundTag compoundTag) {
-		this.properties.setWorldData(type, compoundTag);
+	public int getWanderingTraderSpawnDelay() {
+		return 0;
 	}
 
 	@Override
-	public CompoundTag getWorldData(DimensionType dimensionType) {
-		return this.properties.getWorldData(dimensionType);
+	public void setWanderingTraderSpawnDelay(int wanderingTraderSpawnDelay) {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Derived", true);
-		this.properties.populateCrashReport(crashReportSection);
+	public int getWanderingTraderSpawnChance() {
+		return 0;
+	}
+
+	@Override
+	public void setWanderingTraderSpawnChance(int wanderingTraderSpawnChance) {
+	}
+
+	@Override
+	public void setWanderingTraderId(UUID uuid) {
+	}
+
+	@Override
+	public void populateCrashReport(CrashReportSection reportSection) {
+		reportSection.add("Derived", true);
+		this.properties.populateCrashReport(reportSection);
 	}
 }

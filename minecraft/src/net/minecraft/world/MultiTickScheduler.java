@@ -1,7 +1,6 @@
 package net.minecraft.world;
 
 import java.util.function.Function;
-import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 
 public class MultiTickScheduler<T> implements TickScheduler<T> {
@@ -24,10 +23,5 @@ public class MultiTickScheduler<T> implements TickScheduler<T> {
 	@Override
 	public boolean isTicking(BlockPos pos, T object) {
 		return false;
-	}
-
-	@Override
-	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
-		stream.forEach(scheduledTick -> ((TickScheduler)this.mapper.apply(scheduledTick.pos)).scheduleAll(Stream.of(scheduledTick)));
 	}
 }

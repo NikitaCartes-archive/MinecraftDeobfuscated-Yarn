@@ -18,9 +18,10 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 
 public class IglooGenerator {
 	private static final Identifier TOP_TEMPLATE = new Identifier("igloo/top");
@@ -33,9 +34,7 @@ public class IglooGenerator {
 		TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2)
 	);
 
-	public static void addPieces(
-		StructureManager manager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, Random random, DefaultFeatureConfig defaultConfig
-	) {
+	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, Random random) {
 		if (random.nextDouble() < 0.5) {
 			int i = random.nextInt(8) + 4;
 			pieces.add(new IglooGenerator.Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
@@ -72,7 +71,7 @@ public class IglooGenerator {
 			Structure structure = manager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(BlockMirror.NONE)
+				.setMirror(BlockMirror.field_11302)
 				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.template))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);
@@ -86,38 +85,46 @@ public class IglooGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
-				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
-				BlockEntity blockEntity = world.getBlockEntity(pos.down());
+				serverWorldAccess.setBlockState(pos, Blocks.field_10124.getDefaultState(), 3);
+				BlockEntity blockEntity = serverWorldAccess.getBlockEntity(pos.method_10074());
 				if (blockEntity instanceof ChestBlockEntity) {
-					((ChestBlockEntity)blockEntity).setLootTable(LootTables.IGLOO_CHEST_CHEST, random.nextLong());
+					((ChestBlockEntity)blockEntity).setLootTable(LootTables.field_662, random.nextLong());
 				}
 			}
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+		public boolean generate(
+			StructureWorldAccess structureWorldAccess,
+			StructureAccessor structureAccessor,
+			ChunkGenerator chunkGenerator,
+			Random random,
+			BlockBox boundingBox,
+			ChunkPos chunkPos,
+			BlockPos blockPos
+		) {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(BlockMirror.NONE)
+				.setMirror(BlockMirror.field_11302)
 				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.template))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
-			BlockPos blockPos = (BlockPos)IglooGenerator.field_14406.get(this.template);
-			BlockPos blockPos2 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, 0 - blockPos.getZ())));
-			int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
-			BlockPos blockPos3 = this.pos;
+			BlockPos blockPos2 = (BlockPos)IglooGenerator.field_14406.get(this.template);
+			BlockPos blockPos3 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3 - blockPos2.getX(), 0, 0 - blockPos2.getZ())));
+			int i = structureWorldAccess.getTopY(Heightmap.Type.field_13194, blockPos3.getX(), blockPos3.getZ());
+			BlockPos blockPos4 = this.pos;
 			this.pos = this.pos.add(0, i - 90 - 1, 0);
-			boolean bl = super.generate(world, chunkGenerator, random, blockBox, chunkPos);
+			boolean bl = super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
 			if (this.template.equals(IglooGenerator.TOP_TEMPLATE)) {
-				BlockPos blockPos4 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3, 0, 5)));
-				BlockState blockState = world.getBlockState(blockPos4.down());
-				if (!blockState.isAir() && blockState.getBlock() != Blocks.LADDER) {
-					world.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), 3);
+				BlockPos blockPos5 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)));
+				BlockState blockState = structureWorldAccess.getBlockState(blockPos5.method_10074());
+				if (!blockState.isAir() && !blockState.isOf(Blocks.field_9983)) {
+					structureWorldAccess.setBlockState(blockPos5, Blocks.field_10491.getDefaultState(), 3);
 				}
 			}
 
-			this.pos = blockPos3;
+			this.pos = blockPos4;
 			return bl;
 		}
 	}

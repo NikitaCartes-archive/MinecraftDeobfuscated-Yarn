@@ -3,7 +3,7 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.command.arguments.TimeArgumentType;
+import net.minecraft.command.argument.TimeArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 

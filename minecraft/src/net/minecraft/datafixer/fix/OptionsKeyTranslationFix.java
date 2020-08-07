@@ -2,11 +2,11 @@ package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -35,6 +35,7 @@ public class OptionsKeyTranslationFix extends DataFix {
 			
 									return Pair.of(entry.getKey(), entry.getValue());
 								}).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))))
+							.result()
 							.orElse(dynamic)
 				)
 		);

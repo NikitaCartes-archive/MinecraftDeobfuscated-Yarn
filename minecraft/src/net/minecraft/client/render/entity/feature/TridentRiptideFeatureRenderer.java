@@ -16,14 +16,14 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, PlayerEntityModel<T>> {
 	public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
-	private final ModelPart field_21012 = new ModelPart(64, 64, 0, 0);
+	private final ModelPart aura = new ModelPart(64, 64, 0, 0);
 
-	public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context) {
-		super(context);
-		this.field_21012.addCuboid(-8.0F, -16.0F, -8.0F, 16.0F, 32.0F, 16.0F);
+	public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
+		super(featureRendererContext);
+		this.aura.addCuboid(-8.0F, -16.0F, -8.0F, 16.0F, 32.0F, 16.0F);
 	}
 
-	public void render(
+	public void method_4203(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (livingEntity.isUsingRiptide()) {
@@ -36,7 +36,7 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 				float o = 0.75F * (float)m;
 				matrixStack.scale(o, o, o);
 				matrixStack.translate(0.0, (double)(-0.2F + 0.6F * (float)m), 0.0);
-				this.field_21012.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+				this.aura.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 				matrixStack.pop();
 			}
 		}

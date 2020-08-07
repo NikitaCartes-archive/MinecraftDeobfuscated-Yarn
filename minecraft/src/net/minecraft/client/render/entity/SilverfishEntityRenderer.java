@@ -8,17 +8,17 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SilverfishEntityRenderer extends MobEntityRenderer<SilverfishEntity, SilverfishEntityModel<SilverfishEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/silverfish.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/silverfish.png");
 
 	public SilverfishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SilverfishEntityModel<>(), 0.3F);
 	}
 
-	protected float getLyingAngle(SilverfishEntity silverfishEntity) {
+	protected float method_4107(SilverfishEntity silverfishEntity) {
 		return 180.0F;
 	}
 
-	public Identifier getTexture(SilverfishEntity silverfishEntity) {
-		return SKIN;
+	public Identifier method_4108(SilverfishEntity silverfishEntity) {
+		return TEXTURE;
 	}
 }

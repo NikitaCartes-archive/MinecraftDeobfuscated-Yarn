@@ -20,19 +20,19 @@ public class BannedIpEntry extends BanEntry<String> {
 		return new LiteralText(this.getKey());
 	}
 
-	public BannedIpEntry(JsonObject jsonObject) {
-		super(getIpFromJson(jsonObject), jsonObject);
+	public BannedIpEntry(JsonObject json) {
+		super(getIp(json), json);
 	}
 
-	private static String getIpFromJson(JsonObject json) {
+	private static String getIp(JsonObject json) {
 		return json.has("ip") ? json.get("ip").getAsString() : null;
 	}
 
 	@Override
-	protected void serialize(JsonObject jsonObject) {
+	protected void fromJson(JsonObject json) {
 		if (this.getKey() != null) {
-			jsonObject.addProperty("ip", this.getKey());
-			super.serialize(jsonObject);
+			json.addProperty("ip", this.getKey());
+			super.fromJson(json);
 		}
 	}
 }

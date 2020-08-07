@@ -10,12 +10,7 @@ public class BlockPosLookTarget implements LookTarget {
 
 	public BlockPosLookTarget(BlockPos blockPos) {
 		this.blockPos = blockPos;
-		this.pos = new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
-	}
-
-	@Override
-	public BlockPos getBlockPos() {
-		return this.blockPos;
+		this.pos = Vec3d.ofCenter(blockPos);
 	}
 
 	@Override
@@ -24,11 +19,16 @@ public class BlockPosLookTarget implements LookTarget {
 	}
 
 	@Override
+	public BlockPos getBlockPos() {
+		return this.blockPos;
+	}
+
+	@Override
 	public boolean isSeenBy(LivingEntity entity) {
 		return true;
 	}
 
 	public String toString() {
-		return "BlockPosWrapper{pos=" + this.blockPos + ", lookAt=" + this.pos + '}';
+		return "BlockPosTracker{blockPos=" + this.blockPos + ", centerPosition=" + this.pos + '}';
 	}
 }

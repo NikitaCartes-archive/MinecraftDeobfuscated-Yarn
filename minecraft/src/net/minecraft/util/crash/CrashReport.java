@@ -32,9 +32,9 @@ public class CrashReport {
 	private boolean hasStackTrace = true;
 	private StackTraceElement[] stackTrace = new StackTraceElement[0];
 
-	public CrashReport(String message, Throwable throwable) {
+	public CrashReport(String message, Throwable cause) {
 		this.message = message;
-		this.cause = throwable;
+		this.cause = cause;
 		this.fillSystemDetails();
 	}
 
@@ -296,7 +296,7 @@ public class CrashReport {
 		return crashReport;
 	}
 
-	public static void method_24305() {
+	public static void initCrashReport() {
 		new CrashReport("Don't panic!", new Throwable()).asString();
 	}
 }

@@ -8,4 +8,6 @@ public interface WindowEventHandler {
 	void onWindowFocusChanged(boolean focused);
 
 	void onResolutionChanged();
+
+	void method_30133();
 }

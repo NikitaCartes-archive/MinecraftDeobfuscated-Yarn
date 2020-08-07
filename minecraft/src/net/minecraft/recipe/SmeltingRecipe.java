@@ -14,7 +14,7 @@ public class SmeltingRecipe extends AbstractCookingRecipe {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.FURNACE);
+		return new ItemStack(Blocks.field_10181);
 	}
 
 	@Override

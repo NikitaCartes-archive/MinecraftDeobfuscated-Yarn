@@ -3,11 +3,12 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractPressableButtonWidget extends AbstractButtonWidget {
-	public AbstractPressableButtonWidget(int i, int j, int k, int l, String string) {
-		super(i, j, k, l, string);
+	public AbstractPressableButtonWidget(int i, int j, int k, int l, Text text) {
+		super(i, j, k, l, text);
 	}
 
 	public abstract void onPress();

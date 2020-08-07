@@ -3,22 +3,22 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class FireAspectEnchantment extends Enchantment {
-	protected FireAspectEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.WEAPON, slotTypes);
+	protected FireAspectEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
+		super(weight, EnchantmentTarget.field_9074, slotTypes);
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return 10 + 20 * (level - 1);
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return super.getMinimumPower(level) + 50;
+	public int getMaxPower(int level) {
+		return super.getMinPower(level) + 50;
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 2;
 	}
 }

@@ -6,7 +6,7 @@ public class NetherStarItem extends Item {
 	}
 
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack stack) {
+	public boolean hasGlint(ItemStack stack) {
 		return true;
 	}
 }

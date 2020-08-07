@@ -2,7 +2,8 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.fluid.Fluid;
@@ -17,8 +18,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class MagmaCubeEntity extends SlimeEntity {
@@ -26,14 +27,12 @@ public class MagmaCubeEntity extends SlimeEntity {
 		super(entityType, world);
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
+	public static DefaultAttributeContainer.Builder createMagmaCubeAttributes() {
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.field_23719, 0.2F);
 	}
 
-	public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		return world.getDifficulty() != Difficulty.PEACEFUL;
+	public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		return world.getDifficulty() != Difficulty.field_5801;
 	}
 
 	@Override
@@ -44,7 +43,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	@Override
 	protected void setSize(int size, boolean heal) {
 		super.setSize(size, heal);
-		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue((double)(size * 3));
+		this.getAttributeInstance(EntityAttributes.field_23724).setBaseValue((double)(size * 3));
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	protected ParticleEffect getParticles() {
-		return ParticleTypes.FLAME;
+		return ParticleTypes.field_11240;
 	}
 
 	@Override
@@ -86,7 +85,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	protected void swimUpward(Tag<Fluid> fluid) {
-		if (fluid == FluidTags.LAVA) {
+		if (fluid == FluidTags.field_15518) {
 			Vec3d vec3d = this.getVelocity();
 			this.setVelocity(vec3d.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3d.z);
 			this.velocityDirty = true;
@@ -101,7 +100,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected boolean isBig() {
+	protected boolean canAttack() {
 		return this.canMoveVoluntarily();
 	}
 
@@ -112,21 +111,21 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return this.isSmall() ? SoundEvents.ENTITY_MAGMA_CUBE_HURT_SMALL : SoundEvents.ENTITY_MAGMA_CUBE_HURT;
+		return this.isSmall() ? SoundEvents.field_15005 : SoundEvents.field_14747;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.isSmall() ? SoundEvents.ENTITY_MAGMA_CUBE_DEATH_SMALL : SoundEvents.ENTITY_MAGMA_CUBE_DEATH;
+		return this.isSmall() ? SoundEvents.field_14889 : SoundEvents.field_14662;
 	}
 
 	@Override
 	protected SoundEvent getSquishSound() {
-		return this.isSmall() ? SoundEvents.ENTITY_MAGMA_CUBE_SQUISH_SMALL : SoundEvents.ENTITY_MAGMA_CUBE_SQUISH;
+		return this.isSmall() ? SoundEvents.field_14749 : SoundEvents.field_14949;
 	}
 
 	@Override
 	protected SoundEvent getJumpSound() {
-		return SoundEvents.ENTITY_MAGMA_CUBE_JUMP;
+		return SoundEvents.field_14847;
 	}
 }

@@ -12,13 +12,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/illager/vindicator.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/vindicator.png");
 
 	public VindicatorEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new IllagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
 		this.addFeature(
 			new HeldItemFeatureRenderer<VindicatorEntity, IllagerEntityModel<VindicatorEntity>>(this) {
-				public void render(
+				public void method_17156(
 					MatrixStack matrixStack,
 					VertexConsumerProvider vertexConsumerProvider,
 					int i,
@@ -31,14 +31,14 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 					float l
 				) {
 					if (vindicatorEntity.isAttacking()) {
-						super.render(matrixStack, vertexConsumerProvider, i, vindicatorEntity, f, g, h, j, k, l);
+						super.method_17162(matrixStack, vertexConsumerProvider, i, vindicatorEntity, f, g, h, j, k, l);
 					}
 				}
 			}
 		);
 	}
 
-	public Identifier getTexture(VindicatorEntity vindicatorEntity) {
-		return SKIN;
+	public Identifier method_4147(VindicatorEntity vindicatorEntity) {
+		return TEXTURE;
 	}
 }

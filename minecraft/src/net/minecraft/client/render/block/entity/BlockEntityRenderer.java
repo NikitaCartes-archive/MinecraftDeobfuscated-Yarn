@@ -14,7 +14,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 		this.dispatcher = dispatcher;
 	}
 
-	public abstract void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay);
+	public abstract void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay);
 
 	public boolean rendersOutsideBoundingBox(T blockEntity) {
 		return false;

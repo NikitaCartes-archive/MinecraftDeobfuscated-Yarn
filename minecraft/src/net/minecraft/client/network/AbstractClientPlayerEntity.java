@@ -11,12 +11,12 @@ import net.minecraft.client.texture.PlayerSkinTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -28,20 +28,20 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	public final ClientWorld clientWorld;
 
 	public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile) {
-		super(world, profile);
+		super(world, world.getSpawnPos(), world.method_30671(), profile);
 		this.clientWorld = world;
 	}
 
 	@Override
 	public boolean isSpectator() {
 		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
-		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.SPECTATOR;
+		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9219;
 	}
 
 	@Override
 	public boolean isCreative() {
 		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
-		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.CREATIVE;
+		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9220;
 	}
 
 	public boolean canRenderCapeTexture() {
@@ -115,13 +115,12 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 			f *= 1.1F;
 		}
 
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
-		f = (float)((double)f * ((entityAttributeInstance.getValue() / (double)this.abilities.getWalkSpeed() + 1.0) / 2.0));
+		f = (float)((double)f * ((this.getAttributeValue(EntityAttributes.field_23719) / (double)this.abilities.getWalkSpeed() + 1.0) / 2.0));
 		if (this.abilities.getWalkSpeed() == 0.0F || Float.isNaN(f) || Float.isInfinite(f)) {
 			f = 1.0F;
 		}
 
-		if (this.isUsingItem() && this.getActiveItem().getItem() == Items.BOW) {
+		if (this.isUsingItem() && this.getActiveItem().getItem() == Items.field_8102) {
 			int i = this.getItemUseTime();
 			float g = (float)i / 20.0F;
 			if (g > 1.0F) {
@@ -133,6 +132,6 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 			f *= 1.0F - g * 0.15F;
 		}
 
-		return f;
+		return MathHelper.lerp(MinecraftClient.getInstance().options.fovEffectScale, 1.0F, f);
 	}
 }

@@ -29,24 +29,24 @@ public class MinecartItem extends Item {
 			BlockState blockState = world.getBlockState(blockPos);
 			RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 				? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
-				: RailShape.NORTH_SOUTH;
+				: RailShape.field_12665;
 			double g;
-			if (blockState.matches(BlockTags.RAILS)) {
+			if (blockState.isIn(BlockTags.field_15463)) {
 				if (railShape.isAscending()) {
 					g = 0.6;
 				} else {
 					g = 0.1;
 				}
 			} else {
-				if (!blockState.isAir() || !world.getBlockState(blockPos.down()).matches(BlockTags.RAILS)) {
+				if (!blockState.isAir() || !world.getBlockState(blockPos.method_10074()).isIn(BlockTags.field_15463)) {
 					return this.defaultBehavior.dispense(pointer, stack);
 				}
 
-				BlockState blockState2 = world.getBlockState(blockPos.down());
+				BlockState blockState2 = world.getBlockState(blockPos.method_10074());
 				RailShape railShape2 = blockState2.getBlock() instanceof AbstractRailBlock
 					? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty())
-					: RailShape.NORTH_SOUTH;
-				if (direction != Direction.DOWN && railShape2.isAscending()) {
+					: RailShape.field_12665;
+				if (direction != Direction.field_11033 && railShape2.isAscending()) {
 					g = -0.4;
 				} else {
 					g = -0.9;
@@ -65,7 +65,7 @@ public class MinecartItem extends Item {
 
 		@Override
 		protected void playSound(BlockPointer pointer) {
-			pointer.getWorld().playLevelEvent(1000, pointer.getBlockPos(), 0);
+			pointer.getWorld().syncWorldEvent(1000, pointer.getBlockPos(), 0);
 		}
 	};
 	private final AbstractMinecartEntity.Type type;
@@ -81,14 +81,14 @@ public class MinecartItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (!blockState.matches(BlockTags.RAILS)) {
+		if (!blockState.isIn(BlockTags.field_15463)) {
 			return ActionResult.FAIL;
 		} else {
 			ItemStack itemStack = context.getStack();
 			if (!world.isClient) {
 				RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 					? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
-					: RailShape.NORTH_SOUTH;
+					: RailShape.field_12665;
 				double d = 0.0;
 				if (railShape.isAscending()) {
 					d = 0.5;
@@ -105,7 +105,7 @@ public class MinecartItem extends Item {
 			}
 
 			itemStack.decrement(1);
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		}
 	}
 }

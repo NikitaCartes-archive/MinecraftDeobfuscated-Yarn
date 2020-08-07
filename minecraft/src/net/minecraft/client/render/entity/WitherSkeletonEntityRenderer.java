@@ -8,18 +8,18 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WitherSkeletonEntityRenderer extends SkeletonEntityRenderer {
-	private static final Identifier SKIN = new Identifier("textures/entity/skeleton/wither_skeleton.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/skeleton/wither_skeleton.png");
 
 	public WitherSkeletonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 	}
 
 	@Override
-	public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
-		return SKIN;
+	public Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
+		return TEXTURE;
 	}
 
-	protected void scale(AbstractSkeletonEntity abstractSkeletonEntity, MatrixStack matrixStack, float f) {
+	protected void method_4161(AbstractSkeletonEntity abstractSkeletonEntity, MatrixStack matrixStack, float f) {
 		matrixStack.scale(1.2F, 1.2F, 1.2F);
 	}
 }

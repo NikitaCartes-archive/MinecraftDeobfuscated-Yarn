@@ -9,19 +9,19 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ChickenEntityRenderer extends MobEntityRenderer<ChickenEntity, ChickenEntityModel<ChickenEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/chicken.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/chicken.png");
 
 	public ChickenEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new ChickenEntityModel<>(), 0.3F);
 	}
 
-	public Identifier getTexture(ChickenEntity chickenEntity) {
-		return SKIN;
+	public Identifier method_3892(ChickenEntity chickenEntity) {
+		return TEXTURE;
 	}
 
-	protected float getCustomAngle(ChickenEntity chickenEntity, float f) {
-		float g = MathHelper.lerp(f, chickenEntity.field_6736, chickenEntity.field_6741);
-		float h = MathHelper.lerp(f, chickenEntity.field_6738, chickenEntity.field_6743);
+	protected float method_3893(ChickenEntity chickenEntity, float f) {
+		float g = MathHelper.lerp(f, chickenEntity.prevFlapProgress, chickenEntity.flapProgress);
+		float h = MathHelper.lerp(f, chickenEntity.prevMaxWingDeviation, chickenEntity.maxWingDeviation);
 		return (MathHelper.sin(g) + 1.0F) * h;
 	}
 }

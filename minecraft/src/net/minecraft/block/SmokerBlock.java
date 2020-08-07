@@ -5,9 +5,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SmokerBlockEntity;
-import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -16,21 +16,21 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class SmokerBlock extends AbstractFurnaceBlock {
-	protected SmokerBlock(Block.Settings settings) {
+	protected SmokerBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new SmokerBlockEntity();
 	}
 
 	@Override
-	protected void openContainer(World world, BlockPos pos, PlayerEntity player) {
+	protected void openScreen(World world, BlockPos pos, PlayerEntity player) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof SmokerBlockEntity) {
-			player.openContainer((NameableContainerProvider)blockEntity);
-			player.incrementStat(Stats.INTERACT_WITH_SMOKER);
+			player.openHandledScreen((NamedScreenHandlerFactory)blockEntity);
+			player.incrementStat(Stats.field_17273);
 		}
 	}
 
@@ -42,10 +42,10 @@ public class SmokerBlock extends AbstractFurnaceBlock {
 			double e = (double)pos.getY();
 			double f = (double)pos.getZ() + 0.5;
 			if (random.nextDouble() < 0.1) {
-				world.playSound(d, e, f, SoundEvents.BLOCK_SMOKER_SMOKE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+				world.playSound(d, e, f, SoundEvents.field_17618, SoundCategory.field_15245, 1.0F, 1.0F, false);
 			}
 
-			world.addParticle(ParticleTypes.SMOKE, d, e + 1.1, f, 0.0, 0.0, 0.0);
+			world.addParticle(ParticleTypes.field_11251, d, e + 1.1, f, 0.0, 0.0, 0.0);
 		}
 	}
 }

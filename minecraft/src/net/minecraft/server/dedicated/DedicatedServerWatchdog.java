@@ -20,9 +20,9 @@ public class DedicatedServerWatchdog implements Runnable {
 	private final MinecraftDedicatedServer server;
 	private final long maxTickTime;
 
-	public DedicatedServerWatchdog(MinecraftDedicatedServer minecraftDedicatedServer) {
-		this.server = minecraftDedicatedServer;
-		this.maxTickTime = minecraftDedicatedServer.getMaxTickTime();
+	public DedicatedServerWatchdog(MinecraftDedicatedServer server) {
+		this.server = server;
+		this.maxTickTime = server.getMaxTickTime();
 	}
 
 	public void run() {

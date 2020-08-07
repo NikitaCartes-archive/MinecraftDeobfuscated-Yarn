@@ -2,13 +2,13 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SquidInkParticle extends AnimatedParticle {
-	private SquidInkParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+	private SquidInkParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
 		super(world, x, y, z, spriteProvider, 0.0F);
 		this.scale = 0.5F;
 		this.setColorAlpha(1.0F);
@@ -58,8 +58,8 @@ public class SquidInkParticle extends AnimatedParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new SquidInkParticle(world, d, e, f, g, h, i, this.spriteProvider);
+		public Particle method_3105(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new SquidInkParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 }

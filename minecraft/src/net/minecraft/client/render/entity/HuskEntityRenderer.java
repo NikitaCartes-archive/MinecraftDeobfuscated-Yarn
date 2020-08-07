@@ -8,20 +8,20 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class HuskEntityRenderer extends ZombieEntityRenderer {
-	private static final Identifier SKIN = new Identifier("textures/entity/zombie/husk.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/zombie/husk.png");
 
 	public HuskEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 	}
 
-	protected void scale(ZombieEntity zombieEntity, MatrixStack matrixStack, float f) {
+	protected void method_3985(ZombieEntity zombieEntity, MatrixStack matrixStack, float f) {
 		float g = 1.0625F;
 		matrixStack.scale(1.0625F, 1.0625F, 1.0625F);
 		super.scale(zombieEntity, matrixStack, f);
 	}
 
 	@Override
-	public Identifier getTexture(ZombieEntity zombieEntity) {
-		return SKIN;
+	public Identifier method_4163(ZombieEntity zombieEntity) {
+		return TEXTURE;
 	}
 }

@@ -2,13 +2,15 @@ package net.minecraft.entity.damage;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
@@ -23,20 +25,29 @@ public class DamageTracker {
 	private boolean hasDamage;
 	private String fallDeathSuffix;
 
-	public DamageTracker(LivingEntity livingEntity) {
-		this.entity = livingEntity;
+	public DamageTracker(LivingEntity entity) {
+		this.entity = entity;
 	}
 
 	public void setFallDeathSuffix() {
 		this.clearFallDeathSuffix();
-		if (this.entity.isClimbing()) {
-			Block block = this.entity.world.getBlockState(new BlockPos(this.entity)).getBlock();
-			if (block == Blocks.LADDER) {
+		Optional<BlockPos> optional = this.entity.getClimbingPos();
+		if (optional.isPresent()) {
+			BlockState blockState = this.entity.world.getBlockState((BlockPos)optional.get());
+			if (blockState.isOf(Blocks.field_9983) || blockState.isIn(BlockTags.field_15487)) {
 				this.fallDeathSuffix = "ladder";
-			} else if (block == Blocks.VINE) {
+			} else if (blockState.isOf(Blocks.field_10597)) {
 				this.fallDeathSuffix = "vines";
+			} else if (blockState.isOf(Blocks.field_22123) || blockState.isOf(Blocks.field_22124)) {
+				this.fallDeathSuffix = "weeping_vines";
+			} else if (blockState.isOf(Blocks.field_23078) || blockState.isOf(Blocks.field_23079)) {
+				this.fallDeathSuffix = "twisting_vines";
+			} else if (blockState.isOf(Blocks.field_16492)) {
+				this.fallDeathSuffix = "scaffolding";
+			} else {
+				this.fallDeathSuffix = "other_climbable";
 			}
-		} else if (this.entity.isInsideWater()) {
+		} else if (this.entity.isTouchingWater()) {
 			this.fallDeathSuffix = "water";
 		}
 	}

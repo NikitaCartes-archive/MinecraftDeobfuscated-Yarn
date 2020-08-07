@@ -1,0 +1,48 @@
+package net.minecraft.entity.ai.brain.task;
+
+import com.google.common.collect.ImmutableMap;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.server.world.ServerWorld;
+
+public class StartRidingTask<E extends LivingEntity> extends Task<E> {
+	private final float field_23132;
+
+	public StartRidingTask(float f) {
+		super(
+			ImmutableMap.of(
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_22356,
+				MemoryModuleState.field_18456
+			)
+		);
+		this.field_23132 = f;
+	}
+
+	@Override
+	protected boolean shouldRun(ServerWorld world, E entity) {
+		return !entity.hasVehicle();
+	}
+
+	@Override
+	protected void run(ServerWorld world, E entity, long time) {
+		if (this.isRideTargetClose(entity)) {
+			entity.startRiding(this.getRideTarget(entity));
+		} else {
+			LookTargetUtil.walkTowards(entity, this.getRideTarget(entity), this.field_23132, 1);
+		}
+	}
+
+	private boolean isRideTargetClose(E entity) {
+		return this.getRideTarget(entity).isInRange(entity, 1.0);
+	}
+
+	private Entity getRideTarget(E entity) {
+		return (Entity)entity.getBrain().getOptionalMemory(MemoryModuleType.field_22356).get();
+	}
+}

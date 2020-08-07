@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import net.minecraft.data.client.BlockStateDefinitionProvider;
 import net.minecraft.data.dev.NbtProvider;
+import net.minecraft.data.report.BiomeListProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
 import net.minecraft.data.report.ItemListProvider;
@@ -59,10 +61,15 @@ public class Main {
 			dataGenerator.install(new SnbtProvider(dataGenerator).addWriter(new StructureValidatorProvider()));
 		}
 
+		if (includeClient) {
+			dataGenerator.install(new BlockStateDefinitionProvider(dataGenerator));
+		}
+
 		if (includeServer) {
 			dataGenerator.install(new FluidTagsProvider(dataGenerator));
-			dataGenerator.install(new BlockTagsProvider(dataGenerator));
-			dataGenerator.install(new ItemTagsProvider(dataGenerator));
+			BlockTagsProvider blockTagsProvider = new BlockTagsProvider(dataGenerator);
+			dataGenerator.install(blockTagsProvider);
+			dataGenerator.install(new ItemTagsProvider(dataGenerator, blockTagsProvider));
 			dataGenerator.install(new EntityTypeTagsProvider(dataGenerator));
 			dataGenerator.install(new RecipesProvider(dataGenerator));
 			dataGenerator.install(new AdvancementsProvider(dataGenerator));
@@ -77,6 +84,7 @@ public class Main {
 			dataGenerator.install(new BlockListProvider(dataGenerator));
 			dataGenerator.install(new ItemListProvider(dataGenerator));
 			dataGenerator.install(new CommandSyntaxProvider(dataGenerator));
+			dataGenerator.install(new BiomeListProvider(dataGenerator));
 		}
 
 		return dataGenerator;

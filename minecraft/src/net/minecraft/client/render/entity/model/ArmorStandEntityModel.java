@@ -59,15 +59,15 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 		this.helmet.visible = false;
 	}
 
-	public void animateModel(ArmorStandEntity armorStandEntity, float f, float g, float h) {
+	public void method_24223(ArmorStandEntity armorStandEntity, float f, float g, float h) {
 		this.plate.pitch = 0.0F;
 		this.plate.yaw = (float) (Math.PI / 180.0) * -MathHelper.lerpAngleDegrees(h, armorStandEntity.prevYaw, armorStandEntity.yaw);
 		this.plate.roll = 0.0F;
 	}
 
 	@Override
-	public void setAngles(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(armorStandEntity, f, g, h, i, j);
+	public void method_17066(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
+		super.method_17066(armorStandEntity, f, g, h, i, j);
 		this.leftArm.visible = armorStandEntity.shouldShowArms();
 		this.rightArm.visible = armorStandEntity.shouldShowArms();
 		this.plate.visible = !armorStandEntity.shouldHideBasePlate();
@@ -90,11 +90,11 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	}
 
 	@Override
-	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(Arm arm, MatrixStack matrices) {
 		ModelPart modelPart = this.getArm(arm);
 		boolean bl = modelPart.visible;
 		modelPart.visible = true;
-		super.setArmAngle(arm, matrixStack);
+		super.setArmAngle(arm, matrices);
 		modelPart.visible = bl;
 	}
 }

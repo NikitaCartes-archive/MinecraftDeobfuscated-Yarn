@@ -32,4 +32,8 @@ public class TypedActionResult<T> {
 	public static <T> TypedActionResult<T> fail(T data) {
 		return new TypedActionResult<>(ActionResult.FAIL, data);
 	}
+
+	public static <T> TypedActionResult<T> method_29237(T object, boolean bl) {
+		return bl ? success(object) : consume(object);
+	}
 }

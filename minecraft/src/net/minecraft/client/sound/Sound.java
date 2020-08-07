@@ -47,7 +47,7 @@ public class Sound implements SoundContainer<Sound> {
 		return this.weight;
 	}
 
-	public Sound getSound() {
+	public Sound method_4765() {
 		return this;
 	}
 
@@ -74,9 +74,13 @@ public class Sound implements SoundContainer<Sound> {
 		return this.attenuation;
 	}
 
+	public String toString() {
+		return "Sound[" + this.id + "]";
+	}
+
 	@Environment(EnvType.CLIENT)
 	public static enum RegistrationType {
-		FILE("file"),
+		field_5474("file"),
 		SOUND_EVENT("event");
 
 		private final String name;

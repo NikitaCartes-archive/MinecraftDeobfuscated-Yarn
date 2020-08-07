@@ -31,6 +31,7 @@ import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
@@ -60,7 +61,7 @@ public class BuiltinModelItemRenderer {
 	private final ShieldEntityModel modelShield = new ShieldEntityModel();
 	private final TridentEntityModel modelTrident = new TridentEntityModel();
 
-	public void render(ItemStack stack, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
+	public void render(ItemStack stack, ModelTransformation.Mode mode, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		Item item = stack.getItem();
 		if (item instanceof BlockItem) {
 			Block block = ((BlockItem)item).getBlock();
@@ -71,14 +72,14 @@ public class BuiltinModelItemRenderer {
 					if (compoundTag.contains("SkullOwner", 10)) {
 						gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
 					} else if (compoundTag.contains("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
-						GameProfile var15 = new GameProfile(null, compoundTag.getString("SkullOwner"));
-						gameProfile = SkullBlockEntity.loadProperties(var15);
+						GameProfile var16 = new GameProfile(null, compoundTag.getString("SkullOwner"));
+						gameProfile = SkullBlockEntity.loadProperties(var16);
 						compoundTag.remove("SkullOwner");
 						compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
 					}
 				}
 
-				SkullBlockEntityRenderer.render(null, 180.0F, ((AbstractSkullBlock)block).getSkullType(), gameProfile, 0.0F, matrix, vertexConsumerProvider, light);
+				SkullBlockEntityRenderer.render(null, 180.0F, ((AbstractSkullBlock)block).getSkullType(), gameProfile, 0.0F, matrixStack, vertexConsumerProvider, i);
 			} else {
 				BlockEntity blockEntity;
 				if (block instanceof AbstractBannerBlock) {
@@ -87,13 +88,13 @@ public class BuiltinModelItemRenderer {
 				} else if (block instanceof BedBlock) {
 					this.renderBed.setColor(((BedBlock)block).getColor());
 					blockEntity = this.renderBed;
-				} else if (block == Blocks.CONDUIT) {
+				} else if (block == Blocks.field_10502) {
 					blockEntity = this.renderConduit;
-				} else if (block == Blocks.CHEST) {
+				} else if (block == Blocks.field_10034) {
 					blockEntity = this.renderChestNormal;
-				} else if (block == Blocks.ENDER_CHEST) {
+				} else if (block == Blocks.field_10443) {
 					blockEntity = this.renderChestEnder;
-				} else if (block == Blocks.TRAPPED_CHEST) {
+				} else if (block == Blocks.field_10380) {
 					blockEntity = this.renderChestTrapped;
 				} else {
 					if (!(block instanceof ShulkerBoxBlock)) {
@@ -108,35 +109,37 @@ public class BuiltinModelItemRenderer {
 					}
 				}
 
-				BlockEntityRenderDispatcher.INSTANCE.renderEntity(blockEntity, matrix, vertexConsumerProvider, light, overlay);
+				BlockEntityRenderDispatcher.INSTANCE.renderEntity(blockEntity, matrixStack, vertexConsumerProvider, i, j);
 			}
 		} else {
-			if (item == Items.SHIELD) {
+			if (item == Items.field_8255) {
 				boolean bl = stack.getSubTag("BlockEntityTag") != null;
-				matrix.push();
-				matrix.scale(1.0F, -1.0F, -1.0F);
+				matrixStack.push();
+				matrixStack.scale(1.0F, -1.0F, -1.0F);
 				SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
 				VertexConsumer vertexConsumer = spriteIdentifier.getSprite()
 					.getTextureSpecificVertexConsumer(
-						ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, stack.hasEnchantmentGlint())
+						ItemRenderer.getDirectGlintVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint())
 					);
-				this.modelShield.method_23775().render(matrix, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+				this.modelShield.method_23775().render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
-					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(ShieldItem.getColor(stack), BannerBlockEntity.method_24281(stack));
-					BannerBlockEntityRenderer.method_23802(matrix, vertexConsumerProvider, light, overlay, this.modelShield.method_23774(), spriteIdentifier, false, list);
+					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListTag(stack));
+					BannerBlockEntityRenderer.renderCanvas(
+						matrixStack, vertexConsumerProvider, i, j, this.modelShield.method_23774(), spriteIdentifier, false, list, stack.hasGlint()
+					);
 				} else {
-					this.modelShield.method_23774().render(matrix, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+					this.modelShield.method_23774().render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 				}
 
-				matrix.pop();
-			} else if (item == Items.TRIDENT) {
-				matrix.push();
-				matrix.scale(1.0F, -1.0F, -1.0F);
-				VertexConsumer vertexConsumer2 = ItemRenderer.getArmorVertexConsumer(
-					vertexConsumerProvider, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasEnchantmentGlint()
+				matrixStack.pop();
+			} else if (item == Items.field_8547) {
+				matrixStack.push();
+				matrixStack.scale(1.0F, -1.0F, -1.0F);
+				VertexConsumer vertexConsumer2 = ItemRenderer.getDirectGlintVertexConsumer(
+					vertexConsumerProvider, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasGlint()
 				);
-				this.modelTrident.render(matrix, vertexConsumer2, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
-				matrix.pop();
+				this.modelTrident.render(matrixStack, vertexConsumer2, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
+				matrixStack.pop();
 			}
 		}
 	}

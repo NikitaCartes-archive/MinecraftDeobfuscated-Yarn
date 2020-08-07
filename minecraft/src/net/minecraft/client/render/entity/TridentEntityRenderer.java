@@ -15,26 +15,26 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
-	public static final Identifier SKIN = new Identifier("textures/entity/trident.png");
+	public static final Identifier TEXTURE = new Identifier("textures/entity/trident.png");
 	private final TridentEntityModel model = new TridentEntityModel();
 
 	public TridentEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(TridentEntity tridentEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void method_4133(TridentEntity tridentEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, tridentEntity.prevYaw, tridentEntity.yaw) - 90.0F));
 		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, tridentEntity.prevPitch, tridentEntity.pitch) + 90.0F));
-		VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
-			vertexConsumerProvider, this.model.getLayer(this.getTexture(tridentEntity)), false, tridentEntity.method_23751()
+		VertexConsumer vertexConsumer = ItemRenderer.getDirectGlintVertexConsumer(
+			vertexConsumerProvider, this.model.getLayer(this.method_4134(tridentEntity)), false, tridentEntity.isEnchanted()
 		);
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 		super.render(tridentEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(TridentEntity tridentEntity) {
-		return SKIN;
+	public Identifier method_4134(TridentEntity tridentEntity) {
+		return TEXTURE;
 	}
 }

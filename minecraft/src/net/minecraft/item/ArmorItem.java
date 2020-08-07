@@ -1,6 +1,8 @@
 package net.minecraft.item;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableMultimap.Builder;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.block.DispenserBlock;
@@ -8,6 +10,7 @@ import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
@@ -20,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-public class ArmorItem extends Item {
+public class ArmorItem extends Item implements Wearable {
 	private static final UUID[] MODIFIERS = new UUID[]{
 		UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"),
 		UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"),
@@ -34,14 +37,16 @@ public class ArmorItem extends Item {
 		}
 	};
 	protected final EquipmentSlot slot;
-	protected final int protection;
-	protected final float toughness;
+	private final int protection;
+	private final float toughness;
+	protected final float knockbackResistance;
 	protected final ArmorMaterial type;
+	private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
 	public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
 		BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 		List<LivingEntity> list = pointer.getWorld()
-			.getEntities(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(armor)));
+			.getEntitiesByClass(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.Equipable(armor)));
 		if (list.isEmpty()) {
 			return false;
 		} else {
@@ -64,7 +69,24 @@ public class ArmorItem extends Item {
 		this.slot = slot;
 		this.protection = material.getProtectionAmount(slot);
 		this.toughness = material.getToughness();
+		this.knockbackResistance = material.getKnockbackResistance();
 		DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
+		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
+		UUID uUID = MODIFIERS[slot.getEntitySlotId()];
+		builder.put(
+			EntityAttributes.field_23724, new EntityAttributeModifier(uUID, "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION)
+		);
+		builder.put(
+			EntityAttributes.field_23725, new EntityAttributeModifier(uUID, "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION)
+		);
+		if (material == ArmorMaterials.field_21977) {
+			builder.put(
+				EntityAttributes.field_23718,
+				new EntityAttributeModifier(uUID, "Armor knockback resistance", (double)this.knockbackResistance, EntityAttributeModifier.Operation.ADDITION)
+			);
+		}
+
+		this.attributeModifiers = builder.build();
 	}
 
 	public EquipmentSlot getSlotType() {
@@ -82,7 +104,7 @@ public class ArmorItem extends Item {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return this.type.getRepairIngredient().test(ingredient) || super.canRepair(stack, ingredient);
+		return this.type.getRepairIngredient().method_8093(ingredient) || super.canRepair(stack, ingredient);
 	}
 
 	@Override
@@ -93,30 +115,22 @@ public class ArmorItem extends Item {
 		if (itemStack2.isEmpty()) {
 			user.equipStack(equipmentSlot, itemStack.copy());
 			itemStack.setCount(0);
-			return TypedActionResult.success(itemStack);
+			return TypedActionResult.method_29237(itemStack, world.isClient());
 		} else {
 			return TypedActionResult.fail(itemStack);
 		}
 	}
 
 	@Override
-	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
-		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
-		if (slot == this.slot) {
-			multimap.put(
-				EntityAttributes.ARMOR.getId(),
-				new EntityAttributeModifier(MODIFIERS[slot.getEntitySlotId()], "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION)
-			);
-			multimap.put(
-				EntityAttributes.ARMOR_TOUGHNESS.getId(),
-				new EntityAttributeModifier(MODIFIERS[slot.getEntitySlotId()], "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION)
-			);
-		}
-
-		return multimap;
+	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+		return slot == this.slot ? this.attributeModifiers : super.getAttributeModifiers(slot);
 	}
 
 	public int getProtection() {
 		return this.protection;
+	}
+
+	public float method_26353() {
+		return this.toughness;
 	}
 }

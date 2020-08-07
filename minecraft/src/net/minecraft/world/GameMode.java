@@ -7,11 +7,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum GameMode {
-	NOT_SET(-1, ""),
-	SURVIVAL(0, "survival"),
-	CREATIVE(1, "creative"),
-	ADVENTURE(2, "adventure"),
-	SPECTATOR(3, "spectator");
+	field_9218(-1, ""),
+	field_9215(0, "survival"),
+	field_9220(1, "creative"),
+	field_9216(2, "adventure"),
+	field_9219(3, "spectator");
 
 	private final int id;
 	private final String name;
@@ -33,12 +33,12 @@ public enum GameMode {
 		return new TranslatableText("gameMode." + this.name);
 	}
 
-	public void setAbilitites(PlayerAbilities abilities) {
-		if (this == CREATIVE) {
+	public void setAbilities(PlayerAbilities abilities) {
+		if (this == field_9220) {
 			abilities.allowFlying = true;
 			abilities.creativeMode = true;
 			abilities.invulnerable = true;
-		} else if (this == SPECTATOR) {
+		} else if (this == field_9219) {
 			abilities.allowFlying = true;
 			abilities.creativeMode = false;
 			abilities.invulnerable = true;
@@ -50,38 +50,38 @@ public enum GameMode {
 			abilities.flying = false;
 		}
 
-		abilities.allowModifyWorld = !this.shouldLimitWorldModification();
+		abilities.allowModifyWorld = !this.isBlockBreakingRestricted();
 	}
 
-	public boolean shouldLimitWorldModification() {
-		return this == ADVENTURE || this == SPECTATOR;
+	public boolean isBlockBreakingRestricted() {
+		return this == field_9216 || this == field_9219;
 	}
 
 	public boolean isCreative() {
-		return this == CREATIVE;
+		return this == field_9220;
 	}
 
 	public boolean isSurvivalLike() {
-		return this == SURVIVAL || this == ADVENTURE;
+		return this == field_9215 || this == field_9216;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_24328() {
-		return 2.5F;
+	public float method_31218() {
+		return 3.0F;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_24329() {
+	public float method_31219() {
 		return 6.0F;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_24330() {
+	public float method_31220() {
 		return this.isCreative() ? 5.0F : 4.5F;
 	}
 
 	public static GameMode byId(int id) {
-		return byId(id, SURVIVAL);
+		return byId(id, field_9215);
 	}
 
 	public static GameMode byId(int id, GameMode defaultMode) {
@@ -95,7 +95,7 @@ public enum GameMode {
 	}
 
 	public static GameMode byName(String name) {
-		return byName(name, SURVIVAL);
+		return byName(name, field_9215);
 	}
 
 	public static GameMode byName(String name, GameMode defaultMode) {

@@ -3,10 +3,14 @@ package net.minecraft.world;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.level.ColorResolver;
 
 public interface BlockRenderView extends BlockView {
+	@Environment(EnvType.CLIENT)
+	float getBrightness(Direction direction, boolean shaded);
+
 	LightingProvider getLightingProvider();
 
 	@Environment(EnvType.CLIENT)
@@ -21,6 +25,6 @@ public interface BlockRenderView extends BlockView {
 	}
 
 	default boolean isSkyVisible(BlockPos pos) {
-		return this.getLightLevel(LightType.SKY, pos) >= this.getMaxLightLevel();
+		return this.getLightLevel(LightType.field_9284, pos) >= this.getMaxLightLevel();
 	}
 }

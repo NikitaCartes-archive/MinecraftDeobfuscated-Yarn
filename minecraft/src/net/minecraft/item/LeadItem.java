@@ -1,7 +1,7 @@
 package net.minecraft.item;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.decoration.LeadKnotEntity;
+import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tag.BlockTags;
@@ -20,20 +20,20 @@ public class LeadItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		Block block = world.getBlockState(blockPos).getBlock();
-		if (block.matches(BlockTags.FENCES)) {
+		if (block.isIn(BlockTags.field_16584)) {
 			PlayerEntity playerEntity = context.getPlayer();
 			if (!world.isClient && playerEntity != null) {
 				attachHeldMobsToBlock(playerEntity, world, blockPos);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}
 	}
 
 	public static ActionResult attachHeldMobsToBlock(PlayerEntity playerEntity, World world, BlockPos blockPos) {
-		LeadKnotEntity leadKnotEntity = null;
+		LeashKnotEntity leashKnotEntity = null;
 		boolean bl = false;
 		double d = 7.0;
 		int i = blockPos.getX();
@@ -44,11 +44,11 @@ public class LeadItem extends Item {
 			MobEntity.class, new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0)
 		)) {
 			if (mobEntity.getHoldingEntity() == playerEntity) {
-				if (leadKnotEntity == null) {
-					leadKnotEntity = LeadKnotEntity.getOrCreate(world, blockPos);
+				if (leashKnotEntity == null) {
+					leashKnotEntity = LeashKnotEntity.getOrCreate(world, blockPos);
 				}
 
-				mobEntity.attachLeash(leadKnotEntity, true);
+				mobEntity.attachLeash(leashKnotEntity, true);
 				bl = true;
 			}
 		}

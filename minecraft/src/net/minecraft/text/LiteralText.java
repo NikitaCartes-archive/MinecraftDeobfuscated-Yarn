@@ -1,6 +1,7 @@
 package net.minecraft.text;
 
 public class LiteralText extends BaseText {
+	public static final Text EMPTY = new LiteralText("");
 	private final String string;
 
 	public LiteralText(String string) {
@@ -16,19 +17,19 @@ public class LiteralText extends BaseText {
 		return this.string;
 	}
 
-	public LiteralText copy() {
+	public LiteralText method_10992() {
 		return new LiteralText(this.string);
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (!(o instanceof LiteralText)) {
+		} else if (!(object instanceof LiteralText)) {
 			return false;
 		} else {
-			LiteralText literalText = (LiteralText)o;
-			return this.string.equals(literalText.getRawString()) && super.equals(o);
+			LiteralText literalText = (LiteralText)object;
+			return this.string.equals(literalText.getRawString()) && super.equals(object);
 		}
 	}
 

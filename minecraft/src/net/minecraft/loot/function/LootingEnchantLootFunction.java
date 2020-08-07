@@ -14,7 +14,6 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class LootingEnchantLootFunction extends ConditionalLootFunction {
@@ -28,8 +27,13 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25219;
+	}
+
+	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.KILLER_ENTITY);
+		return ImmutableSet.of(LootContextParameters.field_1230);
 	}
 
 	private boolean hasLimit() {
@@ -38,7 +42,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Entity entity = context.get(LootContextParameters.KILLER_ENTITY);
+		Entity entity = context.get(LootContextParameters.field_1230);
 		if (entity instanceof LivingEntity) {
 			int i = EnchantmentHelper.getLooting((LivingEntity)entity);
 			if (i == 0) {
@@ -67,7 +71,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 			this.countRange = countRange;
 		}
 
-		protected LootingEnchantLootFunction.Builder getThisBuilder() {
+		protected LootingEnchantLootFunction.Builder method_552() {
 			return this;
 		}
 
@@ -82,20 +86,16 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<LootingEnchantLootFunction> {
-		protected Factory() {
-			super(new Identifier("looting_enchant"), LootingEnchantLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<LootingEnchantLootFunction> {
+		public void method_553(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
 			jsonObject.add("count", jsonSerializationContext.serialize(lootingEnchantLootFunction.countRange));
 			if (lootingEnchantLootFunction.hasLimit()) {
 				jsonObject.add("limit", jsonSerializationContext.serialize(lootingEnchantLootFunction.limit));
 			}
 		}
 
-		public LootingEnchantLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public LootingEnchantLootFunction method_554(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			int i = JsonHelper.getInt(jsonObject, "limit", 0);
 			return new LootingEnchantLootFunction(
 				lootConditions, JsonHelper.deserialize(jsonObject, "count", jsonDeserializationContext, UniformLootTableRange.class), i

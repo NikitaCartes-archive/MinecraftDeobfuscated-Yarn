@@ -72,19 +72,19 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		this.backLegs.addCuboid("backLegBox", -5.0F, 0.0F, 0.0F, 7, 2, 0, 0.0F, 26, 5);
 	}
 
-	public void animateModel(T beeEntity, float f, float g, float h) {
+	public void method_22111(T beeEntity, float f, float g, float h) {
 		super.animateModel(beeEntity, f, g, h);
 		this.bodyPitch = beeEntity.getBodyPitch(h);
 		this.stinger.visible = !beeEntity.hasStung();
 	}
 
-	public void setAngles(T beeEntity, float f, float g, float h, float i, float j) {
+	public void method_22112(T beeEntity, float f, float g, float h, float i, float j) {
 		this.rightWing.pitch = 0.0F;
 		this.leftAntenna.pitch = 0.0F;
 		this.rightAntenna.pitch = 0.0F;
 		this.body.pitch = 0.0F;
 		this.body.pivotY = 19.0F;
-		boolean bl = beeEntity.onGround && beeEntity.getVelocity().lengthSquared() < 1.0E-7;
+		boolean bl = beeEntity.isOnGround() && beeEntity.getVelocity().lengthSquared() < 1.0E-7;
 		if (bl) {
 			this.rightWing.yaw = -0.2618F;
 			this.rightWing.roll = 0.0F;
@@ -109,7 +109,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 			this.body.roll = 0.0F;
 		}
 
-		if (!beeEntity.isAngry()) {
+		if (!beeEntity.hasAngerTime()) {
 			this.body.pitch = 0.0F;
 			this.body.yaw = 0.0F;
 			this.body.roll = 0.0F;

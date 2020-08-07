@@ -74,14 +74,14 @@ public abstract class ThreadExecutor<R extends Runnable> implements MessageListe
 		}
 	}
 
-	public void send(R runnable) {
+	public void method_18858(R runnable) {
 		this.tasks.add(runnable);
 		LockSupport.unpark(this.getThread());
 	}
 
 	public void execute(Runnable runnable) {
 		if (this.shouldExecuteAsync()) {
-			this.send(this.createTask(runnable));
+			this.method_18858(this.createTask(runnable));
 		} else {
 			runnable.run();
 		}

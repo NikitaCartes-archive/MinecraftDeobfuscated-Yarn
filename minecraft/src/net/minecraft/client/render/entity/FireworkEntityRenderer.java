@@ -9,34 +9,37 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.entity.FireworkEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
+public class FireworkEntityRenderer extends EntityRenderer<FireworkRocketEntity> {
 	private final ItemRenderer itemRenderer;
 
-	public FireworkEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
-		super(entityRenderDispatcher);
+	public FireworkEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer itemRenderer) {
+		super(dispatcher);
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void render(FireworkEntity fireworkEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void method_3968(
+		FireworkRocketEntity fireworkRocketEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
+	) {
 		matrixStack.push();
-		matrixStack.multiply(this.renderManager.getRotation());
+		matrixStack.multiply(this.dispatcher.getRotation());
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-		if (fireworkEntity.wasShotAtAngle()) {
+		if (fireworkRocketEntity.wasShotAtAngle()) {
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 		}
 
-		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Mode.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+		this.itemRenderer
+			.renderItem(fireworkRocketEntity.getStack(), ModelTransformation.Mode.field_4318, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
 		matrixStack.pop();
-		super.render(fireworkEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(fireworkRocketEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(FireworkEntity fireworkEntity) {
+	public Identifier method_3969(FireworkRocketEntity fireworkRocketEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

@@ -1,10 +1,11 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.DamagePredicate;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -16,25 +17,27 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 		return ID;
 	}
 
-	public EntityHurtPlayerCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		DamagePredicate damagePredicate = DamagePredicate.deserialize(jsonObject.get("damage"));
-		return new EntityHurtPlayerCriterion.Conditions(damagePredicate);
+	public EntityHurtPlayerCriterion.Conditions method_8902(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
+		DamagePredicate damagePredicate = DamagePredicate.fromJson(jsonObject.get("damage"));
+		return new EntityHurtPlayerCriterion.Conditions(extended, damagePredicate);
 	}
 
 	public void trigger(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, source, dealt, taken, blocked));
+		this.test(player, conditions -> conditions.matches(player, source, dealt, taken, blocked));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final DamagePredicate damage;
 
-		public Conditions(DamagePredicate damage) {
-			super(EntityHurtPlayerCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, DamagePredicate damage) {
+			super(EntityHurtPlayerCriterion.ID, player);
 			this.damage = damage;
 		}
 
-		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate.Builder builder) {
-			return new EntityHurtPlayerCriterion.Conditions(builder.build());
+		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate.Builder damageBuilder) {
+			return new EntityHurtPlayerCriterion.Conditions(EntityPredicate.Extended.EMPTY, damageBuilder.build());
 		}
 
 		public boolean matches(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
@@ -42,9 +45,9 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("damage", this.damage.serialize());
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
+			jsonObject.add("damage", this.damage.toJson());
 			return jsonObject;
 		}
 	}

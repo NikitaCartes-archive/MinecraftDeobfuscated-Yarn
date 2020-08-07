@@ -33,14 +33,14 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		float age,
 		float headYaw,
 		float headPitch,
-		float f,
+		float tickDelta,
 		float red,
 		float green,
 		float blue
 	) {
 		if (!entity.isInvisible()) {
 			contextModel.copyStateTo(model);
-			model.animateModel(entity, limbAngle, limbDistance, f);
+			model.animateModel(entity, limbAngle, limbDistance, tickDelta);
 			model.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch);
 			renderModel(model, texture, matrices, vertexConsumers, light, entity, red, green, blue);
 		}
@@ -77,7 +77,7 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		float limbAngle,
 		float limbDistance,
 		float tickDelta,
-		float customAngle,
+		float animationProgress,
 		float headYaw,
 		float headPitch
 	);

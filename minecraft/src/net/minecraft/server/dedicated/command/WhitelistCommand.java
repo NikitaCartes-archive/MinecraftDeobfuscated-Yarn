@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Collection;
-import net.minecraft.command.arguments.GameProfileArgumentType;
+import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
@@ -26,8 +26,8 @@ public class WhitelistCommand {
 		new TranslatableText("commands.whitelist.remove.failed")
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("whitelist")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(CommandManager.literal("on").executes(commandContext -> executeOn(commandContext.getSource())))
@@ -102,7 +102,7 @@ public class WhitelistCommand {
 		for(GameProfile gameProfile : targets) {
 			if (whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
-				whitelist.removeEntry(whitelistEntry);
+				whitelist.remove(whitelistEntry);
 				source.sendFeedback(new TranslatableText("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
 				++i;
 			}

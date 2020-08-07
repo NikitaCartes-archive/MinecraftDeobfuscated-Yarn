@@ -23,7 +23,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 	private final ModelPart[] field_3304;
 	private final ModelPart[] field_3301;
 
-	public HorseEntityModel(float f) {
+	public HorseEntityModel(float scale) {
 		super(true, 16.2F, 1.36F, 2.7272F, 2.0F, 20.0F);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
@@ -34,46 +34,46 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		this.head.addCuboid(-2.05F, -6.0F, -2.0F, 4.0F, 12.0F, 7.0F);
 		this.head.pitch = (float) (Math.PI / 6);
 		ModelPart modelPart = new ModelPart(this, 0, 13);
-		modelPart.addCuboid(-3.0F, -11.0F, -2.0F, 6.0F, 5.0F, 7.0F, f);
+		modelPart.addCuboid(-3.0F, -11.0F, -2.0F, 6.0F, 5.0F, 7.0F, scale);
 		ModelPart modelPart2 = new ModelPart(this, 56, 36);
-		modelPart2.addCuboid(-1.0F, -11.0F, 5.01F, 2.0F, 16.0F, 2.0F, f);
+		modelPart2.addCuboid(-1.0F, -11.0F, 5.01F, 2.0F, 16.0F, 2.0F, scale);
 		ModelPart modelPart3 = new ModelPart(this, 0, 25);
-		modelPart3.addCuboid(-2.0F, -11.0F, -7.0F, 4.0F, 5.0F, 5.0F, f);
+		modelPart3.addCuboid(-2.0F, -11.0F, -7.0F, 4.0F, 5.0F, 5.0F, scale);
 		this.head.addChild(modelPart);
 		this.head.addChild(modelPart2);
 		this.head.addChild(modelPart3);
 		this.method_2789(this.head);
 		this.leftBackLeg = new ModelPart(this, 48, 21);
 		this.leftBackLeg.mirror = true;
-		this.leftBackLeg.addCuboid(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f);
+		this.leftBackLeg.addCuboid(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, scale);
 		this.leftBackLeg.setPivot(4.0F, 14.0F, 7.0F);
 		this.rightBackLeg = new ModelPart(this, 48, 21);
-		this.rightBackLeg.addCuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f);
+		this.rightBackLeg.addCuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, scale);
 		this.rightBackLeg.setPivot(-4.0F, 14.0F, 7.0F);
 		this.leftFrontLeg = new ModelPart(this, 48, 21);
 		this.leftFrontLeg.mirror = true;
-		this.leftFrontLeg.addCuboid(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f);
+		this.leftFrontLeg.addCuboid(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, scale);
 		this.leftFrontLeg.setPivot(4.0F, 6.0F, -12.0F);
 		this.rightFrontLeg = new ModelPart(this, 48, 21);
-		this.rightFrontLeg.addCuboid(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f);
+		this.rightFrontLeg.addCuboid(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, scale);
 		this.rightFrontLeg.setPivot(-4.0F, 6.0F, -12.0F);
-		float g = 5.5F;
+		float f = 5.5F;
 		this.field_20930 = new ModelPart(this, 48, 21);
 		this.field_20930.mirror = true;
-		this.field_20930.addCuboid(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
+		this.field_20930.addCuboid(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, scale, scale + 5.5F, scale);
 		this.field_20930.setPivot(4.0F, 14.0F, 7.0F);
 		this.field_20931 = new ModelPart(this, 48, 21);
-		this.field_20931.addCuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
+		this.field_20931.addCuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, scale, scale + 5.5F, scale);
 		this.field_20931.setPivot(-4.0F, 14.0F, 7.0F);
 		this.field_20932 = new ModelPart(this, 48, 21);
 		this.field_20932.mirror = true;
-		this.field_20932.addCuboid(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
+		this.field_20932.addCuboid(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, scale, scale + 5.5F, scale);
 		this.field_20932.setPivot(4.0F, 6.0F, -12.0F);
 		this.field_20933 = new ModelPart(this, 48, 21);
-		this.field_20933.addCuboid(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
+		this.field_20933.addCuboid(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, scale, scale + 5.5F, scale);
 		this.field_20933.setPivot(-4.0F, 6.0F, -12.0F);
 		this.tail = new ModelPart(this, 42, 36);
-		this.tail.addCuboid(-1.5F, 0.0F, 0.0F, 3.0F, 14.0F, 4.0F, f);
+		this.tail.addCuboid(-1.5F, 0.0F, 0.0F, 3.0F, 14.0F, 4.0F, scale);
 		this.tail.setPivot(0.0F, -5.0F, 2.0F);
 		this.tail.pitch = (float) (Math.PI / 6);
 		this.torso.addChild(this.tail);
@@ -81,17 +81,17 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		modelPart4.addCuboid(-5.0F, -8.0F, -9.0F, 10.0F, 9.0F, 9.0F, 0.5F);
 		this.torso.addChild(modelPart4);
 		ModelPart modelPart5 = new ModelPart(this, 29, 5);
-		modelPart5.addCuboid(2.0F, -9.0F, -6.0F, 1.0F, 2.0F, 2.0F, f);
+		modelPart5.addCuboid(2.0F, -9.0F, -6.0F, 1.0F, 2.0F, 2.0F, scale);
 		this.head.addChild(modelPart5);
 		ModelPart modelPart6 = new ModelPart(this, 29, 5);
-		modelPart6.addCuboid(-3.0F, -9.0F, -6.0F, 1.0F, 2.0F, 2.0F, f);
+		modelPart6.addCuboid(-3.0F, -9.0F, -6.0F, 1.0F, 2.0F, 2.0F, scale);
 		this.head.addChild(modelPart6);
 		ModelPart modelPart7 = new ModelPart(this, 32, 2);
-		modelPart7.addCuboid(3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, f);
+		modelPart7.addCuboid(3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, scale);
 		modelPart7.pitch = (float) (-Math.PI / 6);
 		this.head.addChild(modelPart7);
 		ModelPart modelPart8 = new ModelPart(this, 32, 2);
-		modelPart8.addCuboid(-3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, f);
+		modelPart8.addCuboid(-3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, scale);
 		modelPart8.pitch = (float) (-Math.PI / 6);
 		this.head.addChild(modelPart8);
 		ModelPart modelPart9 = new ModelPart(this, 1, 1);
@@ -113,7 +113,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		modelPart.addChild(modelPart3);
 	}
 
-	public void setAngles(T horseBaseEntity, float f, float g, float h, float i, float j) {
+	public void method_17085(T horseBaseEntity, float f, float g, float h, float i, float j) {
 		boolean bl = horseBaseEntity.isSaddled();
 		boolean bl2 = horseBaseEntity.hasPassengers();
 
@@ -148,7 +148,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		);
 	}
 
-	public void animateModel(T horseBaseEntity, float f, float g, float h) {
+	public void method_17084(T horseBaseEntity, float f, float g, float h) {
 		super.animateModel(horseBaseEntity, f, g, h);
 		float i = MathHelper.lerpAngle(horseBaseEntity.prevBodyYaw, horseBaseEntity.bodyYaw, h);
 		float j = MathHelper.lerpAngle(horseBaseEntity.prevHeadYaw, horseBaseEntity.headYaw, h);
@@ -171,14 +171,14 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		float o = horseBaseEntity.getAngryAnimationProgress(h);
 		float p = 1.0F - o;
 		float q = horseBaseEntity.getEatingAnimationProgress(h);
-		boolean bl = horseBaseEntity.field_6957 != 0;
+		boolean bl = horseBaseEntity.tailWagTicks != 0;
 		float r = (float)horseBaseEntity.age + h;
 		this.head.pivotY = 4.0F;
 		this.head.pivotZ = -12.0F;
 		this.torso.pitch = 0.0F;
 		this.head.pitch = (float) (Math.PI / 6) + m;
 		this.head.yaw = l * (float) (Math.PI / 180.0);
-		float s = horseBaseEntity.isInsideWater() ? 0.2F : 1.0F;
+		float s = horseBaseEntity.isTouchingWater() ? 0.2F : 1.0F;
 		float t = MathHelper.cos(s * f * 0.6662F + (float) Math.PI);
 		float u = t * 0.8F * g;
 		float v = (1.0F - Math.max(o, n)) * ((float) (Math.PI / 6) + m + q * MathHelper.sin(r) * 0.05F);

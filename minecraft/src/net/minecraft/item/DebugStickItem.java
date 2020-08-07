@@ -17,8 +17,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class DebugStickItem extends Item {
 	public DebugStickItem(Item.Settings settings) {
@@ -26,14 +26,14 @@ public class DebugStickItem extends Item {
 	}
 
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack stack) {
+	public boolean hasGlint(ItemStack stack) {
 		return true;
 	}
 
 	@Override
 	public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
 		if (!world.isClient) {
-			this.use(miner, state, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
+			this.use(miner, state, world, pos, false, miner.getStackInHand(Hand.field_5808));
 		}
 
 		return false;
@@ -48,10 +48,10 @@ public class DebugStickItem extends Item {
 			this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, context.getStack());
 		}
 
-		return ActionResult.SUCCESS;
+		return ActionResult.success(world.isClient);
 	}
 
-	private void use(PlayerEntity player, BlockState state, IWorld world, BlockPos pos, boolean update, ItemStack stack) {
+	private void use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, boolean update, ItemStack stack) {
 		if (player.isCreativeLevelTwoOp()) {
 			Block block = state.getBlock();
 			StateManager<Block, BlockState> stateManager = block.getStateManager();
@@ -90,7 +90,7 @@ public class DebugStickItem extends Item {
 	}
 
 	private static void sendMessage(PlayerEntity player, Text message) {
-		((ServerPlayerEntity)player).sendChatMessage(message, MessageType.GAME_INFO);
+		((ServerPlayerEntity)player).sendMessage(message, MessageType.field_11733, Util.NIL_UUID);
 	}
 
 	private static <T extends Comparable<T>> String getValueString(BlockState state, Property<T> property) {

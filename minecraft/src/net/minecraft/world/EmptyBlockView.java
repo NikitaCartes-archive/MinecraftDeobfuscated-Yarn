@@ -9,7 +9,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 
 public enum EmptyBlockView implements BlockView {
-	INSTANCE;
+	field_12294;
 
 	@Nullable
 	@Override
@@ -19,11 +19,11 @@ public enum EmptyBlockView implements BlockView {
 
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
-		return Blocks.AIR.getDefaultState();
+		return Blocks.field_10124.getDefaultState();
 	}
 
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
-		return Fluids.EMPTY.getDefaultState();
+		return Fluids.field_15906.getDefaultState();
 	}
 }

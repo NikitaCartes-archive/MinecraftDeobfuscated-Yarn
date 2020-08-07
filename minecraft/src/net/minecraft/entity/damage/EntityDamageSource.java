@@ -12,26 +12,26 @@ import net.minecraft.util.math.Vec3d;
 public class EntityDamageSource extends DamageSource {
 	@Nullable
 	protected final Entity source;
-	private boolean field_5880;
-	private boolean field_21866;
+	private boolean thorns;
+	private boolean field_26759;
 
-	public EntityDamageSource(String name, @Nullable Entity entity) {
+	public EntityDamageSource(String name, @Nullable Entity source) {
 		super(name);
-		this.source = entity;
+		this.source = source;
 	}
 
-	public EntityDamageSource method_5550() {
-		this.field_5880 = true;
+	public EntityDamageSource setThorns() {
+		this.thorns = true;
 		return this;
 	}
 
-	public EntityDamageSource method_24312(boolean bl) {
-		this.field_21866 = bl;
+	public EntityDamageSource method_31200(boolean bl) {
+		this.field_26759 = bl;
 		return this;
 	}
 
-	public boolean method_5549() {
-		return this.field_5880;
+	public boolean isThorns() {
+		return this.thorns;
 	}
 
 	@Nullable
@@ -41,12 +41,12 @@ public class EntityDamageSource extends DamageSource {
 	}
 
 	@Override
-	public Text getDeathMessage(LivingEntity livingEntity) {
+	public Text getDeathMessage(LivingEntity entity) {
 		ItemStack itemStack = this.source instanceof LivingEntity ? ((LivingEntity)this.source).getMainHandStack() : ItemStack.EMPTY;
 		String string = "death.attack." + this.name;
 		return !itemStack.isEmpty() && itemStack.hasCustomName()
-			? new TranslatableText(string + ".item", livingEntity.getDisplayName(), this.source.getDisplayName(), itemStack.toHoverableText())
-			: new TranslatableText(string, livingEntity.getDisplayName(), this.source.getDisplayName());
+			? new TranslatableText(string + ".item", entity.getDisplayName(), this.source.getDisplayName(), itemStack.toHoverableText())
+			: new TranslatableText(string, entity.getDisplayName(), this.source.getDisplayName());
 	}
 
 	@Override
@@ -58,5 +58,10 @@ public class EntityDamageSource extends DamageSource {
 	@Override
 	public Vec3d getPosition() {
 		return this.source != null ? this.source.getPos() : null;
+	}
+
+	@Override
+	public String toString() {
+		return "EntityDamageSource (" + this.source + ")";
 	}
 }

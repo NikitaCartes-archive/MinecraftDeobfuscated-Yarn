@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 public class DirectoryResourcePack extends AbstractFileResourcePack {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final boolean IS_WINDOWS = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
+	private static final boolean IS_WINDOWS = Util.getOperatingSystem() == Util.OperatingSystem.field_1133;
 	private static final CharMatcher BACKSLASH_MATCHER = CharMatcher.is('\\');
 
 	public DirectoryResourcePack(File file) {
@@ -77,7 +77,7 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 				if (string.equals(string.toLowerCase(Locale.ROOT))) {
 					set.add(string.substring(0, string.length() - 1));
 				} else {
-					this.warnNonLowercaseNamespace(string);
+					this.warnNonLowerCaseNamespace(string);
 				}
 			}
 		}
@@ -85,7 +85,8 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 		return set;
 	}
 
-	public void close() throws IOException {
+	@Override
+	public void close() {
 	}
 
 	@Override

@@ -1,32 +1,24 @@
 package net.minecraft.world.gen.placer;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class DoublePlantPlacer extends BlockPlacer {
-	public DoublePlantPlacer() {
-		super(BlockPlacerType.DOUBLE_PLANT_PLACER);
-	}
+	public static final Codec<DoublePlantPlacer> field_24868 = Codec.unit((Supplier<DoublePlantPlacer>)(() -> DoublePlantPlacer.field_24869));
+	public static final DoublePlantPlacer field_24869 = new DoublePlantPlacer();
 
-	public <T> DoublePlantPlacer(Dynamic<T> dynamic) {
-		this();
+	@Override
+	protected BlockPlacerType<?> method_28673() {
+		return BlockPlacerType.field_21224;
 	}
 
 	@Override
-	public void method_23403(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
-		((TallPlantBlock)blockState.getBlock()).placeAt(iWorld, blockPos, 2);
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.BLOCK_PLACER_TYPE.getId(this.type).toString()))))
-			.getValue();
+	public void method_23403(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, Random random) {
+		((TallPlantBlock)blockState.getBlock()).placeAt(worldAccess, blockPos, 2);
 	}
 }

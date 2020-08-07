@@ -1,10 +1,7 @@
 package net.minecraft.world.chunk;
 
 import java.io.IOException;
-import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -14,7 +11,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
 	public WorldChunk getWorldChunk(int chunkX, int chunkZ, boolean create) {
-		return (WorldChunk)this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, create);
+		return (WorldChunk)this.getChunk(chunkX, chunkZ, ChunkStatus.field_12803, create);
 	}
 
 	@Nullable
@@ -25,18 +22,15 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
 	@Override
 	public BlockView getChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.field_12798, false);
 	}
 
 	public boolean isChunkLoaded(int x, int z) {
-		return this.getChunk(x, z, ChunkStatus.FULL, false) != null;
+		return this.getChunk(x, z, ChunkStatus.field_12803, false) != null;
 	}
 
 	@Nullable
 	public abstract Chunk getChunk(int x, int z, ChunkStatus leastStatus, boolean create);
-
-	@Environment(EnvType.CLIENT)
-	public abstract void tick(BooleanSupplier shouldKeepTicking);
 
 	public abstract String getDebugString();
 

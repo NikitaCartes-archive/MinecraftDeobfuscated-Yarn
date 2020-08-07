@@ -1,8 +1,6 @@
 package net.minecraft.structure.processor;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.structure.Structure;
@@ -11,14 +9,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public class BlockRotStructureProcessor extends StructureProcessor {
+	public static final Codec<BlockRotStructureProcessor> CODEC = Codec.FLOAT
+		.fieldOf("integrity")
+		.orElse(1.0F)
+		.<BlockRotStructureProcessor>xmap(BlockRotStructureProcessor::new, blockRotStructureProcessor -> blockRotStructureProcessor.integrity)
+		.codec();
 	private final float integrity;
 
 	public BlockRotStructureProcessor(float integrity) {
 		this.integrity = integrity;
-	}
-
-	public BlockRotStructureProcessor(Dynamic<?> dynamic) {
-		this(dynamic.get("integrity").asFloat(1.0F));
 	}
 
 	@Nullable
@@ -26,21 +25,17 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 	public Structure.StructureBlockInfo process(
 		WorldView worldView,
 		BlockPos pos,
+		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData placementData
+		StructurePlacementData structurePlacementData
 	) {
-		Random random = placementData.getRandom(structureBlockInfo2.pos);
+		Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
 		return !(this.integrity >= 1.0F) && !(random.nextFloat() <= this.integrity) ? null : structureBlockInfo2;
 	}
 
 	@Override
-	protected StructureProcessorType getType() {
-		return StructureProcessorType.BLOCK_ROT;
-	}
-
-	@Override
-	protected <T> Dynamic<T> method_16666(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("integrity"), dynamicOps.createFloat(this.integrity))));
+	protected StructureProcessorType<?> getType() {
+		return StructureProcessorType.field_16988;
 	}
 }

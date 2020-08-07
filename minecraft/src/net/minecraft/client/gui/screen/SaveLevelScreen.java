@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -16,9 +17,9 @@ public class SaveLevelScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderDirtBackground(0);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 70, 16777215);
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(0);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

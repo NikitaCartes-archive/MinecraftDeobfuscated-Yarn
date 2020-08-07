@@ -13,12 +13,12 @@ import net.minecraft.server.world.ServerWorld;
 public class VillagerBabiesSensor extends Sensor<LivingEntity> {
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.VISIBLE_VILLAGER_BABIES);
+		return ImmutableSet.of(MemoryModuleType.field_19006);
 	}
 
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
-		entity.getBrain().putMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES, this.getVisibleVillagerBabies(entity));
+		entity.getBrain().remember(MemoryModuleType.field_19006, this.getVisibleVillagerBabies(entity));
 	}
 
 	private List<LivingEntity> getVisibleVillagerBabies(LivingEntity entities) {
@@ -26,10 +26,10 @@ public class VillagerBabiesSensor extends Sensor<LivingEntity> {
 	}
 
 	private boolean isVillagerBaby(LivingEntity entity) {
-		return entity.getType() == EntityType.VILLAGER && entity.isBaby();
+		return entity.getType() == EntityType.field_6077 && entity.isBaby();
 	}
 
 	private List<LivingEntity> getVisibleMobs(LivingEntity entity) {
-		return (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(Lists.newArrayList());
+		return (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).orElse(Lists.newArrayList());
 	}
 }

@@ -4,10 +4,22 @@ import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 
+/**
+ * A special inventory interface for inventories that expose different slots for different sides, such as hoppers.
+ */
 public interface SidedInventory extends Inventory {
-	int[] getInvAvailableSlots(Direction side);
+	/**
+	 * Gets the available slot positions that are reachable from a given side.
+	 */
+	int[] getAvailableSlots(Direction side);
 
-	boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir);
+	/**
+	 * Determines whether the given stack can be inserted into this inventory at the specified slot position from the given direction.
+	 */
+	boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir);
 
-	boolean canExtractInvStack(int slot, ItemStack stack, Direction dir);
+	/**
+	 * Determines whether the given stack can be removed from this inventory at the specified slot position from the given direction.
+	 */
+	boolean canExtract(int slot, ItemStack stack, Direction dir);
 }

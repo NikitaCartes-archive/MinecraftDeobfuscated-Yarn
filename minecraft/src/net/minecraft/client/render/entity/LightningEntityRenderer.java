@@ -7,10 +7,10 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
@@ -18,7 +18,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(LightningEntity lightningEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void method_4034(LightningEntity lightningEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		float[] fs = new float[8];
 		float[] gs = new float[8];
 		float h = 0.0F;
@@ -110,7 +110,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		vertexConsumer.vertex(matrix4f, f + (bl3 ? o : -o), (float)(i * 16), g + (bl4 ? o : -o)).color(k, l, m, 0.3F).next();
 	}
 
-	public Identifier getTexture(LightningEntity lightningEntity) {
+	public Identifier method_4033(LightningEntity lightningEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

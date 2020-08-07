@@ -103,6 +103,7 @@ public final class Window implements AutoCloseable {
 		GLFW.glfwSetWindowPosCallback(this.handle, this::onWindowPosChanged);
 		GLFW.glfwSetWindowSizeCallback(this.handle, this::onWindowSizeChanged);
 		GLFW.glfwSetWindowFocusCallback(this.handle, this::onWindowFocusChanged);
+		GLFW.glfwSetCursorEnterCallback(this.handle, this::method_30132);
 	}
 
 	public int getRefreshRate() {
@@ -178,7 +179,7 @@ public final class Window implements AutoCloseable {
 
 		ByteBuffer var6;
 		try {
-			byteBuffer = TextureUtil.readResource(in);
+			byteBuffer = TextureUtil.readAllToByteBuffer(in);
 			byteBuffer.rewind();
 			var6 = STBImage.stbi_load_from_memory(byteBuffer, x, y, channels, 0);
 		} finally {
@@ -273,6 +274,12 @@ public final class Window implements AutoCloseable {
 	private void onWindowFocusChanged(long window, boolean focused) {
 		if (window == this.handle) {
 			this.eventHandler.onWindowFocusChanged(focused);
+		}
+	}
+
+	private void method_30132(long l, boolean bl) {
+		if (bl) {
+			this.eventHandler.method_30133();
 		}
 	}
 
@@ -389,7 +396,7 @@ public final class Window implements AutoCloseable {
 		this.scaledHeight = (double)this.framebufferHeight / scaleFactor > (double)j ? j + 1 : j;
 	}
 
-	public void method_24286(String string) {
+	public void setTitle(String string) {
 		GLFW.glfwSetWindowTitle(this.handle, string);
 	}
 

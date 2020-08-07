@@ -13,7 +13,7 @@ public class IronGolemLookGoal extends Goal {
 
 	public IronGolemLookGoal(IronGolemEntity golem) {
 		this.golem = golem;
-		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 
 public class StringTag implements Tag {
 	public static final TagReader<StringTag> READER = new TagReader<StringTag>() {
-		public StringTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public StringTag method_23257(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(288L);
 			String string = dataInput.readUTF();
 			positionTracker.add((long)(16 * string.length()));
@@ -63,7 +63,7 @@ public class StringTag implements Tag {
 		return escape(this.value);
 	}
 
-	public StringTag copy() {
+	public StringTag method_10705() {
 		return this;
 	}
 

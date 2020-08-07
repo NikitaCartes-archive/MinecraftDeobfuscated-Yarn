@@ -8,8 +8,8 @@ import java.util.Locale;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.command.arguments.BlockPosArgumentType;
-import net.minecraft.command.arguments.NbtPathArgumentType;
+import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.CommandManager;
@@ -56,9 +56,9 @@ public class BlockDataObject implements DataCommandObject {
 		tag.putInt("x", this.pos.getX());
 		tag.putInt("y", this.pos.getY());
 		tag.putInt("z", this.pos.getZ());
-		this.blockEntity.fromTag(tag);
-		this.blockEntity.markDirty();
 		BlockState blockState = this.blockEntity.getWorld().getBlockState(this.pos);
+		this.blockEntity.fromTag(blockState, tag);
+		this.blockEntity.markDirty();
 		this.blockEntity.getWorld().updateListeners(this.pos, blockState, blockState, 3);
 	}
 

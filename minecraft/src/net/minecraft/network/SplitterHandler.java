@@ -6,7 +6,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.CorruptedFrameException;
 import java.util.List;
-import net.minecraft.util.PacketByteBuf;
 
 public class SplitterHandler extends ByteToMessageDecoder {
 	@Override

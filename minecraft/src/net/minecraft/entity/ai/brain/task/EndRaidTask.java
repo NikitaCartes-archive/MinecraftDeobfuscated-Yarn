@@ -4,9 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.raid.Raid;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.village.raid.Raid;
 
 public class EndRaidTask extends Task<LivingEntity> {
 	public EndRaidTask() {
@@ -21,9 +20,9 @@ public class EndRaidTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		Raid raid = world.getRaidAt(new BlockPos(entity));
+		Raid raid = world.getRaidAt(entity.getBlockPos());
 		if (raid == null || raid.hasStopped() || raid.hasLost()) {
-			brain.setDefaultActivity(Activity.IDLE);
+			brain.setDefaultActivity(Activity.field_18595);
 			brain.refreshActivities(world.getTimeOfDay(), world.getTime());
 		}
 	}

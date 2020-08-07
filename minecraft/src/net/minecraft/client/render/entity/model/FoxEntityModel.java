@@ -59,7 +59,7 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 		this.torso.addChild(this.tail);
 	}
 
-	public void animateModel(T foxEntity, float f, float g, float h) {
+	public void method_18330(T foxEntity, float f, float g, float h) {
 		this.torso.pitch = (float) (Math.PI / 2);
 		this.tail.pitch = -0.05235988F;
 		this.rightBackLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
@@ -131,7 +131,7 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 		return ImmutableList.<ModelPart>of(this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg);
 	}
 
-	public void setAngles(T foxEntity, float f, float g, float h, float i, float j) {
+	public void method_18332(T foxEntity, float f, float g, float h, float i, float j) {
 		if (!foxEntity.isSleeping() && !foxEntity.isWalking() && !foxEntity.isInSneakingPose()) {
 			this.head.pitch = j * (float) (Math.PI / 180.0);
 			this.head.yaw = i * (float) (Math.PI / 180.0);

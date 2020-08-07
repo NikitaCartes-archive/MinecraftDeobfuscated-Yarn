@@ -8,19 +8,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.network.packet.RequestCommandCompletionsC2SPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ClientCommandSource implements CommandSource {
@@ -29,9 +33,9 @@ public class ClientCommandSource implements CommandSource {
 	private int completionId = -1;
 	private CompletableFuture<Suggestions> pendingCompletion;
 
-	public ClientCommandSource(ClientPlayNetworkHandler client, MinecraftClient minecraftClient) {
-		this.networkHandler = client;
-		this.client = minecraftClient;
+	public ClientCommandSource(ClientPlayNetworkHandler networkHandler, MinecraftClient client) {
+		this.networkHandler = networkHandler;
+		this.client = client;
 	}
 
 	@Override
@@ -47,7 +51,7 @@ public class ClientCommandSource implements CommandSource {
 
 	@Override
 	public Collection<String> getEntitySuggestions() {
-		return (Collection<String>)(this.client.crosshairTarget != null && this.client.crosshairTarget.getType() == HitResult.Type.ENTITY
+		return (Collection<String>)(this.client.crosshairTarget != null && this.client.crosshairTarget.getType() == HitResult.Type.field_1331
 			? Collections.singleton(((EntityHitResult)this.client.crosshairTarget).getEntity().getUuidAsString())
 			: Collections.emptyList());
 	}
@@ -70,7 +74,7 @@ public class ClientCommandSource implements CommandSource {
 	@Override
 	public boolean hasPermissionLevel(int level) {
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
-		return clientPlayerEntity != null ? clientPlayerEntity.allowsPermissionLevel(level) : level == 0;
+		return clientPlayerEntity != null ? clientPlayerEntity.hasPermissionLevel(level) : level == 0;
 	}
 
 	@Override
@@ -85,20 +89,20 @@ public class ClientCommandSource implements CommandSource {
 		return this.pendingCompletion;
 	}
 
-	private static String formatDouble(double d) {
+	private static String format(double d) {
 		return String.format(Locale.ROOT, "%.2f", d);
 	}
 
-	private static String formatInt(int i) {
+	private static String format(int i) {
 		return Integer.toString(i);
 	}
 
 	@Override
 	public Collection<CommandSource.RelativePosition> getBlockPositionSuggestions() {
 		HitResult hitResult = this.client.crosshairTarget;
-		if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
+		if (hitResult != null && hitResult.getType() == HitResult.Type.field_1332) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-			return Collections.singleton(new CommandSource.RelativePosition(formatInt(blockPos.getX()), formatInt(blockPos.getY()), formatInt(blockPos.getZ())));
+			return Collections.singleton(new CommandSource.RelativePosition(format(blockPos.getX()), format(blockPos.getY()), format(blockPos.getZ())));
 		} else {
 			return CommandSource.super.getBlockPositionSuggestions();
 		}
@@ -107,12 +111,22 @@ public class ClientCommandSource implements CommandSource {
 	@Override
 	public Collection<CommandSource.RelativePosition> getPositionSuggestions() {
 		HitResult hitResult = this.client.crosshairTarget;
-		if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
+		if (hitResult != null && hitResult.getType() == HitResult.Type.field_1332) {
 			Vec3d vec3d = hitResult.getPos();
-			return Collections.singleton(new CommandSource.RelativePosition(formatDouble(vec3d.x), formatDouble(vec3d.y), formatDouble(vec3d.z)));
+			return Collections.singleton(new CommandSource.RelativePosition(format(vec3d.x), format(vec3d.y), format(vec3d.z)));
 		} else {
 			return CommandSource.super.getPositionSuggestions();
 		}
+	}
+
+	@Override
+	public Set<RegistryKey<World>> getWorldKeys() {
+		return this.networkHandler.getWorldKeys();
+	}
+
+	@Override
+	public DynamicRegistryManager getRegistryManager() {
+		return this.networkHandler.getRegistryManager();
 	}
 
 	public void onCommandSuggestions(int completionId, Suggestions suggestions) {

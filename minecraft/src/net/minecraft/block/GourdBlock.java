@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 public abstract class GourdBlock extends Block {
-	public GourdBlock(Block.Settings settings) {
+	public GourdBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

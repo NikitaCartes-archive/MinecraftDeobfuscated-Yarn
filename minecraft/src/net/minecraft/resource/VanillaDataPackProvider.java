@@ -1,15 +1,17 @@
 package net.minecraft.resource;
 
-import java.util.Map;
+import java.util.function.Consumer;
 
 public class VanillaDataPackProvider implements ResourcePackProvider {
 	private final DefaultResourcePack pack = new DefaultResourcePack("minecraft");
 
 	@Override
-	public <T extends ResourcePackProfile> void register(Map<String, T> registry, ResourcePackProfile.Factory<T> factory) {
-		T resourcePackProfile = ResourcePackProfile.of("vanilla", false, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM);
+	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
+		ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
+			"vanilla", false, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.field_14281, ResourcePackSource.field_25348
+		);
 		if (resourcePackProfile != null) {
-			registry.put("vanilla", resourcePackProfile);
+			consumer.accept(resourcePackProfile);
 		}
 	}
 }

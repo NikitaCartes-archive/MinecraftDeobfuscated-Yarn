@@ -1,9 +1,9 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityArmorStandSilentFix extends ChoiceFix {
@@ -11,12 +11,12 @@ public class EntityArmorStandSilentFix extends ChoiceFix {
 		super(outputSchema, changesType, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
 	}
 
-	public Dynamic<?> fixSilent(Dynamic<?> tag) {
-		return tag.get("Silent").asBoolean(false) && !tag.get("Marker").asBoolean(false) ? tag.remove("Silent") : tag;
+	public Dynamic<?> fixSilent(Dynamic<?> dynamic) {
+		return dynamic.get("Silent").asBoolean(false) && !dynamic.get("Marker").asBoolean(false) ? dynamic.remove("Silent") : dynamic;
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::fixSilent);
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), this::fixSilent);
 	}
 }

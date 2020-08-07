@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.block.ColoredBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -15,18 +14,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
-	public BeaconBlock(Block.Settings settings) {
+public class BeaconBlock extends BlockWithEntity implements Stainable {
+	public BeaconBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
 	public DyeColor getColor() {
-		return DyeColor.WHITE;
+		return DyeColor.field_7952;
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new BeaconBlockEntity();
 	}
 
@@ -37,22 +36,17 @@ public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeaconBlockEntity) {
-				player.openContainer((BeaconBlockEntity)blockEntity);
-				player.incrementStat(Stats.INTERACT_WITH_BEACON);
+				player.openHandledScreen((BeaconBlockEntity)blockEntity);
+				player.incrementStat(Stats.field_15416);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 
 	@Override
-	public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
-		return false;
-	}
-
-	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
+		return BlockRenderType.field_11458;
 	}
 
 	@Override

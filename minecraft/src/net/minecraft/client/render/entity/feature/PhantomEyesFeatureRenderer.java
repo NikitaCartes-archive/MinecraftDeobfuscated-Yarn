@@ -11,8 +11,8 @@ import net.minecraft.util.Identifier;
 public class PhantomEyesFeatureRenderer<T extends Entity> extends EyesFeatureRenderer<T, PhantomEntityModel<T>> {
 	private static final RenderLayer SKIN = RenderLayer.getEyes(new Identifier("textures/entity/phantom_eyes.png"));
 
-	public PhantomEyesFeatureRenderer(FeatureRendererContext<T, PhantomEntityModel<T>> context) {
-		super(context);
+	public PhantomEyesFeatureRenderer(FeatureRendererContext<T, PhantomEntityModel<T>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	@Override

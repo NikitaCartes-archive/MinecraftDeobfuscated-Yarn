@@ -7,9 +7,9 @@ import net.fabricmc.api.Environment;
 
 public interface ProfileResult {
 	@Environment(EnvType.CLIENT)
-	List<ProfilerTiming> getTimings(String parentTiming);
+	List<ProfilerTiming> getTimings(String parentPath);
 
-	boolean saveToFile(File file);
+	boolean save(File file);
 
 	long getStartTime();
 
@@ -27,7 +27,7 @@ public interface ProfileResult {
 		return this.getEndTick() - this.getStartTick();
 	}
 
-	static String method_21721(String string) {
-		return string.replace('\u001e', '.');
+	static String getHumanReadableName(String path) {
+		return path.replace('\u001e', '.');
 	}
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.class_4752;
+import net.minecraft.class_5508;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,76 +20,53 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class AxeItem extends MiningToolItem {
+	private static final Set<Material> field_23139 = Sets.<Material>newHashSet(
+		Material.WOOD, Material.NETHER_WOOD, Material.PLANT, Material.REPLACEABLE_PLANT, Material.BAMBOO, Material.GOURD
+	);
 	private static final Set<Block> EFFECTIVE_BLOCKS = Sets.<Block>newHashSet(
-		Blocks.OAK_PLANKS,
-		Blocks.SPRUCE_PLANKS,
-		Blocks.BIRCH_PLANKS,
-		Blocks.JUNGLE_PLANKS,
-		Blocks.ACACIA_PLANKS,
-		Blocks.DARK_OAK_PLANKS,
-		Blocks.BOOKSHELF,
-		Blocks.OAK_WOOD,
-		Blocks.SPRUCE_WOOD,
-		Blocks.BIRCH_WOOD,
-		Blocks.JUNGLE_WOOD,
-		Blocks.ACACIA_WOOD,
-		Blocks.DARK_OAK_WOOD,
-		Blocks.OAK_LOG,
-		Blocks.SPRUCE_LOG,
-		Blocks.BIRCH_LOG,
-		Blocks.JUNGLE_LOG,
-		Blocks.ACACIA_LOG,
-		Blocks.DARK_OAK_LOG,
-		Blocks.CHEST,
-		Blocks.PUMPKIN,
-		Blocks.CARVED_PUMPKIN,
-		Blocks.JACK_O_LANTERN,
-		Blocks.MELON,
-		Blocks.LADDER,
-		Blocks.SCAFFOLDING,
-		Blocks.OAK_BUTTON,
-		Blocks.SPRUCE_BUTTON,
-		Blocks.BIRCH_BUTTON,
-		Blocks.JUNGLE_BUTTON,
-		Blocks.DARK_OAK_BUTTON,
-		Blocks.ACACIA_BUTTON,
-		Blocks.OAK_PRESSURE_PLATE,
-		Blocks.SPRUCE_PRESSURE_PLATE,
-		Blocks.BIRCH_PRESSURE_PLATE,
-		Blocks.JUNGLE_PRESSURE_PLATE,
-		Blocks.DARK_OAK_PRESSURE_PLATE,
-		Blocks.ACACIA_PRESSURE_PLATE
+		Blocks.field_9983,
+		Blocks.field_16492,
+		Blocks.field_10057,
+		Blocks.field_10066,
+		Blocks.field_10417,
+		Blocks.field_10553,
+		Blocks.field_10493,
+		Blocks.field_10278,
+		Blocks.field_22100,
+		Blocks.field_22101
 	);
 	protected static final Map<Block, Block> STRIPPED_BLOCKS = new Builder<Block, Block>()
-		.put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
-		.put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
-		.put(Blocks.DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_WOOD)
-		.put(Blocks.DARK_OAK_LOG, Blocks.STRIPPED_DARK_OAK_LOG)
-		.put(Blocks.ACACIA_WOOD, Blocks.STRIPPED_ACACIA_WOOD)
-		.put(Blocks.ACACIA_LOG, Blocks.STRIPPED_ACACIA_LOG)
-		.put(Blocks.BIRCH_WOOD, Blocks.STRIPPED_BIRCH_WOOD)
-		.put(Blocks.BIRCH_LOG, Blocks.STRIPPED_BIRCH_LOG)
-		.put(Blocks.JUNGLE_WOOD, Blocks.STRIPPED_JUNGLE_WOOD)
-		.put(Blocks.JUNGLE_LOG, Blocks.STRIPPED_JUNGLE_LOG)
-		.put(Blocks.SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_WOOD)
-		.put(Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG)
+		.put(Blocks.field_10126, Blocks.field_10250)
+		.put(Blocks.field_10431, Blocks.field_10519)
+		.put(Blocks.field_10178, Blocks.field_10374)
+		.put(Blocks.field_10010, Blocks.field_10244)
+		.put(Blocks.field_9999, Blocks.field_10103)
+		.put(Blocks.field_10533, Blocks.field_10622)
+		.put(Blocks.field_10307, Blocks.field_10204)
+		.put(Blocks.field_10511, Blocks.field_10366)
+		.put(Blocks.field_10303, Blocks.field_10084)
+		.put(Blocks.field_10306, Blocks.field_10254)
+		.put(Blocks.field_10155, Blocks.field_10558)
+		.put(Blocks.field_10037, Blocks.field_10436)
+		.put(Blocks.field_22111, Blocks.field_22112)
+		.put(Blocks.field_22503, Blocks.field_22504)
+		.put(Blocks.field_22118, Blocks.field_22119)
+		.put(Blocks.field_22505, Blocks.field_22506)
 		.build();
 
-	protected AxeItem(ToolMaterial material, Item.Settings settings) {
-		super(material, EFFECTIVE_BLOCKS, settings);
+	protected AxeItem(ToolMaterial toolMaterial, Item.Settings settings) {
+		super(toolMaterial, EFFECTIVE_BLOCKS, settings);
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
+	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		Material material = state.getMaterial();
-		return material != Material.WOOD && material != Material.PLANT && material != Material.REPLACEABLE_PLANT && material != Material.BAMBOO
-			? super.getMiningSpeed(stack, state)
-			: this.miningSpeed;
+		return field_23139.contains(material) ? this.miningSpeed : super.getMiningSpeedMultiplier(stack, state);
 	}
 
 	@Override
-	protected class_4752 method_24322() {
-		return class_4752.field_21871;
+	protected class_5508 method_31212() {
+		return class_5508.field_26764;
 	}
 
 	@Override
@@ -100,7 +77,7 @@ public class AxeItem extends MiningToolItem {
 		Block block = (Block)STRIPPED_BLOCKS.get(blockState.getBlock());
 		if (block != null) {
 			PlayerEntity playerEntity = context.getPlayer();
-			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			world.playSound(playerEntity, blockPos, SoundEvents.field_14675, SoundCategory.field_15245, 1.0F, 1.0F);
 			if (!world.isClient) {
 				world.setBlockState(blockPos, block.getDefaultState().with(PillarBlock.AXIS, blockState.get(PillarBlock.AXIS)), 11);
 				if (playerEntity != null) {
@@ -108,7 +85,7 @@ public class AxeItem extends MiningToolItem {
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}
@@ -116,7 +93,7 @@ public class AxeItem extends MiningToolItem {
 
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(1, attacker, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+		stack.damage(1, attacker, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
 		return true;
 	}
 }

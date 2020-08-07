@@ -6,8 +6,7 @@ import com.google.gson.JsonSerializationContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.BoundedIntUnaryOperator;
-import net.minecraft.util.Identifier;
+import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.util.JsonHelper;
 
 public class LimitCountLootFunction extends ConditionalLootFunction {
@@ -16,6 +15,11 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 	private LimitCountLootFunction(LootCondition[] conditions, BoundedIntUnaryOperator limit) {
 		super(conditions);
 		this.limit = limit;
+	}
+
+	@Override
+	public LootFunctionType getType() {
+		return LootFunctionTypes.field_25227;
 	}
 
 	@Override
@@ -29,17 +33,13 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new LimitCountLootFunction(conditions, limit));
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<LimitCountLootFunction> {
-		protected Factory() {
-			super(new Identifier("limit_count"), LimitCountLootFunction.class);
-		}
-
-		public void toJson(JsonObject jsonObject, LimitCountLootFunction limitCountLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, limitCountLootFunction, jsonSerializationContext);
+	public static class Serializer extends ConditionalLootFunction.Serializer<LimitCountLootFunction> {
+		public void method_510(JsonObject jsonObject, LimitCountLootFunction limitCountLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, limitCountLootFunction, jsonSerializationContext);
 			jsonObject.add("limit", jsonSerializationContext.serialize(limitCountLootFunction.limit));
 		}
 
-		public LimitCountLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public LimitCountLootFunction method_509(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			BoundedIntUnaryOperator boundedIntUnaryOperator = JsonHelper.deserialize(jsonObject, "limit", jsonDeserializationContext, BoundedIntUnaryOperator.class);
 			return new LimitCountLootFunction(lootConditions, boundedIntUnaryOperator);
 		}

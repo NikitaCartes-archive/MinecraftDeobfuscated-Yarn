@@ -7,14 +7,15 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class CaveSpiderEntity extends SpiderEntity {
@@ -22,10 +23,8 @@ public class CaveSpiderEntity extends SpiderEntity {
 		super(entityType, world);
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(12.0);
+	public static DefaultAttributeContainer.Builder createCaveSpiderAttributes() {
+		return SpiderEntity.createSpiderAttributes().add(EntityAttributes.field_23716, 12.0);
 	}
 
 	@Override
@@ -33,14 +32,14 @@ public class CaveSpiderEntity extends SpiderEntity {
 		if (super.tryAttack(target)) {
 			if (target instanceof LivingEntity) {
 				int i = 0;
-				if (this.world.getDifficulty() == Difficulty.NORMAL) {
+				if (this.world.getDifficulty() == Difficulty.field_5802) {
 					i = 7;
-				} else if (this.world.getDifficulty() == Difficulty.HARD) {
+				} else if (this.world.getDifficulty() == Difficulty.field_5807) {
 					i = 15;
 				}
 
 				if (i > 0) {
-					((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0));
+					((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.field_5899, i * 20, 0));
 				}
 			}
 
@@ -52,7 +51,9 @@ public class CaveSpiderEntity extends SpiderEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		return entityData;
 	}
 

@@ -5,30 +5,30 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 
 public class SpawnerBlock extends BlockWithEntity {
-	protected SpawnerBlock(Block.Settings settings) {
+	protected SpawnerBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new MobSpawnerBlockEntity();
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, world, pos, stack);
-		int i = 15 + world.random.nextInt(15) + world.random.nextInt(15);
-		this.dropExperience(world, pos, i);
+	public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
+		super.onStacksDropped(state, serverWorld, pos, stack);
+		int i = 15 + serverWorld.random.nextInt(15) + serverWorld.random.nextInt(15);
+		this.dropExperience(serverWorld, pos, i);
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
+		return BlockRenderType.field_11458;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -18,19 +18,19 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 	}
 
 	@Override
-	public net.minecraft.client.render.VertexConsumer getBuffer(RenderLayer renderLayer) {
-		if (renderLayer.method_24295()) {
-			net.minecraft.client.render.VertexConsumer vertexConsumer = this.plainDrawer.getBuffer(renderLayer);
-			return new OutlineVertexConsumerProvider.VertexConsumer(vertexConsumer, this.red, this.green, this.blue, this.alpha);
+	public VertexConsumer getBuffer(RenderLayer renderLayer) {
+		if (renderLayer.isOutline()) {
+			VertexConsumer vertexConsumer = this.plainDrawer.getBuffer(renderLayer);
+			return new OutlineVertexConsumerProvider.OutlineVertexConsumer(vertexConsumer, this.red, this.green, this.blue, this.alpha);
 		} else {
-			net.minecraft.client.render.VertexConsumer vertexConsumer = this.parent.getBuffer(renderLayer);
-			Optional<RenderLayer> optional = renderLayer.getTexture();
+			VertexConsumer vertexConsumer = this.parent.getBuffer(renderLayer);
+			Optional<RenderLayer> optional = renderLayer.getAffectedOutline();
 			if (optional.isPresent()) {
-				net.minecraft.client.render.VertexConsumer vertexConsumer2 = this.plainDrawer.getBuffer((RenderLayer)optional.get());
-				OutlineVertexConsumerProvider.VertexConsumer vertexConsumer3 = new OutlineVertexConsumerProvider.VertexConsumer(
+				VertexConsumer vertexConsumer2 = this.plainDrawer.getBuffer((RenderLayer)optional.get());
+				OutlineVertexConsumerProvider.OutlineVertexConsumer outlineVertexConsumer = new OutlineVertexConsumerProvider.OutlineVertexConsumer(
 					vertexConsumer2, this.red, this.green, this.blue, this.alpha
 				);
-				return VertexConsumers.dual(vertexConsumer3, vertexConsumer);
+				return VertexConsumers.dual(outlineVertexConsumer, vertexConsumer);
 			} else {
 				return vertexConsumer;
 			}
@@ -49,15 +49,15 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class VertexConsumer extends FixedColorVertexConsumer {
-		private final net.minecraft.client.render.VertexConsumer delegate;
+	static class OutlineVertexConsumer extends FixedColorVertexConsumer {
+		private final VertexConsumer delegate;
 		private double x;
 		private double y;
 		private double z;
 		private float u;
 		private float v;
 
-		private VertexConsumer(net.minecraft.client.render.VertexConsumer delegate, int red, int green, int blue, int alpha) {
+		private OutlineVertexConsumer(VertexConsumer delegate, int red, int green, int blue, int alpha) {
 			this.delegate = delegate;
 			super.fixedColor(red, green, blue, alpha);
 		}
@@ -67,7 +67,7 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		}
 
 		@Override
-		public net.minecraft.client.render.VertexConsumer vertex(double x, double y, double z) {
+		public VertexConsumer vertex(double x, double y, double z) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
@@ -75,29 +75,29 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		}
 
 		@Override
-		public net.minecraft.client.render.VertexConsumer color(int red, int green, int blue, int alpha) {
+		public VertexConsumer color(int red, int green, int blue, int alpha) {
 			return this;
 		}
 
 		@Override
-		public net.minecraft.client.render.VertexConsumer texture(float u, float v) {
+		public VertexConsumer texture(float u, float v) {
 			this.u = u;
 			this.v = v;
 			return this;
 		}
 
 		@Override
-		public net.minecraft.client.render.VertexConsumer overlay(int u, int v) {
+		public VertexConsumer overlay(int u, int v) {
 			return this;
 		}
 
 		@Override
-		public net.minecraft.client.render.VertexConsumer light(int u, int v) {
+		public VertexConsumer light(int u, int v) {
 			return this;
 		}
 
 		@Override
-		public net.minecraft.client.render.VertexConsumer normal(float x, float y, float z) {
+		public VertexConsumer normal(float x, float y, float z) {
 			return this;
 		}
 

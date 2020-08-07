@@ -1,10 +1,11 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import java.util.stream.Stream;
 
 public interface FeatureConfig {
-	DefaultFeatureConfig DEFAULT = new DefaultFeatureConfig();
+	DefaultFeatureConfig DEFAULT = DefaultFeatureConfig.INSTANCE;
 
-	<T> Dynamic<T> serialize(DynamicOps<T> ops);
+	default Stream<ConfiguredFeature<?, ?>> method_30649() {
+		return Stream.empty();
+	}
 }

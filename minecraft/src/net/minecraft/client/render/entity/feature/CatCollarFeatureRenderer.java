@@ -13,11 +13,11 @@ public class CatCollarFeatureRenderer extends FeatureRenderer<CatEntity, CatEnti
 	private static final Identifier SKIN = new Identifier("textures/entity/cat/cat_collar.png");
 	private final CatEntityModel<CatEntity> model = new CatEntityModel<>(0.01F);
 
-	public CatCollarFeatureRenderer(FeatureRendererContext<CatEntity, CatEntityModel<CatEntity>> context) {
-		super(context);
+	public CatCollarFeatureRenderer(FeatureRendererContext<CatEntity, CatEntityModel<CatEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(
+	public void method_16047(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CatEntity catEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (catEntity.isTamed()) {

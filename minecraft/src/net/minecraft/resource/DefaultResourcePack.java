@@ -102,7 +102,7 @@ public class DefaultResourcePack implements ResourcePack {
 			} catch (IOException var15) {
 			}
 
-			if (type == ResourceType.CLIENT_RESOURCES) {
+			if (type == ResourceType.field_14188) {
 				Enumeration<URL> enumeration = null;
 
 				try {
@@ -272,6 +272,7 @@ public class DefaultResourcePack implements ResourcePack {
 		return "Default";
 	}
 
+	@Override
 	public void close() {
 	}
 }

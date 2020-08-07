@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 public enum BlockRenderType {
-	INVISIBLE,
-	ENTITYBLOCK_ANIMATED,
-	MODEL;
+	field_11455,
+	field_11456,
+	field_11458;
 }

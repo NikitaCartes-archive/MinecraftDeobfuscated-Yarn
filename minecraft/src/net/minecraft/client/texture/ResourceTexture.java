@@ -39,15 +39,15 @@ public class ResourceTexture extends AbstractTexture {
 
 		NativeImage nativeImage = textureData.getImage();
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
-			RenderSystem.recordRenderCall(() -> this.method_22810(nativeImage, bl, bl2));
+			RenderSystem.recordRenderCall(() -> this.upload(nativeImage, bl, bl2));
 		} else {
-			this.method_22810(nativeImage, bl, bl2);
+			this.upload(nativeImage, bl, bl2);
 		}
 	}
 
-	private void method_22810(NativeImage nativeImage, boolean bl, boolean bl2) {
-		TextureUtil.prepareImage(this.getGlId(), 0, nativeImage.getWidth(), nativeImage.getHeight());
-		nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), bl, bl2, false, true);
+	private void upload(NativeImage nativeImage, boolean blur, boolean clamp) {
+		TextureUtil.allocate(this.getGlId(), 0, nativeImage.getWidth(), nativeImage.getHeight());
+		nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), blur, clamp, false, true);
 	}
 
 	protected ResourceTexture.TextureData loadTextureData(ResourceManager resourceManager) {

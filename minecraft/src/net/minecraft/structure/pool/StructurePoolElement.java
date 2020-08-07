@@ -1,29 +1,40 @@
 package net.minecraft.structure.pool;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.processor.StructureProcessorList;
+import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public abstract class StructurePoolElement {
+	public static final Codec<StructurePoolElement> CODEC = Registry.STRUCTURE_POOL_ELEMENT
+		.dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
 	@Nullable
 	private volatile StructurePool.Projection projection;
 
-	protected StructurePoolElement(StructurePool.Projection projection) {
-		this.projection = projection;
+	protected static <E extends StructurePoolElement> RecordCodecBuilder<E, StructurePool.Projection> method_28883() {
+		return StructurePool.Projection.field_24956.fieldOf("projection").forGetter(StructurePoolElement::getProjection);
 	}
 
-	protected StructurePoolElement(Dynamic<?> dynamic) {
-		this.projection = StructurePool.Projection.getById(dynamic.get("projection").asString(StructurePool.Projection.RIGID.getId()));
+	protected StructurePoolElement(StructurePool.Projection projection) {
+		this.projection = projection;
 	}
 
 	public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(
@@ -34,18 +45,21 @@ public abstract class StructurePoolElement {
 
 	public abstract boolean generate(
 		StructureManager structureManager,
-		IWorld world,
-		ChunkGenerator<?> chunkGenerator,
+		StructureWorldAccess structureWorldAccess,
+		StructureAccessor structureAccessor,
+		ChunkGenerator chunkGenerator,
 		BlockPos blockPos,
+		BlockPos blockPos2,
 		BlockRotation blockRotation,
 		BlockBox blockBox,
-		Random random
+		Random random,
+		boolean keepJigsaws
 	);
 
-	public abstract StructurePoolElementType getType();
+	public abstract StructurePoolElementType<?> getType();
 
 	public void method_16756(
-		IWorld iWorld, Structure.StructureBlockInfo structureBlockInfo, BlockPos blockPos, BlockRotation blockRotation, Random random, BlockBox blockBox
+		WorldAccess worldAccess, Structure.StructureBlockInfo structureBlockInfo, BlockPos blockPos, BlockRotation blockRotation, Random random, BlockBox blockBox
 	) {
 	}
 
@@ -63,17 +77,37 @@ public abstract class StructurePoolElement {
 		}
 	}
 
-	protected abstract <T> Dynamic<T> method_16625(DynamicOps<T> dynamicOps);
-
-	public <T> Dynamic<T> method_16755(DynamicOps<T> dynamicOps) {
-		T object = this.method_16625(dynamicOps).getValue();
-		T object2 = dynamicOps.mergeInto(
-			object, dynamicOps.createString("element_type"), dynamicOps.createString(Registry.STRUCTURE_POOL_ELEMENT.getId(this.getType()).toString())
-		);
-		return new Dynamic<>(dynamicOps, dynamicOps.mergeInto(object2, dynamicOps.createString("projection"), dynamicOps.createString(this.projection.getId())));
+	public int getGroundLevelDelta() {
+		return 1;
 	}
 
-	public int method_19308() {
-		return 1;
+	public static Function<StructurePool.Projection, EmptyPoolElement> method_30438() {
+		return projection -> EmptyPoolElement.INSTANCE;
+	}
+
+	public static Function<StructurePool.Projection, LegacySinglePoolElement> method_30425(String string) {
+		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), () -> StructureProcessorLists.field_26688, projection);
+	}
+
+	public static Function<StructurePool.Projection, LegacySinglePoolElement> method_30426(String string, StructureProcessorList structureProcessorList) {
+		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), () -> structureProcessorList, projection);
+	}
+
+	public static Function<StructurePool.Projection, SinglePoolElement> method_30434(String string) {
+		return projection -> new SinglePoolElement(Either.left(new Identifier(string)), () -> StructureProcessorLists.field_26688, projection);
+	}
+
+	public static Function<StructurePool.Projection, SinglePoolElement> method_30435(String string, StructureProcessorList structureProcessorList) {
+		return projection -> new SinglePoolElement(Either.left(new Identifier(string)), () -> structureProcessorList, projection);
+	}
+
+	public static Function<StructurePool.Projection, FeaturePoolElement> method_30421(ConfiguredFeature<?, ?> configuredFeature) {
+		return projection -> new FeaturePoolElement(() -> configuredFeature, projection);
+	}
+
+	public static Function<StructurePool.Projection, ListPoolElement> method_30429(List<Function<StructurePool.Projection, ? extends StructurePoolElement>> list) {
+		return projection -> new ListPoolElement(
+				(List<StructurePoolElement>)list.stream().map(function -> (StructurePoolElement)function.apply(projection)).collect(Collectors.toList()), projection
+			);
 	}
 }

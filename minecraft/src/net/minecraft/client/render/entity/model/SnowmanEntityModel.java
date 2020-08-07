@@ -36,7 +36,7 @@ public class SnowmanEntityModel<T extends Entity> extends CompositeEntityModel<T
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.topSnowball.yaw = headYaw * (float) (Math.PI / 180.0);
 		this.topSnowball.pitch = headPitch * (float) (Math.PI / 180.0);
 		this.middleSnowball.yaw = headYaw * (float) (Math.PI / 180.0) * 0.25F;
@@ -57,7 +57,7 @@ public class SnowmanEntityModel<T extends Entity> extends CompositeEntityModel<T
 		return ImmutableList.<ModelPart>of(this.middleSnowball, this.bottomSnowball, this.topSnowball, this.leftArm, this.rightArm);
 	}
 
-	public ModelPart method_2834() {
+	public ModelPart getTopSnowball() {
 		return this.topSnowball;
 	}
 }

@@ -34,12 +34,12 @@ public class RegionFile implements AutoCloseable {
 	private final IntBuffer saveTimes;
 	private final SectorMap sectors = new SectorMap();
 
-	public RegionFile(File file, File directory) throws IOException {
-		this(file.toPath(), directory.toPath(), ChunkStreamVersion.DEFLATE);
+	public RegionFile(File file, File directory, boolean dsync) throws IOException {
+		this(file.toPath(), directory.toPath(), ChunkStreamVersion.DEFLATE, dsync);
 	}
 
-	public RegionFile(Path file, Path directory, ChunkStreamVersion chunkStreamVersion) throws IOException {
-		this.outputChunkStreamVersion = chunkStreamVersion;
+	public RegionFile(Path file, Path directory, ChunkStreamVersion outputChunkStreamVersion, boolean dsync) throws IOException {
+		this.outputChunkStreamVersion = outputChunkStreamVersion;
 		if (!Files.isDirectory(directory, new LinkOption[0])) {
 			throw new IllegalArgumentException("Expected directory, got " + directory.toAbsolutePath());
 		} else {
@@ -48,7 +48,12 @@ public class RegionFile implements AutoCloseable {
 			this.sectorData.limit(1024);
 			this.header.position(4096);
 			this.saveTimes = this.header.asIntBuffer();
-			this.channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
+			if (dsync) {
+				this.channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.DSYNC);
+			} else {
+				this.channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
+			}
+
 			this.sectors.allocate(0, 2);
 			this.header.position(0);
 			int i = this.channel.read(this.header, 0L);
@@ -219,6 +224,10 @@ public class RegionFile implements AutoCloseable {
 		return new DataOutputStream(new BufferedOutputStream(this.outputChunkStreamVersion.wrap(new RegionFile.ChunkBuffer(pos))));
 	}
 
+	public void method_26981() throws IOException {
+		this.channel.force(true);
+	}
+
 	protected synchronized void writeChunk(ChunkPos pos, ByteBuffer byteBuffer) throws IOException {
 		int i = getIndex(pos);
 		int j = this.sectorData.get(i);
@@ -310,13 +319,9 @@ public class RegionFile implements AutoCloseable {
 			this.fillLastSector();
 		} finally {
 			try {
-				this.writeHeader();
+				this.channel.force(true);
 			} finally {
-				try {
-					this.channel.force(true);
-				} finally {
-					this.channel.close();
-				}
+				this.channel.close();
 			}
 		}
 	}

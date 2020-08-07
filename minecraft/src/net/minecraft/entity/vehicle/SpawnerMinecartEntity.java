@@ -24,7 +24,7 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 
 		@Override
 		public BlockPos getPos() {
-			return new BlockPos(SpawnerMinecartEntity.this);
+			return SpawnerMinecartEntity.this.getBlockPos();
 		}
 	};
 
@@ -33,29 +33,29 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public SpawnerMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.SPAWNER_MINECART, world, x, y, z);
+		super(EntityType.field_6142, world, x, y, z);
 	}
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.SPAWNER;
+		return AbstractMinecartEntity.Type.field_7680;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.SPAWNER.getDefaultState();
+		return Blocks.field_10260.getDefaultState();
 	}
 
 	@Override
 	protected void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		this.logic.deserialize(tag);
+		this.logic.fromTag(tag);
 	}
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		this.logic.serialize(tag);
+		this.logic.toTag(tag);
 	}
 
 	@Environment(EnvType.CLIENT)

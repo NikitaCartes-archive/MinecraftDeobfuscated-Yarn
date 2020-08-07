@@ -14,8 +14,8 @@ public class BlockHitResult extends HitResult {
 		return new BlockHitResult(true, pos, side, blockPos, false);
 	}
 
-	public BlockHitResult(Vec3d pos, Direction side, BlockPos blockPos, boolean bl) {
-		this(false, pos, side, blockPos, bl);
+	public BlockHitResult(Vec3d pos, Direction side, BlockPos blockPos, boolean insideBlock) {
+		this(false, pos, side, blockPos, insideBlock);
 	}
 
 	private BlockHitResult(boolean missed, Vec3d pos, Direction side, BlockPos blockPos, boolean insideBlock) {
@@ -30,6 +30,10 @@ public class BlockHitResult extends HitResult {
 		return new BlockHitResult(this.missed, this.pos, side, this.blockPos, this.insideBlock);
 	}
 
+	public BlockHitResult method_29328(BlockPos blockPos) {
+		return new BlockHitResult(this.missed, this.pos, this.side, blockPos, this.insideBlock);
+	}
+
 	public BlockPos getBlockPos() {
 		return this.blockPos;
 	}
@@ -40,7 +44,7 @@ public class BlockHitResult extends HitResult {
 
 	@Override
 	public HitResult.Type getType() {
-		return this.missed ? HitResult.Type.MISS : HitResult.Type.BLOCK;
+		return this.missed ? HitResult.Type.field_1333 : HitResult.Type.field_1332;
 	}
 
 	public boolean isInsideBlock() {
