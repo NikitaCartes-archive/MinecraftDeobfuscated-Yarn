@@ -4,13 +4,13 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.function.Supplier;
-import net.minecraft.class_5504;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
@@ -44,7 +44,7 @@ public class BuiltinRegistries {
 		Registry.PROCESSOR_LIST_WORLDGEN, () -> StructureProcessorLists.ZOMBIE_PLAINS
 	);
 	public static final Registry<StructurePool> STRUCTURE_POOL = addRegistry(Registry.TEMPLATE_POOL_WORLDGEN, StructurePools::initDefaultPools);
-	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, () -> class_5504.field_26734);
+	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, () -> Biomes.PLAINS);
 	public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = addRegistry(
 		Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings::getInstance
 	);

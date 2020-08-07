@@ -16,7 +16,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
 
 public class FlatChunkGenerator extends ChunkGenerator {
-	public static final Codec<FlatChunkGenerator> field_24769 = FlatChunkGeneratorConfig.CODEC
+	public static final Codec<FlatChunkGenerator> CODEC = FlatChunkGeneratorConfig.CODEC
 		.fieldOf("settings")
 		.<FlatChunkGenerator>xmap(FlatChunkGenerator::new, FlatChunkGenerator::method_28545)
 		.codec();
@@ -29,7 +29,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 
 	@Override
 	protected Codec<? extends ChunkGenerator> getCodec() {
-		return field_24769;
+		return CODEC;
 	}
 
 	@Environment(EnvType.CLIENT)

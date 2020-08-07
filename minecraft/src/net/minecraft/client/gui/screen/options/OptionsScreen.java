@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.VideoOptionsScreen;
-import net.minecraft.client.gui.screen.pack.AbstractPackScreen;
+import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
@@ -171,7 +171,7 @@ public class OptionsScreen extends Screen {
 				new TranslatableText("options.resourcepack"),
 				buttonWidget -> this.client
 						.openScreen(
-							new AbstractPackScreen(
+							new PackScreen(
 								this, this.client.getResourcePackManager(), this::method_29975, this.client.getResourcePackDir(), new TranslatableText("resourcePack.title")
 							)
 						)

@@ -200,7 +200,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				itemStack = itemStack2.copy();
 				bl = true;
 				ScreenHandler.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getCount());
-				int k = Math.min(itemStack.getMaxCount(), slot.getMaxStackAmount(itemStack));
+				int k = Math.min(itemStack.getMaxCount(), slot.getMaxItemCount(itemStack));
 				if (itemStack.getCount() > k) {
 					string = Formatting.YELLOW.toString() + k;
 					itemStack.setCount(k);
@@ -250,7 +250,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 					ItemStack itemStack3 = slot.getStack();
 					int i = itemStack3.isEmpty() ? 0 : itemStack3.getCount();
 					ScreenHandler.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack2, i);
-					int j = Math.min(itemStack2.getMaxCount(), slot.getMaxStackAmount(itemStack2));
+					int j = Math.min(itemStack2.getMaxCount(), slot.getMaxItemCount(itemStack2));
 					if (itemStack2.getCount() > j) {
 						itemStack2.setCount(j);
 					}

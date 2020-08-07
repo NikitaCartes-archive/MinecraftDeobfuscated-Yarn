@@ -55,7 +55,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		Realms.narrateNow(
 			subscriptionTitle.getString(), subscriptionStartLabelText.getString(), this.startDate, timeLeftLabelText.getString(), this.daysLeft.getString()
 		);
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 100,
@@ -125,7 +125,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

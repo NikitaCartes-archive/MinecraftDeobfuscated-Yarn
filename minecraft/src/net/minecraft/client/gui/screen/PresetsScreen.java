@@ -33,7 +33,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import net.minecraft.world.gen.chunk.StructureConfig;
@@ -124,17 +124,19 @@ public class PresetsScreen extends Screen {
 				return FlatChunkGeneratorConfig.getDefaultConfig(registry);
 			} else {
 				FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getConfig());
-				Biome biome = registry.method_31140(Biomes.PLAINS);
+				RegistryKey<Biome> registryKey = BuiltInBiomes.PLAINS;
 				if (iterator.hasNext()) {
 					try {
 						Identifier identifier = new Identifier((String)iterator.next());
-						biome = (Biome)registry.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
+						registryKey = RegistryKey.of(Registry.BIOME_KEY, identifier);
+						registry.method_31189(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
 					} catch (Exception var8) {
 						field_25043.error("Error while parsing flat world string => {}", var8.getMessage());
 					}
 				}
 
-				flatChunkGeneratorConfig2.setBiome(biome);
+				RegistryKey<Biome> registryKey2 = registryKey;
+				flatChunkGeneratorConfig2.setBiome(() -> registry.method_31140(registryKey2));
 				return flatChunkGeneratorConfig2;
 			}
 		}
@@ -158,7 +160,7 @@ public class PresetsScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.shareText = new TranslatableText("createWorld.customize.presets.share");
 		this.listText = new TranslatableText("createWorld.customize.presets.list");
 		this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
@@ -199,7 +201,7 @@ public class PresetsScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override
@@ -257,7 +259,7 @@ public class PresetsScreen extends Screen {
 				flatChunkGeneratorConfig.getLayers().add(flatChunkGeneratorLayers[i]);
 			}
 
-			flatChunkGeneratorConfig.setBiome(registry.method_31140(registryKey));
+			flatChunkGeneratorConfig.setBiome(() -> registry.method_31140(registryKey));
 			flatChunkGeneratorConfig.updateLayerBlocks();
 			return flatChunkGeneratorConfig.method_28912(structuresConfig);
 		}));
@@ -267,7 +269,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.classic_flat"),
 			Blocks.GRASS_BLOCK,
-			Biomes.PLAINS,
+			BuiltInBiomes.PLAINS,
 			Arrays.asList(StructureFeature.VILLAGE),
 			false,
 			false,
@@ -279,7 +281,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.tunnelers_dream"),
 			Blocks.STONE,
-			Biomes.MOUNTAINS,
+			BuiltInBiomes.MOUNTAINS,
 			Arrays.asList(StructureFeature.MINESHAFT),
 			true,
 			true,
@@ -292,7 +294,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.water_world"),
 			Items.WATER_BUCKET,
-			Biomes.DEEP_OCEAN,
+			BuiltInBiomes.DEEP_OCEAN,
 			Arrays.asList(StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK, StructureFeature.MONUMENT),
 			false,
 			false,
@@ -306,7 +308,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.overworld"),
 			Blocks.GRASS,
-			Biomes.PLAINS,
+			BuiltInBiomes.PLAINS,
 			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.MINESHAFT, StructureFeature.PILLAGER_OUTPOST, StructureFeature.RUINED_PORTAL),
 			true,
 			true,
@@ -319,7 +321,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.snowy_kingdom"),
 			Blocks.SNOW,
-			Biomes.SNOWY_TUNDRA,
+			BuiltInBiomes.SNOWY_TUNDRA,
 			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.IGLOO),
 			false,
 			false,
@@ -333,7 +335,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.bottomless_pit"),
 			Items.FEATHER,
-			Biomes.PLAINS,
+			BuiltInBiomes.PLAINS,
 			Arrays.asList(StructureFeature.VILLAGE),
 			false,
 			false,
@@ -345,7 +347,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.desert"),
 			Blocks.SAND,
-			Biomes.DESERT,
+			BuiltInBiomes.DESERT,
 			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.DESERT_PYRAMID, StructureFeature.MINESHAFT),
 			true,
 			true,
@@ -358,7 +360,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.redstone_ready"),
 			Items.REDSTONE,
-			Biomes.DESERT,
+			BuiltInBiomes.DESERT,
 			Collections.emptyList(),
 			false,
 			false,
@@ -370,7 +372,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.the_void"),
 			Blocks.BARRIER,
-			Biomes.THE_VOID,
+			BuiltInBiomes.THE_VOID,
 			Collections.emptyList(),
 			false,
 			true,
@@ -391,7 +393,7 @@ public class PresetsScreen extends Screen {
 			this.field_25045 = function;
 		}
 
-		public Text method_27571() {
+		public Text getName() {
 			return this.name;
 		}
 	}
@@ -412,7 +414,7 @@ public class PresetsScreen extends Screen {
 				NarratorManager.INSTANCE
 					.narrate(
 						new TranslatableText(
-								"narrator.select", ((PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(this.children().indexOf(superflatPresetEntry))).method_27571()
+								"narrator.select", ((PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(this.children().indexOf(superflatPresetEntry))).getName()
 							)
 							.getString()
 					);

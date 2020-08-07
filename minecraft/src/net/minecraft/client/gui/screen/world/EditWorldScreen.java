@@ -65,7 +65,7 @@ public class EditWorldScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		ButtonWidget buttonWidget = this.addButton(
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20, new TranslatableText("selectWorld.edit.resetIcon"), buttonWidgetx -> {
 				FileUtils.deleteQuietly(this.field_23777.getIconFile());
@@ -203,7 +203,7 @@ public class EditWorldScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void commit() {

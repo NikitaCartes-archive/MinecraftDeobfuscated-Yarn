@@ -68,7 +68,7 @@ import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeParticleConfig;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
@@ -109,7 +109,7 @@ public class ClientWorld extends World {
 		this.chunkManager = new ClientChunkManager(this, i);
 		this.clientWorldProperties = properties;
 		this.worldRenderer = worldRenderer;
-		this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.getRegistryManager().getDimensionTypes().getKey(dimensionType));
+		this.skyProperties = SkyProperties.byDimensionType(dimensionType);
 		this.setSpawnPos(new BlockPos(8, 64, 8), 0.0F);
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
@@ -626,7 +626,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.getRegistryManager().get(Registry.BIOME_KEY).method_31140(Biomes.PLAINS);
+		return this.getRegistryManager().get(Registry.BIOME_KEY).method_31140(BuiltInBiomes.PLAINS);
 	}
 
 	public float method_23783(float f) {
@@ -932,8 +932,8 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void populateCrashReport(CrashReportSection reportSection) {
-			MutableWorldProperties.super.populateCrashReport(reportSection);
+		public void populateCrashReport(CrashReportSection crashReportSection) {
+			MutableWorldProperties.super.populateCrashReport(crashReportSection);
 		}
 
 		public void setDifficulty(Difficulty difficulty) {

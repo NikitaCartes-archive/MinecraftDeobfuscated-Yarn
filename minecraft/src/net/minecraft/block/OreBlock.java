@@ -30,12 +30,12 @@ public class OreBlock extends Block {
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, serverWorld, pos, stack);
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
+		super.onStacksDropped(state, world, pos, stack);
 		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
-			int i = this.getExperienceWhenMined(serverWorld.random);
+			int i = this.getExperienceWhenMined(world.random);
 			if (i > 0) {
-				this.dropExperience(serverWorld, pos, i);
+				this.dropExperience(world, pos, i);
 			}
 		}
 	}

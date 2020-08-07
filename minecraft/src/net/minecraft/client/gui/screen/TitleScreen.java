@@ -181,7 +181,7 @@ public class TitleScreen extends Screen {
 			? ButtonWidget.EMPTY
 			: (buttonWidget, matrixStack, i, j) -> {
 				if (!buttonWidget.active) {
-					this.renderTooltip(
+					this.renderOrderedTooltip(
 						matrixStack, this.client.textRenderer.wrapLines(new TranslatableText("title.multiplayer.disabled"), Math.max(this.width / 2 - 43, 170)), i, j
 					);
 				}

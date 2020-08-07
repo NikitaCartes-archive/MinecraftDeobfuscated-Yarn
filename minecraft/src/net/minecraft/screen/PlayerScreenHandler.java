@@ -53,7 +53,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 			final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
 			this.addSlot(new Slot(inventory, 39 - i, 8, 8 + i * 18) {
 				@Override
-				public int getMaxStackAmount() {
+				public int getMaxItemCount() {
 					return 1;
 				}
 

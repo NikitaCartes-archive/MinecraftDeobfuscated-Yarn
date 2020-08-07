@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
 public class FixedBiomeSource extends BiomeSource {
-	public static final Codec<FixedBiomeSource> field_24717 = Biome.REGISTRY_CODEC
+	public static final Codec<FixedBiomeSource> CODEC = Biome.REGISTRY_CODEC
 		.fieldOf("biome")
 		.<FixedBiomeSource>xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome)
 		.stable()
@@ -25,14 +25,14 @@ public class FixedBiomeSource extends BiomeSource {
 		this(() -> biome);
 	}
 
-	public FixedBiomeSource(Supplier<Biome> supplier) {
-		super(ImmutableList.of((Biome)supplier.get()));
-		this.biome = supplier;
+	public FixedBiomeSource(Supplier<Biome> biome) {
+		super(ImmutableList.of((Biome)biome.get()));
+		this.biome = biome;
 	}
 
 	@Override
-	protected Codec<? extends BiomeSource> method_28442() {
-		return field_24717;
+	protected Codec<? extends BiomeSource> getCodec() {
+		return CODEC;
 	}
 
 	@Environment(EnvType.CLIENT)

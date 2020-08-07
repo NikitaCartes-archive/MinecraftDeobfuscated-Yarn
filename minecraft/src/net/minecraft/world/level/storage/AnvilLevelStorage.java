@@ -23,7 +23,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
@@ -61,15 +61,17 @@ public class AnvilLevelStorage {
 		Registry<Biome> registry = impl.get(Registry.BIOME_KEY);
 		BiomeSource biomeSource;
 		if (saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld()) {
-			biomeSource = new FixedBiomeSource(registry.method_31140(Biomes.PLAINS));
+			biomeSource = new FixedBiomeSource(registry.method_31140(BuiltInBiomes.PLAINS));
 		} else {
 			biomeSource = new VanillaLayeredBiomeSource(l, false, false, registry);
 		}
 
 		convertRegions(impl, new File(file, "region"), list, biomeSource, 0, i, progressListener);
-		convertRegions(impl, new File(file2, "region"), list2, new FixedBiomeSource(registry.method_31140(Biomes.NETHER_WASTES)), list.size(), i, progressListener);
 		convertRegions(
-			impl, new File(file3, "region"), list3, new FixedBiomeSource(registry.method_31140(Biomes.THE_END)), list.size() + list2.size(), i, progressListener
+			impl, new File(file2, "region"), list2, new FixedBiomeSource(registry.method_31140(BuiltInBiomes.NETHER_WASTES)), list.size(), i, progressListener
+		);
+		convertRegions(
+			impl, new File(file3, "region"), list3, new FixedBiomeSource(registry.method_31140(BuiltInBiomes.THE_END)), list.size() + list2.size(), i, progressListener
 		);
 		makeMcrLevelDatBackup(session);
 		session.method_27425(impl, saveProperties);
