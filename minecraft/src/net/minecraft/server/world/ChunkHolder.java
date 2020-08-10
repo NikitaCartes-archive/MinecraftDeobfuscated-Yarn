@@ -193,7 +193,7 @@ public class ChunkHolder {
 			this.field_26744 |= i >= 64;
 			if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
 				this.sendPacketToPlayersWatching(
-					new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, false), !this.field_26744
+					new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, true), !this.field_26744
 				);
 				this.skyLightUpdateBits = 0;
 				this.blockLightUpdateBits = 0;
