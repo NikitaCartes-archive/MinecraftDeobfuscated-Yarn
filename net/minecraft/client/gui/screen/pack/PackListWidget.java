@@ -67,29 +67,31 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         private final ResourcePackOrganizer.Pack pack;
         private final OrderedText field_26590;
         private final class_5489 field_26591;
+        private final OrderedText field_26784;
+        private final class_5489 field_26785;
 
-        public ResourcePackEntry(MinecraftClient client, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
-            Text text2;
-            Text text;
-            this.client = client;
+        public ResourcePackEntry(MinecraftClient minecraftClient, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
+            this.client = minecraftClient;
             this.screen = screen;
             this.pack = pack;
             this.widget = widget;
-            if (pack.getCompatibility().isCompatible()) {
-                text = pack.getDisplayName();
-                text2 = pack.getDecoratedDescription();
-            } else {
-                text = INCOMPATIBLE;
-                text2 = pack.getCompatibility().getNotification();
-            }
-            int i = client.textRenderer.getWidth(text);
+            this.field_26590 = ResourcePackEntry.method_31229(minecraftClient, pack.getDisplayName());
+            this.field_26591 = ResourcePackEntry.method_31230(minecraftClient, pack.getDecoratedDescription());
+            this.field_26784 = ResourcePackEntry.method_31229(minecraftClient, INCOMPATIBLE);
+            this.field_26785 = ResourcePackEntry.method_31230(minecraftClient, pack.getCompatibility().getNotification());
+        }
+
+        private static OrderedText method_31229(MinecraftClient minecraftClient, Text text) {
+            int i = minecraftClient.textRenderer.getWidth(text);
             if (i > 157) {
-                StringVisitable stringVisitable = StringVisitable.concat(client.textRenderer.trimToWidth(text, 157 - client.textRenderer.getWidth("...")), StringVisitable.plain("..."));
-                this.field_26590 = Language.getInstance().reorder(stringVisitable);
-            } else {
-                this.field_26590 = text.asOrderedText();
+                StringVisitable stringVisitable = StringVisitable.concat(minecraftClient.textRenderer.trimToWidth(text, 157 - minecraftClient.textRenderer.getWidth("...")), StringVisitable.plain("..."));
+                return Language.getInstance().reorder(stringVisitable);
             }
-            this.field_26591 = class_5489.method_30891(client.textRenderer, text2, 157, 2);
+            return text.asOrderedText();
+        }
+
+        private static class_5489 method_31230(MinecraftClient minecraftClient, Text text) {
+            return class_5489.method_30891(minecraftClient.textRenderer, text, 157, 2);
         }
 
         @Override
@@ -102,12 +104,18 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             this.client.getTextureManager().bindTexture(this.pack.method_30286());
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
+            OrderedText orderedText = this.field_26590;
+            class_5489 lv = this.field_26591;
             if (this.isSelectable() && (this.client.options.touchscreen || hovered)) {
                 this.client.getTextureManager().bindTexture(RESOURCE_PACKS_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 int i = mouseX - x;
                 int j = mouseY - y;
+                if (!this.pack.getCompatibility().isCompatible()) {
+                    orderedText = this.field_26784;
+                    lv = this.field_26785;
+                }
                 if (this.pack.canBeEnabled()) {
                     if (i < 32) {
                         DrawableHelper.drawTexture(matrices, x, y, 0.0f, 32.0f, 32, 32, 256, 256);
@@ -138,8 +146,8 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     }
                 }
             }
-            this.client.textRenderer.drawWithShadow(matrices, this.field_26590, (float)(x + 32 + 2), (float)(y + 1), 0xFFFFFF);
-            this.field_26591.method_30893(matrices, x + 32 + 2, y + 12, 10, 0x808080);
+            this.client.textRenderer.drawWithShadow(matrices, orderedText, (float)(x + 32 + 2), (float)(y + 1), 0xFFFFFF);
+            lv.method_30893(matrices, x + 32 + 2, y + 12, 10, 0x808080);
         }
 
         private boolean isSelectable() {
