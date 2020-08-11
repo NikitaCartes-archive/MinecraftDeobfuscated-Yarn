@@ -14,17 +14,17 @@ import net.minecraft.world.gen.placer.BlockPlacerType;
 
 public class DoublePlantPlacer
 extends BlockPlacer {
-    public static final Codec<DoublePlantPlacer> field_24868 = Codec.unit(() -> field_24869);
-    public static final DoublePlantPlacer field_24869 = new DoublePlantPlacer();
+    public static final Codec<DoublePlantPlacer> CODEC = Codec.unit(() -> INSTANCE);
+    public static final DoublePlantPlacer INSTANCE = new DoublePlantPlacer();
 
     @Override
-    protected BlockPlacerType<?> method_28673() {
+    protected BlockPlacerType<?> getType() {
         return BlockPlacerType.DOUBLE_PLANT_PLACER;
     }
 
     @Override
-    public void method_23403(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, Random random) {
-        ((TallPlantBlock)blockState.getBlock()).placeAt(worldAccess, blockPos, 2);
+    public void generate(WorldAccess world, BlockPos pos, BlockState state, Random random) {
+        ((TallPlantBlock)state.getBlock()).placeAt(world, pos, 2);
     }
 }
 

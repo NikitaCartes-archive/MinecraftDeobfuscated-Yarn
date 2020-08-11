@@ -29,23 +29,23 @@ public class MusicTracker {
     public void tick() {
         MusicSound musicSound = this.client.getMusicType();
         if (this.current != null) {
-            if (!musicSound.getEvent().getId().equals(this.current.getId()) && musicSound.method_27282()) {
+            if (!musicSound.getSound().getId().equals(this.current.getId()) && musicSound.shouldReplaceCurrentMusic()) {
                 this.client.getSoundManager().stop(this.current);
-                this.timeUntilNextSong = MathHelper.nextInt(this.random, 0, musicSound.method_27280() / 2);
+                this.timeUntilNextSong = MathHelper.nextInt(this.random, 0, musicSound.getMinDelay() / 2);
             }
             if (!this.client.getSoundManager().isPlaying(this.current)) {
                 this.current = null;
-                this.timeUntilNextSong = Math.min(this.timeUntilNextSong, MathHelper.nextInt(this.random, musicSound.method_27280(), musicSound.method_27281()));
+                this.timeUntilNextSong = Math.min(this.timeUntilNextSong, MathHelper.nextInt(this.random, musicSound.getMinDelay(), musicSound.getMaxDelay()));
             }
         }
-        this.timeUntilNextSong = Math.min(this.timeUntilNextSong, musicSound.method_27281());
+        this.timeUntilNextSong = Math.min(this.timeUntilNextSong, musicSound.getMaxDelay());
         if (this.current == null && this.timeUntilNextSong-- <= 0) {
             this.play(musicSound);
         }
     }
 
     public void play(MusicSound type) {
-        this.current = PositionedSoundInstance.music(type.getEvent());
+        this.current = PositionedSoundInstance.music(type.getSound());
         if (this.current.getSound() != SoundManager.MISSING_SOUND) {
             this.client.getSoundManager().play(this.current);
         }
@@ -64,7 +64,7 @@ public class MusicTracker {
         if (this.current == null) {
             return false;
         }
-        return type.getEvent().getId().equals(this.current.getId());
+        return type.getSound().getId().equals(this.current.getId());
     }
 }
 

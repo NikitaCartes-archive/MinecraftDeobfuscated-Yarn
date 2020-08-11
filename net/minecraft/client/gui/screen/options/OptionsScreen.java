@@ -74,7 +74,7 @@ extends Screen {
             }
         } else {
             this.addButton(new OptionButtonWidget(this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, Option.REALMS_NOTIFICATIONS, Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings), buttonWidget -> {
-                Option.REALMS_NOTIFICATIONS.set(this.settings);
+                Option.REALMS_NOTIFICATIONS.toggle(this.settings);
                 this.settings.write();
                 buttonWidget.setMessage(Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings));
             }));

@@ -217,14 +217,14 @@ implements ScreenHandlerListener {
                 BlockPos blockPos2 = SpawnLocating.findOverworldSpawn(world, blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
                 if (blockPos2 == null) continue;
                 this.refreshPositionAndAngles(blockPos2, 0.0f, 0.0f);
-                if (!world.doesNotCollide(this)) {
+                if (!world.isSpaceEmpty(this)) {
                     continue;
                 }
                 break;
             }
         } else {
             this.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
-            while (!world.doesNotCollide(this) && this.getY() < 255.0) {
+            while (!world.isSpaceEmpty(this) && this.getY() < 255.0) {
                 this.updatePosition(this.getX(), this.getY() + 1.0, this.getZ());
             }
         }

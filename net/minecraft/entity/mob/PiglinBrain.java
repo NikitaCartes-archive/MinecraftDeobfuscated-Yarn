@@ -380,9 +380,9 @@ public class PiglinBrain {
         return Optional.empty();
     }
 
-    public static void onGuardedBlockBroken(PlayerEntity player, boolean bl) {
+    public static void onGuardedBlockInteracted(PlayerEntity player, boolean blockOpen) {
         List<PiglinEntity> list = player.world.getNonSpectatingEntities(PiglinEntity.class, player.getBoundingBox().expand(16.0));
-        list.stream().filter(PiglinBrain::hasIdleActivity).filter(piglinEntity -> !bl || LookTargetUtil.isVisibleInMemory(piglinEntity, player)).forEach(piglin -> {
+        list.stream().filter(PiglinBrain::hasIdleActivity).filter(piglinEntity -> !blockOpen || LookTargetUtil.isVisibleInMemory(piglinEntity, player)).forEach(piglin -> {
             if (piglin.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
                 PiglinBrain.becomeAngryWithPlayer(piglin, player);
             } else {

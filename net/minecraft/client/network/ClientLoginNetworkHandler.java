@@ -19,7 +19,7 @@ import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.realms.DisconnectedRealmsScreen;
+import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
@@ -108,9 +108,9 @@ implements ClientLoginPacketListener {
     @Override
     public void onDisconnected(Text reason) {
         if (this.parentGui != null && this.parentGui instanceof RealmsScreen) {
-            this.client.openScreen(new DisconnectedRealmsScreen(this.parentGui, ScreenTexts.field_26625, reason));
+            this.client.openScreen(new DisconnectedRealmsScreen(this.parentGui, ScreenTexts.FAILED, reason));
         } else {
-            this.client.openScreen(new DisconnectedScreen(this.parentGui, ScreenTexts.field_26625, reason));
+            this.client.openScreen(new DisconnectedScreen(this.parentGui, ScreenTexts.FAILED, reason));
         }
     }
 

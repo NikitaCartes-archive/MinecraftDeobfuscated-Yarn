@@ -43,8 +43,8 @@ implements IndexedIterable<T> {
     }
 
     @Override
-    public int getRawId(T object) {
-        Integer integer = this.idMap.get(object);
+    public int getRawId(T entry) {
+        Integer integer = this.idMap.get(entry);
         return integer == null ? -1 : integer;
     }
 

@@ -30,13 +30,13 @@ implements Tag {
     }
 
     @Override
-    public /* synthetic */ void add(int value, Object object) {
-        this.add(value, (T)((Tag)object));
+    public /* synthetic */ void add(int index, Object value) {
+        this.add(index, (T)((Tag)value));
     }
 
     @Override
-    public /* synthetic */ Object set(int index, Object object) {
-        return this.set(index, (T)((Tag)object));
+    public /* synthetic */ Object set(int index, Object value) {
+        return this.set(index, (T)((Tag)value));
     }
 }
 

@@ -8,6 +8,9 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.minecraft.entity.effect.StatusEffectInstance;
 
+/**
+ * Represents the components that make up the properties of a food item.
+ */
 public class FoodComponent {
     private final int hunger;
     private final float saturationModifier;
@@ -25,26 +28,51 @@ public class FoodComponent {
         this.statusEffects = statusEffects;
     }
 
+    /**
+     * Gets the amount of hunger a food item will fill.
+     * 
+     * <p>One hunger is equivalent to half of a hunger bar icon.
+     */
     public int getHunger() {
         return this.hunger;
     }
 
+    /**
+     * Gets the saturation modifier of a food item.
+     * 
+     * <p>This value is typically used to determine how long a player can sustain the current hunger value before the hunger is used.
+     */
     public float getSaturationModifier() {
         return this.saturationModifier;
     }
 
+    /**
+     * Checks if a food item can be fed to dogs.
+     */
     public boolean isMeat() {
         return this.meat;
     }
 
+    /**
+     * Checks if a food item can be eaten when the current hunger bar is full.
+     */
     public boolean isAlwaysEdible() {
         return this.alwaysEdible;
     }
 
+    /**
+     * Checks if a food item is snack-like and is eaten quickly.
+     */
     public boolean isSnack() {
         return this.snack;
     }
 
+    /**
+     * Gets a list of all status effect instances that may be applied when a food item is consumed.
+     * 
+     * <p>The first value in the pair is the status effect instance to be applied.
+     * <p>The second value is the chance the status effect gets applied, on a scale between {@code 0.0F} and {@code 1.0F}.
+     */
     public List<Pair<StatusEffectInstance, Float>> getStatusEffects() {
         return this.statusEffects;
     }

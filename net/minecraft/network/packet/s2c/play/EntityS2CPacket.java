@@ -32,15 +32,15 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static double method_30301(long l) {
-        return (double)l / 4096.0;
+    public static double decodePacketCoordinate(long coord) {
+        return (double)coord / 4096.0;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Vec3d method_30302(Vec3d vec3d) {
-        double d = this.deltaX == 0 ? vec3d.x : EntityS2CPacket.method_30301(EntityS2CPacket.encodePacketCoordinate(vec3d.x) + (long)this.deltaX);
-        double e = this.deltaY == 0 ? vec3d.y : EntityS2CPacket.method_30301(EntityS2CPacket.encodePacketCoordinate(vec3d.y) + (long)this.deltaY);
-        double f = this.deltaZ == 0 ? vec3d.z : EntityS2CPacket.method_30301(EntityS2CPacket.encodePacketCoordinate(vec3d.z) + (long)this.deltaZ);
+    public Vec3d calculateDeltaPosition(Vec3d orig) {
+        double d = this.deltaX == 0 ? orig.x : EntityS2CPacket.decodePacketCoordinate(EntityS2CPacket.encodePacketCoordinate(orig.x) + (long)this.deltaX);
+        double e = this.deltaY == 0 ? orig.y : EntityS2CPacket.decodePacketCoordinate(EntityS2CPacket.encodePacketCoordinate(orig.y) + (long)this.deltaY);
+        double f = this.deltaZ == 0 ? orig.z : EntityS2CPacket.decodePacketCoordinate(EntityS2CPacket.encodePacketCoordinate(orig.z) + (long)this.deltaZ);
         return new Vec3d(d, e, f);
     }
 

@@ -11,8 +11,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.client.realms.DisconnectedRealmsScreen;
 import net.minecraft.client.realms.Realms;
+import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
@@ -66,7 +66,7 @@ public class RealmsConnection {
                         return;
                     }
                     LOGGER.error("Couldn't connect to world", (Throwable)unknownHostException);
-                    DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'"));
+                    DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'"));
                     minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
                 } catch (Exception exception) {
                     minecraftClient.getResourcePackDownloader().clear();
@@ -79,7 +79,7 @@ public class RealmsConnection {
                         String string2 = inetAddress + ":" + port;
                         string = string.replaceAll(string2, "");
                     }
-                    DisconnectedRealmsScreen disconnectedRealmsScreen2 = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", string));
+                    DisconnectedRealmsScreen disconnectedRealmsScreen2 = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", string));
                     minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen2));
                 }
             }

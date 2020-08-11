@@ -119,7 +119,7 @@ extends AbstractDecorationEntity {
         if (this.fixed) {
             return true;
         }
-        if (!this.world.doesNotCollide(this)) {
+        if (!this.world.isSpaceEmpty(this)) {
             return false;
         }
         BlockState blockState = this.world.getBlockState(this.attachmentPos.offset(this.facing.getOpposite()));

@@ -628,8 +628,8 @@ implements DynamicOps<Tag> {
                 return DataResult.success(compoundTag);
             }
             if (tag instanceof CompoundTag) {
-                CompoundTag compoundTag2 = new CompoundTag(Maps.newHashMap(((CompoundTag)tag).method_29143()));
-                for (Map.Entry<String, Tag> entry : compoundTag.method_29143().entrySet()) {
+                CompoundTag compoundTag2 = new CompoundTag(Maps.newHashMap(((CompoundTag)tag).toMap()));
+                for (Map.Entry<String, Tag> entry : compoundTag.toMap().entrySet()) {
                     compoundTag2.put(entry.getKey(), entry.getValue());
                 }
                 return DataResult.success(compoundTag2);

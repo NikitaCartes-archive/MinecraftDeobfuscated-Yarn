@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.world.dimension;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -23,7 +23,7 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class AreaHelper {
-    private static final AbstractBlock.ContextPredicate field_25883 = (blockState, blockView, blockPos) -> blockState.isOf(Blocks.OBSIDIAN);
+    private static final AbstractBlock.ContextPredicate IS_VALID_FRAME_BLOCK = (blockState, blockView, blockPos) -> blockState.isOf(Blocks.OBSIDIAN);
     private final WorldAccess world;
     private final Direction.Axis axis;
     private final Direction negativeDir;
@@ -91,11 +91,11 @@ public class AreaHelper {
             mutable.set(blockPos).move(direction, i);
             BlockState blockState = this.world.getBlockState(mutable);
             if (!AreaHelper.validStateInsidePortal(blockState)) {
-                if (!field_25883.test(blockState, this.world, mutable)) break;
+                if (!IS_VALID_FRAME_BLOCK.test(blockState, this.world, mutable)) break;
                 return i;
             }
             BlockState blockState2 = this.world.getBlockState(mutable.move(Direction.DOWN));
-            if (!field_25883.test(blockState2, this.world, mutable)) break;
+            if (!IS_VALID_FRAME_BLOCK.test(blockState2, this.world, mutable)) break;
         }
         return 0;
     }
@@ -112,7 +112,7 @@ public class AreaHelper {
     private boolean method_30491(BlockPos.Mutable mutable, int i) {
         for (int j = 0; j < this.width; ++j) {
             BlockPos.Mutable mutable2 = mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, j);
-            if (field_25883.test(this.world.getBlockState(mutable2), this.world, mutable2)) continue;
+            if (IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable2), this.world, mutable2)) continue;
             return false;
         }
         return true;
@@ -121,11 +121,11 @@ public class AreaHelper {
     private int method_30490(BlockPos.Mutable mutable) {
         for (int i = 0; i < 21; ++i) {
             mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, -1);
-            if (!field_25883.test(this.world.getBlockState(mutable), this.world, mutable)) {
+            if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable), this.world, mutable)) {
                 return i;
             }
             mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, this.width);
-            if (!field_25883.test(this.world.getBlockState(mutable), this.world, mutable)) {
+            if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable), this.world, mutable)) {
                 return i;
             }
             for (int j = 0; j < this.width; ++j) {

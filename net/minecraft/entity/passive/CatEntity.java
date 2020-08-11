@@ -360,15 +360,15 @@ extends TameableEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
-        if (serverWorldAccess.getMoonSize() > 0.9f) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        if (world.getMoonSize() > 0.9f) {
             this.setCatType(this.random.nextInt(11));
         } else {
             this.setCatType(this.random.nextInt(10));
         }
-        ServerWorld world = serverWorldAccess.toServerWorld();
-        if (world instanceof ServerWorld && world.getStructureAccessor().getStructureAt(this.getBlockPos(), true, StructureFeature.SWAMP_HUT).hasChildren()) {
+        ServerWorld world2 = world.toServerWorld();
+        if (world2 instanceof ServerWorld && world2.getStructureAccessor().getStructureAt(this.getBlockPos(), true, StructureFeature.SWAMP_HUT).hasChildren()) {
             this.setCatType(10);
             this.setPersistent();
         }
@@ -462,8 +462,8 @@ extends TameableEntity {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return this.createChild(serverWorld, passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return this.createChild(world, entity);
     }
 
     static class SleepWithOwnerGoal
@@ -529,7 +529,7 @@ extends TameableEntity {
         @Override
         public void stop() {
             this.cat.setSleepingWithOwner(false);
-            float f = this.cat.world.method_30274(1.0f);
+            float f = this.cat.world.getSkyAngle(1.0f);
             if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.world.getRandom().nextFloat() < 0.7) {
                 this.dropMorningGifts();
             }

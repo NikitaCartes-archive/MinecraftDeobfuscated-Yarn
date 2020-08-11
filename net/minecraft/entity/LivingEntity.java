@@ -122,7 +122,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -2343,7 +2343,7 @@ extends Entity {
     public boolean canSee(Entity entity) {
         Vec3d vec3d2;
         Vec3d vec3d = new Vec3d(this.getX(), this.getEyeY(), this.getZ());
-        return this.world.rayTrace(new RayTraceContext(vec3d, vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ()), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this)).getType() == HitResult.Type.MISS;
+        return this.world.raycast(new RaycastContext(vec3d, vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ()), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)).getType() == HitResult.Type.MISS;
     }
 
     @Override
@@ -2643,7 +2643,7 @@ extends Entity {
             }
             if (bl2) {
                 this.requestTeleport(x, g, z);
-                if (world.doesNotCollide(this) && !world.containsFluid(this.getBoundingBox())) {
+                if (world.isSpaceEmpty(this) && !world.containsFluid(this.getBoundingBox())) {
                     bl = true;
                 }
             }

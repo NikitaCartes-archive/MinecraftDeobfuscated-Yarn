@@ -102,7 +102,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         OCEAN("ocean"),
         NETHER("nether");
 
-        public static final Codec<Type> field_24840;
+        public static final Codec<Type> CODEC;
         private static final Map<String, Type> BY_NAME;
         private final String name;
 
@@ -124,7 +124,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         }
 
         static {
-            field_24840 = StringIdentifiable.createCodec(Type::values, Type::byName);
+            CODEC = StringIdentifiable.createCodec(Type::values, Type::byName);
             BY_NAME = Arrays.stream(Type.values()).collect(Collectors.toMap(Type::getName, type -> type));
         }
     }
@@ -178,7 +178,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
             BlockRotation blockRotation = Util.getRandom(BlockRotation.values(), (Random)this.random);
             BlockMirror blockMirror = this.random.nextFloat() < 0.5f ? BlockMirror.NONE : BlockMirror.FRONT_BACK;
             BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
-            BlockPos blockPos2 = new ChunkPos(i, j).getCenterBlockPos();
+            BlockPos blockPos2 = new ChunkPos(i, j).getStartPos();
             BlockBox blockBox = structure.method_27267(blockPos2, blockRotation, blockPos, blockMirror);
             Vec3i vec3i = blockBox.getCenter();
             int k = vec3i.getX();

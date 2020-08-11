@@ -74,8 +74,8 @@ extends BlockEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Text method_30843(int i) {
-        return this.text[i];
+    public Text getTextOnRow(int row) {
+        return this.text[row];
     }
 
     public void setTextOnRow(int row, Text text) {

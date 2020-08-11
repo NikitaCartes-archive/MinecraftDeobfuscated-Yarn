@@ -61,7 +61,7 @@ implements Vanishable {
                 return;
             }
             Optional<RegistryKey<World>> optional = CompassItem.getLodestoneDimension(compoundTag);
-            if (optional.isPresent() && optional.get() == world.getRegistryKey() && compoundTag.contains("LodestonePos") && !((ServerWorld)world).getPointOfInterestStorage().method_26339(PointOfInterestType.LODESTONE, NbtHelper.toBlockPos(compoundTag.getCompound("LodestonePos")))) {
+            if (optional.isPresent() && optional.get() == world.getRegistryKey() && compoundTag.contains("LodestonePos") && !((ServerWorld)world).getPointOfInterestStorage().hasTypeAt(PointOfInterestType.LODESTONE, NbtHelper.toBlockPos(compoundTag.getCompound("LodestonePos")))) {
                 compoundTag.remove("LodestonePos");
             }
         }

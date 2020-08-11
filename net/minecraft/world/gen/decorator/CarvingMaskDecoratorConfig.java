@@ -12,7 +12,7 @@ import net.minecraft.world.gen.decorator.DecoratorConfig;
 
 public class CarvingMaskDecoratorConfig
 implements DecoratorConfig {
-    public static final Codec<CarvingMaskDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)GenerationStep.Carver.field_24770.fieldOf("step")).forGetter(carvingMaskDecoratorConfig -> carvingMaskDecoratorConfig.step), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(carvingMaskDecoratorConfig -> Float.valueOf(carvingMaskDecoratorConfig.probability))).apply((Applicative<CarvingMaskDecoratorConfig, ?>)instance, CarvingMaskDecoratorConfig::new));
+    public static final Codec<CarvingMaskDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)GenerationStep.Carver.CODEC.fieldOf("step")).forGetter(carvingMaskDecoratorConfig -> carvingMaskDecoratorConfig.step), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(carvingMaskDecoratorConfig -> Float.valueOf(carvingMaskDecoratorConfig.probability))).apply((Applicative<CarvingMaskDecoratorConfig, ?>)instance, CarvingMaskDecoratorConfig::new));
     protected final GenerationStep.Carver step;
     protected final float probability;
 

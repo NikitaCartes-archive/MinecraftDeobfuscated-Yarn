@@ -53,7 +53,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CompoundTag
 implements Tag {
-    public static final Codec<CompoundTag> field_25128 = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
+    public static final Codec<CompoundTag> CODEC = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
         Tag tag = dynamic.convert(NbtOps.INSTANCE).getValue();
         if (tag instanceof CompoundTag) {
             return DataResult.success((CompoundTag)tag);
@@ -527,7 +527,7 @@ implements Tag {
         return mutableText;
     }
 
-    protected Map<String, Tag> method_29143() {
+    protected Map<String, Tag> toMap() {
         return Collections.unmodifiableMap(this.tags);
     }
 

@@ -75,7 +75,7 @@ extends Entity {
             this.setVelocity((this.random.nextFloat() - this.random.nextFloat()) * 0.2f, 0.2f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
             this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
         }
-        if (!this.world.doesNotCollide(this.getBoundingBox())) {
+        if (!this.world.isSpaceEmpty(this.getBoundingBox())) {
             this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
         }
         double d = 8.0;

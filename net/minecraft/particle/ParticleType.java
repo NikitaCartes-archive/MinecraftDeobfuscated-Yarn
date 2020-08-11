@@ -9,23 +9,26 @@ import net.fabricmc.api.Environment;
 import net.minecraft.particle.ParticleEffect;
 
 public abstract class ParticleType<T extends ParticleEffect> {
-    private final boolean shouldAlwaysSpawn;
+    private final boolean alwaysShow;
     private final ParticleEffect.Factory<T> parametersFactory;
 
-    protected ParticleType(boolean shouldAlwaysShow, ParticleEffect.Factory<T> parametersFactory) {
-        this.shouldAlwaysSpawn = shouldAlwaysShow;
+    /**
+     * @param alwaysShow whether this particle type should appear regardless of {@linkplain GameOptions#particles particle mode}
+     */
+    protected ParticleType(boolean alwaysShow, ParticleEffect.Factory<T> parametersFactory) {
+        this.alwaysShow = alwaysShow;
         this.parametersFactory = parametersFactory;
     }
 
     @Environment(value=EnvType.CLIENT)
     public boolean shouldAlwaysSpawn() {
-        return this.shouldAlwaysSpawn;
+        return this.alwaysShow;
     }
 
     public ParticleEffect.Factory<T> getParametersFactory() {
         return this.parametersFactory;
     }
 
-    public abstract Codec<T> method_29138();
+    public abstract Codec<T> getCodec();
 }
 

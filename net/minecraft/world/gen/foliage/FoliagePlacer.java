@@ -19,23 +19,23 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public abstract class FoliagePlacer {
-    public static final Codec<FoliagePlacer> CODEC = Registry.FOLIAGE_PLACER_TYPE.dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
+    public static final Codec<FoliagePlacer> TYPE_CODEC = Registry.FOLIAGE_PLACER_TYPE.dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
     protected final UniformIntDistribution radius;
     protected final UniformIntDistribution offset;
 
-    protected static <P extends FoliagePlacer> Products.P2<RecordCodecBuilder.Mu<P>, UniformIntDistribution, UniformIntDistribution> method_30411(RecordCodecBuilder.Instance<P> instance) {
+    protected static <P extends FoliagePlacer> Products.P2<RecordCodecBuilder.Mu<P>, UniformIntDistribution, UniformIntDistribution> fillFoliagePlacerFields(RecordCodecBuilder.Instance<P> instance) {
         return instance.group(((MapCodec)UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("radius")).forGetter(foliagePlacer -> foliagePlacer.radius), ((MapCodec)UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("offset")).forGetter(foliagePlacer -> foliagePlacer.offset));
     }
 
-    public FoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2) {
-        this.radius = uniformIntDistribution;
-        this.offset = uniformIntDistribution2;
+    public FoliagePlacer(UniformIntDistribution radius, UniformIntDistribution offset) {
+        this.radius = radius;
+        this.offset = offset;
     }
 
     protected abstract FoliagePlacerType<?> getType();
 
-    public void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, BlockBox blockBox) {
-        this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.method_27386(random), blockBox);
+    public void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, BlockBox box) {
+        this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.getRandomOffset(random), box);
     }
 
     /**
@@ -43,13 +43,13 @@ public abstract class FoliagePlacer {
      */
     protected abstract void generate(ModifiableTestableWorld var1, Random var2, TreeFeatureConfig var3, int var4, TreeNode var5, int var6, int var7, Set<BlockPos> var8, int var9, BlockBox var10);
 
-    public abstract int getHeight(Random var1, int var2, TreeFeatureConfig var3);
+    public abstract int getRandomHeight(Random var1, int var2, TreeFeatureConfig var3);
 
-    public int getRadius(Random random, int baseHeight) {
+    public int getRandomRadius(Random random, int baseHeight) {
         return this.radius.getValue(random);
     }
 
-    private int method_27386(Random random) {
+    private int getRandomOffset(Random random) {
         return this.offset.getValue(random);
     }
 
@@ -68,17 +68,17 @@ public abstract class FoliagePlacer {
         return this.isInvalidForLeaves(random, m, j, n, l, bl);
     }
 
-    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, BlockPos blockPos, int baseHeight, Set<BlockPos> set, int i, boolean giantTrunk, BlockBox blockBox) {
-        int j = giantTrunk ? 1 : 0;
+    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, BlockPos pos, int baseHeight, Set<BlockPos> leaves, int offset, boolean giantTrunk, BlockBox box) {
+        int i = giantTrunk ? 1 : 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int k = -baseHeight; k <= baseHeight + j; ++k) {
-            for (int l = -baseHeight; l <= baseHeight + j; ++l) {
-                if (this.method_27387(random, k, i, l, baseHeight, giantTrunk)) continue;
-                mutable.set(blockPos, k, i, l);
+        for (int j = -baseHeight; j <= baseHeight + i; ++j) {
+            for (int k = -baseHeight; k <= baseHeight + i; ++k) {
+                if (this.method_27387(random, j, offset, k, baseHeight, giantTrunk)) continue;
+                mutable.set(pos, j, offset, k);
                 if (!TreeFeature.canReplace(world, mutable)) continue;
                 world.setBlockState(mutable, config.leavesProvider.getBlockState(random, mutable), 19);
-                blockBox.encompass(new BlockBox(mutable, mutable));
-                set.add(mutable.toImmutable());
+                box.encompass(new BlockBox(mutable, mutable));
+                leaves.add(mutable.toImmutable());
             }
         }
     }

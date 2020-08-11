@@ -97,12 +97,12 @@ Saddleable {
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0f);
     }
 
-    public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess worldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random) {
-        BlockPos.Mutable mutable = blockPos.mutableCopy();
+    public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        BlockPos.Mutable mutable = pos.mutableCopy();
         do {
             mutable.move(Direction.UP);
-        } while (worldAccess.getFluidState(mutable).isIn(FluidTags.LAVA));
-        return worldAccess.getBlockState(mutable).isAir();
+        } while (world.getFluidState(mutable).isIn(FluidTags.LAVA));
+        return world.getBlockState(mutable).isAir();
     }
 
     @Override
@@ -158,7 +158,7 @@ Saddleable {
         this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
         this.temptGoal = new TemptGoal((PathAwareEntity)this, 1.4, false, ATTRACTING_INGREDIENT);
         this.goalSelector.add(3, this.temptGoal);
-        this.goalSelector.add(4, new class_5494(this, 1.5));
+        this.goalSelector.add(4, new GoBackToLavaGoal(this, 1.5));
         this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
         this.goalSelector.add(7, new WanderAroundGoal(this, 1.0, 60));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
@@ -425,23 +425,23 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (this.isBaby()) {
-            return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+            return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         }
         if (this.random.nextInt(30) == 0) {
-            MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorldAccess.toServerWorld());
-            entityData = this.method_30336(serverWorldAccess, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false));
+            MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
+            entityData = this.method_30336(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false));
             mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
             this.saddle(null);
         } else if (this.random.nextInt(10) == 0) {
-            PassiveEntity passiveEntity = EntityType.STRIDER.create(serverWorldAccess.toServerWorld());
+            PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());
             passiveEntity.setBreedingAge(-24000);
-            entityData = this.method_30336(serverWorldAccess, difficulty, passiveEntity, null);
+            entityData = this.method_30336(world, difficulty, passiveEntity, null);
         } else {
             entityData = new PassiveEntity.PassiveData(0.5f);
         }
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     private EntityData method_30336(ServerWorldAccess serverWorldAccess, LocalDifficulty localDifficulty, MobEntity mobEntity, @Nullable EntityData entityData) {
@@ -452,32 +452,32 @@ Saddleable {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return this.createChild(serverWorld, passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return this.createChild(world, entity);
     }
 
-    static class class_5494
+    static class GoBackToLavaGoal
     extends MoveToTargetPosGoal {
-        private final StriderEntity field_26632;
+        private final StriderEntity strider;
 
-        private class_5494(StriderEntity striderEntity, double d) {
-            super(striderEntity, d, 8, 2);
-            this.field_26632 = striderEntity;
+        private GoBackToLavaGoal(StriderEntity strider, double speed) {
+            super(strider, speed, 8, 2);
+            this.strider = strider;
         }
 
         @Override
-        public BlockPos method_30953() {
+        public BlockPos getTargetPos() {
             return this.targetPos;
         }
 
         @Override
         public boolean shouldContinue() {
-            return !this.field_26632.isInLava() && this.isTargetPos(this.field_26632.world, this.targetPos);
+            return !this.strider.isInLava() && this.isTargetPos(this.strider.world, this.targetPos);
         }
 
         @Override
         public boolean canStart() {
-            return !this.field_26632.isInLava() && super.canStart();
+            return !this.strider.isInLava() && super.canStart();
         }
 
         @Override

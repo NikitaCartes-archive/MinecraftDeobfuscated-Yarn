@@ -69,7 +69,7 @@ implements RangedAttackMob {
     protected void initGoals() {
         super.initGoals();
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new SpellcastingIllagerEntity.LookAtTargetGoal(this));
+        this.goalSelector.add(1, new SpellcastingIllagerEntity.LookAtTargetGoal());
         this.goalSelector.add(4, new GiveInvisibilityGoal());
         this.goalSelector.add(5, new BlindTargetGoal());
         this.goalSelector.add(6, new BowAttackGoal<IllusionerEntity>(this, 0.5, 20, 15.0f));
@@ -87,9 +87,9 @@ implements RangedAttackMob {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -218,7 +218,6 @@ implements RangedAttackMob {
         private int targetId;
 
         private BlindTargetGoal() {
-            super(IllusionerEntity.this);
         }
 
         @Override
@@ -270,7 +269,6 @@ implements RangedAttackMob {
     class GiveInvisibilityGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
         private GiveInvisibilityGoal() {
-            super(IllusionerEntity.this);
         }
 
         @Override

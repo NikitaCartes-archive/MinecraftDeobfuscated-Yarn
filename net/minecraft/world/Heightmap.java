@@ -127,7 +127,7 @@ public class Heightmap {
         MOTION_BLOCKING("MOTION_BLOCKING", Purpose.CLIENT, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()),
         MOTION_BLOCKING_NO_LEAVES("MOTION_BLOCKING_NO_LEAVES", Purpose.LIVE_WORLD, blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock));
 
-        public static final Codec<Type> field_24772;
+        public static final Codec<Type> CODEC;
         private final String name;
         private final Purpose purpose;
         private final Predicate<BlockState> blockPredicate;
@@ -167,7 +167,7 @@ public class Heightmap {
         }
 
         static {
-            field_24772 = StringIdentifiable.createCodec(Type::values, Type::byName);
+            CODEC = StringIdentifiable.createCodec(Type::values, Type::byName);
             BY_NAME = Util.make(Maps.newHashMap(), hashMap -> {
                 for (Type type : Type.values()) {
                     hashMap.put(type.name, type);

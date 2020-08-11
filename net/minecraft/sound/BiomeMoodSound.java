@@ -13,23 +13,23 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
 public class BiomeMoodSound {
-    public static final Codec<BiomeMoodSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.field_24628.fieldOf("sound")).forGetter(biomeMoodSound -> biomeMoodSound.event), ((MapCodec)Codec.INT.fieldOf("tick_delay")).forGetter(biomeMoodSound -> biomeMoodSound.cultivationTicks), ((MapCodec)Codec.INT.fieldOf("block_search_extent")).forGetter(biomeMoodSound -> biomeMoodSound.spawnRange), ((MapCodec)Codec.DOUBLE.fieldOf("offset")).forGetter(biomeMoodSound -> biomeMoodSound.extraDistance)).apply((Applicative<BiomeMoodSound, ?>)instance, BiomeMoodSound::new));
+    public static final Codec<BiomeMoodSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.CODEC.fieldOf("sound")).forGetter(biomeMoodSound -> biomeMoodSound.sound), ((MapCodec)Codec.INT.fieldOf("tick_delay")).forGetter(biomeMoodSound -> biomeMoodSound.cultivationTicks), ((MapCodec)Codec.INT.fieldOf("block_search_extent")).forGetter(biomeMoodSound -> biomeMoodSound.spawnRange), ((MapCodec)Codec.DOUBLE.fieldOf("offset")).forGetter(biomeMoodSound -> biomeMoodSound.extraDistance)).apply((Applicative<BiomeMoodSound, ?>)instance, BiomeMoodSound::new));
     public static final BiomeMoodSound CAVE = new BiomeMoodSound(SoundEvents.AMBIENT_CAVE, 6000, 8, 2.0);
-    private SoundEvent event;
+    private SoundEvent sound;
     private int cultivationTicks;
     private int spawnRange;
     private double extraDistance;
 
-    public BiomeMoodSound(SoundEvent event, int cultivationTicks, int spawnRange, double extraDistance) {
-        this.event = event;
+    public BiomeMoodSound(SoundEvent sound, int cultivationTicks, int spawnRange, double extraDistance) {
+        this.sound = sound;
         this.cultivationTicks = cultivationTicks;
         this.spawnRange = spawnRange;
         this.extraDistance = extraDistance;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public SoundEvent getEvent() {
-        return this.event;
+    public SoundEvent getSound() {
+        return this.sound;
     }
 
     /**

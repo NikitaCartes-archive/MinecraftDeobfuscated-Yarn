@@ -36,7 +36,7 @@ public class PortalForcer {
         Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, i, PointOfInterestStorage.OccupationStatus.ANY).sorted(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos)).thenComparingInt(pointOfInterest -> pointOfInterest.getPos().getY())).filter(pointOfInterest -> this.world.getBlockState(pointOfInterest.getPos()).contains(Properties.HORIZONTAL_AXIS)).findFirst();
         return optional.map(pointOfInterest -> {
             BlockPos blockPos2 = pointOfInterest.getPos();
-            this.world.getChunkManager().addTicket(ChunkTicketType.field_19280, new ChunkPos(blockPos2), 3, blockPos2);
+            this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos2), 3, blockPos2);
             BlockState blockState = this.world.getBlockState(blockPos2);
             return class_5459.method_30574(blockPos2, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
         });

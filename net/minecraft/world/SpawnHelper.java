@@ -178,7 +178,7 @@ public final class SpawnHelper {
         if (!SpawnRestriction.canSpawn(entityType, world, SpawnReason.NATURAL, pos, world.random)) {
             return false;
         }
-        return world.doesNotCollide(entityType.createSimpleBoundingBox((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5));
+        return world.isSpaceEmpty(entityType.createSimpleBoundingBox((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5));
     }
 
     @Nullable
@@ -305,7 +305,7 @@ public final class SpawnHelper {
                         float f = spawnEntry.type.getWidth();
                         double d = MathHelper.clamp((double)l, (double)i + (double)f, (double)i + 16.0 - (double)f);
                         double e = MathHelper.clamp((double)m, (double)j + (double)f, (double)j + 16.0 - (double)f);
-                        if (!serverWorldAccess.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e)) || !SpawnRestriction.canSpawn(spawnEntry.type, serverWorldAccess, SpawnReason.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), serverWorldAccess.getRandom())) continue;
+                        if (!serverWorldAccess.isSpaceEmpty(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e)) || !SpawnRestriction.canSpawn(spawnEntry.type, serverWorldAccess, SpawnReason.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), serverWorldAccess.getRandom())) continue;
                         try {
                             entity = spawnEntry.type.create(serverWorldAccess.toServerWorld());
                         } catch (Exception exception) {

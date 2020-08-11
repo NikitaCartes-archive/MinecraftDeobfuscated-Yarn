@@ -258,7 +258,7 @@ public abstract class AbstractBlock {
     }
 
     @Deprecated
-    public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
+    public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
@@ -584,8 +584,8 @@ public abstract class AbstractBlock {
             return this.getBlock().getVisualShape(this.asBlockState(), world, pos, context);
         }
 
-        public VoxelShape getRayTraceShape(BlockView world, BlockPos pos) {
-            return this.getBlock().getRayTraceShape(this.asBlockState(), world, pos);
+        public VoxelShape getRaycastShape(BlockView world, BlockPos pos) {
+            return this.getBlock().getRaycastShape(this.asBlockState(), world, pos);
         }
 
         public final boolean hasSolidTopSurface(BlockView world, BlockPos pos, Entity entity) {

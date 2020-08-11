@@ -12,37 +12,37 @@ import net.fabricmc.api.Environment;
 import net.minecraft.sound.SoundEvent;
 
 public class MusicSound {
-    public static final Codec<MusicSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.field_24628.fieldOf("sound")).forGetter(musicSound -> musicSound.event), ((MapCodec)Codec.INT.fieldOf("min_delay")).forGetter(musicSound -> musicSound.field_24058), ((MapCodec)Codec.INT.fieldOf("max_delay")).forGetter(musicSound -> musicSound.field_24059), ((MapCodec)Codec.BOOL.fieldOf("replace_current_music")).forGetter(musicSound -> musicSound.field_24060)).apply((Applicative<MusicSound, ?>)instance, MusicSound::new));
-    private final SoundEvent event;
-    private final int field_24058;
-    private final int field_24059;
-    private final boolean field_24060;
+    public static final Codec<MusicSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.CODEC.fieldOf("sound")).forGetter(musicSound -> musicSound.sound), ((MapCodec)Codec.INT.fieldOf("min_delay")).forGetter(musicSound -> musicSound.minDelay), ((MapCodec)Codec.INT.fieldOf("max_delay")).forGetter(musicSound -> musicSound.maxDelay), ((MapCodec)Codec.BOOL.fieldOf("replace_current_music")).forGetter(musicSound -> musicSound.replaceCurrentMusic)).apply((Applicative<MusicSound, ?>)instance, MusicSound::new));
+    private final SoundEvent sound;
+    private final int minDelay;
+    private final int maxDelay;
+    private final boolean replaceCurrentMusic;
 
-    public MusicSound(SoundEvent event, int i, int j, boolean bl) {
-        this.event = event;
-        this.field_24058 = i;
-        this.field_24059 = j;
-        this.field_24060 = bl;
+    public MusicSound(SoundEvent sound, int minDelay, int maxDelay, boolean replaceCurrentMusic) {
+        this.sound = sound;
+        this.minDelay = minDelay;
+        this.maxDelay = maxDelay;
+        this.replaceCurrentMusic = replaceCurrentMusic;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public SoundEvent getEvent() {
-        return this.event;
+    public SoundEvent getSound() {
+        return this.sound;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int method_27280() {
-        return this.field_24058;
+    public int getMinDelay() {
+        return this.minDelay;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int method_27281() {
-        return this.field_24059;
+    public int getMaxDelay() {
+        return this.maxDelay;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_27282() {
-        return this.field_24060;
+    public boolean shouldReplaceCurrentMusic() {
+        return this.replaceCurrentMusic;
     }
 }
 

@@ -37,16 +37,16 @@ public class PointOfInterestSet {
     private final Runnable updateListener;
     private boolean valid;
 
-    public static Codec<PointOfInterestSet> method_28364(Runnable runnable) {
-        return RecordCodecBuilder.create(instance -> instance.group(RecordCodecBuilder.point(runnable), Codec.BOOL.optionalFieldOf("Valid", false).forGetter(pointOfInterestSet -> pointOfInterestSet.valid), ((MapCodec)PointOfInterest.method_28359(runnable).listOf().fieldOf("Records")).forGetter(pointOfInterestSet -> ImmutableList.copyOf(pointOfInterestSet.pointsOfInterestByPos.values()))).apply((Applicative<PointOfInterestSet, ?>)instance, PointOfInterestSet::new)).orElseGet(Util.method_29188("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(runnable, false, ImmutableList.of()));
+    public static Codec<PointOfInterestSet> createCodec(Runnable updateListener) {
+        return RecordCodecBuilder.create(instance -> instance.group(RecordCodecBuilder.point(updateListener), Codec.BOOL.optionalFieldOf("Valid", false).forGetter(pointOfInterestSet -> pointOfInterestSet.valid), ((MapCodec)PointOfInterest.createCodec(updateListener).listOf().fieldOf("Records")).forGetter(pointOfInterestSet -> ImmutableList.copyOf(pointOfInterestSet.pointsOfInterestByPos.values()))).apply((Applicative<PointOfInterestSet, ?>)instance, PointOfInterestSet::new)).orElseGet(Util.method_29188("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(updateListener, false, ImmutableList.of()));
     }
 
     public PointOfInterestSet(Runnable updateListener) {
         this(updateListener, true, ImmutableList.of());
     }
 
-    private PointOfInterestSet(Runnable runnable, boolean bl, List<PointOfInterest> list) {
-        this.updateListener = runnable;
+    private PointOfInterestSet(Runnable updateListener, boolean bl, List<PointOfInterest> list) {
+        this.updateListener = updateListener;
         this.valid = bl;
         list.forEach(this::add);
     }

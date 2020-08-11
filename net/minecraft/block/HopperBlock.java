@@ -86,7 +86,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
+    public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         switch (state.get(FACING)) {
             case DOWN: {
                 return DOWN_RAY_TRACE_SHAPE;

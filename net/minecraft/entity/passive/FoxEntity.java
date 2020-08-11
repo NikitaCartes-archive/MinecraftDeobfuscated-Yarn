@@ -91,7 +91,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import org.jetbrains.annotations.Nullable;
 
 public class FoxEntity
@@ -251,8 +251,8 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        Optional<RegistryKey<Biome>> optional = serverWorldAccess.method_31081(this.getBlockPos());
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        Optional<RegistryKey<Biome>> optional = world.method_31081(this.getBlockPos());
         Type type = Type.fromBiome(optional);
         boolean bl = false;
         if (entityData instanceof FoxData) {
@@ -267,11 +267,11 @@ extends AnimalEntity {
         if (bl) {
             this.setBreedingAge(-24000);
         }
-        if (serverWorldAccess instanceof ServerWorld) {
+        if (world instanceof ServerWorld) {
             this.addTypeSpecificGoals();
         }
         this.initEquipment(difficulty);
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     private void addTypeSpecificGoals() {
@@ -633,8 +633,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return this.createChild(serverWorld, passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return this.createChild(world, entity);
     }
 
     class LookAtEntityGoal
@@ -1363,8 +1363,8 @@ extends AnimalEntity {
     }
 
     public static enum Type {
-        RED(0, "red", BuiltInBiomes.TAIGA, BuiltInBiomes.TAIGA_HILLS, BuiltInBiomes.TAIGA_MOUNTAINS, BuiltInBiomes.GIANT_TREE_TAIGA, BuiltInBiomes.GIANT_SPRUCE_TAIGA, BuiltInBiomes.GIANT_TREE_TAIGA_HILLS, BuiltInBiomes.GIANT_SPRUCE_TAIGA_HILLS),
-        SNOW(1, "snow", BuiltInBiomes.SNOWY_TAIGA, BuiltInBiomes.SNOWY_TAIGA_HILLS, BuiltInBiomes.SNOWY_TAIGA_MOUNTAINS);
+        RED(0, "red", BiomeKeys.TAIGA, BiomeKeys.TAIGA_HILLS, BiomeKeys.TAIGA_MOUNTAINS, BiomeKeys.GIANT_TREE_TAIGA, BiomeKeys.GIANT_SPRUCE_TAIGA, BiomeKeys.GIANT_TREE_TAIGA_HILLS, BiomeKeys.GIANT_SPRUCE_TAIGA_HILLS),
+        SNOW(1, "snow", BiomeKeys.SNOWY_TAIGA, BiomeKeys.SNOWY_TAIGA_HILLS, BiomeKeys.SNOWY_TAIGA_MOUNTAINS);
 
         private static final Type[] TYPES;
         private static final Map<String, Type> NAME_TYPE_MAP;

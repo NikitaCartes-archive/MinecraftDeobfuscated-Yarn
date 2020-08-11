@@ -18,6 +18,15 @@ extends Registry<T> {
 
     public abstract <V extends T> V add(RegistryKey<T> var1, V var2, Lifecycle var3);
 
-    public abstract <V extends T> V method_31062(OptionalInt var1, RegistryKey<T> var2, V var3, Lifecycle var4);
+    /**
+     * If the given key is already present in the registry, replaces the entry associated with the given
+     * key with the new entry. This method asserts that the raw ID is equal to the value already in
+     * the registry. The raw ID not being present may lead to buggy behavior.
+     * 
+     * <p>If the given key is not already present in the registry, adds the entry to the registry. If
+     * {@code rawId} is present, then this method gives the entry this raw ID. Otherwise, uses the
+     * next available ID.</p>
+     */
+    public abstract <V extends T> V replace(OptionalInt var1, RegistryKey<T> var2, V var3, Lifecycle var4);
 }
 

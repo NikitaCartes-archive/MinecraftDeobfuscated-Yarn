@@ -93,14 +93,14 @@ extends BlockWithEntity {
             ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
             if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
                 Direction direction = state.get(FACING);
-                bl = world.doesNotCollide(ShulkerLidCollisions.getLidCollisionBox(pos, direction));
+                bl = world.isSpaceEmpty(ShulkerLidCollisions.getLidCollisionBox(pos, direction));
             } else {
                 bl = true;
             }
             if (bl) {
                 player.openHandledScreen(shulkerBoxBlockEntity);
                 player.incrementStat(Stats.OPEN_SHULKER_BOX);
-                PiglinBrain.onGuardedBlockBroken(player, true);
+                PiglinBrain.onGuardedBlockInteracted(player, true);
             }
             return ActionResult.CONSUME;
         }

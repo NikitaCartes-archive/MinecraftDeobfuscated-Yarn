@@ -305,7 +305,7 @@ implements Monster {
         private boolean willCollide(Vec3d direction, int steps) {
             Box box = this.ghast.getBoundingBox();
             for (int i = 1; i < steps; ++i) {
-                if (this.ghast.world.doesNotCollide(this.ghast, box = box.offset(direction))) continue;
+                if (this.ghast.world.isSpaceEmpty(this.ghast, box = box.offset(direction))) continue;
                 return false;
             }
             return true;

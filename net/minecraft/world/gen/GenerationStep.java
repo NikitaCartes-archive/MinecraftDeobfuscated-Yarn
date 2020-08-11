@@ -17,7 +17,7 @@ public class GenerationStep {
         AIR("air"),
         LIQUID("liquid");
 
-        public static final Codec<Carver> field_24770;
+        public static final Codec<Carver> CODEC;
         private static final Map<String, Carver> BY_NAME;
         private final String name;
 
@@ -30,8 +30,8 @@ public class GenerationStep {
         }
 
         @Nullable
-        public static Carver method_28546(String string) {
-            return BY_NAME.get(string);
+        public static Carver byName(String name) {
+            return BY_NAME.get(name);
         }
 
         @Override
@@ -40,7 +40,7 @@ public class GenerationStep {
         }
 
         static {
-            field_24770 = StringIdentifiable.createCodec(Carver::values, Carver::method_28546);
+            CODEC = StringIdentifiable.createCodec(Carver::values, Carver::byName);
             BY_NAME = Arrays.stream(Carver.values()).collect(Collectors.toMap(Carver::getName, carver -> carver));
         }
     }

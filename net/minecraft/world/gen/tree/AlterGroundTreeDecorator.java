@@ -19,7 +19,7 @@ import net.minecraft.world.gen.tree.TreeDecoratorType;
 
 public class AlterGroundTreeDecorator
 extends TreeDecorator {
-    public static final Codec<AlterGroundTreeDecorator> CODEC = ((MapCodec)BlockStateProvider.CODEC.fieldOf("provider")).xmap(AlterGroundTreeDecorator::new, alterGroundTreeDecorator -> alterGroundTreeDecorator.provider).codec();
+    public static final Codec<AlterGroundTreeDecorator> CODEC = ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("provider")).xmap(AlterGroundTreeDecorator::new, alterGroundTreeDecorator -> alterGroundTreeDecorator.provider).codec();
     private final BlockStateProvider provider;
 
     public AlterGroundTreeDecorator(BlockStateProvider provider) {

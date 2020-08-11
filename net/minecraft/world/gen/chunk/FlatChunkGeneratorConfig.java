@@ -24,7 +24,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
 
 public class FlatChunkGeneratorConfig {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_26748), ((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(FlatChunkGeneratorConfig::getConfig), ((MapCodec)FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers")).forGetter(FlatChunkGeneratorConfig::getLayers), ((MapCodec)Codec.BOOL.fieldOf("lakes")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24977), ((MapCodec)Codec.BOOL.fieldOf("features")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24976), Biome.REGISTRY_CODEC.optionalFieldOf("biome").orElseGet(Optional::empty).forGetter(flatChunkGeneratorConfig -> Optional.of(flatChunkGeneratorConfig.biome))).apply((Applicative<FlatChunkGeneratorConfig, ?>)instance, FlatChunkGeneratorConfig::new)).stable();
+    public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biomeRegistry), ((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(FlatChunkGeneratorConfig::getStructuresConfig), ((MapCodec)FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers")).forGetter(FlatChunkGeneratorConfig::getLayers), ((MapCodec)Codec.BOOL.fieldOf("lakes")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.hasLakes), ((MapCodec)Codec.BOOL.fieldOf("features")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.hasFeatures), Biome.REGISTRY_CODEC.optionalFieldOf("biome").orElseGet(Optional::empty).forGetter(flatChunkGeneratorConfig -> Optional.of(flatChunkGeneratorConfig.biome))).apply((Applicative<FlatChunkGeneratorConfig, ?>)instance, FlatChunkGeneratorConfig::new)).stable();
     private static final Map<StructureFeature<?>, ConfiguredStructureFeature<?, ?>> STRUCTURE_TO_FEATURES = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(StructureFeature.MINESHAFT, ConfiguredStructureFeatures.MINESHAFT);
         hashMap.put(StructureFeature.VILLAGE, ConfiguredStructureFeatures.VILLAGE_PLAINS);
@@ -61,83 +61,83 @@ public class FlatChunkGeneratorConfig {
         hashMap.put(StructureFeature.RUINED_PORTAL, ConfiguredStructureFeatures.RUINED_PORTAL);
         hashMap.put(StructureFeature.BASTION_REMNANT, ConfiguredStructureFeatures.BASTION_REMNANT);
     });
-    private final Registry<Biome> field_26748;
-    private final StructuresConfig config;
+    private final Registry<Biome> biomeRegistry;
+    private final StructuresConfig structuresConfig;
     private final List<FlatChunkGeneratorLayer> layers = Lists.newArrayList();
     private Supplier<Biome> biome;
     private final BlockState[] layerBlocks = new BlockState[256];
     private boolean hasNoTerrain;
-    private boolean field_24976 = false;
-    private boolean field_24977 = false;
+    private boolean hasFeatures = false;
+    private boolean hasLakes = false;
 
-    public FlatChunkGeneratorConfig(Registry<Biome> registry, StructuresConfig structuresConfig, List<FlatChunkGeneratorLayer> list, boolean bl, boolean bl2, Optional<Supplier<Biome>> optional) {
-        this(structuresConfig, registry);
-        if (bl) {
-            this.method_28916();
+    public FlatChunkGeneratorConfig(Registry<Biome> biomeRegistry, StructuresConfig structuresConfig, List<FlatChunkGeneratorLayer> layers, boolean hasLakes, boolean hasFeatures, Optional<Supplier<Biome>> biome) {
+        this(structuresConfig, biomeRegistry);
+        if (hasLakes) {
+            this.enableLakes();
         }
-        if (bl2) {
-            this.method_28911();
+        if (hasFeatures) {
+            this.enableFeatures();
         }
-        this.layers.addAll(list);
+        this.layers.addAll(layers);
         this.updateLayerBlocks();
-        if (!optional.isPresent()) {
+        if (!biome.isPresent()) {
             LOGGER.error("Unknown biome, defaulting to plains");
-            this.biome = () -> registry.method_31140(BuiltInBiomes.PLAINS);
+            this.biome = () -> biomeRegistry.getOrThrow(BiomeKeys.PLAINS);
         } else {
-            this.biome = optional.get();
+            this.biome = biome.get();
         }
     }
 
-    public FlatChunkGeneratorConfig(StructuresConfig structuresConfig, Registry<Biome> registry) {
-        this.field_26748 = registry;
-        this.config = structuresConfig;
-        this.biome = () -> registry.method_31140(BuiltInBiomes.PLAINS);
+    public FlatChunkGeneratorConfig(StructuresConfig structuresConfig, Registry<Biome> biomeRegistry) {
+        this.biomeRegistry = biomeRegistry;
+        this.structuresConfig = structuresConfig;
+        this.biome = () -> biomeRegistry.getOrThrow(BiomeKeys.PLAINS);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public FlatChunkGeneratorConfig method_28912(StructuresConfig structuresConfig) {
+    public FlatChunkGeneratorConfig withStructuresConfig(StructuresConfig structuresConfig) {
         return this.method_29965(this.layers, structuresConfig);
     }
 
     @Environment(value=EnvType.CLIENT)
     public FlatChunkGeneratorConfig method_29965(List<FlatChunkGeneratorLayer> list, StructuresConfig structuresConfig) {
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, this.field_26748);
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, this.biomeRegistry);
         for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : list) {
             flatChunkGeneratorConfig.layers.add(new FlatChunkGeneratorLayer(flatChunkGeneratorLayer.getThickness(), flatChunkGeneratorLayer.getBlockState().getBlock()));
             flatChunkGeneratorConfig.updateLayerBlocks();
         }
         flatChunkGeneratorConfig.setBiome(this.biome);
-        if (this.field_24976) {
-            flatChunkGeneratorConfig.method_28911();
+        if (this.hasFeatures) {
+            flatChunkGeneratorConfig.enableFeatures();
         }
-        if (this.field_24977) {
-            flatChunkGeneratorConfig.method_28916();
+        if (this.hasLakes) {
+            flatChunkGeneratorConfig.enableLakes();
         }
         return flatChunkGeneratorConfig;
     }
 
-    public void method_28911() {
-        this.field_24976 = true;
+    public void enableFeatures() {
+        this.hasFeatures = true;
     }
 
-    public void method_28916() {
-        this.field_24977 = true;
+    public void enableLakes() {
+        this.hasLakes = true;
     }
 
-    public Biome method_28917() {
+    public Biome createBiome() {
         int i;
         boolean bl;
         Biome biome = this.getBiome();
         GenerationSettings generationSettings = biome.getGenerationSettings();
         GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(generationSettings.getSurfaceBuilder());
-        if (this.field_24977) {
+        if (this.hasLakes) {
             builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_WATER);
             builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_LAVA);
         }
-        for (Map.Entry<StructureFeature<?>, StructureConfig> entry : this.config.getStructures().entrySet()) {
+        for (Map.Entry<StructureFeature<?>, StructureConfig> entry : this.structuresConfig.getStructures().entrySet()) {
             builder.structureFeature(generationSettings.method_30978(STRUCTURE_TO_FEATURES.get(entry.getKey())));
         }
-        boolean bl2 = bl = (!this.hasNoTerrain || this.field_26748.getKey(biome).equals(Optional.of(BuiltInBiomes.THE_VOID))) && this.field_24976;
+        boolean bl2 = bl = (!this.hasNoTerrain || this.biomeRegistry.getKey(biome).equals(Optional.of(BiomeKeys.THE_VOID))) && this.hasFeatures;
         if (bl) {
             List<List<Supplier<ConfiguredFeature<?, ?>>>> list = generationSettings.getFeatures();
             for (i = 0; i < list.size(); ++i) {
@@ -158,8 +158,8 @@ public class FlatChunkGeneratorConfig {
         return new Biome.Builder().precipitation(biome.getPrecipitation()).category(biome.getCategory()).depth(biome.getDepth()).scale(biome.getScale()).temperature(biome.getTemperature()).downfall(biome.getDownfall()).effects(biome.getEffects()).generationSettings(builder.build()).spawnSettings(biome.getSpawnSettings()).build();
     }
 
-    public StructuresConfig getConfig() {
-        return this.config;
+    public StructuresConfig getStructuresConfig() {
+        return this.structuresConfig;
     }
 
     public Biome getBiome() {
@@ -167,8 +167,8 @@ public class FlatChunkGeneratorConfig {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setBiome(Supplier<Biome> supplier) {
-        this.biome = supplier;
+    public void setBiome(Supplier<Biome> biome) {
+        this.biome = biome;
     }
 
     public List<FlatChunkGeneratorLayer> getLayers() {
@@ -197,10 +197,10 @@ public class FlatChunkGeneratorConfig {
         }
     }
 
-    public static FlatChunkGeneratorConfig getDefaultConfig(Registry<Biome> registry) {
+    public static FlatChunkGeneratorConfig getDefaultConfig(Registry<Biome> biomeRegistry) {
         StructuresConfig structuresConfig = new StructuresConfig(Optional.of(StructuresConfig.DEFAULT_STRONGHOLD), Maps.newHashMap(ImmutableMap.of(StructureFeature.VILLAGE, StructuresConfig.DEFAULT_STRUCTURES.get(StructureFeature.VILLAGE))));
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, registry);
-        flatChunkGeneratorConfig.biome = () -> registry.method_31140(BuiltInBiomes.PLAINS);
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, biomeRegistry);
+        flatChunkGeneratorConfig.biome = () -> biomeRegistry.getOrThrow(BiomeKeys.PLAINS);
         flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
         flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(2, Blocks.DIRT));
         flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK));

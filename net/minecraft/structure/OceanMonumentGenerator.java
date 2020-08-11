@@ -1141,7 +1141,7 @@ public class OceanMonumentGenerator {
             int l = this.applyXTransform(9, 22);
             int m = this.applyZTransform(9, 22);
             for (Piece piece : this.field_14465) {
-                piece.getBoundingBox().offset(l, k, m);
+                piece.getBoundingBox().move(l, k, m);
             }
             BlockBox blockBox = BlockBox.create(this.applyXTransform(1, 1), this.applyYTransform(1), this.applyZTransform(1, 1), this.applyXTransform(23, 21), this.applyYTransform(8), this.applyZTransform(23, 21));
             BlockBox blockBox2 = BlockBox.create(this.applyXTransform(34, 1), this.applyYTransform(1), this.applyZTransform(34, 1), this.applyXTransform(56, 21), this.applyYTransform(8), this.applyZTransform(56, 21));
@@ -1624,19 +1624,19 @@ public class OceanMonumentGenerator {
             this.boundingBox = direction == Direction.NORTH || direction == Direction.SOUTH ? new BlockBox(0, 0, 0, j * 8 - 1, k * 4 - 1, l * 8 - 1) : new BlockBox(0, 0, 0, l * 8 - 1, k * 4 - 1, j * 8 - 1);
             switch (direction) {
                 case NORTH: {
-                    this.boundingBox.offset(n * 8, p * 4, -(o + l) * 8 + 1);
+                    this.boundingBox.move(n * 8, p * 4, -(o + l) * 8 + 1);
                     break;
                 }
                 case SOUTH: {
-                    this.boundingBox.offset(n * 8, p * 4, o * 8);
+                    this.boundingBox.move(n * 8, p * 4, o * 8);
                     break;
                 }
                 case WEST: {
-                    this.boundingBox.offset(-(o + l) * 8 + 1, p * 4, n * 8);
+                    this.boundingBox.move(-(o + l) * 8 + 1, p * 4, n * 8);
                     break;
                 }
                 default: {
-                    this.boundingBox.offset(o * 8, p * 4, n * 8);
+                    this.boundingBox.move(o * 8, p * 4, n * 8);
                 }
             }
         }

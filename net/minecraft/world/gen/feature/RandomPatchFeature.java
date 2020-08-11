@@ -32,7 +32,7 @@ extends Feature<RandomPatchFeatureConfig> {
             Vec3i blockPos3 = mutable.down();
             BlockState blockState2 = structureWorldAccess.getBlockState((BlockPos)blockPos3);
             if (!structureWorldAccess.isAir(mutable) && (!randomPatchFeatureConfig.canReplace || !structureWorldAccess.getBlockState(mutable).getMaterial().isReplaceable()) || !blockState.canPlaceAt(structureWorldAccess, mutable) || !randomPatchFeatureConfig.whitelist.isEmpty() && !randomPatchFeatureConfig.whitelist.contains(blockState2.getBlock()) || randomPatchFeatureConfig.blacklist.contains(blockState2) || randomPatchFeatureConfig.needsWater && !structureWorldAccess.getFluidState(((BlockPos)blockPos3).west()).isIn(FluidTags.WATER) && !structureWorldAccess.getFluidState(((BlockPos)blockPos3).east()).isIn(FluidTags.WATER) && !structureWorldAccess.getFluidState(((BlockPos)blockPos3).north()).isIn(FluidTags.WATER) && !structureWorldAccess.getFluidState(((BlockPos)blockPos3).south()).isIn(FluidTags.WATER)) continue;
-            randomPatchFeatureConfig.blockPlacer.method_23403(structureWorldAccess, mutable, blockState, random);
+            randomPatchFeatureConfig.blockPlacer.generate(structureWorldAccess, mutable, blockState, random);
             ++i;
         }
         return i > 0;

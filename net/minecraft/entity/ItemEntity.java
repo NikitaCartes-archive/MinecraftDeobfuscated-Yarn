@@ -107,7 +107,7 @@ extends Entity {
         if (this.world.isClient) {
             this.noClip = false;
         } else {
-            boolean bl = this.noClip = !this.world.doesNotCollide(this);
+            boolean bl = this.noClip = !this.world.isSpaceEmpty(this);
             if (this.noClip) {
                 this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
             }

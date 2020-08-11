@@ -21,8 +21,8 @@ extends WorldView {
         return DimensionType.MOON_SIZES[this.getDimension().getMoonPhase(this.getLunarTime())];
     }
 
-    default public float method_30274(float tickDelta) {
-        return this.getDimension().method_28528(this.getLunarTime());
+    default public float getSkyAngle(float tickDelta) {
+        return this.getDimension().getSkyAngle(this.getLunarTime());
     }
 
     /**

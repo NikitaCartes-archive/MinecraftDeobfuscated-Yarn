@@ -59,7 +59,7 @@ implements AutoCloseable {
         float f = this.output.textureWidth;
         float g = this.output.textureHeight;
         RenderSystem.viewport(0, 0, (int)f, (int)g);
-        this.program.bindSampler("DiffuseSampler", this.input::method_30277);
+        this.program.bindSampler("DiffuseSampler", this.input::getColorAttachment);
         for (int i = 0; i < this.samplerValues.size(); ++i) {
             this.program.bindSampler(this.samplerNames.get(i), this.samplerValues.get(i));
             this.program.getUniformByNameOrDummy("AuxSize" + i).set(this.samplerWidths.get(i).intValue(), this.samplerHeights.get(i).intValue());

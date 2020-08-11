@@ -34,14 +34,14 @@ import net.minecraft.world.World;
 public class TridentItem
 extends Item
 implements Vanishable {
-    private final Multimap<EntityAttribute, EntityAttributeModifier> field_23746;
+    private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
     public TridentItem(Item.Settings settings) {
         super(settings);
         ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
         builder.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", 8.0, EntityAttributeModifier.Operation.ADDITION));
         builder.put(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", (double)-2.9f, EntityAttributeModifier.Operation.ADDITION));
-        this.field_23746 = builder.build();
+        this.attributeModifiers = builder.build();
     }
 
     @Override
@@ -138,7 +138,7 @@ implements Vanishable {
     @Override
     public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
         if (slot == EquipmentSlot.MAINHAND) {
-            return this.field_23746;
+            return this.attributeModifiers;
         }
         return super.getAttributeModifiers(slot);
     }

@@ -136,7 +136,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
             l += random.nextInt(k - l);
         }
         int m = l - this.boundingBox.maxY;
-        this.boundingBox.offset(0, m, 0);
+        this.boundingBox.move(0, m, 0);
         for (StructurePiece structurePiece : this.children) {
             structurePiece.translate(0, m, 0);
         }
@@ -146,7 +146,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
         int k = j - i + 1 - this.boundingBox.getBlockCountY();
         int l = k > 1 ? i + random.nextInt(k) : i;
         int m = l - this.boundingBox.minY;
-        this.boundingBox.offset(0, m, 0);
+        this.boundingBox.move(0, m, 0);
         for (StructurePiece structurePiece : this.children) {
             structurePiece.translate(0, m, 0);
         }

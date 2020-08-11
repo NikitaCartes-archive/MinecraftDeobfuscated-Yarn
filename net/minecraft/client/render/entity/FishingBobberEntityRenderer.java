@@ -42,7 +42,7 @@ extends EntityRenderer<FishingBobberEntity> {
         double q;
         double p;
         double o;
-        PlayerEntity playerEntity = fishingBobberEntity.getOwner();
+        PlayerEntity playerEntity = fishingBobberEntity.getPlayerOwner();
         if (playerEntity == null) {
             return;
         }

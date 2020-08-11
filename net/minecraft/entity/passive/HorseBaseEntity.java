@@ -748,7 +748,7 @@ Saddleable {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return null;
     }
 
@@ -984,12 +984,12 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(0.2f);
         }
         this.initAttributes();
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 }
 

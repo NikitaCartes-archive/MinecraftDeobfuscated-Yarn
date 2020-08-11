@@ -20,7 +20,7 @@ public enum SoundCategory {
     AMBIENT("ambient"),
     VOICE("voice");
 
-    private static final Map<String, SoundCategory> NAME_MAP;
+    private static final Map<String, SoundCategory> BY_NAME;
     private final String name;
 
     private SoundCategory(String name) {
@@ -32,7 +32,7 @@ public enum SoundCategory {
     }
 
     static {
-        NAME_MAP = Arrays.stream(SoundCategory.values()).collect(Collectors.toMap(SoundCategory::getName, Function.identity()));
+        BY_NAME = Arrays.stream(SoundCategory.values()).collect(Collectors.toMap(SoundCategory::getName, Function.identity()));
     }
 }
 

@@ -228,20 +228,20 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         HorseBaseEntity horseBaseEntity;
-        if (passiveEntity instanceof DonkeyEntity) {
-            horseBaseEntity = EntityType.MULE.create(serverWorld);
+        if (entity instanceof DonkeyEntity) {
+            horseBaseEntity = EntityType.MULE.create(world);
         } else {
-            HorseEntity horseEntity = (HorseEntity)passiveEntity;
-            horseBaseEntity = EntityType.HORSE.create(serverWorld);
+            HorseEntity horseEntity = (HorseEntity)entity;
+            horseBaseEntity = EntityType.HORSE.create(world);
             int i = this.random.nextInt(9);
             HorseColor horseColor = i < 4 ? this.getColor() : (i < 8 ? horseEntity.getColor() : Util.getRandom(HorseColor.values(), this.random));
             int j = this.random.nextInt(5);
             HorseMarking horseMarking = j < 2 ? this.getMarking() : (j < 4 ? horseEntity.getMarking() : Util.getRandom(HorseMarking.values(), this.random));
             ((HorseEntity)horseBaseEntity).setVariant(horseColor, horseMarking);
         }
-        this.setChildAttributes(passiveEntity, horseBaseEntity);
+        this.setChildAttributes(entity, horseBaseEntity);
         return horseBaseEntity;
     }
 
@@ -257,7 +257,7 @@ extends HorseBaseEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         HorseColor horseColor;
         if (entityData instanceof HorseData) {
             horseColor = ((HorseData)entityData).color;
@@ -266,7 +266,7 @@ extends HorseBaseEntity {
             entityData = new HorseData(horseColor);
         }
         this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), this.random));
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     public static class HorseData

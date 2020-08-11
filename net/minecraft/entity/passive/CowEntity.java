@@ -108,8 +108,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return this.createChild(serverWorld, passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return this.createChild(world, entity);
     }
 }
 

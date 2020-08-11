@@ -94,9 +94,9 @@ public class BeeEntity
 extends AnimalEntity
 implements Angerable,
 Flutterer {
-    private static final TrackedData<Byte> multipleByteTracker = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Integer> anger = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final IntRange field_25363 = Durations.betweenSeconds(20, 39);
+    private static final TrackedData<Byte> STATUS_TRACKER = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Integer> ANGER = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
     private UUID targetUuid;
     private float currentPitch;
     private float lastPitch;
@@ -129,8 +129,8 @@ Flutterer {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(multipleByteTracker, (byte)0);
-        this.dataTracker.startTracking(anger, 0);
+        this.dataTracker.startTracking(STATUS_TRACKER, (byte)0);
+        this.dataTracker.startTracking(ANGER, 0);
     }
 
     @Override
@@ -337,12 +337,12 @@ Flutterer {
 
     @Override
     public int getAngerTime() {
-        return this.dataTracker.get(anger);
+        return this.dataTracker.get(ANGER);
     }
 
     @Override
     public void setAngerTime(int ticks) {
-        this.dataTracker.set(anger, ticks);
+        this.dataTracker.set(ANGER, ticks);
     }
 
     @Override
@@ -357,7 +357,7 @@ Flutterer {
 
     @Override
     public void chooseRandomAngerTime() {
-        this.setAngerTime(field_25363.choose(this.random));
+        this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
     }
 
     private boolean doesHiveHaveSpace(BlockPos pos) {
@@ -457,14 +457,14 @@ Flutterer {
 
     private void setBeeFlag(int bit, boolean value) {
         if (value) {
-            this.dataTracker.set(multipleByteTracker, (byte)(this.dataTracker.get(multipleByteTracker) | bit));
+            this.dataTracker.set(STATUS_TRACKER, (byte)(this.dataTracker.get(STATUS_TRACKER) | bit));
         } else {
-            this.dataTracker.set(multipleByteTracker, (byte)(this.dataTracker.get(multipleByteTracker) & ~bit));
+            this.dataTracker.set(STATUS_TRACKER, (byte)(this.dataTracker.get(STATUS_TRACKER) & ~bit));
         }
     }
 
     private boolean getBeeFlag(int location) {
-        return (this.dataTracker.get(multipleByteTracker) & location) != 0;
+        return (this.dataTracker.get(STATUS_TRACKER) & location) != 0;
     }
 
     public static DefaultAttributeContainer.Builder createBeeAttributes() {
@@ -592,8 +592,8 @@ Flutterer {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return this.createChild(serverWorld, passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return this.createChild(world, entity);
     }
 
     class EnterHiveGoal

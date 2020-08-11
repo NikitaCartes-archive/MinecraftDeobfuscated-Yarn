@@ -21,13 +21,13 @@ public class JigsawFeature
 extends StructureFeature<StructurePoolFeatureConfig> {
     private final int structureStartY;
     private final boolean field_25836;
-    private final boolean field_25837;
+    private final boolean surface;
 
-    public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int startY, boolean bl, boolean bl2) {
+    public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int structureStartY, boolean bl, boolean surface) {
         super(codec);
-        this.structureStartY = startY;
+        this.structureStartY = structureStartY;
         this.field_25836 = bl;
-        this.field_25837 = bl2;
+        this.surface = surface;
     }
 
     @Override
@@ -48,7 +48,7 @@ extends StructureFeature<StructurePoolFeatureConfig> {
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, StructurePoolFeatureConfig structurePoolFeatureConfig) {
             BlockPos blockPos = new BlockPos(i * 16, this.jigsawFeature.structureStartY, j * 16);
             StructurePools.initDefaultPools();
-            StructurePoolBasedGenerator.method_30419(dynamicRegistryManager, structurePoolFeatureConfig, PoolStructurePiece::new, chunkGenerator, structureManager, blockPos, this.children, this.random, this.jigsawFeature.field_25836, this.jigsawFeature.field_25837);
+            StructurePoolBasedGenerator.method_30419(dynamicRegistryManager, structurePoolFeatureConfig, PoolStructurePiece::new, chunkGenerator, structureManager, blockPos, this.children, this.random, this.jigsawFeature.field_25836, this.jigsawFeature.surface);
             this.setBoundingBoxFromChildren();
         }
     }

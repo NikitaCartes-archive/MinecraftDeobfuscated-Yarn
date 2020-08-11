@@ -105,7 +105,7 @@ public class ModelPredicateProviderRegistry {
                 if (clientWorld == null) {
                     return 0.0f;
                 }
-                double d = clientWorld.getDimension().isNatural() ? (double)clientWorld.method_30274(1.0f) : Math.random();
+                double d = clientWorld.getDimension().isNatural() ? (double)clientWorld.getSkyAngle(1.0f) : Math.random();
                 d = this.getTime(clientWorld, d);
                 return (float)d;
             }

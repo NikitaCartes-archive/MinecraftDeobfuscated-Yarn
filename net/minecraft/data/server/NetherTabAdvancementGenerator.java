@@ -51,12 +51,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class NetherTabAdvancementGenerator
 implements Consumer<Consumer<Advancement>> {
-    private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(BuiltInBiomes.NETHER_WASTES, BuiltInBiomes.SOUL_SAND_VALLEY, BuiltInBiomes.WARPED_FOREST, BuiltInBiomes.CRIMSON_FOREST, BuiltInBiomes.BASALT_DELTAS);
+    private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(BiomeKeys.NETHER_WASTES, BiomeKeys.SOUL_SAND_VALLEY, BiomeKeys.WARPED_FOREST, BiomeKeys.CRIMSON_FOREST, BiomeKeys.BASALT_DELTAS);
     private static final EntityPredicate.Extended field_25712 = EntityPredicate.Extended.create(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().item(Items.GOLDEN_HELMET).build()).build())).invert().build(), EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().item(Items.GOLDEN_CHESTPLATE).build()).build())).invert().build(), EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().item(Items.GOLDEN_LEGGINGS).build()).build())).invert().build(), EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(Items.GOLDEN_BOOTS).build()).build())).invert().build());
 
     @Override

@@ -45,7 +45,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.ChunkRandom;
 import org.jetbrains.annotations.Nullable;
 
@@ -280,7 +280,7 @@ implements Monster {
     public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         if (world.getDifficulty() != Difficulty.PEACEFUL) {
             boolean bl;
-            if (Objects.equals(world.method_31081(pos), Optional.of(BuiltInBiomes.SWAMP)) && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < world.getMoonSize() && world.getLightLevel(pos) <= random.nextInt(8)) {
+            if (Objects.equals(world.method_31081(pos), Optional.of(BiomeKeys.SWAMP)) && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < world.getMoonSize() && world.getLightLevel(pos) <= random.nextInt(8)) {
                 return SlimeEntity.canMobSpawn(type, world, spawnReason, pos, random);
             }
             if (!(world instanceof StructureWorldAccess)) {
@@ -318,14 +318,14 @@ implements Monster {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int i = this.random.nextInt(3);
         if (i < 2 && this.random.nextFloat() < 0.5f * difficulty.getClampedLocalDifficulty()) {
             ++i;
         }
         int j = 1 << i;
         this.setSize(j, true);
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     private float getJumpSoundPitch() {

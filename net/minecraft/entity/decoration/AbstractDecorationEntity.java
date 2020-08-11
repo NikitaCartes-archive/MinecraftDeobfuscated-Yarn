@@ -101,7 +101,7 @@ extends Entity {
     }
 
     public boolean canStayAttached() {
-        if (!this.world.doesNotCollide(this)) {
+        if (!this.world.isSpaceEmpty(this)) {
             return false;
         }
         int i = Math.max(1, this.getWidthPixels() / 16);
@@ -257,7 +257,7 @@ extends Entity {
     }
 
     @Override
-    public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
+    public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
     }
 
     @Override

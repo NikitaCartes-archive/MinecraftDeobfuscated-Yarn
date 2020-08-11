@@ -25,7 +25,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import org.jetbrains.annotations.Nullable;
 
 public class BoneMealItem
@@ -85,7 +85,7 @@ extends Item {
                 if (world.getBlockState(blockPos2 = blockPos2.add(RANDOM.nextInt(3) - 1, (RANDOM.nextInt(3) - 1) * RANDOM.nextInt(3) / 2, RANDOM.nextInt(3) - 1)).isFullCube(world, blockPos2)) continue block0;
             }
             Optional<RegistryKey<Biome>> optional = world.method_31081(blockPos2);
-            if (Objects.equals(optional, Optional.of(BuiltInBiomes.WARM_OCEAN)) || Objects.equals(optional, Optional.of(BuiltInBiomes.DEEP_WARM_OCEAN))) {
+            if (Objects.equals(optional, Optional.of(BiomeKeys.WARM_OCEAN)) || Objects.equals(optional, Optional.of(BiomeKeys.DEEP_WARM_OCEAN))) {
                 if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
                     blockState = (BlockState)((Block)BlockTags.WALL_CORALS.getRandom(world.random)).getDefaultState().with(DeadCoralWallFanBlock.FACING, facing);
                 } else if (RANDOM.nextInt(4) == 0) {

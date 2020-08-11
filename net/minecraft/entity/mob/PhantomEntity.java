@@ -131,7 +131,7 @@ implements Monster {
 
     @Override
     public void tickMovement() {
-        if (this.isAlive() && this.isInDaylight()) {
+        if (this.isAlive() && this.isAffectedByDaylight()) {
             this.setOnFireFor(8);
         }
         super.tickMovement();
@@ -143,10 +143,10 @@ implements Monster {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.circlingCenter = this.getBlockPos().up(5);
         this.setPhantomSize(0);
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override

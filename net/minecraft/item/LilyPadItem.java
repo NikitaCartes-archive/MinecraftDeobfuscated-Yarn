@@ -13,7 +13,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class LilyPadItem
@@ -29,7 +29,7 @@ extends BlockItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        BlockHitResult blockHitResult = LilyPadItem.rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
+        BlockHitResult blockHitResult = LilyPadItem.raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
         BlockHitResult blockHitResult2 = blockHitResult.method_29328(blockHitResult.getBlockPos().up());
         ActionResult actionResult = super.useOnBlock(new ItemUsageContext(user, hand, blockHitResult2));
         return new TypedActionResult<ItemStack>(actionResult, user.getStackInHand(hand));

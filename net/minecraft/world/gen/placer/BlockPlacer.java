@@ -12,10 +12,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.placer.BlockPlacerType;
 
 public abstract class BlockPlacer {
-    public static final Codec<BlockPlacer> field_24865 = Registry.BLOCK_PLACER_TYPE.dispatch(BlockPlacer::method_28673, BlockPlacerType::method_28674);
+    public static final Codec<BlockPlacer> TYPE_CODEC = Registry.BLOCK_PLACER_TYPE.dispatch(BlockPlacer::getType, BlockPlacerType::getCodec);
 
-    public abstract void method_23403(WorldAccess var1, BlockPos var2, BlockState var3, Random var4);
+    public abstract void generate(WorldAccess var1, BlockPos var2, BlockState var3, Random var4);
 
-    protected abstract BlockPlacerType<?> method_28673();
+    protected abstract BlockPlacerType<?> getType();
 }
 

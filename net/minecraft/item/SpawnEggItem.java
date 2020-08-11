@@ -35,7 +35,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.MobSpawnerLogic;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,7 +85,7 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        BlockHitResult hitResult = SpawnEggItem.rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
+        BlockHitResult hitResult = SpawnEggItem.raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
         if (((HitResult)hitResult).getType() != HitResult.Type.BLOCK) {
             return TypedActionResult.pass(itemStack);
         }

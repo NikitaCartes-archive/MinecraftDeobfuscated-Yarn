@@ -25,7 +25,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -69,7 +69,7 @@ extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         BlockPos blockPos;
         ItemStack itemStack = user.getStackInHand(hand);
-        BlockHitResult hitResult = EnderEyeItem.rayTrace(world, user, RayTraceContext.FluidHandling.NONE);
+        BlockHitResult hitResult = EnderEyeItem.raycast(world, user, RaycastContext.FluidHandling.NONE);
         if (((HitResult)hitResult).getType() == HitResult.Type.BLOCK && world.getBlockState(hitResult.getBlockPos()).isOf(Blocks.END_PORTAL_FRAME)) {
             return TypedActionResult.pass(itemStack);
         }

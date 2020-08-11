@@ -18,7 +18,7 @@ public enum SpawnGroup implements StringIdentifiable
     WATER_AMBIENT("water_ambient", 20, true, false, 64),
     MISC("misc", -1, true, true, 128);
 
-    public static final Codec<SpawnGroup> field_24655;
+    public static final Codec<SpawnGroup> CODEC;
     private static final Map<String, SpawnGroup> BY_NAME;
     private final int capacity;
     private final boolean peaceful;
@@ -44,8 +44,8 @@ public enum SpawnGroup implements StringIdentifiable
         return this.name;
     }
 
-    public static SpawnGroup method_28307(String string) {
-        return BY_NAME.get(string);
+    public static SpawnGroup byName(String name) {
+        return BY_NAME.get(name);
     }
 
     public int getCapacity() {
@@ -69,7 +69,7 @@ public enum SpawnGroup implements StringIdentifiable
     }
 
     static {
-        field_24655 = StringIdentifiable.createCodec(SpawnGroup::values, SpawnGroup::method_28307);
+        CODEC = StringIdentifiable.createCodec(SpawnGroup::values, SpawnGroup::byName);
         BY_NAME = Arrays.stream(SpawnGroup.values()).collect(Collectors.toMap(SpawnGroup::getName, spawnGroup -> spawnGroup));
     }
 }

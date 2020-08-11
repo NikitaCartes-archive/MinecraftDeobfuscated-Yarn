@@ -44,7 +44,7 @@ extends JigsawFeature {
     }
 
     private boolean method_30845(ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j) {
-        StructureConfig structureConfig = chunkGenerator.getConfig().getForType(StructureFeature.VILLAGE);
+        StructureConfig structureConfig = chunkGenerator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
         if (structureConfig == null) {
             return false;
         }

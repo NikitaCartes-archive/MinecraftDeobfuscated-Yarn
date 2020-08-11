@@ -198,9 +198,9 @@ implements AutoCloseable {
                             break block20;
                         }
                         if (bl) {
-                            postProcessShader.addAuxTarget(string4, framebuffer3::method_30278, framebuffer3.textureWidth, framebuffer3.textureHeight);
+                            postProcessShader.addAuxTarget(string4, framebuffer3::getDepthAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
                         } else {
-                            postProcessShader.addAuxTarget(string4, framebuffer3::method_30277, framebuffer3.textureWidth, framebuffer3.textureHeight);
+                            postProcessShader.addAuxTarget(string4, framebuffer3::getColorAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
                         }
                     } catch (Exception exception) {
                         ShaderParseException shaderParseException = ShaderParseException.wrap(exception);

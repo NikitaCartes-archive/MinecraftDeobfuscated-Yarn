@@ -79,14 +79,14 @@ extends Screen {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)unknownHostException);
-                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", "Unknown host"))));
+                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", "Unknown host"))));
                 } catch (Exception exception) {
                     if (ConnectScreen.this.connectingCancelled) {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)exception);
                     String string = inetAddress == null ? exception.toString() : exception.toString().replaceAll(inetAddress + ":" + port, "");
-                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", string))));
+                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", string))));
                 }
             }
         };

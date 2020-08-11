@@ -15,18 +15,18 @@ import net.minecraft.sound.SoundEvent;
  * Represents an "additions sound" for a biome.
  */
 public class BiomeAdditionsSound {
-    public static final Codec<BiomeAdditionsSound> field_24673 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.field_24628.fieldOf("sound")).forGetter(biomeAdditionsSound -> biomeAdditionsSound.event), ((MapCodec)Codec.DOUBLE.fieldOf("tick_chance")).forGetter(biomeAdditionsSound -> biomeAdditionsSound.chance)).apply((Applicative<BiomeAdditionsSound, ?>)instance, BiomeAdditionsSound::new));
-    private SoundEvent event;
+    public static final Codec<BiomeAdditionsSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.CODEC.fieldOf("sound")).forGetter(biomeAdditionsSound -> biomeAdditionsSound.sound), ((MapCodec)Codec.DOUBLE.fieldOf("tick_chance")).forGetter(biomeAdditionsSound -> biomeAdditionsSound.chance)).apply((Applicative<BiomeAdditionsSound, ?>)instance, BiomeAdditionsSound::new));
+    private SoundEvent sound;
     private double chance;
 
-    public BiomeAdditionsSound(SoundEvent event, double chance) {
-        this.event = event;
+    public BiomeAdditionsSound(SoundEvent sound, double chance) {
+        this.sound = sound;
         this.chance = chance;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public SoundEvent getEvent() {
-        return this.event;
+    public SoundEvent getSound() {
+        return this.sound;
     }
 
     /**

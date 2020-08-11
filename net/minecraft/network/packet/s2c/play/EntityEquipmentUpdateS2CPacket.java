@@ -18,15 +18,15 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 public class EntityEquipmentUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private int id;
-    private final List<Pair<EquipmentSlot, ItemStack>> field_25721;
+    private final List<Pair<EquipmentSlot, ItemStack>> equipmentList;
 
     public EntityEquipmentUpdateS2CPacket() {
-        this.field_25721 = Lists.newArrayList();
+        this.equipmentList = Lists.newArrayList();
     }
 
-    public EntityEquipmentUpdateS2CPacket(int i, List<Pair<EquipmentSlot, ItemStack>> list) {
-        this.id = i;
-        this.field_25721 = list;
+    public EntityEquipmentUpdateS2CPacket(int id, List<Pair<EquipmentSlot, ItemStack>> equipmentList) {
+        this.id = id;
+        this.equipmentList = equipmentList;
     }
 
     @Override
@@ -38,16 +38,16 @@ implements Packet<ClientPlayPacketListener> {
             i = buf.readByte();
             EquipmentSlot equipmentSlot = equipmentSlots[i & 0x7F];
             ItemStack itemStack = buf.readItemStack();
-            this.field_25721.add(Pair.of(equipmentSlot, itemStack));
+            this.equipmentList.add(Pair.of(equipmentSlot, itemStack));
         } while ((i & 0xFFFFFF80) != 0);
     }
 
     @Override
     public void write(PacketByteBuf buf) throws IOException {
         buf.writeVarInt(this.id);
-        int i = this.field_25721.size();
+        int i = this.equipmentList.size();
         for (int j = 0; j < i; ++j) {
-            Pair<EquipmentSlot, ItemStack> pair = this.field_25721.get(j);
+            Pair<EquipmentSlot, ItemStack> pair = this.equipmentList.get(j);
             EquipmentSlot equipmentSlot = pair.getFirst();
             boolean bl = j != i - 1;
             int k = equipmentSlot.ordinal();
@@ -67,8 +67,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public List<Pair<EquipmentSlot, ItemStack>> method_30145() {
-        return this.field_25721;
+    public List<Pair<EquipmentSlot, ItemStack>> getEquipmentList() {
+        return this.equipmentList;
     }
 }
 

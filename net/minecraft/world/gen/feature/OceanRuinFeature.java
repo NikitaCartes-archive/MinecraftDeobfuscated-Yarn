@@ -37,8 +37,8 @@ extends StructureFeature<OceanRuinFeatureConfig> {
         WARM("warm"),
         COLD("cold");
 
-        public static final Codec<BiomeType> field_24990;
-        private static final Map<String, BiomeType> nameMap;
+        public static final Codec<BiomeType> CODEC;
+        private static final Map<String, BiomeType> BY_NAME;
         private final String name;
 
         private BiomeType(String string2) {
@@ -51,7 +51,7 @@ extends StructureFeature<OceanRuinFeatureConfig> {
 
         @Nullable
         public static BiomeType byName(String name) {
-            return nameMap.get(name);
+            return BY_NAME.get(name);
         }
 
         @Override
@@ -60,8 +60,8 @@ extends StructureFeature<OceanRuinFeatureConfig> {
         }
 
         static {
-            field_24990 = StringIdentifiable.createCodec(BiomeType::values, BiomeType::byName);
-            nameMap = Arrays.stream(BiomeType.values()).collect(Collectors.toMap(BiomeType::getName, biomeType -> biomeType));
+            CODEC = StringIdentifiable.createCodec(BiomeType::values, BiomeType::byName);
+            BY_NAME = Arrays.stream(BiomeType.values()).collect(Collectors.toMap(BiomeType::getName, biomeType -> biomeType));
         }
     }
 

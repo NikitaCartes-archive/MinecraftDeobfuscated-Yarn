@@ -164,7 +164,7 @@ public abstract class ChunkTicketManager {
     }
 
     protected void setChunkForced(ChunkPos pos, boolean forced) {
-        ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<ChunkPos>(ChunkTicketType.field_14031, 31, pos);
+        ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<ChunkPos>(ChunkTicketType.FORCED, 31, pos);
         if (forced) {
             this.addTicket(pos.toLong(), chunkTicket);
         } else {

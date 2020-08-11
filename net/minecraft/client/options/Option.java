@@ -72,7 +72,7 @@ public abstract class Option {
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
         if (d == 0.0) {
-            return ScreenTexts.method_30619(doubleOption.getDisplayPrefix(), false);
+            return ScreenTexts.composeToggleText(doubleOption.getDisplayPrefix(), false);
         }
         return doubleOption.method_30503(d);
     });
@@ -156,7 +156,7 @@ public abstract class Option {
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.get((GameOptions)gameOptions);
         if (d == 0.0) {
-            return ScreenTexts.method_30619(doubleOption.getDisplayPrefix(), false);
+            return ScreenTexts.composeToggleText(doubleOption.getDisplayPrefix(), false);
         }
         return doubleOption.method_30504((int)d);
     });

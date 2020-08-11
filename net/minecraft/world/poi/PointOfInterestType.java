@@ -25,8 +25,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
 
 public class PointOfInterestType {
-    private static final Supplier<Set<PointOfInterestType>> field_25163 = Suppliers.memoize(() -> Registry.VILLAGER_PROFESSION.stream().map(VillagerProfession::getWorkStation).collect(Collectors.toSet()));
-    public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> field_25163.get().contains(pointOfInterestType);
+    private static final Supplier<Set<PointOfInterestType>> VILLAGER_WORKSTATIONS = Suppliers.memoize(() -> Registry.VILLAGER_PROFESSION.stream().map(VillagerProfession::getWorkStation).collect(Collectors.toSet()));
+    public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> VILLAGER_WORKSTATIONS.get().contains(pointOfInterestType);
     public static final Predicate<PointOfInterestType> ALWAYS_TRUE = pointOfInterestType -> true;
     private static final Set<BlockState> BED_STATES = ImmutableList.of(Blocks.RED_BED, Blocks.BLACK_BED, Blocks.BLUE_BED, Blocks.BROWN_BED, Blocks.CYAN_BED, Blocks.GRAY_BED, Blocks.GREEN_BED, Blocks.LIGHT_BLUE_BED, Blocks.LIGHT_GRAY_BED, Blocks.LIME_BED, Blocks.MAGENTA_BED, Blocks.ORANGE_BED, new Block[]{Blocks.PINK_BED, Blocks.PURPLE_BED, Blocks.WHITE_BED, Blocks.YELLOW_BED}).stream().flatMap(block -> block.getStateManager().getStates().stream()).filter(blockState -> blockState.get(BedBlock.PART) == BedPart.HEAD).collect(ImmutableSet.toImmutableSet());
     private static final Map<BlockState, PointOfInterestType> BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE = Maps.newHashMap();
@@ -51,7 +51,7 @@ public class PointOfInterestType {
     public static final PointOfInterestType BEE_NEST = PointOfInterestType.register("bee_nest", PointOfInterestType.getAllStatesOf(Blocks.BEE_NEST), 0, 1);
     public static final PointOfInterestType NETHER_PORTAL = PointOfInterestType.register("nether_portal", PointOfInterestType.getAllStatesOf(Blocks.NETHER_PORTAL), 0, 1);
     public static final PointOfInterestType LODESTONE = PointOfInterestType.register("lodestone", PointOfInterestType.getAllStatesOf(Blocks.LODESTONE), 0, 1);
-    protected static final Set<BlockState> field_25162 = new ObjectOpenHashSet<BlockState>(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.keySet());
+    protected static final Set<BlockState> REGISTERED_STATES = new ObjectOpenHashSet<BlockState>(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.keySet());
     private final String id;
     private final Set<BlockState> blockStates;
     private final int ticketCount;

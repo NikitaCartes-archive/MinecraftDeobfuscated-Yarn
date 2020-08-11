@@ -365,7 +365,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
-        if (itemGroup.hasTooltip()) {
+        if (itemGroup.shouldRenderName()) {
             RenderSystem.disableBlend();
             this.textRenderer.draw(matrices, itemGroup.getTranslationKey(), 8.0f, 6.0f, 0x404040);
         }

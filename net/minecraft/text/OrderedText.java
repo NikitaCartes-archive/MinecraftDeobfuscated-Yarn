@@ -8,8 +8,8 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.CharacterVisitor;
 import net.minecraft.client.font.TextVisitFactory;
+import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.Style;
 
 /**

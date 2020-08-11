@@ -179,12 +179,12 @@ extends SchoolingFishEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int l;
         int k;
         int j;
         int i;
-        entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         if (entityTag != null && entityTag.contains("BucketVariantTag", 3)) {
             this.setVariant(entityTag.getInt("BucketVariantTag"));
             return entityData;

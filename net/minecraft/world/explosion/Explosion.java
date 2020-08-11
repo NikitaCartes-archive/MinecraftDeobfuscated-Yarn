@@ -42,7 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.EntityExplosionBehavior;
 import net.minecraft.world.explosion.ExplosionBehavior;
@@ -120,7 +120,7 @@ public class Explosion {
                     double o;
                     double n = MathHelper.lerp((double)k, box.minX, box.maxX);
                     Vec3d vec3d = new Vec3d(n + g, o = MathHelper.lerp((double)l, box.minY, box.maxY), (p = MathHelper.lerp((double)m, box.minZ, box.maxZ)) + h);
-                    if (entity.world.rayTrace(new RayTraceContext(vec3d, source, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS) {
+                    if (entity.world.raycast(new RaycastContext(vec3d, source, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS) {
                         ++i;
                     }
                     ++j;

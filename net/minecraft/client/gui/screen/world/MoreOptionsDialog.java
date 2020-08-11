@@ -104,7 +104,7 @@ Drawable {
 
             @Override
             public Text getMessage() {
-                return ScreenTexts.method_30619(super.getMessage(), MoreOptionsDialog.this.generatorOptions.shouldGenerateStructures());
+                return ScreenTexts.composeToggleText(super.getMessage(), MoreOptionsDialog.this.generatorOptions.shouldGenerateStructures());
             }
 
             @Override
@@ -121,7 +121,7 @@ Drawable {
                 }
                 GeneratorType generatorType = GeneratorType.VALUES.get(i);
                 this.field_25049 = Optional.of(generatorType);
-                this.generatorOptions = generatorType.method_29077(this.field_25483, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest());
+                this.generatorOptions = generatorType.createDefaultOptions(this.field_25483, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest());
                 if (this.generatorOptions.isDebugWorld() && !Screen.hasShiftDown()) continue;
             }
             parent.setMoreOptionsOpen();
@@ -144,7 +144,7 @@ Drawable {
         this.mapTypeButton.visible = false;
         this.mapTypeButton.active = this.field_25049.isPresent();
         this.customizeTypeButton = parent.addButton(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), buttonWidget -> {
-            GeneratorType.ScreenProvider screenProvider = GeneratorType.field_25053.get(this.field_25049);
+            GeneratorType.ScreenProvider screenProvider = GeneratorType.SCREEN_PROVIDERS.get(this.field_25049);
             if (screenProvider != null) {
                 client.openScreen(screenProvider.createEditScreen(parent, this.generatorOptions));
             }
@@ -157,7 +157,7 @@ Drawable {
 
             @Override
             public Text getMessage() {
-                return ScreenTexts.method_30619(super.getMessage(), MoreOptionsDialog.this.generatorOptions.hasBonusChest() && !parent.hardcore);
+                return ScreenTexts.composeToggleText(super.getMessage(), MoreOptionsDialog.this.generatorOptions.hasBonusChest() && !parent.hardcore);
             }
         });
         this.bonusItemsButton.visible = false;
@@ -291,7 +291,7 @@ Drawable {
         } else {
             this.mapFeaturesButton.visible = visible;
             this.bonusItemsButton.visible = visible;
-            this.customizeTypeButton.visible = visible && GeneratorType.field_25053.containsKey(this.field_25049);
+            this.customizeTypeButton.visible = visible && GeneratorType.SCREEN_PROVIDERS.containsKey(this.field_25049);
             this.field_25048.visible = visible;
         }
         this.seedTextField.setVisible(visible);

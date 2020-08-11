@@ -36,16 +36,16 @@ import net.minecraft.util.math.Matrix4f;
 @Environment(value=EnvType.CLIENT)
 public class SignEditScreen
 extends Screen {
-    private final SignBlockEntityRenderer.SignModel field_21525 = new SignBlockEntityRenderer.SignModel();
+    private final SignBlockEntityRenderer.SignModel model = new SignBlockEntityRenderer.SignModel();
     private final SignBlockEntity sign;
     private int ticksSinceOpened;
     private int currentRow;
     private SelectionManager selectionManager;
-    private final String[] field_24285 = (String[])IntStream.range(0, 4).mapToObj(signBlockEntity::method_30843).map(Text::getString).toArray(String[]::new);
+    private final String[] text = (String[])IntStream.range(0, 4).mapToObj(sign::getTextOnRow).map(Text::getString).toArray(String[]::new);
 
-    public SignEditScreen(SignBlockEntity signBlockEntity) {
+    public SignEditScreen(SignBlockEntity sign) {
         super(new TranslatableText("sign.edit"));
-        this.sign = signBlockEntity;
+        this.sign = sign;
     }
 
     @Override
@@ -53,8 +53,8 @@ extends Screen {
         this.client.keyboard.setRepeatEvents(true);
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, ScreenTexts.DONE, buttonWidget -> this.finishEditing()));
         this.sign.setEditable(false);
-        this.selectionManager = new SelectionManager(() -> this.field_24285[this.currentRow], string -> {
-            this.field_24285[this.currentRow] = string;
+        this.selectionManager = new SelectionManager(() -> this.text[this.currentRow], string -> {
+            this.text[this.currentRow] = string;
             this.sign.setTextOnRow(this.currentRow, new LiteralText((String)string));
         }, SelectionManager.makeClipboardGetter(this.client), SelectionManager.makeClipboardSetter(this.client), string -> this.client.textRenderer.getWidth((String)string) <= 90);
     }
@@ -64,7 +64,7 @@ extends Screen {
         this.client.keyboard.setRepeatEvents(false);
         ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
         if (clientPlayNetworkHandler != null) {
-            clientPlayNetworkHandler.sendPacket(new UpdateSignC2SPacket(this.sign.getPos(), this.field_24285[0], this.field_24285[1], this.field_24285[2], this.field_24285[3]));
+            clientPlayNetworkHandler.sendPacket(new UpdateSignC2SPacket(this.sign.getPos(), this.text[0], this.text[1], this.text[2], this.text[3]));
         }
         this.sign.setEditable(true);
     }
@@ -136,10 +136,10 @@ extends Screen {
         matrices.scale(0.6666667f, -0.6666667f, -0.6666667f);
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
         SpriteIdentifier spriteIdentifier = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
-        VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.field_21525::getLayer);
-        this.field_21525.field.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
+        VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.model::getLayer);
+        this.model.field.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
         if (bl) {
-            this.field_21525.foot.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
+            this.model.foot.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
         }
         matrices.pop();
         float h = 0.010416667f;
@@ -148,16 +148,16 @@ extends Screen {
         int i = this.sign.getTextColor().getSignColor();
         int j = this.selectionManager.getSelectionStart();
         int k = this.selectionManager.getSelectionEnd();
-        int l = this.currentRow * 10 - this.field_24285.length * 5;
+        int l = this.currentRow * 10 - this.text.length * 5;
         Matrix4f matrix4f = matrices.peek().getModel();
-        for (m = 0; m < this.field_24285.length; ++m) {
-            string = this.field_24285[m];
+        for (m = 0; m < this.text.length; ++m) {
+            string = this.text[m];
             if (string == null) continue;
             if (this.textRenderer.isRightToLeft()) {
                 string = this.textRenderer.mirror(string);
             }
             float n = -this.client.textRenderer.getWidth(string) / 2;
-            this.client.textRenderer.draw(string, n, m * 10 - this.field_24285.length * 5, i, false, matrix4f, immediate, false, 0, 0xF000F0, false);
+            this.client.textRenderer.draw(string, n, m * 10 - this.text.length * 5, i, false, matrix4f, immediate, false, 0, 0xF000F0, false);
             if (m != this.currentRow || j < 0 || !bl2) continue;
             o = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
             p = o - this.client.textRenderer.getWidth(string) / 2;
@@ -165,8 +165,8 @@ extends Screen {
             this.client.textRenderer.draw("_", p, l, i, false, matrix4f, immediate, false, 0, 0xF000F0, false);
         }
         immediate.draw();
-        for (m = 0; m < this.field_24285.length; ++m) {
-            string = this.field_24285[m];
+        for (m = 0; m < this.text.length; ++m) {
+            string = this.text[m];
             if (string == null || m != this.currentRow || j < 0) continue;
             int q = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
             o = q - this.client.textRenderer.getWidth(string) / 2;

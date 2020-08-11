@@ -13,9 +13,9 @@ public class Memory<T> {
     private final T value;
     private long expiry;
 
-    public Memory(T object, long l) {
-        this.value = object;
-        this.expiry = l;
+    public Memory(T value, long expiry) {
+        this.value = value;
+        this.expiry = expiry;
     }
 
     public void tick() {
@@ -51,7 +51,7 @@ public class Memory<T> {
         return this.expiry != Long.MAX_VALUE;
     }
 
-    public static <T> Codec<Memory<T>> method_28353(Codec<T> codec) {
+    public static <T> Codec<Memory<T>> createCodec(Codec<T> codec) {
         return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf("value")).forGetter(memory -> memory.value), Codec.LONG.optionalFieldOf("ttl").forGetter(memory -> memory.method_24914() ? Optional.of(memory.expiry) : Optional.empty())).apply((Applicative<Memory, ?>)instance, (object, optional) -> new Memory<Object>(object, optional.orElse(Long.MAX_VALUE))));
     }
 }

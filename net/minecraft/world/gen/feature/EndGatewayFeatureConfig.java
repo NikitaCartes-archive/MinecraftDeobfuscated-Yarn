@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class EndGatewayFeatureConfig
 implements FeatureConfig {
-    public static final Codec<EndGatewayFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(BlockPos.field_25064.optionalFieldOf("exit").forGetter(endGatewayFeatureConfig -> endGatewayFeatureConfig.exitPos), ((MapCodec)Codec.BOOL.fieldOf("exact")).forGetter(endGatewayFeatureConfig -> endGatewayFeatureConfig.exact)).apply((Applicative<EndGatewayFeatureConfig, ?>)instance, EndGatewayFeatureConfig::new));
+    public static final Codec<EndGatewayFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(BlockPos.CODEC.optionalFieldOf("exit").forGetter(endGatewayFeatureConfig -> endGatewayFeatureConfig.exitPos), ((MapCodec)Codec.BOOL.fieldOf("exact")).forGetter(endGatewayFeatureConfig -> endGatewayFeatureConfig.exact)).apply((Applicative<EndGatewayFeatureConfig, ?>)instance, EndGatewayFeatureConfig::new));
     private final Optional<BlockPos> exitPos;
     private final boolean exact;
 

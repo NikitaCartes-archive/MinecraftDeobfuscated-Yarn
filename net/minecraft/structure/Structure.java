@@ -502,14 +502,14 @@ public class Structure {
                 this.mirrorBoundingBox(blockRotation, m, k, blockBox, Direction.NORTH, Direction.SOUTH);
             }
         }
-        blockBox.offset(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        blockBox.move(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         return blockBox;
     }
 
     private void mirrorBoundingBox(BlockRotation rotation, int offsetX, int offsetZ, BlockBox boundingBox, Direction direction, Direction direction2) {
         BlockPos blockPos = BlockPos.ORIGIN;
         blockPos = rotation == BlockRotation.CLOCKWISE_90 || rotation == BlockRotation.COUNTERCLOCKWISE_90 ? blockPos.offset(rotation.rotate(direction), offsetZ) : (rotation == BlockRotation.CLOCKWISE_180 ? blockPos.offset(direction2, offsetX) : blockPos.offset(direction, offsetX));
-        boundingBox.offset(blockPos.getX(), 0, blockPos.getZ());
+        boundingBox.move(blockPos.getX(), 0, blockPos.getZ());
     }
 
     public CompoundTag toTag(CompoundTag tag) {

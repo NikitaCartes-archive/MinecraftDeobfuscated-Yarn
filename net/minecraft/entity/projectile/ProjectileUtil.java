@@ -21,7 +21,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +32,7 @@ public final class ProjectileUtil {
         Vec3d vec3d = entity.getVelocity();
         World world = entity.world;
         Vec3d vec3d2 = entity.getPos();
-        HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3 = vec3d2.add(vec3d), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, entity));
+        HitResult hitResult = world.raycast(new RaycastContext(vec3d2, vec3d3 = vec3d2.add(vec3d), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity));
         if (((HitResult)hitResult).getType() != HitResult.Type.MISS) {
             vec3d3 = hitResult.getPos();
         }
@@ -44,7 +44,7 @@ public final class ProjectileUtil {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public static EntityHitResult rayTrace(Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double d) {
+    public static EntityHitResult raycast(Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double d) {
         World world = entity.world;
         double e = d;
         Entity entity2 = null;
@@ -53,7 +53,7 @@ public final class ProjectileUtil {
             Vec3d vec3d4;
             double f;
             Box box2 = entity3.getBoundingBox().expand(entity3.getTargetingMargin());
-            Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);
+            Optional<Vec3d> optional = box2.raycast(vec3d, vec3d2);
             if (box2.contains(vec3d)) {
                 if (!(e >= 0.0)) continue;
                 entity2 = entity3;
@@ -85,7 +85,7 @@ public final class ProjectileUtil {
         for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
             double e;
             Box box2 = entity3.getBoundingBox().expand(0.3f);
-            Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);
+            Optional<Vec3d> optional = box2.raycast(vec3d, vec3d2);
             if (!optional.isPresent() || !((e = vec3d.squaredDistanceTo(optional.get())) < d)) continue;
             entity2 = entity3;
             d = e;

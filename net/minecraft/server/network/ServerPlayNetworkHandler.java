@@ -330,7 +330,7 @@ implements ServerPlayPacketListener {
                 this.connection.send(new VehicleMoveS2CPacket(entity));
                 return;
             }
-            boolean bl = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
+            boolean bl = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
             l = g - this.updatedRiddenX;
             m = h - this.updatedRiddenY - 1.0E-6;
             n = i - this.updatedRiddenZ;
@@ -349,7 +349,7 @@ implements ServerPlayPacketListener {
                 LOGGER.warn("{} (vehicle of {}) moved wrongly! {}", (Object)entity.getName().getString(), (Object)this.player.getName().getString(), (Object)Math.sqrt(p));
             }
             entity.updatePositionAndAngles(g, h, i, j, k);
-            boolean bl3 = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
+            boolean bl3 = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
             if (bl && (bl2 || !bl3)) {
                 entity.updatePositionAndAngles(d, e, f, j, k);
                 this.connection.send(new VehicleMoveS2CPacket(entity));
@@ -774,7 +774,7 @@ implements ServerPlayPacketListener {
             LOGGER.warn("{} moved wrongly!", (Object)this.player.getName().getString());
         }
         this.player.updatePositionAndAngles(h, i, j, k, l);
-        if (!this.player.noClip && !this.player.isSleeping() && (bl22 && serverWorld.doesNotCollide(this.player, box) || this.isPlayerNotCollidingWithBlocks(serverWorld, box))) {
+        if (!this.player.noClip && !this.player.isSleeping() && (bl22 && serverWorld.isSpaceEmpty(this.player, box) || this.isPlayerNotCollidingWithBlocks(serverWorld, box))) {
             this.requestTeleport(d, e, f, k, l);
             return;
         }

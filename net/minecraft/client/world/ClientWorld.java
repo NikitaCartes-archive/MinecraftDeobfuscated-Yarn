@@ -72,7 +72,7 @@ import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -93,15 +93,15 @@ extends World {
     private Scoreboard scoreboard = new Scoreboard();
     private final Map<String, MapState> mapStates = Maps.newHashMap();
     private int lightningTicksLeft;
-    private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap(3), object2ObjectArrayMap -> {
-        object2ObjectArrayMap.put(BiomeColors.GRASS_COLOR, new BiomeColorCache());
-        object2ObjectArrayMap.put(BiomeColors.FOLIAGE_COLOR, new BiomeColorCache());
-        object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new BiomeColorCache());
+    private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap(3), cache -> {
+        cache.put(BiomeColors.GRASS_COLOR, new BiomeColorCache());
+        cache.put(BiomeColors.FOLIAGE_COLOR, new BiomeColorCache());
+        cache.put(BiomeColors.WATER_COLOR, new BiomeColorCache());
     });
     private final ClientChunkManager chunkManager;
 
-    public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, Properties properties, RegistryKey<World> registryKey, DimensionType dimensionType, int i, Supplier<Profiler> supplier, WorldRenderer worldRenderer, boolean bl, long l) {
-        super(properties, registryKey, dimensionType, supplier, true, bl, l);
+    public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, Properties properties, RegistryKey<World> registryKey, DimensionType dimensionType, int i, Supplier<Profiler> supplier, WorldRenderer worldRenderer, boolean debugWorld, long l) {
+        super(properties, registryKey, dimensionType, supplier, true, debugWorld, l);
         this.netHandler = clientPlayNetworkHandler;
         this.chunkManager = new ClientChunkManager(this, i);
         this.clientWorldProperties = properties;
@@ -583,11 +583,11 @@ extends World {
 
     @Override
     public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-        return this.getRegistryManager().get(Registry.BIOME_KEY).method_31140(BuiltInBiomes.PLAINS);
+        return this.getRegistryManager().get(Registry.BIOME_KEY).getOrThrow(BiomeKeys.PLAINS);
     }
 
     public float method_23783(float f) {
-        float g = this.method_30274(f);
+        float g = this.getSkyAngle(f);
         float h = 1.0f - (MathHelper.cos(g * ((float)Math.PI * 2)) * 2.0f + 0.2f);
         h = MathHelper.clamp(h, 0.0f, 1.0f);
         h = 1.0f - h;
@@ -599,7 +599,7 @@ extends World {
     public Vec3d method_23777(BlockPos blockPos, float f) {
         float o;
         float n;
-        float g = this.method_30274(f);
+        float g = this.getSkyAngle(f);
         float h = MathHelper.cos(g * ((float)Math.PI * 2)) * 2.0f + 0.5f;
         h = MathHelper.clamp(h, 0.0f, 1.0f);
         Biome biome = this.getBiome(blockPos);
@@ -640,7 +640,7 @@ extends World {
     public Vec3d getCloudsColor(float tickDelta) {
         float m;
         float l;
-        float f = this.method_30274(tickDelta);
+        float f = this.getSkyAngle(tickDelta);
         float g = MathHelper.cos(f * ((float)Math.PI * 2)) * 2.0f + 0.5f;
         g = MathHelper.clamp(g, 0.0f, 1.0f);
         float h = 1.0f;
@@ -669,7 +669,7 @@ extends World {
     }
 
     public float method_23787(float f) {
-        float g = this.method_30274(f);
+        float g = this.getSkyAngle(f);
         float h = 1.0f - (MathHelper.cos(g * ((float)Math.PI * 2)) * 2.0f + 0.25f);
         h = MathHelper.clamp(h, 0.0f, 1.0f);
         return h * h * 0.5f;

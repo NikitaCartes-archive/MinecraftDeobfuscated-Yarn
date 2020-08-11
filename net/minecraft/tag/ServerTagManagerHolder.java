@@ -16,7 +16,7 @@ import net.minecraft.tag.TagManager;
  * A class containing the single static instance of {@link TagManager} on the server.
  */
 public class ServerTagManagerHolder {
-    private static volatile TagManager tagManager = TagManager.create(TagGroup.create(BlockTags.method_31072().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))), TagGroup.create(ItemTags.method_31074().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))), TagGroup.create(FluidTags.all().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))), TagGroup.create(EntityTypeTags.method_31073().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))));
+    private static volatile TagManager tagManager = TagManager.create(TagGroup.create(BlockTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))), TagGroup.create(ItemTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))), TagGroup.create(FluidTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))), TagGroup.create(EntityTypeTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))));
 
     public static TagManager getTagManager() {
         return tagManager;

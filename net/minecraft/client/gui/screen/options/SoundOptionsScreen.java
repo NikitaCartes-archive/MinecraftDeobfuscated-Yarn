@@ -35,7 +35,7 @@ extends GameOptionsScreen {
             ++i;
         }
         this.addButton(new OptionButtonWidget(this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150, 20, Option.SUBTITLES, Option.SUBTITLES.getDisplayString(this.gameOptions), buttonWidget -> {
-            Option.SUBTITLES.set(this.client.options);
+            Option.SUBTITLES.toggle(this.client.options);
             buttonWidget.setMessage(Option.SUBTITLES.getDisplayString(this.client.options));
             this.client.options.write();
         }));

@@ -36,10 +36,10 @@ implements ParticleEffect {
             return this.read(type, reader);
         }
     };
-    private final Codec<DefaultParticleType> field_25127 = Codec.unit(this::getType);
+    private final Codec<DefaultParticleType> codec = Codec.unit(this::getType);
 
-    protected DefaultParticleType(boolean bl) {
-        super(bl, PARAMETER_FACTORY);
+    protected DefaultParticleType(boolean alwaysShow) {
+        super(alwaysShow, PARAMETER_FACTORY);
     }
 
     public DefaultParticleType getType() {
@@ -47,8 +47,8 @@ implements ParticleEffect {
     }
 
     @Override
-    public Codec<DefaultParticleType> method_29138() {
-        return this.field_25127;
+    public Codec<DefaultParticleType> getCodec() {
+        return this.codec;
     }
 
     @Override

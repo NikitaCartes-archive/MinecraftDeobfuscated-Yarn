@@ -82,18 +82,18 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     public static final SurfaceBuilder<TernarySurfaceConfig> SOUL_SAND_VALLEY = SurfaceBuilder.register("soul_sand_valley", new SoulSandValleySurfaceBuilder(TernarySurfaceConfig.CODEC));
     public static final SurfaceBuilder<TernarySurfaceConfig> BASALT_DELTAS = SurfaceBuilder.register("basalt_deltas", new BasaltDeltasSurfaceBuilder(TernarySurfaceConfig.CODEC));
     public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = SurfaceBuilder.register("nope", new NopeSurfaceBuilder(TernarySurfaceConfig.CODEC));
-    private final Codec<ConfiguredSurfaceBuilder<C>> field_25016;
+    private final Codec<ConfiguredSurfaceBuilder<C>> codec;
 
-    private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String string, F surfaceBuilder) {
-        return (F)Registry.register(Registry.SURFACE_BUILDER, string, surfaceBuilder);
+    private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String id, F surfaceBuilder) {
+        return (F)Registry.register(Registry.SURFACE_BUILDER, id, surfaceBuilder);
     }
 
     public SurfaceBuilder(Codec<C> codec) {
-        this.field_25016 = ((MapCodec)codec.fieldOf("config")).xmap(this::method_30478, ConfiguredSurfaceBuilder::getConfig).codec();
+        this.codec = ((MapCodec)codec.fieldOf("config")).xmap(this::method_30478, ConfiguredSurfaceBuilder::getConfig).codec();
     }
 
-    public Codec<ConfiguredSurfaceBuilder<C>> method_29003() {
-        return this.field_25016;
+    public Codec<ConfiguredSurfaceBuilder<C>> getCodec() {
+        return this.codec;
     }
 
     public ConfiguredSurfaceBuilder<C> method_30478(C surfaceConfig) {

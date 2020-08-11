@@ -130,11 +130,11 @@ implements SynchronousResourceReloadListener {
         matrices.pop();
     }
 
-    public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean glint) {
+    public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
         if (glint) {
-            return VertexConsumers.dual(vertexConsumerProvider.getBuffer(bl ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), vertexConsumerProvider.getBuffer(renderLayer));
+            return VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), vertexConsumers.getBuffer(layer));
         }
-        return vertexConsumerProvider.getBuffer(renderLayer);
+        return vertexConsumers.getBuffer(layer);
     }
 
     public static VertexConsumer getGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {

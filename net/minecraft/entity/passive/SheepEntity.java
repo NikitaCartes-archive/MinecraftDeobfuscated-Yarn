@@ -364,9 +364,9 @@ implements Shearable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        this.setColor(SheepEntity.generateDefaultColor(serverWorldAccess.getRandom()));
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        this.setColor(SheepEntity.generateDefaultColor(world.getRandom()));
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     private DyeColor getChildColor(AnimalEntity firstParent, AnimalEntity secondParent) {
@@ -395,8 +395,8 @@ implements Shearable {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return this.createChild(serverWorld, passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return this.createChild(world, entity);
     }
 }
 

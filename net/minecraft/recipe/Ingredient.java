@@ -113,16 +113,16 @@ implements Predicate<ItemStack> {
     }
 
     public static Ingredient ofItems(ItemConvertible ... items) {
-        return Ingredient.method_26964(Arrays.stream(items).map(ItemStack::new));
+        return Ingredient.ofStacks(Arrays.stream(items).map(ItemStack::new));
     }
 
     @Environment(value=EnvType.CLIENT)
     public static Ingredient ofStacks(ItemStack ... stacks) {
-        return Ingredient.method_26964(Arrays.stream(stacks));
+        return Ingredient.ofStacks(Arrays.stream(stacks));
     }
 
-    public static Ingredient method_26964(Stream<ItemStack> stream) {
-        return Ingredient.ofEntries(stream.filter(itemStack -> !itemStack.isEmpty()).map(stack -> new StackEntry((ItemStack)stack)));
+    public static Ingredient ofStacks(Stream<ItemStack> stacks) {
+        return Ingredient.ofEntries(stacks.filter(itemStack -> !itemStack.isEmpty()).map(stack -> new StackEntry((ItemStack)stack)));
     }
 
     public static Ingredient fromTag(Tag<Item> tag) {

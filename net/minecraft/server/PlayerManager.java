@@ -416,7 +416,7 @@ public abstract class PlayerManager {
         } else if (blockPos != null) {
             serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, 0.0f));
         }
-        while (!serverWorld2.doesNotCollide(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
+        while (!serverWorld2.isSpaceEmpty(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
             serverPlayerEntity.updatePosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
         }
         WorldProperties worldProperties = serverPlayerEntity.world.getLevelProperties();

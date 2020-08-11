@@ -65,23 +65,23 @@ implements Spawner {
         return 0;
     }
 
-    private int spawnInSwampHut(ServerWorld serverWorld, BlockPos pos) {
+    private int spawnInSwampHut(ServerWorld world, BlockPos pos) {
         int i = 16;
-        List<CatEntity> list = serverWorld.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(16.0, 8.0, 16.0));
+        List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(16.0, 8.0, 16.0));
         if (list.size() < 1) {
-            return this.spawn(pos, serverWorld);
+            return this.spawn(pos, world);
         }
         return 0;
     }
 
-    private int spawn(BlockPos pos, ServerWorld serverWorld) {
-        CatEntity catEntity = EntityType.CAT.create(serverWorld);
+    private int spawn(BlockPos pos, ServerWorld world) {
+        CatEntity catEntity = EntityType.CAT.create(world);
         if (catEntity == null) {
             return 0;
         }
-        catEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
+        catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
         catEntity.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-        serverWorld.spawnEntityAndPassengers(catEntity);
+        world.spawnEntityAndPassengers(catEntity);
         return 1;
     }
 }

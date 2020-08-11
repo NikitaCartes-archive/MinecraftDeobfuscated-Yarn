@@ -136,9 +136,9 @@ implements CrossbowUser {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (spawnReason != SpawnReason.STRUCTURE) {
-            if (serverWorldAccess.getRandom().nextFloat() < 0.2f) {
+            if (world.getRandom().nextFloat() < 0.2f) {
                 this.setBaby(true);
             } else if (this.isAdult()) {
                 this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
@@ -147,7 +147,7 @@ implements CrossbowUser {
         PiglinBrain.setHuntedRecently(this);
         this.initEquipment(difficulty);
         this.updateEnchantments(difficulty);
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override

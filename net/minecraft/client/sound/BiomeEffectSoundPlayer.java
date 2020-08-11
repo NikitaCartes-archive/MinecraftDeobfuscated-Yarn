@@ -69,7 +69,7 @@ implements ClientPlayerTickable {
         }
         this.additionsSound.ifPresent(biomeAdditionsSound -> {
             if (this.random.nextDouble() < biomeAdditionsSound.getChance()) {
-                this.soundManager.play(PositionedSoundInstance.ambient(biomeAdditionsSound.getEvent()));
+                this.soundManager.play(PositionedSoundInstance.ambient(biomeAdditionsSound.getSound()));
             }
         });
         this.moodSound.ifPresent(biomeMoodSound -> {
@@ -87,7 +87,7 @@ implements ClientPlayerTickable {
                 double k = f - this.player.getZ();
                 double l = MathHelper.sqrt(g * g + h * h + k * k);
                 double m = l + biomeMoodSound.getExtraDistance();
-                PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(biomeMoodSound.getEvent(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m);
+                PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(biomeMoodSound.getSound(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m);
                 this.soundManager.play(positionedSoundInstance);
                 this.moodPercentage = 0.0f;
             } else {

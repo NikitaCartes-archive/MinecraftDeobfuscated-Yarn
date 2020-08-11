@@ -140,7 +140,7 @@ extends LandPathNodeMaker {
         }
         if (pathNodeType == PathNodeType.OPEN) {
             Box box = new Box((double)x - e + 0.5, (double)y + 0.001, (double)z - e + 0.5, (double)x + e + 0.5, (float)y + this.entity.getHeight(), (double)z + e + 0.5);
-            if (!this.entity.world.doesNotCollide(this.entity, box)) {
+            if (!this.entity.world.isSpaceEmpty(this.entity, box)) {
                 return null;
             }
             PathNodeType pathNodeType2 = this.getNodeType(this.cachedWorld, x, y - 1, z, this.entity, this.entityBlockXSize, this.entityBlockYSize, this.entityBlockZSize, false, false);

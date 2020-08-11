@@ -100,8 +100,8 @@ extends DrawableHelper {
         this.client.getProfiler().push("debug");
         RenderSystem.pushMatrix();
         Entity entity = this.client.getCameraEntity();
-        this.blockHit = entity.rayTrace(20.0, 0.0f, false);
-        this.fluidHit = entity.rayTrace(20.0, 0.0f, true);
+        this.blockHit = entity.raycast(20.0, 0.0f, false);
+        this.fluidHit = entity.raycast(20.0, 0.0f, true);
         this.renderLeftText(matrices);
         this.renderRightText(matrices);
         RenderSystem.popMatrix();

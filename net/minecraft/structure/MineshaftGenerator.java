@@ -626,7 +626,7 @@ public class MineshaftGenerator {
         public void translate(int x, int y, int z) {
             super.translate(x, y, z);
             for (BlockBox blockBox : this.entrances) {
-                blockBox.offset(x, y, z);
+                blockBox.move(x, y, z);
             }
         }
 

@@ -28,7 +28,7 @@ implements ClientChatListener {
         if (messageType != MessageType.CHAT) {
             this.client.inGameHud.getChatHud().addMessage(message);
         } else {
-            this.client.inGameHud.getChatHud().method_27147(message);
+            this.client.inGameHud.getChatHud().queueMessage(message);
         }
     }
 }

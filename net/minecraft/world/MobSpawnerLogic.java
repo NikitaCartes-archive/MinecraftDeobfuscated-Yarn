@@ -108,7 +108,7 @@ public abstract class MobSpawnerLogic {
                 double g = j >= 1 ? listTag.getDouble(0) : (double)blockPos.getX() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
                 double h = j >= 2 ? listTag.getDouble(1) : (double)(blockPos.getY() + world.random.nextInt(3) - 1);
                 double d = k = j >= 3 ? listTag.getDouble(2) : (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-                if (!world.doesNotCollide(optional.get().createSimpleBoundingBox(g, h, k))) continue;
+                if (!world.isSpaceEmpty(optional.get().createSimpleBoundingBox(g, h, k))) continue;
                 ServerWorld serverWorld = (ServerWorld)world;
                 if (!SpawnRestriction.canSpawn(optional.get(), serverWorld, SpawnReason.SPAWNER, new BlockPos(g, h, k), world.getRandom())) continue;
                 Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, world, entity -> {

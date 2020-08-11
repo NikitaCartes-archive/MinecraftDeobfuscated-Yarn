@@ -27,7 +27,7 @@ public class SwordItem
 extends ToolItem
 implements Vanishable {
     private final float attackDamage;
-    private final Multimap<EntityAttribute, EntityAttributeModifier> field_23745;
+    private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
     public SwordItem(ToolMaterial toolMaterial, int attackDamage, float attackSpeed, Item.Settings settings) {
         super(toolMaterial, settings);
@@ -35,7 +35,7 @@ implements Vanishable {
         ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
         builder.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.ADDITION));
         builder.put(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Weapon modifier", (double)attackSpeed, EntityAttributeModifier.Operation.ADDITION));
-        this.field_23745 = builder.build();
+        this.attributeModifiers = builder.build();
     }
 
     public float getAttackDamage() {
@@ -81,7 +81,7 @@ implements Vanishable {
     @Override
     public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
         if (slot == EquipmentSlot.MAINHAND) {
-            return this.field_23745;
+            return this.attributeModifiers;
         }
         return super.getAttributeModifiers(slot);
     }

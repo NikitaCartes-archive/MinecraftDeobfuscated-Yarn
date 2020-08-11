@@ -30,7 +30,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import org.jetbrains.annotations.Nullable;
 
 public class NbtIo {
-    public static CompoundTag method_30613(File file) throws IOException {
+    public static CompoundTag readCompressed(File file) throws IOException {
         try (FileInputStream inputStream = new FileInputStream(file);){
             CompoundTag compoundTag = NbtIo.readCompressed(inputStream);
             return compoundTag;
@@ -44,9 +44,9 @@ public class NbtIo {
         }
     }
 
-    public static void method_30614(CompoundTag compoundTag, File file) throws IOException {
+    public static void writeCompressed(CompoundTag tag, File file) throws IOException {
         try (FileOutputStream outputStream = new FileOutputStream(file);){
-            NbtIo.writeCompressed(compoundTag, outputStream);
+            NbtIo.writeCompressed(tag, outputStream);
         }
     }
 
@@ -119,8 +119,8 @@ public class NbtIo {
         throw new IllegalStateException("Decompilation failed");
     }
 
-    public static CompoundTag read(DataInput dataInput) throws IOException {
-        return NbtIo.read(dataInput, PositionTracker.DEFAULT);
+    public static CompoundTag read(DataInput input) throws IOException {
+        return NbtIo.read(input, PositionTracker.DEFAULT);
     }
 
     public static CompoundTag read(DataInput input, PositionTracker tracker) throws IOException {

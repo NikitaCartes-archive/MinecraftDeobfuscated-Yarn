@@ -23,9 +23,9 @@ implements FeatureConfig {
         this(features, () -> defaultFeature);
     }
 
-    private RandomFeatureConfig(List<RandomFeatureEntry> list, Supplier<ConfiguredFeature<?, ?>> supplier) {
-        this.features = list;
-        this.defaultFeature = supplier;
+    private RandomFeatureConfig(List<RandomFeatureEntry> features, Supplier<ConfiguredFeature<?, ?>> defaultFeature) {
+        this.features = features;
+        this.defaultFeature = defaultFeature;
     }
 
     @Override

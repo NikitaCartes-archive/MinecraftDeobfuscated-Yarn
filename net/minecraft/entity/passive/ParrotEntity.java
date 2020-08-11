@@ -73,7 +73,7 @@ import org.jetbrains.annotations.Nullable;
 public class ParrotEntity
 extends TameableShoulderEntity
 implements Flutterer {
-    private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> VARIANT = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final Predicate<MobEntity> CAN_IMITATE = new Predicate<MobEntity>(){
 
         @Override
@@ -141,12 +141,12 @@ implements Flutterer {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setVariant(this.random.nextInt(5));
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(false);
         }
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -304,7 +304,7 @@ implements Flutterer {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return null;
     }
 
@@ -394,17 +394,17 @@ implements Flutterer {
     }
 
     public int getVariant() {
-        return MathHelper.clamp(this.dataTracker.get(ATTR_VARIANT), 0, 4);
+        return MathHelper.clamp(this.dataTracker.get(VARIANT), 0, 4);
     }
 
     public void setVariant(int variant) {
-        this.dataTracker.set(ATTR_VARIANT, variant);
+        this.dataTracker.set(VARIANT, variant);
     }
 
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(ATTR_VARIANT, 0);
+        this.dataTracker.startTracking(VARIANT, 0);
     }
 
     @Override

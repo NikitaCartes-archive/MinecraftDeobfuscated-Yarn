@@ -210,7 +210,7 @@ implements PaletteResizeListener<T> {
         return 1 + this.palette.getPacketSize() + PacketByteBuf.getVarIntSizeBytes(this.data.getSize()) + this.data.getStorage().length * 8;
     }
 
-    public boolean method_19526(Predicate<T> predicate) {
+    public boolean hasAny(Predicate<T> predicate) {
         return this.palette.accepts(predicate);
     }
 

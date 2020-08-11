@@ -55,7 +55,7 @@ extends BlockWithEntity {
         if (blockEntity instanceof BarrelBlockEntity) {
             player.openHandledScreen((BarrelBlockEntity)blockEntity);
             player.incrementStat(Stats.OPEN_BARREL);
-            PiglinBrain.onGuardedBlockBroken(player, true);
+            PiglinBrain.onGuardedBlockInteracted(player, true);
         }
         return ActionResult.CONSUME;
     }

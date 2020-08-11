@@ -28,8 +28,8 @@ implements IndexedIterable<K> {
     }
 
     @Override
-    public int getRawId(@Nullable K object) {
-        return this.getIdFromIndex(this.findIndex(object, this.getIdealIndex(object)));
+    public int getRawId(@Nullable K entry) {
+        return this.getIdFromIndex(this.findIndex(entry, this.getIdealIndex(entry)));
     }
 
     @Override

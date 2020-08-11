@@ -279,7 +279,7 @@ implements Monster {
     }
 
     private boolean canStay(BlockPos pos, Direction attachSide) {
-        return this.world.isDirectionSolid(pos.offset(attachSide), this, attachSide.getOpposite()) && this.world.doesNotCollide(this, ShulkerLidCollisions.getLidCollisionBox(pos, attachSide.getOpposite()));
+        return this.world.isDirectionSolid(pos.offset(attachSide), this, attachSide.getOpposite()) && this.world.isSpaceEmpty(this, ShulkerLidCollisions.getLidCollisionBox(pos, attachSide.getOpposite()));
     }
 
     protected boolean tryTeleport() {
@@ -290,7 +290,7 @@ implements Monster {
         for (int i = 0; i < 5; ++i) {
             Direction direction;
             BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
-            if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2)) || (direction = this.findAttachSide(blockPos2)) == null) continue;
+            if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.isSpaceEmpty(this, new Box(blockPos2)) || (direction = this.findAttachSide(blockPos2)) == null) continue;
             this.dataTracker.set(ATTACHED_FACE, direction);
             this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0f, 1.0f);
             this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos2));

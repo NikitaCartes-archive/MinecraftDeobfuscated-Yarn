@@ -70,8 +70,8 @@ implements Shearable {
     }
 
     @Override
-    public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
-        UUID uUID = lightningEntity.getUuid();
+    public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
+        UUID uUID = lightning.getUuid();
         if (!uUID.equals(this.lightningId)) {
             this.setType(this.getMooshroomType() == Type.RED ? Type.BROWN : Type.RED);
             this.lightningId = uUID;
@@ -229,8 +229,8 @@ implements Shearable {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return this.createChild(serverWorld, passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return this.createChild(world, entity);
     }
 
     public static enum Type {

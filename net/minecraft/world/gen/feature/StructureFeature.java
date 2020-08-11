@@ -90,9 +90,9 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     public static final StructureFeature<StructurePoolFeatureConfig> VILLAGE = StructureFeature.register("Village", new VillageFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<DefaultFeatureConfig> NETHER_FOSSIL = StructureFeature.register("Nether_Fossil", new NetherFossilFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION);
     public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = StructureFeature.register("Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
-    public static final List<StructureFeature<?>> field_24861 = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
-    private static final Identifier field_26362 = new Identifier("jigsaw");
-    private static final Map<Identifier, Identifier> field_25839 = ImmutableMap.builder().put(new Identifier("nvi"), field_26362).put(new Identifier("pcp"), field_26362).put(new Identifier("bastionremnant"), field_26362).put(new Identifier("runtime"), field_26362).build();
+    public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
+    private static final Identifier JIGSAW_ID = new Identifier("jigsaw");
+    private static final Map<Identifier, Identifier> field_25839 = ImmutableMap.builder().put(new Identifier("nvi"), JIGSAW_ID).put(new Identifier("pcp"), JIGSAW_ID).put(new Identifier("bastionremnant"), JIGSAW_ID).put(new Identifier("runtime"), JIGSAW_ID).build();
     private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 
     private static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
@@ -117,7 +117,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     }
 
     @Nullable
-    public static StructureStart<?> readStructureStart(StructureManager structureManager, CompoundTag tag, long worldSeed) {
+    public static StructureStart<?> readStructureStart(StructureManager manager, CompoundTag tag, long worldSeed) {
         String string = tag.getString("id");
         if ("INVALID".equals(string)) {
             return StructureStart.DEFAULT;
@@ -145,7 +145,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     continue;
                 }
                 try {
-                    StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag);
+                    StructurePiece structurePiece = structurePieceType.load(manager, compoundTag);
                     structureStart.getChildren().add(structurePiece);
                     continue;
                 } catch (Exception exception) {
@@ -180,7 +180,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
      * @param searchRadius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
      */
     @Nullable
-    public BlockPos locateStructure(WorldView worldView, StructureAccessor structureAccessor, BlockPos searchStartPos, int searchRadius, boolean skipExistingChunks, long worldSeed, StructureConfig config) {
+    public BlockPos locateStructure(WorldView world, StructureAccessor structureAccessor, BlockPos searchStartPos, int searchRadius, boolean skipExistingChunks, long worldSeed, StructureConfig config) {
         int i = config.getSpacing();
         int j = searchStartPos.getX() >> 4;
         int k = searchStartPos.getZ() >> 4;
@@ -195,7 +195,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     int o = j + i * m;
                     int p = k + i * n;
                     ChunkPos chunkPos = this.getStartChunk(config, worldSeed, chunkRandom, o, p);
-                    Chunk chunk = worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
+                    Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
                     StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), this, chunk);
                     if (structureStart != null && structureStart.hasChildren()) {
                         if (skipExistingChunks && structureStart.isInExistingChunk()) {
@@ -215,7 +215,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     }
 
     /**
-     * If true, this structure's start position will be uniformy distributed within
+     * If true, this structure's start position will be uniformly distributed within
      * a placement grid cell. If false, the structure's starting point will be biased
      * towards the center of the cell.
      */

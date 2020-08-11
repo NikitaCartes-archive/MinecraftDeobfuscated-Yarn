@@ -86,7 +86,7 @@ public class ParticleTypes {
     public static final DefaultParticleType LANDING_OBSIDIAN_TEAR = ParticleTypes.register("landing_obsidian_tear", false);
     public static final DefaultParticleType REVERSE_PORTAL = ParticleTypes.register("reverse_portal", false);
     public static final DefaultParticleType WHITE_ASH = ParticleTypes.register("white_ash", false);
-    public static final Codec<ParticleEffect> field_25125 = Registry.PARTICLE_TYPE.dispatch("type", ParticleEffect::getType, ParticleType::method_29138);
+    public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
     private static DefaultParticleType register(String name, boolean alwaysShow) {
         return Registry.register(Registry.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));
@@ -96,7 +96,7 @@ public class ParticleTypes {
         return Registry.register(Registry.PARTICLE_TYPE, name, new ParticleType<T>(false, factory){
 
             @Override
-            public Codec<T> method_29138() {
+            public Codec<T> getCodec() {
                 return (Codec)function.apply(this);
             }
         });

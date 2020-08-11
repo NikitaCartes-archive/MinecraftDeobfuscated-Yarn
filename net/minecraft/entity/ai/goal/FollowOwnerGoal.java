@@ -139,7 +139,7 @@ extends Goal {
             return false;
         }
         BlockPos blockPos = pos.subtract(this.tameable.getBlockPos());
-        return this.world.doesNotCollide(this.tameable, this.tameable.getBoundingBox().offset(blockPos));
+        return this.world.isSpaceEmpty(this.tameable, this.tameable.getBoundingBox().offset(blockPos));
     }
 
     private int getRandomInt(int min, int max) {

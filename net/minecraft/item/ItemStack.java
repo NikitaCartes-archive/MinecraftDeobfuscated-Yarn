@@ -84,7 +84,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public final class ItemStack {
-    public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.ITEM.fieldOf("id")).forGetter(itemStack -> itemStack.item), ((MapCodec)Codec.INT.fieldOf("Count")).forGetter(itemStack -> itemStack.count), CompoundTag.field_25128.optionalFieldOf("tag").forGetter(itemStack -> Optional.ofNullable(itemStack.tag))).apply((Applicative<ItemStack, ?>)instance, ItemStack::new));
+    public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.ITEM.fieldOf("id")).forGetter(itemStack -> itemStack.item), ((MapCodec)Codec.INT.fieldOf("Count")).forGetter(itemStack -> itemStack.count), CompoundTag.CODEC.optionalFieldOf("tag").forGetter(itemStack -> Optional.ofNullable(itemStack.tag))).apply((Applicative<ItemStack, ?>)instance, ItemStack::new));
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ItemStack EMPTY = new ItemStack((ItemConvertible)null);
     public static final DecimalFormat MODIFIER_FORMAT = Util.make(new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));

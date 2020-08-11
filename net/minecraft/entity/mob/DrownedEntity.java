@@ -57,7 +57,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import org.jetbrains.annotations.Nullable;
 
 public class DrownedEntity
@@ -92,8 +92,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && this.random.nextFloat() < 0.03f) {
             this.equipStack(EquipmentSlot.OFFHAND, new ItemStack(Items.NAUTILUS_SHELL));
             this.handDropChances[EquipmentSlot.OFFHAND.getEntitySlotId()] = 2.0f;
@@ -101,14 +101,14 @@ implements RangedAttackMob {
         return entityData;
     }
 
-    public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         boolean bl;
-        Optional<RegistryKey<Biome>> optional = serverWorldAccess.method_31081(pos);
-        boolean bl2 = bl = serverWorldAccess.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(serverWorldAccess, pos, random) && (spawnReason == SpawnReason.SPAWNER || serverWorldAccess.getFluidState(pos).isIn(FluidTags.WATER));
-        if (Objects.equals(optional, Optional.of(BuiltInBiomes.RIVER)) || Objects.equals(optional, Optional.of(BuiltInBiomes.FROZEN_RIVER))) {
+        Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
+        boolean bl2 = bl = world.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(world, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
+        if (Objects.equals(optional, Optional.of(BiomeKeys.RIVER)) || Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_RIVER))) {
             return random.nextInt(15) == 0 && bl;
         }
-        return random.nextInt(40) == 0 && DrownedEntity.isValidSpawnDepth(serverWorldAccess, pos) && bl;
+        return random.nextInt(40) == 0 && DrownedEntity.isValidSpawnDepth(world, pos) && bl;
     }
 
     private static boolean isValidSpawnDepth(WorldAccess world, BlockPos pos) {

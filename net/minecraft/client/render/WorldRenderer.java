@@ -1409,7 +1409,7 @@ AutoCloseable {
         RenderSystem.disableAlphaTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        float[] fs = this.world.getSkyProperties().getSkyColor(this.world.method_30274(tickDelta), tickDelta);
+        float[] fs = this.world.getSkyProperties().getSkyColor(this.world.getSkyAngle(tickDelta), tickDelta);
         if (fs != null) {
             RenderSystem.disableTexture();
             RenderSystem.shadeModel(7425);
@@ -1442,7 +1442,7 @@ AutoCloseable {
         i = 1.0f - this.world.getRainGradient(tickDelta);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, i);
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0f));
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.world.method_30274(tickDelta) * 360.0f));
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(tickDelta) * 360.0f));
         Matrix4f matrix4f2 = matrices.peek().getModel();
         k = 30.0f;
         this.textureManager.bindTexture(SUN);

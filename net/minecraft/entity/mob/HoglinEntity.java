@@ -164,11 +164,11 @@ Hoglin {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        if (serverWorldAccess.getRandom().nextFloat() < 0.2f) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        if (world.getRandom().nextFloat() < 0.2f) {
             this.setBaby(true);
         }
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -292,8 +292,8 @@ Hoglin {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        HoglinEntity hoglinEntity = EntityType.HOGLIN.create(serverWorld);
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        HoglinEntity hoglinEntity = EntityType.HOGLIN.create(world);
         if (hoglinEntity != null) {
             hoglinEntity.setPersistent();
         }

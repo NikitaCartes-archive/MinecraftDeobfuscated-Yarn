@@ -32,7 +32,7 @@ public class WorldSaveHandler {
         try {
             CompoundTag compoundTag = playerEntity.toTag(new CompoundTag());
             File file = File.createTempFile(playerEntity.getUuidAsString() + "-", ".dat", this.playerDataDir);
-            NbtIo.method_30614(compoundTag, file);
+            NbtIo.writeCompressed(compoundTag, file);
             File file2 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
             File file3 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat_old");
             Util.backupAndReplace(file2, file, file3);
@@ -47,7 +47,7 @@ public class WorldSaveHandler {
         try {
             File file = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
             if (file.exists() && file.isFile()) {
-                compoundTag = NbtIo.method_30613(file);
+                compoundTag = NbtIo.readCompressed(file);
             }
         } catch (Exception exception) {
             LOGGER.warn("Failed to load player data for {}", (Object)playerEntity.getName().getString());

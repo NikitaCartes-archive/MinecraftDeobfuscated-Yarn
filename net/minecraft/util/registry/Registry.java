@@ -260,8 +260,8 @@ IndexedIterable<T> {
         return mutableRegistry.add(registryKey, registry, lifecycle);
     }
 
-    protected Registry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
-        this.registryKey = registryKey;
+    protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
+        this.registryKey = key;
         this.lifecycle = lifecycle;
     }
 
@@ -281,7 +281,7 @@ IndexedIterable<T> {
                 if (object == null) {
                     return DataResult.error("Unknown registry id: " + number);
                 }
-                return DataResult.success(object, this.method_31139(object));
+                return DataResult.success(object, this.getEntryLifecycle(object));
             }).map((? super R object) -> Pair.of(object, dynamicOps.empty()));
         }
         return Identifier.CODEC.decode(dynamicOps, object2).flatMap((? super R pair) -> {
@@ -289,7 +289,7 @@ IndexedIterable<T> {
             if (object == null) {
                 return DataResult.error("Unknown registry key: " + pair.getFirst());
             }
-            return DataResult.success(Pair.of(object, pair.getSecond()), this.method_31139(object));
+            return DataResult.success(Pair.of(object, pair.getSecond()), this.getEntryLifecycle(object));
         });
     }
 
@@ -323,23 +323,28 @@ IndexedIterable<T> {
     @Nullable
     public abstract T get(@Nullable Identifier var1);
 
-    protected abstract Lifecycle method_31139(T var1);
+    protected abstract Lifecycle getEntryLifecycle(T var1);
 
-    public abstract Lifecycle method_31138();
+    public abstract Lifecycle getLifecycle();
 
     public Optional<T> getOrEmpty(@Nullable Identifier id) {
         return Optional.ofNullable(this.get(id));
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Optional<T> method_31189(@Nullable RegistryKey<T> registryKey) {
-        return Optional.ofNullable(this.get(registryKey));
+    public Optional<T> getOrEmpty(@Nullable RegistryKey<T> key) {
+        return Optional.ofNullable(this.get(key));
     }
 
-    public T method_31140(RegistryKey<T> registryKey) {
-        T object = this.get(registryKey);
+    /**
+     * Gets an entry from the registry.
+     * 
+     * @throws IllegalStateException if the entry was not present in the registry
+     */
+    public T getOrThrow(RegistryKey<T> key) {
+        T object = this.get(key);
         if (object == null) {
-            throw new IllegalStateException("Missing: " + registryKey);
+            throw new IllegalStateException("Missing: " + key);
         }
         return object;
     }

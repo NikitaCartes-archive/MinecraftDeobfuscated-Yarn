@@ -145,7 +145,7 @@ extends ProjectileEntity {
         boolean bl;
         this.velocityRandom.setSeed(this.getUuid().getLeastSignificantBits() ^ this.world.getTime());
         super.tick();
-        PlayerEntity playerEntity = this.getOwner();
+        PlayerEntity playerEntity = this.getPlayerOwner();
         if (playerEntity == null) {
             this.remove();
             return;
@@ -396,7 +396,7 @@ extends ProjectileEntity {
     }
 
     public int use(ItemStack usedItem) {
-        PlayerEntity playerEntity = this.getOwner();
+        PlayerEntity playerEntity = this.getPlayerOwner();
         if (this.world.isClient || playerEntity == null) {
             return 0;
         }
@@ -458,15 +458,14 @@ extends ProjectileEntity {
     @Override
     public void remove() {
         super.remove();
-        PlayerEntity playerEntity = this.getOwner();
+        PlayerEntity playerEntity = this.getPlayerOwner();
         if (playerEntity != null) {
             playerEntity.fishHook = null;
         }
     }
 
-    @Override
     @Nullable
-    public PlayerEntity getOwner() {
+    public PlayerEntity getPlayerOwner() {
         Entity entity = this.getOwner();
         return entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
     }

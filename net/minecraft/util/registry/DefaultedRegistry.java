@@ -32,8 +32,8 @@ extends SimpleRegistry<T> {
     }
 
     @Override
-    public int getRawId(@Nullable T object) {
-        int i = super.getRawId(object);
+    public int getRawId(@Nullable T entry) {
+        int i = super.getRawId(entry);
         return i == -1 ? super.getRawId(this.defaultValue) : i;
     }
 

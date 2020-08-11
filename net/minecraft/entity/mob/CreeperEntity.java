@@ -202,8 +202,8 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
-        super.onStruckByLightning(serverWorld, lightningEntity);
+    public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
+        super.onStruckByLightning(world, lightning);
         this.dataTracker.set(CHARGED, true);
     }
 

@@ -32,7 +32,7 @@ public class ReloadCommand {
     private static Collection<String> method_29478(ResourcePackManager resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {
         resourcePackManager.scanPacks();
         ArrayList<String> collection2 = Lists.newArrayList(collection);
-        List<String> collection3 = saveProperties.method_29589().getDisabled();
+        List<String> collection3 = saveProperties.getDataPackSettings().getDisabled();
         for (String string : resourcePackManager.getNames()) {
             if (collection3.contains(string) || collection2.contains(string)) continue;
             collection2.add(string);

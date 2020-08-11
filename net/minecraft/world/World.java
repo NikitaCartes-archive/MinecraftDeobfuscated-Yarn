@@ -106,12 +106,12 @@ AutoCloseable {
     private final BiomeAccess biomeAccess;
     private final RegistryKey<World> registryKey;
 
-    protected World(MutableWorldProperties properties, RegistryKey<World> registryKey, final DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l) {
-        this.profiler = supplier;
+    protected World(MutableWorldProperties properties, RegistryKey<World> registryRef, final DimensionType dimensionType, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed) {
+        this.profiler = profiler;
         this.properties = properties;
         this.dimension = dimensionType;
-        this.registryKey = registryKey;
-        this.isClient = bl;
+        this.registryKey = registryRef;
+        this.isClient = isClient;
         this.border = dimensionType.getCoordinateScale() != 1.0 ? new WorldBorder(){
 
             @Override
@@ -125,8 +125,8 @@ AutoCloseable {
             }
         } : new WorldBorder();
         this.thread = Thread.currentThread();
-        this.biomeAccess = new BiomeAccess(this, l, dimensionType.getBiomeAccessType());
-        this.debugWorld = bl2;
+        this.biomeAccess = new BiomeAccess(this, seed, dimensionType.getBiomeAccessType());
+        this.debugWorld = debugWorld;
     }
 
     @Override
@@ -381,7 +381,7 @@ AutoCloseable {
     }
 
     public float getSkyAngleRadians(float tickDelta) {
-        float f = this.method_30274(tickDelta);
+        float f = this.getSkyAngle(tickDelta);
         return f * ((float)Math.PI * 2);
     }
 
@@ -596,7 +596,7 @@ AutoCloseable {
     public void calculateAmbientDarkness() {
         double d = 1.0 - (double)(this.getRainGradient(1.0f) * 5.0f) / 16.0;
         double e = 1.0 - (double)(this.getThunderGradient(1.0f) * 5.0f) / 16.0;
-        double f = 0.5 + 2.0 * MathHelper.clamp((double)MathHelper.cos(this.method_30274(1.0f) * ((float)Math.PI * 2)), -0.25, 0.25);
+        double f = 0.5 + 2.0 * MathHelper.clamp((double)MathHelper.cos(this.getSkyAngle(1.0f) * ((float)Math.PI * 2)), -0.25, 0.25);
         this.ambientDarkness = (int)((1.0 - f * d * e) * 11.0);
     }
 
@@ -994,6 +994,12 @@ AutoCloseable {
         return this.biomeAccess;
     }
 
+    /**
+     * Checks if this world is a debug world.
+     * 
+     * <p>Debug worlds are not modifiable and are typically meant for development and debug use only.
+     * See <a href="https://minecraft.gamepedia.com/Debug_mode">the minecraft wiki</a> as well.
+     */
     public final boolean isDebugWorld() {
         return this.debugWorld;
     }

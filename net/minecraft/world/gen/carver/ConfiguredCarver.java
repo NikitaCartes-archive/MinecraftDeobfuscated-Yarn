@@ -18,9 +18,9 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.CarverConfig;
 
 public class ConfiguredCarver<WC extends CarverConfig> {
-    public static final Codec<ConfiguredCarver<?>> field_25832 = Registry.CARVER.dispatch(configuredCarver -> configuredCarver.carver, Carver::getCodec);
-    public static final Codec<Supplier<ConfiguredCarver<?>>> field_24828 = RegistryElementCodec.of(Registry.CONFIGURED_CARVER_WORLDGEN, field_25832);
-    public static final Codec<List<Supplier<ConfiguredCarver<?>>>> field_26755 = RegistryElementCodec.method_31194(Registry.CONFIGURED_CARVER_WORLDGEN, field_25832);
+    public static final Codec<ConfiguredCarver<?>> CODEC = Registry.CARVER.dispatch(configuredCarver -> configuredCarver.carver, Carver::getCodec);
+    public static final Codec<Supplier<ConfiguredCarver<?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_CARVER_WORLDGEN, CODEC);
+    public static final Codec<List<Supplier<ConfiguredCarver<?>>>> field_26755 = RegistryElementCodec.method_31194(Registry.CONFIGURED_CARVER_WORLDGEN, CODEC);
     private final Carver<WC> carver;
     private final WC config;
 
@@ -29,7 +29,7 @@ public class ConfiguredCarver<WC extends CarverConfig> {
         this.config = config;
     }
 
-    public WC method_30378() {
+    public WC getConfig() {
         return this.config;
     }
 

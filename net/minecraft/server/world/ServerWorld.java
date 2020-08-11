@@ -180,9 +180,9 @@ implements StructureWorldAccess {
     private final StructureAccessor structureAccessor;
     private final boolean field_25143;
 
-    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean bl, long l, List<Spawner> list, boolean bl2) {
-        super(properties, registryKey, dimensionType, server::getProfiler, false, bl, l);
-        this.field_25143 = bl2;
+    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long l, List<Spawner> list, boolean bl) {
+        super(properties, registryKey, dimensionType, server::getProfiler, false, debugWorld, l);
+        this.field_25143 = bl;
         this.server = server;
         this.spawners = list;
         this.worldProperties = properties;

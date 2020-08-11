@@ -41,19 +41,19 @@ extends BlockView {
         return this.intersectsEntities(entity, VoxelShapes.cuboid(entity.getBoundingBox()));
     }
 
-    default public boolean doesNotCollide(Box box) {
-        return this.doesNotCollide(null, box, entity -> true);
+    default public boolean isSpaceEmpty(Box box) {
+        return this.isSpaceEmpty(null, box, entity -> true);
     }
 
-    default public boolean doesNotCollide(Entity entity2) {
-        return this.doesNotCollide(entity2, entity2.getBoundingBox(), entity -> true);
+    default public boolean isSpaceEmpty(Entity entity2) {
+        return this.isSpaceEmpty(entity2, entity2.getBoundingBox(), entity -> true);
     }
 
-    default public boolean doesNotCollide(Entity entity2, Box box) {
-        return this.doesNotCollide(entity2, box, entity -> true);
+    default public boolean isSpaceEmpty(Entity entity2, Box box) {
+        return this.isSpaceEmpty(entity2, box, entity -> true);
     }
 
-    default public boolean doesNotCollide(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
+    default public boolean isSpaceEmpty(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
         return this.getCollisions(entity, box, predicate).allMatch(VoxelShape::isEmpty);
     }
 
@@ -68,11 +68,11 @@ extends BlockView {
     }
 
     @Environment(value=EnvType.CLIENT)
-    default public boolean method_30635(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
-        return this.method_30030(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
+    default public boolean isBlockSpaceEmpty(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
+        return this.getBlockCollisions(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
     }
 
-    default public Stream<VoxelShape> method_30030(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
+    default public Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
         return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box, biPredicate), false);
     }
 }

@@ -85,7 +85,7 @@ extends AbstractTraderEntity {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return null;
     }
 

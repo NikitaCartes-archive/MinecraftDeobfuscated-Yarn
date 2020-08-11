@@ -233,7 +233,7 @@ AutoCloseable {
         this.client.getProfiler().push("pick");
         this.client.targetedEntity = null;
         double d = this.client.interactionManager.getReachDistance();
-        this.client.crosshairTarget = entity2.rayTrace(d, tickDelta, false);
+        this.client.crosshairTarget = entity2.raycast(d, tickDelta, false);
         Vec3d vec3d = entity2.getCameraPosVec(tickDelta);
         boolean bl = false;
         int i = 3;
@@ -254,7 +254,7 @@ AutoCloseable {
         Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
         float f = 1.0f;
         Box box = entity2.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
-        EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity2, vec3d, vec3d3, box, entity -> !entity.isSpectator() && entity.collides(), e);
+        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity2, vec3d, vec3d3, box, entity -> !entity.isSpectator() && entity.collides(), e);
         if (entityHitResult != null) {
             Entity entity22 = entityHitResult.getEntity();
             Vec3d vec3d4 = entityHitResult.getPos();

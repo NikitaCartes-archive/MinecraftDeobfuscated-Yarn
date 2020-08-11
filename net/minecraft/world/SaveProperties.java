@@ -20,9 +20,9 @@ import net.minecraft.world.level.ServerWorldProperties;
 import org.jetbrains.annotations.Nullable;
 
 public interface SaveProperties {
-    public DataPackSettings method_29589();
+    public DataPackSettings getDataPackSettings();
 
-    public void method_29590(DataPackSettings var1);
+    public void updateLevelInfo(DataPackSettings var1);
 
     public boolean isModded();
 
@@ -94,6 +94,6 @@ public interface SaveProperties {
     public GeneratorOptions getGeneratorOptions();
 
     @Environment(value=EnvType.CLIENT)
-    public Lifecycle method_29588();
+    public Lifecycle getLifecycle();
 }
 

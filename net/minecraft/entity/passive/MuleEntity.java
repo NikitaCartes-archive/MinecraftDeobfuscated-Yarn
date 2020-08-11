@@ -55,8 +55,8 @@ extends AbstractDonkeyEntity {
     }
 
     @Override
-    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return EntityType.MULE.create(serverWorld);
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return EntityType.MULE.create(world);
     }
 }
 

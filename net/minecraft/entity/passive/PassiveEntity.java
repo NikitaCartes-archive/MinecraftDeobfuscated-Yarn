@@ -30,7 +30,7 @@ extends PathAwareEntity {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         PassiveData passiveData;
         if (entityData == null) {
             entityData = new PassiveData(true);
@@ -39,7 +39,7 @@ extends PathAwareEntity {
             this.setBreedingAge(-24000);
         }
         passiveData.countSpawned();
-        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Nullable

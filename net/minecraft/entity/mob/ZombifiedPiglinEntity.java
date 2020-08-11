@@ -48,7 +48,7 @@ implements Angerable {
     private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION);
     private static final IntRange field_25382 = Durations.betweenSeconds(0, 1);
     private int angrySoundDelay;
-    private static final IntRange field_25379 = Durations.betweenSeconds(20, 39);
+    private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
     private int angerTime;
     private UUID targetUuid;
     private static final IntRange field_25609 = Durations.betweenSeconds(4, 6);
@@ -152,7 +152,7 @@ implements Angerable {
 
     @Override
     public void chooseRandomAngerTime() {
-        this.setAngerTime(field_25379.choose(this.random));
+        this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
     }
 
     public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

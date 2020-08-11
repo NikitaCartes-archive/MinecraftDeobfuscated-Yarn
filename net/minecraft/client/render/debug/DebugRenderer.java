@@ -130,7 +130,7 @@ public class DebugRenderer {
             return Optional.empty();
         }
         Vec3d vec3d = entity2.getCameraPosVec(1.0f);
-        EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity2, vec3d, vec3d3 = vec3d.add(vec3d2 = entity2.getRotationVec(1.0f).multiply(maxDistance)), box = entity2.getBoundingBox().stretch(vec3d2).expand(1.0), predicate = entity -> !entity.isSpectator() && entity.collides(), i = maxDistance * maxDistance);
+        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity2, vec3d, vec3d3 = vec3d.add(vec3d2 = entity2.getRotationVec(1.0f).multiply(maxDistance)), box = entity2.getBoundingBox().stretch(vec3d2).expand(1.0), predicate = entity -> !entity.isSpectator() && entity.collides(), i = maxDistance * maxDistance);
         if (entityHitResult == null) {
             return Optional.empty();
         }

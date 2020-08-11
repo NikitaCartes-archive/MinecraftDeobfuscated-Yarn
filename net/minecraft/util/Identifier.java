@@ -46,9 +46,10 @@ implements Comparable<Identifier> {
     }
 
     /**
-     * @param id A string of the form <namespace>:<path>, for example minecraft:iron_ingot.
-     * The string will be split (on the :) into an identifier with the specified path and namespace.
-     * Prefer using the constructor {@link net.minecraft.util.Identifier#Identifier(java.lang.String, java.lang.String)} that takes the namespace and path as individual parameters to avoid mistakes.
+     * <p>Takes a string of the form {@code <namespace>:<path>}, for example {@code minecraft:iron_ingot}.</p>
+     * <p>The string will be split (on the {@code :}) into an identifier with the specified path and namespace.</p>
+     * Prefer using the {@link #Identifier(java.lang.String, java.lang.String)} constructor that takes the namespace and path as individual parameters to avoid mistakes.
+     * @throws InvalidIdentifierException if the string cannot be parsed as an identifier.
      */
     public Identifier(String id) {
         this(Identifier.split(id, ':'));
@@ -62,6 +63,11 @@ implements Comparable<Identifier> {
         return new Identifier(Identifier.split(id, delimiter));
     }
 
+    /**
+     * <p>Parses a string into an {@code Identifier}.</p>
+     * Takes a string of the form {@code <namespace>:<path>}, for example {@code minecraft:iron_ingot}.
+     * @return resulting identifier, or {@code null} if the string couldn't be parsed as an identifier
+     */
     @Nullable
     public static Identifier tryParse(String id) {
         try {

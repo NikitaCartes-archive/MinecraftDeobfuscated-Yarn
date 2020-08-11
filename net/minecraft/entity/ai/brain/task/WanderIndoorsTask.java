@@ -35,7 +35,7 @@ extends Task<PathAwareEntity> {
         BlockPos blockPos2 = pathAwareEntity.getBlockPos();
         List list = BlockPos.stream(blockPos2.add(-1, -1, -1), blockPos2.add(1, 1, 1)).map(BlockPos::toImmutable).collect(Collectors.toList());
         Collections.shuffle(list);
-        Optional<BlockPos> optional = list.stream().filter(blockPos -> !serverWorld.isSkyVisible((BlockPos)blockPos)).filter(blockPos -> serverWorld.isTopSolid((BlockPos)blockPos, pathAwareEntity)).filter(blockPos -> serverWorld.doesNotCollide(pathAwareEntity)).findFirst();
+        Optional<BlockPos> optional = list.stream().filter(blockPos -> !serverWorld.isSkyVisible((BlockPos)blockPos)).filter(blockPos -> serverWorld.isTopSolid((BlockPos)blockPos, pathAwareEntity)).filter(blockPos -> serverWorld.isSpaceEmpty(pathAwareEntity)).findFirst();
         optional.ifPresent(blockPos -> pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget((BlockPos)blockPos, this.speed, 0)));
     }
 }

@@ -57,7 +57,7 @@ NamedScreenHandlerFactory {
             Entity entity;
             ItemScatterer.spawn(this.world, this, (Inventory)this);
             if (!this.world.isClient && (entity = damageSource.getSource()) != null && entity.getType() == EntityType.PLAYER) {
-                PiglinBrain.onGuardedBlockBroken((PlayerEntity)entity, true);
+                PiglinBrain.onGuardedBlockInteracted((PlayerEntity)entity, true);
             }
         }
     }
@@ -168,7 +168,7 @@ NamedScreenHandlerFactory {
     public ActionResult interact(PlayerEntity player, Hand hand) {
         player.openHandledScreen(this);
         if (!player.world.isClient) {
-            PiglinBrain.onGuardedBlockBroken(player, true);
+            PiglinBrain.onGuardedBlockInteracted(player, true);
             return ActionResult.CONSUME;
         }
         return ActionResult.SUCCESS;

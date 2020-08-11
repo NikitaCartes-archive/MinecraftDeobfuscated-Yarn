@@ -29,8 +29,8 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 
@@ -95,7 +95,7 @@ extends BiomeSource {
     public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
         int i = this.threeDimensionalSampling ? biomeY : 0;
         Biome.MixedNoisePoint mixedNoisePoint = new Biome.MixedNoisePoint((float)this.temperatureNoise.sample(biomeX, i, biomeZ), (float)this.humidityNoise.sample(biomeX, i, biomeZ), (float)this.altitudeNoise.sample(biomeX, i, biomeZ), (float)this.weirdnessNoise.sample(biomeX, i, biomeZ), 0.0f);
-        return this.biomePoints.stream().min(Comparator.comparing(pair -> Float.valueOf(((Biome.MixedNoisePoint)pair.getFirst()).calculateDistanceTo(mixedNoisePoint)))).map(Pair::getSecond).map(Supplier::get).orElse(Biomes.THE_VOID);
+        return this.biomePoints.stream().min(Comparator.comparing(pair -> Float.valueOf(((Biome.MixedNoisePoint)pair.getFirst()).calculateDistanceTo(mixedNoisePoint)))).map(Pair::getSecond).map(Supplier::get).orElse(BuiltinBiomes.THE_VOID);
     }
 
     public boolean method_28462(long l) {
@@ -104,7 +104,7 @@ extends BiomeSource {
 
     public static class Preset {
         private static final Map<Identifier, Preset> field_24724 = Maps.newHashMap();
-        public static final Preset NETHER = new Preset(new Identifier("nether"), (preset, registry, long_) -> new MultiNoiseBiomeSource((long)long_, ImmutableList.of(Pair.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.method_31140(BuiltInBiomes.NETHER_WASTES)), Pair.of(new Biome.MixedNoisePoint(0.0f, -0.5f, 0.0f, 0.0f, 0.0f), () -> registry.method_31140(BuiltInBiomes.SOUL_SAND_VALLEY)), Pair.of(new Biome.MixedNoisePoint(0.4f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.method_31140(BuiltInBiomes.CRIMSON_FOREST)), Pair.of(new Biome.MixedNoisePoint(0.0f, 0.5f, 0.0f, 0.0f, 0.375f), () -> registry.method_31140(BuiltInBiomes.WARPED_FOREST)), Pair.of(new Biome.MixedNoisePoint(-0.5f, 0.0f, 0.0f, 0.0f, 0.175f), () -> registry.method_31140(BuiltInBiomes.BASALT_DELTAS))), Optional.of(Pair.of(registry, preset))));
+        public static final Preset NETHER = new Preset(new Identifier("nether"), (preset, registry, long_) -> new MultiNoiseBiomeSource((long)long_, ImmutableList.of(Pair.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.NETHER_WASTES)), Pair.of(new Biome.MixedNoisePoint(0.0f, -0.5f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(new Biome.MixedNoisePoint(0.4f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.CRIMSON_FOREST)), Pair.of(new Biome.MixedNoisePoint(0.0f, 0.5f, 0.0f, 0.0f, 0.375f), () -> registry.getOrThrow(BiomeKeys.WARPED_FOREST)), Pair.of(new Biome.MixedNoisePoint(-0.5f, 0.0f, 0.0f, 0.0f, 0.175f), () -> registry.getOrThrow(BiomeKeys.BASALT_DELTAS))), Optional.of(Pair.of(registry, preset))));
         private final Identifier id;
         private final Function3<Preset, Registry<Biome>, Long, MultiNoiseBiomeSource> biomeSourceFunction;
 

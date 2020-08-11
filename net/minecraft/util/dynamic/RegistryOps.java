@@ -136,7 +136,7 @@ extends ForwardingDynamicOps<T> {
         Optional optional = dataResult2.result();
         if (optional.isPresent()) {
             Pair pair2 = optional.get();
-            mutableRegistry.method_31062(pair2.getSecond(), registryKey2, pair2.getFirst(), dataResult2.lifecycle());
+            mutableRegistry.replace(pair2.getSecond(), registryKey2, pair2.getFirst(), dataResult2.lifecycle());
         }
         DataResult<java.util.function.Supplier<Object>> dataResult3 = !optional.isPresent() && mutableRegistry.get(registryKey2) != null ? DataResult.success(() -> mutableRegistry.get(registryKey2), Lifecycle.stable()) : dataResult2.map(pair -> () -> mutableRegistry.get(registryKey2));
         ((ValueHolder)valueHolder).values.put(registryKey2, dataResult3);
@@ -148,7 +148,7 @@ extends ForwardingDynamicOps<T> {
     }
 
     protected <E> DataResult<Registry<E>> method_31152(RegistryKey<? extends Registry<E>> registryKey) {
-        return this.registryManager.getOptional(registryKey).map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.method_31138())).orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
+        return this.registryManager.getOptional(registryKey).map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle())).orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
     }
 
     public static interface class_5506 {
@@ -252,7 +252,7 @@ extends ForwardingDynamicOps<T> {
 
             @Override
             public Collection<Identifier> method_31156(RegistryKey<? extends Registry<?>> registryKey) {
-                return this.field_26741.keySet().stream().filter(registryKey2 -> registryKey2.method_31163(registryKey)).map(registryKey2 -> new Identifier(registryKey2.getValue().getNamespace(), registryKey.getValue().getPath() + "/" + registryKey2.getValue().getPath() + ".json")).collect(Collectors.toList());
+                return this.field_26741.keySet().stream().filter(registryKey2 -> registryKey2.isOf(registryKey)).map(registryKey2 -> new Identifier(registryKey2.getValue().getNamespace(), registryKey.getValue().getPath() + "/" + registryKey2.getValue().getPath() + ".json")).collect(Collectors.toList());
             }
 
             @Override

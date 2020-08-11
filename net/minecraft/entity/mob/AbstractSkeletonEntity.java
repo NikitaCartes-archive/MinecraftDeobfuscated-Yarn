@@ -107,7 +107,7 @@ implements RangedAttackMob {
 
     @Override
     public void tickMovement() {
-        boolean bl = this.isInDaylight();
+        boolean bl = this.isAffectedByDaylight();
         if (bl) {
             ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
             if (!itemStack.isEmpty()) {
@@ -144,8 +144,8 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         this.initEquipment(difficulty);
         this.updateEnchantments(difficulty);
         this.updateAttackType();

@@ -55,7 +55,7 @@ extends Screen {
 
     private void updateButtonText() {
         this.buttonGameMode.setMessage(new TranslatableText("options.generic_value", field_25890, new TranslatableText("selectWorld.gameMode." + this.gameMode)));
-        this.buttonAllowCommands.setMessage(ScreenTexts.method_30619(field_25889, this.allowCommands));
+        this.buttonAllowCommands.setMessage(ScreenTexts.composeToggleText(field_25889, this.allowCommands));
     }
 
     @Override

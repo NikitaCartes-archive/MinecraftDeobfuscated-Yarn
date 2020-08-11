@@ -61,8 +61,8 @@ extends HorseBaseEntity {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return EntityType.ZOMBIE_HORSE.create(serverWorld);
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return EntityType.ZOMBIE_HORSE.create(world);
     }
 
     @Override

@@ -46,7 +46,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -165,7 +165,7 @@ extends ProjectileEntity {
         }
         this.inGroundTime = 0;
         Vec3d vec3d3 = this.getPos();
-        HitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d3, vec3d2 = vec3d3.add(vec3d), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
+        HitResult hitResult = this.world.raycast(new RaycastContext(vec3d3, vec3d2 = vec3d3.add(vec3d), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
         if (hitResult.getType() != HitResult.Type.MISS) {
             vec3d2 = hitResult.getPos();
         }
@@ -225,7 +225,7 @@ extends ProjectileEntity {
     }
 
     private boolean method_26351() {
-        return this.inGround && this.world.doesNotCollide(new Box(this.getPos(), this.getPos()).expand(0.06));
+        return this.inGround && this.world.isSpaceEmpty(new Box(this.getPos(), this.getPos()).expand(0.06));
     }
 
     private void method_26352() {

@@ -88,7 +88,7 @@ extends RealmsScreen {
     }
 
     private Text method_27459() {
-        return ScreenTexts.method_30619(new TranslatableText("selectWorld.mapFeatures"), this.generateStructures);
+        return ScreenTexts.composeToggleText(new TranslatableText("selectWorld.mapFeatures"), this.generateStructures);
     }
 }
 

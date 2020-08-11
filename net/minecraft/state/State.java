@@ -45,12 +45,12 @@ public abstract class State<O, S> {
     protected final O owner;
     private final ImmutableMap<Property<?>, Comparable<?>> entries;
     private Table<Property<?>, Comparable<?>, S> withTable;
-    protected final MapCodec<S> field_24740;
+    protected final MapCodec<S> codec;
 
-    protected State(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> mapCodec) {
+    protected State(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> codec) {
         this.owner = owner;
         this.entries = entries;
-        this.field_24740 = mapCodec;
+        this.codec = codec;
     }
 
     public <T extends Comparable<T>> S cycle(Property<T> property) {
@@ -150,7 +150,7 @@ public abstract class State<O, S> {
             if (state.getEntries().isEmpty()) {
                 return Codec.unit(state);
             }
-            return state.field_24740.fieldOf("Properties").codec();
+            return state.codec.fieldOf("Properties").codec();
         });
     }
 }

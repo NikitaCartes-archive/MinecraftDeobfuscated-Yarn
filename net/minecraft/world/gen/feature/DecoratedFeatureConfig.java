@@ -21,9 +21,9 @@ implements FeatureConfig {
     public final Supplier<ConfiguredFeature<?, ?>> feature;
     public final ConfiguredDecorator<?> decorator;
 
-    public DecoratedFeatureConfig(Supplier<ConfiguredFeature<?, ?>> supplier, ConfiguredDecorator<?> configuredDecorator) {
-        this.feature = supplier;
-        this.decorator = configuredDecorator;
+    public DecoratedFeatureConfig(Supplier<ConfiguredFeature<?, ?>> feature, ConfiguredDecorator<?> decorator) {
+        this.feature = feature;
+        this.decorator = decorator;
     }
 
     public String toString() {

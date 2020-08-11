@@ -77,7 +77,7 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
-import net.minecraft.client.realms.DisconnectedRealmsScreen;
+import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.render.debug.BeeDebugRenderer;
@@ -368,13 +368,13 @@ implements ClientPlayPacketListener {
         if (!this.connection.isLocal()) {
             RequiredTagListRegistry.clearAllTags();
         }
-        ArrayList<RegistryKey<World>> arrayList = Lists.newArrayList(packet.method_29443());
+        ArrayList<RegistryKey<World>> arrayList = Lists.newArrayList(packet.getDimensionIds());
         Collections.shuffle(arrayList);
         this.worldKeys = Sets.newLinkedHashSet(arrayList);
         this.registryManager = packet.getRegistryManager();
         RegistryKey<World> registryKey = packet.getDimensionId();
-        DimensionType dimensionType = packet.method_29444();
-        this.chunkLoadDistance = packet.getChunkLoadDistance();
+        DimensionType dimensionType = packet.getDimensionType();
+        this.chunkLoadDistance = packet.getViewDistance();
         boolean bl = packet.isDebugWorld();
         boolean bl2 = packet.isFlatWorld();
         this.worldProperties = properties = new ClientWorld.Properties(Difficulty.NORMAL, packet.isHardcore(), bl2);
@@ -399,7 +399,7 @@ implements ClientPlayPacketListener {
         this.client.player.setReducedDebugInfo(packet.hasReducedDebugInfo());
         this.client.player.setShowsDeathScreen(packet.showsDeathScreen());
         this.client.interactionManager.setGameMode(packet.getGameMode());
-        this.client.interactionManager.method_30108(packet.method_30116());
+        this.client.interactionManager.method_30108(packet.getPreviousGameMode());
         this.client.options.onPlayerModelPartChange();
         this.connection.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
         this.client.getGame().onStartGameSession();
@@ -562,8 +562,8 @@ implements ClientPlayPacketListener {
         }
         if (!entity.isLogicalSideForUpdatingMovement()) {
             if (packet.isPositionChanged()) {
-                Vec3d vec3d = packet.method_30302(entity.method_30227());
-                entity.method_30228(vec3d);
+                Vec3d vec3d = packet.calculateDeltaPosition(entity.getTrackedPosition());
+                entity.updateTrackedPosition(vec3d);
                 float f = packet.hasRotation() ? (float)(packet.getYaw() * 360) / 256.0f : entity.yaw;
                 float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0f : entity.pitch;
                 entity.updateTrackedPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), f, g, 3, false);
@@ -1087,7 +1087,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = this.world.getEntityById(packet.getId());
         if (entity != null) {
-            packet.method_30145().forEach(pair -> entity.equipStack((EquipmentSlot)((Object)((Object)pair.getFirst())), (ItemStack)pair.getSecond()));
+            packet.getEquipmentList().forEach(pair -> entity.equipStack((EquipmentSlot)((Object)((Object)pair.getFirst())), (ItemStack)pair.getSecond()));
         }
     }
 

@@ -35,7 +35,7 @@ implements Codec<SimpleRegistry<E>> {
     }
 
     private RegistryCodec(RegistryKey<? extends Registry<E>> registryRef, Lifecycle lifecycle, Codec<E> codec) {
-        this.delegate = SimpleRegistry.method_31059(registryRef, lifecycle, codec);
+        this.delegate = SimpleRegistry.createCodec(registryRef, lifecycle, codec);
         this.registryRef = registryRef;
         this.elementCodec = codec;
     }

@@ -101,7 +101,7 @@ implements Waterloggable {
         enderChestInventory.setActiveBlockEntity(enderChestBlockEntity);
         player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME));
         player.incrementStat(Stats.OPEN_ENDERCHEST);
-        PiglinBrain.onGuardedBlockBroken(player, true);
+        PiglinBrain.onGuardedBlockInteracted(player, true);
         return ActionResult.CONSUME;
     }
 

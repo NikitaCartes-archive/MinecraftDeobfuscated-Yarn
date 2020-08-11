@@ -221,9 +221,9 @@ Saddleable {
     }
 
     @Override
-    public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
-        if (serverWorld.getDifficulty() != Difficulty.PEACEFUL) {
-            ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorld);
+    public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
+        if (world.getDifficulty() != Difficulty.PEACEFUL) {
+            ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world);
             zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
             zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
             zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
@@ -233,10 +233,10 @@ Saddleable {
                 zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
             }
             zombifiedPiglinEntity.setPersistent();
-            serverWorld.spawnEntity(zombifiedPiglinEntity);
+            world.spawnEntity(zombifiedPiglinEntity);
             this.remove();
         } else {
-            super.onStruckByLightning(serverWorld, lightningEntity);
+            super.onStruckByLightning(world, lightning);
         }
     }
 
@@ -277,8 +277,8 @@ Saddleable {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        return this.createChild(serverWorld, passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return this.createChild(world, entity);
     }
 }
 
