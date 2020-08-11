@@ -5,11 +5,11 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5499;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
@@ -37,8 +37,8 @@ public class GameOptionsScreen extends Screen {
 	@Nullable
 	public static List<OrderedText> method_31048(ButtonListWidget buttonListWidget, int i, int j) {
 		Optional<AbstractButtonWidget> optional = buttonListWidget.getHoveredButton((double)i, (double)j);
-		if (optional.isPresent() && optional.get() instanceof class_5499) {
-			Optional<List<OrderedText>> optional2 = ((class_5499)optional.get()).method_31047();
+		if (optional.isPresent() && optional.get() instanceof OrderableTooltip) {
+			Optional<List<OrderedText>> optional2 = ((OrderableTooltip)optional.get()).getOrderedTooltip();
 			return (List<OrderedText>)optional2.orElse(null);
 		} else {
 			return null;

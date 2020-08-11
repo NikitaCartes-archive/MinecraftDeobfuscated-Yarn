@@ -772,7 +772,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
+	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 	}
 
 	@Override
@@ -810,7 +810,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d method_31166(float f) {
+	public Vec3d method_31166(float tickDelta) {
 		if (this.isMarker()) {
 			Box box = this.method_31168(false).method_30757(this.getPos());
 			BlockPos blockPos = this.getBlockPos();
@@ -830,7 +830,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 			return Vec3d.ofCenter(blockPos);
 		} else {
-			return super.method_31166(f);
+			return super.method_31166(tickDelta);
 		}
 	}
 }

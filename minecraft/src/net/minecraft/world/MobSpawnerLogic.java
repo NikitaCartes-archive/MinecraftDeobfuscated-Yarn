@@ -114,7 +114,7 @@ public abstract class MobSpawnerLogic {
 					double k = j >= 3
 						? listTag.getDouble(2)
 						: (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-					if (world.doesNotCollide(((EntityType)optional.get()).createSimpleBoundingBox(g, h, k))) {
+					if (world.isSpaceEmpty(((EntityType)optional.get()).createSimpleBoundingBox(g, h, k))) {
 						ServerWorld serverWorld = (ServerWorld)world;
 						if (SpawnRestriction.canSpawn((EntityType)optional.get(), serverWorld, SpawnReason.SPAWNER, new BlockPos(g, h, k), world.getRandom())) {
 							Entity entity = EntityType.loadEntityWithPassengers(compoundTag, world, entityx -> {

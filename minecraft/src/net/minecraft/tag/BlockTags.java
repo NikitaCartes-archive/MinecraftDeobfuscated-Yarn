@@ -101,7 +101,7 @@ public final class BlockTags {
 		return REQUIRED_TAGS.getGroup();
 	}
 
-	public static List<? extends Tag.Identified<Block>> method_31072() {
+	public static List<? extends Tag.Identified<Block>> getRequiredTags() {
 		return REQUIRED_TAGS.getTags();
 	}
 }

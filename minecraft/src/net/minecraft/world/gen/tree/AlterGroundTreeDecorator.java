@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class AlterGroundTreeDecorator extends TreeDecorator {
-	public static final Codec<AlterGroundTreeDecorator> CODEC = BlockStateProvider.CODEC
+	public static final Codec<AlterGroundTreeDecorator> CODEC = BlockStateProvider.TYPE_CODEC
 		.fieldOf("provider")
 		.<AlterGroundTreeDecorator>xmap(AlterGroundTreeDecorator::new, alterGroundTreeDecorator -> alterGroundTreeDecorator.provider)
 		.codec();

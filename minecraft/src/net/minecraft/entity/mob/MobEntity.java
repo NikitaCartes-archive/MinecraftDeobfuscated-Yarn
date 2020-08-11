@@ -996,7 +996,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Nullable
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(
@@ -1407,7 +1407,7 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	protected boolean isInDaylight() {
+	protected boolean isAffectedByDaylight() {
 		if (this.world.isDay() && !this.world.isClient) {
 			float f = this.getBrightnessAtEyes();
 			BlockPos blockPos = this.getVehicle() instanceof BoatEntity

@@ -3,6 +3,9 @@ package net.minecraft.item;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 
+/**
+ * Contains all the default food components used in vanilla food items.
+ */
 public class FoodComponents {
 	public static final FoodComponent APPLE = new FoodComponent.Builder().hunger(4).saturationModifier(0.3F).build();
 	public static final FoodComponent BAKED_POTATO = new FoodComponent.Builder().hunger(5).saturationModifier(0.6F).build();

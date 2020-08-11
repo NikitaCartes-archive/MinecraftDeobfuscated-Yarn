@@ -1022,7 +1022,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			double e = movement.z;
 			double f = 0.05;
 
-			while(d != 0.0 && this.world.doesNotCollide(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), 0.0))) {
+			while(d != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), 0.0))) {
 				if (d < 0.05 && d >= -0.05) {
 					d = 0.0;
 				} else if (d > 0.0) {
@@ -1032,7 +1032,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				}
 			}
 
-			while(e != 0.0 && this.world.doesNotCollide(this, this.getBoundingBox().offset(0.0, (double)(-this.stepHeight), e))) {
+			while(e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, (double)(-this.stepHeight), e))) {
 				if (e < 0.05 && e >= -0.05) {
 					e = 0.0;
 				} else if (e > 0.0) {
@@ -1042,7 +1042,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				}
 			}
 
-			while(d != 0.0 && e != 0.0 && this.world.doesNotCollide(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), e))) {
+			while(d != 0.0 && e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), e))) {
 				if (d < 0.05 && d >= -0.05) {
 					d = 0.0;
 				} else if (d > 0.0) {
@@ -1069,7 +1069,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	private boolean method_30263() {
 		return this.onGround
 			|| this.fallDistance < this.stepHeight
-				&& !this.world.doesNotCollide(this, this.getBoundingBox().offset(0.0, (double)(this.fallDistance - this.stepHeight), 0.0));
+				&& !this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, (double)(this.fallDistance - this.stepHeight), 0.0));
 	}
 
 	public void attack(Entity target) {

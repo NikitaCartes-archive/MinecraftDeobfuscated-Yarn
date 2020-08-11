@@ -70,7 +70,7 @@ public class ExperienceOrbEntity extends Entity {
 			this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 		}
 
-		if (!this.world.doesNotCollide(this.getBoundingBox())) {
+		if (!this.world.isSpaceEmpty(this.getBoundingBox())) {
 			this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 		}
 

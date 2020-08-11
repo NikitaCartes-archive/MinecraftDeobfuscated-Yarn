@@ -95,7 +95,7 @@ public class ChunkPos {
 		return "[" + this.x + ", " + this.z + "]";
 	}
 
-	public BlockPos getCenterBlockPos() {
+	public BlockPos getStartPos() {
 		return new BlockPos(this.getStartX(), 0, this.getStartZ());
 	}
 

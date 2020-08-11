@@ -112,7 +112,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	private boolean shouldHatchProgress(World world) {
-		float f = world.method_30274(1.0F);
+		float f = world.getSkyAngle(1.0F);
 		if ((double)f < 0.69 && (double)f > 0.65) {
 			return true;
 		} else {

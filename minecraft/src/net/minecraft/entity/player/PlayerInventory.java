@@ -171,17 +171,17 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 	}
 
-	public int method_29280(Predicate<ItemStack> predicate, int i, Inventory inventory) {
-		int j = 0;
-		boolean bl = i == 0;
-		j += Inventories.method_29234(this, predicate, i - j, bl);
-		j += Inventories.method_29234(inventory, predicate, i - j, bl);
-		j += Inventories.method_29235(this.cursorStack, predicate, i - j, bl);
+	public int remove(Predicate<ItemStack> shouldRemove, int maxCount, Inventory craftingInventory) {
+		int i = 0;
+		boolean bl = maxCount == 0;
+		i += Inventories.remove(this, shouldRemove, maxCount - i, bl);
+		i += Inventories.remove(craftingInventory, shouldRemove, maxCount - i, bl);
+		i += Inventories.remove(this.cursorStack, shouldRemove, maxCount - i, bl);
 		if (this.cursorStack.isEmpty()) {
 			this.cursorStack = ItemStack.EMPTY;
 		}
 
-		return j;
+		return i;
 	}
 
 	private int addStack(ItemStack stack) {

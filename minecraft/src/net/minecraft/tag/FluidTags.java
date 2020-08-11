@@ -13,7 +13,7 @@ public final class FluidTags {
 		return REQUIRED_TAGS.add(id);
 	}
 
-	public static List<? extends Tag.Identified<Fluid>> all() {
+	public static List<? extends Tag.Identified<Fluid>> getRequiredTags() {
 		return REQUIRED_TAGS.getTags();
 	}
 }

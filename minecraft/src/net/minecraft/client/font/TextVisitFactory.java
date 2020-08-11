@@ -3,7 +3,7 @@ package net.minecraft.client.font;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.CharacterVisitor;
+import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;

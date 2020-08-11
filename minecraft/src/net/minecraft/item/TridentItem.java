@@ -27,7 +27,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class TridentItem extends Item implements Vanishable {
-	private final Multimap<EntityAttribute, EntityAttributeModifier> field_23746;
+	private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
 	public TridentItem(Item.Settings settings) {
 		super(settings);
@@ -40,7 +40,7 @@ public class TridentItem extends Item implements Vanishable {
 			EntityAttributes.GENERIC_ATTACK_SPEED,
 			new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", -2.9F, EntityAttributeModifier.Operation.ADDITION)
 		);
-		this.field_23746 = builder.build();
+		this.attributeModifiers = builder.build();
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class TridentItem extends Item implements Vanishable {
 
 	@Override
 	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		return slot == EquipmentSlot.MAINHAND ? this.field_23746 : super.getAttributeModifiers(slot);
+		return slot == EquipmentSlot.MAINHAND ? this.attributeModifiers : super.getAttributeModifiers(slot);
 	}
 
 	@Override

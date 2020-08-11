@@ -114,6 +114,9 @@ public class EndermiteEntity extends HostileEntity {
 		return 0.1;
 	}
 
+	/**
+	 * Returns whether this endermite was spawned from an ender pearl thrown by a player.
+	 */
 	public boolean isPlayerSpawned() {
 		return this.playerSpawned;
 	}

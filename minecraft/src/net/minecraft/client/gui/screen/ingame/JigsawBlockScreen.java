@@ -138,7 +138,7 @@ public class JigsawBlockScreen extends Screen {
 		}) {
 			@Override
 			public Text getMessage() {
-				return ScreenTexts.method_30619(super.getMessage(), JigsawBlockScreen.this.keepJigsaws);
+				return ScreenTexts.composeToggleText(super.getMessage(), JigsawBlockScreen.this.keepJigsaws);
 			}
 		});
 		this.addButton(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, new TranslatableText("jigsaw_block.generate"), buttonWidget -> {

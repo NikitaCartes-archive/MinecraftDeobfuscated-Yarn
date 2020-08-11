@@ -7,7 +7,7 @@ import java.util.OptionalInt;
 import net.minecraft.util.registry.Registry;
 
 public abstract class FeatureSize {
-	public static final Codec<FeatureSize> CODEC = Registry.FEATURE_SIZE_TYPE.dispatch(FeatureSize::getType, FeatureSizeType::getCodec);
+	public static final Codec<FeatureSize> TYPE_CODEC = Registry.FEATURE_SIZE_TYPE.dispatch(FeatureSize::getType, FeatureSizeType::getCodec);
 	protected final OptionalInt minClippedHeight;
 
 	protected static <S extends FeatureSize> RecordCodecBuilder<S, OptionalInt> createCodecBuilder() {

@@ -60,8 +60,8 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	}
 
 	@Override
-	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
-		UUID uUID = lightningEntity.getUuid();
+	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
+		UUID uUID = lightning.getUuid();
 		if (!uUID.equals(this.lightningId)) {
 			this.setType(this.getMooshroomType() == MooshroomEntity.Type.RED ? MooshroomEntity.Type.BROWN : MooshroomEntity.Type.RED);
 			this.lightningId = uUID;

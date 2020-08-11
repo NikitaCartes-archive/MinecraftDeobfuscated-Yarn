@@ -10,17 +10,15 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
-	public static final Codec<ConfiguredSurfaceBuilder<?>> field_25878 = Registry.SURFACE_BUILDER
-		.dispatch(configuredSurfaceBuilder -> configuredSurfaceBuilder.surfaceBuilder, SurfaceBuilder::method_29003);
-	public static final Codec<Supplier<ConfiguredSurfaceBuilder<?>>> field_25015 = RegistryElementCodec.of(
-		Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, field_25878
-	);
+	public static final Codec<ConfiguredSurfaceBuilder<?>> CODEC = Registry.SURFACE_BUILDER
+		.dispatch(configuredSurfaceBuilder -> configuredSurfaceBuilder.surfaceBuilder, SurfaceBuilder::getCodec);
+	public static final Codec<Supplier<ConfiguredSurfaceBuilder<?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, CODEC);
 	public final SurfaceBuilder<SC> surfaceBuilder;
 	public final SC config;
 
-	public ConfiguredSurfaceBuilder(SurfaceBuilder<SC> surfaceBuilder, SC surfaceConfig) {
+	public ConfiguredSurfaceBuilder(SurfaceBuilder<SC> surfaceBuilder, SC config) {
 		this.surfaceBuilder = surfaceBuilder;
-		this.config = surfaceConfig;
+		this.config = config;
 	}
 
 	public void generate(

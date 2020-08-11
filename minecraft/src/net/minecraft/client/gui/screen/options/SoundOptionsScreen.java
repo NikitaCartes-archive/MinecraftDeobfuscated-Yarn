@@ -41,7 +41,7 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 				Option.SUBTITLES,
 				Option.SUBTITLES.getDisplayString(this.gameOptions),
 				buttonWidget -> {
-					Option.SUBTITLES.set(this.client.options);
+					Option.SUBTITLES.toggle(this.client.options);
 					buttonWidget.setMessage(Option.SUBTITLES.getDisplayString(this.client.options));
 					this.client.options.write();
 				}

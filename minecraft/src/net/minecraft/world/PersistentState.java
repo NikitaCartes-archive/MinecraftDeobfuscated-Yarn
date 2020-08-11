@@ -44,7 +44,7 @@ public abstract class PersistentState {
 			compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 
 			try {
-				NbtIo.method_30614(compoundTag, file);
+				NbtIo.writeCompressed(compoundTag, file);
 			} catch (IOException var4) {
 				LOGGER.error("Could not save data {}", this, var4);
 			}

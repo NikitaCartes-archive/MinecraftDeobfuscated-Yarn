@@ -151,7 +151,7 @@ public class ChunkSection {
 		return 2 + this.container.getPacketSize();
 	}
 
-	public boolean method_19523(Predicate<BlockState> predicate) {
-		return this.container.method_19526(predicate);
+	public boolean hasAny(Predicate<BlockState> predicate) {
+		return this.container.hasAny(predicate);
 	}
 }

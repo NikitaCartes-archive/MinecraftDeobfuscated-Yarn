@@ -12,7 +12,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class BoatItem extends Item {
@@ -27,7 +27,7 @@ public class BoatItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.ANY);
+		HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.ANY);
 		if (hitResult.getType() == HitResult.Type.MISS) {
 			return TypedActionResult.pass(itemStack);
 		} else {
@@ -49,7 +49,7 @@ public class BoatItem extends Item {
 				BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = user.yaw;
-				if (!world.doesNotCollide(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
+				if (!world.isSpaceEmpty(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
 					return TypedActionResult.fail(itemStack);
 				} else {
 					if (!world.isClient) {

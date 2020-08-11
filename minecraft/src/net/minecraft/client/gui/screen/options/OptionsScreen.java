@@ -94,7 +94,7 @@ public class OptionsScreen extends Screen {
 					Option.REALMS_NOTIFICATIONS,
 					Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings),
 					buttonWidget -> {
-						Option.REALMS_NOTIFICATIONS.set(this.settings);
+						Option.REALMS_NOTIFICATIONS.toggle(this.settings);
 						this.settings.write();
 						buttonWidget.setMessage(Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings));
 					}

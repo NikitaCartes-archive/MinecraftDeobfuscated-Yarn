@@ -154,12 +154,10 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean glint) {
+	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
 		return glint
-			? VertexConsumers.dual(
-				vertexConsumerProvider.getBuffer(bl ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), vertexConsumerProvider.getBuffer(renderLayer)
-			)
-			: vertexConsumerProvider.getBuffer(renderLayer);
+			? VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), vertexConsumers.getBuffer(layer))
+			: vertexConsumers.getBuffer(layer);
 	}
 
 	public static VertexConsumer getGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {

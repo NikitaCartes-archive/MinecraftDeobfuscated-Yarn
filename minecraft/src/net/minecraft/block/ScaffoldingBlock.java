@@ -50,7 +50,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
+	public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.fullCube();
 	}
 

@@ -17,7 +17,7 @@ public enum SoundCategory {
 	AMBIENT("ambient"),
 	VOICE("voice");
 
-	private static final Map<String, SoundCategory> NAME_MAP = (Map<String, SoundCategory>)Arrays.stream(values())
+	private static final Map<String, SoundCategory> BY_NAME = (Map<String, SoundCategory>)Arrays.stream(values())
 		.collect(Collectors.toMap(SoundCategory::getName, Function.identity()));
 	private final String name;
 

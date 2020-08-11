@@ -269,11 +269,11 @@ public class Framebuffer {
 		this.endWrite();
 	}
 
-	public int method_30277() {
+	public int getColorAttachment() {
 		return this.colorAttachment;
 	}
 
-	public int method_30278() {
+	public int getDepthAttachment() {
 		return this.depthAttachment;
 	}
 }

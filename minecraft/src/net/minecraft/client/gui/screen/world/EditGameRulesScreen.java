@@ -124,7 +124,7 @@ public class EditGameRulesScreen extends Screen {
 			}) {
 				@Override
 				protected MutableText getNarrationMessage() {
-					return ScreenTexts.method_30619(name, booleanRule.get()).append("\n").append(ruleName);
+					return ScreenTexts.composeToggleText(name, booleanRule.get()).append("\n").append(ruleName);
 				}
 			};
 			this.children.add(this.toggleButton);

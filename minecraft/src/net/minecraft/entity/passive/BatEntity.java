@@ -29,6 +29,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class BatEntity extends AmbientEntity {
+	/**
+	 * Equals 0 when the bat is flying, and 1 when it's roosting.
+	 */
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(4.0).includeTeammates();
 	private BlockPos hangingPosition;
@@ -87,6 +90,9 @@ public class BatEntity extends AmbientEntity {
 		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 6.0);
 	}
 
+	/**
+	 * Returns whether this bat is hanging upside-down under a block.
+	 */
 	public boolean isRoosting() {
 		return (this.dataTracker.get(BAT_FLAGS) & 1) != 0;
 	}

@@ -41,7 +41,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class SlimeEntity extends MobEntity implements Monster {
@@ -276,7 +276,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			if (Objects.equals(world.method_31081(pos), Optional.of(BuiltInBiomes.SWAMP))
+			if (Objects.equals(world.method_31081(pos), Optional.of(BiomeKeys.SWAMP))
 				&& pos.getY() > 50
 				&& pos.getY() < 70
 				&& random.nextFloat() < 0.5F
@@ -323,7 +323,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		int i = this.random.nextInt(3);
 		if (i < 2 && this.random.nextFloat() < 0.5F * difficulty.getClampedLocalDifficulty()) {
@@ -332,7 +332,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		int j = 1 << i;
 		this.setSize(j, true);
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private float getJumpSoundPitch() {

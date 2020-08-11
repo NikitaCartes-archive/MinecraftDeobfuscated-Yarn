@@ -4,7 +4,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
-public abstract class BuiltInBiomes {
+public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> OCEAN = register("ocean");
 	public static final RegistryKey<Biome> PLAINS = register("plains");
 	public static final RegistryKey<Biome> DESERT = register("desert");

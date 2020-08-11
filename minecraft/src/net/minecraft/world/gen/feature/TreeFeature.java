@@ -84,9 +84,9 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		TreeFeatureConfig config
 	) {
 		int i = config.trunkPlacer.getHeight(random);
-		int j = config.foliagePlacer.getHeight(random, i, config);
+		int j = config.foliagePlacer.getRandomHeight(random, i, config);
 		int k = i - j;
-		int l = config.foliagePlacer.getRadius(random, k);
+		int l = config.foliagePlacer.getRandomRadius(random, k);
 		BlockPos blockPos;
 		if (!config.skipFluidCheck) {
 			int m = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();

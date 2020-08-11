@@ -46,12 +46,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(
-		BuiltInBiomes.NETHER_WASTES, BuiltInBiomes.SOUL_SAND_VALLEY, BuiltInBiomes.WARPED_FOREST, BuiltInBiomes.CRIMSON_FOREST, BuiltInBiomes.BASALT_DELTAS
+		BiomeKeys.NETHER_WASTES, BiomeKeys.SOUL_SAND_VALLEY, BiomeKeys.WARPED_FOREST, BiomeKeys.CRIMSON_FOREST, BiomeKeys.BASALT_DELTAS
 	);
 	private static final EntityPredicate.Extended field_25712 = EntityPredicate.Extended.create(
 		EntityPropertiesLootCondition.builder(

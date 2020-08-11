@@ -30,7 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.MobSpawnerLogic;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class SpawnEggItem extends Item {
@@ -98,7 +98,7 @@ public class SpawnEggItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
+		HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
 		if (hitResult.getType() != HitResult.Type.BLOCK) {
 			return TypedActionResult.pass(itemStack);
 		} else if (!(world instanceof ServerWorld)) {

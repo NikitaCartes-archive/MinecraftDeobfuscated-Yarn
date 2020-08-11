@@ -41,7 +41,7 @@ public class PortalForcer {
 		return optional.map(
 			pointOfInterest -> {
 				BlockPos blockPosxx = pointOfInterest.getPos();
-				this.world.getChunkManager().addTicket(ChunkTicketType.field_19280, new ChunkPos(blockPosxx), 3, blockPosxx);
+				this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPosxx), 3, blockPosxx);
 				BlockState blockState = this.world.getBlockState(blockPosxx);
 				return class_5459.method_30574(
 					blockPosxx, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, blockPosxx -> this.world.getBlockState(blockPosxx) == blockState

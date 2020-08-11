@@ -98,7 +98,7 @@ public class ItemEntity extends Entity {
 			if (this.world.isClient) {
 				this.noClip = false;
 			} else {
-				this.noClip = !this.world.doesNotCollide(this);
+				this.noClip = !this.world.isSpaceEmpty(this);
 				if (this.noClip) {
 					this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 				}

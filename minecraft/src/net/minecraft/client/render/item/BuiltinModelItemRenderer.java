@@ -61,7 +61,7 @@ public class BuiltinModelItemRenderer {
 	private final ShieldEntityModel modelShield = new ShieldEntityModel();
 	private final TridentEntityModel modelTrident = new TridentEntityModel();
 
-	public void render(ItemStack stack, ModelTransformation.Mode mode, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(ItemStack stack, ModelTransformation.Mode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
 		Item item = stack.getItem();
 		if (item instanceof BlockItem) {
 			Block block = ((BlockItem)item).getBlock();
@@ -79,7 +79,7 @@ public class BuiltinModelItemRenderer {
 					}
 				}
 
-				SkullBlockEntityRenderer.render(null, 180.0F, ((AbstractSkullBlock)block).getSkullType(), gameProfile, 0.0F, matrixStack, vertexConsumerProvider, i);
+				SkullBlockEntityRenderer.render(null, 180.0F, ((AbstractSkullBlock)block).getSkullType(), gameProfile, 0.0F, matrices, vertexConsumers, light);
 			} else {
 				BlockEntity blockEntity;
 				if (block instanceof AbstractBannerBlock) {
@@ -109,37 +109,37 @@ public class BuiltinModelItemRenderer {
 					}
 				}
 
-				BlockEntityRenderDispatcher.INSTANCE.renderEntity(blockEntity, matrixStack, vertexConsumerProvider, i, j);
+				BlockEntityRenderDispatcher.INSTANCE.renderEntity(blockEntity, matrices, vertexConsumers, light, overlay);
 			}
 		} else {
 			if (item == Items.SHIELD) {
 				boolean bl = stack.getSubTag("BlockEntityTag") != null;
-				matrixStack.push();
-				matrixStack.scale(1.0F, -1.0F, -1.0F);
+				matrices.push();
+				matrices.scale(1.0F, -1.0F, -1.0F);
 				SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
 				VertexConsumer vertexConsumer = spriteIdentifier.getSprite()
 					.getTextureSpecificVertexConsumer(
-						ItemRenderer.getDirectGlintVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint())
+						ItemRenderer.getDirectGlintVertexConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint())
 					);
-				this.modelShield.method_23775().render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
+				this.modelShield.method_23775().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
 					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListTag(stack));
 					BannerBlockEntityRenderer.renderCanvas(
-						matrixStack, vertexConsumerProvider, i, j, this.modelShield.method_23774(), spriteIdentifier, false, list, stack.hasGlint()
+						matrices, vertexConsumers, light, overlay, this.modelShield.method_23774(), spriteIdentifier, false, list, stack.hasGlint()
 					);
 				} else {
-					this.modelShield.method_23774().render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
+					this.modelShield.method_23774().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				}
 
-				matrixStack.pop();
+				matrices.pop();
 			} else if (item == Items.TRIDENT) {
-				matrixStack.push();
-				matrixStack.scale(1.0F, -1.0F, -1.0F);
+				matrices.push();
+				matrices.scale(1.0F, -1.0F, -1.0F);
 				VertexConsumer vertexConsumer2 = ItemRenderer.getDirectGlintVertexConsumer(
-					vertexConsumerProvider, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasGlint()
+					vertexConsumers, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasGlint()
 				);
-				this.modelTrident.render(matrixStack, vertexConsumer2, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
-				matrixStack.pop();
+				this.modelTrident.render(matrices, vertexConsumer2, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+				matrices.pop();
 			}
 		}
 	}

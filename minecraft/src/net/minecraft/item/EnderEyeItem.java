@@ -19,7 +19,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -64,7 +64,7 @@ public class EnderEyeItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.NONE);
+		HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
 		if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).isOf(Blocks.END_PORTAL_FRAME)) {
 			return TypedActionResult.pass(itemStack);
 		} else {

@@ -98,7 +98,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Override
 	public void tickMovement() {
-		boolean bl = this.isInDaylight();
+		boolean bl = this.isAffectedByDaylight();
 		if (bl) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 			if (!itemStack.isEmpty()) {
@@ -139,9 +139,9 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
 		this.updateAttackType();

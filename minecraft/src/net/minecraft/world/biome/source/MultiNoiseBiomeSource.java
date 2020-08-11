@@ -26,8 +26,8 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class MultiNoiseBiomeSource extends BiomeSource {
@@ -142,7 +142,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			.min(Comparator.comparing(pair -> ((Biome.MixedNoisePoint)pair.getFirst()).calculateDistanceTo(mixedNoisePoint)))
 			.map(Pair::getSecond)
 			.map(Supplier::get)
-			.orElse(Biomes.THE_VOID);
+			.orElse(BuiltinBiomes.THE_VOID);
 	}
 
 	public boolean method_28462(long l) {
@@ -156,11 +156,11 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			(preset, registry, long_) -> new MultiNoiseBiomeSource(
 					long_,
 					ImmutableList.of(
-						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F), (Supplier)() -> registry.method_31140(BuiltInBiomes.NETHER_WASTES)),
-						Pair.of(new Biome.MixedNoisePoint(0.0F, -0.5F, 0.0F, 0.0F, 0.0F), (Supplier)() -> registry.method_31140(BuiltInBiomes.SOUL_SAND_VALLEY)),
-						Pair.of(new Biome.MixedNoisePoint(0.4F, 0.0F, 0.0F, 0.0F, 0.0F), (Supplier)() -> registry.method_31140(BuiltInBiomes.CRIMSON_FOREST)),
-						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.5F, 0.0F, 0.0F, 0.375F), (Supplier)() -> registry.method_31140(BuiltInBiomes.WARPED_FOREST)),
-						Pair.of(new Biome.MixedNoisePoint(-0.5F, 0.0F, 0.0F, 0.0F, 0.175F), (Supplier)() -> registry.method_31140(BuiltInBiomes.BASALT_DELTAS))
+						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F), (Supplier)() -> registry.getOrThrow(BiomeKeys.NETHER_WASTES)),
+						Pair.of(new Biome.MixedNoisePoint(0.0F, -0.5F, 0.0F, 0.0F, 0.0F), (Supplier)() -> registry.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)),
+						Pair.of(new Biome.MixedNoisePoint(0.4F, 0.0F, 0.0F, 0.0F, 0.0F), (Supplier)() -> registry.getOrThrow(BiomeKeys.CRIMSON_FOREST)),
+						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.5F, 0.0F, 0.0F, 0.375F), (Supplier)() -> registry.getOrThrow(BiomeKeys.WARPED_FOREST)),
+						Pair.of(new Biome.MixedNoisePoint(-0.5F, 0.0F, 0.0F, 0.0F, 0.175F), (Supplier)() -> registry.getOrThrow(BiomeKeys.BASALT_DELTAS))
 					),
 					Optional.of(Pair.of(registry, preset))
 				)

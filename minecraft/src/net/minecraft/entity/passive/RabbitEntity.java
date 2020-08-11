@@ -345,9 +345,9 @@ public class RabbitEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		int i = this.chooseType(serverWorldAccess);
+		int i = this.chooseType(world);
 		if (entityData instanceof RabbitEntity.RabbitData) {
 			i = ((RabbitEntity.RabbitData)entityData).type;
 		} else {
@@ -355,7 +355,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		this.setRabbitType(i);
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private int chooseType(WorldAccess world) {

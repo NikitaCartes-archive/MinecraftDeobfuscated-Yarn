@@ -118,16 +118,16 @@ public final class Ingredient implements Predicate<ItemStack> {
 	}
 
 	public static Ingredient ofItems(ItemConvertible... items) {
-		return method_26964(Arrays.stream(items).map(ItemStack::new));
+		return ofStacks(Arrays.stream(items).map(ItemStack::new));
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static Ingredient ofStacks(ItemStack... stacks) {
-		return method_26964(Arrays.stream(stacks));
+		return ofStacks(Arrays.stream(stacks));
 	}
 
-	public static Ingredient method_26964(Stream<ItemStack> stream) {
-		return ofEntries(stream.filter(itemStack -> !itemStack.isEmpty()).map(stack -> new Ingredient.StackEntry(stack)));
+	public static Ingredient ofStacks(Stream<ItemStack> stacks) {
+		return ofEntries(stacks.filter(itemStack -> !itemStack.isEmpty()).map(stack -> new Ingredient.StackEntry(stack)));
 	}
 
 	public static Ingredient fromTag(Tag<Item> tag) {

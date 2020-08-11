@@ -15,9 +15,9 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 
 public interface SaveProperties {
-	DataPackSettings method_29589();
+	DataPackSettings getDataPackSettings();
 
-	void method_29590(DataPackSettings dataPackSettings);
+	void updateLevelInfo(DataPackSettings dataPackSettings);
 
 	boolean isModded();
 
@@ -88,5 +88,5 @@ public interface SaveProperties {
 	GeneratorOptions getGeneratorOptions();
 
 	@Environment(EnvType.CLIENT)
-	Lifecycle method_29588();
+	Lifecycle getLifecycle();
 }

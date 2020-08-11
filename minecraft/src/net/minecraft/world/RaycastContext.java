@@ -11,14 +11,14 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
-public class RayTraceContext {
+public class RaycastContext {
 	private final Vec3d start;
 	private final Vec3d end;
-	private final RayTraceContext.ShapeType shapeType;
-	private final RayTraceContext.FluidHandling fluid;
+	private final RaycastContext.ShapeType shapeType;
+	private final RaycastContext.FluidHandling fluid;
 	private final ShapeContext entityPosition;
 
-	public RayTraceContext(Vec3d start, Vec3d end, RayTraceContext.ShapeType shapeType, RayTraceContext.FluidHandling fluidHandling, Entity entity) {
+	public RaycastContext(Vec3d start, Vec3d end, RaycastContext.ShapeType shapeType, RaycastContext.FluidHandling fluidHandling, Entity entity) {
 		this.start = start;
 		this.end = end;
 		this.shapeType = shapeType;
@@ -62,14 +62,14 @@ public class RayTraceContext {
 		VoxelShape get(BlockState state, BlockView world, BlockPos pos, ShapeContext context);
 	}
 
-	public static enum ShapeType implements RayTraceContext.ShapeProvider {
+	public static enum ShapeType implements RaycastContext.ShapeProvider {
 		COLLIDER(AbstractBlock.AbstractBlockState::getCollisionShape),
 		OUTLINE(AbstractBlock.AbstractBlockState::getOutlineShape),
 		VISUAL(AbstractBlock.AbstractBlockState::getVisualShape);
 
-		private final RayTraceContext.ShapeProvider provider;
+		private final RaycastContext.ShapeProvider provider;
 
-		private ShapeType(RayTraceContext.ShapeProvider provider) {
+		private ShapeType(RaycastContext.ShapeProvider provider) {
 			this.provider = provider;
 		}
 

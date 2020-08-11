@@ -68,6 +68,6 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 	}
 
 	private Text getPlayerModelPartDisplayString(PlayerModelPart part) {
-		return ScreenTexts.method_30619(part.getOptionName(), this.gameOptions.getEnabledPlayerModelParts().contains(part));
+		return ScreenTexts.composeToggleText(part.getOptionName(), this.gameOptions.getEnabledPlayerModelParts().contains(part));
 	}
 }

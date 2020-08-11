@@ -105,7 +105,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	public boolean canStayAttached() {
-		if (!this.world.doesNotCollide(this)) {
+		if (!this.world.isSpaceEmpty(this)) {
 			return false;
 		} else {
 			int i = Math.max(1, this.getWidthPixels() / 16);
@@ -266,7 +266,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
+	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 	}
 
 	@Override

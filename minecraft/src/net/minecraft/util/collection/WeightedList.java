@@ -42,7 +42,7 @@ public class WeightedList<U> {
 		return this;
 	}
 
-	public boolean method_28339() {
+	public boolean isEmpty() {
 		return this.entries.isEmpty();
 	}
 

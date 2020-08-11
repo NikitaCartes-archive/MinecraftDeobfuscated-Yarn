@@ -224,7 +224,7 @@ public class CreateWorldScreen extends Screen {
 		}) {
 			@Override
 			public Text getMessage() {
-				return ScreenTexts.method_30619(super.getMessage(), CreateWorldScreen.this.cheatsEnabled && !CreateWorldScreen.this.hardcore);
+				return ScreenTexts.composeToggleText(super.getMessage(), CreateWorldScreen.this.cheatsEnabled && !CreateWorldScreen.this.hardcore);
 			}
 
 			@Override

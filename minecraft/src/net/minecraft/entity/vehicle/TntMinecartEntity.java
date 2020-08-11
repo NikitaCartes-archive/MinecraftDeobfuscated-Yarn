@@ -88,14 +88,14 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		}
 	}
 
-	protected void explode(double d) {
+	protected void explode(double velocity) {
 		if (!this.world.isClient) {
-			double e = Math.sqrt(d);
-			if (e > 5.0) {
-				e = 5.0;
+			double d = Math.sqrt(velocity);
+			if (d > 5.0) {
+				d = 5.0;
 			}
 
-			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * e), Explosion.DestructionType.BREAK);
+			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * d), Explosion.DestructionType.BREAK);
 			this.remove();
 		}
 	}

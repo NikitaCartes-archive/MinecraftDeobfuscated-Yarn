@@ -712,7 +712,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason == SpawnReason.BREEDING) {
 			this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
@@ -721,14 +721,14 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER
 			)
 		 {
-			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(serverWorldAccess.method_31081(this.getBlockPos()))));
+			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.method_31081(this.getBlockPos()))));
 		}
 
 		if (spawnReason == SpawnReason.STRUCTURE) {
 			this.natural = true;
 		}
 
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public VillagerEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
@@ -748,12 +748,12 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	@Override
-	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
-		if (serverWorld.getDifficulty() != Difficulty.PEACEFUL) {
-			LOGGER.info("Villager {} was struck by lightning {}.", this, lightningEntity);
-			WitchEntity witchEntity = EntityType.WITCH.create(serverWorld);
+	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
+		if (world.getDifficulty() != Difficulty.PEACEFUL) {
+			LOGGER.info("Villager {} was struck by lightning {}.", this, lightning);
+			WitchEntity witchEntity = EntityType.WITCH.create(world);
 			witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
-			witchEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
+			witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
 			witchEntity.setAiDisabled(this.isAiDisabled());
 			if (this.hasCustomName()) {
 				witchEntity.setCustomName(this.getCustomName());
@@ -761,11 +761,11 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			}
 
 			witchEntity.setPersistent();
-			serverWorld.spawnEntityAndPassengers(witchEntity);
+			world.spawnEntityAndPassengers(witchEntity);
 			this.method_30958();
 			this.remove();
 		} else {
-			super.onStruckByLightning(serverWorld, lightningEntity);
+			super.onStruckByLightning(world, lightning);
 		}
 	}
 
@@ -827,12 +827,12 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 	}
 
-	public void talkWithVillager(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		if ((l < this.gossipStartTime || l >= this.gossipStartTime + 1200L) && (l < villagerEntity.gossipStartTime || l >= villagerEntity.gossipStartTime + 1200L)) {
-			this.gossip.shareGossipFrom(villagerEntity.gossip, this.random, 10);
-			this.gossipStartTime = l;
-			villagerEntity.gossipStartTime = l;
-			this.summonGolem(serverWorld, l, 5);
+	public void talkWithVillager(ServerWorld world, VillagerEntity villager, long time) {
+		if ((time < this.gossipStartTime || time >= this.gossipStartTime + 1200L) && (time < villager.gossipStartTime || time >= villager.gossipStartTime + 1200L)) {
+			this.gossip.shareGossipFrom(villager.gossip, this.random, 10);
+			this.gossipStartTime = time;
+			villager.gossipStartTime = time;
+			this.summonGolem(world, time, 5);
 		}
 	}
 
@@ -846,13 +846,13 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 	}
 
-	public void summonGolem(ServerWorld serverWorld, long l, int i) {
-		if (this.canSummonGolem(l)) {
+	public void summonGolem(ServerWorld world, long time, int i) {
+		if (this.canSummonGolem(time)) {
 			Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
-			List<VillagerEntity> list = serverWorld.getNonSpectatingEntities(VillagerEntity.class, box);
-			List<VillagerEntity> list2 = (List)list.stream().filter(villagerEntity -> villagerEntity.canSummonGolem(l)).limit(5L).collect(Collectors.toList());
+			List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
+			List<VillagerEntity> list2 = (List)list.stream().filter(villagerEntity -> villagerEntity.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
 			if (list2.size() >= i) {
-				IronGolemEntity ironGolemEntity = this.spawnIronGolem(serverWorld);
+				IronGolemEntity ironGolemEntity = this.spawnIronGolem(world);
 				if (ironGolemEntity != null) {
 					list.forEach(GolemLastSeenSensor::method_30233);
 				}
@@ -869,18 +869,18 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	@Nullable
-	private IronGolemEntity spawnIronGolem(ServerWorld serverWorld) {
+	private IronGolemEntity spawnIronGolem(ServerWorld world) {
 		BlockPos blockPos = this.getBlockPos();
 
 		for(int i = 0; i < 10; ++i) {
-			double d = (double)(serverWorld.random.nextInt(16) - 8);
-			double e = (double)(serverWorld.random.nextInt(16) - 8);
+			double d = (double)(world.random.nextInt(16) - 8);
+			double e = (double)(world.random.nextInt(16) - 8);
 			BlockPos blockPos2 = this.method_30023(blockPos, d, e);
 			if (blockPos2 != null) {
-				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(serverWorld, null, null, null, blockPos2, SpawnReason.MOB_SUMMONED, false, false);
+				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world, null, null, null, blockPos2, SpawnReason.MOB_SUMMONED, false, false);
 				if (ironGolemEntity != null) {
-					if (ironGolemEntity.canSpawn(serverWorld, SpawnReason.MOB_SUMMONED) && ironGolemEntity.canSpawn(serverWorld)) {
-						serverWorld.spawnEntityAndPassengers(ironGolemEntity);
+					if (ironGolemEntity.canSpawn(world, SpawnReason.MOB_SUMMONED) && ironGolemEntity.canSpawn(world)) {
+						world.spawnEntityAndPassengers(ironGolemEntity);
 						return ironGolemEntity;
 					}
 

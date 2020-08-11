@@ -71,7 +71,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason != SpawnReason.PATROL
 			&& spawnReason != SpawnReason.EVENT
@@ -90,7 +90,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			this.patrolling = true;
 		}
 
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -107,6 +107,9 @@ public abstract class PatrolEntity extends HostileEntity {
 		this.patrolling = true;
 	}
 
+	/**
+	 * Returns the position this patrol entity is walking to.
+	 */
 	public BlockPos getPatrolTarget() {
 		return this.patrolTarget;
 	}

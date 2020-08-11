@@ -72,18 +72,18 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	);
 	public static final SurfaceBuilder<TernarySurfaceConfig> BASALT_DELTAS = register("basalt_deltas", new BasaltDeltasSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = register("nope", new NopeSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	private final Codec<ConfiguredSurfaceBuilder<C>> field_25016;
+	private final Codec<ConfiguredSurfaceBuilder<C>> codec;
 
-	private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String string, F surfaceBuilder) {
-		return Registry.register(Registry.SURFACE_BUILDER, string, surfaceBuilder);
+	private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String id, F surfaceBuilder) {
+		return Registry.register(Registry.SURFACE_BUILDER, id, surfaceBuilder);
 	}
 
 	public SurfaceBuilder(Codec<C> codec) {
-		this.field_25016 = codec.fieldOf("config").<ConfiguredSurfaceBuilder<C>>xmap(this::method_30478, ConfiguredSurfaceBuilder::getConfig).codec();
+		this.codec = codec.fieldOf("config").<ConfiguredSurfaceBuilder<C>>xmap(this::method_30478, ConfiguredSurfaceBuilder::getConfig).codec();
 	}
 
-	public Codec<ConfiguredSurfaceBuilder<C>> method_29003() {
-		return this.field_25016;
+	public Codec<ConfiguredSurfaceBuilder<C>> getCodec() {
+		return this.codec;
 	}
 
 	public ConfiguredSurfaceBuilder<C> method_30478(C surfaceConfig) {

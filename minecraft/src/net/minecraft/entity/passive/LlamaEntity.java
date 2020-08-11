@@ -53,10 +53,10 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob {
-	private static final Ingredient field_25375 = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
-	private static final TrackedData<Integer> ATTR_STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
+	private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private boolean spit;
 	@Nullable
 	private LlamaEntity following;
@@ -73,7 +73,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	private void setStrength(int strength) {
-		this.dataTracker.set(ATTR_STRENGTH, Math.max(1, Math.min(5, strength)));
+		this.dataTracker.set(STRENGTH, Math.max(1, Math.min(5, strength)));
 	}
 
 	private void initializeStrength() {
@@ -82,7 +82,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	public int getStrength() {
-		return this.dataTracker.get(ATTR_STRENGTH);
+		return this.dataTracker.get(STRENGTH);
 	}
 
 	@Override
@@ -130,17 +130,17 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(ATTR_STRENGTH, 0);
+		this.dataTracker.startTracking(STRENGTH, 0);
 		this.dataTracker.startTracking(CARPET_COLOR, -1);
-		this.dataTracker.startTracking(ATTR_VARIANT, 0);
+		this.dataTracker.startTracking(VARIANT, 0);
 	}
 
 	public int getVariant() {
-		return MathHelper.clamp(this.dataTracker.get(ATTR_VARIANT), 0, 3);
+		return MathHelper.clamp(this.dataTracker.get(VARIANT), 0, 3);
 	}
 
 	public void setVariant(int variant) {
-		this.dataTracker.set(ATTR_VARIANT, variant);
+		this.dataTracker.set(VARIANT, variant);
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return field_25375.test(stack);
+		return TAMING_INGREDIENT.test(stack);
 	}
 
 	@Override
@@ -245,7 +245,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.initializeStrength();
 		int i;
@@ -257,7 +257,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 
 		this.setVariant(i);
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override

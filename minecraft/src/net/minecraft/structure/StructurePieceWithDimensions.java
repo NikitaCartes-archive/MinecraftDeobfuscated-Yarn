@@ -65,7 +65,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 				return false;
 			} else {
 				this.hPos = j / k;
-				this.boundingBox.offset(0, this.hPos - this.boundingBox.minY + i, 0);
+				this.boundingBox.move(0, this.hPos - this.boundingBox.minY + i, 0);
 				return true;
 			}
 		}

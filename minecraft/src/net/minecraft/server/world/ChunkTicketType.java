@@ -14,25 +14,25 @@ public class ChunkTicketType<T> {
 	/**
 	 * Used by the ender dragon to load the central end island during the boss battle.
 	 */
-	public static final ChunkTicketType<Unit> field_17264 = create("dragon", (unit, unit2) -> 0);
+	public static final ChunkTicketType<Unit> DRAGON = create("dragon", (unit, unit2) -> 0);
 	public static final ChunkTicketType<ChunkPos> PLAYER = create("player", Comparator.comparingLong(ChunkPos::toLong));
 	/**
 	 * Used to force load chunks.
 	 */
-	public static final ChunkTicketType<ChunkPos> field_14031 = create("forced", Comparator.comparingLong(ChunkPos::toLong));
+	public static final ChunkTicketType<ChunkPos> FORCED = create("forced", Comparator.comparingLong(ChunkPos::toLong));
 	public static final ChunkTicketType<ChunkPos> LIGHT = create("light", Comparator.comparingLong(ChunkPos::toLong));
 	/**
 	 * Used by a nether portal to load chunks in the other dimension.
 	 */
-	public static final ChunkTicketType<BlockPos> field_19280 = create("portal", Vec3i::compareTo, 300);
+	public static final ChunkTicketType<BlockPos> PORTAL = create("portal", Vec3i::compareTo, 300);
 	/**
 	 * Used to load the chunks at the destination of teleportation.
 	 */
-	public static final ChunkTicketType<Integer> field_19347 = create("post_teleport", Integer::compareTo, 5);
+	public static final ChunkTicketType<Integer> POST_TELEPORT = create("post_teleport", Integer::compareTo, 5);
 	/**
 	 * Represents a type of ticket that has an unknown cause for loading chunks.
 	 */
-	public static final ChunkTicketType<ChunkPos> field_14032 = create("unknown", Comparator.comparingLong(ChunkPos::toLong), 1);
+	public static final ChunkTicketType<ChunkPos> UNKNOWN = create("unknown", Comparator.comparingLong(ChunkPos::toLong), 1);
 
 	/**
 	 * Creates a new ticket type that does not expire.

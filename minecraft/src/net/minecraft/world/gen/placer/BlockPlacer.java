@@ -8,9 +8,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldAccess;
 
 public abstract class BlockPlacer {
-	public static final Codec<BlockPlacer> field_24865 = Registry.BLOCK_PLACER_TYPE.dispatch(BlockPlacer::method_28673, BlockPlacerType::method_28674);
+	public static final Codec<BlockPlacer> TYPE_CODEC = Registry.BLOCK_PLACER_TYPE.dispatch(BlockPlacer::getType, BlockPlacerType::getCodec);
 
-	public abstract void method_23403(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, Random random);
+	public abstract void generate(WorldAccess world, BlockPos pos, BlockState state, Random random);
 
-	protected abstract BlockPlacerType<?> method_28673();
+	protected abstract BlockPlacerType<?> getType();
 }
