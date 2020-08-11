@@ -59,7 +59,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private int attackTicksLeft;
 	private int lookingAtVillagerTicksLeft;
-	private static final IntRange field_25365 = Durations.betweenSeconds(20, 39);
+	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
 	private int angerTime;
 	private UUID angryAt;
 
@@ -176,7 +176,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 
 	@Override
 	public void chooseRandomAngerTime() {
-		this.setAngerTime(field_25365.choose(this.random));
+		this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
 	}
 
 	@Override

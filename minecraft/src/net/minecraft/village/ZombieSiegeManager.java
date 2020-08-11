@@ -29,7 +29,7 @@ public class ZombieSiegeManager implements Spawner {
 	@Override
 	public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
 		if (!world.isDay() && spawnMonsters) {
-			float f = world.method_30274(0.0F);
+			float f = world.getSkyAngle(0.0F);
 			if ((double)f == 0.5) {
 				this.state = world.random.nextInt(10) == 0 ? ZombieSiegeManager.State.SIEGE_TONIGHT : ZombieSiegeManager.State.SIEGE_DONE;
 			}

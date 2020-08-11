@@ -114,7 +114,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	public boolean canStayAttached() {
 		if (this.fixed) {
 			return true;
-		} else if (!this.world.doesNotCollide(this)) {
+		} else if (!this.world.isSpaceEmpty(this)) {
 			return false;
 		} else {
 			BlockState blockState = this.world.getBlockState(this.attachmentPos.offset(this.facing.getOpposite()));

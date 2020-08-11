@@ -126,14 +126,14 @@ public abstract class ItemGroup {
 		public ItemStack createIcon() {
 			return new ItemStack(Blocks.CHEST);
 		}
-	}).setTexture("inventory.png").setNoScrollbar().setNoTooltip();
+	}).setTexture("inventory.png").setNoScrollbar().hideName();
 	private final int index;
 	private final String id;
 	private final Text translationKey;
 	private String name;
 	private String texture = "items.png";
 	private boolean scrollbar = true;
-	private boolean tooltip = true;
+	private boolean renderName = true;
 	private EnchantmentTarget[] enchantments = new EnchantmentTarget[0];
 	private ItemStack icon;
 
@@ -186,13 +186,21 @@ public abstract class ItemGroup {
 		return this;
 	}
 
+	/**
+	 * Checks if this item group should render its name.
+	 * 
+	 * <p>The name is rendered below the top row of item groups and above the inventory.
+	 */
 	@Environment(EnvType.CLIENT)
-	public boolean hasTooltip() {
-		return this.tooltip;
+	public boolean shouldRenderName() {
+		return this.renderName;
 	}
 
-	public ItemGroup setNoTooltip() {
-		this.tooltip = false;
+	/**
+	 * Specifies that when this item group is selected, the name of the item group should not be rendered.
+	 */
+	public ItemGroup hideName() {
+		this.renderName = false;
 		return this;
 	}
 

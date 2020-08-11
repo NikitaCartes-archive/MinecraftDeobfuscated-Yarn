@@ -12,9 +12,7 @@ public class EndSpikeFeatureConfig implements FeatureConfig {
 		instance -> instance.group(
 					Codec.BOOL.fieldOf("crystal_invulnerable").orElse(false).forGetter(endSpikeFeatureConfig -> endSpikeFeatureConfig.crystalInvulnerable),
 					EndSpikeFeature.Spike.CODEC.listOf().fieldOf("spikes").forGetter(endSpikeFeatureConfig -> endSpikeFeatureConfig.spikes),
-					BlockPos.field_25064
-						.optionalFieldOf("crystal_beam_target")
-						.forGetter(endSpikeFeatureConfig -> Optional.ofNullable(endSpikeFeatureConfig.crystalBeamTarget))
+					BlockPos.CODEC.optionalFieldOf("crystal_beam_target").forGetter(endSpikeFeatureConfig -> Optional.ofNullable(endSpikeFeatureConfig.crystalBeamTarget))
 				)
 				.apply(instance, EndSpikeFeatureConfig::new)
 	);

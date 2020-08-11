@@ -44,7 +44,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private LevelInfo levelInfo;
 	private final GeneratorOptions generatorOptions;
-	private final Lifecycle field_25426;
+	private final Lifecycle lifecycle;
 	private int spawnX;
 	private int spawnY;
 	private int spawnZ;
@@ -136,7 +136,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		this.dragonFight = dragonFight;
 		this.levelInfo = levelInfo;
 		this.generatorOptions = generatorOptions;
-		this.field_25426 = lifecycle;
+		this.lifecycle = lifecycle;
 	}
 
 	public LevelProperties(LevelInfo levelInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
@@ -523,8 +523,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Lifecycle method_29588() {
-		return this.field_25426;
+	public Lifecycle getLifecycle() {
+		return this.lifecycle;
 	}
 
 	@Override
@@ -538,12 +538,12 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public DataPackSettings method_29589() {
+	public DataPackSettings getDataPackSettings() {
 		return this.levelInfo.getDataPackSettings();
 	}
 
 	@Override
-	public void method_29590(DataPackSettings dataPackSettings) {
+	public void updateLevelInfo(DataPackSettings dataPackSettings) {
 		this.levelInfo = this.levelInfo.withDataPackSettings(dataPackSettings);
 	}
 

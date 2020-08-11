@@ -1,8 +1,7 @@
-package net.minecraft;
+package net.minecraft.text;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.Style;
 
 /**
  * A visitor for single characters in a string.

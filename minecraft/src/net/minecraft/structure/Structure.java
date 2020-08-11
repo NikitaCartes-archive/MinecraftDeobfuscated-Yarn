@@ -555,7 +555,7 @@ public class Structure {
 			case NONE:
 		}
 
-		blockBox.offset(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+		blockBox.move(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		return blockBox;
 	}
 
@@ -569,7 +569,7 @@ public class Structure {
 			blockPos = blockPos.offset(direction, offsetX);
 		}
 
-		boundingBox.offset(blockPos.getX(), 0, blockPos.getZ());
+		boundingBox.move(blockPos.getX(), 0, blockPos.getZ());
 	}
 
 	public CompoundTag toTag(CompoundTag tag) {

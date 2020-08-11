@@ -25,29 +25,27 @@ import net.minecraft.predicate.entity.FishingHookPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
-	public static final LootCondition.Builder NEEDS_JUNGLE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BuiltInBiomes.JUNGLE)
-	);
+	public static final LootCondition.Builder NEEDS_JUNGLE_BIOME = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE));
 	public static final LootCondition.Builder NEEDS_JUNGLE_HILLS_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BuiltInBiomes.JUNGLE_HILLS)
+		LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE_HILLS)
 	);
 	public static final LootCondition.Builder NEEDS_JUNGLE_EDGE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BuiltInBiomes.JUNGLE_EDGE)
+		LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE_EDGE)
 	);
 	public static final LootCondition.Builder NEEDS_BAMBOO_JUNGLE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BuiltInBiomes.BAMBOO_JUNGLE)
+		LocationPredicate.Builder.create().biome(BiomeKeys.BAMBOO_JUNGLE)
 	);
 	public static final LootCondition.Builder NEEDS_MODIFIED_JUNGLE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BuiltInBiomes.MODIFIED_JUNGLE)
+		LocationPredicate.Builder.create().biome(BiomeKeys.MODIFIED_JUNGLE)
 	);
 	public static final LootCondition.Builder NEEDS_MODIFIED_JUNGLE_EDGE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BuiltInBiomes.MODIFIED_JUNGLE_EDGE)
+		LocationPredicate.Builder.create().biome(BiomeKeys.MODIFIED_JUNGLE_EDGE)
 	);
 	public static final LootCondition.Builder NEEDS_BAMBOO_JUNGLE_HILLS_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BuiltInBiomes.BAMBOO_JUNGLE_HILLS)
+		LocationPredicate.Builder.create().biome(BiomeKeys.BAMBOO_JUNGLE_HILLS)
 	);
 
 	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {

@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 
 public class SwordItem extends ToolItem implements Vanishable {
 	private final float attackDamage;
-	private final Multimap<EntityAttribute, EntityAttributeModifier> field_23745;
+	private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
 	public SwordItem(ToolMaterial toolMaterial, int attackDamage, float attackSpeed, Item.Settings settings) {
 		super(toolMaterial, settings);
@@ -32,7 +32,7 @@ public class SwordItem extends ToolItem implements Vanishable {
 			EntityAttributes.GENERIC_ATTACK_SPEED,
 			new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Weapon modifier", (double)attackSpeed, EntityAttributeModifier.Operation.ADDITION)
 		);
-		this.field_23745 = builder.build();
+		this.attributeModifiers = builder.build();
 	}
 
 	public float getAttackDamage() {
@@ -82,6 +82,6 @@ public class SwordItem extends ToolItem implements Vanishable {
 
 	@Override
 	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		return slot == EquipmentSlot.MAINHAND ? this.field_23745 : super.getAttributeModifiers(slot);
+		return slot == EquipmentSlot.MAINHAND ? this.attributeModifiers : super.getAttributeModifiers(slot);
 	}
 }

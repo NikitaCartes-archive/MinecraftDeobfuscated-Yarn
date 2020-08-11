@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5499;
 import net.minecraft.client.options.Option;
+import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public class OptionButtonWidget extends ButtonWidget implements class_5499 {
+public class OptionButtonWidget extends ButtonWidget implements OrderableTooltip {
 	private final Option option;
 
 	public OptionButtonWidget(int x, int y, int width, int height, Option option, Text text, ButtonWidget.PressAction pressAction) {
@@ -23,7 +23,7 @@ public class OptionButtonWidget extends ButtonWidget implements class_5499 {
 	}
 
 	@Override
-	public Optional<List<OrderedText>> method_31047() {
+	public Optional<List<OrderedText>> getOrderedTooltip() {
 		return this.option.getTooltip();
 	}
 }

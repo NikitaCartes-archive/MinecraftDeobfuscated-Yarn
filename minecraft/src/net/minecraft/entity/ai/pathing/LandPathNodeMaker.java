@@ -330,7 +330,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	private boolean method_29304(Box box) {
-		return (Boolean)this.field_25191.computeIfAbsent(box, box2 -> !this.cachedWorld.doesNotCollide(this.entity, box));
+		return (Boolean)this.field_25191.computeIfAbsent(box, box2 -> !this.cachedWorld.isSpaceEmpty(this.entity, box));
 	}
 
 	@Override

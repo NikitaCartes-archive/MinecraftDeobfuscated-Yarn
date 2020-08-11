@@ -8,42 +8,42 @@ import net.fabricmc.api.Environment;
 public class MusicSound {
 	public static final Codec<MusicSound> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					SoundEvent.field_24628.fieldOf("sound").forGetter(musicSound -> musicSound.event),
-					Codec.INT.fieldOf("min_delay").forGetter(musicSound -> musicSound.field_24058),
-					Codec.INT.fieldOf("max_delay").forGetter(musicSound -> musicSound.field_24059),
-					Codec.BOOL.fieldOf("replace_current_music").forGetter(musicSound -> musicSound.field_24060)
+					SoundEvent.CODEC.fieldOf("sound").forGetter(musicSound -> musicSound.sound),
+					Codec.INT.fieldOf("min_delay").forGetter(musicSound -> musicSound.minDelay),
+					Codec.INT.fieldOf("max_delay").forGetter(musicSound -> musicSound.maxDelay),
+					Codec.BOOL.fieldOf("replace_current_music").forGetter(musicSound -> musicSound.replaceCurrentMusic)
 				)
 				.apply(instance, MusicSound::new)
 	);
-	private final SoundEvent event;
-	private final int field_24058;
-	private final int field_24059;
-	private final boolean field_24060;
+	private final SoundEvent sound;
+	private final int minDelay;
+	private final int maxDelay;
+	private final boolean replaceCurrentMusic;
 
-	public MusicSound(SoundEvent event, int i, int j, boolean bl) {
-		this.event = event;
-		this.field_24058 = i;
-		this.field_24059 = j;
-		this.field_24060 = bl;
+	public MusicSound(SoundEvent sound, int minDelay, int maxDelay, boolean replaceCurrentMusic) {
+		this.sound = sound;
+		this.minDelay = minDelay;
+		this.maxDelay = maxDelay;
+		this.replaceCurrentMusic = replaceCurrentMusic;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent getEvent() {
-		return this.event;
+	public SoundEvent getSound() {
+		return this.sound;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_27280() {
-		return this.field_24058;
+	public int getMinDelay() {
+		return this.minDelay;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_27281() {
-		return this.field_24059;
+	public int getMaxDelay() {
+		return this.maxDelay;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_27282() {
-		return this.field_24060;
+	public boolean shouldReplaceCurrentMusic() {
+		return this.replaceCurrentMusic;
 	}
 }

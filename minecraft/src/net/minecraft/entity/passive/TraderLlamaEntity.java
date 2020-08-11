@@ -99,7 +99,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason == SpawnReason.EVENT) {
 			this.setBreedingAge(0);
@@ -109,7 +109,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 			entityData = new PassiveEntity.PassiveData(false);
 		}
 
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public class DefendTraderGoal extends TrackTargetGoal {

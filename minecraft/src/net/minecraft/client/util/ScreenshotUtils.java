@@ -75,7 +75,7 @@ public class ScreenshotUtils {
 		width = framebuffer.textureWidth;
 		height = framebuffer.textureHeight;
 		NativeImage nativeImage = new NativeImage(width, height, false);
-		RenderSystem.bindTexture(framebuffer.method_30277());
+		RenderSystem.bindTexture(framebuffer.getColorAttachment());
 		nativeImage.loadFromTextureImage(0, true);
 		nativeImage.mirrorVertically();
 		return nativeImage;

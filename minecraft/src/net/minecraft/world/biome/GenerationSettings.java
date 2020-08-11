@@ -36,9 +36,9 @@ public class GenerationSettings {
 	);
 	public static final MapCodec<GenerationSettings> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					ConfiguredSurfaceBuilder.field_25015.fieldOf("surface_builder").forGetter(generationSettings -> generationSettings.surfaceBuilder),
+					ConfiguredSurfaceBuilder.REGISTRY_CODEC.fieldOf("surface_builder").forGetter(generationSettings -> generationSettings.surfaceBuilder),
 					Codec.simpleMap(
-							GenerationStep.Carver.field_24770,
+							GenerationStep.Carver.CODEC,
 							ConfiguredCarver.field_26755.promotePartial(Util.method_29188("Carver: ", LOGGER::error)),
 							StringIdentifiable.method_28142(GenerationStep.Carver.values())
 						)

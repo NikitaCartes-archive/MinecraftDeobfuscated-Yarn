@@ -66,7 +66,7 @@ public class OceanMonumentGenerator {
 			int m = this.applyZTransform(9, 22);
 
 			for (OceanMonumentGenerator.Piece piece : this.field_14465) {
-				piece.getBoundingBox().offset(l, k, m);
+				piece.getBoundingBox().move(l, k, m);
 			}
 
 			BlockBox blockBox = BlockBox.create(
@@ -1461,16 +1461,16 @@ public class OceanMonumentGenerator {
 
 			switch (direction) {
 				case NORTH:
-					this.boundingBox.offset(n * 8, p * 4, -(o + l) * 8 + 1);
+					this.boundingBox.move(n * 8, p * 4, -(o + l) * 8 + 1);
 					break;
 				case SOUTH:
-					this.boundingBox.offset(n * 8, p * 4, o * 8);
+					this.boundingBox.move(n * 8, p * 4, o * 8);
 					break;
 				case WEST:
-					this.boundingBox.offset(-(o + l) * 8 + 1, p * 4, n * 8);
+					this.boundingBox.move(-(o + l) * 8 + 1, p * 4, n * 8);
 					break;
 				default:
-					this.boundingBox.offset(o * 8, p * 4, n * 8);
+					this.boundingBox.move(o * 8, p * 4, n * 8);
 			}
 		}
 

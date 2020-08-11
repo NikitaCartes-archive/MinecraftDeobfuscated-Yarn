@@ -96,7 +96,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		}) {
 			@Override
 			public Text getMessage() {
-				return ScreenTexts.method_30619(super.getMessage(), MoreOptionsDialog.this.generatorOptions.shouldGenerateStructures());
+				return ScreenTexts.composeToggleText(super.getMessage(), MoreOptionsDialog.this.generatorOptions.shouldGenerateStructures());
 			}
 
 			@Override
@@ -121,7 +121,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 
 						GeneratorType generatorType = (GeneratorType)GeneratorType.VALUES.get(ix);
 						this.field_25049 = Optional.of(generatorType);
-						this.generatorOptions = generatorType.method_29077(
+						this.generatorOptions = generatorType.createDefaultOptions(
 							this.field_25483, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest()
 						);
 						if (!this.generatorOptions.isDebugWorld() || Screen.hasShiftDown()) {
@@ -152,7 +152,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		this.mapTypeButton.visible = false;
 		this.mapTypeButton.active = this.field_25049.isPresent();
 		this.customizeTypeButton = parent.addButton(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), buttonWidget -> {
-			GeneratorType.ScreenProvider screenProvider = (GeneratorType.ScreenProvider)GeneratorType.field_25053.get(this.field_25049);
+			GeneratorType.ScreenProvider screenProvider = (GeneratorType.ScreenProvider)GeneratorType.SCREEN_PROVIDERS.get(this.field_25049);
 			if (screenProvider != null) {
 				client.openScreen(screenProvider.createEditScreen(parent, this.generatorOptions));
 			}
@@ -164,7 +164,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		}) {
 			@Override
 			public Text getMessage() {
-				return ScreenTexts.method_30619(super.getMessage(), MoreOptionsDialog.this.generatorOptions.hasBonusChest() && !parent.hardcore);
+				return ScreenTexts.composeToggleText(super.getMessage(), MoreOptionsDialog.this.generatorOptions.hasBonusChest() && !parent.hardcore);
 			}
 		});
 		this.bonusItemsButton.visible = false;
@@ -358,7 +358,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		} else {
 			this.mapFeaturesButton.visible = visible;
 			this.bonusItemsButton.visible = visible;
-			this.customizeTypeButton.visible = visible && GeneratorType.field_25053.containsKey(this.field_25049);
+			this.customizeTypeButton.visible = visible && GeneratorType.SCREEN_PROVIDERS.containsKey(this.field_25049);
 			this.field_25048.visible = visible;
 		}
 

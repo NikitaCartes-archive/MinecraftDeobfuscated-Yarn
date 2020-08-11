@@ -77,7 +77,7 @@ public final class ItemStack {
 		instance -> instance.group(
 					Registry.ITEM.fieldOf("id").forGetter(itemStack -> itemStack.item),
 					Codec.INT.fieldOf("Count").forGetter(itemStack -> itemStack.count),
-					CompoundTag.field_25128.optionalFieldOf("tag").forGetter(itemStack -> Optional.ofNullable(itemStack.tag))
+					CompoundTag.CODEC.optionalFieldOf("tag").forGetter(itemStack -> Optional.ofNullable(itemStack.tag))
 				)
 				.apply(instance, ItemStack::new)
 	);

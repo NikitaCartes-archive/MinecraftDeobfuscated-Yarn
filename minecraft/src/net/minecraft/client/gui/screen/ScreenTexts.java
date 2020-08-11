@@ -16,13 +16,13 @@ public class ScreenTexts {
 	public static final Text NO = new TranslatableText("gui.no");
 	public static final Text PROCEED = new TranslatableText("gui.proceed");
 	public static final Text BACK = new TranslatableText("gui.back");
-	public static final Text field_26625 = new TranslatableText("connect.failed");
+	public static final Text FAILED = new TranslatableText("connect.failed");
 
 	public static Text getToggleText(boolean value) {
 		return value ? ON : OFF;
 	}
 
-	public static MutableText method_30619(Text text, boolean bl) {
-		return new TranslatableText(bl ? "options.on.composed" : "options.off.composed", text);
+	public static MutableText composeToggleText(Text text, boolean value) {
+		return new TranslatableText(value ? "options.on.composed" : "options.off.composed", text);
 	}
 }

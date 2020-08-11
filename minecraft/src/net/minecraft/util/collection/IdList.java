@@ -40,8 +40,8 @@ public class IdList<T> implements IndexedIterable<T> {
 	}
 
 	@Override
-	public int getRawId(T object) {
-		Integer integer = (Integer)this.idMap.get(object);
+	public int getRawId(T entry) {
+		Integer integer = (Integer)this.idMap.get(entry);
 		return integer == null ? -1 : integer;
 	}
 

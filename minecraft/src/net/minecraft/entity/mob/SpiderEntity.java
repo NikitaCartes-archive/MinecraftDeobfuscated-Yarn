@@ -149,20 +149,20 @@ public class SpiderEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
-		if (serverWorldAccess.getRandom().nextInt(100) == 0) {
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		if (world.getRandom().nextInt(100) == 0) {
 			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-			skeletonEntity.initialize(serverWorldAccess, difficulty, spawnReason, null, null);
+			skeletonEntity.initialize(world, difficulty, spawnReason, null, null);
 			skeletonEntity.startRiding(this);
 		}
 
 		if (entityData == null) {
 			entityData = new SpiderEntity.SpiderData();
-			if (serverWorldAccess.getDifficulty() == Difficulty.HARD && serverWorldAccess.getRandom().nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
-				((SpiderEntity.SpiderData)entityData).setEffect(serverWorldAccess.getRandom());
+			if (world.getDifficulty() == Difficulty.HARD && world.getRandom().nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
+				((SpiderEntity.SpiderData)entityData).setEffect(world.getRandom());
 			}
 		}
 

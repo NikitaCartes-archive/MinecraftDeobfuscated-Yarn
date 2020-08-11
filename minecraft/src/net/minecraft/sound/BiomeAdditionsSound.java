@@ -9,24 +9,24 @@ import net.fabricmc.api.Environment;
  * Represents an "additions sound" for a biome.
  */
 public class BiomeAdditionsSound {
-	public static final Codec<BiomeAdditionsSound> field_24673 = RecordCodecBuilder.create(
+	public static final Codec<BiomeAdditionsSound> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					SoundEvent.field_24628.fieldOf("sound").forGetter(biomeAdditionsSound -> biomeAdditionsSound.event),
+					SoundEvent.CODEC.fieldOf("sound").forGetter(biomeAdditionsSound -> biomeAdditionsSound.sound),
 					Codec.DOUBLE.fieldOf("tick_chance").forGetter(biomeAdditionsSound -> biomeAdditionsSound.chance)
 				)
 				.apply(instance, BiomeAdditionsSound::new)
 	);
-	private SoundEvent event;
+	private SoundEvent sound;
 	private double chance;
 
-	public BiomeAdditionsSound(SoundEvent event, double chance) {
-		this.event = event;
+	public BiomeAdditionsSound(SoundEvent sound, double chance) {
+		this.sound = sound;
 		this.chance = chance;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent getEvent() {
-		return this.event;
+	public SoundEvent getSound() {
+		return this.sound;
 	}
 
 	/**

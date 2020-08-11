@@ -227,13 +227,13 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
 		HorseBaseEntity horseBaseEntity;
-		if (passiveEntity instanceof DonkeyEntity) {
-			horseBaseEntity = EntityType.MULE.create(serverWorld);
+		if (entity instanceof DonkeyEntity) {
+			horseBaseEntity = EntityType.MULE.create(world);
 		} else {
-			HorseEntity horseEntity = (HorseEntity)passiveEntity;
-			horseBaseEntity = EntityType.HORSE.create(serverWorld);
+			HorseEntity horseEntity = (HorseEntity)entity;
+			horseBaseEntity = EntityType.HORSE.create(world);
 			int i = this.random.nextInt(9);
 			HorseColor horseColor;
 			if (i < 4) {
@@ -257,7 +257,7 @@ public class HorseEntity extends HorseBaseEntity {
 			((HorseEntity)horseBaseEntity).setVariant(horseColor, horseMarking);
 		}
 
-		this.setChildAttributes(passiveEntity, horseBaseEntity);
+		this.setChildAttributes(entity, horseBaseEntity);
 		return horseBaseEntity;
 	}
 
@@ -274,7 +274,7 @@ public class HorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		HorseColor horseColor;
 		if (entityData instanceof HorseEntity.HorseData) {
@@ -285,7 +285,7 @@ public class HorseEntity extends HorseBaseEntity {
 		}
 
 		this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), this.random));
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public static class HorseData extends PassiveEntity.PassiveData {

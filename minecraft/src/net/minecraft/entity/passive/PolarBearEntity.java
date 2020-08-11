@@ -50,14 +50,14 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class PolarBearEntity extends AnimalEntity implements Angerable {
 	private static final TrackedData<Boolean> WARNING = DataTracker.registerData(PolarBearEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private float lastWarningAnimationProgress;
 	private float warningAnimationProgress;
 	private int warningSoundCooldown;
-	private static final IntRange field_25369 = Durations.betweenSeconds(20, 39);
+	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
 	private int angerTime;
 	private UUID targetUuid;
 
@@ -66,8 +66,8 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	}
 
 	@Override
-	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.POLAR_BEAR.create(serverWorld);
+	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+		return EntityType.POLAR_BEAR.create(world);
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 	public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
-		return !Objects.equals(optional, Optional.of(BuiltInBiomes.FROZEN_OCEAN)) && !Objects.equals(optional, Optional.of(BuiltInBiomes.DEEP_FROZEN_OCEAN))
+		return !Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_OCEAN)) && !Objects.equals(optional, Optional.of(BiomeKeys.DEEP_FROZEN_OCEAN))
 			? isValidNaturalSpawn(type, world, spawnReason, pos, random)
 			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.down()).isOf(Blocks.ICE);
 	}
@@ -121,7 +121,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 	@Override
 	public void chooseRandomAngerTime() {
-		this.setAngerTime(field_25369.choose(this.random));
+		this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
 	}
 
 	@Override
@@ -243,13 +243,13 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(1.0F);
 		}
 
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	class AttackGoal extends MeleeAttackGoal {

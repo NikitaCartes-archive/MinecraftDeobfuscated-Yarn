@@ -11,7 +11,7 @@ import net.minecraft.particle.ParticleTypes;
 public class BiomeParticleConfig {
 	public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ParticleTypes.field_25125.fieldOf("options").forGetter(biomeParticleConfig -> biomeParticleConfig.particle),
+					ParticleTypes.TYPE_CODEC.fieldOf("options").forGetter(biomeParticleConfig -> biomeParticleConfig.particle),
 					Codec.FLOAT.fieldOf("probability").forGetter(biomeParticleConfig -> biomeParticleConfig.probability)
 				)
 				.apply(instance, BiomeParticleConfig::new)

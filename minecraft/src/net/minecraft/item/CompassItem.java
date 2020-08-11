@@ -54,7 +54,7 @@ public class CompassItem extends Item implements Vanishable {
 					&& compoundTag.contains("LodestonePos")
 					&& !((ServerWorld)world)
 						.getPointOfInterestStorage()
-						.method_26339(PointOfInterestType.LODESTONE, NbtHelper.toBlockPos(compoundTag.getCompound("LodestonePos")))) {
+						.hasTypeAt(PointOfInterestType.LODESTONE, NbtHelper.toBlockPos(compoundTag.getCompound("LodestonePos")))) {
 					compoundTag.remove("LodestonePos");
 				}
 			}

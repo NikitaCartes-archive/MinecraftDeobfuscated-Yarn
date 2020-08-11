@@ -162,7 +162,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 					Box box = new Box(
 						(double)x - e + 0.5, (double)y + 0.001, (double)z - e + 0.5, (double)x + e + 0.5, (double)((float)y + this.entity.getHeight()), (double)z + e + 0.5
 					);
-					if (!this.entity.world.doesNotCollide(this.entity, box)) {
+					if (!this.entity.world.isSpaceEmpty(this.entity, box)) {
 						return null;
 					}
 

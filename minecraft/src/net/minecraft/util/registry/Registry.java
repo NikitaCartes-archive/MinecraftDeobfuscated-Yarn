@@ -263,8 +263,8 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 		return mutableRegistry.add((RegistryKey<R>)registryKey, registry, lifecycle);
 	}
 
-	protected Registry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
-		this.registryKey = registryKey;
+	protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
+		this.registryKey = key;
 		this.lifecycle = lifecycle;
 	}
 
@@ -281,7 +281,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 		return dynamicOps.compressMaps()
 			? dynamicOps.getNumberValue(object).flatMap(number -> {
 				T objectx = this.get(number.intValue());
-				return objectx == null ? DataResult.error("Unknown registry id: " + number) : DataResult.success(objectx, this.method_31139(objectx));
+				return objectx == null ? DataResult.error("Unknown registry id: " + number) : DataResult.success(objectx, this.getEntryLifecycle(objectx));
 			}).map(objectx -> Pair.of(objectx, dynamicOps.empty()))
 			: Identifier.CODEC
 				.decode(dynamicOps, object)
@@ -290,7 +290,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 						T objectx = this.get((Identifier)pair.getFirst());
 						return objectx == null
 							? DataResult.error("Unknown registry key: " + pair.getFirst())
-							: DataResult.success(Pair.of(objectx, pair.getSecond()), this.method_31139(objectx));
+							: DataResult.success(Pair.of(objectx, pair.getSecond()), this.getEntryLifecycle(objectx));
 					}
 				);
 	}
@@ -315,10 +315,10 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	@Nullable
 	public abstract Identifier getId(T entry);
 
-	public abstract Optional<RegistryKey<T>> getKey(T value);
+	public abstract Optional<RegistryKey<T>> getKey(T entry);
 
 	@Override
-	public abstract int getRawId(@Nullable T object);
+	public abstract int getRawId(@Nullable T entry);
 
 	@Nullable
 	public abstract T get(@Nullable RegistryKey<T> key);
@@ -326,23 +326,28 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	@Nullable
 	public abstract T get(@Nullable Identifier id);
 
-	protected abstract Lifecycle method_31139(T object);
+	protected abstract Lifecycle getEntryLifecycle(T object);
 
-	public abstract Lifecycle method_31138();
+	public abstract Lifecycle getLifecycle();
 
 	public Optional<T> getOrEmpty(@Nullable Identifier id) {
 		return Optional.ofNullable(this.get(id));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Optional<T> method_31189(@Nullable RegistryKey<T> registryKey) {
-		return Optional.ofNullable(this.get(registryKey));
+	public Optional<T> getOrEmpty(@Nullable RegistryKey<T> key) {
+		return Optional.ofNullable(this.get(key));
 	}
 
-	public T method_31140(RegistryKey<T> registryKey) {
-		T object = this.get(registryKey);
+	/**
+	 * Gets an entry from the registry.
+	 * 
+	 * @throws IllegalStateException if the entry was not present in the registry
+	 */
+	public T getOrThrow(RegistryKey<T> key) {
+		T object = this.get(key);
 		if (object == null) {
-			throw new IllegalStateException("Missing: " + registryKey);
+			throw new IllegalStateException("Missing: " + key);
 		} else {
 			return object;
 		}

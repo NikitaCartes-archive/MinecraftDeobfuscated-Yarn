@@ -12,12 +12,12 @@ public class SimpleBlockPlacer extends BlockPlacer {
 	public static final SimpleBlockPlacer INSTANCE = new SimpleBlockPlacer();
 
 	@Override
-	protected BlockPlacerType<?> method_28673() {
+	protected BlockPlacerType<?> getType() {
 		return BlockPlacerType.SIMPLE_BLOCK_PLACER;
 	}
 
 	@Override
-	public void method_23403(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, Random random) {
-		worldAccess.setBlockState(blockPos, blockState, 2);
+	public void generate(WorldAccess world, BlockPos pos, BlockState state, Random random) {
+		world.setBlockState(pos, state, 2);
 	}
 }

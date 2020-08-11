@@ -1,8 +1,9 @@
-package net.minecraft;
+package net.minecraft.world.dimension;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_5459;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,7 +20,7 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 
 public class AreaHelper {
-	private static final AbstractBlock.ContextPredicate field_25883 = (blockState, blockView, blockPos) -> blockState.isOf(Blocks.OBSIDIAN);
+	private static final AbstractBlock.ContextPredicate IS_VALID_FRAME_BLOCK = (blockState, blockView, blockPos) -> blockState.isOf(Blocks.OBSIDIAN);
 	private final WorldAccess world;
 	private final Direction.Axis axis;
 	private final Direction negativeDir;
@@ -85,14 +86,14 @@ public class AreaHelper {
 			mutable.set(blockPos).move(direction, i);
 			BlockState blockState = this.world.getBlockState(mutable);
 			if (!validStateInsidePortal(blockState)) {
-				if (field_25883.test(blockState, this.world, mutable)) {
+				if (IS_VALID_FRAME_BLOCK.test(blockState, this.world, mutable)) {
 					return i;
 				}
 				break;
 			}
 
 			BlockState blockState2 = this.world.getBlockState(mutable.move(Direction.DOWN));
-			if (!field_25883.test(blockState2, this.world, mutable)) {
+			if (!IS_VALID_FRAME_BLOCK.test(blockState2, this.world, mutable)) {
 				break;
 			}
 		}
@@ -109,7 +110,7 @@ public class AreaHelper {
 	private boolean method_30491(BlockPos.Mutable mutable, int i) {
 		for (int j = 0; j < this.width; j++) {
 			BlockPos.Mutable mutable2 = mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, j);
-			if (!field_25883.test(this.world.getBlockState(mutable2), this.world, mutable2)) {
+			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable2), this.world, mutable2)) {
 				return false;
 			}
 		}
@@ -120,12 +121,12 @@ public class AreaHelper {
 	private int method_30490(BlockPos.Mutable mutable) {
 		for (int i = 0; i < 21; i++) {
 			mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, -1);
-			if (!field_25883.test(this.world.getBlockState(mutable), this.world, mutable)) {
+			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable), this.world, mutable)) {
 				return i;
 			}
 
 			mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, this.width);
-			if (!field_25883.test(this.world.getBlockState(mutable), this.world, mutable)) {
+			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable), this.world, mutable)) {
 				return i;
 			}
 

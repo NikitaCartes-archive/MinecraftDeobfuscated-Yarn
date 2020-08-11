@@ -7,7 +7,7 @@ public class MineshaftFeatureConfig implements FeatureConfig {
 	public static final Codec<MineshaftFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.probability),
-					MineshaftFeature.Type.field_24839.fieldOf("type").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.type)
+					MineshaftFeature.Type.CODEC.fieldOf("type").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.type)
 				)
 				.apply(instance, MineshaftFeatureConfig::new)
 	);

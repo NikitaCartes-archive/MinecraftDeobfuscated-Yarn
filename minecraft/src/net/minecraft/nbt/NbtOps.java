@@ -385,9 +385,9 @@ public class NbtOps implements DynamicOps<Tag> {
 			} else if (!(tag instanceof CompoundTag)) {
 				return DataResult.error("mergeToMap called with not a map: " + tag, tag);
 			} else {
-				CompoundTag compoundTag2 = new CompoundTag(Maps.<String, Tag>newHashMap(((CompoundTag)tag).method_29143()));
+				CompoundTag compoundTag2 = new CompoundTag(Maps.<String, Tag>newHashMap(((CompoundTag)tag).toMap()));
 
-				for (Entry<String, Tag> entry : compoundTag.method_29143().entrySet()) {
+				for (Entry<String, Tag> entry : compoundTag.toMap().entrySet()) {
 					compoundTag2.put((String)entry.getKey(), (Tag)entry.getValue());
 				}
 

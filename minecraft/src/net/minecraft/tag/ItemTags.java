@@ -69,7 +69,7 @@ public final class ItemTags {
 		return REQUIRED_TAGS.getGroup();
 	}
 
-	public static List<? extends Tag.Identified<Item>> method_31074() {
+	public static List<? extends Tag.Identified<Item>> getRequiredTags() {
 		return REQUIRED_TAGS.getTags();
 	}
 }

@@ -361,18 +361,18 @@ public class CatEntity extends TameableEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
-		if (serverWorldAccess.getMoonSize() > 0.9F) {
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		if (world.getMoonSize() > 0.9F) {
 			this.setCatType(this.random.nextInt(11));
 		} else {
 			this.setCatType(this.random.nextInt(10));
 		}
 
-		World world = serverWorldAccess.toServerWorld();
-		if (world instanceof ServerWorld
-			&& ((ServerWorld)world).getStructureAccessor().getStructureAt(this.getBlockPos(), true, StructureFeature.SWAMP_HUT).hasChildren()) {
+		World world2 = world.toServerWorld();
+		if (world2 instanceof ServerWorld
+			&& ((ServerWorld)world2).getStructureAccessor().getStructureAt(this.getBlockPos(), true, StructureFeature.SWAMP_HUT).hasChildren()) {
 			this.setCatType(10);
 			this.setPersistent();
 		}
@@ -556,7 +556,7 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void stop() {
 			this.cat.setSleepingWithOwner(false);
-			float f = this.cat.world.method_30274(1.0F);
+			float f = this.cat.world.getSkyAngle(1.0F);
 			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.world.getRandom().nextFloat() < 0.7) {
 				this.dropMorningGifts();
 			}

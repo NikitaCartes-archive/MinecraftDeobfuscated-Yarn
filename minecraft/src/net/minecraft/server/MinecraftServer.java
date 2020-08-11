@@ -331,7 +331,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ChunkGenerator chunkGenerator;
 		DimensionType dimensionType;
 		if (dimensionOptions == null) {
-			dimensionType = this.registryManager.getDimensionTypes().method_31140(DimensionType.OVERWORLD_REGISTRY_KEY);
+			dimensionType = this.registryManager.getDimensionTypes().getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY);
 			chunkGenerator = GeneratorOptions.createOverworldGenerator(
 				this.registryManager.get(Registry.BIOME_KEY), this.registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN), new Random().nextLong()
 			);
@@ -437,7 +437,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				}
 			}
 
-			serverWorldProperties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, chunkGenerator.getSpawnHeight(), 8), 0.0F);
+			serverWorldProperties.setSpawnPos(chunkPos.getStartPos().add(8, chunkGenerator.getSpawnHeight(), 8), 0.0F);
 			int i = 0;
 			int j = 0;
 			int k = 0;
@@ -1321,7 +1321,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.serverResourceManager.close();
 				this.serverResourceManager = serverResourceManager;
 				this.dataPackManager.setEnabledProfiles(collection);
-				this.saveProperties.method_29590(method_29735(this.dataPackManager));
+				this.saveProperties.updateLevelInfo(method_29735(this.dataPackManager));
 				serverResourceManager.loadRegistryTags();
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();

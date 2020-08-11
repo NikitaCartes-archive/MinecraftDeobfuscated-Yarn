@@ -17,7 +17,7 @@ import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
@@ -39,7 +39,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	private final Registry<Biome> biomeRegistry;
 
 	public DebugChunkGenerator(Registry<Biome> biomeRegistry) {
-		super(new FixedBiomeSource(biomeRegistry.method_31140(BuiltInBiomes.PLAINS)), new StructuresConfig(false));
+		super(new FixedBiomeSource(biomeRegistry.getOrThrow(BiomeKeys.PLAINS)), new StructuresConfig(false));
 		this.biomeRegistry = biomeRegistry;
 	}
 

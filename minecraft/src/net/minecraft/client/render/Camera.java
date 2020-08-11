@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 
 @Environment(EnvType.CLIENT)
 public class Camera {
@@ -81,7 +81,7 @@ public class Camera {
 				this.pos.z - (double)this.horizontalPlane.getZ() * desiredCameraDistance + (double)h
 			);
 			HitResult hitResult = this.area
-				.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.VISUAL, RayTraceContext.FluidHandling.NONE, this.focusedEntity));
+				.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.VISUAL, RaycastContext.FluidHandling.NONE, this.focusedEntity));
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				double d = hitResult.getPos().distanceTo(this.pos);
 				if (d < desiredCameraDistance) {

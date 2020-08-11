@@ -15,20 +15,20 @@ import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class FoliagePlacer {
-	public static final Codec<FoliagePlacer> CODEC = Registry.FOLIAGE_PLACER_TYPE.dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
+	public static final Codec<FoliagePlacer> TYPE_CODEC = Registry.FOLIAGE_PLACER_TYPE.dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
 	protected final UniformIntDistribution radius;
 	protected final UniformIntDistribution offset;
 
-	protected static <P extends FoliagePlacer> P2<Mu<P>, UniformIntDistribution, UniformIntDistribution> method_30411(Instance<P> instance) {
+	protected static <P extends FoliagePlacer> P2<Mu<P>, UniformIntDistribution, UniformIntDistribution> fillFoliagePlacerFields(Instance<P> instance) {
 		return instance.group(
 			UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("radius").forGetter(foliagePlacer -> foliagePlacer.radius),
 			UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("offset").forGetter(foliagePlacer -> foliagePlacer.offset)
 		);
 	}
 
-	public FoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2) {
-		this.radius = uniformIntDistribution;
-		this.offset = uniformIntDistribution2;
+	public FoliagePlacer(UniformIntDistribution radius, UniformIntDistribution offset) {
+		this.radius = radius;
+		this.offset = offset;
 	}
 
 	protected abstract FoliagePlacerType<?> getType();
@@ -42,9 +42,9 @@ public abstract class FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		BlockBox blockBox
+		BlockBox box
 	) {
-		this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.method_27386(random), blockBox);
+		this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.getRandomOffset(random), box);
 	}
 
 	/**
@@ -59,21 +59,21 @@ public abstract class FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i,
-		BlockBox blockBox
+		int offset,
+		BlockBox box
 	);
 
-	public abstract int getHeight(Random random, int trunkHeight, TreeFeatureConfig config);
+	public abstract int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config);
 
-	public int getRadius(Random random, int baseHeight) {
+	public int getRandomRadius(Random random, int baseHeight) {
 		return this.radius.getValue(random);
 	}
 
-	private int method_27386(Random random) {
+	private int getRandomOffset(Random random) {
 		return this.offset.getValue(random);
 	}
 
-	protected abstract boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl);
+	protected abstract boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk);
 
 	protected boolean method_27387(Random random, int i, int j, int k, int l, boolean bl) {
 		int m;
@@ -93,24 +93,24 @@ public abstract class FoliagePlacer {
 		ModifiableTestableWorld world,
 		Random random,
 		TreeFeatureConfig config,
-		BlockPos blockPos,
+		BlockPos pos,
 		int baseHeight,
-		Set<BlockPos> set,
-		int i,
+		Set<BlockPos> leaves,
+		int offset,
 		boolean giantTrunk,
-		BlockBox blockBox
+		BlockBox box
 	) {
-		int j = giantTrunk ? 1 : 0;
+		int i = giantTrunk ? 1 : 0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int k = -baseHeight; k <= baseHeight + j; k++) {
-			for (int l = -baseHeight; l <= baseHeight + j; l++) {
-				if (!this.method_27387(random, k, i, l, baseHeight, giantTrunk)) {
-					mutable.set(blockPos, k, i, l);
+		for (int j = -baseHeight; j <= baseHeight + i; j++) {
+			for (int k = -baseHeight; k <= baseHeight + i; k++) {
+				if (!this.method_27387(random, j, offset, k, baseHeight, giantTrunk)) {
+					mutable.set(pos, j, offset, k);
 					if (TreeFeature.canReplace(world, mutable)) {
 						world.setBlockState(mutable, config.leavesProvider.getBlockState(random, mutable), 19);
-						blockBox.encompass(new BlockBox(mutable, mutable));
-						set.add(mutable.toImmutable());
+						box.encompass(new BlockBox(mutable, mutable));
+						leaves.add(mutable.toImmutable());
 					}
 				}
 			}

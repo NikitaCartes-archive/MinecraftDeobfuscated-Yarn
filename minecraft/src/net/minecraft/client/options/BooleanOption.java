@@ -24,7 +24,7 @@ public class BooleanOption extends Option {
 		this.set(options, "true".equals(value));
 	}
 
-	public void set(GameOptions options) {
+	public void toggle(GameOptions options) {
 		this.set(options, !this.get(options));
 		options.write();
 	}
@@ -40,12 +40,12 @@ public class BooleanOption extends Option {
 	@Override
 	public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
 		return new OptionButtonWidget(x, y, width, 20, this, this.getDisplayString(options), button -> {
-			this.set(options);
+			this.toggle(options);
 			button.setMessage(this.getDisplayString(options));
 		});
 	}
 
 	public Text getDisplayString(GameOptions options) {
-		return ScreenTexts.method_30619(this.getDisplayPrefix(), this.get(options));
+		return ScreenTexts.composeToggleText(this.getDisplayPrefix(), this.get(options));
 	}
 }

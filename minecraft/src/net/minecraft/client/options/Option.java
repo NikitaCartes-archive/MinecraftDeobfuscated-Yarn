@@ -66,7 +66,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
 			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
-			return (Text)(d == 0.0 ? ScreenTexts.method_30619(doubleOption.getDisplayPrefix(), false) : doubleOption.method_30503(d));
+			return (Text)(d == 0.0 ? ScreenTexts.composeToggleText(doubleOption.getDisplayPrefix(), false) : doubleOption.method_30503(d));
 		}
 	);
 	public static final DoubleOption CHAT_WIDTH = new DoubleOption(
@@ -173,7 +173,7 @@ public abstract class Option {
 		(gameOptions, double_) -> gameOptions.mipmapLevels = (int)double_.doubleValue(),
 		(gameOptions, doubleOption) -> {
 			double d = doubleOption.get(gameOptions);
-			return (Text)(d == 0.0 ? ScreenTexts.method_30619(doubleOption.getDisplayPrefix(), false) : doubleOption.method_30504((int)d));
+			return (Text)(d == 0.0 ? ScreenTexts.composeToggleText(doubleOption.getDisplayPrefix(), false) : doubleOption.method_30504((int)d));
 		}
 	);
 	public static final DoubleOption MOUSE_WHEEL_SENSITIVITY = new LogarithmicOption(

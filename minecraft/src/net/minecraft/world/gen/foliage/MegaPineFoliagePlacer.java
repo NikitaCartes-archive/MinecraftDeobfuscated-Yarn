@@ -1,4 +1,4 @@
-package net.minecraft.world.gen.feature;
+package net.minecraft.world.gen.foliage;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,22 +9,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.UniformIntDistribution;
-import net.minecraft.world.gen.foliage.FoliagePlacer;
-import net.minecraft.world.gen.foliage.FoliagePlacerType;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class MegaPineFoliagePlacer extends FoliagePlacer {
 	public static final Codec<MegaPineFoliagePlacer> CODEC = RecordCodecBuilder.create(
-		instance -> method_30411(instance)
+		instance -> fillFoliagePlacerFields(instance)
 				.and(UniformIntDistribution.createValidatedCodec(0, 16, 8).fieldOf("crown_height").forGetter(megaPineFoliagePlacer -> megaPineFoliagePlacer.crownHeight))
 				.apply(instance, MegaPineFoliagePlacer::new)
 	);
 	private final UniformIntDistribution crownHeight;
 
-	public MegaPineFoliagePlacer(
-		UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2, UniformIntDistribution uniformIntDistribution3
-	) {
-		super(uniformIntDistribution, uniformIntDistribution2);
-		this.crownHeight = uniformIntDistribution3;
+	public MegaPineFoliagePlacer(UniformIntDistribution radius, UniformIntDistribution offset, UniformIntDistribution crownHeight) {
+		super(radius, offset);
+		this.crownHeight = crownHeight;
 	}
 
 	@Override
@@ -42,34 +39,34 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i,
-		BlockBox blockBox
+		int offset,
+		BlockBox box
 	) {
 		BlockPos blockPos = treeNode.getCenter();
-		int j = 0;
+		int i = 0;
 
-		for (int k = blockPos.getY() - foliageHeight + i; k <= blockPos.getY() + i; k++) {
-			int l = blockPos.getY() - k;
-			int m = radius + treeNode.getFoliageRadius() + MathHelper.floor((float)l / (float)foliageHeight * 3.5F);
-			int n;
-			if (l > 0 && m == j && (k & 1) == 0) {
-				n = m + 1;
+		for (int j = blockPos.getY() - foliageHeight + offset; j <= blockPos.getY() + offset; j++) {
+			int k = blockPos.getY() - j;
+			int l = radius + treeNode.getFoliageRadius() + MathHelper.floor((float)k / (float)foliageHeight * 3.5F);
+			int m;
+			if (k > 0 && l == i && (j & 1) == 0) {
+				m = l + 1;
 			} else {
-				n = m;
+				m = l;
 			}
 
-			this.generate(world, random, config, new BlockPos(blockPos.getX(), k, blockPos.getZ()), n, leaves, 0, treeNode.isGiantTrunk(), blockBox);
-			j = m;
+			this.generate(world, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, leaves, 0, treeNode.isGiantTrunk(), box);
+			i = l;
 		}
 	}
 
 	@Override
-	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
+	public int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
 		return this.crownHeight.getValue(random);
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
 		return baseHeight + dy >= 7 ? true : baseHeight * baseHeight + dy * dy > dz * dz;
 	}
 }

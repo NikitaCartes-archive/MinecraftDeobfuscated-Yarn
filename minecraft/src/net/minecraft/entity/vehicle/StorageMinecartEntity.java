@@ -51,7 +51,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			if (!this.world.isClient) {
 				Entity entity = damageSource.getSource();
 				if (entity != null && entity.getType() == EntityType.PLAYER) {
-					PiglinBrain.onGuardedBlockBroken((PlayerEntity)entity, true);
+					PiglinBrain.onGuardedBlockInteracted((PlayerEntity)entity, true);
 				}
 			}
 		}
@@ -165,7 +165,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		player.openHandledScreen(this);
 		if (!player.world.isClient) {
-			PiglinBrain.onGuardedBlockBroken(player, true);
+			PiglinBrain.onGuardedBlockInteracted(player, true);
 			return ActionResult.CONSUME;
 		} else {
 			return ActionResult.SUCCESS;

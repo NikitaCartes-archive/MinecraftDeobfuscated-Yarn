@@ -139,7 +139,7 @@ public class Heightmap {
 			blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
 		);
 
-		public static final Codec<Heightmap.Type> field_24772 = StringIdentifiable.createCodec(Heightmap.Type::values, Heightmap.Type::byName);
+		public static final Codec<Heightmap.Type> CODEC = StringIdentifiable.createCodec(Heightmap.Type::values, Heightmap.Type::byName);
 		private final String name;
 		private final Heightmap.Purpose purpose;
 		private final Predicate<BlockState> blockPredicate;

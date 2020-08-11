@@ -175,10 +175,10 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason != SpawnReason.STRUCTURE) {
-			if (serverWorldAccess.getRandom().nextFloat() < 0.2F) {
+			if (world.getRandom().nextFloat() < 0.2F) {
 				this.setBaby(true);
 			} else if (this.isAdult()) {
 				this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
@@ -188,7 +188,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		PiglinBrain.setHuntedRecently(this);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override

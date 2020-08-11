@@ -35,16 +35,16 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private final StorageIoWorker worker;
 	private final Long2ObjectMap<Optional<R>> loadedElements = new Long2ObjectOpenHashMap<>();
 	private final LongLinkedOpenHashSet unsavedElements = new LongLinkedOpenHashSet();
-	private final Function<Runnable, Codec<R>> field_24750;
+	private final Function<Runnable, Codec<R>> codecFactory;
 	private final Function<Runnable, R> factory;
 	private final DataFixer dataFixer;
 	private final DataFixTypes dataFixType;
 
 	public SerializingRegionBasedStorage(
-		File directory, Function<Runnable, Codec<R>> function, Function<Runnable, R> function2, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean bl
+		File directory, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean bl
 	) {
-		this.field_24750 = function;
-		this.factory = function2;
+		this.codecFactory = codecFactory;
+		this.factory = factory;
 		this.dataFixer = dataFixer;
 		this.dataFixType = dataFixTypes;
 		this.worker = new StorageIoWorker(directory, bl, directory.getName());
@@ -128,7 +128,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 				long m = ChunkSectionPos.from(pos, l).asLong();
 				Optional<R> optional = optionalDynamic.get(Integer.toString(l))
 					.result()
-					.flatMap(dynamicx -> ((Codec)this.field_24750.apply((Runnable)() -> this.onUpdate(m))).parse(dynamicx).resultOrPartial(LOGGER::error));
+					.flatMap(dynamicx -> ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(m))).parse(dynamicx).resultOrPartial(LOGGER::error));
 				this.loadedElements.put(m, optional);
 				optional.ifPresent(object -> {
 					this.onLoad(m);
@@ -158,7 +158,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
 			if (optional != null && optional.isPresent()) {
-				DataResult<T> dataResult = ((Codec)this.field_24750.apply((Runnable)() -> this.onUpdate(l))).encodeStart(dynamicOps, optional.get());
+				DataResult<T> dataResult = ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(l))).encodeStart(dynamicOps, optional.get());
 				String string = Integer.toString(i);
 				dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(dynamicOps.createString(string), object));
 			}

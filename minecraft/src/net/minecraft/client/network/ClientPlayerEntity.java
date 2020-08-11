@@ -418,9 +418,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	private void method_30673(double d, double e) {
+	private void pushOutOfBlocks(double d, double e) {
 		BlockPos blockPos = new BlockPos(d, this.getY(), e);
-		if (this.method_30674(blockPos)) {
+		if (this.wouldCollideAt(blockPos)) {
 			double f = d - (double)blockPos.getX();
 			double g = e - (double)blockPos.getZ();
 			Direction direction = null;
@@ -430,7 +430,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			for (Direction direction2 : directions) {
 				double i = direction2.getAxis().choose(f, 0.0, g);
 				double j = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - i : i;
-				if (j < h && !this.method_30674(blockPos.offset(direction2))) {
+				if (j < h && !this.wouldCollideAt(blockPos.offset(direction2))) {
 					h = j;
 					direction = direction2;
 				}
@@ -447,11 +447,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	private boolean method_30674(BlockPos blockPos) {
+	private boolean wouldCollideAt(BlockPos blockPos) {
 		Box box = this.getBoundingBox();
 		Box box2 = new Box((double)blockPos.getX(), box.minY, (double)blockPos.getZ(), (double)blockPos.getX() + 1.0, box.maxY, (double)blockPos.getZ() + 1.0)
 			.contract(1.0E-7);
-		return !this.world.method_30635(this, box2, (blockState, blockPosx) -> blockState.shouldSuffocate(this.world, blockPosx));
+		return !this.world.isBlockSpaceEmpty(this, box2, (blockState, blockPosx) -> blockState.shouldSuffocate(this.world, blockPosx));
 	}
 
 	@Override
@@ -662,10 +662,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (!this.noClip) {
-			this.method_30673(this.getX() - (double)this.getWidth() * 0.35, this.getZ() + (double)this.getWidth() * 0.35);
-			this.method_30673(this.getX() - (double)this.getWidth() * 0.35, this.getZ() - (double)this.getWidth() * 0.35);
-			this.method_30673(this.getX() + (double)this.getWidth() * 0.35, this.getZ() - (double)this.getWidth() * 0.35);
-			this.method_30673(this.getX() + (double)this.getWidth() * 0.35, this.getZ() + (double)this.getWidth() * 0.35);
+			this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35, this.getZ() + (double)this.getWidth() * 0.35);
+			this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35, this.getZ() - (double)this.getWidth() * 0.35);
+			this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getZ() - (double)this.getWidth() * 0.35);
+			this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getZ() + (double)this.getWidth() * 0.35);
 		}
 
 		if (bl2) {

@@ -78,7 +78,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class FoxEntity extends AnimalEntity {
 	private static final TrackedData<Integer> TYPE = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -290,9 +290,9 @@ public class FoxEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		Optional<RegistryKey<Biome>> optional = serverWorldAccess.method_31081(this.getBlockPos());
+		Optional<RegistryKey<Biome>> optional = world.method_31081(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(optional);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
@@ -309,12 +309,12 @@ public class FoxEntity extends AnimalEntity {
 			this.setBreedingAge(-24000);
 		}
 
-		if (serverWorldAccess instanceof ServerWorld) {
+		if (world instanceof ServerWorld) {
 			this.addTypeSpecificGoals();
 		}
 
 		this.initEquipment(difficulty);
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private void addTypeSpecificGoals() {
@@ -1429,15 +1429,15 @@ public class FoxEntity extends AnimalEntity {
 		RED(
 			0,
 			"red",
-			BuiltInBiomes.TAIGA,
-			BuiltInBiomes.TAIGA_HILLS,
-			BuiltInBiomes.TAIGA_MOUNTAINS,
-			BuiltInBiomes.GIANT_TREE_TAIGA,
-			BuiltInBiomes.GIANT_SPRUCE_TAIGA,
-			BuiltInBiomes.GIANT_TREE_TAIGA_HILLS,
-			BuiltInBiomes.GIANT_SPRUCE_TAIGA_HILLS
+			BiomeKeys.TAIGA,
+			BiomeKeys.TAIGA_HILLS,
+			BiomeKeys.TAIGA_MOUNTAINS,
+			BiomeKeys.GIANT_TREE_TAIGA,
+			BiomeKeys.GIANT_SPRUCE_TAIGA,
+			BiomeKeys.GIANT_TREE_TAIGA_HILLS,
+			BiomeKeys.GIANT_SPRUCE_TAIGA_HILLS
 		),
-		SNOW(1, "snow", BuiltInBiomes.SNOWY_TAIGA, BuiltInBiomes.SNOWY_TAIGA_HILLS, BuiltInBiomes.SNOWY_TAIGA_MOUNTAINS);
+		SNOW(1, "snow", BiomeKeys.SNOWY_TAIGA, BiomeKeys.SNOWY_TAIGA_HILLS, BiomeKeys.SNOWY_TAIGA_MOUNTAINS);
 
 		private static final FoxEntity.Type[] TYPES = (FoxEntity.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(FoxEntity.Type::getId))

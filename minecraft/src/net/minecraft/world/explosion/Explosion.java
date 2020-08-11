@@ -40,7 +40,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class Explosion {
@@ -132,7 +132,7 @@ public class Explosion {
 						double o = MathHelper.lerp((double)l, box.minY, box.maxY);
 						double p = MathHelper.lerp((double)m, box.minZ, box.maxZ);
 						Vec3d vec3d = new Vec3d(n + g, o, p + h);
-						if (entity.world.rayTrace(new RayTraceContext(vec3d, source, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, entity)).getType()
+						if (entity.world.raycast(new RaycastContext(vec3d, source, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity)).getType()
 							== HitResult.Type.MISS) {
 							i++;
 						}

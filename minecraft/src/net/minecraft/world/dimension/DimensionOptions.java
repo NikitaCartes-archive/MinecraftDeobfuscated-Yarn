@@ -58,14 +58,14 @@ public final class DimensionOptions {
 		for (RegistryKey<DimensionOptions> registryKey : BASE_DIMENSIONS) {
 			DimensionOptions dimensionOptions = simpleRegistry.get(registryKey);
 			if (dimensionOptions != null) {
-				simpleRegistry2.add(registryKey, dimensionOptions, simpleRegistry.method_31139(dimensionOptions));
+				simpleRegistry2.add(registryKey, dimensionOptions, simpleRegistry.getEntryLifecycle(dimensionOptions));
 			}
 		}
 
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey2 = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (!BASE_DIMENSIONS.contains(registryKey2)) {
-				simpleRegistry2.add(registryKey2, entry.getValue(), simpleRegistry.method_31139((DimensionOptions)entry.getValue()));
+				simpleRegistry2.add(registryKey2, entry.getValue(), simpleRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
 			}
 		}
 
@@ -109,7 +109,7 @@ public final class DimensionOptions {
 						return false;
 					} else {
 						TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)noiseChunkGenerator2.getBiomeSource();
-						return theEndBiomeSource.method_28479(seed);
+						return theEndBiomeSource.isSeedEqual(seed);
 					}
 				}
 			} else {

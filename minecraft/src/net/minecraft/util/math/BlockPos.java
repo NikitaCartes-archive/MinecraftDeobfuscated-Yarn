@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Immutable
 public class BlockPos extends Vec3i {
-	public static final Codec<BlockPos> field_25064 = Codec.INT_STREAM
+	public static final Codec<BlockPos> CODEC = Codec.INT_STREAM
 		.<BlockPos>comapFlatMap(
 			intStream -> Util.toIntArray(intStream, 3).map(is -> new BlockPos(is[0], is[1], is[2])),
 			blockPos -> IntStream.of(new int[]{blockPos.getX(), blockPos.getY(), blockPos.getZ()})

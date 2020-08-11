@@ -52,7 +52,7 @@ public class PostProcessShader implements AutoCloseable {
 		float f = (float)this.output.textureWidth;
 		float g = (float)this.output.textureHeight;
 		RenderSystem.viewport(0, 0, (int)f, (int)g);
-		this.program.bindSampler("DiffuseSampler", this.input::method_30277);
+		this.program.bindSampler("DiffuseSampler", this.input::getColorAttachment);
 
 		for (int i = 0; i < this.samplerValues.size(); i++) {
 			this.program.bindSampler((String)this.samplerNames.get(i), (IntSupplier)this.samplerValues.get(i));

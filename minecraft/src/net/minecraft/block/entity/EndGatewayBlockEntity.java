@@ -101,7 +101,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	public static boolean method_30276(Entity entity) {
-		return EntityPredicates.EXCEPT_SPECTATOR.test(entity) && !entity.getRootVehicle().method_30230();
+		return EntityPredicates.EXCEPT_SPECTATOR.test(entity) && !entity.getRootVehicle().hasNetherPortalCooldown();
 	}
 
 	public boolean isRecentlyGenerated() {
@@ -177,7 +177,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 					entity3 = entity.getRootVehicle();
 				}
 
-				entity3.method_30229();
+				entity3.resetNetherPortalCooldown();
 				entity3.teleport((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
 			}
 

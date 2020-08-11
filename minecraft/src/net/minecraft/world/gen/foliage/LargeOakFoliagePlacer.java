@@ -35,17 +35,17 @@ public class LargeOakFoliagePlacer extends BlobFoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i,
-		BlockBox blockBox
+		int offset,
+		BlockBox box
 	) {
-		for (int j = i; j >= i - foliageHeight; j--) {
-			int k = radius + (j != i && j != i - foliageHeight ? 1 : 0);
-			this.generate(world, random, config, treeNode.getCenter(), k, leaves, j, treeNode.isGiantTrunk(), blockBox);
+		for (int i = offset; i >= offset - foliageHeight; i--) {
+			int j = radius + (i != offset && i != offset - foliageHeight ? 1 : 0);
+			this.generate(world, random, config, treeNode.getCenter(), j, leaves, i, treeNode.isGiantTrunk(), box);
 		}
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
 		return MathHelper.square((float)baseHeight + 0.5F) + MathHelper.square((float)dy + 0.5F) > (float)(dz * dz);
 	}
 }

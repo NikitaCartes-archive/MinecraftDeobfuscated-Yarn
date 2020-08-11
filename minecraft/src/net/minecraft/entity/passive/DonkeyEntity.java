@@ -53,10 +53,10 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 	}
 
 	@Override
-	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		EntityType<? extends HorseBaseEntity> entityType = passiveEntity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
-		HorseBaseEntity horseBaseEntity = entityType.create(serverWorld);
-		this.setChildAttributes(passiveEntity, horseBaseEntity);
+	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+		EntityType<? extends HorseBaseEntity> entityType = entity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
+		HorseBaseEntity horseBaseEntity = entityType.create(world);
+		this.setChildAttributes(entity, horseBaseEntity);
 		return horseBaseEntity;
 	}
 }

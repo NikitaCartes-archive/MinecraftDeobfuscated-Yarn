@@ -168,11 +168,11 @@ public class TurtleEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.setHomePos(this.getBlockPos());
 		this.setTravelPos(BlockPos.ORIGIN);
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public static boolean canSpawn(EntityType<TurtleEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -272,8 +272,8 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.TURTLE.create(serverWorld);
+	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+		return EntityType.TURTLE.create(world);
 	}
 
 	@Override
@@ -329,7 +329,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
+	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		this.damage(DamageSource.LIGHTNING_BOLT, Float.MAX_VALUE);
 	}
 

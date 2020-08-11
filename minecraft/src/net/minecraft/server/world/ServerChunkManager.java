@@ -228,7 +228,7 @@ public class ServerChunkManager extends ChunkManager {
 		int i = 33 + ChunkStatus.getDistanceFromFull(leastStatus);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
 		if (create) {
-			this.ticketManager.addTicketWithLevel(ChunkTicketType.field_14032, chunkPos, i, chunkPos);
+			this.ticketManager.addTicketWithLevel(ChunkTicketType.UNKNOWN, chunkPos, i, chunkPos);
 			if (this.isMissingForLevel(chunkHolder, i)) {
 				Profiler profiler = this.world.getProfiler();
 				profiler.push("chunkLoad");

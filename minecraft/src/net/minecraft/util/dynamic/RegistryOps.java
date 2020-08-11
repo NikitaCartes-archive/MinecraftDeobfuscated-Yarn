@@ -146,7 +146,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 			Optional<Pair<E, OptionalInt>> optional = dataResult2.result();
 			if (optional.isPresent()) {
 				Pair<E, OptionalInt> pair = (Pair<E, OptionalInt>)optional.get();
-				mutableRegistry.method_31062(pair.getSecond(), registryKey2, pair.getFirst(), dataResult2.lifecycle());
+				mutableRegistry.replace(pair.getSecond(), registryKey2, pair.getFirst(), dataResult2.lifecycle());
 			}
 
 			DataResult<Supplier<E>> dataResult3;
@@ -168,7 +168,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	public <E> DataResult<Registry<E>> method_31152(RegistryKey<? extends Registry<E>> registryKey) {
 		return (DataResult<Registry<E>>)this.registryManager
 			.getOptional(registryKey)
-			.map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.method_31138()))
+			.map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle()))
 			.orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
 	}
 
@@ -280,7 +280,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 				return (Collection<Identifier>)this.field_26741
 					.keySet()
 					.stream()
-					.filter(registryKey2 -> registryKey2.method_31163(registryKey))
+					.filter(registryKey2 -> registryKey2.isOf(registryKey))
 					.map(
 						registryKey2 -> new Identifier(
 								registryKey2.getValue().getNamespace(), registryKey.getValue().getPath() + "/" + registryKey2.getValue().getPath() + ".json"

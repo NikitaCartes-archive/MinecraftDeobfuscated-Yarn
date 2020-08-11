@@ -53,7 +53,7 @@ import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class EndermanEntity extends HostileEntity implements Angerable {
@@ -70,7 +70,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			&& ((EndermiteEntity)livingEntity).isPlayerSpawned();
 	private int lastAngrySoundAge = Integer.MIN_VALUE;
 	private int ageWhenTargetSet;
-	private static final IntRange field_25378 = Durations.betweenSeconds(20, 39);
+	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
 	private int angerTime;
 	private UUID targetUuid;
 
@@ -132,7 +132,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	@Override
 	public void chooseRandomAngerTime() {
-		this.setAngerTime(field_25378.choose(this.random));
+		this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
 	}
 
 	@Override
@@ -436,8 +436,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			Block block = blockState.getBlock();
 			Vec3d vec3d = new Vec3d((double)MathHelper.floor(this.enderman.getX()) + 0.5, (double)j + 0.5, (double)MathHelper.floor(this.enderman.getZ()) + 0.5);
 			Vec3d vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5);
-			BlockHitResult blockHitResult = world.rayTrace(
-				new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, this.enderman)
+			BlockHitResult blockHitResult = world.raycast(
+				new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, this.enderman)
 			);
 			boolean bl = blockHitResult.getBlockPos().equals(blockPos);
 			if (block.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {

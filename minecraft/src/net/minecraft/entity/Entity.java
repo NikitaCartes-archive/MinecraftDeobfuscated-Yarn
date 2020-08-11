@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.AreaHelper;
 import net.minecraft.class_5459;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -96,11 +95,12 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.dimension.AreaHelper;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
@@ -173,7 +173,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public int chunkY;
 	public int chunkZ;
 	private boolean chunkPosUpdateRequested;
-	private Vec3d field_25750;
+	private Vec3d trackedPosition;
 	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
 	private int netherPortalCooldown;
@@ -197,7 +197,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.dimensions = type.getDimensions();
 		this.pos = Vec3d.ZERO;
 		this.blockPos = BlockPos.ORIGIN;
-		this.field_25750 = Vec3d.ZERO;
+		this.trackedPosition = Vec3d.ZERO;
 		this.updatePosition(0.0, 0.0, 0.0);
 		this.dataTracker = new DataTracker(this);
 		this.dataTracker.startTracking(FLAGS, (byte)0);
@@ -242,16 +242,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void updateTrackedPosition(double x, double y, double z) {
-		this.method_30228(new Vec3d(x, y, z));
+		this.updateTrackedPosition(new Vec3d(x, y, z));
 	}
 
-	public void method_30228(Vec3d vec3d) {
-		this.field_25750 = vec3d;
+	public void updateTrackedPosition(Vec3d pos) {
+		this.trackedPosition = pos;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vec3d method_30227() {
-		return this.field_25750;
+	public Vec3d getTrackedPosition() {
+		return this.trackedPosition;
 	}
 
 	public EntityType<?> getType() {
@@ -301,7 +301,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.world != null) {
 			for (double d = this.getY(); d > 0.0 && d < 256.0; d++) {
 				this.updatePosition(this.getX(), d, this.getZ());
-				if (this.world.doesNotCollide(this)) {
+				if (this.world.isSpaceEmpty(this)) {
 					break;
 				}
 			}
@@ -422,16 +422,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.world.getProfiler().pop();
 	}
 
-	public void method_30229() {
+	public void resetNetherPortalCooldown() {
 		this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
 	}
 
-	public boolean method_30230() {
+	public boolean hasNetherPortalCooldown() {
 		return this.netherPortalCooldown > 0;
 	}
 
 	protected void tickNetherPortalCooldown() {
-		if (this.method_30230()) {
+		if (this.hasNetherPortalCooldown()) {
 			this.netherPortalCooldown--;
 		}
 	}
@@ -479,7 +479,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	private boolean doesNotCollide(Box box) {
-		return this.world.doesNotCollide(this, box) && !this.world.containsFluid(box);
+		return this.world.isSpaceEmpty(this, box) && !this.world.containsFluid(box);
 	}
 
 	public void setOnGround(boolean onGround) {
@@ -1010,7 +1010,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
 		FluidState fluidState = this.world.getFluidState(blockPos);
 
-		for (Tag<Fluid> tag : FluidTags.all()) {
+		for (Tag<Fluid> tag : FluidTags.getRequiredTags()) {
 			if (fluidState.isIn(tag)) {
 				double e = (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos));
 				if (e > d) {
@@ -1129,13 +1129,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevPitch = this.pitch;
 	}
 
-	public void method_30634(double d, double e, double f) {
-		double g = MathHelper.clamp(d, -3.0E7, 3.0E7);
-		double h = MathHelper.clamp(f, -3.0E7, 3.0E7);
-		this.prevX = g;
-		this.prevY = e;
-		this.prevZ = h;
-		this.updatePosition(g, e, h);
+	public void method_30634(double x, double y, double z) {
+		double d = MathHelper.clamp(x, -3.0E7, 3.0E7);
+		double e = MathHelper.clamp(z, -3.0E7, 3.0E7);
+		this.prevX = d;
+		this.prevY = y;
+		this.prevZ = e;
+		this.updatePosition(d, y, e);
 	}
 
 	public void refreshPositionAfterTeleport(Vec3d vec3d) {
@@ -1288,8 +1288,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vec3d method_31166(float f) {
-		return this.getCameraPosVec(f);
+	public Vec3d method_31166(float tickDelta) {
+		return this.getCameraPosVec(tickDelta);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1300,14 +1300,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return new Vec3d(d, e, g);
 	}
 
-	public HitResult rayTrace(double maxDistance, float tickDelta, boolean includeFluids) {
+	public HitResult raycast(double maxDistance, float tickDelta, boolean includeFluids) {
 		Vec3d vec3d = this.getCameraPosVec(tickDelta);
 		Vec3d vec3d2 = this.getRotationVec(tickDelta);
 		Vec3d vec3d3 = vec3d.add(vec3d2.x * maxDistance, vec3d2.y * maxDistance, vec3d2.z * maxDistance);
 		return this.world
-			.rayTrace(
-				new RayTraceContext(
-					vec3d, vec3d3, RayTraceContext.ShapeType.OUTLINE, includeFluids ? RayTraceContext.FluidHandling.ANY : RayTraceContext.FluidHandling.NONE, this
+			.raycast(
+				new RaycastContext(
+					vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, this
 				)
 			);
 	}
@@ -1581,7 +1581,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			float f = 0.1F;
 			float g = this.dimensions.width * 0.8F;
 			Box box = Box.method_30048((double)g, 0.1F, (double)g).offset(this.getX(), this.getEyeY(), this.getZ());
-			return this.world.method_30030(this, box, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, blockPos)).findAny().isPresent();
+			return this.world.getBlockCollisions(this, box, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, blockPos)).findAny().isPresent();
 		}
 	}
 
@@ -1669,7 +1669,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected boolean wouldPoseNotCollide(EntityPose pose) {
-		return this.world.doesNotCollide(this, this.calculateBoundsForPose(pose).contract(1.0E-7));
+		return this.world.isSpaceEmpty(this, this.calculateBoundsForPose(pose).contract(1.0E-7));
 	}
 
 	public void removeAllPassengers() {
@@ -1744,8 +1744,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void setInNetherPortal(BlockPos pos) {
-		if (this.method_30230()) {
-			this.method_30229();
+		if (this.hasNetherPortalCooldown()) {
+			this.resetNetherPortalCooldown();
 		} else {
 			if (!this.world.isClient && !pos.equals(this.lastNetherPortalPosition)) {
 				this.lastNetherPortalPosition = pos.toImmutable();
@@ -1766,7 +1766,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				if (serverWorld2 != null && minecraftServer.isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
 					this.world.getProfiler().push("portal");
 					this.netherPortalTime = i;
-					this.method_30229();
+					this.resetNetherPortalCooldown();
 					this.moveToWorld(serverWorld2);
 					this.world.getProfiler().pop();
 				}
@@ -1971,7 +1971,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.dataTracker.set(AIR, air);
 	}
 
-	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
+	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		this.setFireTicks(this.fireTicks + 1);
 		if (this.fireTicks == 0) {
 			this.setOnFireFor(8);
@@ -2332,7 +2332,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public final void teleport(double destX, double destY, double destZ) {
 		if (this.world instanceof ServerWorld) {
 			ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
-			((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.field_19347, chunkPos, 0, this.getEntityId());
+			((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
 			this.world.getChunk(chunkPos.x, chunkPos.z);
 			this.requestTeleport(destX, destY, destZ);
 		}

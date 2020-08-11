@@ -16,8 +16,8 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 public class RandomPatchFeatureConfig implements FeatureConfig {
 	public static final Codec<RandomPatchFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockStateProvider.CODEC.fieldOf("state_provider").forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.stateProvider),
-					BlockPlacer.field_24865.fieldOf("block_placer").forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.blockPlacer),
+					BlockStateProvider.TYPE_CODEC.fieldOf("state_provider").forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.stateProvider),
+					BlockPlacer.TYPE_CODEC.fieldOf("block_placer").forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.blockPlacer),
 					BlockState.CODEC
 						.listOf()
 						.fieldOf("whitelist")

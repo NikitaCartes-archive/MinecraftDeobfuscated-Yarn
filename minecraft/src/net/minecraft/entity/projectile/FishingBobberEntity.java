@@ -144,7 +144,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 	public void tick() {
 		this.velocityRandom.setSeed(this.getUuid().getLeastSignificantBits() ^ this.world.getTime());
 		super.tick();
-		PlayerEntity playerEntity = this.getOwner();
+		PlayerEntity playerEntity = this.getPlayerOwner();
 		if (playerEntity == null) {
 			this.remove();
 		} else if (this.world.isClient || !this.removeIfInvalid(playerEntity)) {
@@ -423,7 +423,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 	}
 
 	public int use(ItemStack usedItem) {
-		PlayerEntity playerEntity = this.getOwner();
+		PlayerEntity playerEntity = this.getPlayerOwner();
 		if (!this.world.isClient && playerEntity != null) {
 			int i = 0;
 			if (this.hookedEntity != null) {
@@ -499,14 +499,14 @@ public class FishingBobberEntity extends ProjectileEntity {
 	@Override
 	public void remove() {
 		super.remove();
-		PlayerEntity playerEntity = this.getOwner();
+		PlayerEntity playerEntity = this.getPlayerOwner();
 		if (playerEntity != null) {
 			playerEntity.fishHook = null;
 		}
 	}
 
 	@Nullable
-	public PlayerEntity getOwner() {
+	public PlayerEntity getPlayerOwner() {
 		Entity entity = this.getOwner();
 		return entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
 	}

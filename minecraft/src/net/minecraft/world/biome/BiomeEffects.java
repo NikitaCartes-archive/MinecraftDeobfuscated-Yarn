@@ -28,9 +28,9 @@ public class BiomeEffects {
 						.optionalFieldOf("grass_color_modifier", BiomeEffects.GrassColorModifier.NONE)
 						.forGetter(biomeEffects -> biomeEffects.grassColorModifier),
 					BiomeParticleConfig.CODEC.optionalFieldOf("particle").forGetter(biomeEffects -> biomeEffects.particleConfig),
-					SoundEvent.field_24628.optionalFieldOf("ambient_sound").forGetter(biomeEffects -> biomeEffects.loopSound),
+					SoundEvent.CODEC.optionalFieldOf("ambient_sound").forGetter(biomeEffects -> biomeEffects.loopSound),
 					BiomeMoodSound.CODEC.optionalFieldOf("mood_sound").forGetter(biomeEffects -> biomeEffects.moodSound),
-					BiomeAdditionsSound.field_24673.optionalFieldOf("additions_sound").forGetter(biomeEffects -> biomeEffects.additionsSound),
+					BiomeAdditionsSound.CODEC.optionalFieldOf("additions_sound").forGetter(biomeEffects -> biomeEffects.additionsSound),
 					MusicSound.CODEC.optionalFieldOf("music").forGetter(biomeEffects -> biomeEffects.music)
 				)
 				.apply(instance, BiomeEffects::new)

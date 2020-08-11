@@ -46,7 +46,7 @@ public class GeneratorOptions {
 						Codec.LONG.fieldOf("seed").stable().forGetter(GeneratorOptions::getSeed),
 						Codec.BOOL.fieldOf("generate_features").orElse(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures),
 						Codec.BOOL.fieldOf("bonus_chest").orElse(false).stable().forGetter(GeneratorOptions::hasBonusChest),
-						SimpleRegistry.createCodec(Registry.DIMENSION_OPTIONS, Lifecycle.stable(), DimensionOptions.CODEC)
+						SimpleRegistry.createRegistryCodec(Registry.DIMENSION_OPTIONS, Lifecycle.stable(), DimensionOptions.CODEC)
 							.xmap(DimensionOptions::method_29569, Function.identity())
 							.fieldOf("dimensions")
 							.forGetter(GeneratorOptions::getDimensions),
@@ -102,14 +102,19 @@ public class GeneratorOptions {
 			(long)i,
 			true,
 			true,
-			method_28608(registry2, DimensionType.method_28517(registry2, registry, registry3, (long)i), createOverworldGenerator(registry, registry3, (long)i))
+			method_28608(
+				registry2, DimensionType.createDefaultDimensionOptions(registry2, registry, registry3, (long)i), createOverworldGenerator(registry, registry3, (long)i)
+			)
 		);
 	}
 
 	public static GeneratorOptions getDefaultOptions(Registry<DimensionType> registry, Registry<Biome> registry2, Registry<ChunkGeneratorSettings> registry3) {
 		long l = new Random().nextLong();
 		return new GeneratorOptions(
-			l, true, false, method_28608(registry, DimensionType.method_28517(registry, registry2, registry3, l), createOverworldGenerator(registry2, registry3, l))
+			l,
+			true,
+			false,
+			method_28608(registry, DimensionType.createDefaultDimensionOptions(registry, registry2, registry3, l), createOverworldGenerator(registry2, registry3, l))
 		);
 	}
 
@@ -117,7 +122,7 @@ public class GeneratorOptions {
 		Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed
 	) {
 		return new NoiseChunkGenerator(
-			new VanillaLayeredBiomeSource(seed, false, false, biomeRegistry), seed, () -> chunkGeneratorSettingsRegistry.method_31140(ChunkGeneratorSettings.OVERWORLD)
+			new VanillaLayeredBiomeSource(seed, false, false, biomeRegistry), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.OVERWORLD)
 		);
 	}
 
@@ -138,7 +143,7 @@ public class GeneratorOptions {
 	) {
 		DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
 		Supplier<DimensionType> supplier = () -> dimensionOptions == null
-				? registry.method_31140(DimensionType.OVERWORLD_REGISTRY_KEY)
+				? registry.getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY)
 				: dimensionOptions.getDimensionType();
 		return method_29962(simpleRegistry, supplier, chunkGenerator);
 	}
@@ -152,7 +157,7 @@ public class GeneratorOptions {
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
-				simpleRegistry2.add(registryKey, entry.getValue(), simpleRegistry.method_31139((DimensionOptions)entry.getValue()));
+				simpleRegistry2.add(registryKey, entry.getValue(), simpleRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
 			}
 		}
 
@@ -233,7 +238,7 @@ public class GeneratorOptions {
 		Registry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
 		Registry<Biome> registry2 = dynamicRegistryManager.get(Registry.BIOME_KEY);
 		Registry<ChunkGeneratorSettings> registry3 = dynamicRegistryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
-		SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.method_28517(registry, registry2, registry3, l);
+		SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(registry, registry2, registry3, l);
 		switch (string5) {
 			case "flat":
 				JsonObject jsonObject = !string.isEmpty() ? JsonHelper.deserialize(string) : new JsonObject();
@@ -263,7 +268,7 @@ public class GeneratorOptions {
 					method_28608(
 						registry,
 						simpleRegistry,
-						new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false, registry2), l, () -> registry3.method_31140(ChunkGeneratorSettings.AMPLIFIED))
+						new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false, registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.AMPLIFIED))
 					)
 				);
 			case "largebiomes":
@@ -274,7 +279,7 @@ public class GeneratorOptions {
 					method_28608(
 						registry,
 						simpleRegistry,
-						new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, true, registry2), l, () -> registry3.method_31140(ChunkGeneratorSettings.OVERWORLD))
+						new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, true, registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.OVERWORLD))
 					)
 				);
 			default:
@@ -295,7 +300,7 @@ public class GeneratorOptions {
 				simpleRegistry.add(
 					registryKey,
 					new DimensionOptions(((DimensionOptions)entry.getValue()).getDimensionTypeSupplier(), ((DimensionOptions)entry.getValue()).getChunkGenerator().withSeed(m)),
-					this.options.method_31139((DimensionOptions)entry.getValue())
+					this.options.getEntryLifecycle((DimensionOptions)entry.getValue())
 				);
 			}
 		} else {

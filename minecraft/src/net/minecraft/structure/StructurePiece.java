@@ -469,7 +469,7 @@ public abstract class StructurePiece {
 	}
 
 	public void translate(int x, int y, int z) {
-		this.boundingBox.offset(x, y, z);
+		this.boundingBox.move(x, y, z);
 	}
 
 	@Nullable

@@ -84,8 +84,8 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Boolean> PACIFIED = register("pacified");
 	private final Optional<Codec<Memory<U>>> codec;
 
-	private MemoryModuleType(Optional<Codec<U>> factory) {
-		this.codec = factory.map(Memory::method_28353);
+	private MemoryModuleType(Optional<Codec<U>> codec) {
+		this.codec = codec.map(Memory::createCodec);
 	}
 
 	public String toString() {

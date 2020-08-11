@@ -187,13 +187,13 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		if (serverWorldAccess.getRandom().nextFloat() < 0.2F) {
+		if (world.getRandom().nextFloat() < 0.2F) {
 			this.setBaby(true);
 		}
 
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -317,8 +317,8 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		HoglinEntity hoglinEntity = EntityType.HOGLIN.create(serverWorld);
+	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+		HoglinEntity hoglinEntity = EntityType.HOGLIN.create(world);
 		if (hoglinEntity != null) {
 			hoglinEntity.setPersistent();
 		}

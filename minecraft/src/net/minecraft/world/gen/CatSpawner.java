@@ -72,20 +72,20 @@ public class CatSpawner implements Spawner {
 		return 0;
 	}
 
-	private int spawnInSwampHut(ServerWorld serverWorld, BlockPos pos) {
+	private int spawnInSwampHut(ServerWorld world, BlockPos pos) {
 		int i = 16;
-		List<CatEntity> list = serverWorld.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(16.0, 8.0, 16.0));
-		return list.size() < 1 ? this.spawn(pos, serverWorld) : 0;
+		List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(16.0, 8.0, 16.0));
+		return list.size() < 1 ? this.spawn(pos, world) : 0;
 	}
 
-	private int spawn(BlockPos pos, ServerWorld serverWorld) {
-		CatEntity catEntity = EntityType.CAT.create(serverWorld);
+	private int spawn(BlockPos pos, ServerWorld world) {
+		CatEntity catEntity = EntityType.CAT.create(world);
 		if (catEntity == null) {
 			return 0;
 		} else {
-			catEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
+			catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
 			catEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-			serverWorld.spawnEntityAndPassengers(catEntity);
+			world.spawnEntityAndPassengers(catEntity);
 			return 1;
 		}
 	}

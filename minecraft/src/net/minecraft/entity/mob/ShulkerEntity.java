@@ -287,7 +287,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	private boolean canStay(BlockPos pos, Direction attachSide) {
 		return this.world.isDirectionSolid(pos.offset(attachSide), this, attachSide.getOpposite())
-			&& this.world.doesNotCollide(this, ShulkerLidCollisions.getLidCollisionBox(pos, attachSide.getOpposite()));
+			&& this.world.isSpaceEmpty(this, ShulkerLidCollisions.getLidCollisionBox(pos, attachSide.getOpposite()));
 	}
 
 	protected boolean tryTeleport() {
@@ -299,7 +299,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 				if (blockPos2.getY() > 0
 					&& this.world.isAir(blockPos2)
 					&& this.world.getWorldBorder().contains(blockPos2)
-					&& this.world.doesNotCollide(this, new Box(blockPos2))) {
+					&& this.world.isSpaceEmpty(this, new Box(blockPos2))) {
 					Direction direction = this.findAttachSide(blockPos2);
 					if (direction != null) {
 						this.dataTracker.set(ATTACHED_FACE, direction);

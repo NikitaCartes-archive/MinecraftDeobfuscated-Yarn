@@ -67,13 +67,13 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		return 1.0;
 	}
 
-	protected BlockPos method_30953() {
+	protected BlockPos getTargetPos() {
 		return this.targetPos.up();
 	}
 
 	@Override
 	public void tick() {
-		BlockPos blockPos = this.method_30953();
+		BlockPos blockPos = this.getTargetPos();
 		if (!blockPos.isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
 			this.reached = false;
 			this.tryingTime++;

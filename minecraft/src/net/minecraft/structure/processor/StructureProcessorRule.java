@@ -21,7 +21,7 @@ public class StructureProcessorRule {
 						.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE)
 						.forGetter(structureProcessorRule -> structureProcessorRule.positionPredicate),
 					BlockState.CODEC.fieldOf("output_state").forGetter(structureProcessorRule -> structureProcessorRule.outputState),
-					CompoundTag.field_25128.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.tag))
+					CompoundTag.CODEC.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.tag))
 				)
 				.apply(instance, StructureProcessorRule::new)
 	);

@@ -32,17 +32,17 @@ import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class SignEditScreen extends Screen {
-	private final SignBlockEntityRenderer.SignModel field_21525 = new SignBlockEntityRenderer.SignModel();
+	private final SignBlockEntityRenderer.SignModel model = new SignBlockEntityRenderer.SignModel();
 	private final SignBlockEntity sign;
 	private int ticksSinceOpened;
 	private int currentRow;
 	private SelectionManager selectionManager;
-	private final String[] field_24285;
+	private final String[] text;
 
-	public SignEditScreen(SignBlockEntity signBlockEntity) {
+	public SignEditScreen(SignBlockEntity sign) {
 		super(new TranslatableText("sign.edit"));
-		this.field_24285 = (String[])IntStream.range(0, 4).mapToObj(signBlockEntity::method_30843).map(Text::getString).toArray(String[]::new);
-		this.sign = signBlockEntity;
+		this.text = (String[])IntStream.range(0, 4).mapToObj(sign::getTextOnRow).map(Text::getString).toArray(String[]::new);
+		this.sign = sign;
 	}
 
 	@Override
@@ -51,9 +51,9 @@ public class SignEditScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, ScreenTexts.DONE, buttonWidget -> this.finishEditing()));
 		this.sign.setEditable(false);
 		this.selectionManager = new SelectionManager(
-			() -> this.field_24285[this.currentRow],
+			() -> this.text[this.currentRow],
 			string -> {
-				this.field_24285[this.currentRow] = string;
+				this.text[this.currentRow] = string;
 				this.sign.setTextOnRow(this.currentRow, new LiteralText(string));
 			},
 			SelectionManager.makeClipboardGetter(this.client),
@@ -67,9 +67,7 @@ public class SignEditScreen extends Screen {
 		this.client.keyboard.setRepeatEvents(false);
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
-			clientPlayNetworkHandler.sendPacket(
-				new UpdateSignC2SPacket(this.sign.getPos(), this.field_24285[0], this.field_24285[1], this.field_24285[2], this.field_24285[3])
-			);
+			clientPlayNetworkHandler.sendPacket(new UpdateSignC2SPacket(this.sign.getPos(), this.text[0], this.text[1], this.text[2], this.text[3]));
 		}
 
 		this.sign.setEditable(true);
@@ -136,10 +134,10 @@ public class SignEditScreen extends Screen {
 		matrices.scale(0.6666667F, -0.6666667F, -0.6666667F);
 		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
 		SpriteIdentifier spriteIdentifier = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
-		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.field_21525::getLayer);
-		this.field_21525.field.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
+		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.model::getLayer);
+		this.model.field.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
 		if (bl) {
-			this.field_21525.foot.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
+			this.model.foot.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
 		}
 
 		matrices.pop();
@@ -149,18 +147,18 @@ public class SignEditScreen extends Screen {
 		int i = this.sign.getTextColor().getSignColor();
 		int j = this.selectionManager.getSelectionStart();
 		int k = this.selectionManager.getSelectionEnd();
-		int l = this.currentRow * 10 - this.field_24285.length * 5;
+		int l = this.currentRow * 10 - this.text.length * 5;
 		Matrix4f matrix4f = matrices.peek().getModel();
 
-		for (int m = 0; m < this.field_24285.length; m++) {
-			String string = this.field_24285[m];
+		for (int m = 0; m < this.text.length; m++) {
+			String string = this.text[m];
 			if (string != null) {
 				if (this.textRenderer.isRightToLeft()) {
 					string = this.textRenderer.mirror(string);
 				}
 
 				float n = (float)(-this.client.textRenderer.getWidth(string) / 2);
-				this.client.textRenderer.draw(string, n, (float)(m * 10 - this.field_24285.length * 5), i, false, matrix4f, immediate, false, 0, 15728880, false);
+				this.client.textRenderer.draw(string, n, (float)(m * 10 - this.text.length * 5), i, false, matrix4f, immediate, false, 0, 15728880, false);
 				if (m == this.currentRow && j >= 0 && bl2) {
 					int o = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
 					int p = o - this.client.textRenderer.getWidth(string) / 2;
@@ -173,8 +171,8 @@ public class SignEditScreen extends Screen {
 
 		immediate.draw();
 
-		for (int mx = 0; mx < this.field_24285.length; mx++) {
-			String string = this.field_24285[mx];
+		for (int mx = 0; mx < this.text.length; mx++) {
+			String string = this.text[mx];
 			if (string != null && mx == this.currentRow && j >= 0) {
 				int q = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
 				int o = q - this.client.textRenderer.getWidth(string) / 2;

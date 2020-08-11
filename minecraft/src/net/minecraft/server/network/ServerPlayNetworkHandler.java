@@ -339,7 +339,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					return;
 				}
 
-				boolean bl = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
+				boolean bl = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
 				l = g - this.updatedRiddenX;
 				m = h - this.updatedRiddenY - 1.0E-6;
 				n = i - this.updatedRiddenZ;
@@ -359,7 +359,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 
 				entity.updatePositionAndAngles(g, h, i, j, k);
-				boolean bl3 = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
+				boolean bl3 = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
 				if (bl && (bl2 || !bl3)) {
 					entity.updatePositionAndAngles(d, e, f, j, k);
 					this.connection.send(new VehicleMoveS2CPacket(entity));
@@ -805,7 +805,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							this.player.updatePositionAndAngles(h, i, j, k, l);
 							if (this.player.noClip
 								|| this.player.isSleeping()
-								|| (!bl2 || !serverWorld.doesNotCollide(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box)) {
+								|| (!bl2 || !serverWorld.isSpaceEmpty(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box)) {
 								this.floating = n >= -0.03125
 									&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR
 									&& !this.server.isFlightEnabled()

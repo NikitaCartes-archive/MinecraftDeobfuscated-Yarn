@@ -33,7 +33,7 @@ public class WanderIndoorsTask extends Task<PathAwareEntity> {
 		Optional<BlockPos> optional = list.stream()
 			.filter(blockPosx -> !serverWorld.isSkyVisible(blockPosx))
 			.filter(blockPosx -> serverWorld.isTopSolid(blockPosx, pathAwareEntity))
-			.filter(blockPosx -> serverWorld.doesNotCollide(pathAwareEntity))
+			.filter(blockPosx -> serverWorld.isSpaceEmpty(pathAwareEntity))
 			.findFirst();
 		optional.ifPresent(blockPosx -> pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPosx, this.speed, 0)));
 	}

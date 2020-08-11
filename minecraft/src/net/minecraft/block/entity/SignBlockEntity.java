@@ -71,8 +71,8 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_30843(int i) {
-		return this.text[i];
+	public Text getTextOnRow(int row) {
+		return this.text[row];
 	}
 
 	public void setTextOnRow(int row, Text text) {

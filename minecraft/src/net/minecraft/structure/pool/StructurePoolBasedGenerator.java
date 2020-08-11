@@ -269,7 +269,7 @@ public class StructurePoolBasedGenerator {
 										}
 
 										int r = q - n;
-										BlockBox blockBox4 = blockBox3.translated(0, r, 0);
+										BlockBox blockBox4 = blockBox3.offset(0, r, 0);
 										BlockPos blockPos6 = blockPos5.add(0, r, 0);
 										if (m > 0) {
 											int s = Math.max(m + 1, blockBox4.maxY - blockBox4.minY);

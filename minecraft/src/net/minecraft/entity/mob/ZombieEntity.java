@@ -219,7 +219,7 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	public void tickMovement() {
 		if (this.isAlive()) {
-			boolean bl = this.burnsInDaylight() && this.isInDaylight();
+			boolean bl = this.burnsInDaylight() && this.isAffectedByDaylight();
 			if (bl) {
 				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 				if (!itemStack.isEmpty()) {
@@ -301,7 +301,7 @@ public class ZombieEntity extends HostileEntity {
 						zombieEntity.updatePosition((double)m, (double)n, (double)o);
 						if (!this.world.isPlayerInRange((double)m, (double)n, (double)o, 7.0)
 							&& this.world.intersectsEntities(zombieEntity)
-							&& this.world.doesNotCollide(zombieEntity)
+							&& this.world.isSpaceEmpty(zombieEntity)
 							&& !this.world.containsFluid(zombieEntity.getBoundingBox())) {
 							zombieEntity.setTarget(livingEntity);
 							zombieEntity.initialize(serverWorld, this.world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.REINFORCEMENT, null, null);
@@ -431,13 +431,13 @@ public class ZombieEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		float f = difficulty.getClampedLocalDifficulty();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * f);
 		if (entityData == null) {
-			entityData = new ZombieEntity.ZombieData(method_29936(serverWorldAccess.getRandom()), true);
+			entityData = new ZombieEntity.ZombieData(method_29936(world.getRandom()), true);
 		}
 
 		if (entityData instanceof ZombieEntity.ZombieData) {
@@ -445,22 +445,20 @@ public class ZombieEntity extends HostileEntity {
 			if (zombieData.baby) {
 				this.setBaby(true);
 				if (zombieData.field_25607) {
-					if ((double)serverWorldAccess.getRandom().nextFloat() < 0.05) {
-						List<ChickenEntity> list = serverWorldAccess.getEntitiesByClass(
-							ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED
-						);
+					if ((double)world.getRandom().nextFloat() < 0.05) {
+						List<ChickenEntity> list = world.getEntitiesByClass(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
 						if (!list.isEmpty()) {
 							ChickenEntity chickenEntity = (ChickenEntity)list.get(0);
 							chickenEntity.setHasJockey(true);
 							this.startRiding(chickenEntity);
 						}
-					} else if ((double)serverWorldAccess.getRandom().nextFloat() < 0.05) {
+					} else if ((double)world.getRandom().nextFloat() < 0.05) {
 						ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
 						chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-						chickenEntity2.initialize(serverWorldAccess, difficulty, SpawnReason.JOCKEY, null, null);
+						chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
 						chickenEntity2.setHasJockey(true);
 						this.startRiding(chickenEntity2);
-						serverWorldAccess.spawnEntity(chickenEntity2);
+						world.spawnEntity(chickenEntity2);
 					}
 				}
 			}
@@ -536,6 +534,9 @@ public class ZombieEntity extends HostileEntity {
 		}
 	}
 
+	/**
+	 * Returns the item stack this entity will drop when killed by a charged creeper.
+	 */
 	protected ItemStack getSkull() {
 		return new ItemStack(Items.ZOMBIE_HEAD);
 	}

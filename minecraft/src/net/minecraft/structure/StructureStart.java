@@ -67,13 +67,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 	}
 
 	public abstract void init(
-		DynamicRegistryManager dynamicRegistryManager,
-		ChunkGenerator chunkGenerator,
-		StructureManager structureManager,
-		int chunkX,
-		int chunkZ,
-		Biome biome,
-		C featureConfig
+		DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, StructureManager manager, int chunkX, int chunkZ, Biome biome, C config
 	);
 
 	public BlockBox getBoundingBox() {
@@ -151,7 +145,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		}
 
 		int m = l - this.boundingBox.maxY;
-		this.boundingBox.offset(0, m, 0);
+		this.boundingBox.move(0, m, 0);
 
 		for (StructurePiece structurePiece : this.children) {
 			structurePiece.translate(0, m, 0);
@@ -168,7 +162,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		}
 
 		int m = l - this.boundingBox.minY;
-		this.boundingBox.offset(0, m, 0);
+		this.boundingBox.move(0, m, 0);
 
 		for (StructurePiece structurePiece : this.children) {
 			structurePiece.translate(0, m, 0);

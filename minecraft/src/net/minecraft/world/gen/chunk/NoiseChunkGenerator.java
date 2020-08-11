@@ -94,8 +94,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	protected final Supplier<ChunkGeneratorSettings> settings;
 	private final int worldHeight;
 
-	public NoiseChunkGenerator(BiomeSource biomeSource, long l, Supplier<ChunkGeneratorSettings> supplier) {
-		this(biomeSource, biomeSource, l, supplier);
+	public NoiseChunkGenerator(BiomeSource biomeSource, long worldSeed, Supplier<ChunkGeneratorSettings> supplier) {
+		this(biomeSource, biomeSource, worldSeed, supplier);
 	}
 
 	private NoiseChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, long worldSeed, Supplier<ChunkGeneratorSettings> supplier) {
@@ -427,7 +427,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		int k = i << 4;
 		int l = j << 4;
 
-		for (StructureFeature<?> structureFeature : StructureFeature.field_24861) {
+		for (StructureFeature<?> structureFeature : StructureFeature.JIGSAW_STRUCTURES) {
 			accessor.getStructuresWithChildren(ChunkSectionPos.from(chunkPos, 0), structureFeature).forEach(start -> {
 				for (StructurePiece structurePiece : start.getChildren()) {
 					if (structurePiece.intersectsChunk(chunkPos, 12)) {
@@ -629,7 +629,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		if (!((ChunkGeneratorSettings)this.settings.get()).isMobGenerationDisabled()) {
 			int i = region.getCenterChunkX();
 			int j = region.getCenterChunkZ();
-			Biome biome = region.getBiome(new ChunkPos(i, j).getCenterBlockPos());
+			Biome biome = region.getBiome(new ChunkPos(i, j).getStartPos());
 			ChunkRandom chunkRandom = new ChunkRandom();
 			chunkRandom.setPopulationSeed(region.getSeed(), i << 4, j << 4);
 			SpawnHelper.populateEntities(region, biome, i, j, chunkRandom);

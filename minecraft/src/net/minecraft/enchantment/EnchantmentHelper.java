@@ -116,33 +116,33 @@ public class EnchantmentHelper {
 		}
 	}
 
-	private static void forEachEnchantment(EnchantmentHelper.Consumer action, ItemStack stack) {
+	private static void forEachEnchantment(EnchantmentHelper.Consumer consumer, ItemStack stack) {
 		if (!stack.isEmpty()) {
 			ListTag listTag = stack.getEnchantments();
 
 			for (int i = 0; i < listTag.size(); i++) {
 				String string = listTag.getCompound(i).getString("id");
 				int j = listTag.getCompound(i).getInt("lvl");
-				Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(string)).ifPresent(enchantment -> action.accept(enchantment, j));
+				Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
 			}
 		}
 	}
 
-	private static void forEachEnchantment(EnchantmentHelper.Consumer action, Iterable<ItemStack> stacks) {
+	private static void forEachEnchantment(EnchantmentHelper.Consumer consumer, Iterable<ItemStack> stacks) {
 		for (ItemStack itemStack : stacks) {
-			forEachEnchantment(action, itemStack);
+			forEachEnchantment(consumer, itemStack);
 		}
 	}
 
 	public static int getProtectionAmount(Iterable<ItemStack> equipment, DamageSource source) {
 		MutableInt mutableInt = new MutableInt();
-		forEachEnchantment((enchantment, i) -> mutableInt.add(enchantment.getProtectionAmount(i, source)), equipment);
+		forEachEnchantment((enchantment, level) -> mutableInt.add(enchantment.getProtectionAmount(level, source)), equipment);
 		return mutableInt.intValue();
 	}
 
 	public static float getAttackDamage(ItemStack stack, EntityGroup group) {
 		MutableFloat mutableFloat = new MutableFloat();
-		forEachEnchantment((enchantment, i) -> mutableFloat.add(enchantment.getAttackDamage(i, group)), stack);
+		forEachEnchantment((enchantment, level) -> mutableFloat.add(enchantment.getAttackDamage(level, group)), stack);
 		return mutableFloat.floatValue();
 	}
 
@@ -152,7 +152,7 @@ public class EnchantmentHelper {
 	}
 
 	public static void onUserDamaged(LivingEntity user, Entity attacker) {
-		EnchantmentHelper.Consumer consumer = (enchantment, i) -> enchantment.onUserDamaged(user, attacker, i);
+		EnchantmentHelper.Consumer consumer = (enchantment, level) -> enchantment.onUserDamaged(user, attacker, level);
 		if (user != null) {
 			forEachEnchantment(consumer, user.getItemsEquipped());
 		}
@@ -163,7 +163,7 @@ public class EnchantmentHelper {
 	}
 
 	public static void onTargetDamaged(LivingEntity user, Entity target) {
-		EnchantmentHelper.Consumer consumer = (enchantment, i) -> enchantment.onTargetDamaged(user, target, i);
+		EnchantmentHelper.Consumer consumer = (enchantment, level) -> enchantment.onTargetDamaged(user, target, level);
 		if (user != null) {
 			forEachEnchantment(consumer, user.getItemsEquipped());
 		}

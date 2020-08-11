@@ -54,10 +54,10 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	private int player = -1;
 	private boolean stateChanged;
 	private RealmsLabel titleLabel;
-	private RealmsPlayerScreen.class_5488 field_26496 = RealmsPlayerScreen.class_5488.field_26504;
+	private RealmsPlayerScreen.PlayerOperation operation = RealmsPlayerScreen.PlayerOperation.NONE;
 
-	public RealmsPlayerScreen(RealmsConfigureWorldScreen realmsConfigureWorldScreen, RealmsServer serverData) {
-		this.parent = realmsConfigureWorldScreen;
+	public RealmsPlayerScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData) {
+		this.parent = parent;
 		this.serverData = serverData;
 	}
 
@@ -211,7 +211,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.tooltipText = null;
-		this.field_26496 = RealmsPlayerScreen.class_5488.field_26504;
+		this.operation = RealmsPlayerScreen.PlayerOperation.NONE;
 		this.renderBackground(matrices);
 		if (this.invitedObjectSelectionList != null) {
 			this.invitedObjectSelectionList.render(matrices, mouseX, mouseY, delta);
@@ -270,7 +270,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, f, 8, 7, 8, 14);
 		if (bl) {
 			this.tooltipText = field_26500;
-			this.field_26496 = RealmsPlayerScreen.class_5488.field_26503;
+			this.operation = RealmsPlayerScreen.PlayerOperation.REMOVE;
 		}
 	}
 
@@ -282,7 +282,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
 			this.tooltipText = field_26499;
-			this.field_26496 = RealmsPlayerScreen.class_5488.field_26502;
+			this.operation = RealmsPlayerScreen.PlayerOperation.TOGGLE_OP;
 		}
 	}
 
@@ -294,7 +294,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
 			this.tooltipText = field_26498;
-			this.field_26496 = RealmsPlayerScreen.class_5488.field_26502;
+			this.operation = RealmsPlayerScreen.PlayerOperation.TOGGLE_OP;
 		}
 	}
 
@@ -340,14 +340,14 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
 			if (selectionIndex >= 0
 				&& selectionIndex <= RealmsPlayerScreen.this.serverData.players.size()
-				&& RealmsPlayerScreen.this.field_26496 != RealmsPlayerScreen.class_5488.field_26504) {
-				if (RealmsPlayerScreen.this.field_26496 == RealmsPlayerScreen.class_5488.field_26502) {
+				&& RealmsPlayerScreen.this.operation != RealmsPlayerScreen.PlayerOperation.NONE) {
+				if (RealmsPlayerScreen.this.operation == RealmsPlayerScreen.PlayerOperation.TOGGLE_OP) {
 					if (((PlayerInfo)RealmsPlayerScreen.this.serverData.players.get(selectionIndex)).isOperator()) {
 						RealmsPlayerScreen.this.deop(selectionIndex);
 					} else {
 						RealmsPlayerScreen.this.op(selectionIndex);
 					}
-				} else if (RealmsPlayerScreen.this.field_26496 == RealmsPlayerScreen.class_5488.field_26503) {
+				} else if (RealmsPlayerScreen.this.operation == RealmsPlayerScreen.PlayerOperation.REMOVE) {
 					RealmsPlayerScreen.this.uninvite(selectionIndex);
 				}
 			}
@@ -430,9 +430,9 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum class_5488 {
-		field_26502,
-		field_26503,
-		field_26504;
+	static enum PlayerOperation {
+		TOGGLE_OP,
+		REMOVE,
+		NONE;
 	}
 }

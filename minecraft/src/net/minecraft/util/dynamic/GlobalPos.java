@@ -9,9 +9,7 @@ import net.minecraft.world.World;
 
 public final class GlobalPos {
 	public static final Codec<GlobalPos> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					World.CODEC.fieldOf("dimension").forGetter(GlobalPos::getDimension), BlockPos.field_25064.fieldOf("pos").forGetter(GlobalPos::getPos)
-				)
+		instance -> instance.group(World.CODEC.fieldOf("dimension").forGetter(GlobalPos::getDimension), BlockPos.CODEC.fieldOf("pos").forGetter(GlobalPos::getPos))
 				.apply(instance, GlobalPos::create)
 	);
 	private final RegistryKey<World> dimension;

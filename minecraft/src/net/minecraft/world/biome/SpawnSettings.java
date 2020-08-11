@@ -35,7 +35,7 @@ public class SpawnSettings {
 		instance -> instance.group(
 					Codec.FLOAT.optionalFieldOf("creature_spawn_probability", Float.valueOf(0.1F)).forGetter(spawnSettings -> spawnSettings.creatureSpawnProbability),
 					Codec.simpleMap(
-							SpawnGroup.field_24655,
+							SpawnGroup.CODEC,
 							SpawnSettings.SpawnEntry.CODEC.listOf().promotePartial(Util.method_29188("Spawn data: ", LOGGER::error)),
 							StringIdentifiable.method_28142(SpawnGroup.values())
 						)

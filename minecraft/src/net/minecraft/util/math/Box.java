@@ -248,7 +248,7 @@ public class Box {
 		return this.expand(-value);
 	}
 
-	public Optional<Vec3d> rayTrace(Vec3d min, Vec3d max) {
+	public Optional<Vec3d> raycast(Vec3d min, Vec3d max) {
 		double[] ds = new double[]{1.0};
 		double d = max.x - min.x;
 		double e = max.y - min.y;
@@ -263,7 +263,7 @@ public class Box {
 	}
 
 	@Nullable
-	public static BlockHitResult rayTrace(Iterable<Box> boxes, Vec3d from, Vec3d to, BlockPos pos) {
+	public static BlockHitResult raycast(Iterable<Box> boxes, Vec3d from, Vec3d to, BlockPos pos) {
 		double[] ds = new double[]{1.0};
 		Direction direction = null;
 		double d = to.x - from.x;

@@ -349,10 +349,10 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		this.setColor(generateDefaultColor(serverWorldAccess.getRandom()));
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		this.setColor(generateDefaultColor(world.getRandom()));
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private DyeColor getChildColor(AnimalEntity firstParent, AnimalEntity secondParent) {

@@ -49,7 +49,7 @@ public class BookScreen extends Screen {
 	private int pageIndex;
 	private List<OrderedText> cachedPage = Collections.emptyList();
 	private int cachedPageIndex = -1;
-	private Text field_25897 = LiteralText.EMPTY;
+	private Text pageIndexText = LiteralText.EMPTY;
 	private PageTurnWidget nextPageButton;
 	private PageTurnWidget previousPageButton;
 	private final boolean pageTurnSound;
@@ -163,12 +163,12 @@ public class BookScreen extends Screen {
 		if (this.cachedPageIndex != this.pageIndex) {
 			StringVisitable stringVisitable = this.contents.getPage(this.pageIndex);
 			this.cachedPage = this.textRenderer.wrapLines(stringVisitable, 114);
-			this.field_25897 = new TranslatableText("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
+			this.pageIndexText = new TranslatableText("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		}
 
 		this.cachedPageIndex = this.pageIndex;
-		int k = this.textRenderer.getWidth(this.field_25897);
-		this.textRenderer.draw(matrices, this.field_25897, (float)(i - k + 192 - 44), 18.0F, 0);
+		int k = this.textRenderer.getWidth(this.pageIndexText);
+		this.textRenderer.draw(matrices, this.pageIndexText, (float)(i - k + 192 - 44), 18.0F, 0);
 		int l = Math.min(128 / 9, this.cachedPage.size());
 
 		for (int m = 0; m < l; m++) {

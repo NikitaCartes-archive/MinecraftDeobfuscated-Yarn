@@ -12,13 +12,13 @@ public class PointOfInterest {
 	private int freeTickets;
 	private final Runnable updateListener;
 
-	public static Codec<PointOfInterest> method_28359(Runnable runnable) {
+	public static Codec<PointOfInterest> createCodec(Runnable updateListener) {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
-						BlockPos.field_25064.fieldOf("pos").forGetter(pointOfInterest -> pointOfInterest.pos),
+						BlockPos.CODEC.fieldOf("pos").forGetter(pointOfInterest -> pointOfInterest.pos),
 						Registry.POINT_OF_INTEREST_TYPE.fieldOf("type").forGetter(pointOfInterest -> pointOfInterest.type),
 						Codec.INT.fieldOf("free_tickets").orElse(0).forGetter(pointOfInterest -> pointOfInterest.freeTickets),
-						RecordCodecBuilder.point(runnable)
+						RecordCodecBuilder.point(updateListener)
 					)
 					.apply(instance, PointOfInterest::new)
 		);

@@ -110,7 +110,7 @@ public class BlockBox {
 		this.maxZ = Math.max(this.maxZ, region.maxZ);
 	}
 
-	public void offset(int dx, int dy, int dz) {
+	public void move(int dx, int dy, int dz) {
 		this.minX += dx;
 		this.minY += dy;
 		this.minZ += dz;
@@ -119,12 +119,12 @@ public class BlockBox {
 		this.maxZ += dz;
 	}
 
-	public BlockBox translated(int x, int y, int z) {
+	public BlockBox offset(int x, int y, int z) {
 		return new BlockBox(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
 	}
 
-	public void method_29299(Vec3i vec3i) {
-		this.offset(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+	public void move(Vec3i vec3i) {
+		this.move(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 	}
 
 	public boolean contains(Vec3i vec) {

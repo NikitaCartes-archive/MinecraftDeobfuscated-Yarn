@@ -35,19 +35,19 @@ public interface CollisionView extends BlockView {
 		return this.intersectsEntities(entity, VoxelShapes.cuboid(entity.getBoundingBox()));
 	}
 
-	default boolean doesNotCollide(Box box) {
-		return this.doesNotCollide(null, box, entity -> true);
+	default boolean isSpaceEmpty(Box box) {
+		return this.isSpaceEmpty(null, box, entity -> true);
 	}
 
-	default boolean doesNotCollide(Entity entity) {
-		return this.doesNotCollide(entity, entity.getBoundingBox(), entityx -> true);
+	default boolean isSpaceEmpty(Entity entity) {
+		return this.isSpaceEmpty(entity, entity.getBoundingBox(), entityx -> true);
 	}
 
-	default boolean doesNotCollide(Entity entity, Box box) {
-		return this.doesNotCollide(entity, box, entityx -> true);
+	default boolean isSpaceEmpty(Entity entity, Box box) {
+		return this.isSpaceEmpty(entity, box, entityx -> true);
 	}
 
-	default boolean doesNotCollide(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
+	default boolean isSpaceEmpty(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
 		return this.getCollisions(entity, box, predicate).allMatch(VoxelShape::isEmpty);
 	}
 
@@ -62,11 +62,11 @@ public interface CollisionView extends BlockView {
 	}
 
 	@Environment(EnvType.CLIENT)
-	default boolean method_30635(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
-		return this.method_30030(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
+	default boolean isBlockSpaceEmpty(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
+		return this.getBlockCollisions(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
 	}
 
-	default Stream<VoxelShape> method_30030(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
+	default Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
 		return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box, biPredicate), false);
 	}
 }

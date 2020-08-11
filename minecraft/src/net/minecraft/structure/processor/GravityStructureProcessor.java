@@ -13,7 +13,7 @@ import net.minecraft.world.WorldView;
 public class GravityStructureProcessor extends StructureProcessor {
 	public static final Codec<GravityStructureProcessor> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Heightmap.Type.field_24772
+					Heightmap.Type.CODEC
 						.fieldOf("heightmap")
 						.orElse(Heightmap.Type.WORLD_SURFACE_WG)
 						.forGetter(gravityStructureProcessor -> gravityStructureProcessor.heightmap),

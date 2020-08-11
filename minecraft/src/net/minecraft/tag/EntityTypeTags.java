@@ -22,7 +22,7 @@ public final class EntityTypeTags {
 		return REQUIRED_TAGS.getGroup();
 	}
 
-	public static List<? extends Tag.Identified<EntityType<?>>> method_31073() {
+	public static List<? extends Tag.Identified<EntityType<?>>> getRequiredTags() {
 		return REQUIRED_TAGS.getTags();
 	}
 }

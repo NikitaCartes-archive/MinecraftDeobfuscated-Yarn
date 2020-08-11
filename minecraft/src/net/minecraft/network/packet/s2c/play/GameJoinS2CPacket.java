@@ -20,13 +20,13 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private long sha256Seed;
 	private boolean hardcore;
 	private GameMode gameMode;
-	private GameMode field_25713;
-	private Set<RegistryKey<World>> field_25320;
+	private GameMode previousGameMode;
+	private Set<RegistryKey<World>> dimensionIds;
 	private DynamicRegistryManager.Impl registryManager;
-	private DimensionType field_25321;
+	private DimensionType dimensionType;
 	private RegistryKey<World> dimensionId;
 	private int maxPlayers;
-	private int chunkLoadDistance;
+	private int viewDistance;
 	private boolean reducedDebugInfo;
 	private boolean showDeathScreen;
 	private boolean debugWorld;
@@ -38,13 +38,13 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	public GameJoinS2CPacket(
 		int playerEntityId,
 		GameMode gameMode,
-		GameMode gameMode2,
+		GameMode previousGameMode,
 		long sha256Seed,
 		boolean hardcore,
-		Set<RegistryKey<World>> set,
-		DynamicRegistryManager.Impl impl,
+		Set<RegistryKey<World>> dimensionIds,
+		DynamicRegistryManager.Impl registryManager,
 		DimensionType dimensionType,
-		RegistryKey<World> registryKey,
+		RegistryKey<World> dimensionId,
 		int maxPlayers,
 		int chunkLoadDistance,
 		boolean reducedDebugInfo,
@@ -53,16 +53,16 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		boolean flatWorld
 	) {
 		this.playerEntityId = playerEntityId;
-		this.field_25320 = set;
-		this.registryManager = impl;
-		this.field_25321 = dimensionType;
-		this.dimensionId = registryKey;
+		this.dimensionIds = dimensionIds;
+		this.registryManager = registryManager;
+		this.dimensionType = dimensionType;
+		this.dimensionId = dimensionId;
 		this.sha256Seed = sha256Seed;
 		this.gameMode = gameMode;
-		this.field_25713 = gameMode2;
+		this.previousGameMode = previousGameMode;
 		this.maxPlayers = maxPlayers;
 		this.hardcore = hardcore;
-		this.chunkLoadDistance = chunkLoadDistance;
+		this.viewDistance = chunkLoadDistance;
 		this.reducedDebugInfo = reducedDebugInfo;
 		this.showDeathScreen = showDeathScreen;
 		this.debugWorld = debugWorld;
@@ -74,20 +74,20 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.playerEntityId = buf.readInt();
 		this.hardcore = buf.readBoolean();
 		this.gameMode = GameMode.byId(buf.readByte());
-		this.field_25713 = GameMode.byId(buf.readByte());
+		this.previousGameMode = GameMode.byId(buf.readByte());
 		int i = buf.readVarInt();
-		this.field_25320 = Sets.<RegistryKey<World>>newHashSet();
+		this.dimensionIds = Sets.<RegistryKey<World>>newHashSet();
 
 		for (int j = 0; j < i; j++) {
-			this.field_25320.add(RegistryKey.of(Registry.DIMENSION, buf.readIdentifier()));
+			this.dimensionIds.add(RegistryKey.of(Registry.DIMENSION, buf.readIdentifier()));
 		}
 
 		this.registryManager = buf.decode(DynamicRegistryManager.Impl.CODEC);
-		this.field_25321 = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
+		this.dimensionType = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
 		this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.maxPlayers = buf.readVarInt();
-		this.chunkLoadDistance = buf.readVarInt();
+		this.viewDistance = buf.readVarInt();
 		this.reducedDebugInfo = buf.readBoolean();
 		this.showDeathScreen = buf.readBoolean();
 		this.debugWorld = buf.readBoolean();
@@ -99,19 +99,19 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeInt(this.playerEntityId);
 		buf.writeBoolean(this.hardcore);
 		buf.writeByte(this.gameMode.getId());
-		buf.writeByte(this.field_25713.getId());
-		buf.writeVarInt(this.field_25320.size());
+		buf.writeByte(this.previousGameMode.getId());
+		buf.writeVarInt(this.dimensionIds.size());
 
-		for (RegistryKey<World> registryKey : this.field_25320) {
+		for (RegistryKey<World> registryKey : this.dimensionIds) {
 			buf.writeIdentifier(registryKey.getValue());
 		}
 
 		buf.encode(DynamicRegistryManager.Impl.CODEC, this.registryManager);
-		buf.encode(DimensionType.REGISTRY_CODEC, () -> this.field_25321);
+		buf.encode(DimensionType.REGISTRY_CODEC, () -> this.dimensionType);
 		buf.writeIdentifier(this.dimensionId.getValue());
 		buf.writeLong(this.sha256Seed);
 		buf.writeVarInt(this.maxPlayers);
-		buf.writeVarInt(this.chunkLoadDistance);
+		buf.writeVarInt(this.viewDistance);
 		buf.writeBoolean(this.reducedDebugInfo);
 		buf.writeBoolean(this.showDeathScreen);
 		buf.writeBoolean(this.debugWorld);
@@ -143,13 +143,13 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public GameMode method_30116() {
-		return this.field_25713;
+	public GameMode getPreviousGameMode() {
+		return this.previousGameMode;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Set<RegistryKey<World>> method_29443() {
-		return this.field_25320;
+	public Set<RegistryKey<World>> getDimensionIds() {
+		return this.dimensionIds;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -158,8 +158,8 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public DimensionType method_29444() {
-		return this.field_25321;
+	public DimensionType getDimensionType() {
+		return this.dimensionType;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -168,8 +168,8 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getChunkLoadDistance() {
-		return this.chunkLoadDistance;
+	public int getViewDistance() {
+		return this.viewDistance;
 	}
 
 	@Environment(EnvType.CLIENT)

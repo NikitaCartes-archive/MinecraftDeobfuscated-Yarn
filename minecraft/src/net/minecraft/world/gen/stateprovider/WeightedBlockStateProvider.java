@@ -9,15 +9,13 @@ import net.minecraft.util.math.BlockPos;
 
 public class WeightedBlockStateProvider extends BlockStateProvider {
 	public static final Codec<WeightedBlockStateProvider> CODEC = WeightedList.method_28338(BlockState.CODEC)
-		.<WeightedBlockStateProvider>comapFlatMap(WeightedBlockStateProvider::method_28868, weightedBlockStateProvider -> weightedBlockStateProvider.states)
+		.<WeightedBlockStateProvider>comapFlatMap(WeightedBlockStateProvider::wrap, weightedBlockStateProvider -> weightedBlockStateProvider.states)
 		.fieldOf("entries")
 		.codec();
 	private final WeightedList<BlockState> states;
 
-	private static DataResult<WeightedBlockStateProvider> method_28868(WeightedList<BlockState> weightedList) {
-		return weightedList.method_28339()
-			? DataResult.error("WeightedStateProvider with no states")
-			: DataResult.success(new WeightedBlockStateProvider(weightedList));
+	private static DataResult<WeightedBlockStateProvider> wrap(WeightedList<BlockState> states) {
+		return states.isEmpty() ? DataResult.error("WeightedStateProvider with no states") : DataResult.success(new WeightedBlockStateProvider(states));
 	}
 
 	private WeightedBlockStateProvider(WeightedList<BlockState> states) {

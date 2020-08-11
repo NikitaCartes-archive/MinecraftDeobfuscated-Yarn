@@ -30,7 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class CompoundTag implements Tag {
-	public static final Codec<CompoundTag> field_25128 = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
+	public static final Codec<CompoundTag> CODEC = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
 		Tag tag = dynamic.convert(NbtOps.INSTANCE).getValue();
 		return tag instanceof CompoundTag ? DataResult.success((CompoundTag)tag) : DataResult.error("Not a compound tag: " + tag);
 	}, compoundTag -> new Dynamic<>(NbtOps.INSTANCE, compoundTag));
@@ -509,7 +509,7 @@ public class CompoundTag implements Tag {
 		}
 	}
 
-	protected Map<String, Tag> method_29143() {
+	protected Map<String, Tag> toMap() {
 		return Collections.unmodifiableMap(this.tags);
 	}
 }

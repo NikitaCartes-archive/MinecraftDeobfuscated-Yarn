@@ -15,7 +15,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class GlassBottleItem extends Item {
@@ -37,7 +37,7 @@ public class GlassBottleItem extends Item {
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 			return TypedActionResult.method_29237(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
 		} else {
-			HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
+			HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
 			if (hitResult.getType() == HitResult.Type.MISS) {
 				return TypedActionResult.pass(itemStack);
 			} else {

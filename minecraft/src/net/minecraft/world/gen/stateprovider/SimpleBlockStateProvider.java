@@ -12,8 +12,8 @@ public class SimpleBlockStateProvider extends BlockStateProvider {
 		.codec();
 	private final BlockState state;
 
-	public SimpleBlockStateProvider(BlockState blockState) {
-		this.state = blockState;
+	public SimpleBlockStateProvider(BlockState state) {
+		this.state = state;
 	}
 
 	@Override

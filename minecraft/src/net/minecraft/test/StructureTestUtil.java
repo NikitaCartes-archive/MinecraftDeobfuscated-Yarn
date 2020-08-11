@@ -146,7 +146,7 @@ public class StructureTestUtil {
 		int i = Math.min(blockBox.minX, blockBox.maxX);
 		int j = Math.min(blockBox.minZ, blockBox.maxZ);
 		BlockPos blockPos5 = new BlockPos(blockPos.getX() - i, 0, blockPos.getZ() - j);
-		blockBox.method_29299(blockPos5);
+		blockBox.move(blockPos5);
 		return blockBox;
 	}
 

@@ -182,7 +182,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			BlockRotation blockRotation = Util.getRandom(BlockRotation.values(), this.random);
 			BlockMirror blockMirror = this.random.nextFloat() < 0.5F ? BlockMirror.NONE : BlockMirror.FRONT_BACK;
 			BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
-			BlockPos blockPos2 = new ChunkPos(i, j).getCenterBlockPos();
+			BlockPos blockPos2 = new ChunkPos(i, j).getStartPos();
 			BlockBox blockBox = structure.method_27267(blockPos2, blockRotation, blockPos, blockMirror);
 			Vec3i vec3i = blockBox.getCenter();
 			int k = vec3i.getX();
@@ -210,9 +210,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 		OCEAN("ocean"),
 		NETHER("nether");
 
-		public static final Codec<RuinedPortalFeature.Type> field_24840 = StringIdentifiable.createCodec(
-			RuinedPortalFeature.Type::values, RuinedPortalFeature.Type::byName
-		);
+		public static final Codec<RuinedPortalFeature.Type> CODEC = StringIdentifiable.createCodec(RuinedPortalFeature.Type::values, RuinedPortalFeature.Type::byName);
 		private static final Map<String, RuinedPortalFeature.Type> BY_NAME = (Map<String, RuinedPortalFeature.Type>)Arrays.stream(values())
 			.collect(Collectors.toMap(RuinedPortalFeature.Type::getName, type -> type));
 		private final String name;

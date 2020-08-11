@@ -217,9 +217,9 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
-		if (serverWorld.getDifficulty() != Difficulty.PEACEFUL) {
-			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorld);
+	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
+		if (world.getDifficulty() != Difficulty.PEACEFUL) {
+			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world);
 			zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 			zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 			zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
@@ -230,10 +230,10 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 			}
 
 			zombifiedPiglinEntity.setPersistent();
-			serverWorld.spawnEntity(zombifiedPiglinEntity);
+			world.spawnEntity(zombifiedPiglinEntity);
 			this.remove();
 		} else {
-			super.onStruckByLightning(serverWorld, lightningEntity);
+			super.onStruckByLightning(world, lightning);
 		}
 	}
 

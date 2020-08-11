@@ -11,7 +11,7 @@ public class DepthAverageDecorator extends SimpleDecorator<DepthAverageDecorator
 	}
 
 	public Stream<BlockPos> getPositions(Random random, DepthAverageDecoratorConfig depthAverageDecoratorConfig, BlockPos blockPos) {
-		int i = depthAverageDecoratorConfig.count;
+		int i = depthAverageDecoratorConfig.baseline;
 		int j = depthAverageDecoratorConfig.spread;
 		int k = blockPos.getX();
 		int l = blockPos.getZ();

@@ -35,7 +35,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	private final LongSet preloadedChunks = new LongOpenHashSet();
 
 	public PointOfInterestStorage(File file, DataFixer dataFixer, boolean bl) {
-		super(file, PointOfInterestSet::method_28364, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK, bl);
+		super(file, PointOfInterestSet::createCodec, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK, bl);
 		this.pointOfInterestDistanceTracker = new PointOfInterestStorage.PointOfInterestDistanceTracker();
 	}
 
@@ -51,9 +51,9 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return this.getInCircle(typePredicate, pos, radius, occupationStatus).count();
 	}
 
-	public boolean method_26339(PointOfInterestType pointOfInterestType, BlockPos blockPos) {
-		Optional<PointOfInterestType> optional = this.getOrCreate(ChunkSectionPos.from(blockPos).asLong()).getType(blockPos);
-		return optional.isPresent() && ((PointOfInterestType)optional.get()).equals(pointOfInterestType);
+	public boolean hasTypeAt(PointOfInterestType type, BlockPos pos) {
+		Optional<PointOfInterestType> optional = this.getOrCreate(ChunkSectionPos.from(pos).asLong()).getType(pos);
+		return optional.isPresent() && ((PointOfInterestType)optional.get()).equals(type);
 	}
 
 	public Stream<PointOfInterest> getInSquare(
@@ -160,8 +160,8 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return this.pointOfInterestDistanceTracker.getLevel(pos.asLong());
 	}
 
-	private boolean isOccupied(long l) {
-		Optional<PointOfInterestSet> optional = this.getIfLoaded(l);
+	private boolean isOccupied(long pos) {
+		Optional<PointOfInterestSet> optional = this.getIfLoaded(pos);
 		return optional == null
 			? false
 			: (Boolean)optional.map(
@@ -202,7 +202,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	private static boolean shouldScan(ChunkSection chunkSection) {
-		return chunkSection.method_19523(PointOfInterestType.field_25162::contains);
+		return chunkSection.hasAny(PointOfInterestType.REGISTERED_STATES::contains);
 	}
 
 	private void scanAndPopulate(ChunkSection chunkSection, ChunkSectionPos chunkSectionPos, BiConsumer<BlockPos, PointOfInterestType> biConsumer) {

@@ -48,7 +48,7 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 						|| structureWorldAccess.getFluidState(blockPos3.north()).isIn(FluidTags.WATER)
 						|| structureWorldAccess.getFluidState(blockPos3.south()).isIn(FluidTags.WATER)
 				)) {
-				randomPatchFeatureConfig.blockPlacer.method_23403(structureWorldAccess, mutable, blockState, random);
+				randomPatchFeatureConfig.blockPlacer.generate(structureWorldAccess, mutable, blockState, random);
 				i++;
 			}
 		}

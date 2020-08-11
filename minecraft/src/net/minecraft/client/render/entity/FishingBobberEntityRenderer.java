@@ -30,7 +30,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 	}
 
 	public void render(FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		PlayerEntity playerEntity = fishingBobberEntity.getOwner();
+		PlayerEntity playerEntity = fishingBobberEntity.getPlayerOwner();
 		if (playerEntity != null) {
 			matrixStack.push();
 			matrixStack.push();

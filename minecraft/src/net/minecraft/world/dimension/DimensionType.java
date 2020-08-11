@@ -274,31 +274,29 @@ public class DimensionType {
 	}
 
 	private static ChunkGenerator createEndGenerator(Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed) {
-		return new NoiseChunkGenerator(
-			new TheEndBiomeSource(biomeRegistry, seed), seed, () -> chunkGeneratorSettingsRegistry.method_31140(ChunkGeneratorSettings.END)
-		);
+		return new NoiseChunkGenerator(new TheEndBiomeSource(biomeRegistry, seed), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.END));
 	}
 
 	private static ChunkGenerator createNetherGenerator(Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed) {
 		return new NoiseChunkGenerator(
 			MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(biomeRegistry, seed),
 			seed,
-			() -> chunkGeneratorSettingsRegistry.method_31140(ChunkGeneratorSettings.NETHER)
+			() -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.NETHER)
 		);
 	}
 
-	public static SimpleRegistry<DimensionOptions> method_28517(
-		Registry<DimensionType> registry, Registry<Biome> registry2, Registry<ChunkGeneratorSettings> registry3, long l
+	public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(
+		Registry<DimensionType> dimensionRegistry, Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed
 	) {
 		SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
 		simpleRegistry.add(
 			DimensionOptions.NETHER,
-			new DimensionOptions(() -> registry.method_31140(THE_NETHER_REGISTRY_KEY), createNetherGenerator(registry2, registry3, l)),
+			new DimensionOptions(() -> dimensionRegistry.getOrThrow(THE_NETHER_REGISTRY_KEY), createNetherGenerator(biomeRegistry, chunkGeneratorSettingsRegistry, seed)),
 			Lifecycle.stable()
 		);
 		simpleRegistry.add(
 			DimensionOptions.END,
-			new DimensionOptions(() -> registry.method_31140(THE_END_REGISTRY_KEY), createEndGenerator(registry2, registry3, l)),
+			new DimensionOptions(() -> dimensionRegistry.getOrThrow(THE_END_REGISTRY_KEY), createEndGenerator(biomeRegistry, chunkGeneratorSettingsRegistry, seed)),
 			Lifecycle.stable()
 		);
 		return simpleRegistry;
@@ -379,7 +377,7 @@ public class DimensionType {
 		return this.fixedTime.isPresent();
 	}
 
-	public float method_28528(long time) {
+	public float getSkyAngle(long time) {
 		double d = MathHelper.fractionalPart((double)this.fixedTime.orElse(time) / 24000.0 - 0.25);
 		double e = 0.5 - Math.cos(d * Math.PI) / 2.0;
 		return (float)(d * 2.0 + e) / 3.0F;

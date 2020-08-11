@@ -35,7 +35,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class FallingBlockEntity extends Entity {
@@ -122,9 +122,9 @@ public class FallingBlockEntity extends Entity {
 				double d = this.getVelocity().lengthSquared();
 				if (bl && d > 1.0) {
 					BlockHitResult blockHitResult = this.world
-						.rayTrace(
-							new RayTraceContext(
-								new Vec3d(this.prevX, this.prevY, this.prevZ), this.getPos(), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY, this
+						.raycast(
+							new RaycastContext(
+								new Vec3d(this.prevX, this.prevY, this.prevZ), this.getPos(), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.SOURCE_ONLY, this
 							)
 						);
 					if (blockHitResult.getType() != HitResult.Type.MISS && this.world.getFluidState(blockHitResult.getBlockPos()).isIn(FluidTags.WATER)) {

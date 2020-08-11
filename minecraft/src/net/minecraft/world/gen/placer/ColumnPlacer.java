@@ -19,23 +19,23 @@ public class ColumnPlacer extends BlockPlacer {
 	private final int minSize;
 	private final int extraSize;
 
-	public ColumnPlacer(int i, int j) {
-		this.minSize = i;
-		this.extraSize = j;
+	public ColumnPlacer(int minSize, int extraSize) {
+		this.minSize = minSize;
+		this.extraSize = extraSize;
 	}
 
 	@Override
-	protected BlockPlacerType<?> method_28673() {
+	protected BlockPlacerType<?> getType() {
 		return BlockPlacerType.COLUMN_PLACER;
 	}
 
 	@Override
-	public void method_23403(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, Random random) {
-		BlockPos.Mutable mutable = blockPos.mutableCopy();
+	public void generate(WorldAccess world, BlockPos pos, BlockState state, Random random) {
+		BlockPos.Mutable mutable = pos.mutableCopy();
 		int i = this.minSize + random.nextInt(random.nextInt(this.extraSize + 1) + 1);
 
 		for (int j = 0; j < i; j++) {
-			worldAccess.setBlockState(mutable, blockState, 2);
+			world.setBlockState(mutable, state, 2);
 			mutable.move(Direction.UP);
 		}
 	}

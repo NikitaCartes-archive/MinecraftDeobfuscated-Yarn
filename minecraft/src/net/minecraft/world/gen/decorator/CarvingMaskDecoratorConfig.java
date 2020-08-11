@@ -7,7 +7,7 @@ import net.minecraft.world.gen.GenerationStep;
 public class CarvingMaskDecoratorConfig implements DecoratorConfig {
 	public static final Codec<CarvingMaskDecoratorConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					GenerationStep.Carver.field_24770.fieldOf("step").forGetter(carvingMaskDecoratorConfig -> carvingMaskDecoratorConfig.step),
+					GenerationStep.Carver.CODEC.fieldOf("step").forGetter(carvingMaskDecoratorConfig -> carvingMaskDecoratorConfig.step),
 					Codec.FLOAT.fieldOf("probability").forGetter(carvingMaskDecoratorConfig -> carvingMaskDecoratorConfig.probability)
 				)
 				.apply(instance, CarvingMaskDecoratorConfig::new)

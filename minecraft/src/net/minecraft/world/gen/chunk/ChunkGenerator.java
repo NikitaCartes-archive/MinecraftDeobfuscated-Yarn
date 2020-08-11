@@ -55,7 +55,7 @@ public abstract class ChunkGenerator {
 	public static final Codec<ChunkGenerator> CODEC = Registry.CHUNK_GENERATOR.dispatchStable(ChunkGenerator::getCodec, Function.identity());
 	protected final BiomeSource biomeSource;
 	protected final BiomeSource field_24747;
-	private final StructuresConfig config;
+	private final StructuresConfig structuresConfig;
 	private final long worldSeed;
 	private final List<ChunkPos> strongholds = Lists.<ChunkPos>newArrayList();
 
@@ -66,13 +66,13 @@ public abstract class ChunkGenerator {
 	public ChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, StructuresConfig structuresConfig, long worldSeed) {
 		this.biomeSource = biomeSource;
 		this.field_24747 = biomeSource2;
-		this.config = structuresConfig;
+		this.structuresConfig = structuresConfig;
 		this.worldSeed = worldSeed;
 	}
 
 	private void generateStrongholdPositions() {
 		if (this.strongholds.isEmpty()) {
-			StrongholdConfig strongholdConfig = this.config.getStronghold();
+			StrongholdConfig strongholdConfig = this.structuresConfig.getStronghold();
 			if (strongholdConfig != null && strongholdConfig.getCount() != 0) {
 				List<Biome> list = Lists.<Biome>newArrayList();
 
@@ -187,7 +187,7 @@ public abstract class ChunkGenerator {
 
 			return blockPos;
 		} else {
-			StructureConfig structureConfig = this.config.getForType(feature);
+			StructureConfig structureConfig = this.structuresConfig.getForType(feature);
 			return structureConfig == null
 				? null
 				: feature.locateStructure(world, world.getStructureAccessor(), center, radius, skipExistingChunks, world.getSeed(), structureConfig);
@@ -218,8 +218,8 @@ public abstract class ChunkGenerator {
 	public void populateEntities(ChunkRegion region) {
 	}
 
-	public StructuresConfig getConfig() {
-		return this.config;
+	public StructuresConfig getStructuresConfig() {
+		return this.structuresConfig;
 	}
 
 	public int getSpawnHeight() {
@@ -267,7 +267,7 @@ public abstract class ChunkGenerator {
 	) {
 		StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), configuredStructureFeature.feature, chunk);
 		int i = structureStart != null ? structureStart.getReferences() : 0;
-		StructureConfig structureConfig = this.config.getForType(configuredStructureFeature.feature);
+		StructureConfig structureConfig = this.structuresConfig.getForType(configuredStructureFeature.feature);
 		if (structureConfig != null) {
 			StructureStart<?> structureStart2 = configuredStructureFeature.tryPlaceStart(
 				dynamicRegistryManager, this, this.biomeSource, structureManager, worldSeed, chunkPos, biome, i, structureConfig

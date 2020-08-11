@@ -22,10 +22,10 @@ public class OreFeatureConfig implements FeatureConfig {
 	public final int size;
 	public final BlockState state;
 
-	public OreFeatureConfig(RuleTest ruleTest, BlockState state, int size) {
+	public OreFeatureConfig(RuleTest target, BlockState state, int size) {
 		this.size = size;
 		this.state = state;
-		this.target = ruleTest;
+		this.target = target;
 	}
 
 	public static final class Rules {

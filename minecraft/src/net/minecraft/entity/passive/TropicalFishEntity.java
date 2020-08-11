@@ -211,9 +211,9 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		if (entityTag != null && entityTag.contains("BucketVariantTag", 3)) {
 			this.setVariant(entityTag.getInt("BucketVariantTag"));
 			return entityData;

@@ -247,7 +247,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				this.client.getProfiler().push("pick");
 				this.client.targetedEntity = null;
 				double d = (double)this.client.interactionManager.getReachDistance();
-				this.client.crosshairTarget = entity.rayTrace(d, tickDelta, false);
+				this.client.crosshairTarget = entity.raycast(d, tickDelta, false);
 				Vec3d vec3d = entity.getCameraPosVec(tickDelta);
 				boolean bl = false;
 				int i = 3;
@@ -272,7 +272,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
 				float f = 1.0F;
 				Box box = entity.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
-				EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.collides(), e);
+				EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.collides(), e);
 				if (entityHitResult != null) {
 					Entity entity2 = entityHitResult.getEntity();
 					Vec3d vec3d4 = entityHitResult.getPos();

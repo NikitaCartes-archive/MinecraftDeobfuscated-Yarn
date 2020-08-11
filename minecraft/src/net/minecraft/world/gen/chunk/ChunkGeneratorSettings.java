@@ -105,6 +105,11 @@ public final class ChunkGeneratorSettings {
 		return this.seaLevel;
 	}
 
+	/**
+	 * Whether entities will be generated during chunk population.
+	 * 
+	 * <p>It does not control whether spawns will occur during gameplay.
+	 */
 	@Deprecated
 	protected boolean isMobGenerationDisabled() {
 		return this.mobGenerationDisabled;

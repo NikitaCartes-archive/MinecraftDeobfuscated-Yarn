@@ -59,7 +59,7 @@ public class ClearCommand {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			i += serverPlayerEntity.inventory.method_29280(item, maxCount, serverPlayerEntity.playerScreenHandler.method_29281());
+			i += serverPlayerEntity.inventory.remove(item, maxCount, serverPlayerEntity.playerScreenHandler.method_29281());
 			serverPlayerEntity.currentScreenHandler.sendContentUpdates();
 			serverPlayerEntity.playerScreenHandler.onContentChanged(serverPlayerEntity.inventory);
 			serverPlayerEntity.updateCursorStack();

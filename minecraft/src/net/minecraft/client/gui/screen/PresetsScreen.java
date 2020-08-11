@@ -33,7 +33,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltInBiomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import net.minecraft.world.gen.chunk.StructureConfig;
@@ -123,20 +123,20 @@ public class PresetsScreen extends Screen {
 			if (list.isEmpty()) {
 				return FlatChunkGeneratorConfig.getDefaultConfig(registry);
 			} else {
-				FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getConfig());
-				RegistryKey<Biome> registryKey = BuiltInBiomes.PLAINS;
+				FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getStructuresConfig());
+				RegistryKey<Biome> registryKey = BiomeKeys.PLAINS;
 				if (iterator.hasNext()) {
 					try {
 						Identifier identifier = new Identifier((String)iterator.next());
 						registryKey = RegistryKey.of(Registry.BIOME_KEY, identifier);
-						registry.method_31189(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
+						registry.getOrEmpty(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
 					} catch (Exception var8) {
 						field_25043.error("Error while parsing flat world string => {}", var8.getMessage());
 					}
 				}
 
 				RegistryKey<Biome> registryKey2 = registryKey;
-				flatChunkGeneratorConfig2.setBiome(() -> registry.method_31140(registryKey2));
+				flatChunkGeneratorConfig2.setBiome(() -> registry.getOrThrow(registryKey2));
 				return flatChunkGeneratorConfig2;
 			}
 		}
@@ -248,20 +248,20 @@ public class PresetsScreen extends Screen {
 			StructuresConfig structuresConfig = new StructuresConfig(bl ? Optional.of(StructuresConfig.DEFAULT_STRONGHOLD) : Optional.empty(), map);
 			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, registry);
 			if (bl2) {
-				flatChunkGeneratorConfig.method_28911();
+				flatChunkGeneratorConfig.enableFeatures();
 			}
 
 			if (bl3) {
-				flatChunkGeneratorConfig.method_28916();
+				flatChunkGeneratorConfig.enableLakes();
 			}
 
 			for (int i = flatChunkGeneratorLayers.length - 1; i >= 0; i--) {
 				flatChunkGeneratorConfig.getLayers().add(flatChunkGeneratorLayers[i]);
 			}
 
-			flatChunkGeneratorConfig.setBiome(() -> registry.method_31140(registryKey));
+			flatChunkGeneratorConfig.setBiome(() -> registry.getOrThrow(registryKey));
 			flatChunkGeneratorConfig.updateLayerBlocks();
-			return flatChunkGeneratorConfig.method_28912(structuresConfig);
+			return flatChunkGeneratorConfig.withStructuresConfig(structuresConfig);
 		}));
 	}
 
@@ -269,7 +269,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.classic_flat"),
 			Blocks.GRASS_BLOCK,
-			BuiltInBiomes.PLAINS,
+			BiomeKeys.PLAINS,
 			Arrays.asList(StructureFeature.VILLAGE),
 			false,
 			false,
@@ -281,7 +281,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.tunnelers_dream"),
 			Blocks.STONE,
-			BuiltInBiomes.MOUNTAINS,
+			BiomeKeys.MOUNTAINS,
 			Arrays.asList(StructureFeature.MINESHAFT),
 			true,
 			true,
@@ -294,7 +294,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.water_world"),
 			Items.WATER_BUCKET,
-			BuiltInBiomes.DEEP_OCEAN,
+			BiomeKeys.DEEP_OCEAN,
 			Arrays.asList(StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK, StructureFeature.MONUMENT),
 			false,
 			false,
@@ -308,7 +308,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.overworld"),
 			Blocks.GRASS,
-			BuiltInBiomes.PLAINS,
+			BiomeKeys.PLAINS,
 			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.MINESHAFT, StructureFeature.PILLAGER_OUTPOST, StructureFeature.RUINED_PORTAL),
 			true,
 			true,
@@ -321,7 +321,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.snowy_kingdom"),
 			Blocks.SNOW,
-			BuiltInBiomes.SNOWY_TUNDRA,
+			BiomeKeys.SNOWY_TUNDRA,
 			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.IGLOO),
 			false,
 			false,
@@ -335,7 +335,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.bottomless_pit"),
 			Items.FEATHER,
-			BuiltInBiomes.PLAINS,
+			BiomeKeys.PLAINS,
 			Arrays.asList(StructureFeature.VILLAGE),
 			false,
 			false,
@@ -347,7 +347,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.desert"),
 			Blocks.SAND,
-			BuiltInBiomes.DESERT,
+			BiomeKeys.DESERT,
 			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.DESERT_PYRAMID, StructureFeature.MINESHAFT),
 			true,
 			true,
@@ -360,7 +360,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.redstone_ready"),
 			Items.REDSTONE,
-			BuiltInBiomes.DESERT,
+			BiomeKeys.DESERT,
 			Collections.emptyList(),
 			false,
 			false,
@@ -372,7 +372,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.the_void"),
 			Blocks.BARRIER,
-			BuiltInBiomes.THE_VOID,
+			BiomeKeys.THE_VOID,
 			Collections.emptyList(),
 			false,
 			true,

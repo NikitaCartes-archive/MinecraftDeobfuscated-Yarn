@@ -81,9 +81,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.client
 						.execute(
 							() -> ConnectScreen.this.client
-									.openScreen(
-										new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", "Unknown host"))
-									)
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", "Unknown host")))
 						);
 				} catch (Exception var5) {
 					if (ConnectScreen.this.connectingCancelled) {
@@ -95,7 +93,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.client
 						.execute(
 							() -> ConnectScreen.this.client
-									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", string)))
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", string)))
 						);
 				}
 			}

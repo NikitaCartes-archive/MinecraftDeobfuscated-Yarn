@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class DarkOakFoliagePlacer extends FoliagePlacer {
 	public static final Codec<DarkOakFoliagePlacer> CODEC = RecordCodecBuilder.create(
-		instance -> method_30411(instance).apply(instance, DarkOakFoliagePlacer::new)
+		instance -> fillFoliagePlacerFields(instance).apply(instance, DarkOakFoliagePlacer::new)
 	);
 
 	public DarkOakFoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2) {
@@ -34,26 +34,26 @@ public class DarkOakFoliagePlacer extends FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i,
-		BlockBox blockBox
+		int offset,
+		BlockBox box
 	) {
-		BlockPos blockPos = treeNode.getCenter().up(i);
+		BlockPos blockPos = treeNode.getCenter().up(offset);
 		boolean bl = treeNode.isGiantTrunk();
 		if (bl) {
-			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, blockBox);
-			this.generate(world, random, config, blockPos, radius + 3, leaves, 0, bl, blockBox);
-			this.generate(world, random, config, blockPos, radius + 2, leaves, 1, bl, blockBox);
+			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
+			this.generate(world, random, config, blockPos, radius + 3, leaves, 0, bl, box);
+			this.generate(world, random, config, blockPos, radius + 2, leaves, 1, bl, box);
 			if (random.nextBoolean()) {
-				this.generate(world, random, config, blockPos, radius, leaves, 2, bl, blockBox);
+				this.generate(world, random, config, blockPos, radius, leaves, 2, bl, box);
 			}
 		} else {
-			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, blockBox);
-			this.generate(world, random, config, blockPos, radius + 1, leaves, 0, bl, blockBox);
+			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
+			this.generate(world, random, config, blockPos, radius + 1, leaves, 0, bl, box);
 		}
 	}
 
 	@Override
-	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
+	public int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
 		return 4;
 	}
 
@@ -63,8 +63,8 @@ public class DarkOakFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
-		if (dx == -1 && !bl) {
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
+		if (dx == -1 && !giantTrunk) {
 			return baseHeight == dz && dy == dz;
 		} else {
 			return dx == 1 ? baseHeight + dy > dz * 2 - 2 : false;

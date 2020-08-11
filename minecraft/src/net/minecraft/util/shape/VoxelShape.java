@@ -139,7 +139,7 @@ public abstract class VoxelShape {
 	}
 
 	@Nullable
-	public BlockHitResult rayTrace(Vec3d start, Vec3d end, BlockPos pos) {
+	public BlockHitResult raycast(Vec3d start, Vec3d end, BlockPos pos) {
 		if (this.isEmpty()) {
 			return null;
 		} else {
@@ -150,7 +150,7 @@ public abstract class VoxelShape {
 				Vec3d vec3d2 = start.add(vec3d.multiply(0.001));
 				return this.contains(vec3d2.x - (double)pos.getX(), vec3d2.y - (double)pos.getY(), vec3d2.z - (double)pos.getZ())
 					? new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z).getOpposite(), pos, true)
-					: Box.rayTrace(this.getBoundingBoxes(), start, end, pos);
+					: Box.raycast(this.getBoundingBoxes(), start, end, pos);
 			}
 		}
 	}

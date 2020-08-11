@@ -22,10 +22,11 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
 
 public class PointOfInterestType {
-	private static final Supplier<Set<PointOfInterestType>> field_25163 = Suppliers.memoize(
+	private static final Supplier<Set<PointOfInterestType>> VILLAGER_WORKSTATIONS = Suppliers.memoize(
 		() -> (Set<PointOfInterestType>)Registry.VILLAGER_PROFESSION.stream().map(VillagerProfession::getWorkStation).collect(Collectors.toSet())
 	);
-	public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> ((Set)field_25163.get()).contains(pointOfInterestType);
+	public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> ((Set)VILLAGER_WORKSTATIONS.get())
+			.contains(pointOfInterestType);
 	public static final Predicate<PointOfInterestType> ALWAYS_TRUE = pointOfInterestType -> true;
 	private static final Set<BlockState> BED_STATES = (Set<BlockState>)ImmutableList.of(
 			Blocks.RED_BED,
@@ -71,7 +72,7 @@ public class PointOfInterestType {
 	public static final PointOfInterestType BEE_NEST = register("bee_nest", getAllStatesOf(Blocks.BEE_NEST), 0, 1);
 	public static final PointOfInterestType NETHER_PORTAL = register("nether_portal", getAllStatesOf(Blocks.NETHER_PORTAL), 0, 1);
 	public static final PointOfInterestType LODESTONE = register("lodestone", getAllStatesOf(Blocks.LODESTONE), 0, 1);
-	protected static final Set<BlockState> field_25162 = new ObjectOpenHashSet<>(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.keySet());
+	protected static final Set<BlockState> REGISTERED_STATES = new ObjectOpenHashSet<>(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.keySet());
 	private final String id;
 	private final Set<BlockState> blockStates;
 	private final int ticketCount;

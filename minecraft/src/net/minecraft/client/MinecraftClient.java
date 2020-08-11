@@ -303,8 +303,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static byte[] memoryReservedForCrash = new byte[10485760];
 	@Nullable
 	public ClientPlayerInteractionManager interactionManager;
+	/**
+	 * Represents the world the client is currently viewing.
+	 * This field is not null when in game.
+	 */
 	@Nullable
 	public ClientWorld world;
+	/**
+	 * Represents the client's own player.
+	 * This field is not null when in game.
+	 */
 	@Nullable
 	public ClientPlayerEntity player;
 	@Nullable
@@ -793,9 +801,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.levelStorage;
 	}
 
-	private void method_29041(String string) {
+	private void openChatScreen(String text) {
 		if (this.isInSingleplayer() || this.isOnlineChatEnabled()) {
-			this.openScreen(new ChatScreen(string));
+			this.openScreen(new ChatScreen(text));
 		} else if (this.player != null) {
 			this.player.sendSystemMessage(new TranslatableText("chat.cannotSend").formatted(Formatting.RED), Util.NIL_UUID);
 		}
@@ -1535,11 +1543,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		boolean bl3 = this.options.chatVisibility != ChatVisibility.HIDDEN;
 		if (bl3) {
 			while (this.options.keyChat.wasPressed()) {
-				this.method_29041("");
+				this.openChatScreen("");
 			}
 
 			if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
-				this.method_29041("/");
+				this.openChatScreen("/");
 			}
 		}
 
@@ -1669,7 +1677,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
 		boolean bl = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
-		boolean bl2 = saveProperties.method_29588() != Lifecycle.stable();
+		boolean bl2 = saveProperties.getLifecycle() != Lifecycle.stable();
 		if (worldLoadAction == MinecraftClient.WorldLoadAction.NONE || !bl && !bl2) {
 			this.disconnect();
 			this.worldGenProgressTracker.set(null);

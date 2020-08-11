@@ -14,15 +14,15 @@ import net.minecraft.world.gen.trunk.TrunkPlacer;
 public class TreeFeatureConfig implements FeatureConfig {
 	public static final Codec<TreeFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockStateProvider.CODEC.fieldOf("trunk_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkProvider),
-					BlockStateProvider.CODEC.fieldOf("leaves_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.leavesProvider),
-					FoliagePlacer.CODEC.fieldOf("foliage_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.foliagePlacer),
+					BlockStateProvider.TYPE_CODEC.fieldOf("trunk_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkProvider),
+					BlockStateProvider.TYPE_CODEC.fieldOf("leaves_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.leavesProvider),
+					FoliagePlacer.TYPE_CODEC.fieldOf("foliage_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.foliagePlacer),
 					TrunkPlacer.CODEC.fieldOf("trunk_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkPlacer),
-					FeatureSize.CODEC.fieldOf("minimum_size").forGetter(treeFeatureConfig -> treeFeatureConfig.minimumSize),
+					FeatureSize.TYPE_CODEC.fieldOf("minimum_size").forGetter(treeFeatureConfig -> treeFeatureConfig.minimumSize),
 					TreeDecorator.TYPE_CODEC.listOf().fieldOf("decorators").forGetter(treeFeatureConfig -> treeFeatureConfig.decorators),
 					Codec.INT.fieldOf("max_water_depth").orElse(0).forGetter(treeFeatureConfig -> treeFeatureConfig.maxWaterDepth),
 					Codec.BOOL.fieldOf("ignore_vines").orElse(false).forGetter(treeFeatureConfig -> treeFeatureConfig.ignoreVines),
-					Heightmap.Type.field_24772.fieldOf("heightmap").forGetter(treeFeatureConfig -> treeFeatureConfig.heightmap)
+					Heightmap.Type.CODEC.fieldOf("heightmap").forGetter(treeFeatureConfig -> treeFeatureConfig.heightmap)
 				)
 				.apply(instance, TreeFeatureConfig::new)
 	);

@@ -245,7 +245,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			if (namedScreenHandlerFactory != null) {
 				player.openHandledScreen(namedScreenHandlerFactory);
 				player.incrementStat(this.getOpenStat());
-				PiglinBrain.onGuardedBlockBroken(player, true);
+				PiglinBrain.onGuardedBlockInteracted(player, true);
 			}
 
 			return ActionResult.CONSUME;

@@ -97,7 +97,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
 		return null;
 	}
 

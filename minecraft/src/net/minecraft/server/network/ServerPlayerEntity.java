@@ -207,7 +207,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				BlockPos blockPos2 = SpawnLocating.findOverworldSpawn(world, blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
 				if (blockPos2 != null) {
 					this.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
-					if (world.doesNotCollide(this)) {
+					if (world.isSpaceEmpty(this)) {
 						break;
 					}
 				}
@@ -215,7 +215,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		} else {
 			this.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
 
-			while (!world.doesNotCollide(this) && this.getY() < 255.0) {
+			while (!world.isSpaceEmpty(this) && this.getY() < 255.0) {
 				this.updatePosition(this.getX(), this.getY() + 1.0, this.getZ());
 			}
 		}

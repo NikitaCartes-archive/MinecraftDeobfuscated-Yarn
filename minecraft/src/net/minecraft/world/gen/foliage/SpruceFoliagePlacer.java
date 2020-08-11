@@ -11,18 +11,16 @@ import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class SpruceFoliagePlacer extends FoliagePlacer {
-	public static final Codec<SpruceFoliagePlacer> field_24936 = RecordCodecBuilder.create(
-		instance -> method_30411(instance)
+	public static final Codec<SpruceFoliagePlacer> CODEC = RecordCodecBuilder.create(
+		instance -> fillFoliagePlacerFields(instance)
 				.and(UniformIntDistribution.createValidatedCodec(0, 16, 8).fieldOf("trunk_height").forGetter(spruceFoliagePlacer -> spruceFoliagePlacer.trunkHeight))
 				.apply(instance, SpruceFoliagePlacer::new)
 	);
 	private final UniformIntDistribution trunkHeight;
 
-	public SpruceFoliagePlacer(
-		UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2, UniformIntDistribution uniformIntDistribution3
-	) {
-		super(uniformIntDistribution, uniformIntDistribution2);
-		this.trunkHeight = uniformIntDistribution3;
+	public SpruceFoliagePlacer(UniformIntDistribution radius, UniformIntDistribution offset, UniformIntDistribution trunkHeight) {
+		super(radius, offset);
+		this.trunkHeight = trunkHeight;
 	}
 
 	@Override
@@ -40,33 +38,33 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i,
-		BlockBox blockBox
+		int offset,
+		BlockBox box
 	) {
 		BlockPos blockPos = treeNode.getCenter();
-		int j = random.nextInt(2);
-		int k = 1;
-		int l = 0;
+		int i = random.nextInt(2);
+		int j = 1;
+		int k = 0;
 
-		for (int m = i; m >= -foliageHeight; m--) {
-			this.generate(world, random, config, blockPos, j, leaves, m, treeNode.isGiantTrunk(), blockBox);
-			if (j >= k) {
-				j = l;
-				l = 1;
-				k = Math.min(k + 1, radius + treeNode.getFoliageRadius());
+		for (int l = offset; l >= -foliageHeight; l--) {
+			this.generate(world, random, config, blockPos, i, leaves, l, treeNode.isGiantTrunk(), box);
+			if (i >= j) {
+				i = k;
+				k = 1;
+				j = Math.min(j + 1, radius + treeNode.getFoliageRadius());
 			} else {
-				j++;
+				i++;
 			}
 		}
 	}
 
 	@Override
-	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
+	public int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
 		return Math.max(4, trunkHeight - this.trunkHeight.getValue(random));
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
 		return baseHeight == dz && dy == dz && dz > 0;
 	}
 }

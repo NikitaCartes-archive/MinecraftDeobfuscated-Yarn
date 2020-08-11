@@ -38,7 +38,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class Item implements ItemConvertible {
@@ -246,7 +246,7 @@ public class Item implements ItemConvertible {
 		return this.getMaxCount() == 1 && this.isDamageable();
 	}
 
-	protected static BlockHitResult rayTrace(World world, PlayerEntity player, RayTraceContext.FluidHandling fluidHandling) {
+	protected static BlockHitResult raycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling) {
 		float f = player.pitch;
 		float g = player.yaw;
 		Vec3d vec3d = player.getCameraPosVec(1.0F);
@@ -258,7 +258,7 @@ public class Item implements ItemConvertible {
 		float n = h * j;
 		double d = 5.0;
 		Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double)k * 5.0, (double)n * 5.0);
-		return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, fluidHandling, player));
+		return world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
 	}
 
 	public int getEnchantability() {

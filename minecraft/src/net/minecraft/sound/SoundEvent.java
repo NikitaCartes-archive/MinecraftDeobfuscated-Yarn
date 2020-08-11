@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 
 public class SoundEvent {
-	public static final Codec<SoundEvent> field_24628 = Identifier.CODEC.xmap(SoundEvent::new, soundEvent -> soundEvent.id);
+	public static final Codec<SoundEvent> CODEC = Identifier.CODEC.xmap(SoundEvent::new, soundEvent -> soundEvent.id);
 	private final Identifier id;
 
 	public SoundEvent(Identifier id) {

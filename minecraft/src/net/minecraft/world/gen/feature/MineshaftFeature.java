@@ -66,7 +66,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
 				int k = -5;
 				int l = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
-				this.boundingBox.offset(0, l, 0);
+				this.boundingBox.move(0, l, 0);
 
 				for (StructurePiece structurePiece : this.children) {
 					structurePiece.translate(0, l, 0);
@@ -81,8 +81,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		NORMAL("normal"),
 		MESA("mesa");
 
-		public static final Codec<MineshaftFeature.Type> field_24839 = StringIdentifiable.createCodec(MineshaftFeature.Type::values, MineshaftFeature.Type::byName);
-		private static final Map<String, MineshaftFeature.Type> nameMap = (Map<String, MineshaftFeature.Type>)Arrays.stream(values())
+		public static final Codec<MineshaftFeature.Type> CODEC = StringIdentifiable.createCodec(MineshaftFeature.Type::values, MineshaftFeature.Type::byName);
+		private static final Map<String, MineshaftFeature.Type> BY_NAME = (Map<String, MineshaftFeature.Type>)Arrays.stream(values())
 			.collect(Collectors.toMap(MineshaftFeature.Type::getName, type -> type));
 		private final String name;
 
@@ -94,8 +94,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			return this.name;
 		}
 
-		private static MineshaftFeature.Type byName(String nam) {
-			return (MineshaftFeature.Type)nameMap.get(nam);
+		private static MineshaftFeature.Type byName(String name) {
+			return (MineshaftFeature.Type)BY_NAME.get(name);
 		}
 
 		public static MineshaftFeature.Type byIndex(int index) {

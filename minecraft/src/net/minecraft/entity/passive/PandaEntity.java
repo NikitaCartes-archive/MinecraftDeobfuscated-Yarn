@@ -230,10 +230,10 @@ public class PandaEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		PandaEntity pandaEntity = EntityType.PANDA.create(serverWorld);
-		if (passiveEntity instanceof PandaEntity) {
-			pandaEntity.initGenes(this, (PandaEntity)passiveEntity);
+	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+		PandaEntity pandaEntity = EntityType.PANDA.create(world);
+		if (entity instanceof PandaEntity) {
+			pandaEntity.initGenes(this, (PandaEntity)entity);
 		}
 
 		pandaEntity.resetAttributes();
@@ -529,7 +529,7 @@ public class PandaEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
@@ -538,7 +538,7 @@ public class PandaEntity extends AnimalEntity {
 			entityData = new PassiveEntity.PassiveData(0.2F);
 		}
 
-		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public void initGenes(PandaEntity mother, @Nullable PandaEntity father) {

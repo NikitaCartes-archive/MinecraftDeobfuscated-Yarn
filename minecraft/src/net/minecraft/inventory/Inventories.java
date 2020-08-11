@@ -54,31 +54,43 @@ public class Inventories {
 		}
 	}
 
-	public static int method_29234(Inventory inventory, Predicate<ItemStack> predicate, int i, boolean bl) {
-		int j = 0;
+	/**
+	 * Removes a number, not exceeding {@code maxCount}, of items from an inventory based on a predicate and returns that number.
+	 * @return the number of items removed
+	 * 
+	 * @param dryRun whether to return the number of items which would have been removed without actually removing them
+	 */
+	public static int remove(Inventory inventory, Predicate<ItemStack> shouldRemove, int maxCount, boolean dryRun) {
+		int i = 0;
 
-		for (int k = 0; k < inventory.size(); k++) {
-			ItemStack itemStack = inventory.getStack(k);
-			int l = method_29235(itemStack, predicate, i - j, bl);
-			if (l > 0 && !bl && itemStack.isEmpty()) {
-				inventory.setStack(k, ItemStack.EMPTY);
+		for (int j = 0; j < inventory.size(); j++) {
+			ItemStack itemStack = inventory.getStack(j);
+			int k = remove(itemStack, shouldRemove, maxCount - i, dryRun);
+			if (k > 0 && !dryRun && itemStack.isEmpty()) {
+				inventory.setStack(j, ItemStack.EMPTY);
 			}
 
-			j += l;
+			i += k;
 		}
 
-		return j;
+		return i;
 	}
 
-	public static int method_29235(ItemStack itemStack, Predicate<ItemStack> predicate, int i, boolean bl) {
-		if (itemStack.isEmpty() || !predicate.test(itemStack)) {
+	/**
+	 * Removes a number, not exceeding {@code maxCount}, of items from an item stack based on a predicate and returns that number.
+	 * @return the number of items removed
+	 * 
+	 * @param dryRun whether to return the number of items which would have been removed without actually removing them
+	 */
+	public static int remove(ItemStack stack, Predicate<ItemStack> shouldRemove, int maxCount, boolean dryRun) {
+		if (stack.isEmpty() || !shouldRemove.test(stack)) {
 			return 0;
-		} else if (bl) {
-			return itemStack.getCount();
+		} else if (dryRun) {
+			return stack.getCount();
 		} else {
-			int j = i < 0 ? itemStack.getCount() : Math.min(i, itemStack.getCount());
-			itemStack.decrement(j);
-			return j;
+			int i = maxCount < 0 ? stack.getCount() : Math.min(maxCount, stack.getCount());
+			stack.decrement(i);
+			return i;
 		}
 	}
 }

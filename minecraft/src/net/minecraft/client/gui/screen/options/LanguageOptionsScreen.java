@@ -39,7 +39,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		this.forceUnicodeButton = this.addButton(
 			new OptionButtonWidget(
 				this.width / 2 - 155, this.height - 38, 150, 20, Option.FORCE_UNICODE_FONT, Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions), buttonWidget -> {
-					Option.FORCE_UNICODE_FONT.set(this.gameOptions);
+					Option.FORCE_UNICODE_FONT.toggle(this.gameOptions);
 					this.gameOptions.write();
 					buttonWidget.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
 					this.client.onResolutionChanged();

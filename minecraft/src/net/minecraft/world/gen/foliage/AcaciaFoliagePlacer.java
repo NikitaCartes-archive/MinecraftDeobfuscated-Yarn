@@ -11,7 +11,9 @@ import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class AcaciaFoliagePlacer extends FoliagePlacer {
-	public static final Codec<AcaciaFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> method_30411(instance).apply(instance, AcaciaFoliagePlacer::new));
+	public static final Codec<AcaciaFoliagePlacer> CODEC = RecordCodecBuilder.create(
+		instance -> fillFoliagePlacerFields(instance).apply(instance, AcaciaFoliagePlacer::new)
+	);
 
 	public AcaciaFoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2) {
 		super(uniformIntDistribution, uniformIntDistribution2);
@@ -32,23 +34,23 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i,
-		BlockBox blockBox
+		int offset,
+		BlockBox box
 	) {
 		boolean bl = treeNode.isGiantTrunk();
-		BlockPos blockPos = treeNode.getCenter().up(i);
-		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius(), leaves, -1 - foliageHeight, bl, blockBox);
-		this.generate(world, random, config, blockPos, radius - 1, leaves, -foliageHeight, bl, blockBox);
-		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, leaves, 0, bl, blockBox);
+		BlockPos blockPos = treeNode.getCenter().up(offset);
+		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius(), leaves, -1 - foliageHeight, bl, box);
+		this.generate(world, random, config, blockPos, radius - 1, leaves, -foliageHeight, bl, box);
+		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, leaves, 0, bl, box);
 	}
 
 	@Override
-	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
+	public int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
 		return 0;
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
 		return dx == 0 ? (baseHeight > 1 || dy > 1) && baseHeight != 0 && dy != 0 : baseHeight == dz && dy == dz && dz > 0;
 	}
 }

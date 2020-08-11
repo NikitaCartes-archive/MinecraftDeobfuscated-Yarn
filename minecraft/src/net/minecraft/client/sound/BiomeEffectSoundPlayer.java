@@ -65,7 +65,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 
 		this.additionsSound.ifPresent(biomeAdditionsSound -> {
 			if (this.random.nextDouble() < biomeAdditionsSound.getChance()) {
-				this.soundManager.play(PositionedSoundInstance.ambient(biomeAdditionsSound.getEvent()));
+				this.soundManager.play(PositionedSoundInstance.ambient(biomeAdditionsSound.getSound()));
 			}
 		});
 		this.moodSound
@@ -95,7 +95,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 						double l = (double)MathHelper.sqrt(g * g + h * h + k * k);
 						double m = l + biomeMoodSound.getExtraDistance();
 						PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(
-							biomeMoodSound.getEvent(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m
+							biomeMoodSound.getSound(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m
 						);
 						this.soundManager.play(positionedSoundInstance);
 						this.moodPercentage = 0.0F;
