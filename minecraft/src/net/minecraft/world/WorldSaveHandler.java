@@ -21,7 +21,7 @@ public class WorldSaveHandler {
 
 	public WorldSaveHandler(LevelStorage.Session session, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
-		this.playerDataDir = session.getDirectory(WorldSavePath.field_24182).toFile();
+		this.playerDataDir = session.getDirectory(WorldSavePath.PLAYERDATA).toFile();
 		this.playerDataDir.mkdirs();
 	}
 
@@ -29,7 +29,7 @@ public class WorldSaveHandler {
 		try {
 			CompoundTag compoundTag = playerEntity.toTag(new CompoundTag());
 			File file = File.createTempFile(playerEntity.getUuidAsString() + "-", ".dat", this.playerDataDir);
-			NbtIo.method_30614(compoundTag, file);
+			NbtIo.writeCompressed(compoundTag, file);
 			File file2 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
 			File file3 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat_old");
 			Util.backupAndReplace(file2, file, file3);
@@ -45,7 +45,7 @@ public class WorldSaveHandler {
 		try {
 			File file = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
 			if (file.exists() && file.isFile()) {
-				compoundTag = NbtIo.method_30613(file);
+				compoundTag = NbtIo.readCompressed(file);
 			}
 		} catch (Exception var4) {
 			LOGGER.warn("Failed to load player data for {}", playerEntity.getName().getString());
@@ -53,7 +53,7 @@ public class WorldSaveHandler {
 
 		if (compoundTag != null) {
 			int i = compoundTag.contains("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
-			playerEntity.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.field_19213, compoundTag, i));
+			playerEntity.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
 		}
 
 		return compoundTag;

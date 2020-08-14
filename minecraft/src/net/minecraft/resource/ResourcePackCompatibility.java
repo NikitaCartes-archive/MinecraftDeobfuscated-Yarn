@@ -7,9 +7,9 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum ResourcePackCompatibility {
-	field_14223("old"),
-	field_14220("new"),
-	field_14224("compatible");
+	TOO_OLD("old"),
+	TOO_NEW("new"),
+	COMPATIBLE("compatible");
 
 	private final Text notification;
 	private final Text confirmMessage;
@@ -20,14 +20,14 @@ public enum ResourcePackCompatibility {
 	}
 
 	public boolean isCompatible() {
-		return this == field_14224;
+		return this == COMPATIBLE;
 	}
 
 	public static ResourcePackCompatibility from(int packVersion) {
 		if (packVersion < SharedConstants.getGameVersion().getPackVersion()) {
-			return field_14223;
+			return TOO_OLD;
 		} else {
-			return packVersion > SharedConstants.getGameVersion().getPackVersion() ? field_14220 : field_14224;
+			return packVersion > SharedConstants.getGameVersion().getPackVersion() ? TOO_NEW : COMPATIBLE;
 		}
 	}
 

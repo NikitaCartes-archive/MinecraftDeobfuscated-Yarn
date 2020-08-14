@@ -83,31 +83,31 @@ public class ClientRecipeBook extends RecipeBook {
 			ItemStack itemStack = recipe.getOutput();
 			ItemGroup itemGroup = itemStack.getItem().getGroup();
 			if (itemGroup == ItemGroup.BUILDING_BLOCKS) {
-				return RecipeBookGroup.field_1806;
+				return RecipeBookGroup.CRAFTING_BUILDING_BLOCKS;
 			} else if (itemGroup == ItemGroup.TOOLS || itemGroup == ItemGroup.COMBAT) {
-				return RecipeBookGroup.field_1813;
+				return RecipeBookGroup.CRAFTING_EQUIPMENT;
 			} else {
-				return itemGroup == ItemGroup.REDSTONE ? RecipeBookGroup.field_1803 : RecipeBookGroup.field_1810;
+				return itemGroup == ItemGroup.REDSTONE ? RecipeBookGroup.CRAFTING_REDSTONE : RecipeBookGroup.CRAFTING_MISC;
 			}
 		} else if (recipeType == RecipeType.SMELTING) {
 			if (recipe.getOutput().getItem().isFood()) {
-				return RecipeBookGroup.field_1808;
+				return RecipeBookGroup.FURNACE_FOOD;
 			} else {
-				return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.field_1811 : RecipeBookGroup.field_1812;
+				return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.FURNACE_BLOCKS : RecipeBookGroup.FURNACE_MISC;
 			}
 		} else if (recipeType == RecipeType.BLASTING) {
-			return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.field_17111 : RecipeBookGroup.field_17112;
+			return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.BLAST_FURNACE_BLOCKS : RecipeBookGroup.BLAST_FURNACE_MISC;
 		} else if (recipeType == RecipeType.SMOKING) {
-			return RecipeBookGroup.field_17114;
-		} else if (recipeType == RecipeType.field_17641) {
-			return RecipeBookGroup.field_17764;
+			return RecipeBookGroup.SMOKER_FOOD;
+		} else if (recipeType == RecipeType.STONECUTTING) {
+			return RecipeBookGroup.STONECUTTER;
 		} else if (recipeType == RecipeType.CAMPFIRE_COOKING) {
-			return RecipeBookGroup.field_17765;
-		} else if (recipeType == RecipeType.field_25388) {
-			return RecipeBookGroup.field_25624;
+			return RecipeBookGroup.CAMPFIRE;
+		} else if (recipeType == RecipeType.SMITHING) {
+			return RecipeBookGroup.SMITHING;
 		} else {
 			field_25622.warn("Unknown recipe category: {}/{}", () -> Registry.RECIPE_TYPE.getId(recipe.getType()), recipe::getId);
-			return RecipeBookGroup.field_25625;
+			return RecipeBookGroup.UNKNOWN;
 		}
 	}
 

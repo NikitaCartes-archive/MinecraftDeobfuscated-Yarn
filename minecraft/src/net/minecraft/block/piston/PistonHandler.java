@@ -30,7 +30,7 @@ public class PistonHandler {
 			this.posTo = pos.offset(dir);
 		} else {
 			this.motionDirection = dir.getOpposite();
-			this.posTo = pos.method_10079(dir, 2);
+			this.posTo = pos.offset(dir, 2);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class PistonHandler {
 		this.brokenBlocks.clear();
 		BlockState blockState = this.world.getBlockState(this.posTo);
 		if (!PistonBlock.isMovable(blockState, this.world, this.posTo, this.motionDirection, false, this.pistonDirection)) {
-			if (this.retracted && blockState.getPistonBehavior() == PistonBehavior.field_15971) {
+			if (this.retracted && blockState.getPistonBehavior() == PistonBehavior.DESTROY) {
 				this.brokenBlocks.add(this.posTo);
 				return true;
 			} else {
@@ -60,14 +60,14 @@ public class PistonHandler {
 	}
 
 	private static boolean isBlockSticky(Block block) {
-		return block == Blocks.field_10030 || block == Blocks.field_21211;
+		return block == Blocks.SLIME_BLOCK || block == Blocks.HONEY_BLOCK;
 	}
 
 	private static boolean isAdjacentBlockStuck(Block block, Block block2) {
-		if (block == Blocks.field_21211 && block2 == Blocks.field_10030) {
+		if (block == Blocks.HONEY_BLOCK && block2 == Blocks.SLIME_BLOCK) {
 			return false;
 		} else {
-			return block == Blocks.field_10030 && block2 == Blocks.field_21211 ? false : isBlockSticky(block) || isBlockSticky(block2);
+			return block == Blocks.SLIME_BLOCK && block2 == Blocks.HONEY_BLOCK ? false : isBlockSticky(block) || isBlockSticky(block2);
 		}
 	}
 
@@ -88,7 +88,7 @@ public class PistonHandler {
 				return false;
 			} else {
 				while (isBlockSticky(block)) {
-					BlockPos blockPos = pos.method_10079(this.motionDirection.getOpposite(), i);
+					BlockPos blockPos = pos.offset(this.motionDirection.getOpposite(), i);
 					Block block2 = block;
 					blockState = this.world.getBlockState(blockPos);
 					block = blockState.getBlock();
@@ -107,14 +107,14 @@ public class PistonHandler {
 				int j = 0;
 
 				for (int k = i - 1; k >= 0; k--) {
-					this.movedBlocks.add(pos.method_10079(this.motionDirection.getOpposite(), k));
+					this.movedBlocks.add(pos.offset(this.motionDirection.getOpposite(), k));
 					j++;
 				}
 
 				int k = 1;
 
 				while (true) {
-					BlockPos blockPos2 = pos.method_10079(this.motionDirection, k);
+					BlockPos blockPos2 = pos.offset(this.motionDirection, k);
 					int l = this.movedBlocks.indexOf(blockPos2);
 					if (l > -1) {
 						this.setMovedBlocks(j, l);
@@ -138,7 +138,7 @@ public class PistonHandler {
 						return false;
 					}
 
-					if (blockState.getPistonBehavior() == PistonBehavior.field_15971) {
+					if (blockState.getPistonBehavior() == PistonBehavior.DESTROY) {
 						this.brokenBlocks.add(blockPos2);
 						return true;
 					}

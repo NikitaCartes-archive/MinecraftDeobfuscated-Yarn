@@ -24,11 +24,11 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 		this.shadowRadius = 0.5F;
 	}
 
-	public void method_3965(FallingBlockEntity fallingBlockEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(FallingBlockEntity fallingBlockEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		BlockState blockState = fallingBlockEntity.getBlockState();
-		if (blockState.getRenderType() == BlockRenderType.field_11458) {
+		if (blockState.getRenderType() == BlockRenderType.MODEL) {
 			World world = fallingBlockEntity.getWorldClient();
-			if (blockState != world.getBlockState(fallingBlockEntity.getBlockPos()) && blockState.getRenderType() != BlockRenderType.field_11455) {
+			if (blockState != world.getBlockState(fallingBlockEntity.getBlockPos()) && blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 				matrixStack.push();
 				BlockPos blockPos = new BlockPos(fallingBlockEntity.getX(), fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.getZ());
 				matrixStack.translate(-0.5, 0.0, -0.5);
@@ -52,7 +52,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 		}
 	}
 
-	public Identifier method_3964(FallingBlockEntity fallingBlockEntity) {
+	public Identifier getTexture(FallingBlockEntity fallingBlockEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

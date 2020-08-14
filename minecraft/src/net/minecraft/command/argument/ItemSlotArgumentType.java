@@ -51,10 +51,10 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 		hashMap.put("weapon", 98);
 		hashMap.put("weapon.mainhand", 98);
 		hashMap.put("weapon.offhand", 99);
-		hashMap.put("armor.head", 100 + EquipmentSlot.field_6169.getEntitySlotId());
-		hashMap.put("armor.chest", 100 + EquipmentSlot.field_6174.getEntitySlotId());
-		hashMap.put("armor.legs", 100 + EquipmentSlot.field_6172.getEntitySlotId());
-		hashMap.put("armor.feet", 100 + EquipmentSlot.field_6166.getEntitySlotId());
+		hashMap.put("armor.head", 100 + EquipmentSlot.HEAD.getEntitySlotId());
+		hashMap.put("armor.chest", 100 + EquipmentSlot.CHEST.getEntitySlotId());
+		hashMap.put("armor.legs", 100 + EquipmentSlot.LEGS.getEntitySlotId());
+		hashMap.put("armor.feet", 100 + EquipmentSlot.FEET.getEntitySlotId());
 		hashMap.put("horse.saddle", 400);
 		hashMap.put("horse.armor", 401);
 		hashMap.put("horse.chest", 499);
@@ -68,7 +68,7 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 		return context.<Integer>getArgument(name, Integer.class);
 	}
 
-	public Integer method_9470(StringReader stringReader) throws CommandSyntaxException {
+	public Integer parse(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
 		if (!slotNamesToSlotCommandId.containsKey(string)) {
 			throw UNKNOWN_SLOT_EXCEPTION.create(string);

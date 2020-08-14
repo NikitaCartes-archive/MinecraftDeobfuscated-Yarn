@@ -16,40 +16,40 @@ public class MuleEntity extends AbstractDonkeyEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		super.getAmbientSound();
-		return SoundEvents.field_14614;
+		return SoundEvents.ENTITY_MULE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getAngrySound() {
 		super.getAngrySound();
-		return SoundEvents.field_24631;
+		return SoundEvents.ENTITY_MULE_ANGRY;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
 		super.getDeathSound();
-		return SoundEvents.field_15158;
+		return SoundEvents.ENTITY_MULE_DEATH;
 	}
 
 	@Nullable
 	@Override
 	protected SoundEvent getEatSound() {
-		return SoundEvents.field_24632;
+		return SoundEvents.ENTITY_MULE_EAT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
 		super.getHurtSound(source);
-		return SoundEvents.field_14900;
+		return SoundEvents.ENTITY_MULE_HURT;
 	}
 
 	@Override
 	protected void playAddChestSound() {
-		this.playSound(SoundEvents.field_15063, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+		this.playSound(SoundEvents.ENTITY_MULE_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 
 	@Override
 	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.field_6057.create(serverWorld);
+		return EntityType.MULE.create(serverWorld);
 	}
 }

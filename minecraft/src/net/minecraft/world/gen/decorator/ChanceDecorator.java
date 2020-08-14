@@ -10,7 +10,7 @@ public class ChanceDecorator extends SimpleDecorator<ChanceDecoratorConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_14347(Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
 		return random.nextFloat() < 1.0F / (float)chanceDecoratorConfig.chance ? Stream.of(blockPos) : Stream.empty();
 	}
 }

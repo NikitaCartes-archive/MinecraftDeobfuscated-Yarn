@@ -15,7 +15,7 @@ public class CloseScreenS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.syncId = syncId;
 	}
 
-	public void method_11427(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCloseScreen(this);
 	}
 

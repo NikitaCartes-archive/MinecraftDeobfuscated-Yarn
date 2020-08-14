@@ -65,7 +65,7 @@ public class EditWorldScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		ButtonWidget buttonWidget = this.addButton(
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20, new TranslatableText("selectWorld.edit.resetIcon"), buttonWidgetx -> {
 				FileUtils.deleteQuietly(this.field_23777.getIconFile());
@@ -171,7 +171,7 @@ public class EditWorldScreen extends Screen {
 						dataResult2.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure"
 					);
 					dataResult2.error().ifPresent(partialResult -> LOGGER.error("Error exporting world settings: {}", partialResult));
-					this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.field_25039, text2, text));
+					this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
 				}
 			)
 		);
@@ -203,7 +203,7 @@ public class EditWorldScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void commit() {
@@ -245,12 +245,12 @@ public class EditWorldScreen extends Screen {
 		if (iOException != null) {
 			Text text = new TranslatableText("selectWorld.edit.backupFailed");
 			Text text2 = new LiteralText(iOException.getMessage());
-			MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.field_2220, text, text2));
+			MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
 			return false;
 		} else {
 			Text text = new TranslatableText("selectWorld.edit.backupCreated", session.getDirectoryName());
 			Text text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
-			MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.field_2220, text, text2));
+			MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
 			return true;
 		}
 	}

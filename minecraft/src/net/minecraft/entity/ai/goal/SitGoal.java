@@ -9,7 +9,7 @@ public class SitGoal extends Goal {
 
 	public SitGoal(TameableEntity tameable) {
 		this.tameable = tameable;
-		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
 	}
 
 	@Override

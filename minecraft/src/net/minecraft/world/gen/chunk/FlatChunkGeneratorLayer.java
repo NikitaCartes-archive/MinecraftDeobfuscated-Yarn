@@ -11,7 +11,7 @@ public class FlatChunkGeneratorLayer {
 	public static final Codec<FlatChunkGeneratorLayer> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.intRange(0, 256).fieldOf("height").forGetter(FlatChunkGeneratorLayer::getThickness),
-					Registry.BLOCK.fieldOf("block").orElse(Blocks.field_10124).forGetter(flatChunkGeneratorLayer -> flatChunkGeneratorLayer.getBlockState().getBlock())
+					Registry.BLOCK.fieldOf("block").orElse(Blocks.AIR).forGetter(flatChunkGeneratorLayer -> flatChunkGeneratorLayer.getBlockState().getBlock())
 				)
 				.apply(instance, FlatChunkGeneratorLayer::new)
 	);

@@ -44,7 +44,7 @@ public class ConcretePowderBlock extends FallingBlock {
 
 		for (Direction direction : Direction.values()) {
 			BlockState blockState = world.getBlockState(mutable);
-			if (direction != Direction.field_11033 || hardensIn(blockState)) {
+			if (direction != Direction.DOWN || hardensIn(blockState)) {
 				mutable.set(pos, direction);
 				blockState = world.getBlockState(mutable);
 				if (hardensIn(blockState) && !blockState.isSideSolidFullSquare(world, pos, direction.getOpposite())) {
@@ -58,7 +58,7 @@ public class ConcretePowderBlock extends FallingBlock {
 	}
 
 	private static boolean hardensIn(BlockState state) {
-		return state.getFluidState().isIn(FluidTags.field_15517);
+		return state.getFluidState().isIn(FluidTags.WATER);
 	}
 
 	@Override

@@ -42,6 +42,6 @@ public class FireChargeItem extends Item {
 	}
 
 	private void playUseSound(World world, BlockPos pos) {
-		world.playSound(null, pos, SoundEvents.field_15013, SoundCategory.field_15245, 1.0F, (RANDOM.nextFloat() - RANDOM.nextFloat()) * 0.2F + 1.0F);
+		world.playSound(null, pos, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (RANDOM.nextFloat() - RANDOM.nextFloat()) * 0.2F + 1.0F);
 	}
 }

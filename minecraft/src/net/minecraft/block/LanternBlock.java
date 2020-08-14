@@ -38,8 +38,8 @@ public class LanternBlock extends Block implements Waterloggable {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 
 		for (Direction direction : ctx.getPlacementDirections()) {
-			if (direction.getAxis() == Direction.Axis.field_11052) {
-				BlockState blockState = this.getDefaultState().with(HANGING, Boolean.valueOf(direction == Direction.field_11036));
+			if (direction.getAxis() == Direction.Axis.Y) {
+				BlockState blockState = this.getDefaultState().with(HANGING, Boolean.valueOf(direction == Direction.UP));
 				if (blockState.canPlaceAt(ctx.getWorld(), ctx.getBlockPos())) {
 					return blockState.with(field_26441, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 				}
@@ -66,12 +66,12 @@ public class LanternBlock extends Block implements Waterloggable {
 	}
 
 	protected static Direction attachedDirection(BlockState state) {
-		return state.get(HANGING) ? Direction.field_11033 : Direction.field_11036;
+		return state.get(HANGING) ? Direction.DOWN : Direction.UP;
 	}
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.field_15971;
+		return PistonBehavior.DESTROY;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class LanternBlock extends Block implements Waterloggable {
 		}
 
 		return attachedDirection(state).getOpposite() == direction && !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 

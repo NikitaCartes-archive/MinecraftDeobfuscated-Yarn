@@ -45,7 +45,7 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 		buf.writeFloat(this.value);
 	}
 
-	public void method_11490(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGameStateChange(this);
 	}
 

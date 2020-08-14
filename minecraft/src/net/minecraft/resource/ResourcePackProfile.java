@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 public class ResourcePackProfile implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(
-		new TranslatableText("resourcePack.broken_assets").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1056}),
+		new TranslatableText("resourcePack.broken_assets").formatted(new Formatting[]{Formatting.RED, Formatting.ITALIC}),
 		SharedConstants.getGameVersion().getPackVersion()
 	);
 	private final String name;
@@ -122,9 +122,9 @@ public class ResourcePackProfile implements AutoCloseable {
 	public Text getInformationText(boolean enabled) {
 		return Texts.bracketed(this.source.decorate(new LiteralText(this.name)))
 			.styled(
-				style -> style.withColor(enabled ? Formatting.field_1060 : Formatting.field_1061)
+				style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED)
 						.withInsertion(StringArgumentType.escapeIfRequired(this.name))
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, new LiteralText("").append(this.displayName).append("\n").append(this.description)))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("").append(this.displayName).append("\n").append(this.description)))
 			);
 	}
 
@@ -190,12 +190,12 @@ public class ResourcePackProfile implements AutoCloseable {
 	}
 
 	public static enum InsertionPosition {
-		field_14280,
-		field_14281;
+		TOP,
+		BOTTOM;
 
 		public <T> int insert(List<T> items, T item, Function<T, ResourcePackProfile> profileGetter, boolean listInverted) {
 			ResourcePackProfile.InsertionPosition insertionPosition = listInverted ? this.inverse() : this;
-			if (insertionPosition == field_14281) {
+			if (insertionPosition == BOTTOM) {
 				int i;
 				for (i = 0; i < items.size(); i++) {
 					ResourcePackProfile resourcePackProfile = (ResourcePackProfile)profileGetter.apply(items.get(i));
@@ -221,7 +221,7 @@ public class ResourcePackProfile implements AutoCloseable {
 		}
 
 		public ResourcePackProfile.InsertionPosition inverse() {
-			return this == field_14280 ? field_14281 : field_14280;
+			return this == TOP ? BOTTOM : TOP;
 		}
 	}
 }

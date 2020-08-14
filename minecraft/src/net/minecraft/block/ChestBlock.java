@@ -62,20 +62,20 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	protected static final VoxelShape DOUBLE_EAST_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 16.0, 14.0, 15.0);
 	protected static final VoxelShape SINGLE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 	private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<Inventory>> INVENTORY_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<Inventory>>() {
-		public Optional<Inventory> method_17461(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+		public Optional<Inventory> getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 			return Optional.of(new DoubleInventory(chestBlockEntity, chestBlockEntity2));
 		}
 
-		public Optional<Inventory> method_17460(ChestBlockEntity chestBlockEntity) {
+		public Optional<Inventory> getFrom(ChestBlockEntity chestBlockEntity) {
 			return Optional.of(chestBlockEntity);
 		}
 
-		public Optional<Inventory> method_24170() {
+		public Optional<Inventory> getFallback() {
 			return Optional.empty();
 		}
 	};
 	private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NamedScreenHandlerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NamedScreenHandlerFactory>>() {
-		public Optional<NamedScreenHandlerFactory> method_17463(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+		public Optional<NamedScreenHandlerFactory> getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 			final Inventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
 			return Optional.of(new NamedScreenHandlerFactory() {
 				@Nullable
@@ -101,11 +101,11 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			});
 		}
 
-		public Optional<NamedScreenHandlerFactory> method_17462(ChestBlockEntity chestBlockEntity) {
+		public Optional<NamedScreenHandlerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
 			return Optional.of(chestBlockEntity);
 		}
 
-		public Optional<NamedScreenHandlerFactory> method_24171() {
+		public Optional<NamedScreenHandlerFactory> getFallback() {
 			return Optional.empty();
 		}
 	};
@@ -113,22 +113,22 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	protected ChestBlock(AbstractBlock.Settings settings, Supplier<BlockEntityType<? extends ChestBlockEntity>> supplier) {
 		super(settings, supplier);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(CHEST_TYPE, ChestType.field_12569).with(WATERLOGGED, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(CHEST_TYPE, ChestType.SINGLE).with(WATERLOGGED, Boolean.valueOf(false))
 		);
 	}
 
 	public static DoubleBlockProperties.Type getDoubleBlockType(BlockState state) {
 		ChestType chestType = state.get(CHEST_TYPE);
-		if (chestType == ChestType.field_12569) {
-			return DoubleBlockProperties.Type.field_21783;
+		if (chestType == ChestType.SINGLE) {
+			return DoubleBlockProperties.Type.SINGLE;
 		} else {
-			return chestType == ChestType.field_12571 ? DoubleBlockProperties.Type.field_21784 : DoubleBlockProperties.Type.field_21785;
+			return chestType == ChestType.RIGHT ? DoubleBlockProperties.Type.FIRST : DoubleBlockProperties.Type.SECOND;
 		}
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11456;
+		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
 	@Override
@@ -139,14 +139,14 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 		if (newState.isOf(this) && direction.getAxis().isHorizontal()) {
 			ChestType chestType = newState.get(CHEST_TYPE);
-			if (state.get(CHEST_TYPE) == ChestType.field_12569
-				&& chestType != ChestType.field_12569
+			if (state.get(CHEST_TYPE) == ChestType.SINGLE
+				&& chestType != ChestType.SINGLE
 				&& state.get(FACING) == newState.get(FACING)
 				&& getFacing(newState) == direction.getOpposite()) {
 				return state.with(CHEST_TYPE, chestType.getOpposite());
 			}
 		} else if (getFacing(state) == direction) {
-			return state.with(CHEST_TYPE, ChestType.field_12569);
+			return state.with(CHEST_TYPE, ChestType.SINGLE);
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
@@ -154,18 +154,18 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		if (state.get(CHEST_TYPE) == ChestType.field_12569) {
+		if (state.get(CHEST_TYPE) == ChestType.SINGLE) {
 			return SINGLE_SHAPE;
 		} else {
 			switch (getFacing(state)) {
-				case field_11043:
+				case NORTH:
 				default:
 					return DOUBLE_NORTH_SHAPE;
-				case field_11035:
+				case SOUTH:
 					return DOUBLE_SOUTH_SHAPE;
-				case field_11039:
+				case WEST:
 					return DOUBLE_WEST_SHAPE;
-				case field_11034:
+				case EAST:
 					return DOUBLE_EAST_SHAPE;
 			}
 		}
@@ -173,12 +173,12 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 	public static Direction getFacing(BlockState state) {
 		Direction direction = state.get(FACING);
-		return state.get(CHEST_TYPE) == ChestType.field_12574 ? direction.rotateYClockwise() : direction.rotateYCounterclockwise();
+		return state.get(CHEST_TYPE) == ChestType.LEFT ? direction.rotateYClockwise() : direction.rotateYCounterclockwise();
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		ChestType chestType = ChestType.field_12569;
+		ChestType chestType = ChestType.SINGLE;
 		Direction direction = ctx.getPlayerFacing().getOpposite();
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		boolean bl = ctx.shouldCancelInteraction();
@@ -187,15 +187,15 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			Direction direction3 = this.getNeighborChestDirection(ctx, direction2.getOpposite());
 			if (direction3 != null && direction3.getAxis() != direction2.getAxis()) {
 				direction = direction3;
-				chestType = direction3.rotateYCounterclockwise() == direction2.getOpposite() ? ChestType.field_12571 : ChestType.field_12574;
+				chestType = direction3.rotateYCounterclockwise() == direction2.getOpposite() ? ChestType.RIGHT : ChestType.LEFT;
 			}
 		}
 
-		if (chestType == ChestType.field_12569 && !bl) {
+		if (chestType == ChestType.SINGLE && !bl) {
 			if (direction == this.getNeighborChestDirection(ctx, direction.rotateYClockwise())) {
-				chestType = ChestType.field_12574;
+				chestType = ChestType.LEFT;
 			} else if (direction == this.getNeighborChestDirection(ctx, direction.rotateYCounterclockwise())) {
-				chestType = ChestType.field_12571;
+				chestType = ChestType.RIGHT;
 			}
 		}
 
@@ -210,7 +210,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	@Nullable
 	private Direction getNeighborChestDirection(ItemPlacementContext ctx, Direction dir) {
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(dir));
-		return blockState.isOf(this) && blockState.get(CHEST_TYPE) == ChestType.field_12569 ? blockState.get(FACING) : null;
+		return blockState.isOf(this) && blockState.get(CHEST_TYPE) == ChestType.SINGLE ? blockState.get(FACING) : null;
 	}
 
 	@Override
@@ -253,7 +253,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	protected Stat<Identifier> getOpenStat() {
-		return Stats.field_15419.getOrCreateStat(Stats.field_15395);
+		return Stats.CUSTOM.getOrCreateStat(Stats.OPEN_CHEST);
 	}
 
 	@Nullable
@@ -295,15 +295,15 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 		ChestAnimationProgress chestAnimationProgress
 	) {
 		return new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction>() {
-			public Float2FloatFunction method_23899(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+			public Float2FloatFunction getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 				return f -> Math.max(chestBlockEntity.getAnimationProgress(f), chestBlockEntity2.getAnimationProgress(f));
 			}
 
-			public Float2FloatFunction method_23898(ChestBlockEntity chestBlockEntity) {
+			public Float2FloatFunction getFrom(ChestBlockEntity chestBlockEntity) {
 				return chestBlockEntity::getAnimationProgress;
 			}
 
-			public Float2FloatFunction method_24172() {
+			public Float2FloatFunction getFallback() {
 				return chestAnimationProgress::getAnimationProgress;
 			}
 		};

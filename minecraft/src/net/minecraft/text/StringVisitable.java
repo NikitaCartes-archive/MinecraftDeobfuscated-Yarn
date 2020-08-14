@@ -15,7 +15,7 @@ public interface StringVisitable {
 	/**
 	 * Convenience object indicating the termination of a string visit.
 	 */
-	Optional<Unit> TERMINATE_VISIT = Optional.of(Unit.field_17274);
+	Optional<Unit> TERMINATE_VISIT = Optional.of(Unit.INSTANCE);
 	/**
 	 * An empty visitable that does not call the visitors.
 	 */

@@ -4,12 +4,12 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.registry.Registry;
 
 public class TrunkPlacerType<P extends TrunkPlacer> {
-	public static final TrunkPlacerType<StraightTrunkPlacer> field_23763 = register("straight_trunk_placer", StraightTrunkPlacer.CODEC);
-	public static final TrunkPlacerType<ForkingTrunkPlacer> field_23764 = register("forking_trunk_placer", ForkingTrunkPlacer.CODEC);
-	public static final TrunkPlacerType<GiantTrunkPlacer> field_24171 = register("giant_trunk_placer", GiantTrunkPlacer.CODEC);
-	public static final TrunkPlacerType<MegaJungleTrunkPlacer> field_24172 = register("mega_jungle_trunk_placer", MegaJungleTrunkPlacer.CODEC);
-	public static final TrunkPlacerType<DarkOakTrunkPlacer> field_24173 = register("dark_oak_trunk_placer", DarkOakTrunkPlacer.CODEC);
-	public static final TrunkPlacerType<LargeOakTrunkPlacer> field_24174 = register("fancy_trunk_placer", LargeOakTrunkPlacer.CODEC);
+	public static final TrunkPlacerType<StraightTrunkPlacer> STRAIGHT_TRUNK_PLACER = register("straight_trunk_placer", StraightTrunkPlacer.CODEC);
+	public static final TrunkPlacerType<ForkingTrunkPlacer> FORKING_TRUNK_PLACER = register("forking_trunk_placer", ForkingTrunkPlacer.CODEC);
+	public static final TrunkPlacerType<GiantTrunkPlacer> GIANT_TRUNK_PLACER = register("giant_trunk_placer", GiantTrunkPlacer.CODEC);
+	public static final TrunkPlacerType<MegaJungleTrunkPlacer> MEGA_JUNGLE_TRUNK_PLACER = register("mega_jungle_trunk_placer", MegaJungleTrunkPlacer.CODEC);
+	public static final TrunkPlacerType<DarkOakTrunkPlacer> DARK_OAK_TRUNK_PLACER = register("dark_oak_trunk_placer", DarkOakTrunkPlacer.CODEC);
+	public static final TrunkPlacerType<LargeOakTrunkPlacer> FANCY_TRUNK_PLACER = register("fancy_trunk_placer", LargeOakTrunkPlacer.CODEC);
 	private final Codec<P> codec;
 
 	private static <P extends TrunkPlacer> TrunkPlacerType<P> register(String id, Codec<P> codec) {

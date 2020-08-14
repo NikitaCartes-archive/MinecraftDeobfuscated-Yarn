@@ -27,7 +27,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 
 	@Override
 	protected void initAttributes() {
-		this.getAttributeInstance(EntityAttributes.field_23716).setBaseValue((double)this.getChildHealthBonus());
+		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus());
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createAbstractDonkeyAttributes() {
-		return createBaseHorseAttributes().add(EntityAttributes.field_23719, 0.175F).add(EntityAttributes.field_23728, 0.5);
+		return createBaseHorseAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.175F).add(EntityAttributes.HORSE_JUMP_STRENGTH, 0.5);
 	}
 
 	public boolean hasChest() {
@@ -63,7 +63,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		super.dropInventory();
 		if (this.hasChest()) {
 			if (!this.world.isClient) {
-				this.dropItem(Blocks.field_10034);
+				this.dropItem(Blocks.CHEST);
 			}
 
 			this.setHasChest(false);
@@ -120,7 +120,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				return true;
 			}
 
-			if (!this.hasChest() && item.getItem() == Blocks.field_10034.asItem()) {
+			if (!this.hasChest() && item.getItem() == Blocks.CHEST.asItem()) {
 				this.setHasChest(true);
 				this.onChestedStatusChanged();
 				return true;
@@ -154,7 +154,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				return ActionResult.success(this.world.isClient);
 			}
 
-			if (!this.hasChest() && itemStack.getItem() == Blocks.field_10034.asItem()) {
+			if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {
 				this.setHasChest(true);
 				this.playAddChestSound();
 				if (!player.abilities.creativeMode) {
@@ -165,7 +165,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				return ActionResult.success(this.world.isClient);
 			}
 
-			if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.field_8175) {
+			if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
 				this.openInventory(player);
 				return ActionResult.success(this.world.isClient);
 			}
@@ -180,7 +180,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	protected void playAddChestSound() {
-		this.playSound(SoundEvents.field_14598, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+		this.playSound(SoundEvents.ENTITY_DONKEY_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 
 	public int getInventoryColumns() {

@@ -129,9 +129,9 @@ public class AdvancementWidget extends DrawableHelper {
 			float f = this.progress == null ? 0.0F : this.progress.getProgressBarPercentage();
 			AdvancementObtainedStatus advancementObtainedStatus;
 			if (f >= 1.0F) {
-				advancementObtainedStatus = AdvancementObtainedStatus.field_2701;
+				advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
 			} else {
-				advancementObtainedStatus = AdvancementObtainedStatus.field_2699;
+				advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
 			}
 
 			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
@@ -166,23 +166,23 @@ public class AdvancementWidget extends DrawableHelper {
 		AdvancementObtainedStatus advancementObtainedStatus3;
 		if (g >= 1.0F) {
 			m = this.width / 2;
-			advancementObtainedStatus = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus2 = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus3 = AdvancementObtainedStatus.field_2701;
+			advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus2 = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus3 = AdvancementObtainedStatus.OBTAINED;
 		} else if (m < 2) {
 			m = this.width / 2;
-			advancementObtainedStatus = AdvancementObtainedStatus.field_2699;
-			advancementObtainedStatus2 = AdvancementObtainedStatus.field_2699;
-			advancementObtainedStatus3 = AdvancementObtainedStatus.field_2699;
+			advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
+			advancementObtainedStatus2 = AdvancementObtainedStatus.UNOBTAINED;
+			advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
 		} else if (m > this.width - 2) {
 			m = this.width / 2;
-			advancementObtainedStatus = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus2 = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus3 = AdvancementObtainedStatus.field_2699;
+			advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus2 = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
 		} else {
-			advancementObtainedStatus = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus2 = AdvancementObtainedStatus.field_2699;
-			advancementObtainedStatus3 = AdvancementObtainedStatus.field_2699;
+			advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus2 = AdvancementObtainedStatus.UNOBTAINED;
+			advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
 		}
 
 		int n = this.width - m;

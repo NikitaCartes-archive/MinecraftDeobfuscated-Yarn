@@ -10,7 +10,7 @@ public class RangeDecorator extends SimpleDecorator<RangeDecoratorConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_30468(Random random, RangeDecoratorConfig rangeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, RangeDecoratorConfig rangeDecoratorConfig, BlockPos blockPos) {
 		int i = blockPos.getX();
 		int j = blockPos.getZ();
 		int k = random.nextInt(rangeDecoratorConfig.maximum - rangeDecoratorConfig.topOffset) + rangeDecoratorConfig.bottomOffset;

@@ -24,13 +24,13 @@ public class AmbientSoundPlayer implements ClientPlayerTickable {
 			float f = this.player.world.random.nextFloat();
 			if (f < 1.0E-4F) {
 				this.ticksUntilPlay = 0;
-				this.soundManager.play(new AmbientSoundLoops.MusicLoop(this.player, SoundEvents.field_15178));
+				this.soundManager.play(new AmbientSoundLoops.MusicLoop(this.player, SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE));
 			} else if (f < 0.001F) {
 				this.ticksUntilPlay = 0;
-				this.soundManager.play(new AmbientSoundLoops.MusicLoop(this.player, SoundEvents.field_15068));
+				this.soundManager.play(new AmbientSoundLoops.MusicLoop(this.player, SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_RARE));
 			} else if (f < 0.01F) {
 				this.ticksUntilPlay = 0;
-				this.soundManager.play(new AmbientSoundLoops.MusicLoop(this.player, SoundEvents.field_15028));
+				this.soundManager.play(new AmbientSoundLoops.MusicLoop(this.player, SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS));
 			}
 		}
 	}

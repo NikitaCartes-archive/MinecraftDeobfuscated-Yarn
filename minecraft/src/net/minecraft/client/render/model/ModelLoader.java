@@ -136,7 +136,7 @@ public class ModelLoader {
 	public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = Util.make(
 		JsonUnbakedModel.deserialize("{\"gui_light\": \"side\"}"), jsonUnbakedModel -> jsonUnbakedModel.id = "block entity marker"
 	);
-	private static final StateManager<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateManager.Builder<Block, BlockState>(Blocks.field_10124)
+	private static final StateManager<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateManager.Builder<Block, BlockState>(Blocks.AIR)
 		.add(BooleanProperty.of("map"))
 		.build(Block::getDefaultState, BlockState::new);
 	private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
@@ -237,7 +237,7 @@ public class ModelLoader {
 			BakedModel bakedModel = null;
 
 			try {
-				bakedModel = this.bake(identifier, ModelRotation.field_5350);
+				bakedModel = this.bake(identifier, ModelRotation.X0_Y0);
 			} catch (Exception var4x) {
 				LOGGER.warn("Unable to bake model: '{}': {}", identifier, var4x);
 			}
@@ -480,7 +480,7 @@ public class ModelLoader {
 
 						while (iterator.hasNext()) {
 							BlockState blockState = (BlockState)iterator.next();
-							if (blockState.getRenderType() != BlockRenderType.field_11458) {
+							if (blockState.getRenderType() != BlockRenderType.MODEL) {
 								iterator.remove();
 								this.stateLookup.put(blockState, 0);
 							}

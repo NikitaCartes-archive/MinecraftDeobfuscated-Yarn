@@ -74,7 +74,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			}
 
 			HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
-			if (hitResult.getType() != HitResult.Type.field_1333) {
+			if (hitResult.getType() != HitResult.Type.MISS) {
 				this.onCollision(hitResult);
 			}
 
@@ -88,7 +88,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			if (this.isTouchingWater()) {
 				for (int i = 0; i < 4; i++) {
 					float h = 0.25F;
-					this.world.addParticle(ParticleTypes.field_11247, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+					this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 				}
 
 				g = 0.8F;
@@ -112,7 +112,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	protected ParticleEffect getParticleType() {
-		return ParticleTypes.field_11251;
+		return ParticleTypes.SMOKE;
 	}
 
 	protected float getDrag() {

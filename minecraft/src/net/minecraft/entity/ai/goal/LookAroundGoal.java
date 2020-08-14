@@ -11,7 +11,7 @@ public class LookAroundGoal extends Goal {
 
 	public LookAroundGoal(MobEntity mob) {
 		this.mob = mob;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override

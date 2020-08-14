@@ -21,7 +21,7 @@ public class ScreenHandlerPropertyUpdateS2CPacket implements Packet<ClientPlayPa
 		this.value = value;
 	}
 
-	public void method_11447(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onScreenHandlerPropertyUpdate(this);
 	}
 

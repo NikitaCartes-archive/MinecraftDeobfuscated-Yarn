@@ -22,7 +22,7 @@ public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacket
 		this.stack = stack.copy();
 	}
 
-	public void method_11451(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onScreenHandlerSlotUpdate(this);
 	}
 

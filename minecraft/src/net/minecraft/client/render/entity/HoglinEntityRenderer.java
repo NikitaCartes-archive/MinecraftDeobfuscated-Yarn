@@ -14,11 +14,11 @@ public class HoglinEntityRenderer extends MobEntityRenderer<HoglinEntity, Hoglin
 		super(entityRenderDispatcher, new HoglinEntityModel<>(), 0.7F);
 	}
 
-	public Identifier method_24472(HoglinEntity hoglinEntity) {
+	public Identifier getTexture(HoglinEntity hoglinEntity) {
 		return TEXTURE;
 	}
 
-	protected boolean method_27038(HoglinEntity hoglinEntity) {
+	protected boolean isShaking(HoglinEntity hoglinEntity) {
 		return hoglinEntity.canConvert();
 	}
 }

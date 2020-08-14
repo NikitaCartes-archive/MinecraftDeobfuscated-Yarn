@@ -27,7 +27,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		return ID;
 	}
 
-	public PlacedBlockCriterion.Conditions method_9088(
+	public PlacedBlockCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Block block = getBlock(jsonObject);

@@ -26,10 +26,10 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_19007);
+		return ImmutableSet.of(MemoryModuleType.NEAREST_BED);
 	}
 
-	protected void method_21646(ServerWorld serverWorld, MobEntity mobEntity) {
+	protected void sense(ServerWorld serverWorld, MobEntity mobEntity) {
 		if (mobEntity.isBaby()) {
 			this.tries = 0;
 			this.expiryTime = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
@@ -46,14 +46,14 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 				}
 			};
 			Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
-				PointOfInterestType.field_18517.getCompletionCondition(), predicate, mobEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.field_18489
+				PointOfInterestType.HOME.getCompletionCondition(), predicate, mobEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
-			Path path = mobEntity.getNavigation().findPathToAny(stream, PointOfInterestType.field_18517.getSearchDistance());
+			Path path = mobEntity.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
 			if (path != null && path.reachesTarget()) {
 				BlockPos blockPos = path.getTarget();
 				Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
 				if (optional.isPresent()) {
-					mobEntity.getBrain().remember(MemoryModuleType.field_19007, blockPos);
+					mobEntity.getBrain().remember(MemoryModuleType.NEAREST_BED, blockPos);
 				}
 			} else if (this.tries < 5) {
 				this.positionToExpiryTime.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.expiryTime);

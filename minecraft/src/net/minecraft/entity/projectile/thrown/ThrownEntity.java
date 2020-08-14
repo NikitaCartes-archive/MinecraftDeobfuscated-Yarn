@@ -51,13 +51,13 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		super.tick();
 		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
 		boolean bl = false;
-		if (hitResult.getType() == HitResult.Type.field_1332) {
+		if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
-			if (blockState.isOf(Blocks.field_10316)) {
+			if (blockState.isOf(Blocks.NETHER_PORTAL)) {
 				this.setInNetherPortal(blockPos);
 				bl = true;
-			} else if (blockState.isOf(Blocks.field_10613)) {
+			} else if (blockState.isOf(Blocks.END_GATEWAY)) {
 				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 				if (blockEntity instanceof EndGatewayBlockEntity && EndGatewayBlockEntity.method_30276(this)) {
 					((EndGatewayBlockEntity)blockEntity).tryTeleportingEntity(this);
@@ -67,7 +67,7 @@ public abstract class ThrownEntity extends ProjectileEntity {
 			}
 		}
 
-		if (hitResult.getType() != HitResult.Type.field_1333 && !bl) {
+		if (hitResult.getType() != HitResult.Type.MISS && !bl) {
 			this.onCollision(hitResult);
 		}
 
@@ -81,7 +81,7 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		if (this.isTouchingWater()) {
 			for (int i = 0; i < 4; i++) {
 				float g = 0.25F;
-				this.world.addParticle(ParticleTypes.field_11247, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+				this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 
 			h = 0.8F;

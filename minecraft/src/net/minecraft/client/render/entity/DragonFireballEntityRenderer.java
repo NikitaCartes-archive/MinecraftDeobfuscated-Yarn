@@ -23,13 +23,11 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		super(entityRenderDispatcher);
 	}
 
-	protected int method_24086(DragonFireballEntity dragonFireballEntity, BlockPos blockPos) {
+	protected int getBlockLight(DragonFireballEntity dragonFireballEntity, BlockPos blockPos) {
 		return 15;
 	}
 
-	public void method_3906(
-		DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
-	) {
+	public void render(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
 		matrixStack.multiply(this.dispatcher.getRotation());
@@ -58,7 +56,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 			.next();
 	}
 
-	public Identifier method_3905(DragonFireballEntity dragonFireballEntity) {
+	public Identifier getTexture(DragonFireballEntity dragonFireballEntity) {
 		return TEXTURE;
 	}
 }

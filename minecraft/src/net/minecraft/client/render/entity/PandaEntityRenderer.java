@@ -16,13 +16,13 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
 	private static final Map<PandaEntity.Gene, Identifier> TEXTURES = Util.make(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
-		enumMap.put(PandaEntity.Gene.field_6788, new Identifier("textures/entity/panda/panda.png"));
-		enumMap.put(PandaEntity.Gene.field_6794, new Identifier("textures/entity/panda/lazy_panda.png"));
-		enumMap.put(PandaEntity.Gene.field_6795, new Identifier("textures/entity/panda/worried_panda.png"));
-		enumMap.put(PandaEntity.Gene.field_6791, new Identifier("textures/entity/panda/playful_panda.png"));
-		enumMap.put(PandaEntity.Gene.field_6792, new Identifier("textures/entity/panda/brown_panda.png"));
-		enumMap.put(PandaEntity.Gene.field_6793, new Identifier("textures/entity/panda/weak_panda.png"));
-		enumMap.put(PandaEntity.Gene.field_6789, new Identifier("textures/entity/panda/aggressive_panda.png"));
+		enumMap.put(PandaEntity.Gene.NORMAL, new Identifier("textures/entity/panda/panda.png"));
+		enumMap.put(PandaEntity.Gene.LAZY, new Identifier("textures/entity/panda/lazy_panda.png"));
+		enumMap.put(PandaEntity.Gene.WORRIED, new Identifier("textures/entity/panda/worried_panda.png"));
+		enumMap.put(PandaEntity.Gene.PLAYFUL, new Identifier("textures/entity/panda/playful_panda.png"));
+		enumMap.put(PandaEntity.Gene.BROWN, new Identifier("textures/entity/panda/brown_panda.png"));
+		enumMap.put(PandaEntity.Gene.WEAK, new Identifier("textures/entity/panda/weak_panda.png"));
+		enumMap.put(PandaEntity.Gene.AGGRESSIVE, new Identifier("textures/entity/panda/aggressive_panda.png"));
 	});
 
 	public PandaEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -30,11 +30,11 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 		this.addFeature(new PandaHeldItemFeatureRenderer(this));
 	}
 
-	public Identifier method_4083(PandaEntity pandaEntity) {
-		return (Identifier)TEXTURES.getOrDefault(pandaEntity.getProductGene(), TEXTURES.get(PandaEntity.Gene.field_6788));
+	public Identifier getTexture(PandaEntity pandaEntity) {
+		return (Identifier)TEXTURES.getOrDefault(pandaEntity.getProductGene(), TEXTURES.get(PandaEntity.Gene.NORMAL));
 	}
 
-	protected void method_4085(PandaEntity pandaEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(PandaEntity pandaEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(pandaEntity, matrixStack, f, g, h);
 		if (pandaEntity.playingTicks > 0) {
 			int i = pandaEntity.playingTicks;

@@ -25,7 +25,7 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 		super(codec);
 	}
 
-	public void method_27132(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -66,7 +66,7 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 			BlockState blockState6 = chunk.getBlockState(mutable);
 			if (blockState5.isOf(blockState.getBlock()) && (blockState6.isAir() || blockState6 == blockState2)) {
 				for (int t = 0; t < q; t++) {
-					mutable.move(Direction.field_11036);
+					mutable.move(Direction.UP);
 					if (!chunk.getBlockState(mutable).isOf(blockState.getBlock())) {
 						break;
 					}
@@ -85,7 +85,7 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 						chunk.setBlockState(mutable, blockState4, false);
 					}
 
-					mutable.move(Direction.field_11033);
+					mutable.move(Direction.DOWN);
 				}
 			}
 

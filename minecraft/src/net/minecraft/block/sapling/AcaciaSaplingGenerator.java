@@ -10,6 +10,6 @@ public class AcaciaSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	@Override
 	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
-		return ConfiguredFeatures.field_26039;
+		return ConfiguredFeatures.ACACIA;
 	}
 }

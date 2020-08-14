@@ -88,7 +88,7 @@ public class WeightedUnbakedModel implements UnbakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<WeightedUnbakedModel> {
-		public WeightedUnbakedModel method_3499(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public WeightedUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			List<ModelVariant> list = Lists.<ModelVariant>newArrayList();
 			if (jsonElement.isJsonArray()) {
 				JsonArray jsonArray = jsonElement.getAsJsonArray();

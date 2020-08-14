@@ -52,7 +52,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.pendingInvitationSelectionList = new RealmsPendingInvitesScreen.PendingInvitationSelectionList();
 		(new Thread("Realms-pending-invitations-fetcher") {
 				public void run() {
@@ -239,7 +239,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			RealmsPendingInvitesScreen.this.updateButtonStates();
 		}
 
-		public void method_25188(@Nullable RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry pendingInvitationSelectionListEntry) {
+		public void setSelected(@Nullable RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry pendingInvitationSelectionListEntry) {
 			super.setSelected(pendingInvitationSelectionListEntry);
 			RealmsPendingInvitesScreen.this.selectedInvite = this.children().indexOf(pendingInvitationSelectionListEntry);
 			RealmsPendingInvitesScreen.this.updateButtonStates();

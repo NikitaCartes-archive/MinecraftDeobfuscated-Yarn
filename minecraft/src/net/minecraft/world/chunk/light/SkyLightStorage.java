@@ -16,9 +16,7 @@ import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
 import net.minecraft.world.chunk.ColumnChunkNibbleArray;
 
 public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
-	private static final Direction[] LIGHT_REDUCTION_DIRECTIONS = new Direction[]{
-		Direction.field_11043, Direction.field_11035, Direction.field_11039, Direction.field_11034
-	};
+	private static final Direction[] LIGHT_REDUCTION_DIRECTIONS = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 	private final LongSet field_15820 = new LongOpenHashSet();
 	private final LongSet sectionsToUpdate = new LongOpenHashSet();
 	private final LongSet sectionsToRemove = new LongOpenHashSet();
@@ -26,7 +24,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	private volatile boolean hasUpdates;
 
 	protected SkyLightStorage(ChunkProvider chunkProvider) {
-		super(LightType.field_9284, chunkProvider, new SkyLightStorage.Data(new Long2ObjectOpenHashMap<>(), new Long2IntOpenHashMap(), Integer.MAX_VALUE));
+		super(LightType.SKY, chunkProvider, new SkyLightStorage.Data(new Long2ObjectOpenHashMap<>(), new Long2IntOpenHashMap(), Integer.MAX_VALUE));
 	}
 
 	@Override
@@ -39,7 +37,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			ChunkNibbleArray chunkNibbleArray = this.getLightSection(data, l);
 			if (chunkNibbleArray == null) {
 				for (blockPos = BlockPos.removeChunkSectionLocalY(blockPos); chunkNibbleArray == null; chunkNibbleArray = this.getLightSection(data, l)) {
-					l = ChunkSectionPos.offset(l, Direction.field_11036);
+					l = ChunkSectionPos.offset(l, Direction.UP);
 					if (++i >= j) {
 						return 15;
 					}
@@ -107,7 +105,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		int i = ChunkSectionPos.unpackY(sectionPos);
 		if (this.storage.columnToTopSection.get(l) == i + 1) {
 			long m;
-			for (m = sectionPos; !this.hasSection(m) && this.isAboveMinHeight(i); m = ChunkSectionPos.offset(m, Direction.field_11033)) {
+			for (m = sectionPos; !this.hasSection(m) && this.isAboveMinHeight(i); m = ChunkSectionPos.offset(m, Direction.DOWN)) {
 				i--;
 			}
 
@@ -152,12 +150,12 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		if (chunkNibbleArray != null) {
 			return chunkNibbleArray;
 		} else {
-			long l = ChunkSectionPos.offset(sectionPos, Direction.field_11036);
+			long l = ChunkSectionPos.offset(sectionPos, Direction.UP);
 			int i = this.storage.columnToTopSection.get(ChunkSectionPos.withZeroY(sectionPos));
 			if (i != this.storage.minSectionY && ChunkSectionPos.unpackY(l) < i) {
 				ChunkNibbleArray chunkNibbleArray2;
 				while ((chunkNibbleArray2 = this.getLightSection(l, true)) == null) {
-					l = ChunkSectionPos.offset(l, Direction.field_11036);
+					l = ChunkSectionPos.offset(l, Direction.UP);
 				}
 
 				return new ChunkNibbleArray(new ColumnChunkNibbleArray(chunkNibbleArray2, 0).asByteArray());
@@ -197,15 +195,15 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 											long q;
 											long r;
 											switch (direction) {
-												case field_11043:
+												case NORTH:
 													q = BlockPos.asLong(j + o, k + p, m);
 													r = BlockPos.asLong(j + o, k + p, m - 1);
 													break;
-												case field_11035:
+												case SOUTH:
 													q = BlockPos.asLong(j + o, k + p, m + 16 - 1);
 													r = BlockPos.asLong(j + o, k + p, m + 16);
 													break;
-												case field_11039:
+												case WEST:
 													q = BlockPos.asLong(j, k + o, m + p);
 													r = BlockPos.asLong(j - 1, k + o, m + p);
 													break;
@@ -319,7 +317,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			this.minSectionY = minSectionY;
 		}
 
-		public SkyLightStorage.Data method_15572() {
+		public SkyLightStorage.Data copy() {
 			return new SkyLightStorage.Data(this.arrays.clone(), this.columnToTopSection.clone(), this.minSectionY);
 		}
 	}

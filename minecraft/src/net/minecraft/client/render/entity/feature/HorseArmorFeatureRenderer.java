@@ -21,15 +21,15 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 		super(featureRendererContext);
 	}
 
-	public void method_18658(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = horseEntity.getArmorType();
 		if (itemStack.getItem() instanceof HorseArmorItem) {
 			HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
 			this.getContextModel().copyStateTo(this.model);
-			this.model.method_17084(horseEntity, f, g, h);
-			this.model.method_17085(horseEntity, f, g, j, k, l);
+			this.model.animateModel(horseEntity, f, g, h);
+			this.model.setAngles(horseEntity, f, g, j, k, l);
 			float n;
 			float o;
 			float p;

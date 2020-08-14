@@ -30,7 +30,7 @@ public class PlayerSpawnPositionS2CPacket implements Packet<ClientPlayPacketList
 		buf.writeBlockPos(this.pos);
 	}
 
-	public void method_11869(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerSpawnPosition(this);
 	}
 

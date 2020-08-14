@@ -4,7 +4,7 @@ import net.minecraft.world.biome.layer.type.SouthEastSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum AddBambooJungleLayer implements SouthEastSamplingLayer {
-	field_16120;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource context, int se) {

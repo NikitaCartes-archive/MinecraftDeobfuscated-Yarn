@@ -15,15 +15,15 @@ public class NetherForestVegetationFeature extends Feature<BlockPileFeatureConfi
 		super(codec);
 	}
 
-	public boolean method_24444(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig
 	) {
 		return method_26264(structureWorldAccess, random, blockPos, blockPileFeatureConfig, 8, 4);
 	}
 
 	public static boolean method_26264(WorldAccess worldAccess, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig, int i, int j) {
-		Block block = worldAccess.getBlockState(blockPos.method_10074()).getBlock();
-		if (!block.isIn(BlockTags.field_21953)) {
+		Block block = worldAccess.getBlockState(blockPos.down()).getBlock();
+		if (!block.isIn(BlockTags.NYLIUM)) {
 			return false;
 		} else {
 			int k = blockPos.getY();

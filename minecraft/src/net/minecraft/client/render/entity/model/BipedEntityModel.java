@@ -22,8 +22,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 	public ModelPart leftArm;
 	public ModelPart rightLeg;
 	public ModelPart leftLeg;
-	public BipedEntityModel.ArmPose leftArmPose = BipedEntityModel.ArmPose.field_3409;
-	public BipedEntityModel.ArmPose rightArmPose = BipedEntityModel.ArmPose.field_3409;
+	public BipedEntityModel.ArmPose leftArmPose = BipedEntityModel.ArmPose.EMPTY;
+	public BipedEntityModel.ArmPose rightArmPose = BipedEntityModel.ArmPose.EMPTY;
 	public boolean sneaking;
 	public float leaningPitch;
 
@@ -74,12 +74,12 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		return ImmutableList.<ModelPart>of(this.torso, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.helmet);
 	}
 
-	public void method_17086(T livingEntity, float f, float g, float h) {
+	public void animateModel(T livingEntity, float f, float g, float h) {
 		this.leaningPitch = livingEntity.getLeaningPitch(h);
 		super.animateModel(livingEntity, f, g, h);
 	}
 
-	public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
 		boolean bl = livingEntity.getRoll() > 4;
 		boolean bl2 = livingEntity.isInSwimmingPose();
 		this.head.yaw = i * (float) (Math.PI / 180.0);
@@ -134,7 +134,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 		this.rightArm.yaw = 0.0F;
 		this.leftArm.yaw = 0.0F;
-		boolean bl3 = livingEntity.getMainArm() == Arm.field_6183;
+		boolean bl3 = livingEntity.getMainArm() == Arm.RIGHT;
 		boolean bl4 = bl3 ? this.leftArmPose.method_30156() : this.rightArmPose.method_30156();
 		if (bl3 != bl4) {
 			this.method_30155(livingEntity);
@@ -173,8 +173,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		if (this.leaningPitch > 0.0F) {
 			float l = f % 26.0F;
 			Arm arm = this.getPreferredArm(livingEntity);
-			float m = arm == Arm.field_6183 && this.handSwingProgress > 0.0F ? 0.0F : this.leaningPitch;
-			float n = arm == Arm.field_6182 && this.handSwingProgress > 0.0F ? 0.0F : this.leaningPitch;
+			float m = arm == Arm.RIGHT && this.handSwingProgress > 0.0F ? 0.0F : this.leaningPitch;
+			float n = arm == Arm.LEFT && this.handSwingProgress > 0.0F ? 0.0F : this.leaningPitch;
 			if (l < 14.0F) {
 				this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, 0.0F);
 				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 0.0F);
@@ -211,62 +211,62 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 	private void method_30154(T livingEntity) {
 		switch (this.rightArmPose) {
-			case field_3409:
+			case EMPTY:
 				this.rightArm.yaw = 0.0F;
 				break;
-			case field_3406:
+			case BLOCK:
 				this.rightArm.pitch = this.rightArm.pitch * 0.5F - 0.9424779F;
 				this.rightArm.yaw = (float) (-Math.PI / 6);
 				break;
-			case field_3410:
+			case ITEM:
 				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) (Math.PI / 10);
 				this.rightArm.yaw = 0.0F;
 				break;
-			case field_3407:
+			case THROW_SPEAR:
 				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) Math.PI;
 				this.rightArm.yaw = 0.0F;
 				break;
-			case field_3403:
+			case BOW_AND_ARROW:
 				this.rightArm.yaw = -0.1F + this.head.yaw;
 				this.leftArm.yaw = 0.1F + this.head.yaw + 0.4F;
 				this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 				this.leftArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 				break;
-			case field_3405:
+			case CROSSBOW_CHARGE:
 				CrossbowPosing.charge(this.rightArm, this.leftArm, livingEntity, true);
 				break;
-			case field_3408:
+			case CROSSBOW_HOLD:
 				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
 		}
 	}
 
 	private void method_30155(T livingEntity) {
 		switch (this.leftArmPose) {
-			case field_3409:
+			case EMPTY:
 				this.leftArm.yaw = 0.0F;
 				break;
-			case field_3406:
+			case BLOCK:
 				this.leftArm.pitch = this.leftArm.pitch * 0.5F - 0.9424779F;
 				this.leftArm.yaw = (float) (Math.PI / 6);
 				break;
-			case field_3410:
+			case ITEM:
 				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) (Math.PI / 10);
 				this.leftArm.yaw = 0.0F;
 				break;
-			case field_3407:
+			case THROW_SPEAR:
 				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
 				this.leftArm.yaw = 0.0F;
 				break;
-			case field_3403:
+			case BOW_AND_ARROW:
 				this.rightArm.yaw = -0.1F + this.head.yaw - 0.4F;
 				this.leftArm.yaw = 0.1F + this.head.yaw;
 				this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 				this.leftArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 				break;
-			case field_3405:
+			case CROSSBOW_CHARGE:
 				CrossbowPosing.charge(this.rightArm, this.leftArm, livingEntity, false);
 				break;
-			case field_3408:
+			case CROSSBOW_HOLD:
 				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, false);
 		}
 	}
@@ -277,7 +277,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			ModelPart modelPart = this.getArm(arm);
 			float g = this.handSwingProgress;
 			this.torso.yaw = MathHelper.sin(MathHelper.sqrt(g) * (float) (Math.PI * 2)) * 0.2F;
-			if (arm == Arm.field_6182) {
+			if (arm == Arm.LEFT) {
 				this.torso.yaw *= -1.0F;
 			}
 
@@ -347,7 +347,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 	}
 
 	protected ModelPart getArm(Arm arm) {
-		return arm == Arm.field_6182 ? this.leftArm : this.rightArm;
+		return arm == Arm.LEFT ? this.leftArm : this.rightArm;
 	}
 
 	@Override
@@ -357,18 +357,18 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 	protected Arm getPreferredArm(T entity) {
 		Arm arm = entity.getMainArm();
-		return entity.preferredHand == Hand.field_5808 ? arm : arm.getOpposite();
+		return entity.preferredHand == Hand.MAIN_HAND ? arm : arm.getOpposite();
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum ArmPose {
-		field_3409(false),
-		field_3410(false),
-		field_3406(false),
-		field_3403(true),
-		field_3407(false),
-		field_3405(true),
-		field_3408(true);
+		EMPTY(false),
+		ITEM(false),
+		BLOCK(false),
+		BOW_AND_ARROW(true),
+		THROW_SPEAR(false),
+		CROSSBOW_CHARGE(true),
+		CROSSBOW_HOLD(true);
 
 		private final boolean field_25722;
 

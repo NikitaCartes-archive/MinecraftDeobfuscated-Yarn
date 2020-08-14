@@ -62,7 +62,7 @@ public class EndPortalBlock extends BlockWithEntity {
 		double d = (double)pos.getX() + random.nextDouble();
 		double e = (double)pos.getY() + 0.8;
 		double f = (double)pos.getZ() + random.nextDouble();
-		world.addParticle(ParticleTypes.field_11251, d, e, f, 0.0, 0.0, 0.0);
+		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -222,19 +222,19 @@ public class TestCommand {
 		if (x <= 48 && y <= 48 && z <= 48) {
 			ServerWorld serverWorld = source.getWorld();
 			BlockPos blockPos = new BlockPos(source.getPosition());
-			BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.field_13202, blockPos).getY(), blockPos.getZ() + 3);
-			StructureTestUtil.createTestArea(structure.toLowerCase(), blockPos2, new BlockPos(x, y, z), BlockRotation.field_11467, serverWorld);
+			BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
+			StructureTestUtil.createTestArea(structure.toLowerCase(), blockPos2, new BlockPos(x, y, z), BlockRotation.NONE, serverWorld);
 
 			for (int i = 0; i < x; i++) {
 				for (int j = 0; j < z; j++) {
 					BlockPos blockPos3 = new BlockPos(blockPos2.getX() + i, blockPos2.getY() + 1, blockPos2.getZ() + j);
-					Block block = Blocks.field_10093;
+					Block block = Blocks.POLISHED_ANDESITE;
 					BlockStateArgument blockStateArgument = new BlockStateArgument(block.getDefaultState(), Collections.EMPTY_SET, null);
 					blockStateArgument.setBlockState(serverWorld, blockPos3, 2);
 				}
 			}
 
-			StructureTestUtil.placeStartButton(blockPos2, new BlockPos(1, 0, -1), BlockRotation.field_11467, serverWorld);
+			StructureTestUtil.placeStartButton(blockPos2, new BlockPos(1, 0, -1), BlockRotation.NONE, serverWorld);
 			return 0;
 		} else {
 			throw new IllegalArgumentException("The structure must be less than 48 blocks big in each axis");
@@ -262,9 +262,9 @@ public class TestCommand {
 				.setStyle(
 					Style.EMPTY
 						.withBold(true)
-						.withColor(Formatting.field_1060)
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, new LiteralText("Click to copy to clipboard")))
-						.withClickEvent(new ClickEvent(ClickEvent.Action.field_21462, "final BlockPos " + variableName + " = new BlockPos(" + string + ");"))
+						.withColor(Formatting.GREEN)
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard")))
+						.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + variableName + " = new BlockPos(" + string + ");"))
 				);
 			source.sendFeedback(new LiteralText("Position relative to " + string2 + ": ").append(text), false);
 			DebugInfoSender.addGameTestMarker(serverWorld, new BlockPos(blockPos), string, -2147418368, 10000);
@@ -277,7 +277,7 @@ public class TestCommand {
 		ServerWorld serverWorld = source.getWorld();
 		BlockPos blockPos2 = StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverWorld);
 		if (blockPos2 == null) {
-			sendMessage(serverWorld, "Couldn't find any structure block within 15 radius", Formatting.field_1061);
+			sendMessage(serverWorld, "Couldn't find any structure block within 15 radius", Formatting.RED);
 			return 0;
 		} else {
 			TestUtil.clearDebugMarkers(serverWorld);
@@ -291,7 +291,7 @@ public class TestCommand {
 		ServerWorld serverWorld = source.getWorld();
 		Collection<BlockPos> collection = StructureTestUtil.findStructureBlocks(blockPos, 200, serverWorld);
 		if (collection.isEmpty()) {
-			sendMessage(serverWorld, "Couldn't find any structure blocks within 200 block radius", Formatting.field_1061);
+			sendMessage(serverWorld, "Couldn't find any structure blocks within 200 block radius", Formatting.RED);
 			return 1;
 		} else {
 			TestUtil.clearDebugMarkers(serverWorld);
@@ -320,15 +320,15 @@ public class TestCommand {
 
 	private static void onCompletion(ServerWorld world, TestSet tests) {
 		if (tests.isDone()) {
-			sendMessage(world, "GameTest done! " + tests.getTestCount() + " tests were run", Formatting.field_1068);
+			sendMessage(world, "GameTest done! " + tests.getTestCount() + " tests were run", Formatting.WHITE);
 			if (tests.failed()) {
-				sendMessage(world, "" + tests.getFailedRequiredTestCount() + " required tests failed :(", Formatting.field_1061);
+				sendMessage(world, "" + tests.getFailedRequiredTestCount() + " required tests failed :(", Formatting.RED);
 			} else {
-				sendMessage(world, "All required tests passed :)", Formatting.field_1060);
+				sendMessage(world, "All required tests passed :)", Formatting.GREEN);
 			}
 
 			if (tests.hasFailedOptionalTests()) {
-				sendMessage(world, "" + tests.getFailedOptionalTestCount() + " optional tests failed", Formatting.field_1080);
+				sendMessage(world, "" + tests.getFailedOptionalTestCount() + " optional tests failed", Formatting.GRAY);
 			}
 		}
 	}
@@ -338,7 +338,7 @@ public class TestCommand {
 		TestUtil.clearDebugMarkers(serverWorld);
 		BlockPos blockPos = new BlockPos(
 			source.getPosition().x,
-			(double)source.getWorld().getTopPosition(Heightmap.Type.field_13202, new BlockPos(source.getPosition())).getY(),
+			(double)source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, new BlockPos(source.getPosition())).getY(),
 			source.getPosition().z
 		);
 		TestUtil.clearTests(serverWorld, blockPos, TestManager.INSTANCE, MathHelper.clamp(radius, 0, 1024));
@@ -348,7 +348,7 @@ public class TestCommand {
 	private static int executeRun(ServerCommandSource source, TestFunction testFunction, int i) {
 		ServerWorld serverWorld = source.getWorld();
 		BlockPos blockPos = new BlockPos(source.getPosition());
-		int j = source.getWorld().getTopPosition(Heightmap.Type.field_13202, blockPos).getY();
+		int j = source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ() + 3);
 		TestUtil.clearDebugMarkers(serverWorld);
 		setWorld(testFunction, serverWorld);
@@ -404,7 +404,7 @@ public class TestCommand {
 
 	private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions, int i, int j) {
 		BlockPos blockPos = new BlockPos(source.getPosition());
-		BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.field_13202, blockPos).getY(), blockPos.getZ() + 3);
+		BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
 		ServerWorld serverWorld = source.getWorld();
 		BlockRotation blockRotation = StructureTestUtil.method_29408(i);
 		Collection<GameTest> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, blockRotation, serverWorld, TestManager.INSTANCE, j);
@@ -422,7 +422,7 @@ public class TestCommand {
 		ServerWorld serverWorld = serverCommandSource.getWorld();
 		BlockPos blockPos2 = StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverWorld);
 		if (blockPos2 == null) {
-			sendMessage(serverWorld, "Couldn't find any structure block within 15 radius", Formatting.field_1061);
+			sendMessage(serverWorld, "Couldn't find any structure block within 15 radius", Formatting.RED);
 			return 0;
 		} else {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(blockPos2);

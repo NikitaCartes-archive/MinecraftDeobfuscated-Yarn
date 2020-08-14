@@ -21,14 +21,14 @@ public class StraightTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	protected TrunkPlacerType<?> getType() {
-		return TrunkPlacerType.field_23763;
+		return TrunkPlacerType.STRAIGHT_TRUNK_PLACER;
 	}
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
 		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
-		method_27400(world, pos.method_10074());
+		method_27400(world, pos.down());
 
 		for (int i = 0; i < trunkHeight; i++) {
 			method_27402(world, random, pos.up(i), set, blockBox, treeFeatureConfig);

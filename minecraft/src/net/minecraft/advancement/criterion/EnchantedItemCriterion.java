@@ -18,7 +18,7 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		return ID;
 	}
 
-	public EnchantedItemCriterion.Conditions method_8872(
+	public EnchantedItemCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));

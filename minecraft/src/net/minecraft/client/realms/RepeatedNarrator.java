@@ -27,7 +27,7 @@ public class RepeatedNarrator {
 						: new RepeatedNarrator.Parameters(message, RateLimiter.create((double)this.permitsPerSecond))
 			);
 		if (parameters.rateLimiter.tryAcquire(1)) {
-			NarratorManager.INSTANCE.onChatMessage(MessageType.field_11735, new LiteralText(message), Util.NIL_UUID);
+			NarratorManager.INSTANCE.onChatMessage(MessageType.SYSTEM, new LiteralText(message), Util.NIL_UUID);
 		}
 	}
 

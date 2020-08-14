@@ -34,7 +34,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 				double j = f + this.dragon.getRandom().nextGaussian() / 2.0;
 
 				for (int k = 0; k < 6; k++) {
-					this.dragon.world.addParticle(ParticleTypes.field_11216, g, h, j, -vec3d.x * 0.08F * (double)k, -vec3d.y * 0.6F, -vec3d.z * 0.08F * (double)k);
+					this.dragon.world.addParticle(ParticleTypes.DRAGON_BREATH, g, h, j, -vec3d.x * 0.08F * (double)k, -vec3d.y * 0.6F, -vec3d.z * 0.08F * (double)k);
 				}
 
 				vec3d.rotateY((float) (Math.PI / 16));
@@ -47,9 +47,9 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 		this.ticks++;
 		if (this.ticks >= 200) {
 			if (this.field_7052 >= 4) {
-				this.dragon.getPhaseManager().setPhase(PhaseType.field_7077);
+				this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
 			} else {
-				this.dragon.getPhaseManager().setPhase(PhaseType.field_7081);
+				this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
 			}
 		} else if (this.ticks == 10) {
 			Vec3d vec3d = new Vec3d(this.dragon.partHead.getX() - this.dragon.getX(), 0.0, this.dragon.partHead.getZ() - this.dragon.getZ()).normalize();
@@ -74,8 +74,8 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			this.field_7051.setOwner(this.dragon);
 			this.field_7051.setRadius(5.0F);
 			this.field_7051.setDuration(200);
-			this.field_7051.setParticleType(ParticleTypes.field_11216);
-			this.field_7051.addEffect(new StatusEffectInstance(StatusEffects.field_5921));
+			this.field_7051.setParticleType(ParticleTypes.DRAGON_BREATH);
+			this.field_7051.addEffect(new StatusEffectInstance(StatusEffects.INSTANT_DAMAGE));
 			this.dragon.world.spawnEntity(this.field_7051);
 		}
 	}
@@ -96,7 +96,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 
 	@Override
 	public PhaseType<SittingFlamingPhase> getType() {
-		return PhaseType.field_7072;
+		return PhaseType.SITTING_FLAMING;
 	}
 
 	public void method_6857() {

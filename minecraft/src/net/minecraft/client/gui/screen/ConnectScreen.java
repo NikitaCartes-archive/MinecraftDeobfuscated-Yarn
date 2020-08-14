@@ -70,7 +70,7 @@ public class ConnectScreen extends Screen {
 								ConnectScreen.this.connection, ConnectScreen.this.client, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)
 							)
 						);
-					ConnectScreen.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.field_20593));
+					ConnectScreen.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
 					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.client.getSession().getProfile()));
 				} catch (UnknownHostException var4) {
 					if (ConnectScreen.this.connectingCancelled) {

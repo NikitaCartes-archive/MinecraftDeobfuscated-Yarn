@@ -21,11 +21,11 @@ public class DrownedEntityRenderer extends ZombieBaseEntityRenderer<DrownedEntit
 	}
 
 	@Override
-	public Identifier method_4163(ZombieEntity zombieEntity) {
+	public Identifier getTexture(ZombieEntity zombieEntity) {
 		return TEXTURE;
 	}
 
-	protected void method_4164(DrownedEntity drownedEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(DrownedEntity drownedEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(drownedEntity, matrixStack, f, g, h);
 		float i = drownedEntity.getLeaningPitch(h);
 		if (i > 0.0F) {

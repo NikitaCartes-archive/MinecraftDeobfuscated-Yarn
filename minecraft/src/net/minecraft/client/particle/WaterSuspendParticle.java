@@ -52,7 +52,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_24464(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			Random random = clientWorld.random;
 			double j = random.nextGaussian() * 1.0E-6F;
 			double k = random.nextGaussian() * 1.0E-4F;
@@ -72,7 +72,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_24465(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f);
 			waterSuspendParticle.setSprite(this.spriteProvider);
 			return waterSuspendParticle;
@@ -87,7 +87,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_24466(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			double j = (double)clientWorld.random.nextFloat() * -1.9 * (double)clientWorld.random.nextFloat() * 0.1;
 			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f, 0.0, j, 0.0);
 			waterSuspendParticle.setSprite(this.spriteProvider);

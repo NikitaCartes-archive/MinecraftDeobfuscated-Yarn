@@ -37,7 +37,7 @@ public class RecipeCategoryOptionsC2SPacket implements Packet<ServerPlayPacketLi
 		buf.writeBoolean(this.filteringCraftable);
 	}
 
-	public void method_30304(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onRecipeCategoryOptions(this);
 	}
 

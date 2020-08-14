@@ -9,9 +9,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.world.biome.Biome;
 
 public class CheckerboardBiomeSource extends BiomeSource {
-	public static final Codec<CheckerboardBiomeSource> field_24715 = RecordCodecBuilder.create(
+	public static final Codec<CheckerboardBiomeSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Biome.REGISTRY_CODEC.listOf().fieldOf("biomes").forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray),
+					Biome.field_26750.fieldOf("biomes").forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray),
 					Codec.intRange(0, 62).fieldOf("scale").orElse(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)
 				)
 				.apply(instance, CheckerboardBiomeSource::new)
@@ -28,8 +28,8 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	protected Codec<? extends BiomeSource> method_28442() {
-		return field_24715;
+	protected Codec<? extends BiomeSource> getCodec() {
+		return CODEC;
 	}
 
 	@Environment(EnvType.CLIENT)

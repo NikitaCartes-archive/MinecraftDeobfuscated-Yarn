@@ -31,7 +31,7 @@ public class FarmlandBlock extends Block {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		if (direction == Direction.field_11036 && !state.canPlaceAt(world, pos)) {
+		if (direction == Direction.UP && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
@@ -46,7 +46,7 @@ public class FarmlandBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return !this.getDefaultState().canPlaceAt(ctx.getWorld(), ctx.getBlockPos()) ? Blocks.field_10566.getDefaultState() : super.getPlacementState(ctx);
+		return !this.getDefaultState().canPlaceAt(ctx.getWorld(), ctx.getBlockPos()) ? Blocks.DIRT.getDefaultState() : super.getPlacementState(ctx);
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class FarmlandBlock extends Block {
 	}
 
 	public static void setToDirt(BlockState state, World world, BlockPos pos) {
-		world.setBlockState(pos, pushEntitiesUpBeforeBlockChange(state, Blocks.field_10566.getDefaultState(), world, pos));
+		world.setBlockState(pos, pushEntitiesUpBeforeBlockChange(state, Blocks.DIRT.getDefaultState(), world, pos));
 	}
 
 	private static boolean hasCrop(BlockView world, BlockPos pos) {
@@ -104,7 +104,7 @@ public class FarmlandBlock extends Block {
 
 	private static boolean isWaterNearby(WorldView world, BlockPos pos) {
 		for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
-			if (world.getFluidState(blockPos).isIn(FluidTags.field_15517)) {
+			if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 				return true;
 			}
 		}

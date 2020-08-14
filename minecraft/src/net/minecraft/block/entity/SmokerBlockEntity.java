@@ -10,7 +10,7 @@ import net.minecraft.text.TranslatableText;
 
 public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
 	public SmokerBlockEntity() {
-		super(BlockEntityType.field_16414, RecipeType.SMOKING);
+		super(BlockEntityType.SMOKER, RecipeType.SMOKING);
 	}
 
 	@Override

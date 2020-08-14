@@ -70,7 +70,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-		return !this.fluid.isIn(FluidTags.field_15518);
+		return !this.fluid.isIn(FluidTags.LAVA);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11455;
+		return BlockRenderType.INVISIBLE;
 	}
 
 	@Override
@@ -124,21 +124,21 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	private boolean receiveNeighborFluids(World world, BlockPos pos, BlockState state) {
-		if (this.fluid.isIn(FluidTags.field_15518)) {
-			boolean bl = world.getBlockState(pos.method_10074()).isOf(Blocks.field_22090);
+		if (this.fluid.isIn(FluidTags.LAVA)) {
+			boolean bl = world.getBlockState(pos.down()).isOf(Blocks.SOUL_SOIL);
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.field_11033) {
+				if (direction != Direction.DOWN) {
 					BlockPos blockPos = pos.offset(direction);
-					if (world.getFluidState(blockPos).isIn(FluidTags.field_15517)) {
-						Block block = world.getFluidState(pos).isStill() ? Blocks.field_10540 : Blocks.field_10445;
+					if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
+						Block block = world.getFluidState(pos).isStill() ? Blocks.OBSIDIAN : Blocks.COBBLESTONE;
 						world.setBlockState(pos, block.getDefaultState());
 						this.playExtinguishSound(world, pos);
 						return false;
 					}
 
-					if (bl && world.getBlockState(blockPos).isOf(Blocks.field_10384)) {
-						world.setBlockState(pos, Blocks.field_22091.getDefaultState());
+					if (bl && world.getBlockState(blockPos).isOf(Blocks.BLUE_ICE)) {
+						world.setBlockState(pos, Blocks.BASALT.getDefaultState());
 						this.playExtinguishSound(world, pos);
 						return false;
 					}
@@ -161,10 +161,10 @@ public class FluidBlock extends Block implements FluidDrainable {
 	@Override
 	public Fluid tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
 		if ((Integer)state.get(LEVEL) == 0) {
-			world.setBlockState(pos, Blocks.field_10124.getDefaultState(), 11);
+			world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
 			return this.fluid;
 		} else {
-			return Fluids.field_15906;
+			return Fluids.EMPTY;
 		}
 	}
 }

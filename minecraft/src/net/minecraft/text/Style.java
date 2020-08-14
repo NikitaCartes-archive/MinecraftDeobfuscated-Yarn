@@ -292,22 +292,22 @@ public class Style {
 		Boolean boolean4 = this.underlined;
 		Boolean boolean5 = this.obfuscated;
 		switch (formatting) {
-			case field_1051:
+			case OBFUSCATED:
 				boolean5 = true;
 				break;
-			case field_1067:
+			case BOLD:
 				boolean_ = true;
 				break;
-			case field_1055:
+			case STRIKETHROUGH:
 				boolean3 = true;
 				break;
-			case field_1073:
+			case UNDERLINE:
 				boolean4 = true;
 				break;
-			case field_1056:
+			case ITALIC:
 				boolean2 = true;
 				break;
-			case field_1070:
+			case RESET:
 				return EMPTY;
 			default:
 				textColor = TextColor.fromFormatting(formatting);
@@ -335,22 +335,22 @@ public class Style {
 		Boolean boolean4 = this.underlined;
 		Boolean boolean5 = this.obfuscated;
 		switch (formatting) {
-			case field_1051:
+			case OBFUSCATED:
 				boolean5 = true;
 				break;
-			case field_1067:
+			case BOLD:
 				boolean_ = true;
 				break;
-			case field_1055:
+			case STRIKETHROUGH:
 				boolean3 = true;
 				break;
-			case field_1073:
+			case UNDERLINE:
 				boolean4 = true;
 				break;
-			case field_1056:
+			case ITALIC:
 				boolean2 = true;
 				break;
-			case field_1070:
+			case RESET:
 				return EMPTY;
 			default:
 				boolean5 = false;
@@ -380,22 +380,22 @@ public class Style {
 
 		for (Formatting formatting : formattings) {
 			switch (formatting) {
-				case field_1051:
+				case OBFUSCATED:
 					boolean5 = true;
 					break;
-				case field_1067:
+				case BOLD:
 					boolean_ = true;
 					break;
-				case field_1055:
+				case STRIKETHROUGH:
 					boolean3 = true;
 					break;
-				case field_1073:
+				case UNDERLINE:
 					boolean4 = true;
 					break;
-				case field_1056:
+				case ITALIC:
 					boolean2 = true;
 					break;
-				case field_1070:
+				case RESET:
 					return EMPTY;
 				default:
 					textColor = TextColor.fromFormatting(formatting);
@@ -487,7 +487,7 @@ public class Style {
 	 */
 	public static class Serializer implements JsonDeserializer<Style>, JsonSerializer<Style> {
 		@Nullable
-		public Style method_10991(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public Style deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonObject()) {
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
 				if (jsonObject == null) {
@@ -574,7 +574,7 @@ public class Style {
 		}
 
 		@Nullable
-		public JsonElement method_10990(Style style, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(Style style, Type type, JsonSerializationContext jsonSerializationContext) {
 			if (style.isEmpty()) {
 				return null;
 			} else {

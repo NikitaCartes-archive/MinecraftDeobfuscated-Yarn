@@ -65,7 +65,7 @@ public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
 		return this.category;
 	}
 
-	public void method_11905(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onStopSound(this);
 	}
 }

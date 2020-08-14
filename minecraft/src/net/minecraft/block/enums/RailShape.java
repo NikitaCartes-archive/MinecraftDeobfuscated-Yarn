@@ -3,16 +3,16 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum RailShape implements StringIdentifiable {
-	field_12665("north_south"),
-	field_12674("east_west"),
-	field_12667("ascending_east"),
-	field_12666("ascending_west"),
-	field_12670("ascending_north"),
-	field_12668("ascending_south"),
-	field_12664("south_east"),
-	field_12671("south_west"),
-	field_12672("north_west"),
-	field_12663("north_east");
+	NORTH_SOUTH("north_south"),
+	EAST_WEST("east_west"),
+	ASCENDING_EAST("ascending_east"),
+	ASCENDING_WEST("ascending_west"),
+	ASCENDING_NORTH("ascending_north"),
+	ASCENDING_SOUTH("ascending_south"),
+	SOUTH_EAST("south_east"),
+	SOUTH_WEST("south_west"),
+	NORTH_WEST("north_west"),
+	NORTH_EAST("north_east");
 
 	private final String name;
 
@@ -25,7 +25,7 @@ public enum RailShape implements StringIdentifiable {
 	}
 
 	public boolean isAscending() {
-		return this == field_12670 || this == field_12667 || this == field_12668 || this == field_12666;
+		return this == ASCENDING_NORTH || this == ASCENDING_EAST || this == ASCENDING_SOUTH || this == ASCENDING_WEST;
 	}
 
 	@Override

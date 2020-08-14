@@ -44,7 +44,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 	}
 
 	public void renderDamage(BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrix, VertexConsumer vertexConsumer) {
-		if (state.getRenderType() == BlockRenderType.field_11458) {
+		if (state.getRenderType() == BlockRenderType.MODEL) {
 			BakedModel bakedModel = this.models.getModel(state);
 			long l = state.getRenderingSeed(pos);
 			this.blockModelRenderer.render(world, bakedModel, state, pos, matrix, vertexConsumer, true, this.random, l, OverlayTexture.DEFAULT_UV);
@@ -56,7 +56,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 	) {
 		try {
 			BlockRenderType blockRenderType = state.getRenderType();
-			return blockRenderType != BlockRenderType.field_11458
+			return blockRenderType != BlockRenderType.MODEL
 				? false
 				: this.blockModelRenderer
 					.render(world, this.getModel(state), state, pos, matrix, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
@@ -89,9 +89,9 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 
 	public void renderBlockAsEntity(BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumer, int light, int overlay) {
 		BlockRenderType blockRenderType = state.getRenderType();
-		if (blockRenderType != BlockRenderType.field_11455) {
+		if (blockRenderType != BlockRenderType.INVISIBLE) {
 			switch (blockRenderType) {
-				case field_11458:
+				case MODEL:
 					BakedModel bakedModel = this.getModel(state);
 					int i = this.blockColors.getColor(state, null, null, 0);
 					float f = (float)(i >> 16 & 0xFF) / 255.0F;
@@ -100,8 +100,8 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 					this.blockModelRenderer
 						.render(matrices.peek(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state, false)), state, bakedModel, f, g, h, light, overlay);
 					break;
-				case field_11456:
-					BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(state.getBlock()), ModelTransformation.Mode.field_4315, matrices, vertexConsumer, light, overlay);
+				case ENTITYBLOCK_ANIMATED:
+					BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(state.getBlock()), ModelTransformation.Mode.NONE, matrices, vertexConsumer, light, overlay);
 			}
 		}
 	}

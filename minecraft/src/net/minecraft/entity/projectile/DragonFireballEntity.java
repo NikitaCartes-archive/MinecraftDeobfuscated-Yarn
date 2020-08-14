@@ -23,18 +23,18 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 
 	@Environment(EnvType.CLIENT)
 	public DragonFireballEntity(World world, double x, double y, double z, double directionX, double directionY, double directionZ) {
-		super(EntityType.field_6129, x, y, z, directionX, directionY, directionZ, world);
+		super(EntityType.DRAGON_FIREBALL, x, y, z, directionX, directionY, directionZ, world);
 	}
 
 	public DragonFireballEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
-		super(EntityType.field_6129, owner, directionX, directionY, directionZ, world);
+		super(EntityType.DRAGON_FIREBALL, owner, directionX, directionY, directionZ, world);
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
 		Entity entity = this.getOwner();
-		if (hitResult.getType() != HitResult.Type.field_1331 || !((EntityHitResult)hitResult).getEntity().isPartOf(entity)) {
+		if (hitResult.getType() != HitResult.Type.ENTITY || !((EntityHitResult)hitResult).getEntity().isPartOf(entity)) {
 			if (!this.world.isClient) {
 				List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
 				AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
@@ -42,11 +42,11 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 					areaEffectCloudEntity.setOwner((LivingEntity)entity);
 				}
 
-				areaEffectCloudEntity.setParticleType(ParticleTypes.field_11216);
+				areaEffectCloudEntity.setParticleType(ParticleTypes.DRAGON_BREATH);
 				areaEffectCloudEntity.setRadius(3.0F);
 				areaEffectCloudEntity.setDuration(600);
 				areaEffectCloudEntity.setRadiusGrowth((7.0F - areaEffectCloudEntity.getRadius()) / (float)areaEffectCloudEntity.getDuration());
-				areaEffectCloudEntity.addEffect(new StatusEffectInstance(StatusEffects.field_5921, 1, 1));
+				areaEffectCloudEntity.addEffect(new StatusEffectInstance(StatusEffects.INSTANT_DAMAGE, 1, 1));
 				if (!list.isEmpty()) {
 					for (LivingEntity livingEntity : list) {
 						double d = this.squaredDistanceTo(livingEntity);
@@ -76,7 +76,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 
 	@Override
 	protected ParticleEffect getParticleType() {
-		return ParticleTypes.field_11216;
+		return ParticleTypes.DRAGON_BREATH;
 	}
 
 	@Override

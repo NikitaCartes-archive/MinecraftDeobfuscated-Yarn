@@ -183,7 +183,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	private void moveToSpawn(ServerWorld world) {
 		BlockPos blockPos = world.getSpawnPos();
-		if (world.getDimension().hasSkyLight() && world.getServer().getSaveProperties().getGameMode() != GameMode.field_9216) {
+		if (world.getDimension().hasSkyLight() && world.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
 			int i = Math.max(0, this.server.getSpawnRadius(world));
 			int j = MathHelper.floor(world.getWorldBorder().getDistanceInsideBorder((double)blockPos.getX(), (double)blockPos.getZ()));
 			if (j < i) {
@@ -230,12 +230,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		super.readCustomDataFromTag(tag);
 		if (tag.contains("playerGameType", 99)) {
 			if (this.getServer().shouldForceGameMode()) {
-				this.interactionManager.setGameMode(this.getServer().getDefaultGameMode(), GameMode.field_9218);
+				this.interactionManager.setGameMode(this.getServer().getDefaultGameMode(), GameMode.NOT_SET);
 			} else {
 				this.interactionManager
 					.setGameMode(
 						GameMode.byId(tag.getInt("playerGameType")),
-						tag.contains("previousPlayerGameType", 3) ? GameMode.byId(tag.getInt("previousPlayerGameType")) : GameMode.field_9218
+						tag.contains("previousPlayerGameType", 3) ? GameMode.byId(tag.getInt("previousPlayerGameType")) : GameMode.NOT_SET
 					);
 			}
 		}
@@ -338,13 +338,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Override
 	public void enterCombat() {
 		super.enterCombat();
-		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12352));
+		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTER_COMBAT));
 	}
 
 	@Override
 	public void endCombat() {
 		super.endCombat();
-		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12353));
+		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.END_COMBAT));
 	}
 
 	@Override
@@ -389,7 +389,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		if (entity != this) {
 			if (entity.isAlive()) {
 				this.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
-				this.getServerWorld().method_14178().updateCameraPosition(this);
+				this.getServerWorld().getChunkManager().updateCameraPosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
 				}
@@ -433,32 +433,32 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 			if (this.getHealth() + this.getAbsorptionAmount() != this.lastHealthScore) {
 				this.lastHealthScore = this.getHealth() + this.getAbsorptionAmount();
-				this.updateScores(ScoreboardCriterion.field_1453, MathHelper.ceil(this.lastHealthScore));
+				this.updateScores(ScoreboardCriterion.HEALTH, MathHelper.ceil(this.lastHealthScore));
 			}
 
 			if (this.hungerManager.getFoodLevel() != this.lastFoodScore) {
 				this.lastFoodScore = this.hungerManager.getFoodLevel();
-				this.updateScores(ScoreboardCriterion.field_1464, MathHelper.ceil((float)this.lastFoodScore));
+				this.updateScores(ScoreboardCriterion.FOOD, MathHelper.ceil((float)this.lastFoodScore));
 			}
 
 			if (this.getAir() != this.lastAirScore) {
 				this.lastAirScore = this.getAir();
-				this.updateScores(ScoreboardCriterion.field_1459, MathHelper.ceil((float)this.lastAirScore));
+				this.updateScores(ScoreboardCriterion.AIR, MathHelper.ceil((float)this.lastAirScore));
 			}
 
 			if (this.getArmor() != this.lastArmorScore) {
 				this.lastArmorScore = this.getArmor();
-				this.updateScores(ScoreboardCriterion.field_1452, MathHelper.ceil((float)this.lastArmorScore));
+				this.updateScores(ScoreboardCriterion.ARMOR, MathHelper.ceil((float)this.lastArmorScore));
 			}
 
 			if (this.totalExperience != this.lastExperienceScore) {
 				this.lastExperienceScore = this.totalExperience;
-				this.updateScores(ScoreboardCriterion.field_1460, MathHelper.ceil((float)this.lastExperienceScore));
+				this.updateScores(ScoreboardCriterion.XP, MathHelper.ceil((float)this.lastExperienceScore));
 			}
 
 			if (this.experienceLevel != this.lastLevelScore) {
 				this.lastLevelScore = this.experienceLevel;
-				this.updateScores(ScoreboardCriterion.field_1465, MathHelper.ceil((float)this.lastLevelScore));
+				this.updateScores(ScoreboardCriterion.LEVEL, MathHelper.ceil((float)this.lastLevelScore));
 			}
 
 			if (this.totalExperience != this.syncedExperience) {
@@ -483,37 +483,37 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public void onDeath(DamageSource source) {
-		boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19398);
+		boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
 		if (bl) {
 			Text text = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
 				.sendPacket(
-					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, text),
+					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text),
 					future -> {
 						if (!future.isSuccess()) {
 							int i = 256;
 							String string = text.asTruncatedString(256);
-							Text text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.field_1054));
+							Text text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.YELLOW));
 							Text text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName())
-								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, text2)));
-							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350, text3));
+								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
+							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text3));
 						}
 					}
 				);
 			AbstractTeam abstractTeam = this.getScoreboardTeam();
-			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1442) {
-				this.server.getPlayerManager().broadcastChatMessage(text, MessageType.field_11735, Util.NIL_UUID);
-			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1444) {
+			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
+				this.server.getPlayerManager().broadcastChatMessage(text, MessageType.SYSTEM, Util.NIL_UUID);
+			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS) {
 				this.server.getPlayerManager().sendToTeam(this, text);
-			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.field_1446) {
+			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM) {
 				this.server.getPlayerManager().sendToOtherTeams(this, text);
 			}
 		} else {
-			this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.field_12350));
+			this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED));
 		}
 
 		this.dropShoulderEntities();
-		if (this.world.getGameRules().getBoolean(GameRules.field_25401)) {
+		if (this.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
 			this.forgiveMobAnger();
 		}
 
@@ -521,18 +521,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.drop(source);
 		}
 
-		this.getScoreboard().forEachScore(ScoreboardCriterion.field_1456, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
+		this.getScoreboard().forEachScore(ScoreboardCriterion.DEATH_COUNT, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
 		LivingEntity livingEntity = this.getPrimeAdversary();
 		if (livingEntity != null) {
-			this.incrementStat(Stats.field_15411.getOrCreateStat(livingEntity.getType()));
+			this.incrementStat(Stats.KILLED_BY.getOrCreateStat(livingEntity.getType()));
 			livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
 			this.onKilledBy(livingEntity);
 		}
 
 		this.world.sendEntityStatus(this, (byte)3);
-		this.incrementStat(Stats.field_15421);
-		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15400));
-		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
+		this.incrementStat(Stats.DEATHS);
+		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
+		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
 		this.extinguish();
 		this.setFlag(0, false);
 		this.getDamageTracker().update();
@@ -554,12 +554,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.addScore(score);
 			String string = this.getEntityName();
 			String string2 = killer.getEntityName();
-			this.getScoreboard().forEachScore(ScoreboardCriterion.field_1457, string, ScoreboardPlayerScore::incrementScore);
+			this.getScoreboard().forEachScore(ScoreboardCriterion.TOTAL_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
 			if (killer instanceof PlayerEntity) {
-				this.incrementStat(Stats.field_15404);
-				this.getScoreboard().forEachScore(ScoreboardCriterion.field_1463, string, ScoreboardPlayerScore::incrementScore);
+				this.incrementStat(Stats.PLAYER_KILLS);
+				this.getScoreboard().forEachScore(ScoreboardCriterion.PLAYER_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
 			} else {
-				this.incrementStat(Stats.field_15414);
+				this.incrementStat(Stats.MOB_KILLS);
 			}
 
 			this.updateScoreboardScore(string, string2, ScoreboardCriterion.TEAM_KILLS);
@@ -706,7 +706,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
 				for (int k = -1; k < 3; k++) {
-					BlockState blockState = k == -1 ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState();
+					BlockState blockState = k == -1 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
 					world.setBlockState(mutable.set(centerPos).move(j, k, i), blockState);
 				}
 			}
@@ -719,10 +719,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		if (optional.isPresent()) {
 			return optional;
 		} else {
-			Direction.Axis axis = (Direction.Axis)this.world
-				.getBlockState(this.lastNetherPortalPosition)
-				.method_28500(NetherPortalBlock.AXIS)
-				.orElse(Direction.Axis.field_11048);
+			Direction.Axis axis = (Direction.Axis)this.world.getBlockState(this.lastNetherPortalPosition).method_28500(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
 			Optional<class_5459.class_5460> optional2 = serverWorld.getPortalForcer().method_30482(blockPos, axis);
 			if (!optional2.isPresent()) {
 				LOGGER.error("Unable to create a portal, likely target out of worldborder");
@@ -773,17 +770,17 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos pos) {
 		Direction direction = this.world.getBlockState(pos).get(HorizontalFacingBlock.FACING);
 		if (this.isSleeping() || !this.isAlive()) {
-			return Either.left(PlayerEntity.SleepFailureReason.field_7531);
+			return Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM);
 		} else if (!this.world.getDimension().isNatural()) {
-			return Either.left(PlayerEntity.SleepFailureReason.field_7528);
+			return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
 		} else if (!this.isBedTooFarAway(pos, direction)) {
-			return Either.left(PlayerEntity.SleepFailureReason.field_7530);
+			return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
 		} else if (this.isBedObstructed(pos, direction)) {
-			return Either.left(PlayerEntity.SleepFailureReason.field_18592);
+			return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
 		} else {
 			this.setSpawnPoint(this.world.getRegistryKey(), pos, this.yaw, false, true);
 			if (this.world.isDay()) {
-				return Either.left(PlayerEntity.SleepFailureReason.field_7529);
+				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			} else {
 				if (!this.isCreative()) {
 					double d = 8.0;
@@ -796,12 +793,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 							hostileEntity -> hostileEntity.isAngryAt(this)
 						);
 					if (!list.isEmpty()) {
-						return Either.left(PlayerEntity.SleepFailureReason.field_7532);
+						return Either.left(PlayerEntity.SleepFailureReason.NOT_SAFE);
 					}
 				}
 
 				Either<PlayerEntity.SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> {
-					this.incrementStat(Stats.field_15381);
+					this.incrementStat(Stats.SLEEP_IN_BED);
 					Criteria.SLEPT_IN_BED.trigger(this);
 				});
 				((ServerWorld)this.world).updateSleepingPlayers();
@@ -812,7 +809,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public void sleep(BlockPos pos) {
-		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
+		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
 		super.sleep(pos);
 	}
 
@@ -833,7 +830,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Override
 	public void wakeUp(boolean bl, boolean updateSleepingPlayers) {
 		if (this.isSleeping()) {
-			this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, 2));
+			this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, 2));
 		}
 
 		super.wakeUp(bl, updateSleepingPlayers);
@@ -913,7 +910,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.inventory, this);
 			if (screenHandler == null) {
 				if (this.isSpectator()) {
-					this.sendMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.field_1061), true);
+					this.sendMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
 				}
 
 				return OptionalInt.empty();
@@ -946,7 +943,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Override
 	public void openEditBookScreen(ItemStack book, Hand hand) {
 		Item item = book.getItem();
-		if (item == Items.field_8360) {
+		if (item == Items.WRITTEN_BOOK) {
 			if (WrittenBookItem.resolve(book, this.getCommandSource(), this)) {
 				this.currentScreenHandler.sendContentUpdates();
 			}
@@ -1078,7 +1075,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public void sendMessage(Text message, boolean actionBar) {
-		this.networkHandler.sendPacket(new GameMessageS2CPacket(message, actionBar ? MessageType.field_11733 : MessageType.field_11737, Util.NIL_UUID));
+		this.networkHandler.sendPacket(new GameMessageS2CPacket(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT, Util.NIL_UUID));
 	}
 
 	@Override
@@ -1137,7 +1134,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	protected void onStatusEffectApplied(StatusEffectInstance effect) {
 		super.onStatusEffectApplied(effect);
 		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), effect));
-		if (effect.getEffectType() == StatusEffects.field_5902) {
+		if (effect.getEffectType() == StatusEffects.LEVITATION) {
 			this.levitationStartTick = this.age;
 			this.levitationStartPos = this.getPos();
 		}
@@ -1156,7 +1153,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	protected void onStatusEffectRemoved(StatusEffectInstance effect) {
 		super.onStatusEffectRemoved(effect);
 		this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getEntityId(), effect.getEffectType()));
-		if (effect.getEffectType() == StatusEffects.field_5902) {
+		if (effect.getEffectType() == StatusEffects.LEVITATION) {
 			this.levitationStartPos = null;
 		}
 
@@ -1176,12 +1173,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public void addCritParticles(Entity target) {
-		this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 4));
+		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 4));
 	}
 
 	@Override
 	public void addEnchantedHitParticles(Entity target) {
-		this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 5));
+		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 5));
 	}
 
 	@Override
@@ -1200,7 +1197,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	public void setGameMode(GameMode gameMode) {
 		this.interactionManager.method_30118(gameMode);
 		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_MODE_CHANGED, (float)gameMode.getId()));
-		if (gameMode == GameMode.field_9219) {
+		if (gameMode == GameMode.SPECTATOR) {
 			this.dropShoulderEntities();
 			this.stopRiding();
 		} else {
@@ -1213,17 +1210,17 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public boolean isSpectator() {
-		return this.interactionManager.getGameMode() == GameMode.field_9219;
+		return this.interactionManager.getGameMode() == GameMode.SPECTATOR;
 	}
 
 	@Override
 	public boolean isCreative() {
-		return this.interactionManager.getGameMode() == GameMode.field_9220;
+		return this.interactionManager.getGameMode() == GameMode.CREATIVE;
 	}
 
 	@Override
 	public void sendSystemMessage(Text message, UUID senderUuid) {
-		this.sendMessage(message, MessageType.field_11735, senderUuid);
+		this.sendMessage(message, MessageType.SYSTEM, senderUuid);
 	}
 
 	public void sendMessage(Text message, MessageType type, UUID senderUuid) {
@@ -1231,15 +1228,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			.sendPacket(
 				new GameMessageS2CPacket(message, type, senderUuid),
 				future -> {
-					if (!future.isSuccess() && (type == MessageType.field_11733 || type == MessageType.field_11735)) {
+					if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM)) {
 						int i = 256;
 						String string = message.asTruncatedString(256);
-						Text text2 = new LiteralText(string).formatted(Formatting.field_1054);
+						Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
 						this.networkHandler
 							.sendPacket(
-								new GameMessageS2CPacket(
-									new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.field_1061), MessageType.field_11735, senderUuid
-								)
+								new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, senderUuid)
 							);
 					}
 				}
@@ -1255,9 +1250,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	public void setClientSettings(ClientSettingsC2SPacket packet) {
 		this.clientChatVisibility = packet.getChatVisibility();
 		this.clientChatColorsEnabled = packet.hasChatColors();
-		this.field_26762 = packet.method_31228();
+		this.field_26790 = packet.method_31265();
 		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)packet.getPlayerModelBitMask());
-		this.getDataTracker().set(MAIN_ARM, (byte)(packet.getMainArm() == Arm.field_6182 ? 0 : 1));
+		this.getDataTracker().set(MAIN_ARM, (byte)(packet.getMainArm() == Arm.LEFT ? 0 : 1));
 	}
 
 	public ChatVisibility getClientChatVisibility() {
@@ -1329,7 +1324,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public void attack(Entity target) {
-		if (this.interactionManager.getGameMode() == GameMode.field_9219) {
+		if (this.interactionManager.getGameMode() == GameMode.SPECTATOR) {
 			this.setCameraEntity(target);
 		} else {
 			super.attack(target);
@@ -1473,10 +1468,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			ItemStack itemStack = itemEntity.getStack();
 			if (retainOwnership) {
 				if (!itemStack.isEmpty()) {
-					this.increaseStat(Stats.field_15405.getOrCreateStat(itemStack.getItem()), stack.getCount());
+					this.increaseStat(Stats.DROPPED.getOrCreateStat(itemStack.getItem()), stack.getCount());
 				}
 
-				this.incrementStat(Stats.field_15406);
+				this.incrementStat(Stats.DROP);
 			}
 
 			return itemEntity;

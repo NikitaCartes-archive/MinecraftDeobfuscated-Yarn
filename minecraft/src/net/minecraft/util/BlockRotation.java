@@ -8,10 +8,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
 
 public enum BlockRotation {
-	field_11467(DirectionTransformation.field_23292),
-	field_11463(DirectionTransformation.field_23318),
-	field_11464(DirectionTransformation.field_23300),
-	field_11465(DirectionTransformation.field_23319);
+	NONE(DirectionTransformation.IDENTITY),
+	CLOCKWISE_90(DirectionTransformation.ROT_90_Y_NEG),
+	CLOCKWISE_180(DirectionTransformation.ROT_180_FACE_XZ),
+	COUNTERCLOCKWISE_90(DirectionTransformation.ROT_90_Y_POS);
 
 	private final DirectionTransformation directionTransformation;
 
@@ -21,38 +21,38 @@ public enum BlockRotation {
 
 	public BlockRotation rotate(BlockRotation rotation) {
 		switch (rotation) {
-			case field_11464:
+			case CLOCKWISE_180:
 				switch (this) {
-					case field_11467:
-						return field_11464;
-					case field_11463:
-						return field_11465;
-					case field_11464:
-						return field_11467;
-					case field_11465:
-						return field_11463;
+					case NONE:
+						return CLOCKWISE_180;
+					case CLOCKWISE_90:
+						return COUNTERCLOCKWISE_90;
+					case CLOCKWISE_180:
+						return NONE;
+					case COUNTERCLOCKWISE_90:
+						return CLOCKWISE_90;
 				}
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				switch (this) {
-					case field_11467:
-						return field_11465;
-					case field_11463:
-						return field_11467;
-					case field_11464:
-						return field_11463;
-					case field_11465:
-						return field_11464;
+					case NONE:
+						return COUNTERCLOCKWISE_90;
+					case CLOCKWISE_90:
+						return NONE;
+					case CLOCKWISE_180:
+						return CLOCKWISE_90;
+					case COUNTERCLOCKWISE_90:
+						return CLOCKWISE_180;
 				}
-			case field_11463:
+			case CLOCKWISE_90:
 				switch (this) {
-					case field_11467:
-						return field_11463;
-					case field_11463:
-						return field_11464;
-					case field_11464:
-						return field_11465;
-					case field_11465:
-						return field_11467;
+					case NONE:
+						return CLOCKWISE_90;
+					case CLOCKWISE_90:
+						return CLOCKWISE_180;
+					case CLOCKWISE_180:
+						return COUNTERCLOCKWISE_90;
+					case COUNTERCLOCKWISE_90:
+						return NONE;
 				}
 			default:
 				return this;
@@ -64,15 +64,15 @@ public enum BlockRotation {
 	}
 
 	public Direction rotate(Direction direction) {
-		if (direction.getAxis() == Direction.Axis.field_11052) {
+		if (direction.getAxis() == Direction.Axis.Y) {
 			return direction;
 		} else {
 			switch (this) {
-				case field_11463:
+				case CLOCKWISE_90:
 					return direction.rotateYClockwise();
-				case field_11464:
+				case CLOCKWISE_180:
 					return direction.getOpposite();
-				case field_11465:
+				case COUNTERCLOCKWISE_90:
 					return direction.rotateYCounterclockwise();
 				default:
 					return direction;
@@ -82,11 +82,11 @@ public enum BlockRotation {
 
 	public int rotate(int rotation, int fullTurn) {
 		switch (this) {
-			case field_11463:
+			case CLOCKWISE_90:
 				return (rotation + fullTurn / 4) % fullTurn;
-			case field_11464:
+			case CLOCKWISE_180:
 				return (rotation + fullTurn / 2) % fullTurn;
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return (rotation + fullTurn * 3 / 4) % fullTurn;
 			default:
 				return rotation;

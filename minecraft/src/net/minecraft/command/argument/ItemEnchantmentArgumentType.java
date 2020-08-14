@@ -31,7 +31,7 @@ public class ItemEnchantmentArgumentType implements ArgumentType<Enchantment> {
 		return context.getArgument(name, Enchantment.class);
 	}
 
-	public Enchantment method_9335(StringReader stringReader) throws CommandSyntaxException {
+	public Enchantment parse(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.fromCommandInput(stringReader);
 		return (Enchantment)Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> UNKNOWN_ENCHANTMENT_EXCEPTION.create(identifier));
 	}

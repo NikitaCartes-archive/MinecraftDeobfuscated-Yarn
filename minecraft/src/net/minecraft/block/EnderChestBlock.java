@@ -43,8 +43,8 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	private static final Text CONTAINER_NAME = new TranslatableText("container.enderchest");
 
 	protected EnderChestBlock(AbstractBlock.Settings settings) {
-		super(settings, () -> BlockEntityType.field_11901);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
+		super(settings, () -> BlockEntityType.ENDER_CHEST);
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -62,7 +62,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11456;
+		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 						(i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
 					)
 				);
-				player.incrementStat(Stats.field_15424);
+				player.incrementStat(Stats.OPEN_ENDERCHEST);
 				PiglinBrain.onGuardedBlockBroken(player, true);
 				return ActionResult.CONSUME;
 			}
@@ -115,7 +115,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 			double g = (double)(random.nextFloat() * (float)j);
 			double h = ((double)random.nextFloat() - 0.5) * 0.125;
 			double l = (double)(random.nextFloat() * (float)k);
-			world.addParticle(ParticleTypes.field_11214, d, e, f, g, h, l);
+			world.addParticle(ParticleTypes.PORTAL, d, e, f, g, h, l);
 		}
 	}
 

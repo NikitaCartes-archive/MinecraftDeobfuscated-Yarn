@@ -86,6 +86,7 @@ public final class Biome {
 				)
 	);
 	public static final Codec<Supplier<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
+	public static final Codec<List<Supplier<Biome>>> field_26750 = RegistryElementCodec.method_31194(Registry.BIOME_KEY, CODEC);
 	private final Map<Integer, List<StructureFeature<?>>> field_26634 = (Map<Integer, List<StructureFeature<?>>>)Registry.STRUCTURE_FEATURE
 		.stream()
 		.collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
@@ -179,7 +180,7 @@ public final class Biome {
 		if (this.getTemperature(pos) >= 0.15F) {
 			return false;
 		} else {
-			if (pos.getY() >= 0 && pos.getY() < 256 && world.getLightLevel(LightType.field_9282, pos) < 10) {
+			if (pos.getY() >= 0 && pos.getY() < 256 && world.getLightLevel(LightType.BLOCK, pos) < 10) {
 				BlockState blockState = world.getBlockState(pos);
 				FluidState fluidState = world.getFluidState(pos);
 				if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
@@ -202,9 +203,9 @@ public final class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && world.getLightLevel(LightType.field_9282, blockPos) < 10) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && world.getLightLevel(LightType.BLOCK, blockPos) < 10) {
 				BlockState blockState = world.getBlockState(blockPos);
-				if (blockState.isAir() && Blocks.field_10477.getDefaultState().canPlaceAt(world, blockPos)) {
+				if (blockState.isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos)) {
 					return true;
 				}
 			}
@@ -387,7 +388,7 @@ public final class Biome {
 		private Float scale;
 		@Nullable
 		private Float temperature;
-		private Biome.TemperatureModifier temperatureModifier = Biome.TemperatureModifier.field_26407;
+		private Biome.TemperatureModifier temperatureModifier = Biome.TemperatureModifier.NONE;
 		@Nullable
 		private Float downfall;
 		@Nullable
@@ -498,23 +499,23 @@ public final class Biome {
 	}
 
 	public static enum Category implements StringIdentifiable {
-		field_9371("none"),
-		field_9361("taiga"),
-		field_9357("extreme_hills"),
-		field_9358("jungle"),
-		field_9354("mesa"),
-		field_9355("plains"),
-		field_9356("savanna"),
-		field_9362("icy"),
-		field_9360("the_end"),
-		field_9363("beach"),
-		field_9370("forest"),
-		field_9367("ocean"),
-		field_9368("desert"),
-		field_9369("river"),
-		field_9364("swamp"),
-		field_9365("mushroom"),
-		field_9366("nether");
+		NONE("none"),
+		TAIGA("taiga"),
+		EXTREME_HILLS("extreme_hills"),
+		JUNGLE("jungle"),
+		MESA("mesa"),
+		PLAINS("plains"),
+		SAVANNA("savanna"),
+		ICY("icy"),
+		THEEND("the_end"),
+		BEACH("beach"),
+		FOREST("forest"),
+		OCEAN("ocean"),
+		DESERT("desert"),
+		RIVER("river"),
+		SWAMP("swamp"),
+		MUSHROOM("mushroom"),
+		NETHER("nether");
 
 		public static final Codec<Biome.Category> CODEC = StringIdentifiable.createCodec(Biome.Category::values, Biome.Category::byName);
 		private static final Map<String, Biome.Category> BY_NAME = (Map<String, Biome.Category>)Arrays.stream(values())
@@ -628,9 +629,9 @@ public final class Biome {
 	}
 
 	public static enum Precipitation implements StringIdentifiable {
-		field_9384("none"),
-		field_9382("rain"),
-		field_9383("snow");
+		NONE("none"),
+		RAIN("rain"),
+		SNOW("snow");
 
 		public static final Codec<Biome.Precipitation> CODEC = StringIdentifiable.createCodec(Biome.Precipitation::values, Biome.Precipitation::byName);
 		private static final Map<String, Biome.Precipitation> BY_NAME = (Map<String, Biome.Precipitation>)Arrays.stream(values())
@@ -656,13 +657,13 @@ public final class Biome {
 	}
 
 	public static enum TemperatureModifier implements StringIdentifiable {
-		field_26407("none") {
+		NONE("none") {
 			@Override
 			public float getModifiedTemperature(BlockPos pos, float temperature) {
 				return temperature;
 			}
 		},
-		field_26408("frozen") {
+		FROZEN("frozen") {
 			@Override
 			public float getModifiedTemperature(BlockPos pos, float temperature) {
 				double d = Biome.field_26392.sample((double)pos.getX() * 0.05, (double)pos.getZ() * 0.05, false) * 7.0;
@@ -711,9 +712,7 @@ public final class Biome {
 			instance -> instance.group(
 						Biome.Precipitation.CODEC.fieldOf("precipitation").forGetter(weather -> weather.precipitation),
 						Codec.FLOAT.fieldOf("temperature").forGetter(weather -> weather.temperature),
-						Biome.TemperatureModifier.CODEC
-							.optionalFieldOf("temperature_modifier", Biome.TemperatureModifier.field_26407)
-							.forGetter(weather -> weather.temperatureModifier),
+						Biome.TemperatureModifier.CODEC.optionalFieldOf("temperature_modifier", Biome.TemperatureModifier.NONE).forGetter(weather -> weather.temperatureModifier),
 						Codec.FLOAT.fieldOf("downfall").forGetter(weather -> weather.downfall)
 					)
 					.apply(instance, Biome.Weather::new)

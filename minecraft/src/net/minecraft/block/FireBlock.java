@@ -34,7 +34,7 @@ public class FireBlock extends AbstractFireBlock {
 	private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = (Map<Direction, BooleanProperty>)ConnectingBlock.FACING_PROPERTIES
 		.entrySet()
 		.stream()
-		.filter(entry -> entry.getKey() != Direction.field_11033)
+		.filter(entry -> entry.getKey() != Direction.DOWN)
 		.collect(Util.toMap());
 	private static final VoxelShape field_26653 = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
 	private static final VoxelShape field_26654 = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
@@ -93,7 +93,7 @@ public class FireBlock extends AbstractFireBlock {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return this.canPlaceAt(state, world, pos) ? this.method_24855(world, pos, (Integer)state.get(AGE)) : Blocks.field_10124.getDefaultState();
+		return this.canPlaceAt(state, world, pos) ? this.method_24855(world, pos, (Integer)state.get(AGE)) : Blocks.AIR.getDefaultState();
 	}
 
 	@Override
@@ -107,9 +107,9 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	protected BlockState getStateForPosition(BlockView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.field_11036)) {
+		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
 			BlockState blockState2 = this.getDefaultState();
 
 			for (Direction direction : Direction.values()) {
@@ -127,19 +127,19 @@ public class FireBlock extends AbstractFireBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
-		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.field_11036) || this.areBlocksAroundFlammable(world, pos);
+		BlockPos blockPos = pos.down();
+		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP) || this.areBlocksAroundFlammable(world, pos);
 	}
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		world.method_14196().schedule(pos, this, method_26155(world.random));
-		if (world.getGameRules().getBoolean(GameRules.field_19387)) {
+		world.getBlockTickScheduler().schedule(pos, this, method_26155(world.random));
+		if (world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			if (!state.canPlaceAt(world, pos)) {
 				world.removeBlock(pos, false);
 			}
 
-			BlockState blockState = world.getBlockState(pos.method_10074());
+			BlockState blockState = world.getBlockState(pos.down());
 			boolean bl = blockState.isIn(world.getDimension().getInfiniburnBlocks());
 			int i = (Integer)state.get(AGE);
 			if (!bl && world.isRaining() && this.isRainingAround(world, pos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
@@ -153,15 +153,15 @@ public class FireBlock extends AbstractFireBlock {
 
 				if (!bl) {
 					if (!this.areBlocksAroundFlammable(world, pos)) {
-						BlockPos blockPos = pos.method_10074();
-						if (!world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.field_11036) || i > 3) {
+						BlockPos blockPos = pos.down();
+						if (!world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP) || i > 3) {
 							world.removeBlock(pos, false);
 						}
 
 						return;
 					}
 
-					if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(world.getBlockState(pos.method_10074()))) {
+					if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(world.getBlockState(pos.down()))) {
 						world.removeBlock(pos, false);
 						return;
 					}
@@ -171,7 +171,7 @@ public class FireBlock extends AbstractFireBlock {
 				int k = bl2 ? -50 : 0;
 				this.trySpreadingFire(world, pos.east(), 300 + k, random, i);
 				this.trySpreadingFire(world, pos.west(), 300 + k, random, i);
-				this.trySpreadingFire(world, pos.method_10074(), 250 + k, random, i);
+				this.trySpreadingFire(world, pos.down(), 250 + k, random, i);
 				this.trySpreadingFire(world, pos.up(), 250 + k, random, i);
 				this.trySpreadingFire(world, pos.north(), 300 + k, random, i);
 				this.trySpreadingFire(world, pos.south(), 300 + k, random, i);
@@ -239,7 +239,7 @@ public class FireBlock extends AbstractFireBlock {
 
 	private BlockState method_24855(WorldAccess worldAccess, BlockPos blockPos, int i) {
 		BlockState blockState = getState(worldAccess, blockPos);
-		return blockState.isOf(Blocks.field_10036) ? blockState.with(AGE, Integer.valueOf(i)) : blockState;
+		return blockState.isOf(Blocks.FIRE) ? blockState.with(AGE, Integer.valueOf(i)) : blockState;
 	}
 
 	private boolean areBlocksAroundFlammable(BlockView world, BlockPos pos) {
@@ -293,134 +293,134 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	public static void registerDefaultFlammables() {
-		FireBlock fireBlock = (FireBlock)Blocks.field_10036;
-		fireBlock.registerFlammableBlock(Blocks.field_10161, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_9975, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10148, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10334, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10218, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10075, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10119, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10071, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10257, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10617, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10031, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10500, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10188, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10291, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10513, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10041, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10196, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10457, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10620, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10020, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10299, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10319, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10132, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10144, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10563, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10408, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10569, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10122, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10256, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10616, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10431, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10037, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10511, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10306, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10533, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10010, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10519, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10436, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10366, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10254, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10622, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10244, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10250, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10558, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10204, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10084, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10103, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10374, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10126, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10155, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10307, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10303, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_9999, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10178, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10503, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_9988, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10539, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10335, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10098, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10035, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10504, 30, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10375, 15, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10479, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10112, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10428, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10583, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10378, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10430, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10003, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10214, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10313, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10182, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10449, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10086, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10226, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10573, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10270, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10048, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10156, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10315, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10554, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_9995, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10548, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10606, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10446, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10095, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10215, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10294, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10490, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10028, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10459, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10423, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10222, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10619, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10259, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10514, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10113, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10170, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10314, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10146, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10597, 15, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_10381, 5, 5);
-		fireBlock.registerFlammableBlock(Blocks.field_10359, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_22422, 15, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10466, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_9977, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10482, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10290, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10512, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10040, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10393, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10591, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10209, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10433, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10510, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10043, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10473, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10338, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10536, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10106, 60, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_10342, 30, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_10211, 60, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_16492, 60, 60);
-		fireBlock.registerFlammableBlock(Blocks.field_16330, 30, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_17563, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_16999, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.field_20422, 5, 20);
-		fireBlock.registerFlammableBlock(Blocks.field_20421, 30, 20);
+		FireBlock fireBlock = (FireBlock)Blocks.FIRE;
+		fireBlock.registerFlammableBlock(Blocks.OAK_PLANKS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.SPRUCE_PLANKS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.BIRCH_PLANKS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.JUNGLE_PLANKS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.ACACIA_PLANKS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_PLANKS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.OAK_SLAB, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.SPRUCE_SLAB, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.BIRCH_SLAB, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.JUNGLE_SLAB, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.ACACIA_SLAB, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_SLAB, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.OAK_FENCE_GATE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.SPRUCE_FENCE_GATE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.BIRCH_FENCE_GATE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.JUNGLE_FENCE_GATE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_FENCE_GATE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.ACACIA_FENCE_GATE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.OAK_FENCE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.SPRUCE_FENCE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.BIRCH_FENCE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.JUNGLE_FENCE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_FENCE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.ACACIA_FENCE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.OAK_STAIRS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.BIRCH_STAIRS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.SPRUCE_STAIRS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.JUNGLE_STAIRS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.ACACIA_STAIRS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_STAIRS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.OAK_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.SPRUCE_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.BIRCH_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.JUNGLE_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.ACACIA_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_OAK_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_SPRUCE_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_BIRCH_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_JUNGLE_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_ACACIA_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_DARK_OAK_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_OAK_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_SPRUCE_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_BIRCH_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_JUNGLE_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_ACACIA_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_DARK_OAK_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.OAK_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.SPRUCE_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.BIRCH_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.JUNGLE_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.ACACIA_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.OAK_LEAVES, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.SPRUCE_LEAVES, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.BIRCH_LEAVES, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.JUNGLE_LEAVES, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.ACACIA_LEAVES, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_LEAVES, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.BOOKSHELF, 30, 20);
+		fireBlock.registerFlammableBlock(Blocks.TNT, 15, 100);
+		fireBlock.registerFlammableBlock(Blocks.GRASS, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.FERN, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.DEAD_BUSH, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.SUNFLOWER, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.LILAC, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.ROSE_BUSH, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.PEONY, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.TALL_GRASS, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.LARGE_FERN, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.DANDELION, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.POPPY, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.BLUE_ORCHID, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.ALLIUM, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.AZURE_BLUET, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.RED_TULIP, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.ORANGE_TULIP, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.WHITE_TULIP, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.PINK_TULIP, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.OXEYE_DAISY, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.CORNFLOWER, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.LILY_OF_THE_VALLEY, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.WITHER_ROSE, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.WHITE_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.ORANGE_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.MAGENTA_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.LIGHT_BLUE_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.YELLOW_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.LIME_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.PINK_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.GRAY_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.LIGHT_GRAY_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.CYAN_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.PURPLE_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.BLUE_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.BROWN_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.GREEN_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.RED_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.BLACK_WOOL, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.VINE, 15, 100);
+		fireBlock.registerFlammableBlock(Blocks.COAL_BLOCK, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.HAY_BLOCK, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.TARGET, 15, 20);
+		fireBlock.registerFlammableBlock(Blocks.WHITE_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.ORANGE_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.MAGENTA_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.LIGHT_BLUE_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.YELLOW_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.LIME_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.PINK_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.GRAY_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.LIGHT_GRAY_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.CYAN_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.PURPLE_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.BLUE_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.BROWN_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.GREEN_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.RED_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.BLACK_CARPET, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.DRIED_KELP_BLOCK, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.BAMBOO, 60, 60);
+		fireBlock.registerFlammableBlock(Blocks.SCAFFOLDING, 60, 60);
+		fireBlock.registerFlammableBlock(Blocks.LECTERN, 30, 20);
+		fireBlock.registerFlammableBlock(Blocks.COMPOSTER, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.SWEET_BERRY_BUSH, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.BEEHIVE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.BEE_NEST, 30, 20);
 	}
 }

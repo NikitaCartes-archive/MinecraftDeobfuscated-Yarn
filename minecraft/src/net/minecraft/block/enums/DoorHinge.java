@@ -3,8 +3,8 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum DoorHinge implements StringIdentifiable {
-	field_12588,
-	field_12586;
+	LEFT,
+	RIGHT;
 
 	public String toString() {
 		return this.asString();
@@ -12,6 +12,6 @@ public enum DoorHinge implements StringIdentifiable {
 
 	@Override
 	public String asString() {
-		return this == field_12588 ? "left" : "right";
+		return this == LEFT ? "left" : "right";
 	}
 }

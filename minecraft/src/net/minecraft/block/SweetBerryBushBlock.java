@@ -38,7 +38,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return new ItemStack(Items.field_16998);
+		return new ItemStack(Items.SWEET_BERRIES);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity instanceof LivingEntity && entity.getType() != EntityType.field_17943 && entity.getType() != EntityType.field_20346) {
+		if (entity instanceof LivingEntity && entity.getType() != EntityType.FOX && entity.getType() != EntityType.BEE) {
 			entity.slowMovement(state, new Vec3d(0.8F, 0.75, 0.8F));
 			if (!world.isClient && (Integer)state.get(AGE) > 0 && (entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ())) {
 				double d = Math.abs(entity.getX() - entity.lastRenderX);
@@ -81,12 +81,12 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		int i = (Integer)state.get(AGE);
 		boolean bl = i == 3;
-		if (!bl && player.getStackInHand(hand).getItem() == Items.field_8324) {
+		if (!bl && player.getStackInHand(hand).getItem() == Items.BONE_MEAL) {
 			return ActionResult.PASS;
 		} else if (i > 1) {
 			int j = 1 + world.random.nextInt(2);
-			dropStack(world, pos, new ItemStack(Items.field_16998, j + (bl ? 1 : 0)));
-			world.playSound(null, pos, SoundEvents.field_17617, SoundCategory.field_15245, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+			dropStack(world, pos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
+			world.playSound(null, pos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
 			world.setBlockState(pos, state.with(AGE, Integer.valueOf(1)), 2);
 			return ActionResult.success(world.isClient);
 		} else {

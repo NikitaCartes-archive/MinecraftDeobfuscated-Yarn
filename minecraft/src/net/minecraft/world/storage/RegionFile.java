@@ -1,5 +1,6 @@
 package net.minecraft.world.storage;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -32,7 +33,8 @@ public class RegionFile implements AutoCloseable {
 	private final ByteBuffer header = ByteBuffer.allocateDirect(8192);
 	private final IntBuffer sectorData;
 	private final IntBuffer saveTimes;
-	private final SectorMap sectors = new SectorMap();
+	@VisibleForTesting
+	protected final SectorMap sectors = new SectorMap();
 
 	public RegionFile(File file, File directory, boolean dsync) throws IOException {
 		this(file.toPath(), directory.toPath(), ChunkStreamVersion.DEFLATE, dsync);
@@ -62,12 +64,25 @@ public class RegionFile implements AutoCloseable {
 					LOGGER.warn("Region file {} has truncated header: {}", file, i);
 				}
 
+				long l = Files.size(file);
+
 				for (int j = 0; j < 1024; j++) {
 					int k = this.sectorData.get(j);
 					if (k != 0) {
-						int l = getOffset(k);
-						int m = getSize(k);
-						this.sectors.allocate(l, m);
+						int m = getOffset(k);
+						int n = getSize(k);
+						if (m < 2) {
+							LOGGER.warn("Region file {} has invalid sector at index: {}; sector {} overlaps with header", file, j, m);
+							this.sectorData.put(j, 0);
+						} else if (n == 0) {
+							LOGGER.warn("Region file {} has an invalid sector at index: {}; size has to be > 0", file, j);
+							this.sectorData.put(j, 0);
+						} else if ((long)m * 4096L > l) {
+							LOGGER.warn("Region file {} has an invalid sector at index: {}; sector {} is out of bounds", file, j, m);
+							this.sectorData.put(j, 0);
+						} else {
+							this.sectors.allocate(m, n);
+						}
 					}
 				}
 			}
@@ -165,7 +180,7 @@ public class RegionFile implements AutoCloseable {
 	}
 
 	private static int getOffset(int sectorData) {
-		return sectorData >> 8;
+		return sectorData >> 8 & 16777215;
 	}
 
 	private static int getSectorCount(int byteCount) {

@@ -41,19 +41,19 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	}
 
 	public CartographyTableScreenHandler(int syncId, PlayerInventory inventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.field_17343, syncId);
+		super(ScreenHandlerType.CARTOGRAPHY_TABLE, syncId);
 		this.context = context;
 		this.addSlot(new Slot(this.inventory, 0, 15, 15) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.getItem() == Items.field_8204;
+				return stack.getItem() == Items.FILLED_MAP;
 			}
 		});
 		this.addSlot(new Slot(this.inventory, 1, 15, 52) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				Item item = stack.getItem();
-				return item == Items.field_8407 || item == Items.field_8895 || item == Items.GLASS_PANE;
+				return item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE;
 			}
 		});
 		this.addSlot(new Slot(this.resultSlot, 2, 145, 39) {
@@ -70,7 +70,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
 					if (CartographyTableScreenHandler.this.lastTakeResultTime != l) {
-						world.playSound(null, blockPos, SoundEvents.field_17484, SoundCategory.field_15245, 1.0F, 1.0F);
+						world.playSound(null, blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						CartographyTableScreenHandler.this.lastTakeResultTime = l;
 					}
 				}));
@@ -91,7 +91,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.field_16336);
+		return canUse(this.context, player, Blocks.CARTOGRAPHY_TABLE);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 			MapState mapState = FilledMapItem.getMapState(map, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
-				if (itemx == Items.field_8407 && !mapState.locked && mapState.scale < 4) {
+				if (itemx == Items.PAPER && !mapState.locked && mapState.scale < 4) {
 					itemStack4 = map.copy();
 					itemStack4.setCount(1);
 					itemStack4.getOrCreateTag().putInt("map_scale_direction", 1);
@@ -125,7 +125,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 					itemStack4.getOrCreateTag().putBoolean("map_to_lock", true);
 					this.sendContentUpdates();
 				} else {
-					if (itemx != Items.field_8895) {
+					if (itemx != Items.MAP) {
 						this.resultSlot.removeStack(2);
 						this.sendContentUpdates();
 						return;
@@ -165,11 +165,11 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 
 				slot.onStackChanged(itemStack2, itemStack);
 			} else if (index != 1 && index != 0) {
-				if (item == Items.field_8204) {
+				if (item == Items.FILLED_MAP) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (item != Items.field_8407 && item != Items.field_8895 && item != Items.GLASS_PANE) {
+				} else if (item != Items.PAPER && item != Items.MAP && item != Items.GLASS_PANE) {
 					if (index >= 3 && index < 30) {
 						if (!this.insertItem(itemStack2, 30, 39, false)) {
 							return ItemStack.EMPTY;

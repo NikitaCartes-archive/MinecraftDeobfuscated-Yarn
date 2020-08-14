@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 public class ZombieSiegeManager implements Spawner {
 	private static final Logger field_26390 = LogManager.getLogger();
 	private boolean spawned;
-	private ZombieSiegeManager.State state = ZombieSiegeManager.State.field_18482;
+	private ZombieSiegeManager.State state = ZombieSiegeManager.State.SIEGE_DONE;
 	private int remaining;
 	private int countdown;
 	private int startX;
@@ -31,10 +31,10 @@ public class ZombieSiegeManager implements Spawner {
 		if (!world.isDay() && spawnMonsters) {
 			float f = world.method_30274(0.0F);
 			if ((double)f == 0.5) {
-				this.state = world.random.nextInt(10) == 0 ? ZombieSiegeManager.State.field_18481 : ZombieSiegeManager.State.field_18482;
+				this.state = world.random.nextInt(10) == 0 ? ZombieSiegeManager.State.SIEGE_TONIGHT : ZombieSiegeManager.State.SIEGE_DONE;
 			}
 
-			if (this.state == ZombieSiegeManager.State.field_18482) {
+			if (this.state == ZombieSiegeManager.State.SIEGE_DONE) {
 				return 0;
 			} else {
 				if (!this.spawned) {
@@ -54,14 +54,14 @@ public class ZombieSiegeManager implements Spawner {
 						this.trySpawnZombie(world);
 						this.remaining--;
 					} else {
-						this.state = ZombieSiegeManager.State.field_18482;
+						this.state = ZombieSiegeManager.State.SIEGE_DONE;
 					}
 
 					return 1;
 				}
 			}
 		} else {
-			this.state = ZombieSiegeManager.State.field_18482;
+			this.state = ZombieSiegeManager.State.SIEGE_DONE;
 			this.spawned = false;
 			return 0;
 		}
@@ -71,7 +71,7 @@ public class ZombieSiegeManager implements Spawner {
 		for (PlayerEntity playerEntity : world.getPlayers()) {
 			if (!playerEntity.isSpectator()) {
 				BlockPos blockPos = playerEntity.getBlockPos();
-				if (world.isNearOccupiedPointOfInterest(blockPos) && world.getBiome(blockPos).getCategory() != Biome.Category.field_9365) {
+				if (world.isNearOccupiedPointOfInterest(blockPos) && world.getBiome(blockPos).getCategory() != Biome.Category.MUSHROOM) {
 					for (int i = 0; i < 10; i++) {
 						float f = world.random.nextFloat() * (float) (Math.PI * 2);
 						this.startX = blockPos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F);
@@ -98,7 +98,7 @@ public class ZombieSiegeManager implements Spawner {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(world);
-				zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.field_16467, null, null);
+				zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.EVENT, null, null);
 			} catch (Exception var5) {
 				field_26390.warn("Failed to create zombie for village siege at {}", vec3d, var5);
 				return;
@@ -114,10 +114,9 @@ public class ZombieSiegeManager implements Spawner {
 		for (int i = 0; i < 10; i++) {
 			int j = pos.getX() + world.random.nextInt(16) - 8;
 			int k = pos.getZ() + world.random.nextInt(16) - 8;
-			int l = world.getTopY(Heightmap.Type.field_13202, j, k);
+			int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, j, k);
 			BlockPos blockPos = new BlockPos(j, l, k);
-			if (world.isNearOccupiedPointOfInterest(blockPos)
-				&& HostileEntity.canSpawnInDark(EntityType.field_6051, world, SpawnReason.field_16467, blockPos, world.random)) {
+			if (world.isNearOccupiedPointOfInterest(blockPos) && HostileEntity.canSpawnInDark(EntityType.ZOMBIE, world, SpawnReason.EVENT, blockPos, world.random)) {
 				return Vec3d.ofBottomCenter(blockPos);
 			}
 		}
@@ -126,8 +125,8 @@ public class ZombieSiegeManager implements Spawner {
 	}
 
 	static enum State {
-		field_18480,
-		field_18481,
-		field_18482;
+		SIEGE_CAN_ACTIVATE,
+		SIEGE_TONIGHT,
+		SIEGE_DONE;
 	}
 }

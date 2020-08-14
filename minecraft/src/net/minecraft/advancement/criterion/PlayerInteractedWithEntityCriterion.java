@@ -19,7 +19,7 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		return ID;
 	}
 
-	protected PlayerInteractedWithEntityCriterion.Conditions method_30096(
+	protected PlayerInteractedWithEntityCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));

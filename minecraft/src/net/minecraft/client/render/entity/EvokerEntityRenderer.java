@@ -18,7 +18,7 @@ public class EvokerEntityRenderer<T extends SpellcastingIllagerEntity> extends I
 		super(entityRenderDispatcher, new IllagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
 		this.addFeature(
 			new HeldItemFeatureRenderer<T, IllagerEntityModel<T>>(this) {
-				public void method_23170(
+				public void render(
 					MatrixStack matrixStack,
 					VertexConsumerProvider vertexConsumerProvider,
 					int i,
@@ -31,14 +31,14 @@ public class EvokerEntityRenderer<T extends SpellcastingIllagerEntity> extends I
 					float l
 				) {
 					if (spellcastingIllagerEntity.isSpellcasting()) {
-						super.method_17162(matrixStack, vertexConsumerProvider, i, spellcastingIllagerEntity, f, g, h, j, k, l);
+						super.render(matrixStack, vertexConsumerProvider, i, spellcastingIllagerEntity, f, g, h, j, k, l);
 					}
 				}
 			}
 		);
 	}
 
-	public Identifier method_3961(T spellcastingIllagerEntity) {
+	public Identifier getTexture(T spellcastingIllagerEntity) {
 		return TEXTURE;
 	}
 }

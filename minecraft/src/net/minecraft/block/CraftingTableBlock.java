@@ -27,7 +27,7 @@ public class CraftingTableBlock extends Block {
 			return ActionResult.SUCCESS;
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-			player.incrementStat(Stats.field_15368);
+			player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 			return ActionResult.CONSUME;
 		}
 	}

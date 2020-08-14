@@ -19,16 +19,16 @@ public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, Wither
 		this.addFeature(new WitherArmorFeatureRenderer(this));
 	}
 
-	protected int method_24093(WitherEntity witherEntity, BlockPos blockPos) {
+	protected int getBlockLight(WitherEntity witherEntity, BlockPos blockPos) {
 		return 15;
 	}
 
-	public Identifier method_4153(WitherEntity witherEntity) {
+	public Identifier getTexture(WitherEntity witherEntity) {
 		int i = witherEntity.getInvulnerableTimer();
 		return i > 0 && (i > 80 || i / 5 % 2 != 1) ? INVULNERABLE_TEXTURE : TEXTURE;
 	}
 
-	protected void method_4152(WitherEntity witherEntity, MatrixStack matrixStack, float f) {
+	protected void scale(WitherEntity witherEntity, MatrixStack matrixStack, float f) {
 		float g = 2.0F;
 		int i = witherEntity.getInvulnerableTimer();
 		if (i > 0) {

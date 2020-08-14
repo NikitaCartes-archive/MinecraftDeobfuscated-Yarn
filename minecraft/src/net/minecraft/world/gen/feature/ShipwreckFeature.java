@@ -26,7 +26,7 @@ public class ShipwreckFeature extends StructureFeature<ShipwreckFeatureConfig> {
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28647(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,

@@ -11,7 +11,7 @@ import net.minecraft.village.raid.Raid;
 
 public class HideWhenBellRingsTask extends Task<LivingEntity> {
 	public HideWhenBellRingsTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_19009, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.HEARD_BELL_TIME, MemoryModuleState.VALUE_PRESENT));
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class HideWhenBellRingsTask extends Task<LivingEntity> {
 		Brain<?> brain = entity.getBrain();
 		Raid raid = world.getRaidAt(entity.getBlockPos());
 		if (raid == null) {
-			brain.doExclusively(Activity.field_19043);
+			brain.doExclusively(Activity.HIDE);
 		}
 	}
 }

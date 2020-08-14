@@ -55,9 +55,7 @@ public class ResourcePackOrganizer {
 
 	public void refresh() {
 		this.resourcePackManager.scanPacks();
-		this.enabledPacks.clear();
-		this.enabledPacks.addAll(this.resourcePackManager.getEnabledProfiles());
-		Collections.reverse(this.enabledPacks);
+		this.enabledPacks.retainAll(this.resourcePackManager.getProfiles());
 		this.disabledPacks.clear();
 		this.disabledPacks.addAll(this.resourcePackManager.getProfiles());
 		this.disabledPacks.removeAll(this.enabledPacks);

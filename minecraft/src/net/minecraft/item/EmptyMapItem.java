@@ -21,8 +21,8 @@ public class EmptyMapItem extends NetworkSyncedItem {
 			itemStack2.decrement(1);
 		}
 
-		user.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		user.playSound(SoundEvents.field_17484, 1.0F, 1.0F);
+		user.incrementStat(Stats.USED.getOrCreateStat(this));
+		user.playSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1.0F, 1.0F);
 		if (itemStack2.isEmpty()) {
 			return TypedActionResult.method_29237(itemStack, world.isClient());
 		} else {

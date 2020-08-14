@@ -46,11 +46,11 @@ public class WitherEntityModel<T extends WitherEntity> extends CompositeEntityMo
 		this.parts = builder.build();
 	}
 
-	public ImmutableList<ModelPart> method_22970() {
+	public ImmutableList<ModelPart> getParts() {
 		return this.parts;
 	}
 
-	public void method_17130(T witherEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T witherEntity, float f, float g, float h, float i, float j) {
 		float k = MathHelper.cos(h * 0.1F);
 		this.field_3613[1].pitch = (0.065F + 0.05F * k) * (float) Math.PI;
 		this.field_3613[2].setPivot(-2.0F, 6.9F + MathHelper.cos(this.field_3613[1].pitch) * 10.0F, -0.5F + MathHelper.sin(this.field_3613[1].pitch) * 10.0F);
@@ -59,7 +59,7 @@ public class WitherEntityModel<T extends WitherEntity> extends CompositeEntityMo
 		this.field_3612[0].pitch = j * (float) (Math.PI / 180.0);
 	}
 
-	public void method_17128(T witherEntity, float f, float g, float h) {
+	public void animateModel(T witherEntity, float f, float g, float h) {
 		for (int i = 1; i < 3; i++) {
 			this.field_3612[i].yaw = (witherEntity.getHeadYaw(i - 1) - witherEntity.bodyYaw) * (float) (Math.PI / 180.0);
 			this.field_3612[i].pitch = witherEntity.getHeadPitch(i - 1) * (float) (Math.PI / 180.0);

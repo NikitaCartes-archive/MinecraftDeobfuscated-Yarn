@@ -25,14 +25,14 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	}
 
 	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.field_22484, syncId, playerInventory, context);
+		super(ScreenHandlerType.SMITHING, syncId, playerInventory, context);
 		this.field_25385 = playerInventory.player.world;
-		this.field_25668 = this.field_25385.getRecipeManager().listAllOfType(RecipeType.field_25388);
+		this.field_25668 = this.field_25385.getRecipeManager().listAllOfType(RecipeType.SMITHING);
 	}
 
 	@Override
 	protected boolean canUse(BlockState state) {
-		return state.isOf(Blocks.field_16329);
+		return state.isOf(Blocks.SMITHING_TABLE);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	public void updateResult() {
-		List<SmithingRecipe> list = this.field_25385.getRecipeManager().getAllMatches(RecipeType.field_25388, this.input, this.field_25385);
+		List<SmithingRecipe> list = this.field_25385.getRecipeManager().getAllMatches(RecipeType.SMITHING, this.input, this.field_25385);
 		if (list.isEmpty()) {
 			this.output.setStack(0, ItemStack.EMPTY);
 		} else {

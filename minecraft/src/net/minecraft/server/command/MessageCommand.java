@@ -41,20 +41,19 @@ public class MessageCommand {
 		if (entity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 			consumer = text2 -> serverPlayerEntity.sendSystemMessage(
-					new TranslatableText("commands.message.display.outgoing", text2, message).formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056}),
+					new TranslatableText("commands.message.display.outgoing", text2, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
 					serverPlayerEntity.getUuid()
 				);
 		} else {
 			consumer = text2 -> source.sendFeedback(
-					new TranslatableText("commands.message.display.outgoing", text2, message).formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056}), false
+					new TranslatableText("commands.message.display.outgoing", text2, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}), false
 				);
 		}
 
 		for (ServerPlayerEntity serverPlayerEntity2 : targets) {
 			consumer.accept(serverPlayerEntity2.getDisplayName());
 			serverPlayerEntity2.sendSystemMessage(
-				new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message)
-					.formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056}),
+				new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
 				uUID
 			);
 		}

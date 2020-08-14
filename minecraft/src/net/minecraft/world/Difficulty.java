@@ -9,10 +9,10 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum Difficulty {
-	field_5801(0, "peaceful"),
-	field_5805(1, "easy"),
-	field_5802(2, "normal"),
-	field_5807(3, "hard");
+	PEACEFUL(0, "peaceful"),
+	EASY(1, "easy"),
+	NORMAL(2, "normal"),
+	HARD(3, "hard");
 
 	private static final Difficulty[] BY_NAME = (Difficulty[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(Difficulty::getId))

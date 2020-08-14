@@ -33,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SoundManager extends SinglePreparationResourceReloadListener<SoundManager.SoundList> {
-	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.field_5474, false, false, 16);
+	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
@@ -48,7 +48,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		this.soundSystem = new SoundSystem(this, gameOptions, resourceManager);
 	}
 
-	protected SoundManager.SoundList method_18180(ResourceManager resourceManager, Profiler profiler) {
+	protected SoundManager.SoundList prepare(ResourceManager resourceManager, Profiler profiler) {
 		SoundManager.SoundList soundList = new SoundManager.SoundList();
 		profiler.startTick();
 
@@ -125,7 +125,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		return soundList;
 	}
 
-	protected void method_18182(SoundManager.SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(SoundManager.SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
 		soundList.addTo(this.sounds, this.soundSystem);
 
 		for (Identifier identifier : this.sounds.keySet()) {
@@ -205,7 +205,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 	}
 
 	public void updateSoundVolume(SoundCategory category, float volume) {
-		if (category == SoundCategory.field_15250 && volume <= 0.0F) {
+		if (category == SoundCategory.MASTER && volume <= 0.0F) {
 			this.stopAll();
 		}
 
@@ -259,7 +259,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 				final Identifier identifier = sound.getIdentifier();
 				SoundContainer<Sound> soundContainer;
 				switch (sound.getRegistrationType()) {
-					case field_5474:
+					case FILE:
 						if (!SoundManager.isSoundResourcePresent(sound, id, resourceManager)) {
 							continue;
 						}
@@ -274,18 +274,18 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 								return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
 							}
 
-							public Sound method_4883() {
+							public Sound getSound() {
 								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier);
 								if (weightedSoundSet == null) {
 									return SoundManager.MISSING_SOUND;
 								} else {
-									Sound sound = weightedSoundSet.method_4887();
+									Sound sound = weightedSoundSet.getSound();
 									return new Sound(
 										sound.getIdentifier().toString(),
 										sound.getVolume() * sound.getVolume(),
 										sound.getPitch() * sound.getPitch(),
 										sound.getWeight(),
-										Sound.RegistrationType.field_5474,
+										Sound.RegistrationType.FILE,
 										sound.isStreamed() || sound.isStreamed(),
 										sound.isPreloaded(),
 										sound.getAttenuation()

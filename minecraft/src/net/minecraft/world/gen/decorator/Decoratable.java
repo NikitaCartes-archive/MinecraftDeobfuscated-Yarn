@@ -12,7 +12,7 @@ public interface Decoratable<R> {
 	 * e.g. a count of 2 would give approximately half of the input positions.
 	 */
 	default R applyChance(int chance) {
-		return this.decorate(Decorator.field_25861.configure(new ChanceDecoratorConfig(chance)));
+		return this.decorate(Decorator.CHANCE.configure(new ChanceDecoratorConfig(chance)));
 	}
 
 	/**
@@ -22,7 +22,7 @@ public interface Decoratable<R> {
 	 * @param count the distribution of the repetition count
 	 */
 	default R repeat(UniformIntDistribution count) {
-		return this.decorate(Decorator.field_25862.configure(new CountConfig(count)));
+		return this.decorate(Decorator.COUNT.configure(new CountConfig(count)));
 	}
 
 	/**
@@ -46,7 +46,7 @@ public interface Decoratable<R> {
 	}
 
 	default R method_30377(int i) {
-		return this.decorate(Decorator.field_25870.configure(new RangeDecoratorConfig(0, 0, i)));
+		return this.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(0, 0, i)));
 	}
 
 	/**
@@ -54,6 +54,6 @@ public interface Decoratable<R> {
 	 * horizontally a random amount between 0 and 15 blocks on both horizontal axes.
 	 */
 	default R spreadHorizontally() {
-		return this.decorate(Decorator.field_25866.configure(NopeDecoratorConfig.INSTANCE));
+		return this.decorate(Decorator.SQUARE.configure(NopeDecoratorConfig.INSTANCE));
 	}
 }

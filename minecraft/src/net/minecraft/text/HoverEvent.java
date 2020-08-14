@@ -94,20 +94,20 @@ public class HoverEvent {
 	}
 
 	public static class Action<T> {
-		public static final HoverEvent.Action<Text> field_24342 = new HoverEvent.Action<>(
+		public static final HoverEvent.Action<Text> SHOW_TEXT = new HoverEvent.Action<>(
 			"show_text", true, Text.Serializer::fromJson, Text.Serializer::toJsonTree, Function.identity()
 		);
-		public static final HoverEvent.Action<HoverEvent.ItemStackContent> field_24343 = new HoverEvent.Action<>(
+		public static final HoverEvent.Action<HoverEvent.ItemStackContent> SHOW_ITEM = new HoverEvent.Action<>(
 			"show_item",
 			true,
 			jsonElement -> HoverEvent.ItemStackContent.parse(jsonElement),
 			object -> ((HoverEvent.ItemStackContent)object).toJson(),
 			text -> HoverEvent.ItemStackContent.parse(text)
 		);
-		public static final HoverEvent.Action<HoverEvent.EntityContent> field_24344 = new HoverEvent.Action<>(
+		public static final HoverEvent.Action<HoverEvent.EntityContent> SHOW_ENTITY = new HoverEvent.Action<>(
 			"show_entity", true, HoverEvent.EntityContent::parse, HoverEvent.EntityContent::toJson, HoverEvent.EntityContent::parse
 		);
-		private static final Map<String, HoverEvent.Action> BY_NAME = (Map<String, HoverEvent.Action>)Stream.of(field_24342, field_24343, field_24344)
+		private static final Map<String, HoverEvent.Action> BY_NAME = (Map<String, HoverEvent.Action>)Stream.of(SHOW_TEXT, SHOW_ITEM, SHOW_ENTITY)
 			.collect(ImmutableMap.toImmutableMap(HoverEvent.Action::getName, action -> action));
 		private final String name;
 		private final boolean parsable;
@@ -262,7 +262,7 @@ public class HoverEvent {
 		}
 
 		public ItemStackContent(ItemStack stack) {
-			this(stack.getItem(), stack.getCount(), stack.getTag() != null ? stack.getTag().method_10553() : null);
+			this(stack.getItem(), stack.getCount(), stack.getTag() != null ? stack.getTag().copy() : null);
 		}
 
 		public boolean equals(Object object) {

@@ -181,14 +181,14 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 					if (string != null) {
 						DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 						ResourcePackManager resourcePackManager = new ResourcePackManager(
-							new VanillaDataPackProvider(), new FileResourcePackProvider(parent.method_29693().toFile(), ResourcePackSource.field_25349)
+							new VanillaDataPackProvider(), new FileResourcePackProvider(parent.method_29693().toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
 						);
 
 						ServerResourceManager serverResourceManager;
 						try {
 							MinecraftServer.loadDataPacks(resourcePackManager, parent.field_25479, false);
 							CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
-								resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.field_25421, 2, Util.getMainWorkerExecutor(), client
+								resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), client
 							);
 							client.runTasks(completableFuture::isDone);
 							serverResourceManager = (ServerResourceManager)completableFuture.get();
@@ -196,7 +196,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 							field_25046.error("Error loading data packs when importing world settings", (Throwable)var25);
 							Text text = new TranslatableText("selectWorld.import_worldgen_settings.failure");
 							Text text2 = new LiteralText(var25.getMessage());
-							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.field_25039, text, text2));
+							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
 							resourcePackManager.close();
 							return;
 						}
@@ -237,7 +237,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 							String string2 = ((PartialResult)dataResult.error().get()).message();
 							field_25046.error("Error parsing world settings: {}", string2);
 							Text text4 = new LiteralText(string2);
-							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.field_25039, text3, text4));
+							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text3, text4));
 						}
 
 						serverResourceManager.close();

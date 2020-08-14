@@ -22,7 +22,7 @@ public class CommandBossBar extends ServerBossBar {
 	private int maxValue = 100;
 
 	public CommandBossBar(Identifier id, Text displayName) {
-		super(displayName, BossBar.Color.field_5786, BossBar.Style.field_5795);
+		super(displayName, BossBar.Color.WHITE, BossBar.Style.PROGRESS);
 		this.id = id;
 		this.setPercent(0.0F);
 	}
@@ -75,7 +75,7 @@ public class CommandBossBar extends ServerBossBar {
 		return Texts.bracketed(this.getName())
 			.styled(
 				style -> style.withColor(this.getColor().getTextFormat())
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, new LiteralText(this.getId().toString())))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(this.getId().toString())))
 						.withInsertion(this.getId().toString())
 			);
 	}
@@ -166,7 +166,7 @@ public class CommandBossBar extends ServerBossBar {
 		ListTag listTag = tag.getList("Players", 11);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			commandBossBar.addPlayer(NbtHelper.toUuid(listTag.method_10534(i)));
+			commandBossBar.addPlayer(NbtHelper.toUuid(listTag.get(i)));
 		}
 
 		return commandBossBar;

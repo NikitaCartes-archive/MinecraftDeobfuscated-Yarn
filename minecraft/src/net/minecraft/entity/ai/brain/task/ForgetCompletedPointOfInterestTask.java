@@ -20,7 +20,7 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 	private final Predicate<PointOfInterestType> condition;
 
 	public ForgetCompletedPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModule) {
-		super(ImmutableMap.of(memoryModule, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(memoryModule, MemoryModuleState.VALUE_PRESENT));
 		this.condition = poiType.getCompletionCondition();
 		this.memoryModule = memoryModule;
 	}
@@ -48,7 +48,7 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 
 	private boolean isBedOccupiedByOthers(ServerWorld world, BlockPos pos, LivingEntity entity) {
 		BlockState blockState = world.getBlockState(pos);
-		return blockState.getBlock().isIn(BlockTags.field_16443) && (Boolean)blockState.get(BedBlock.OCCUPIED) && !entity.isSleeping();
+		return blockState.getBlock().isIn(BlockTags.BEDS) && (Boolean)blockState.get(BedBlock.OCCUPIED) && !entity.isSleeping();
 	}
 
 	private boolean hasCompletedPointOfInterest(ServerWorld world, BlockPos pos) {

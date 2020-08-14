@@ -6,7 +6,7 @@ import net.minecraft.command.argument.BrigadierArgumentTypes;
 import net.minecraft.network.PacketByteBuf;
 
 public class LongArgumentSerializer implements ArgumentSerializer<LongArgumentType> {
-	public void method_21690(LongArgumentType longArgumentType, PacketByteBuf packetByteBuf) {
+	public void toPacket(LongArgumentType longArgumentType, PacketByteBuf packetByteBuf) {
 		boolean bl = longArgumentType.getMinimum() != Long.MIN_VALUE;
 		boolean bl2 = longArgumentType.getMaximum() != Long.MAX_VALUE;
 		packetByteBuf.writeByte(BrigadierArgumentTypes.createFlag(bl, bl2));
@@ -19,14 +19,14 @@ public class LongArgumentSerializer implements ArgumentSerializer<LongArgumentTy
 		}
 	}
 
-	public LongArgumentType method_21691(PacketByteBuf packetByteBuf) {
+	public LongArgumentType fromPacket(PacketByteBuf packetByteBuf) {
 		byte b = packetByteBuf.readByte();
 		long l = BrigadierArgumentTypes.hasMin(b) ? packetByteBuf.readLong() : Long.MIN_VALUE;
 		long m = BrigadierArgumentTypes.hasMax(b) ? packetByteBuf.readLong() : Long.MAX_VALUE;
 		return LongArgumentType.longArg(l, m);
 	}
 
-	public void method_21689(LongArgumentType longArgumentType, JsonObject jsonObject) {
+	public void toJson(LongArgumentType longArgumentType, JsonObject jsonObject) {
 		if (longArgumentType.getMinimum() != Long.MIN_VALUE) {
 			jsonObject.addProperty("min", longArgumentType.getMinimum());
 		}

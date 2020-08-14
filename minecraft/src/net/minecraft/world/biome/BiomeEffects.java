@@ -25,7 +25,7 @@ public class BiomeEffects {
 					Codec.INT.optionalFieldOf("foliage_color").forGetter(biomeEffects -> biomeEffects.foliageColor),
 					Codec.INT.optionalFieldOf("grass_color").forGetter(biomeEffects -> biomeEffects.grassColor),
 					BiomeEffects.GrassColorModifier.CODEC
-						.optionalFieldOf("grass_color_modifier", BiomeEffects.GrassColorModifier.field_26426)
+						.optionalFieldOf("grass_color_modifier", BiomeEffects.GrassColorModifier.NONE)
 						.forGetter(biomeEffects -> biomeEffects.grassColorModifier),
 					BiomeParticleConfig.CODEC.optionalFieldOf("particle").forGetter(biomeEffects -> biomeEffects.particleConfig),
 					SoundEvent.field_24628.optionalFieldOf("ambient_sound").forGetter(biomeEffects -> biomeEffects.loopSound),
@@ -165,7 +165,7 @@ public class BiomeEffects {
 		private OptionalInt skyColor = OptionalInt.empty();
 		private Optional<Integer> foliageColor = Optional.empty();
 		private Optional<Integer> grassColor = Optional.empty();
-		private BiomeEffects.GrassColorModifier grassColorModifier = BiomeEffects.GrassColorModifier.field_26426;
+		private BiomeEffects.GrassColorModifier grassColorModifier = BiomeEffects.GrassColorModifier.NONE;
 		private Optional<BiomeParticleConfig> particleConfig = Optional.empty();
 		private Optional<SoundEvent> loopSound = Optional.empty();
 		private Optional<BiomeMoodSound> moodSound = Optional.empty();
@@ -251,21 +251,21 @@ public class BiomeEffects {
 	}
 
 	public static enum GrassColorModifier implements StringIdentifiable {
-		field_26426("none") {
+		NONE("none") {
 			@Environment(EnvType.CLIENT)
 			@Override
 			public int getModifiedGrassColor(double x, double z, int color) {
 				return color;
 			}
 		},
-		field_26427("dark_forest") {
+		DARK_FOREST("dark_forest") {
 			@Environment(EnvType.CLIENT)
 			@Override
 			public int getModifiedGrassColor(double x, double z, int color) {
 				return (color & 16711422) + 2634762 >> 1;
 			}
 		},
-		field_26428("swamp") {
+		SWAMP("swamp") {
 			@Environment(EnvType.CLIENT)
 			@Override
 			public int getModifiedGrassColor(double x, double z, int color) {

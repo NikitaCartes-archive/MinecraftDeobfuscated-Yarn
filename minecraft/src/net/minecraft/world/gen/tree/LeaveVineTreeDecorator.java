@@ -19,7 +19,7 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 
 	@Override
 	protected TreeDecoratorType<?> getType() {
-		return TreeDecoratorType.field_21321;
+		return TreeDecoratorType.LEAVE_VINE;
 	}
 
 	@Override
@@ -61,9 +61,9 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 		this.placeVine(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
 		int i = 4;
 
-		for (BlockPos var7 = blockPos.method_10074(); Feature.isAir(modifiableTestableWorld, var7) && i > 0; i--) {
+		for (BlockPos var7 = blockPos.down(); Feature.isAir(modifiableTestableWorld, var7) && i > 0; i--) {
 			this.placeVine(modifiableTestableWorld, var7, booleanProperty, set, blockBox);
-			var7 = var7.method_10074();
+			var7 = var7.down();
 		}
 	}
 }

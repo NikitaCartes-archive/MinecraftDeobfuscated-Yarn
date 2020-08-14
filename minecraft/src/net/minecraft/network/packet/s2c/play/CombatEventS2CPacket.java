@@ -27,11 +27,11 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.type = type;
 		LivingEntity livingEntity = damageTracker.getBiggestAttacker();
 		switch (type) {
-			case field_12353:
+			case END_COMBAT:
 				this.timeSinceLastAttack = damageTracker.getTimeSinceLastAttack();
 				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
 				break;
-			case field_12350:
+			case ENTITY_DIED:
 				this.entityId = damageTracker.getEntity().getEntityId();
 				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
 				this.deathMessage = deathMessage;
@@ -41,10 +41,10 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		this.type = buf.readEnumConstant(CombatEventS2CPacket.Type.class);
-		if (this.type == CombatEventS2CPacket.Type.field_12353) {
+		if (this.type == CombatEventS2CPacket.Type.END_COMBAT) {
 			this.timeSinceLastAttack = buf.readVarInt();
 			this.attackerEntityId = buf.readInt();
-		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
+		} else if (this.type == CombatEventS2CPacket.Type.ENTITY_DIED) {
 			this.entityId = buf.readVarInt();
 			this.attackerEntityId = buf.readInt();
 			this.deathMessage = buf.readText();
@@ -54,28 +54,28 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeEnumConstant(this.type);
-		if (this.type == CombatEventS2CPacket.Type.field_12353) {
+		if (this.type == CombatEventS2CPacket.Type.END_COMBAT) {
 			buf.writeVarInt(this.timeSinceLastAttack);
 			buf.writeInt(this.attackerEntityId);
-		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
+		} else if (this.type == CombatEventS2CPacket.Type.ENTITY_DIED) {
 			buf.writeVarInt(this.entityId);
 			buf.writeInt(this.attackerEntityId);
 			buf.writeText(this.deathMessage);
 		}
 	}
 
-	public void method_11706(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCombatEvent(this);
 	}
 
 	@Override
 	public boolean isWritingErrorSkippable() {
-		return this.type == CombatEventS2CPacket.Type.field_12350;
+		return this.type == CombatEventS2CPacket.Type.ENTITY_DIED;
 	}
 
 	public static enum Type {
-		field_12352,
-		field_12353,
-		field_12350;
+		ENTER_COMBAT,
+		END_COMBAT,
+		ENTITY_DIED;
 	}
 }

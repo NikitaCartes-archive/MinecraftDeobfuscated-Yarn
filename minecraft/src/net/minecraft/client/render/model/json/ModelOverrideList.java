@@ -36,7 +36,7 @@ public class ModelOverrideList {
 					UnbakedModel unbakedModelx = (UnbakedModel)unbakedModelGetter.apply(modelOverride.getModelId());
 					return Objects.equals(unbakedModelx, unbakedModel)
 						? null
-						: modelLoader.bake(modelOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.field_5350);
+						: modelLoader.bake(modelOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
 				}
 			)
 			.collect(Collectors.toList());

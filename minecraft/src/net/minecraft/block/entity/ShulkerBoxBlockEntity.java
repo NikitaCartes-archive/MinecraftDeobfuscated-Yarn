@@ -36,7 +36,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	private static final int[] AVAILABLE_SLOTS = IntStream.range(0, 27).toArray();
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 	private int viewerCount;
-	private ShulkerBoxBlockEntity.AnimationStage animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12065;
+	private ShulkerBoxBlockEntity.AnimationStage animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
 	private float animationProgress;
 	private float prevAnimationProgress;
 	@Nullable
@@ -44,7 +44,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	private boolean cachedColorUpdateNeeded;
 
 	public ShulkerBoxBlockEntity(@Nullable DyeColor color) {
-		super(BlockEntityType.field_11896);
+		super(BlockEntityType.SHULKER_BOX);
 		this.cachedColor = color;
 	}
 
@@ -56,7 +56,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	@Override
 	public void tick() {
 		this.updateAnimation();
-		if (this.animationStage == ShulkerBoxBlockEntity.AnimationStage.field_12066 || this.animationStage == ShulkerBoxBlockEntity.AnimationStage.field_12064) {
+		if (this.animationStage == ShulkerBoxBlockEntity.AnimationStage.OPENING || this.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSING) {
 			this.pushEntities();
 		}
 	}
@@ -64,27 +64,27 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	protected void updateAnimation() {
 		this.prevAnimationProgress = this.animationProgress;
 		switch (this.animationStage) {
-			case field_12065:
+			case CLOSED:
 				this.animationProgress = 0.0F;
 				break;
-			case field_12066:
+			case OPENING:
 				this.animationProgress += 0.1F;
 				if (this.animationProgress >= 1.0F) {
 					this.pushEntities();
-					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12063;
+					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
 					this.animationProgress = 1.0F;
 					this.updateNeighborStates();
 				}
 				break;
-			case field_12064:
+			case CLOSING:
 				this.animationProgress -= 0.1F;
 				if (this.animationProgress <= 0.0F) {
-					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12065;
+					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
 					this.animationProgress = 0.0F;
 					this.updateNeighborStates();
 				}
 				break;
-			case field_12063:
+			case OPENED:
 				this.animationProgress = 1.0F;
 		}
 	}
@@ -122,14 +122,14 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			if (!list.isEmpty()) {
 				for (int i = 0; i < list.size(); i++) {
 					Entity entity = (Entity)list.get(i);
-					if (entity.getPistonBehavior() != PistonBehavior.field_15975) {
+					if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
 						double d = 0.0;
 						double e = 0.0;
 						double f = 0.0;
 						Box box2 = entity.getBoundingBox();
 						switch (direction.getAxis()) {
-							case field_11048:
-								if (direction.getDirection() == Direction.AxisDirection.field_11056) {
+							case X:
+								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
 									d = box.maxX - box2.minX;
 								} else {
 									d = box2.maxX - box.minX;
@@ -137,8 +137,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 								d += 0.01;
 								break;
-							case field_11052:
-								if (direction.getDirection() == Direction.AxisDirection.field_11056) {
+							case Y:
+								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
 									e = box.maxY - box2.minY;
 								} else {
 									e = box2.maxY - box.minY;
@@ -146,8 +146,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 								e += 0.01;
 								break;
-							case field_11051:
-								if (direction.getDirection() == Direction.AxisDirection.field_11056) {
+							case Z:
+								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
 									f = box.maxZ - box2.minZ;
 								} else {
 									f = box2.maxZ - box.minZ;
@@ -157,7 +157,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 						}
 
 						entity.move(
-							MovementType.field_6306, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ())
+							MovementType.SHULKER_BOX, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ())
 						);
 					}
 				}
@@ -175,12 +175,12 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		if (type == 1) {
 			this.viewerCount = data;
 			if (data == 0) {
-				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12064;
+				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSING;
 				this.updateNeighborStates();
 			}
 
 			if (data == 1) {
-				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12066;
+				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENING;
 				this.updateNeighborStates();
 			}
 
@@ -191,7 +191,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	private void updateNeighborStates() {
-		this.getCachedState().method_30101(this.getWorld(), this.getPos(), 3);
+		this.getCachedState().updateNeighbors(this.getWorld(), this.getPos(), 3);
 	}
 
 	@Override
@@ -204,7 +204,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			this.viewerCount++;
 			this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount == 1) {
-				this.world.playSound(null, this.pos, SoundEvents.field_14825, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+				this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
 		}
 	}
@@ -215,7 +215,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			this.viewerCount--;
 			this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount <= 0) {
-				this.world.playSound(null, this.pos, SoundEvents.field_14751, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+				this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
 		}
 	}
@@ -298,13 +298,13 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	public boolean suffocates() {
-		return this.animationStage == ShulkerBoxBlockEntity.AnimationStage.field_12065;
+		return this.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSED;
 	}
 
 	public static enum AnimationStage {
-		field_12065,
-		field_12066,
-		field_12063,
-		field_12064;
+		CLOSED,
+		OPENING,
+		OPENED,
+		CLOSING;
 	}
 }

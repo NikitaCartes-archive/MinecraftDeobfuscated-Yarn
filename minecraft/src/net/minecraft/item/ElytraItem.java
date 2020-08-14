@@ -20,7 +20,7 @@ public class ElytraItem extends Item implements Wearable {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return ingredient.getItem() == Items.field_8614;
+		return ingredient.getItem() == Items.PHANTOM_MEMBRANE;
 	}
 
 	@Override

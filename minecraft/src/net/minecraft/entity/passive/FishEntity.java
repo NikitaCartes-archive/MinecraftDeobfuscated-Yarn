@@ -53,7 +53,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createFishAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 3.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	public static boolean canSpawn(EntityType<? extends FishEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getBlockState(pos).isOf(Blocks.field_10382) && world.getBlockState(pos.up()).isOf(Blocks.field_10382);
+		return world.getBlockState(pos).isOf(Blocks.WATER) && world.getBlockState(pos.up()).isOf(Blocks.WATER);
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	public void travel(Vec3d movementInput) {
 		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
 			this.updateVelocity(0.01F, movementInput);
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (this.getTarget() == null) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
@@ -145,8 +145,8 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	@Override
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8705 && this.isAlive()) {
-			this.playSound(SoundEvents.field_14568, 1.0F, 1.0F);
+		if (itemStack.getItem() == Items.WATER_BUCKET && this.isAlive()) {
+			this.playSound(SoundEvents.ITEM_BUCKET_FILL_FISH, 1.0F, 1.0F);
 			itemStack.decrement(1);
 			ItemStack itemStack2 = this.getFishBucketItem();
 			this.copyDataToStack(itemStack2);
@@ -183,7 +183,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 	@Override
 	protected SoundEvent getSwimSound() {
-		return SoundEvents.field_14591;
+		return SoundEvents.ENTITY_FISH_SWIM;
 	}
 
 	@Override
@@ -200,12 +200,12 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 		@Override
 		public void tick() {
-			if (this.fish.isSubmergedIn(FluidTags.field_15517)) {
+			if (this.fish.isSubmergedIn(FluidTags.WATER)) {
 				this.fish.setVelocity(this.fish.getVelocity().add(0.0, 0.005, 0.0));
 			}
 
-			if (this.state == MoveControl.State.field_6378 && !this.fish.getNavigation().isIdle()) {
-				float f = (float)(this.speed * this.fish.getAttributeValue(EntityAttributes.field_23719));
+			if (this.state == MoveControl.State.MOVE_TO && !this.fish.getNavigation().isIdle()) {
+				float f = (float)(this.speed * this.fish.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				this.fish.setMovementSpeed(MathHelper.lerp(0.125F, this.fish.getMovementSpeed(), f));
 				double d = this.targetX - this.fish.getX();
 				double e = this.targetY - this.fish.getY();

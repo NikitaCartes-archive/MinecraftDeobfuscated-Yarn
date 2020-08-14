@@ -14,7 +14,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13142(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EndGatewayFeatureConfig endGatewayFeatureConfig
 	) {
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-1, -2, -1), blockPos.add(1, 2, 1))) {
@@ -24,7 +24,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 			boolean bl4 = Math.abs(blockPos2.getY() - blockPos.getY()) == 2;
 			if (bl && bl2 && bl3) {
 				BlockPos blockPos3 = blockPos2.toImmutable();
-				this.setBlockState(structureWorldAccess, blockPos3, Blocks.field_10613.getDefaultState());
+				this.setBlockState(structureWorldAccess, blockPos3, Blocks.END_GATEWAY.getDefaultState());
 				endGatewayFeatureConfig.getExitPos().ifPresent(blockPos2x -> {
 					BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos3);
 					if (blockEntity instanceof EndGatewayBlockEntity) {
@@ -34,13 +34,13 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 					}
 				});
 			} else if (bl2) {
-				this.setBlockState(structureWorldAccess, blockPos2, Blocks.field_10124.getDefaultState());
+				this.setBlockState(structureWorldAccess, blockPos2, Blocks.AIR.getDefaultState());
 			} else if (bl4 && bl && bl3) {
-				this.setBlockState(structureWorldAccess, blockPos2, Blocks.field_9987.getDefaultState());
+				this.setBlockState(structureWorldAccess, blockPos2, Blocks.BEDROCK.getDefaultState());
 			} else if ((bl || bl3) && !bl4) {
-				this.setBlockState(structureWorldAccess, blockPos2, Blocks.field_9987.getDefaultState());
+				this.setBlockState(structureWorldAccess, blockPos2, Blocks.BEDROCK.getDefaultState());
 			} else {
-				this.setBlockState(structureWorldAccess, blockPos2, Blocks.field_10124.getDefaultState());
+				this.setBlockState(structureWorldAccess, blockPos2, Blocks.AIR.getDefaultState());
 			}
 		}
 

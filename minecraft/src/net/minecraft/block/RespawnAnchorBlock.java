@@ -63,7 +63,7 @@ public class RespawnAnchorBlock extends Block {
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (hand == Hand.field_5808 && !isChargeItem(itemStack) && isChargeItem(player.getStackInHand(Hand.field_5810))) {
+		if (hand == Hand.MAIN_HAND && !isChargeItem(itemStack) && isChargeItem(player.getStackInHand(Hand.OFF_HAND))) {
 			return ActionResult.PASS;
 		} else if (isChargeItem(itemStack) && canCharge(state)) {
 			charge(world, pos, state);
@@ -86,7 +86,14 @@ public class RespawnAnchorBlock extends Block {
 				if (serverPlayerEntity.getSpawnPointDimension() != world.getRegistryKey() || !serverPlayerEntity.getSpawnPointPosition().equals(pos)) {
 					serverPlayerEntity.setSpawnPoint(world.getRegistryKey(), pos, 0.0F, false, true);
 					world.playSound(
-						null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.field_23118, SoundCategory.field_15245, 1.0F, 1.0F
+						null,
+						(double)pos.getX() + 0.5,
+						(double)pos.getY() + 0.5,
+						(double)pos.getZ() + 0.5,
+						SoundEvents.BLOCK_RESPAWN_ANCHOR_SET_SPAWN,
+						SoundCategory.BLOCKS,
+						1.0F,
+						1.0F
 					);
 					return ActionResult.SUCCESS;
 				}
@@ -106,7 +113,7 @@ public class RespawnAnchorBlock extends Block {
 
 	private static boolean hasStillWater(BlockPos pos, World world) {
 		FluidState fluidState = world.getFluidState(pos);
-		if (!fluidState.isIn(FluidTags.field_15517)) {
+		if (!fluidState.isIn(FluidTags.WATER)) {
 			return false;
 		} else if (fluidState.isStill()) {
 			return true;
@@ -115,21 +122,21 @@ public class RespawnAnchorBlock extends Block {
 			if (f < 2.0F) {
 				return false;
 			} else {
-				FluidState fluidState2 = world.getFluidState(pos.method_10074());
-				return !fluidState2.isIn(FluidTags.field_15517);
+				FluidState fluidState2 = world.getFluidState(pos.down());
+				return !fluidState2.isIn(FluidTags.WATER);
 			}
 		}
 	}
 
 	private void explode(BlockState state, World world, BlockPos explodedPos) {
 		world.removeBlock(explodedPos, false);
-		boolean bl = Direction.Type.field_11062.stream().map(explodedPos::offset).anyMatch(blockPos -> hasStillWater(blockPos, world));
-		final boolean bl2 = bl || world.getFluidState(explodedPos.up()).isIn(FluidTags.field_15517);
+		boolean bl = Direction.Type.HORIZONTAL.stream().map(explodedPos::offset).anyMatch(blockPos -> hasStillWater(blockPos, world));
+		final boolean bl2 = bl || world.getFluidState(explodedPos.up()).isIn(FluidTags.WATER);
 		ExplosionBehavior explosionBehavior = new ExplosionBehavior() {
 			@Override
 			public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
 				return pos.equals(explodedPos) && bl2
-					? Optional.of(Blocks.field_10382.getBlastResistance())
+					? Optional.of(Blocks.WATER.getBlastResistance())
 					: super.getBlastResistance(explosion, world, pos, blockState, fluidState);
 			}
 		};
@@ -142,7 +149,7 @@ public class RespawnAnchorBlock extends Block {
 			(double)explodedPos.getZ() + 0.5,
 			5.0F,
 			true,
-			Explosion.DestructionType.field_18687
+			Explosion.DestructionType.DESTROY
 		);
 	}
 
@@ -153,7 +160,14 @@ public class RespawnAnchorBlock extends Block {
 	public static void charge(World world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state.with(CHARGES, Integer.valueOf((Integer)state.get(CHARGES) + 1)), 3);
 		world.playSound(
-			null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.field_23116, SoundCategory.field_15245, 1.0F, 1.0F
+			null,
+			(double)pos.getX() + 0.5,
+			(double)pos.getY() + 0.5,
+			(double)pos.getZ() + 0.5,
+			SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE,
+			SoundCategory.BLOCKS,
+			1.0F,
+			1.0F
 		);
 	}
 
@@ -163,7 +177,14 @@ public class RespawnAnchorBlock extends Block {
 		if ((Integer)state.get(CHARGES) != 0) {
 			if (random.nextInt(100) == 0) {
 				world.playSound(
-					null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.field_23115, SoundCategory.field_15245, 1.0F, 1.0F
+					null,
+					(double)pos.getX() + 0.5,
+					(double)pos.getY() + 0.5,
+					(double)pos.getZ() + 0.5,
+					SoundEvents.BLOCK_RESPAWN_ANCHOR_AMBIENT,
+					SoundCategory.BLOCKS,
+					1.0F,
+					1.0F
 				);
 			}
 
@@ -171,7 +192,7 @@ public class RespawnAnchorBlock extends Block {
 			double e = (double)pos.getY() + 1.0;
 			double f = (double)pos.getZ() + 0.5 + (0.5 - random.nextDouble());
 			double g = (double)random.nextFloat() * 0.04;
-			world.addParticle(ParticleTypes.field_23190, d, e, f, 0.0, g, 0.0);
+			world.addParticle(ParticleTypes.REVERSE_PORTAL, d, e, f, 0.0, g, 0.0);
 		}
 	}
 

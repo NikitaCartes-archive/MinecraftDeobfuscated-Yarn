@@ -13,7 +13,7 @@ public class AlternativeEntry extends CombinedEntry {
 
 	@Override
 	public LootPoolEntryType getType() {
-		return LootPoolEntryTypes.field_25211;
+		return LootPoolEntryTypes.ALTERNATIVES;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class AlternativeEntry extends CombinedEntry {
 			}
 		}
 
-		protected AlternativeEntry.Builder method_388() {
+		protected AlternativeEntry.Builder getThisBuilder() {
 			return this;
 		}
 

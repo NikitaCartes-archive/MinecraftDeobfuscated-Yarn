@@ -23,11 +23,11 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		super(entityRenderDispatcher, entityModel, f);
 	}
 
-	protected boolean method_4071(T mobEntity) {
-		return super.method_4055(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.dispatcher.targetedEntity);
+	protected boolean hasLabel(T mobEntity) {
+		return super.hasLabel(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.dispatcher.targetedEntity);
 	}
 
-	public boolean method_4068(T mobEntity, Frustum frustum, double d, double e, double f) {
+	public boolean shouldRender(T mobEntity, Frustum frustum, double d, double e, double f) {
 		if (super.shouldRender(mobEntity, frustum, d, e, f)) {
 			return true;
 		} else {
@@ -36,8 +36,8 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		}
 	}
 
-	public void method_4072(T mobEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		super.method_4054(mobEntity, f, g, matrixStack, vertexConsumerProvider, i);
+	public void render(T mobEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		super.render(mobEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		Entity entity = mobEntity.getHoldingEntity();
 		if (entity != null) {
 			this.method_4073(mobEntity, g, matrixStack, vertexConsumerProvider, entity);
@@ -68,8 +68,8 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		BlockPos blockPos2 = new BlockPos(entity.getCameraPosVec(f));
 		int r = this.getBlockLight(mobEntity, blockPos);
 		int s = this.dispatcher.getRenderer(entity).getBlockLight(entity, blockPos2);
-		int t = mobEntity.world.getLightLevel(LightType.field_9284, blockPos);
-		int u = mobEntity.world.getLightLevel(LightType.field_9284, blockPos2);
+		int t = mobEntity.world.getLightLevel(LightType.SKY, blockPos);
+		int u = mobEntity.world.getLightLevel(LightType.SKY, blockPos2);
 		method_23186(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025F, 0.025F, p, q);
 		method_23186(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025F, 0.0F, p, q);
 		matrixStack.pop();

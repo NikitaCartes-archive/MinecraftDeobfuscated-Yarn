@@ -11,9 +11,9 @@ public class OakSaplingGenerator extends SaplingGenerator {
 	@Override
 	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
 		if (random.nextInt(10) == 0) {
-			return bl ? ConfiguredFeatures.field_26097 : ConfiguredFeatures.field_26044;
+			return bl ? ConfiguredFeatures.FANCY_OAK_BEES_005 : ConfiguredFeatures.FANCY_OAK;
 		} else {
-			return bl ? ConfiguredFeatures.field_26054 : ConfiguredFeatures.field_26036;
+			return bl ? ConfiguredFeatures.OAK_BEES_005 : ConfiguredFeatures.OAK;
 		}
 	}
 }

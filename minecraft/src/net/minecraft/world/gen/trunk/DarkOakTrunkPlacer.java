@@ -23,7 +23,7 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	protected TrunkPlacerType<?> getType() {
-		return TrunkPlacerType.field_24173;
+		return TrunkPlacerType.DARK_OAK_TRUNK_PLACER;
 	}
 
 	@Override
@@ -31,12 +31,12 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		method_27400(world, blockPos);
 		method_27400(world, blockPos.east());
 		method_27400(world, blockPos.south());
 		method_27400(world, blockPos.south().east());
-		Direction direction = Direction.Type.field_11062.random(random);
+		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		int i = trunkHeight - random.nextInt(4);
 		int j = 2 - random.nextInt(3);
 		int k = pos.getX();

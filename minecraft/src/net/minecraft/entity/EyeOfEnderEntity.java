@@ -38,13 +38,13 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 	}
 
 	public EyeOfEnderEntity(World world, double x, double y, double z) {
-		this(EntityType.field_6061, world);
+		this(EntityType.EYE_OF_ENDER, world);
 		this.lifespan = 0;
 		this.updatePosition(x, y, z);
 	}
 
 	public void setItem(ItemStack stack) {
-		if (stack.getItem() != Items.field_8449 || stack.hasTag()) {
+		if (stack.getItem() != Items.ENDER_EYE || stack.hasTag()) {
 			this.getDataTracker().set(ITEM, Util.make(stack.copy(), stackx -> stackx.setCount(1)));
 		}
 	}
@@ -56,7 +56,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 	@Override
 	public ItemStack getStack() {
 		ItemStack itemStack = this.getTrackedItem();
-		return itemStack.isEmpty() ? new ItemStack(Items.field_8449) : itemStack;
+		return itemStack.isEmpty() ? new ItemStack(Items.ENDER_EYE) : itemStack;
 	}
 
 	@Override
@@ -146,12 +146,12 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		float o = 0.25F;
 		if (this.isTouchingWater()) {
 			for (int p = 0; p < 4; p++) {
-				this.world.addParticle(ParticleTypes.field_11247, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+				this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 		} else {
 			this.world
 				.addParticle(
-					ParticleTypes.field_11214,
+					ParticleTypes.PORTAL,
 					d - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
 					e - vec3d.y * 0.25 - 0.5,
 					f - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
@@ -165,7 +165,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 			this.updatePosition(d, e, f);
 			this.lifespan++;
 			if (this.lifespan > 80 && !this.world.isClient) {
-				this.playSound(SoundEvents.field_15210, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F);
 				this.remove();
 				if (this.dropsItem) {
 					this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));

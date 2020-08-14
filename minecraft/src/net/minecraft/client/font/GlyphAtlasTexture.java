@@ -22,7 +22,7 @@ public class GlyphAtlasTexture extends AbstractTexture {
 		this.id = id;
 		this.hasColor = hasColor;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
-		TextureUtil.allocate(hasColor ? NativeImage.GLFormat.ABGR : NativeImage.GLFormat.field_5016, this.getGlId(), 256, 256);
+		TextureUtil.allocate(hasColor ? NativeImage.GLFormat.ABGR : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
 		this.textLayer = RenderLayer.getText(id);
 		this.seeThroughTextLayer = RenderLayer.getTextSeeThrough(id);
 	}

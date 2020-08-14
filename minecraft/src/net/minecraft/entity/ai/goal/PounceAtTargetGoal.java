@@ -13,7 +13,7 @@ public class PounceAtTargetGoal extends Goal {
 	public PounceAtTargetGoal(MobEntity mob, float velocity) {
 		this.mob = mob;
 		this.velocity = velocity;
-		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
 	}
 
 	@Override

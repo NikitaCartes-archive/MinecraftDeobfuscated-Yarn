@@ -19,7 +19,7 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected FoliagePlacerType<?> getType() {
-		return FoliagePlacerType.field_21302;
+		return FoliagePlacerType.ACACIA_FOLIAGE_PLACER;
 	}
 
 	@Override

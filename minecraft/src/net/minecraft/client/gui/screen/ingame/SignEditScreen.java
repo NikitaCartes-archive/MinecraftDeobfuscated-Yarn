@@ -47,7 +47,7 @@ public class SignEditScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, ScreenTexts.DONE, buttonWidget -> this.finishEditing()));
 		this.sign.setEditable(false);
 		this.selectionManager = new SelectionManager(
@@ -64,7 +64,7 @@ public class SignEditScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(
@@ -193,7 +193,7 @@ public class SignEditScreen extends Screen {
 					BufferBuilder bufferBuilder = tessellator.getBuffer();
 					RenderSystem.disableTexture();
 					RenderSystem.enableColorLogicOp();
-					RenderSystem.logicOp(GlStateManager.LogicOp.field_5110);
+					RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 					bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 					bufferBuilder.vertex(matrix4f, (float)u, (float)(l + 9), 0.0F).color(0, 0, 255, 255).next();
 					bufferBuilder.vertex(matrix4f, (float)v, (float)(l + 9), 0.0F).color(0, 0, 255, 255).next();

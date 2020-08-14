@@ -30,8 +30,8 @@ public class CoralFanBlock extends DeadCoralFanBlock {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		if (direction == Direction.field_11033 && !state.canPlaceAt(world, pos)) {
-			return Blocks.field_10124.getDefaultState();
+		if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
+			return Blocks.AIR.getDefaultState();
 		} else {
 			this.checkLivingConditions(state, world, pos);
 			if ((Boolean)state.get(WATERLOGGED)) {

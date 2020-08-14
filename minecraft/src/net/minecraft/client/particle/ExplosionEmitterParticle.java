@@ -21,7 +21,7 @@ public class ExplosionEmitterParticle extends NoRenderParticle {
 			double d = this.x + (this.random.nextDouble() - this.random.nextDouble()) * 4.0;
 			double e = this.y + (this.random.nextDouble() - this.random.nextDouble()) * 4.0;
 			double f = this.z + (this.random.nextDouble() - this.random.nextDouble()) * 4.0;
-			this.world.addParticle(ParticleTypes.field_11236, d, e, f, (double)((float)this.age_ / (float)this.maxAge_), 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.EXPLOSION, d, e, f, (double)((float)this.age_ / (float)this.maxAge_), 0.0, 0.0);
 		}
 
 		this.age_++;
@@ -32,7 +32,7 @@ public class ExplosionEmitterParticle extends NoRenderParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		public Particle method_3037(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new ExplosionEmitterParticle(clientWorld, d, e, f);
 		}
 	}

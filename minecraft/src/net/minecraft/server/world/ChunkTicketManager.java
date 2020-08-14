@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class ChunkTicketManager {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.field_12803) - 2;
+	private static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL) - 2;
 	private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<>();
 	private final Long2ObjectOpenHashMap<SortedArraySet<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap<>();
 	private final ChunkTicketManager.TicketDistanceLevelPropagator distanceFromTicketTracker = new ChunkTicketManager.TicketDistanceLevelPropagator();
@@ -103,7 +103,7 @@ public abstract class ChunkTicketManager {
 
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
-					if (this.getTicketSet(l).stream().anyMatch(chunkTicket -> chunkTicket.getType() == ChunkTicketType.field_14033)) {
+					if (this.getTicketSet(l).stream().anyMatch(chunkTicket -> chunkTicket.getType() == ChunkTicketType.PLAYER)) {
 						ChunkHolder chunkHolder = chunkStorage.getCurrentChunkHolder(l);
 						if (chunkHolder == null) {
 							throw new IllegalStateException();
@@ -298,7 +298,7 @@ public abstract class ChunkTicketManager {
 
 		private void updateTicket(long pos, int distance, boolean oldWithinViewDistance, boolean withinViewDistance) {
 			if (oldWithinViewDistance != withinViewDistance) {
-				ChunkTicket<?> chunkTicket = new ChunkTicket<>(ChunkTicketType.field_14033, ChunkTicketManager.NEARBY_PLAYER_TICKET_LEVEL, new ChunkPos(pos));
+				ChunkTicket<?> chunkTicket = new ChunkTicket<>(ChunkTicketType.PLAYER, ChunkTicketManager.NEARBY_PLAYER_TICKET_LEVEL, new ChunkPos(pos));
 				if (withinViewDistance) {
 					ChunkTicketManager.this.playerTicketThrottler.send(ChunkTaskPrioritySystem.createMessage(() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> {
 							if (this.isWithinViewDistance(this.getLevel(pos))) {

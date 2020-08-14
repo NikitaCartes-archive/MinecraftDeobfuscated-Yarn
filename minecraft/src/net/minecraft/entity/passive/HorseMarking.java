@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public enum HorseMarking {
-	field_23808(0),
-	field_23809(1),
-	field_23810(2),
-	field_23811(3),
-	field_23812(4);
+	NONE(0),
+	WHITE(1),
+	WHITE_FIELD(2),
+	WHITE_DOTS(3),
+	BLACK_DOTS(4);
 
 	private static final HorseMarking[] VALUES = (HorseMarking[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(HorseMarking::getIndex))

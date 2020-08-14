@@ -27,7 +27,7 @@ public class ChunkLoadDistanceS2CPacket implements Packet<ClientPlayPacketListen
 		buf.writeVarInt(this.distance);
 	}
 
-	public void method_20205(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onChunkLoadDistance(this);
 	}
 

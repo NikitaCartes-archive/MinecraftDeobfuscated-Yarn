@@ -44,11 +44,11 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 	@Override
 	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		return state.get(LIT) && Direction.field_11036 != direction ? 15 : 0;
+		return state.get(LIT) && Direction.UP != direction ? 15 : 0;
 	}
 
 	protected boolean shouldUnpower(World world, BlockPos pos, BlockState state) {
-		return world.isEmittingRedstonePower(pos.method_10074(), Direction.field_11033);
+		return world.isEmittingRedstonePower(pos.down(), Direction.DOWN);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 				world.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)), 3);
 				if (isBurnedOut(world, pos, true)) {
 					world.syncWorldEvent(1502, pos, 0);
-					world.method_14196().schedule(pos, world.getBlockState(pos).getBlock(), 160);
+					world.getBlockTickScheduler().schedule(pos, world.getBlockState(pos).getBlock(), 160);
 				}
 			}
 		} else if (!bl && !isBurnedOut(world, pos, false)) {
@@ -82,7 +82,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 	@Override
 	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		return direction == Direction.field_11033 ? state.getWeakRedstonePower(world, pos, direction) : 0;
+		return direction == Direction.DOWN ? state.getWeakRedstonePower(world, pos, direction) : 0;
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_3576(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		World world = pistonBlockEntity.getWorld();
 		if (world != null) {
 			BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.getMovementDirection().getOpposite());
@@ -39,12 +39,12 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 				matrixStack.translate(
 					(double)pistonBlockEntity.getRenderOffsetX(f), (double)pistonBlockEntity.getRenderOffsetY(f), (double)pistonBlockEntity.getRenderOffsetZ(f)
 				);
-				if (blockState.isOf(Blocks.field_10379) && pistonBlockEntity.getProgress(f) <= 4.0F) {
+				if (blockState.isOf(Blocks.PISTON_HEAD) && pistonBlockEntity.getProgress(f) <= 4.0F) {
 					blockState = blockState.with(PistonHeadBlock.SHORT, Boolean.valueOf(pistonBlockEntity.getProgress(f) <= 0.5F));
 					this.method_3575(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
 				} else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
-					PistonType pistonType = blockState.isOf(Blocks.field_10615) ? PistonType.field_12634 : PistonType.field_12637;
-					BlockState blockState2 = Blocks.field_10379
+					PistonType pistonType = blockState.isOf(Blocks.STICKY_PISTON) ? PistonType.STICKY : PistonType.DEFAULT;
+					BlockState blockState2 = Blocks.PISTON_HEAD
 						.getDefaultState()
 						.with(PistonHeadBlock.TYPE, pistonType)
 						.with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));

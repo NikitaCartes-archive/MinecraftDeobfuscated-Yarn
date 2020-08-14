@@ -61,7 +61,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		.maximumSize(512L)
 		.weakKeys()
 		.build(new CacheLoader<VoxelShape, Boolean>() {
-			public Boolean method_20516(VoxelShape voxelShape) {
+			public Boolean load(VoxelShape voxelShape) {
 				return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
 			}
 		});
@@ -92,11 +92,11 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	public static BlockState getStateFromRawId(int stateId) {
 		BlockState blockState = STATE_IDS.get(stateId);
-		return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
+		return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
 	}
 
 	public static Block getBlockFromItem(@Nullable Item item) {
-		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.field_10124;
+		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.AIR;
 	}
 
 	public static BlockState pushEntitiesUpBeforeBlockChange(BlockState from, BlockState to, World world, BlockPos pos) {
@@ -104,7 +104,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 			.offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 
 		for (Entity entity : world.getOtherEntities(null, voxelShape.getBoundingBox())) {
-			double d = VoxelShapes.calculateMaxOffset(Direction.Axis.field_11052, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
+			double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
 			entity.requestTeleport(entity.getX(), entity.getY() + 1.0 + d, entity.getZ());
 		}
 
@@ -190,12 +190,12 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	public static boolean cannotConnect(Block block) {
 		return block instanceof LeavesBlock
-			|| block == Blocks.field_10499
-			|| block == Blocks.field_10147
-			|| block == Blocks.field_10009
-			|| block == Blocks.field_10545
-			|| block == Blocks.field_10261
-			|| block.isIn(BlockTags.field_21490);
+			|| block == Blocks.BARRIER
+			|| block == Blocks.CARVED_PUMPKIN
+			|| block == Blocks.JACK_O_LANTERN
+			|| block == Blocks.MELON
+			|| block == Blocks.PUMPKIN
+			|| block.isIn(BlockTags.SHULKER_BOXES);
 	}
 
 	public boolean hasRandomTicks(BlockState state) {
@@ -231,12 +231,12 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public static boolean hasTopRim(BlockView world, BlockPos pos) {
-		return world.getBlockState(pos).isSideSolid(world, pos, Direction.field_11036, SideShapeType.field_25824);
+		return world.getBlockState(pos).isSideSolid(world, pos, Direction.UP, SideShapeType.RIGID);
 	}
 
 	public static boolean sideCoversSmallSquare(WorldView world, BlockPos pos, Direction side) {
 		BlockState blockState = world.getBlockState(pos);
-		return side == Direction.field_11033 && blockState.isIn(BlockTags.field_25148) ? false : blockState.isSideSolid(world, pos, side, SideShapeType.field_25823);
+		return side == Direction.DOWN && blockState.isIn(BlockTags.UNSTABLE_BOTTOM_CENTER) ? false : blockState.isSideSolid(world, pos, side, SideShapeType.CENTER);
 	}
 
 	public static boolean isFaceFullSquare(VoxelShape shape, Direction side) {
@@ -262,9 +262,9 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public static List<ItemStack> getDroppedStacks(BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity) {
 		LootContext.Builder builder = new LootContext.Builder(world)
 			.random(world.random)
-			.parameter(LootContextParameters.field_24424, Vec3d.ofCenter(pos))
-			.parameter(LootContextParameters.field_1229, ItemStack.EMPTY)
-			.optionalParameter(LootContextParameters.field_1228, blockEntity);
+			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+			.parameter(LootContextParameters.TOOL, ItemStack.EMPTY)
+			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return state.getDroppedStacks(builder);
 	}
 
@@ -273,10 +273,10 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	) {
 		LootContext.Builder builder = new LootContext.Builder(world)
 			.random(world.random)
-			.parameter(LootContextParameters.field_24424, Vec3d.ofCenter(pos))
-			.parameter(LootContextParameters.field_1229, stack)
-			.optionalParameter(LootContextParameters.field_1226, entity)
-			.optionalParameter(LootContextParameters.field_1228, blockEntity);
+			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+			.parameter(LootContextParameters.TOOL, stack)
+			.optionalParameter(LootContextParameters.THIS_ENTITY, entity)
+			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return state.getDroppedStacks(builder);
 	}
 
@@ -287,10 +287,10 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		}
 	}
 
-	public static void dropStacks(BlockState state, WorldAccess worldAccess, BlockPos pos, @Nullable BlockEntity blockEntity) {
-		if (worldAccess instanceof ServerWorld) {
-			getDroppedStacks(state, (ServerWorld)worldAccess, pos, blockEntity).forEach(stack -> dropStack((ServerWorld)worldAccess, pos, stack));
-			state.onStacksDropped((ServerWorld)worldAccess, pos, ItemStack.EMPTY);
+	public static void dropStacks(BlockState state, WorldAccess world, BlockPos pos, @Nullable BlockEntity blockEntity) {
+		if (world instanceof ServerWorld) {
+			getDroppedStacks(state, (ServerWorld)world, pos, blockEntity).forEach(stack -> dropStack((ServerWorld)world, pos, stack));
+			state.onStacksDropped((ServerWorld)world, pos, ItemStack.EMPTY);
 		}
 	}
 
@@ -313,12 +313,12 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		}
 	}
 
-	protected void dropExperience(ServerWorld serverWorld, BlockPos pos, int size) {
-		if (serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+	protected void dropExperience(ServerWorld world, BlockPos pos, int size) {
+		if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			while (size > 0) {
 				int i = ExperienceOrbEntity.roundToOrbSize(size);
 				size -= i;
-				serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, i));
+				world.spawnEntity(new ExperienceOrbEntity(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, i));
 			}
 		}
 	}
@@ -327,9 +327,15 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return this.resistance;
 	}
 
+	/**
+	 * Called when this block is destroyed by an explosion.
+	 */
 	public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
 	}
 
+	/**
+	 * Called when an entity steps on this block.
+	 */
 	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
 	}
 
@@ -339,7 +345,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
-		player.incrementStat(Stats.field_15427.getOrCreateStat(this));
+		player.incrementStat(Stats.MINED.getOrCreateStat(this));
 		player.addExhaustion(0.005F);
 		dropStacks(state, world, pos, blockEntity, player, stack);
 	}
@@ -395,7 +401,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		world.syncWorldEvent(player, 2001, pos, getRawIdFromState(state));
-		if (this.isIn(BlockTags.field_23800)) {
+		if (this.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
 			PiglinBrain.onGuardedBlockBroken(player, false);
 		}
 	}

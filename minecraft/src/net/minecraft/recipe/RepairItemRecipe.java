@@ -20,7 +20,7 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean method_20808(CraftingInventory craftingInventory, World world) {
+	public boolean matches(CraftingInventory craftingInventory, World world) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
 		for (int i = 0; i < craftingInventory.size(); i++) {
@@ -39,7 +39,7 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		return list.size() == 2;
 	}
 
-	public ItemStack method_20807(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
 		for (int i = 0; i < craftingInventory.size(); i++) {

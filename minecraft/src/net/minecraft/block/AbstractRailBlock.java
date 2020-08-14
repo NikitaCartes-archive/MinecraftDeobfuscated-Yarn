@@ -22,7 +22,7 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	public static boolean isRail(BlockState state) {
-		return state.isIn(BlockTags.field_15463) && state.getBlock() instanceof AbstractRailBlock;
+		return state.isIn(BlockTags.RAILS) && state.getBlock() instanceof AbstractRailBlock;
 	}
 
 	protected AbstractRailBlock(boolean allowCurves, AbstractBlock.Settings settings) {
@@ -42,7 +42,7 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return hasTopRim(world, pos.method_10074());
+		return hasTopRim(world, pos.down());
 	}
 
 	@Override
@@ -82,17 +82,17 @@ public abstract class AbstractRailBlock extends Block {
 	 * <li>The block in the direction of ascent does not have a top rim.</li></ul>
 	 */
 	private static boolean shouldDropRail(BlockPos pos, World world, RailShape shape) {
-		if (!hasTopRim(world, pos.method_10074())) {
+		if (!hasTopRim(world, pos.down())) {
 			return true;
 		} else {
 			switch (shape) {
-				case field_12667:
+				case ASCENDING_EAST:
 					return !hasTopRim(world, pos.east());
-				case field_12666:
+				case ASCENDING_WEST:
 					return !hasTopRim(world, pos.west());
-				case field_12670:
+				case ASCENDING_NORTH:
 					return !hasTopRim(world, pos.north());
-				case field_12668:
+				case ASCENDING_SOUTH:
 					return !hasTopRim(world, pos.south());
 				default:
 					return false;
@@ -114,7 +114,7 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.field_15974;
+		return PistonBehavior.NORMAL;
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public abstract class AbstractRailBlock extends Block {
 
 			if (this.allowCurves) {
 				world.updateNeighborsAlways(pos, this);
-				world.updateNeighborsAlways(pos.method_10074(), this);
+				world.updateNeighborsAlways(pos.down(), this);
 			}
 		}
 	}
@@ -136,8 +136,8 @@ public abstract class AbstractRailBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = super.getDefaultState();
 		Direction direction = ctx.getPlayerFacing();
-		boolean bl = direction == Direction.field_11034 || direction == Direction.field_11039;
-		return blockState.with(this.getShapeProperty(), bl ? RailShape.field_12674 : RailShape.field_12665);
+		boolean bl = direction == Direction.EAST || direction == Direction.WEST;
+		return blockState.with(this.getShapeProperty(), bl ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH);
 	}
 
 	public abstract Property<RailShape> getShapeProperty();

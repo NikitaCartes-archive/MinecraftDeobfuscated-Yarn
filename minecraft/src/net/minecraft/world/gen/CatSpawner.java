@@ -40,7 +40,7 @@ public class CatSpawner implements Spawner {
 					)) {
 						return 0;
 					} else {
-						if (SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, world, blockPos, EntityType.field_16281)) {
+						if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, world, blockPos, EntityType.CAT)) {
 							if (world.isNearOccupiedPointOfInterest(blockPos, 2)) {
 								return this.spawnInHouse(world, blockPos);
 							}
@@ -61,8 +61,7 @@ public class CatSpawner implements Spawner {
 
 	private int spawnInHouse(ServerWorld world, BlockPos pos) {
 		int i = 48;
-		if (world.getPointOfInterestStorage()
-				.count(PointOfInterestType.field_18517.getCompletionCondition(), pos, 48, PointOfInterestStorage.OccupationStatus.field_18488)
+		if (world.getPointOfInterestStorage().count(PointOfInterestType.HOME.getCompletionCondition(), pos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 			> 4L) {
 			List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(48.0, 8.0, 48.0));
 			if (list.size() < 5) {
@@ -80,11 +79,11 @@ public class CatSpawner implements Spawner {
 	}
 
 	private int spawn(BlockPos pos, ServerWorld serverWorld) {
-		CatEntity catEntity = EntityType.field_16281.create(serverWorld);
+		CatEntity catEntity = EntityType.CAT.create(serverWorld);
 		if (catEntity == null) {
 			return 0;
 		} else {
-			catEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(pos), SpawnReason.field_16459, null, null);
+			catEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
 			catEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
 			serverWorld.spawnEntityAndPassengers(catEntity);
 			return 1;

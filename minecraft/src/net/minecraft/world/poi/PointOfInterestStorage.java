@@ -35,7 +35,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	private final LongSet preloadedChunks = new LongOpenHashSet();
 
 	public PointOfInterestStorage(File file, DataFixer dataFixer, boolean bl) {
-		super(file, PointOfInterestSet::method_28364, PointOfInterestSet::new, dataFixer, DataFixTypes.field_19221, bl);
+		super(file, PointOfInterestSet::method_28364, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK, bl);
 		this.pointOfInterestDistanceTracker = new PointOfInterestStorage.PointOfInterestDistanceTracker();
 	}
 
@@ -120,7 +120,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> positionPredicate, BlockPos pos, int radius) {
-		return this.getInCircle(typePredicate, pos, radius, PointOfInterestStorage.OccupationStatus.field_18487)
+		return this.getInCircle(typePredicate, pos, radius, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
 			.filter(pointOfInterest -> positionPredicate.test(pointOfInterest.getPos()))
 			.findFirst()
 			.map(pointOfInterest -> {
@@ -165,7 +165,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return optional == null
 			? false
 			: (Boolean)optional.map(
-					pointOfInterestSet -> pointOfInterestSet.get(PointOfInterestType.ALWAYS_TRUE, PointOfInterestStorage.OccupationStatus.field_18488).count() > 0L
+					pointOfInterestSet -> pointOfInterestSet.get(PointOfInterestType.ALWAYS_TRUE, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).count() > 0L
 				)
 				.orElse(false);
 	}
@@ -228,13 +228,13 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 			.filter(pair -> !(Boolean)((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false))
 			.map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos())
 			.filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong()))
-			.forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.field_12798));
+			.forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
 	}
 
 	public static enum OccupationStatus {
-		field_18487(PointOfInterest::hasSpace),
-		field_18488(PointOfInterest::isOccupied),
-		field_18489(pointOfInterest -> true);
+		HAS_SPACE(PointOfInterest::hasSpace),
+		IS_OCCUPIED(PointOfInterest::isOccupied),
+		ANY(pointOfInterest -> true);
 
 		private final Predicate<? super PointOfInterest> predicate;
 

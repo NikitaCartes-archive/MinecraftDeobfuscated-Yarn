@@ -24,7 +24,7 @@ public class DesertPyramidFeature extends StructureFeature<DefaultFeatureConfig>
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28624(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,

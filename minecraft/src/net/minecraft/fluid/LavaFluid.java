@@ -37,7 +37,7 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	public Item getBucketItem() {
-		return Items.field_8187;
+		return Items.LAVA_BUCKET;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -49,8 +49,8 @@ public abstract class LavaFluid extends FlowableFluid {
 				double d = (double)pos.getX() + random.nextDouble();
 				double e = (double)pos.getY() + 1.0;
 				double f = (double)pos.getZ() + random.nextDouble();
-				world.addParticle(ParticleTypes.field_11239, d, e, f, 0.0, 0.0, 0.0);
-				world.playSound(d, e, f, SoundEvents.field_14576, SoundCategory.field_15245, 0.2F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.15F, false);
+				world.addParticle(ParticleTypes.LAVA, d, e, f, 0.0, 0.0, 0.0);
+				world.playSound(d, e, f, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 0.2F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.15F, false);
 			}
 
 			if (random.nextInt(200) == 0) {
@@ -58,8 +58,8 @@ public abstract class LavaFluid extends FlowableFluid {
 					(double)pos.getX(),
 					(double)pos.getY(),
 					(double)pos.getZ(),
-					SoundEvents.field_15021,
-					SoundCategory.field_15245,
+					SoundEvents.BLOCK_LAVA_AMBIENT,
+					SoundCategory.BLOCKS,
 					0.2F + random.nextFloat() * 0.2F,
 					0.9F + random.nextFloat() * 0.15F,
 					false
@@ -70,7 +70,7 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
-		if (world.getGameRules().getBoolean(GameRules.field_19387)) {
+		if (world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			int i = random.nextInt(3);
 			if (i > 0) {
 				BlockPos blockPos = pos;
@@ -124,7 +124,7 @@ public abstract class LavaFluid extends FlowableFluid {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ParticleEffect getParticle() {
-		return ParticleTypes.field_11223;
+		return ParticleTypes.DRIPPING_LAVA;
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	public BlockState toBlockState(FluidState state) {
-		return Blocks.field_10164.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(state)));
+		return Blocks.LAVA.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(state)));
 	}
 
 	@Override
@@ -154,7 +154,7 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	public boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
-		return state.getHeight(world, pos) >= 0.44444445F && fluid.isIn(FluidTags.field_15517);
+		return state.getHeight(world, pos) >= 0.44444445F && fluid.isIn(FluidTags.WATER);
 	}
 
 	@Override
@@ -188,11 +188,11 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	protected void flow(WorldAccess world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
-		if (direction == Direction.field_11033) {
+		if (direction == Direction.DOWN) {
 			FluidState fluidState2 = world.getFluidState(pos);
-			if (this.isIn(FluidTags.field_15518) && fluidState2.isIn(FluidTags.field_15517)) {
+			if (this.isIn(FluidTags.LAVA) && fluidState2.isIn(FluidTags.WATER)) {
 				if (state.getBlock() instanceof FluidBlock) {
-					world.setBlockState(pos, Blocks.field_10340.getDefaultState(), 3);
+					world.setBlockState(pos, Blocks.STONE.getDefaultState(), 3);
 				}
 
 				this.playExtinguishEvent(world, pos);

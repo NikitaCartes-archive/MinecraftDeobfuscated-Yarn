@@ -28,10 +28,10 @@ public class SignBlockEntity extends BlockEntity {
 	private boolean editable = true;
 	private PlayerEntity editor;
 	private final OrderedText[] textBeingEdited = new OrderedText[4];
-	private DyeColor textColor = DyeColor.field_7963;
+	private DyeColor textColor = DyeColor.BLACK;
 
 	public SignBlockEntity() {
-		super(BlockEntityType.field_11911);
+		super(BlockEntityType.SIGN);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class SignBlockEntity extends BlockEntity {
 	public void fromTag(BlockState state, CompoundTag tag) {
 		this.editable = false;
 		super.fromTag(state, tag);
-		this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.field_7963);
+		this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
 
 		for (int i = 0; i < 4; i++) {
 			String string = tag.getString("Text" + (i + 1));
@@ -131,7 +131,7 @@ public class SignBlockEntity extends BlockEntity {
 			Style style = text == null ? null : text.getStyle();
 			if (style != null && style.getClickEvent() != null) {
 				ClickEvent clickEvent = style.getClickEvent();
-				if (clickEvent.getAction() == ClickEvent.Action.field_11750) {
+				if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
 					player.getServer().getCommandManager().execute(this.getCommandSource((ServerPlayerEntity)player), clickEvent.getValue());
 				}
 			}

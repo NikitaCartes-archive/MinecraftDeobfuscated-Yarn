@@ -16,29 +16,29 @@ public class WalkTowardJobSiteTask extends Task<VillagerEntity> {
 	final float speed;
 
 	public WalkTowardJobSiteTask(float speed) {
-		super(ImmutableMap.of(MemoryModuleType.field_25160, MemoryModuleState.field_18456), 1200);
+		super(ImmutableMap.of(MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleState.VALUE_PRESENT), 1200);
 		this.speed = speed;
 	}
 
-	protected boolean method_29251(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		return (Boolean)villagerEntity.getBrain()
 			.getFirstPossibleNonCoreActivity()
-			.map(activity -> activity == Activity.field_18595 || activity == Activity.field_18596 || activity == Activity.field_18885)
+			.map(activity -> activity == Activity.IDLE || activity == Activity.WORK || activity == Activity.PLAY)
 			.orElse(true);
 	}
 
-	protected boolean method_29523(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		return villagerEntity.getBrain().hasMemoryModule(MemoryModuleType.field_25160);
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		return villagerEntity.getBrain().hasMemoryModule(MemoryModuleType.POTENTIAL_JOB_SITE);
 	}
 
-	protected void method_29252(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		LookTargetUtil.walkTowards(
-			villagerEntity, ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_25160).get()).getPos(), this.speed, 1
+			villagerEntity, ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos(), this.speed, 1
 		);
 	}
 
-	protected void method_29525(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_25160);
+	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		optional.ifPresent(globalPos -> {
 			BlockPos blockPos = globalPos.getPos();
 			ServerWorld serverWorld2 = serverWorld.getServer().getWorld(globalPos.getDimension());
@@ -51,6 +51,6 @@ public class WalkTowardJobSiteTask extends Task<VillagerEntity> {
 				DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
 			}
 		});
-		villagerEntity.getBrain().forget(MemoryModuleType.field_25160);
+		villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
 	}
 }

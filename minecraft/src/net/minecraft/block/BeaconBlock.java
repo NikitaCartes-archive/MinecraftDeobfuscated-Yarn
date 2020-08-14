@@ -21,7 +21,7 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 
 	@Override
 	public DyeColor getColor() {
-		return DyeColor.field_7952;
+		return DyeColor.WHITE;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeaconBlockEntity) {
 				player.openHandledScreen((BeaconBlockEntity)blockEntity);
-				player.incrementStat(Stats.field_15416);
+				player.incrementStat(Stats.INTERACT_WITH_BEACON);
 			}
 
 			return ActionResult.CONSUME;
@@ -46,7 +46,7 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override

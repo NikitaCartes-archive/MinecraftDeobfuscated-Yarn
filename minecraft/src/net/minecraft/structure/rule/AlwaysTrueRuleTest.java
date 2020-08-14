@@ -19,6 +19,6 @@ public class AlwaysTrueRuleTest extends RuleTest {
 
 	@Override
 	protected RuleTestType<?> getType() {
-		return RuleTestType.field_16982;
+		return RuleTestType.ALWAYS_TRUE;
 	}
 }

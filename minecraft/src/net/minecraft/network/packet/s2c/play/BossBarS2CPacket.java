@@ -41,26 +41,26 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.uuid = buf.readUuid();
 		this.type = buf.readEnumConstant(BossBarS2CPacket.Type.class);
 		switch (this.type) {
-			case field_12078:
+			case ADD:
 				this.name = buf.readText();
 				this.percent = buf.readFloat();
 				this.color = buf.readEnumConstant(BossBar.Color.class);
 				this.overlay = buf.readEnumConstant(BossBar.Style.class);
 				this.setFlagBitfield(buf.readUnsignedByte());
-			case field_12082:
+			case REMOVE:
 			default:
 				break;
-			case field_12080:
+			case UPDATE_PCT:
 				this.percent = buf.readFloat();
 				break;
-			case field_12084:
+			case UPDATE_NAME:
 				this.name = buf.readText();
 				break;
-			case field_12081:
+			case UPDATE_STYLE:
 				this.color = buf.readEnumConstant(BossBar.Color.class);
 				this.overlay = buf.readEnumConstant(BossBar.Style.class);
 				break;
-			case field_12083:
+			case UPDATE_PROPERTIES:
 				this.setFlagBitfield(buf.readUnsignedByte());
 		}
 	}
@@ -76,26 +76,26 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeUuid(this.uuid);
 		buf.writeEnumConstant(this.type);
 		switch (this.type) {
-			case field_12078:
+			case ADD:
 				buf.writeText(this.name);
 				buf.writeFloat(this.percent);
 				buf.writeEnumConstant(this.color);
 				buf.writeEnumConstant(this.overlay);
 				buf.writeByte(this.getFlagBitfield());
-			case field_12082:
+			case REMOVE:
 			default:
 				break;
-			case field_12080:
+			case UPDATE_PCT:
 				buf.writeFloat(this.percent);
 				break;
-			case field_12084:
+			case UPDATE_NAME:
 				buf.writeText(this.name);
 				break;
-			case field_12081:
+			case UPDATE_STYLE:
 				buf.writeEnumConstant(this.color);
 				buf.writeEnumConstant(this.overlay);
 				break;
-			case field_12083:
+			case UPDATE_PROPERTIES:
 				buf.writeByte(this.getFlagBitfield());
 		}
 	}
@@ -117,7 +117,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		return i;
 	}
 
-	public void method_11330(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onBossBar(this);
 	}
 
@@ -167,11 +167,11 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public static enum Type {
-		field_12078,
-		field_12082,
-		field_12080,
-		field_12084,
-		field_12081,
-		field_12083;
+		ADD,
+		REMOVE,
+		UPDATE_PCT,
+		UPDATE_NAME,
+		UPDATE_STYLE,
+		UPDATE_PROPERTIES;
 	}
 }

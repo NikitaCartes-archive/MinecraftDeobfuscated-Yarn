@@ -53,7 +53,7 @@ public class Dismounting {
 
 	public static VoxelShape getCollisionShape(BlockView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
-		return !blockState.isIn(BlockTags.field_22414) && (!(blockState.getBlock() instanceof TrapdoorBlock) || !blockState.get(TrapdoorBlock.OPEN))
+		return !blockState.isIn(BlockTags.CLIMBABLE) && (!(blockState.getBlock() instanceof TrapdoorBlock) || !blockState.get(TrapdoorBlock.OPEN))
 			? blockState.getCollisionShape(world, pos)
 			: VoxelShapes.empty();
 	}
@@ -65,11 +65,11 @@ public class Dismounting {
 		while (i < maxDistance) {
 			VoxelShape voxelShape = (VoxelShape)collisionShapeGetter.apply(mutable);
 			if (!voxelShape.isEmpty()) {
-				return (double)(pos.getY() + i) + voxelShape.getMin(Direction.Axis.field_11052);
+				return (double)(pos.getY() + i) + voxelShape.getMin(Direction.Axis.Y);
 			}
 
 			i++;
-			mutable.move(Direction.field_11036);
+			mutable.move(Direction.UP);
 		}
 
 		return Double.POSITIVE_INFINITY;
@@ -80,10 +80,10 @@ public class Dismounting {
 		if (bl && entityType.isInvalidSpawn(collisionView.getBlockState(blockPos))) {
 			return null;
 		} else {
-			double d = collisionView.getDismountHeight(getCollisionShape(collisionView, blockPos), () -> getCollisionShape(collisionView, blockPos.method_10074()));
+			double d = collisionView.getDismountHeight(getCollisionShape(collisionView, blockPos), () -> getCollisionShape(collisionView, blockPos.down()));
 			if (!canDismountInBlock(d)) {
 				return null;
-			} else if (bl && d <= 0.0 && entityType.isInvalidSpawn(collisionView.getBlockState(blockPos.method_10074()))) {
+			} else if (bl && d <= 0.0 && entityType.isInvalidSpawn(collisionView.getBlockState(blockPos.down()))) {
 				return null;
 			} else {
 				Vec3d vec3d = Vec3d.ofCenter(blockPos, d);

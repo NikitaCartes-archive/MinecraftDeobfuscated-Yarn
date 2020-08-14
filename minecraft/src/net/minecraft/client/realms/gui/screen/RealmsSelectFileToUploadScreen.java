@@ -31,7 +31,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Text worldLang = new TranslatableText("selectWorld.world");
 	private static final Text conversionLang = new TranslatableText("selectWorld.conversion");
-	private static final Text field_26507 = new TranslatableText("mco.upload.hardcore").formatted(Formatting.field_1079);
+	private static final Text field_26507 = new TranslatableText("mco.upload.hardcore").formatted(Formatting.DARK_RED);
 	private static final Text field_26508 = new TranslatableText("selectWorld.cheats");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private final RealmsResetWorldScreen parent;
@@ -69,7 +69,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.worldSelectionList = new RealmsSelectFileToUploadScreen.WorldSelectionList();
 
 		try {
@@ -99,7 +99,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void upload() {
@@ -207,7 +207,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		}
 
 		public void addEntry(LevelSummary levelSummary) {
-			this.method_25491(RealmsSelectFileToUploadScreen.this.new WorldListEntry(levelSummary));
+			this.addEntry(RealmsSelectFileToUploadScreen.this.new WorldListEntry(levelSummary));
 		}
 
 		@Override
@@ -243,7 +243,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			}
 		}
 
-		public void method_25227(@Nullable RealmsSelectFileToUploadScreen.WorldListEntry worldListEntry) {
+		public void setSelected(@Nullable RealmsSelectFileToUploadScreen.WorldListEntry worldListEntry) {
 			super.setSelected(worldListEntry);
 			RealmsSelectFileToUploadScreen.this.selectedWorld = this.children().indexOf(worldListEntry);
 			RealmsSelectFileToUploadScreen.this.uploadButton.active = RealmsSelectFileToUploadScreen.this.selectedWorld >= 0

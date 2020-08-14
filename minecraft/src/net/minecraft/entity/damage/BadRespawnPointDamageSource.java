@@ -19,8 +19,8 @@ public class BadRespawnPointDamageSource extends DamageSource {
 	public Text getDeathMessage(LivingEntity entity) {
 		Text text = Texts.bracketed(new TranslatableText("death.attack.badRespawnPoint.link"))
 			.styled(
-				style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.field_11749, "https://bugs.mojang.com/browse/MCPE-28723"))
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, new LiteralText("MCPE-28723")))
+				style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://bugs.mojang.com/browse/MCPE-28723"))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("MCPE-28723")))
 			);
 		return new TranslatableText("death.attack.badRespawnPoint.message", entity.getDisplayName(), text);
 	}

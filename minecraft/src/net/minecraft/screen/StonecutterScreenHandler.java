@@ -47,7 +47,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	}
 
 	public StonecutterScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.field_17625, syncId);
+		super(ScreenHandlerType.STONECUTTER, syncId);
 		this.context = context;
 		this.world = playerInventory.player.world;
 		this.inputSlot = this.addSlot(new Slot(this.input, 0, 20, 33));
@@ -69,7 +69,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
 					if (StonecutterScreenHandler.this.lastTakeTime != l) {
-						world.playSound(null, blockPos, SoundEvents.field_17710, SoundCategory.field_15245, 1.0F, 1.0F);
+						world.playSound(null, blockPos, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						StonecutterScreenHandler.this.lastTakeTime = l;
 					}
 				}));
@@ -112,7 +112,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.field_16335);
+		return canUse(this.context, player, Blocks.STONECUTTER);
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 		this.selectedRecipe.set(-1);
 		this.outputSlot.setStack(ItemStack.EMPTY);
 		if (!stack.isEmpty()) {
-			this.availableRecipes = this.world.getRecipeManager().getAllMatches(RecipeType.field_17641, input, this.world);
+			this.availableRecipes = this.world.getRecipeManager().getAllMatches(RecipeType.STONECUTTING, input, this.world);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 
 	@Override
 	public ScreenHandlerType<?> getType() {
-		return ScreenHandlerType.field_17625;
+		return ScreenHandlerType.STONECUTTER;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -193,7 +193,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 				if (!this.insertItem(itemStack2, 2, 38, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (this.world.getRecipeManager().getFirstMatch(RecipeType.field_17641, new SimpleInventory(itemStack2), this.world).isPresent()) {
+			} else if (this.world.getRecipeManager().getFirstMatch(RecipeType.STONECUTTING, new SimpleInventory(itemStack2), this.world).isPresent()) {
 				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}

@@ -81,10 +81,10 @@ public class UpgradeData {
 			Set<Direction> set = side.getDirections();
 			int i = 0;
 			int j = 15;
-			boolean bl = set.contains(Direction.field_11034);
-			boolean bl2 = set.contains(Direction.field_11039);
-			boolean bl3 = set.contains(Direction.field_11035);
-			boolean bl4 = set.contains(Direction.field_11043);
+			boolean bl = set.contains(Direction.EAST);
+			boolean bl2 = set.contains(Direction.WEST);
+			boolean bl3 = set.contains(Direction.SOUTH);
+			boolean bl4 = set.contains(Direction.NORTH);
 			boolean bl5 = set.size() == 1;
 			ChunkPos chunkPos = chunk.getPos();
 			int k = chunkPos.getStartX() + (!bl5 || !bl4 && !bl3 ? (bl2 ? 0 : 15) : 1);
@@ -109,7 +109,7 @@ public class UpgradeData {
 	}
 
 	private static BlockState applyAdjacentBlock(BlockState oldState, Direction dir, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
-		return ((UpgradeData.Logic)BLOCK_TO_LOGIC.getOrDefault(oldState.getBlock(), UpgradeData.BuiltinLogic.field_12962))
+		return ((UpgradeData.Logic)BLOCK_TO_LOGIC.getOrDefault(oldState.getBlock(), UpgradeData.BuiltinLogic.DEFAULT))
 			.getUpdatedState(oldState, dir, world.getBlockState(otherPos), world, currentPos, otherPos);
 	}
 
@@ -192,44 +192,44 @@ public class UpgradeData {
 	}
 
 	static enum BuiltinLogic implements UpgradeData.Logic {
-		field_12957(
-			Blocks.field_10282,
-			Blocks.field_10316,
-			Blocks.field_10197,
-			Blocks.field_10022,
-			Blocks.field_10300,
-			Blocks.field_10321,
-			Blocks.field_10145,
-			Blocks.field_10133,
-			Blocks.field_10522,
-			Blocks.field_10353,
-			Blocks.field_10628,
-			Blocks.field_10233,
-			Blocks.field_10404,
-			Blocks.field_10456,
-			Blocks.field_10023,
-			Blocks.field_10529,
-			Blocks.field_10287,
-			Blocks.field_10506,
-			Blocks.field_10535,
-			Blocks.field_10105,
-			Blocks.field_10414,
-			Blocks.field_10081,
-			Blocks.field_10255,
-			Blocks.field_10102,
-			Blocks.field_10534,
-			Blocks.field_10121,
-			Blocks.field_10411,
-			Blocks.field_10231,
-			Blocks.field_10284,
-			Blocks.field_10544,
-			Blocks.field_10330,
-			Blocks.field_10187,
-			Blocks.field_10088,
-			Blocks.field_10391,
-			Blocks.field_10401,
-			Blocks.field_10587,
-			Blocks.field_10265
+		BLACKLIST(
+			Blocks.OBSERVER,
+			Blocks.NETHER_PORTAL,
+			Blocks.WHITE_CONCRETE_POWDER,
+			Blocks.ORANGE_CONCRETE_POWDER,
+			Blocks.MAGENTA_CONCRETE_POWDER,
+			Blocks.LIGHT_BLUE_CONCRETE_POWDER,
+			Blocks.YELLOW_CONCRETE_POWDER,
+			Blocks.LIME_CONCRETE_POWDER,
+			Blocks.PINK_CONCRETE_POWDER,
+			Blocks.GRAY_CONCRETE_POWDER,
+			Blocks.LIGHT_GRAY_CONCRETE_POWDER,
+			Blocks.CYAN_CONCRETE_POWDER,
+			Blocks.PURPLE_CONCRETE_POWDER,
+			Blocks.BLUE_CONCRETE_POWDER,
+			Blocks.BROWN_CONCRETE_POWDER,
+			Blocks.GREEN_CONCRETE_POWDER,
+			Blocks.RED_CONCRETE_POWDER,
+			Blocks.BLACK_CONCRETE_POWDER,
+			Blocks.ANVIL,
+			Blocks.CHIPPED_ANVIL,
+			Blocks.DAMAGED_ANVIL,
+			Blocks.DRAGON_EGG,
+			Blocks.GRAVEL,
+			Blocks.SAND,
+			Blocks.RED_SAND,
+			Blocks.OAK_SIGN,
+			Blocks.SPRUCE_SIGN,
+			Blocks.BIRCH_SIGN,
+			Blocks.ACACIA_SIGN,
+			Blocks.JUNGLE_SIGN,
+			Blocks.DARK_OAK_SIGN,
+			Blocks.OAK_WALL_SIGN,
+			Blocks.SPRUCE_WALL_SIGN,
+			Blocks.BIRCH_WALL_SIGN,
+			Blocks.ACACIA_WALL_SIGN,
+			Blocks.JUNGLE_WALL_SIGN,
+			Blocks.DARK_OAK_WALL_SIGN
 		) {
 			@Override
 			public BlockState getUpdatedState(
@@ -238,7 +238,7 @@ public class UpgradeData {
 				return blockState;
 			}
 		},
-		field_12962 {
+		DEFAULT {
 			@Override
 			public BlockState getUpdatedState(
 				BlockState blockState, Direction direction, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, BlockPos blockPos2
@@ -246,20 +246,20 @@ public class UpgradeData {
 				return blockState.getStateForNeighborUpdate(direction, worldAccess.getBlockState(blockPos2), worldAccess, blockPos, blockPos2);
 			}
 		},
-		field_12960(Blocks.field_10034, Blocks.field_10380) {
+		CHEST(Blocks.CHEST, Blocks.TRAPPED_CHEST) {
 			@Override
 			public BlockState getUpdatedState(
 				BlockState blockState, Direction direction, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, BlockPos blockPos2
 			) {
 				if (blockState2.isOf(blockState.getBlock())
 					&& direction.getAxis().isHorizontal()
-					&& blockState.get(ChestBlock.CHEST_TYPE) == ChestType.field_12569
-					&& blockState2.get(ChestBlock.CHEST_TYPE) == ChestType.field_12569) {
+					&& blockState.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE
+					&& blockState2.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE) {
 					Direction direction2 = blockState.get(ChestBlock.FACING);
 					if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
-						ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.field_12574 : ChestType.field_12571;
+						ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.LEFT : ChestType.RIGHT;
 						worldAccess.setBlockState(blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), 18);
-						if (direction2 == Direction.field_11043 || direction2 == Direction.field_11034) {
+						if (direction2 == Direction.NORTH || direction2 == Direction.EAST) {
 							BlockEntity blockEntity = worldAccess.getBlockEntity(blockPos);
 							BlockEntity blockEntity2 = worldAccess.getBlockEntity(blockPos2);
 							if (blockEntity instanceof ChestBlockEntity && blockEntity2 instanceof ChestBlockEntity) {
@@ -274,7 +274,7 @@ public class UpgradeData {
 				return blockState;
 			}
 		},
-		field_12963(true, Blocks.field_10098, Blocks.field_10539, Blocks.field_10035, Blocks.field_10335, Blocks.field_10503, Blocks.field_9988) {
+		LEAVES(true, Blocks.ACACIA_LEAVES, Blocks.BIRCH_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES) {
 			private final ThreadLocal<List<ObjectSet<BlockPos>>> distanceToPositions = ThreadLocal.withInitial(() -> Lists.newArrayListWithCapacity(7));
 
 			@Override
@@ -327,7 +327,7 @@ public class UpgradeData {
 				list.clear();
 			}
 		},
-		field_12958(Blocks.field_10168, Blocks.field_9984) {
+		STEM_BLOCK(Blocks.MELON_STEM, Blocks.PUMPKIN_STEM) {
 			@Override
 			public BlockState getUpdatedState(
 				BlockState blockState, Direction direction, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, BlockPos blockPos2

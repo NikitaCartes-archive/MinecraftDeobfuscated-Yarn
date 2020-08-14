@@ -31,7 +31,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 
 	@Override
 	protected TreeDecoratorType<?> getType() {
-		return TreeDecoratorType.field_21323;
+		return TreeDecoratorType.BEEHIVE;
 	}
 
 	@Override
@@ -45,8 +45,8 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 			if (!list.isEmpty()) {
 				BlockPos blockPos = (BlockPos)list.get(random.nextInt(list.size()));
 				BlockPos blockPos2 = blockPos.offset(direction);
-				if (Feature.isAir(world, blockPos2) && Feature.isAir(world, blockPos2.offset(Direction.field_11035))) {
-					BlockState blockState = Blocks.field_20421.getDefaultState().with(BeehiveBlock.FACING, Direction.field_11035);
+				if (Feature.isAir(world, blockPos2) && Feature.isAir(world, blockPos2.offset(Direction.SOUTH))) {
+					BlockState blockState = Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);
 					this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
 					BlockEntity blockEntity = world.getBlockEntity(blockPos2);
 					if (blockEntity instanceof BeehiveBlockEntity) {
@@ -54,7 +54,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 						int j = 2 + random.nextInt(2);
 
 						for (int k = 0; k < j; k++) {
-							BeeEntity beeEntity = new BeeEntity(EntityType.field_20346, world.toServerWorld());
+							BeeEntity beeEntity = new BeeEntity(EntityType.BEE, world.toServerWorld());
 							beehiveBlockEntity.tryEnterHive(beeEntity, false, random.nextInt(599));
 						}
 					}

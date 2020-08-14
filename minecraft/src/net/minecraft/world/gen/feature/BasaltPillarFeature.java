@@ -16,7 +16,7 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_24433(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (structureWorldAccess.isAir(blockPos) && !structureWorldAccess.isAir(blockPos.up())) {
@@ -32,20 +32,20 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 					return true;
 				}
 
-				structureWorldAccess.setBlockState(mutable, Blocks.field_22091.getDefaultState(), 2);
-				bl = bl && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.field_11043));
-				bl2 = bl2 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.field_11035));
-				bl3 = bl3 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.field_11039));
-				bl4 = bl4 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.field_11034));
-				mutable.move(Direction.field_11033);
+				structureWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);
+				bl = bl && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
+				bl2 = bl2 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
+				bl3 = bl3 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.WEST));
+				bl4 = bl4 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.EAST));
+				mutable.move(Direction.DOWN);
 			}
 
-			mutable.move(Direction.field_11036);
-			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.field_11043));
-			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.field_11035));
-			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.field_11039));
-			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.field_11034));
-			mutable.move(Direction.field_11033);
+			mutable.move(Direction.UP);
+			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
+			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
+			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.WEST));
+			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.EAST));
+			mutable.move(Direction.DOWN);
 			BlockPos.Mutable mutable3 = new BlockPos.Mutable();
 
 			for (int i = -3; i < 4; i++) {
@@ -55,15 +55,15 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 						mutable3.set(mutable.add(i, 0, j));
 						int l = 3;
 
-						while (structureWorldAccess.isAir(mutable2.set(mutable3, Direction.field_11033))) {
-							mutable3.move(Direction.field_11033);
+						while (structureWorldAccess.isAir(mutable2.set(mutable3, Direction.DOWN))) {
+							mutable3.move(Direction.DOWN);
 							if (--l <= 0) {
 								break;
 							}
 						}
 
-						if (!structureWorldAccess.isAir(mutable2.set(mutable3, Direction.field_11033))) {
-							structureWorldAccess.setBlockState(mutable3, Blocks.field_22091.getDefaultState(), 2);
+						if (!structureWorldAccess.isAir(mutable2.set(mutable3, Direction.DOWN))) {
+							structureWorldAccess.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), 2);
 						}
 					}
 				}
@@ -77,13 +77,13 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 
 	private void tryPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
 		if (random.nextBoolean()) {
-			world.setBlockState(pos, Blocks.field_22091.getDefaultState(), 2);
+			world.setBlockState(pos, Blocks.BASALT.getDefaultState(), 2);
 		}
 	}
 
 	private boolean stopOrPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
 		if (random.nextInt(10) != 0) {
-			world.setBlockState(pos, Blocks.field_22091.getDefaultState(), 2);
+			world.setBlockState(pos, Blocks.BASALT.getDefaultState(), 2);
 			return true;
 		} else {
 			return false;

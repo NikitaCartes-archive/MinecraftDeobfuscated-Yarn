@@ -4,11 +4,11 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.registry.Registry;
 
 public class TreeDecoratorType<P extends TreeDecorator> {
-	public static final TreeDecoratorType<TrunkVineTreeDecorator> field_21320 = register("trunk_vine", TrunkVineTreeDecorator.CODEC);
-	public static final TreeDecoratorType<LeaveVineTreeDecorator> field_21321 = register("leave_vine", LeaveVineTreeDecorator.CODEC);
-	public static final TreeDecoratorType<CocoaBeansTreeDecorator> field_21322 = register("cocoa", CocoaBeansTreeDecorator.CODEC);
-	public static final TreeDecoratorType<BeehiveTreeDecorator> field_21323 = register("beehive", BeehiveTreeDecorator.CODEC);
-	public static final TreeDecoratorType<AlterGroundTreeDecorator> field_21324 = register("alter_ground", AlterGroundTreeDecorator.CODEC);
+	public static final TreeDecoratorType<TrunkVineTreeDecorator> TRUNK_VINE = register("trunk_vine", TrunkVineTreeDecorator.CODEC);
+	public static final TreeDecoratorType<LeaveVineTreeDecorator> LEAVE_VINE = register("leave_vine", LeaveVineTreeDecorator.CODEC);
+	public static final TreeDecoratorType<CocoaBeansTreeDecorator> COCOA = register("cocoa", CocoaBeansTreeDecorator.CODEC);
+	public static final TreeDecoratorType<BeehiveTreeDecorator> BEEHIVE = register("beehive", BeehiveTreeDecorator.CODEC);
+	public static final TreeDecoratorType<AlterGroundTreeDecorator> ALTER_GROUND = register("alter_ground", AlterGroundTreeDecorator.CODEC);
 	private final Codec<P> codec;
 
 	private static <P extends TreeDecorator> TreeDecoratorType<P> register(String id, Codec<P> codec) {

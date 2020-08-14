@@ -47,8 +47,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
 	private static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
 	private static final Text field_26581 = new TranslatableText("lanServer.scanning");
-	private static final Text field_26582 = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.field_1079);
-	private static final Text field_26583 = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.field_1079);
+	private static final Text field_26582 = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
+	private static final Text field_26583 = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
 	private static final Text field_26584 = new TranslatableText("multiplayer.status.client_out_of_date");
 	private static final Text field_26585 = new TranslatableText("multiplayer.status.server_out_of_date");
 	private static final Text field_26586 = new TranslatableText("multiplayer.status.no_connection");
@@ -70,7 +70,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		this.lanServers.forEach(this::addEntry);
 	}
 
-	public void method_20122(@Nullable MultiplayerServerListWidget.Entry entry) {
+	public void setSelected(@Nullable MultiplayerServerListWidget.Entry entry) {
 		super.setSelected(entry);
 		if (this.getSelected() instanceof MultiplayerServerListWidget.ServerEntry) {
 			NarratorManager.INSTANCE
@@ -256,7 +256,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				this.client.textRenderer.draw(matrices, (OrderedText)list.get(i), (float)(x + 32 + 3), (float)(y + 12 + 9 * i), 8421504);
 			}
 
-			Text text = (Text)(bl3 ? this.server.version.shallowCopy().formatted(Formatting.field_1079) : this.server.playerCountLabel);
+			Text text = (Text)(bl3 ? this.server.version.shallowCopy().formatted(Formatting.DARK_RED) : this.server.playerCountLabel);
 			int j = this.client.textRenderer.getWidth(text);
 			this.client.textRenderer.draw(matrices, text, (float)(x + entryWidth - j - 15 - 2), (float)(y + 1), 8421504);
 			int k = 0;
@@ -422,7 +422,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			this.screen.getServerList().swapEntries(i, j);
 			this.screen.serverListWidget.setServers(this.screen.getServerList());
 			MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.screen.serverListWidget.children().get(j);
-			this.screen.serverListWidget.method_20122(entry);
+			this.screen.serverListWidget.setSelected(entry);
 			MultiplayerServerListWidget.this.ensureVisible(entry);
 		}
 

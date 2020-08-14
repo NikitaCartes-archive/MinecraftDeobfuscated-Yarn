@@ -16,19 +16,17 @@ public class SeaPickleFeature extends Feature<CountConfig> {
 		super(codec);
 	}
 
-	public boolean method_13876(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, CountConfig countConfig
-	) {
+	public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, CountConfig countConfig) {
 		int i = 0;
 		int j = countConfig.getCount().getValue(random);
 
 		for (int k = 0; k < j; k++) {
 			int l = random.nextInt(8) - random.nextInt(8);
 			int m = random.nextInt(8) - random.nextInt(8);
-			int n = structureWorldAccess.getTopY(Heightmap.Type.field_13200, blockPos.getX() + l, blockPos.getZ() + m);
+			int n = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + l, blockPos.getZ() + m);
 			BlockPos blockPos2 = new BlockPos(blockPos.getX() + l, n, blockPos.getZ() + m);
-			BlockState blockState = Blocks.field_10476.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1));
-			if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.field_10382) && blockState.canPlaceAt(structureWorldAccess, blockPos2)) {
+			BlockState blockState = Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1));
+			if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER) && blockState.canPlaceAt(structureWorldAccess, blockPos2)) {
 				structureWorldAccess.setBlockState(blockPos2, blockState, 2);
 				i++;
 			}

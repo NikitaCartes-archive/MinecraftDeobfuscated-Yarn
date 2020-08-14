@@ -547,12 +547,12 @@ public class ChunkPalettedStorageFix extends DataFix {
 	}
 
 	public static enum Facing {
-		field_15858(ChunkPalettedStorageFix.Facing.Direction.field_15870, ChunkPalettedStorageFix.Facing.Axis.field_15866),
-		field_15863(ChunkPalettedStorageFix.Facing.Direction.field_15873, ChunkPalettedStorageFix.Facing.Axis.field_15866),
-		field_15859(ChunkPalettedStorageFix.Facing.Direction.field_15870, ChunkPalettedStorageFix.Facing.Axis.field_15867),
-		field_15862(ChunkPalettedStorageFix.Facing.Direction.field_15873, ChunkPalettedStorageFix.Facing.Axis.field_15867),
-		field_15857(ChunkPalettedStorageFix.Facing.Direction.field_15870, ChunkPalettedStorageFix.Facing.Axis.field_15869),
-		field_15860(ChunkPalettedStorageFix.Facing.Direction.field_15873, ChunkPalettedStorageFix.Facing.Axis.field_15869);
+		DOWN(ChunkPalettedStorageFix.Facing.Direction.NEGATIVE, ChunkPalettedStorageFix.Facing.Axis.Y),
+		UP(ChunkPalettedStorageFix.Facing.Direction.POSITIVE, ChunkPalettedStorageFix.Facing.Axis.Y),
+		NORTH(ChunkPalettedStorageFix.Facing.Direction.NEGATIVE, ChunkPalettedStorageFix.Facing.Axis.Z),
+		SOUTH(ChunkPalettedStorageFix.Facing.Direction.POSITIVE, ChunkPalettedStorageFix.Facing.Axis.Z),
+		WEST(ChunkPalettedStorageFix.Facing.Direction.NEGATIVE, ChunkPalettedStorageFix.Facing.Axis.X),
+		EAST(ChunkPalettedStorageFix.Facing.Direction.POSITIVE, ChunkPalettedStorageFix.Facing.Axis.X);
 
 		private final ChunkPalettedStorageFix.Facing.Axis axis;
 		private final ChunkPalettedStorageFix.Facing.Direction direction;
@@ -571,14 +571,14 @@ public class ChunkPalettedStorageFix extends DataFix {
 		}
 
 		public static enum Axis {
-			field_15869,
-			field_15866,
-			field_15867;
+			X,
+			Y,
+			Z;
 		}
 
 		public static enum Direction {
-			field_15873(1),
-			field_15870(-1);
+			POSITIVE(1),
+			NEGATIVE(-1);
 
 			private final int offset;
 
@@ -630,7 +630,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									j |= i;
 									Dynamic<?> dynamic2 = this.getBlock(j);
 									if ("minecraft:grass_block".equals(ChunkPalettedStorageFix.getName(dynamic2))) {
-										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(j, ChunkPalettedStorageFix.Facing.field_15863)));
+										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(j, ChunkPalettedStorageFix.Facing.UP)));
 										if ("minecraft:snow".equals(string) || "minecraft:snow_layer".equals(string)) {
 											this.setBlock(j, ChunkPalettedStorageFix.snowyGrass);
 										}
@@ -642,7 +642,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									jxxxxxxxxx |= i;
 									Dynamic<?> dynamic2 = this.getBlock(jxxxxxxxxx);
 									if ("minecraft:podzol".equals(ChunkPalettedStorageFix.getName(dynamic2))) {
-										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxxxx, ChunkPalettedStorageFix.Facing.field_15863)));
+										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxxxx, ChunkPalettedStorageFix.Facing.UP)));
 										if ("minecraft:snow".equals(string) || "minecraft:snow_layer".equals(string)) {
 											this.setBlock(jxxxxxxxxx, ChunkPalettedStorageFix.podzol);
 										}
@@ -691,7 +691,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									if (ChunkPalettedStorageFix.getName(dynamic2).endsWith("_door")) {
 										Dynamic<?> dynamic3 = this.getBlock(jxxx);
 										if ("lower".equals(ChunkPalettedStorageFix.getProperty(dynamic3, "half"))) {
-											int k = adjacentTo(jxxx, ChunkPalettedStorageFix.Facing.field_15863);
+											int k = adjacentTo(jxxx, ChunkPalettedStorageFix.Facing.UP);
 											Dynamic<?> dynamic4 = this.getBlock(k);
 											String string4 = ChunkPalettedStorageFix.getName(dynamic3);
 											if (string4.equals(ChunkPalettedStorageFix.getName(dynamic4))) {
@@ -711,7 +711,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									jxxxxxxxx |= i;
 									Dynamic<?> dynamic2 = this.getBlock(jxxxxxxxx);
 									if ("minecraft:carved_pumpkin".equals(ChunkPalettedStorageFix.getName(dynamic2))) {
-										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxxx, ChunkPalettedStorageFix.Facing.field_15858)));
+										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxxx, ChunkPalettedStorageFix.Facing.DOWN)));
 										if ("minecraft:grass_block".equals(string) || "minecraft:dirt".equals(string)) {
 											this.setBlock(jxxxxxxxx, ChunkPalettedStorageFix.pumpkin);
 										}
@@ -723,7 +723,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									jxxxxxxx |= i;
 									Dynamic<?> dynamic2 = this.getBlock(jxxxxxxx);
 									if ("minecraft:mycelium".equals(ChunkPalettedStorageFix.getName(dynamic2))) {
-										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxx, ChunkPalettedStorageFix.Facing.field_15863)));
+										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxx, ChunkPalettedStorageFix.Facing.UP)));
 										if ("minecraft:snow".equals(string) || "minecraft:snow_layer".equals(string)) {
 											this.setBlock(jxxxxxxx, ChunkPalettedStorageFix.snowyMycelium);
 										}
@@ -766,7 +766,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									jx |= i;
 									Dynamic<?> dynamic2 = this.getBlock(jx);
 									if ("upper".equals(ChunkPalettedStorageFix.getProperty(dynamic2, "half"))) {
-										Dynamic<?> dynamic3 = this.getBlock(adjacentTo(jx, ChunkPalettedStorageFix.Facing.field_15858));
+										Dynamic<?> dynamic3 = this.getBlock(adjacentTo(jx, ChunkPalettedStorageFix.Facing.DOWN));
 										String string3 = ChunkPalettedStorageFix.getName(dynamic3);
 										if ("minecraft:sunflower".equals(string3)) {
 											this.setBlock(jx, ChunkPalettedStorageFix.sunflowerUpper);
@@ -818,13 +818,13 @@ public class ChunkPalettedStorageFix extends DataFix {
 
 		public static int adjacentTo(int i, ChunkPalettedStorageFix.Facing direction) {
 			switch (direction.getAxis()) {
-				case field_15869:
+				case X:
 					int j = (i & 15) + direction.getDirection().getOffset();
 					return j >= 0 && j <= 15 ? i & -16 | j : -1;
-				case field_15866:
+				case Y:
 					int k = (i >> 8) + direction.getDirection().getOffset();
 					return k >= 0 && k <= 255 ? i & 0xFF | k << 8 : -1;
-				case field_15867:
+				case Z:
 					int l = (i >> 4 & 15) + direction.getDirection().getOffset();
 					return l >= 0 && l <= 15 ? i & -241 | l << 4 : -1;
 				default:

@@ -24,7 +24,7 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 
 	@Override
 	protected TreeDecoratorType<?> getType() {
-		return TreeDecoratorType.field_21324;
+		return TreeDecoratorType.ALTER_GROUND;
 	}
 
 	@Override

@@ -51,7 +51,7 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3038(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new ExplosionLargeParticle(clientWorld, d, e, f, g, this.spriteProvider);
 		}
 	}

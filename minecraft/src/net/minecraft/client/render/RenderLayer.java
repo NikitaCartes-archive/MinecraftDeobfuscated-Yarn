@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class RenderLayer extends RenderPhase {
-	private static final RenderLayer field_9178 = of(
+	private static final RenderLayer SOLID = of(
 		"solid",
 		VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
 		7,
@@ -25,7 +25,7 @@ public abstract class RenderLayer extends RenderPhase {
 		false,
 		RenderLayer.MultiPhaseParameters.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(true)
 	);
-	private static final RenderLayer field_9175 = of(
+	private static final RenderLayer CUTOUT_MIPPED = of(
 		"cutout_mipped",
 		VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
 		7,
@@ -39,7 +39,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.alpha(HALF_ALPHA)
 			.build(true)
 	);
-	private static final RenderLayer field_9174 = of(
+	private static final RenderLayer CUTOUT = of(
 		"cutout",
 		VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
 		7,
@@ -53,26 +53,26 @@ public abstract class RenderLayer extends RenderPhase {
 			.alpha(HALF_ALPHA)
 			.build(true)
 	);
-	private static final RenderLayer field_9179 = of(
+	private static final RenderLayer TRANSLUCENT = of(
 		"translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, createTranslucentPhaseData()
 	);
-	private static final RenderLayer field_25285 = of(
+	private static final RenderLayer TRANSLUCENT_MOVING_BLOCK = of(
 		"translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, true, getItemPhaseData()
 	);
-	private static final RenderLayer field_20963 = of(
+	private static final RenderLayer TRANSLUCENT_NO_CRUMBLING = of(
 		"translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, true, createTranslucentPhaseData()
 	);
-	private static final RenderLayer field_20964 = of(
+	private static final RenderLayer LEASH = of(
 		"leash",
 		VertexFormats.POSITION_COLOR_LIGHT,
 		7,
 		256,
 		RenderLayer.MultiPhaseParameters.builder().texture(NO_TEXTURE).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).build(false)
 	);
-	private static final RenderLayer field_20965 = of(
+	private static final RenderLayer WATER_MASK = of(
 		"water_mask", VertexFormats.POSITION, 7, 256, RenderLayer.MultiPhaseParameters.builder().texture(NO_TEXTURE).writeMaskState(DEPTH_MASK).build(false)
 	);
-	private static final RenderLayer field_24472 = of(
+	private static final RenderLayer ARMOR_GLINT = of(
 		"armor_glint",
 		VertexFormats.POSITION_TEXTURE,
 		7,
@@ -87,7 +87,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false)
 	);
-	private static final RenderLayer field_24473 = of(
+	private static final RenderLayer ARMOR_ENTITY_GLINT = of(
 		"armor_entity_glint",
 		VertexFormats.POSITION_TEXTURE,
 		7,
@@ -102,7 +102,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false)
 	);
-	private static final RenderLayer field_26373 = of(
+	private static final RenderLayer GLINT_TRANSLUCENT = of(
 		"glint_translucent",
 		VertexFormats.POSITION_TEXTURE,
 		7,
@@ -117,7 +117,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.target(ITEM_TARGET)
 			.build(false)
 	);
-	private static final RenderLayer field_20967 = of(
+	private static final RenderLayer GLINT = of(
 		"glint",
 		VertexFormats.POSITION_TEXTURE,
 		7,
@@ -131,7 +131,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.texturing(GLINT_TEXTURING)
 			.build(false)
 	);
-	private static final RenderLayer field_25487 = of(
+	private static final RenderLayer GLINT_DIRECT = of(
 		"glint_direct",
 		VertexFormats.POSITION_TEXTURE,
 		7,
@@ -145,7 +145,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.texturing(GLINT_TEXTURING)
 			.build(false)
 	);
-	private static final RenderLayer field_20968 = of(
+	private static final RenderLayer ENTITY_GLINT = of(
 		"entity_glint",
 		VertexFormats.POSITION_TEXTURE,
 		7,
@@ -160,7 +160,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
-	private static final RenderLayer field_25488 = of(
+	private static final RenderLayer ENTITY_GLINT_DIRECT = of(
 		"entity_glint_direct",
 		VertexFormats.POSITION_TEXTURE,
 		7,
@@ -174,7 +174,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
-	private static final RenderLayer field_20970 = of(
+	private static final RenderLayer LIGHTNING = of(
 		"lightning",
 		VertexFormats.POSITION_COLOR,
 		7,
@@ -188,8 +188,8 @@ public abstract class RenderLayer extends RenderPhase {
 			.shadeModel(SMOOTH_SHADE_MODEL)
 			.build(false)
 	);
-	private static final RenderLayer field_25644 = of("tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, getTripwirePhaseData());
-	public static final RenderLayer.MultiPhase field_21695 = of(
+	private static final RenderLayer TRIPWIRE = of("tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, getTripwirePhaseData());
+	public static final RenderLayer.MultiPhase LINES = of(
 		"lines",
 		VertexFormats.POSITION_COLOR,
 		1,
@@ -210,15 +210,15 @@ public abstract class RenderLayer extends RenderPhase {
 	private final Optional<RenderLayer> optionalThis;
 
 	public static RenderLayer getSolid() {
-		return field_9178;
+		return SOLID;
 	}
 
 	public static RenderLayer getCutoutMipped() {
-		return field_9175;
+		return CUTOUT_MIPPED;
 	}
 
 	public static RenderLayer getCutout() {
-		return field_9174;
+		return CUTOUT;
 	}
 
 	private static RenderLayer.MultiPhaseParameters createTranslucentPhaseData() {
@@ -232,7 +232,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getTranslucent() {
-		return field_9179;
+		return TRANSLUCENT;
 	}
 
 	private static RenderLayer.MultiPhaseParameters getItemPhaseData() {
@@ -246,11 +246,11 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getTranslucentMovingBlock() {
-		return field_25285;
+		return TRANSLUCENT_MOVING_BLOCK;
 	}
 
 	public static RenderLayer getTranslucentNoCrumbling() {
-		return field_20963;
+		return TRANSLUCENT_NO_CRUMBLING;
 	}
 
 	public static RenderLayer getArmorCutoutNoCull(Identifier texture) {
@@ -478,11 +478,11 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getLeash() {
-		return field_20964;
+		return LEASH;
 	}
 
 	public static RenderLayer getWaterMask() {
-		return field_20965;
+		return WATER_MASK;
 	}
 
 	public static RenderLayer getOutline(Identifier texture) {
@@ -503,36 +503,36 @@ public abstract class RenderLayer extends RenderPhase {
 				.texturing(OUTLINE_TEXTURING)
 				.fog(NO_FOG)
 				.target(OUTLINE_TARGET)
-				.build(RenderLayer.OutlineMode.field_21854)
+				.build(RenderLayer.OutlineMode.IS_OUTLINE)
 		);
 	}
 
 	public static RenderLayer getArmorGlint() {
-		return field_24472;
+		return ARMOR_GLINT;
 	}
 
 	public static RenderLayer getArmorEntityGlint() {
-		return field_24473;
+		return ARMOR_ENTITY_GLINT;
 	}
 
 	public static RenderLayer method_30676() {
-		return field_26373;
+		return GLINT_TRANSLUCENT;
 	}
 
 	public static RenderLayer getGlint() {
-		return field_20967;
+		return GLINT;
 	}
 
 	public static RenderLayer getGlintDirect() {
-		return field_25487;
+		return GLINT_DIRECT;
 	}
 
 	public static RenderLayer getEntityGlint() {
-		return field_20968;
+		return ENTITY_GLINT;
 	}
 
 	public static RenderLayer getEntityGlintDirect() {
-		return field_25488;
+		return ENTITY_GLINT_DIRECT;
 	}
 
 	public static RenderLayer getBlockBreaking(Identifier texture) {
@@ -591,7 +591,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getLightning() {
-		return field_20970;
+		return LIGHTNING;
 	}
 
 	private static RenderLayer.MultiPhaseParameters getTripwirePhaseData() {
@@ -605,7 +605,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getTripwire() {
-		return field_25644;
+		return TRIPWIRE;
 	}
 
 	public static RenderLayer getEndPortal(int layer) {
@@ -636,7 +636,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getLines() {
-		return field_21695;
+		return LINES;
 	}
 
 	public RenderLayer(
@@ -728,7 +728,7 @@ public abstract class RenderLayer extends RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	static final class MultiPhase extends RenderLayer {
-		private static final ObjectOpenCustomHashSet<RenderLayer.MultiPhase> CACHE = new ObjectOpenCustomHashSet<>(RenderLayer.MultiPhase.HashStrategy.field_21698);
+		private static final ObjectOpenCustomHashSet<RenderLayer.MultiPhase> CACHE = new ObjectOpenCustomHashSet<>(RenderLayer.MultiPhase.HashStrategy.INSTANCE);
 		private final RenderLayer.MultiPhaseParameters phases;
 		private final int hash;
 		private final Optional<RenderLayer> affectedOutline;
@@ -754,10 +754,10 @@ public abstract class RenderLayer extends RenderPhase {
 				() -> phases.phases.forEach(RenderPhase::endDrawing)
 			);
 			this.phases = phases;
-			this.affectedOutline = phases.outlineMode == RenderLayer.OutlineMode.field_21855
+			this.affectedOutline = phases.outlineMode == RenderLayer.OutlineMode.AFFECTS_OUTLINE
 				? phases.texture.getId().map(identifier -> getOutline(identifier, phases.cull))
 				: Optional.empty();
-			this.outline = phases.outlineMode == RenderLayer.OutlineMode.field_21854;
+			this.outline = phases.outlineMode == RenderLayer.OutlineMode.IS_OUTLINE;
 			this.hash = Objects.hash(new Object[]{super.hashCode(), phases});
 		}
 
@@ -800,13 +800,13 @@ public abstract class RenderLayer extends RenderPhase {
 
 		@Environment(EnvType.CLIENT)
 		static enum HashStrategy implements Strategy<RenderLayer.MultiPhase> {
-			field_21698;
+			INSTANCE;
 
-			public int method_24057(@Nullable RenderLayer.MultiPhase multiPhase) {
+			public int hashCode(@Nullable RenderLayer.MultiPhase multiPhase) {
 				return multiPhase == null ? 0 : multiPhase.hash;
 			}
 
-			public boolean method_24058(@Nullable RenderLayer.MultiPhase multiPhase, @Nullable RenderLayer.MultiPhase multiPhase2) {
+			public boolean equals(@Nullable RenderLayer.MultiPhase multiPhase, @Nullable RenderLayer.MultiPhase multiPhase2) {
 				if (multiPhase == multiPhase2) {
 					return true;
 				} else {
@@ -1009,7 +1009,7 @@ public abstract class RenderLayer extends RenderPhase {
 			}
 
 			public RenderLayer.MultiPhaseParameters build(boolean affectsOutline) {
-				return this.build(affectsOutline ? RenderLayer.OutlineMode.field_21855 : RenderLayer.OutlineMode.field_21853);
+				return this.build(affectsOutline ? RenderLayer.OutlineMode.AFFECTS_OUTLINE : RenderLayer.OutlineMode.NONE);
 			}
 
 			public RenderLayer.MultiPhaseParameters build(RenderLayer.OutlineMode outlineMode) {
@@ -1037,9 +1037,9 @@ public abstract class RenderLayer extends RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	static enum OutlineMode {
-		field_21853("none"),
-		field_21854("is_outline"),
-		field_21855("affects_outline");
+		NONE("none"),
+		IS_OUTLINE("is_outline"),
+		AFFECTS_OUTLINE("affects_outline");
 
 		private final String name;
 

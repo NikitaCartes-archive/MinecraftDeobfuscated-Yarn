@@ -45,7 +45,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 
 	public static void updateState(BlockState state, World world, BlockPos pos) {
 		if (world.getDimension().hasSkyLight()) {
-			int i = world.getLightLevel(LightType.field_9284, pos) - world.getAmbientDarkness();
+			int i = world.getLightLevel(LightType.SKY, pos) - world.getAmbientDarkness();
 			float f = world.getSkyAngleRadians(1.0F);
 			boolean bl = (Boolean)state.get(INVERTED);
 			if (bl) {
@@ -81,7 +81,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override

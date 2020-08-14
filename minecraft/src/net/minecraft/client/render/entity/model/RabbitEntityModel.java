@@ -132,7 +132,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 		}
 	}
 
-	public void method_17117(T rabbitEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T rabbitEntity, float f, float g, float h, float i, float j) {
 		float k = h - (float)rabbitEntity.age;
 		this.nose.pitch = j * (float) (Math.PI / 180.0);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
@@ -151,7 +151,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 		this.rightFrontLeg.pitch = (this.field_3531 * -40.0F - 11.0F) * (float) (Math.PI / 180.0);
 	}
 
-	public void method_17115(T rabbitEntity, float f, float g, float h) {
+	public void animateModel(T rabbitEntity, float f, float g, float h) {
 		super.animateModel(rabbitEntity, f, g, h);
 		this.field_3531 = MathHelper.sin(rabbitEntity.getJumpProgress(h) * (float) Math.PI);
 	}

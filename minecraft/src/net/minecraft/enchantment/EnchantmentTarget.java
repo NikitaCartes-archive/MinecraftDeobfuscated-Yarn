@@ -15,99 +15,99 @@ import net.minecraft.item.Vanishable;
 import net.minecraft.item.Wearable;
 
 public enum EnchantmentTarget {
-	field_9068 {
+	ARMOR {
 		@Override
-		public boolean isAcceptableItem(Item item) {
+		public boolean isAcceptableItem(Item item, boolean bl) {
 			return item instanceof ArmorItem;
 		}
 	},
-	field_9079 {
+	ARMOR_FEET {
 		@Override
-		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6166;
+		public boolean isAcceptableItem(Item item, boolean bl) {
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.FEET;
 		}
 	},
-	field_9076 {
+	ARMOR_LEGS {
 		@Override
-		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6172;
+		public boolean isAcceptableItem(Item item, boolean bl) {
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.LEGS;
 		}
 	},
-	field_9071 {
+	ARMOR_CHEST {
 		@Override
-		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6174;
+		public boolean isAcceptableItem(Item item, boolean bl) {
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.CHEST;
 		}
 	},
-	field_9080 {
+	ARMOR_HEAD {
 		@Override
-		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6169;
+		public boolean isAcceptableItem(Item item, boolean bl) {
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.HEAD;
 		}
 	},
-	field_9074 {
+	WEAPON {
 		@Override
-		public boolean isAcceptableItem(Item item) {
-			return item instanceof SwordItem;
+		public boolean isAcceptableItem(Item item, boolean bl) {
+			return item instanceof SwordItem || bl && item instanceof AxeItem;
 		}
 	},
-	field_9069 {
+	DIGGER {
 		@Override
-		public boolean isAcceptableItem(Item item) {
+		public boolean isAcceptableItem(Item item, boolean bl) {
 			return item instanceof MiningToolItem;
 		}
 	},
-	field_9072 {
+	FISHING_ROD {
 		@Override
-		public boolean isAcceptableItem(Item item) {
+		public boolean isAcceptableItem(Item item, boolean bl) {
 			return item instanceof FishingRodItem;
 		}
 	},
-	field_9073 {
+	TRIDENT {
 		@Override
-		public boolean isAcceptableItem(Item item) {
+		public boolean isAcceptableItem(Item item, boolean bl) {
 			return item instanceof TridentItem;
 		}
 	},
-	field_9082 {
+	BREAKABLE {
 		@Override
-		public boolean isAcceptableItem(Item item) {
+		public boolean isAcceptableItem(Item item, boolean bl) {
 			return item.isDamageable();
 		}
 	},
-	field_9070 {
+	BOW {
 		@Override
-		public boolean isAcceptableItem(Item item) {
+		public boolean isAcceptableItem(Item item, boolean bl) {
 			return item instanceof BowItem;
 		}
 	},
-	field_9078 {
+	WEARABLE {
 		@Override
-		public boolean isAcceptableItem(Item item) {
+		public boolean isAcceptableItem(Item item, boolean bl) {
 			return item instanceof Wearable || Block.getBlockFromItem(item) instanceof Wearable;
 		}
 	},
-	field_9081 {
+	CROSSBOW {
 		@Override
-		public boolean isAcceptableItem(Item item) {
+		public boolean isAcceptableItem(Item item, boolean bl) {
 			return item instanceof CrossbowItem;
 		}
 	},
-	field_26774 {
+	AXE {
 		@Override
-		public boolean isAcceptableItem(Item item) {
+		public boolean isAcceptableItem(Item item, boolean bl) {
 			return item instanceof AxeItem;
 		}
 	},
-	field_23747 {
+	VANISHABLE {
 		@Override
-		public boolean isAcceptableItem(Item item) {
-			return item instanceof Vanishable || Block.getBlockFromItem(item) instanceof Vanishable || field_9082.isAcceptableItem(item);
+		public boolean isAcceptableItem(Item item, boolean bl) {
+			return item instanceof Vanishable || Block.getBlockFromItem(item) instanceof Vanishable || BREAKABLE.isAcceptableItem(item, bl);
 		}
 	};
 
 	private EnchantmentTarget() {
 	}
 
-	public abstract boolean isAcceptableItem(Item item);
+	public abstract boolean isAcceptableItem(Item item, boolean bl);
 }

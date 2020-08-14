@@ -43,8 +43,8 @@ public class FontStorage implements AutoCloseable {
 		this.glyphRendererCache.clear();
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
-		this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.field_2283);
-		this.whiteRectangleGlyphRenderer = this.getGlyphRenderer(WhiteRectangleGlyph.field_20912);
+		this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
+		this.whiteRectangleGlyphRenderer = this.getGlyphRenderer(WhiteRectangleGlyph.INSTANCE);
 		IntSet intSet = new IntOpenHashSet();
 
 		for (Font font : fonts) {
@@ -57,7 +57,7 @@ public class FontStorage implements AutoCloseable {
 				Glyph glyph = (Glyph)(i == 32 ? SPACE : fontx.getGlyph(i));
 				if (glyph != null) {
 					set.add(fontx);
-					if (glyph != BlankGlyph.field_2283) {
+					if (glyph != BlankGlyph.INSTANCE) {
 						this.charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), ix -> new IntArrayList()).add(i);
 					}
 					break;
@@ -100,7 +100,7 @@ public class FontStorage implements AutoCloseable {
 			}
 		}
 
-		return BlankGlyph.field_2283;
+		return BlankGlyph.INSTANCE;
 	}
 
 	public GlyphRenderer getGlyphRenderer(int i) {

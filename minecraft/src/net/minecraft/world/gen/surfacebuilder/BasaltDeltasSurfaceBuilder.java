@@ -6,9 +6,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
 public class BasaltDeltasSurfaceBuilder extends AbstractNetherSurfaceBuilder {
-	private static final BlockState BASALT = Blocks.field_22091.getDefaultState();
-	private static final BlockState BLACKSTONE = Blocks.field_23869.getDefaultState();
-	private static final BlockState GRAVEL = Blocks.field_10255.getDefaultState();
+	private static final BlockState BASALT = Blocks.BASALT.getDefaultState();
+	private static final BlockState BLACKSTONE = Blocks.BLACKSTONE.getDefaultState();
+	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
 	private static final ImmutableList<BlockState> field_23918 = ImmutableList.of(BASALT, BLACKSTONE);
 	private static final ImmutableList<BlockState> field_23919 = ImmutableList.of(BASALT);
 

@@ -39,7 +39,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		return CACHE.getUnchecked(l);
 	}
 
-	public boolean method_15887(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig
 	) {
 		List<EndSpikeFeature.Spike> list = endSpikeFeatureConfig.getSpikes();
@@ -64,9 +64,9 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		)) {
 			if (blockPos.getSquaredDistance((double)spike.getCenterX(), (double)blockPos.getY(), (double)spike.getCenterZ(), false) <= (double)(i * i + 1)
 				&& blockPos.getY() < spike.getHeight()) {
-				this.setBlockState(serverWorldAccess, blockPos, Blocks.field_10540.getDefaultState());
+				this.setBlockState(serverWorldAccess, blockPos, Blocks.OBSIDIAN.getDefaultState());
 			} else if (blockPos.getY() > 65) {
-				this.setBlockState(serverWorldAccess, blockPos, Blocks.field_10124.getDefaultState());
+				this.setBlockState(serverWorldAccess, blockPos, Blocks.AIR.getDefaultState());
 			}
 		}
 
@@ -85,7 +85,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 						if (bl || bl2 || bl3) {
 							boolean bl4 = m == -2 || m == 2 || bl3;
 							boolean bl5 = n == -2 || n == 2 || bl3;
-							BlockState blockState = Blocks.field_10576
+							BlockState blockState = Blocks.IRON_BARS
 								.getDefaultState()
 								.with(PaneBlock.NORTH, Boolean.valueOf(bl4 && n != -2))
 								.with(PaneBlock.SOUTH, Boolean.valueOf(bl4 && n != 2))
@@ -98,14 +98,14 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			}
 		}
 
-		EndCrystalEntity endCrystalEntity = EntityType.field_6110.create(serverWorldAccess.toServerWorld());
+		EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(serverWorldAccess.toServerWorld());
 		endCrystalEntity.setBeamTarget(config.getPos());
 		endCrystalEntity.setInvulnerable(config.isCrystalInvulnerable());
 		endCrystalEntity.refreshPositionAndAngles(
 			(double)spike.getCenterX() + 0.5, (double)(spike.getHeight() + 1), (double)spike.getCenterZ() + 0.5, random.nextFloat() * 360.0F, 0.0F
 		);
 		serverWorldAccess.spawnEntity(endCrystalEntity);
-		this.setBlockState(serverWorldAccess, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.field_9987.getDefaultState());
+		this.setBlockState(serverWorldAccess, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
 	}
 
 	public static class Spike {
@@ -168,7 +168,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		private SpikeCache() {
 		}
 
-		public List<EndSpikeFeature.Spike> method_14507(Long long_) {
+		public List<EndSpikeFeature.Spike> load(Long long_) {
 			List<Integer> list = (List<Integer>)IntStream.range(0, 10).boxed().collect(Collectors.toList());
 			Collections.shuffle(list, new Random(long_));
 			List<EndSpikeFeature.Spike> list2 = Lists.<EndSpikeFeature.Spike>newArrayList();

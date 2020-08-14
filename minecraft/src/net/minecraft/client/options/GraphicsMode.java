@@ -8,9 +8,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public enum GraphicsMode {
-	field_25427(0, "options.graphics.fast"),
-	field_25428(1, "options.graphics.fancy"),
-	field_25429(2, "options.graphics.fabulous");
+	FAST(0, "options.graphics.fast"),
+	FANCY(1, "options.graphics.fancy"),
+	FABULOUS(2, "options.graphics.fabulous");
 
 	private static final GraphicsMode[] VALUES = (GraphicsMode[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(GraphicsMode::getId))
@@ -37,11 +37,11 @@ public enum GraphicsMode {
 
 	public String toString() {
 		switch (this) {
-			case field_25427:
+			case FAST:
 				return "fast";
-			case field_25428:
+			case FANCY:
 				return "fancy";
-			case field_25429:
+			case FABULOUS:
 				return "fabulous";
 			default:
 				throw new IllegalArgumentException();

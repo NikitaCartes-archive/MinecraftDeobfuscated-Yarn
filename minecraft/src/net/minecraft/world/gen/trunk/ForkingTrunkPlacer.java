@@ -22,16 +22,16 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	protected TrunkPlacerType<?> getType() {
-		return TrunkPlacerType.field_23764;
+		return TrunkPlacerType.FORKING_TRUNK_PLACER;
 	}
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
 		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
-		method_27400(world, pos.method_10074());
+		method_27400(world, pos.down());
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
-		Direction direction = Direction.Type.field_11062.random(random);
+		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		int i = trunkHeight - random.nextInt(4) - 1;
 		int j = 3 - random.nextInt(3);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -55,7 +55,7 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 		list.add(new FoliagePlacer.TreeNode(new BlockPos(k, m, l), 1, false));
 		k = pos.getX();
 		l = pos.getZ();
-		Direction direction2 = Direction.Type.field_11062.random(random);
+		Direction direction2 = Direction.Type.HORIZONTAL.random(random);
 		if (direction2 != direction) {
 			int ox = i - random.nextInt(2) - 1;
 			int p = 1 + random.nextInt(3);

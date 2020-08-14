@@ -18,23 +18,23 @@ public class NetherCaveCarver extends CaveCarver {
 	public NetherCaveCarver(Codec<ProbabilityConfig> codec) {
 		super(codec, 128);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
-			Blocks.field_10340,
-			Blocks.field_10474,
-			Blocks.field_10508,
-			Blocks.field_10115,
-			Blocks.field_10566,
-			Blocks.field_10253,
-			Blocks.field_10520,
-			Blocks.field_10219,
-			Blocks.field_10515,
-			Blocks.field_10114,
-			Blocks.field_22090,
-			Blocks.field_22120,
-			Blocks.field_22113,
-			Blocks.field_10541,
-			Blocks.field_22115,
-			Blocks.field_22091,
-			Blocks.field_23869
+			Blocks.STONE,
+			Blocks.GRANITE,
+			Blocks.DIORITE,
+			Blocks.ANDESITE,
+			Blocks.DIRT,
+			Blocks.COARSE_DIRT,
+			Blocks.PODZOL,
+			Blocks.GRASS_BLOCK,
+			Blocks.NETHERRACK,
+			Blocks.SOUL_SAND,
+			Blocks.SOUL_SOIL,
+			Blocks.CRIMSON_NYLIUM,
+			Blocks.WARPED_NYLIUM,
+			Blocks.NETHER_WART_BLOCK,
+			Blocks.WARPED_WART_BLOCK,
+			Blocks.BASALT,
+			Blocks.BLACKSTONE
 		);
 		this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
 	}

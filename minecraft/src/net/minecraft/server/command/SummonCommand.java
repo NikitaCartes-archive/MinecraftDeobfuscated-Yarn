@@ -75,7 +75,7 @@ public class SummonCommand {
 		if (!World.method_25953(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
-			CompoundTag compoundTag = nbt.method_10553();
+			CompoundTag compoundTag = nbt.copy();
 			compoundTag.putString("id", entity.toString());
 			ServerWorld serverWorld = source.getWorld();
 			Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
@@ -86,7 +86,7 @@ public class SummonCommand {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				if (initialize && entity2 instanceof MobEntity) {
-					((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity2.getBlockPos()), SpawnReason.field_16462, null, null);
+					((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity2.getBlockPos()), SpawnReason.COMMAND, null, null);
 				}
 
 				if (!serverWorld.method_30736(entity2)) {

@@ -117,14 +117,14 @@ public class Main {
 			}
 
 			ResourcePackManager resourcePackManager = new ResourcePackManager(
-				new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.field_24186).toFile(), ResourcePackSource.field_25349)
+				new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
 			);
 			DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(
 				resourcePackManager, dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings, bl
 			);
 			CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
 				resourcePackManager.createResourcePacks(),
-				CommandManager.RegistrationEnvironment.field_25420,
+				CommandManager.RegistrationEnvironment.DEDICATED,
 				serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel,
 				Util.getMainWorkerExecutor(),
 				Runnable::run

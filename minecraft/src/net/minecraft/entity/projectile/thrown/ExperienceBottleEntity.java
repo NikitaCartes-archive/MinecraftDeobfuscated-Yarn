@@ -16,16 +16,16 @@ public class ExperienceBottleEntity extends ThrownItemEntity {
 	}
 
 	public ExperienceBottleEntity(World world, LivingEntity owner) {
-		super(EntityType.field_6064, owner, world);
+		super(EntityType.EXPERIENCE_BOTTLE, owner, world);
 	}
 
 	public ExperienceBottleEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6064, x, y, z, world);
+		super(EntityType.EXPERIENCE_BOTTLE, x, y, z, world);
 	}
 
 	@Override
 	protected Item getDefaultItem() {
-		return Items.field_8287;
+		return Items.EXPERIENCE_BOTTLE;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class ExperienceBottleEntity extends ThrownItemEntity {
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
 		if (!this.world.isClient) {
-			this.world.syncWorldEvent(2002, this.getBlockPos(), PotionUtil.getColor(Potions.field_8991));
+			this.world.syncWorldEvent(2002, this.getBlockPos(), PotionUtil.getColor(Potions.WATER));
 			int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5);
 
 			while (i > 0) {

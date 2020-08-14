@@ -33,7 +33,7 @@ public class ThreeLayersFeatureSize extends FeatureSize {
 
 	@Override
 	protected FeatureSizeType<?> getType() {
-		return FeatureSizeType.field_24148;
+		return FeatureSizeType.THREE_LAYERS_FEATURE_SIZE;
 	}
 
 	@Override

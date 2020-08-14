@@ -21,10 +21,8 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final String motd = this.getString("motd", "A Minecraft Server");
 	public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
 	public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
-	public final Difficulty difficulty = this.get(
-		"difficulty", combineParser(Difficulty::byOrdinal, Difficulty::byName), Difficulty::getName, Difficulty.field_5805
-	);
-	public final GameMode gameMode = this.get("gamemode", combineParser(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.field_9215);
+	public final Difficulty difficulty = this.get("difficulty", combineParser(Difficulty::byOrdinal, Difficulty::byName), Difficulty::getName, Difficulty.EASY);
+	public final GameMode gameMode = this.get("gamemode", combineParser(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.SURVIVAL);
 	public final String levelName = this.getString("level-name", "world");
 	public final int serverPort = this.getInt("server-port", 25565);
 	public final int maxBuildHeight = this.transformedParseInt("max-build-height", integer -> MathHelper.clamp((integer + 8) / 16 * 16, 64, 256), 256);
@@ -93,7 +91,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		return new ServerPropertiesHandler(loadProperties(path), dynamicRegistryManager);
 	}
 
-	protected ServerPropertiesHandler method_16713(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
+	protected ServerPropertiesHandler create(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
 		return new ServerPropertiesHandler(properties, dynamicRegistryManager);
 	}
 }

@@ -28,7 +28,7 @@ public class DimensionArgumentType implements ArgumentType<Identifier> {
 		object -> new TranslatableText("argument.dimension.invalid", object)
 	);
 
-	public Identifier method_9287(StringReader stringReader) throws CommandSyntaxException {
+	public Identifier parse(StringReader stringReader) throws CommandSyntaxException {
 		return Identifier.fromCommandInput(stringReader);
 	}
 
@@ -50,7 +50,7 @@ public class DimensionArgumentType implements ArgumentType<Identifier> {
 
 	public static ServerWorld getDimensionArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		Identifier identifier = context.getArgument(name, Identifier.class);
-		RegistryKey<World> registryKey = RegistryKey.of(Registry.field_25298, identifier);
+		RegistryKey<World> registryKey = RegistryKey.of(Registry.DIMENSION, identifier);
 		ServerWorld serverWorld = context.getSource().getMinecraftServer().getWorld(registryKey);
 		if (serverWorld == null) {
 			throw INVALID_DIMENSION_EXCEPTION.create(identifier);

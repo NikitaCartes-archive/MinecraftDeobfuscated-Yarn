@@ -5,123 +5,107 @@ import java.util.stream.IntStream;
 import net.minecraft.util.Identifier;
 
 public class Models {
-	public static final Model field_22942 = block(
-		"cube",
-		TextureKey.field_23012,
-		TextureKey.field_23019,
-		TextureKey.field_23020,
-		TextureKey.field_23021,
-		TextureKey.field_23022,
-		TextureKey.field_23023,
-		TextureKey.field_23024
+	public static final Model CUBE = block(
+		"cube", TextureKey.PARTICLE, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST, TextureKey.UP, TextureKey.DOWN
 	);
-	public static final Model field_23400 = block(
-		"cube_directional",
-		TextureKey.field_23012,
-		TextureKey.field_23019,
-		TextureKey.field_23020,
-		TextureKey.field_23021,
-		TextureKey.field_23022,
-		TextureKey.field_23023,
-		TextureKey.field_23024
+	public static final Model CUBE_DIRECTIONAL = block(
+		"cube_directional", TextureKey.PARTICLE, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST, TextureKey.UP, TextureKey.DOWN
 	);
-	public static final Model field_22972 = block("cube_all", TextureKey.field_23010);
-	public static final Model field_22973 = block("cube_mirrored_all", "_mirrored", TextureKey.field_23010);
-	public static final Model field_22974 = block("cube_column", TextureKey.field_23013, TextureKey.field_23018);
-	public static final Model field_22975 = block("cube_column_horizontal", "_horizontal", TextureKey.field_23013, TextureKey.field_23018);
-	public static final Model field_22976 = block("cube_top", TextureKey.field_23015, TextureKey.field_23018);
-	public static final Model field_22977 = block("cube_bottom_top", TextureKey.field_23015, TextureKey.field_23014, TextureKey.field_23018);
-	public static final Model field_22978 = block("orientable", TextureKey.field_23015, TextureKey.field_23016, TextureKey.field_23018);
-	public static final Model field_22979 = block(
-		"orientable_with_bottom", TextureKey.field_23015, TextureKey.field_23014, TextureKey.field_23018, TextureKey.field_23016
-	);
-	public static final Model field_22980 = block("orientable_vertical", "_vertical", TextureKey.field_23016, TextureKey.field_23018);
-	public static final Model field_22981 = block("button", TextureKey.field_23011);
-	public static final Model field_22982 = block("button_pressed", "_pressed", TextureKey.field_23011);
-	public static final Model field_22983 = block("button_inventory", "_inventory", TextureKey.field_23011);
-	public static final Model field_22984 = block("door_bottom", "_bottom", TextureKey.field_23015, TextureKey.field_23014);
-	public static final Model field_22985 = block("door_bottom_rh", "_bottom_hinge", TextureKey.field_23015, TextureKey.field_23014);
-	public static final Model field_22986 = block("door_top", "_top", TextureKey.field_23015, TextureKey.field_23014);
-	public static final Model field_22987 = block("door_top_rh", "_top_hinge", TextureKey.field_23015, TextureKey.field_23014);
-	public static final Model field_22988 = block("fence_post", "_post", TextureKey.field_23011);
-	public static final Model field_22989 = block("fence_side", "_side", TextureKey.field_23011);
-	public static final Model field_22990 = block("fence_inventory", "_inventory", TextureKey.field_23011);
-	public static final Model field_22991 = block("template_wall_post", "_post", TextureKey.field_23027);
-	public static final Model field_22992 = block("template_wall_side", "_side", TextureKey.field_23027);
-	public static final Model field_22993 = block("template_wall_side_tall", "_side_tall", TextureKey.field_23027);
-	public static final Model field_22994 = block("wall_inventory", "_inventory", TextureKey.field_23027);
-	public static final Model field_22995 = block("template_fence_gate", TextureKey.field_23011);
-	public static final Model field_22996 = block("template_fence_gate_open", "_open", TextureKey.field_23011);
-	public static final Model field_22904 = block("template_fence_gate_wall", "_wall", TextureKey.field_23011);
-	public static final Model field_22905 = block("template_fence_gate_wall_open", "_wall_open", TextureKey.field_23011);
-	public static final Model field_22906 = block("pressure_plate_up", TextureKey.field_23011);
-	public static final Model field_22907 = block("pressure_plate_down", "_down", TextureKey.field_23011);
-	public static final Model PARTICLE = make(TextureKey.field_23012);
-	public static final Model field_22909 = block("slab", TextureKey.field_23014, TextureKey.field_23015, TextureKey.field_23018);
-	public static final Model field_22910 = block("slab_top", "_top", TextureKey.field_23014, TextureKey.field_23015, TextureKey.field_23018);
-	public static final Model field_22911 = block("leaves", TextureKey.field_23010);
-	public static final Model field_22912 = block("stairs", TextureKey.field_23014, TextureKey.field_23015, TextureKey.field_23018);
-	public static final Model field_22913 = block("inner_stairs", "_inner", TextureKey.field_23014, TextureKey.field_23015, TextureKey.field_23018);
-	public static final Model field_22914 = block("outer_stairs", "_outer", TextureKey.field_23014, TextureKey.field_23015, TextureKey.field_23018);
-	public static final Model field_22915 = block("template_trapdoor_top", "_top", TextureKey.field_23011);
-	public static final Model field_22916 = block("template_trapdoor_bottom", "_bottom", TextureKey.field_23011);
-	public static final Model field_22917 = block("template_trapdoor_open", "_open", TextureKey.field_23011);
-	public static final Model field_22918 = block("template_orientable_trapdoor_top", "_top", TextureKey.field_23011);
-	public static final Model field_22919 = block("template_orientable_trapdoor_bottom", "_bottom", TextureKey.field_23011);
-	public static final Model field_22920 = block("template_orientable_trapdoor_open", "_open", TextureKey.field_23011);
-	public static final Model field_22921 = block("cross", TextureKey.field_23025);
-	public static final Model field_22922 = block("tinted_cross", TextureKey.field_23025);
-	public static final Model field_22923 = block("flower_pot_cross", TextureKey.field_23026);
-	public static final Model field_22924 = block("tinted_flower_pot_cross", TextureKey.field_23026);
-	public static final Model field_22925 = block("rail_flat", TextureKey.field_23028);
-	public static final Model field_22926 = block("rail_curved", "_corner", TextureKey.field_23028);
-	public static final Model field_22927 = block("template_rail_raised_ne", "_raised_ne", TextureKey.field_23028);
-	public static final Model field_22928 = block("template_rail_raised_sw", "_raised_sw", TextureKey.field_23028);
-	public static final Model field_22929 = block("carpet", TextureKey.field_23029);
-	public static final Model field_22946 = block("coral_fan", TextureKey.field_23033);
-	public static final Model field_22947 = block("coral_wall_fan", TextureKey.field_23033);
-	public static final Model field_22948 = block("template_glazed_terracotta", TextureKey.field_23030);
-	public static final Model field_22949 = block("template_chorus_flower", TextureKey.field_23011);
-	public static final Model field_22950 = block("template_daylight_detector", TextureKey.field_23015, TextureKey.field_23018);
-	public static final Model field_22951 = block("template_glass_pane_noside", "_noside", TextureKey.field_23031);
-	public static final Model field_22952 = block("template_glass_pane_noside_alt", "_noside_alt", TextureKey.field_23031);
-	public static final Model field_22953 = block("template_glass_pane_post", "_post", TextureKey.field_23031, TextureKey.field_23032);
-	public static final Model field_22954 = block("template_glass_pane_side", "_side", TextureKey.field_23031, TextureKey.field_23032);
-	public static final Model field_22955 = block("template_glass_pane_side_alt", "_side_alt", TextureKey.field_23031, TextureKey.field_23032);
-	public static final Model field_22956 = block("template_command_block", TextureKey.field_23016, TextureKey.field_23017, TextureKey.field_23018);
-	public static final Model field_22957 = block("template_anvil", TextureKey.field_23015);
+	public static final Model CUBE_ALL = block("cube_all", TextureKey.ALL);
+	public static final Model CUBE_MIRRORED_ALL = block("cube_mirrored_all", "_mirrored", TextureKey.ALL);
+	public static final Model CUBE_COLUMN = block("cube_column", TextureKey.END, TextureKey.SIDE);
+	public static final Model CUBE_COLUMN_HORIZONTAL = block("cube_column_horizontal", "_horizontal", TextureKey.END, TextureKey.SIDE);
+	public static final Model CUBE_TOP = block("cube_top", TextureKey.TOP, TextureKey.SIDE);
+	public static final Model CUBE_BOTTOM_TOP = block("cube_bottom_top", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE);
+	public static final Model ORIENTABLE = block("orientable", TextureKey.TOP, TextureKey.FRONT, TextureKey.SIDE);
+	public static final Model ORIENTABLE_WITH_BOTTOM = block("orientable_with_bottom", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.FRONT);
+	public static final Model ORIENTABLE_VERTICAL = block("orientable_vertical", "_vertical", TextureKey.FRONT, TextureKey.SIDE);
+	public static final Model BUTTON = block("button", TextureKey.TEXTURE);
+	public static final Model BUTTON_PRESSED = block("button_pressed", "_pressed", TextureKey.TEXTURE);
+	public static final Model BUTTON_INVENTORY = block("button_inventory", "_inventory", TextureKey.TEXTURE);
+	public static final Model DOOR_BOTTOM = block("door_bottom", "_bottom", TextureKey.TOP, TextureKey.BOTTOM);
+	public static final Model DOOR_BOTTOM_RH = block("door_bottom_rh", "_bottom_hinge", TextureKey.TOP, TextureKey.BOTTOM);
+	public static final Model DOOR_TOP = block("door_top", "_top", TextureKey.TOP, TextureKey.BOTTOM);
+	public static final Model DOOR_TOP_RH = block("door_top_rh", "_top_hinge", TextureKey.TOP, TextureKey.BOTTOM);
+	public static final Model FENCE_POST = block("fence_post", "_post", TextureKey.TEXTURE);
+	public static final Model FENCE_SIDE = block("fence_side", "_side", TextureKey.TEXTURE);
+	public static final Model FENCE_INVENTORY = block("fence_inventory", "_inventory", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_WALL_POST = block("template_wall_post", "_post", TextureKey.WALL);
+	public static final Model TEMPLATE_WALL_SIDE = block("template_wall_side", "_side", TextureKey.WALL);
+	public static final Model TEMPLATE_WALL_SIDE_TALL = block("template_wall_side_tall", "_side_tall", TextureKey.WALL);
+	public static final Model WALL_INVENTORY = block("wall_inventory", "_inventory", TextureKey.WALL);
+	public static final Model TEMPLATE_FENCE_GATE = block("template_fence_gate", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_FENCE_GATE_OPEN = block("template_fence_gate_open", "_open", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_FENCE_GATE_WALL = block("template_fence_gate_wall", "_wall", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_FENCE_GATE_WALL_OPEN = block("template_fence_gate_wall_open", "_wall_open", TextureKey.TEXTURE);
+	public static final Model PRESSURE_PLATE_UP = block("pressure_plate_up", TextureKey.TEXTURE);
+	public static final Model PRESSURE_PLATE_DOWN = block("pressure_plate_down", "_down", TextureKey.TEXTURE);
+	public static final Model PARTICLE = make(TextureKey.PARTICLE);
+	public static final Model SLAB = block("slab", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.SIDE);
+	public static final Model SLAB_TOP = block("slab_top", "_top", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.SIDE);
+	public static final Model LEAVES = block("leaves", TextureKey.ALL);
+	public static final Model STAIRS = block("stairs", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.SIDE);
+	public static final Model INNER_STAIRS = block("inner_stairs", "_inner", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.SIDE);
+	public static final Model OUTER_STAIRS = block("outer_stairs", "_outer", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.SIDE);
+	public static final Model TEMPLATE_TRAPDOOR_TOP = block("template_trapdoor_top", "_top", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_TRAPDOOR_BOTTOM = block("template_trapdoor_bottom", "_bottom", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_TRAPDOOR_OPEN = block("template_trapdoor_open", "_open", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_ORIENTABLE_TRAPDOOR_TOP = block("template_orientable_trapdoor_top", "_top", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_ORIENTABLE_TRAPDOOR_BOTTOM = block("template_orientable_trapdoor_bottom", "_bottom", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_ORIENTABLE_TRAPDOOR_OPEN = block("template_orientable_trapdoor_open", "_open", TextureKey.TEXTURE);
+	public static final Model CROSS = block("cross", TextureKey.CROSS);
+	public static final Model TINTED_CROSS = block("tinted_cross", TextureKey.CROSS);
+	public static final Model FLOWER_POT_CROSS = block("flower_pot_cross", TextureKey.PLANT);
+	public static final Model TINTED_FLOWER_POT_CROSS = block("tinted_flower_pot_cross", TextureKey.PLANT);
+	public static final Model RAIL_FLAT = block("rail_flat", TextureKey.RAIL);
+	public static final Model RAIL_CURVED = block("rail_curved", "_corner", TextureKey.RAIL);
+	public static final Model TEMPLATE_RAIL_RAISED_NE = block("template_rail_raised_ne", "_raised_ne", TextureKey.RAIL);
+	public static final Model TEMPLATE_RAIL_RAISED_SW = block("template_rail_raised_sw", "_raised_sw", TextureKey.RAIL);
+	public static final Model CARPET = block("carpet", TextureKey.WOOL);
+	public static final Model CORAL_FAN = block("coral_fan", TextureKey.FAN);
+	public static final Model CORAL_WALL_FAN = block("coral_wall_fan", TextureKey.FAN);
+	public static final Model TEMPLATE_GLAZED_TERRACOTTA = block("template_glazed_terracotta", TextureKey.PATTERN);
+	public static final Model TEMPLATE_CHORUS_FLOWER = block("template_chorus_flower", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_DAYLIGHT_DETECTOR = block("template_daylight_detector", TextureKey.TOP, TextureKey.SIDE);
+	public static final Model TEMPLATE_GLASS_PANE_NOSIDE = block("template_glass_pane_noside", "_noside", TextureKey.PANE);
+	public static final Model TEMPLATE_GLASS_PANE_NOSIDE_ALT = block("template_glass_pane_noside_alt", "_noside_alt", TextureKey.PANE);
+	public static final Model TEMPLATE_GLASS_PANE_POST = block("template_glass_pane_post", "_post", TextureKey.PANE, TextureKey.EDGE);
+	public static final Model TEMPLATE_GLASS_PANE_SIDE = block("template_glass_pane_side", "_side", TextureKey.PANE, TextureKey.EDGE);
+	public static final Model TEMPLATE_GLASS_PANE_SIDE_ALT = block("template_glass_pane_side_alt", "_side_alt", TextureKey.PANE, TextureKey.EDGE);
+	public static final Model TEMPLATE_COMMAND_BLOCK = block("template_command_block", TextureKey.FRONT, TextureKey.BACK, TextureKey.SIDE);
+	public static final Model TEMPLATE_ANVIL = block("template_anvil", TextureKey.TOP);
 	public static final Model[] STEM_GROWTH_STAGES = (Model[])IntStream.range(0, 8)
-		.mapToObj(i -> block("stem_growth" + i, "_stage" + i, TextureKey.field_23034))
+		.mapToObj(i -> block("stem_growth" + i, "_stage" + i, TextureKey.STEM))
 		.toArray(Model[]::new);
-	public static final Model field_22959 = block("stem_fruit", TextureKey.field_23034, TextureKey.field_23035);
-	public static final Model field_22960 = block("crop", TextureKey.field_22999);
-	public static final Model field_22961 = block("template_farmland", TextureKey.field_23000, TextureKey.field_23015);
-	public static final Model field_22962 = block("template_fire_floor", TextureKey.field_23001);
-	public static final Model field_22963 = block("template_fire_side", TextureKey.field_23001);
-	public static final Model field_22964 = block("template_fire_side_alt", TextureKey.field_23001);
-	public static final Model field_22965 = block("template_fire_up", TextureKey.field_23001);
-	public static final Model field_22966 = block("template_fire_up_alt", TextureKey.field_23001);
-	public static final Model field_23957 = block("template_campfire", TextureKey.field_23001, TextureKey.field_23958);
-	public static final Model field_22967 = block("template_lantern", TextureKey.field_23002);
-	public static final Model field_22968 = block("template_hanging_lantern", "_hanging", TextureKey.field_23002);
-	public static final Model field_22969 = block("template_torch", TextureKey.field_23005);
-	public static final Model field_22970 = block("template_torch_wall", TextureKey.field_23005);
-	public static final Model field_22971 = block("template_piston", TextureKey.field_23003, TextureKey.field_23014, TextureKey.field_23018);
-	public static final Model field_22930 = block("template_piston_head", TextureKey.field_23003, TextureKey.field_23018, TextureKey.field_23004);
-	public static final Model field_22931 = block("template_piston_head_short", TextureKey.field_23003, TextureKey.field_23018, TextureKey.field_23004);
-	public static final Model field_22932 = block("template_seagrass", TextureKey.field_23011);
-	public static final Model field_22933 = block("template_turtle_egg", TextureKey.field_23010);
-	public static final Model field_22934 = block("template_two_turtle_eggs", TextureKey.field_23010);
-	public static final Model field_22935 = block("template_three_turtle_eggs", TextureKey.field_23010);
-	public static final Model field_22936 = block("template_four_turtle_eggs", TextureKey.field_23010);
-	public static final Model field_22937 = block("template_single_face", TextureKey.field_23011);
-	public static final Model field_22938 = item("generated", TextureKey.field_23006);
-	public static final Model field_22939 = item("handheld", TextureKey.field_23006);
-	public static final Model field_22940 = item("handheld_rod", TextureKey.field_23006);
-	public static final Model field_22941 = item("template_shulker_box", TextureKey.field_23012);
-	public static final Model field_22943 = item("template_bed", TextureKey.field_23012);
-	public static final Model field_22944 = item("template_banner");
-	public static final Model field_22945 = item("template_skull");
+	public static final Model STEM_FRUIT = block("stem_fruit", TextureKey.STEM, TextureKey.UPPERSTEM);
+	public static final Model CROP = block("crop", TextureKey.CROP);
+	public static final Model TEMPLATE_FARMLAND = block("template_farmland", TextureKey.DIRT, TextureKey.TOP);
+	public static final Model TEMPLATE_FIRE_FLOOR = block("template_fire_floor", TextureKey.FIRE);
+	public static final Model TEMPLATE_FIRE_SIDE = block("template_fire_side", TextureKey.FIRE);
+	public static final Model TEMPLATE_FIRE_SIDE_ALT = block("template_fire_side_alt", TextureKey.FIRE);
+	public static final Model TEMPLATE_FIRE_UP = block("template_fire_up", TextureKey.FIRE);
+	public static final Model TEMPLATE_FIRE_UP_ALT = block("template_fire_up_alt", TextureKey.FIRE);
+	public static final Model TEMPLATE_CAMPFIRE = block("template_campfire", TextureKey.FIRE, TextureKey.LIT_LOG);
+	public static final Model TEMPLATE_LANTERN = block("template_lantern", TextureKey.LANTERN);
+	public static final Model TEMPLATE_HANGING_LANTERN = block("template_hanging_lantern", "_hanging", TextureKey.LANTERN);
+	public static final Model TEMPLATE_TORCH = block("template_torch", TextureKey.TORCH);
+	public static final Model TEMPLATE_TORCH_WALL = block("template_torch_wall", TextureKey.TORCH);
+	public static final Model TEMPLATE_PISTON = block("template_piston", TextureKey.PLATFORM, TextureKey.BOTTOM, TextureKey.SIDE);
+	public static final Model TEMPLATE_PISTON_HEAD = block("template_piston_head", TextureKey.PLATFORM, TextureKey.SIDE, TextureKey.UNSTICKY);
+	public static final Model TEMPLATE_PISTON_HEAD_SHORT = block("template_piston_head_short", TextureKey.PLATFORM, TextureKey.SIDE, TextureKey.UNSTICKY);
+	public static final Model TEMPLATE_SEAGRASS = block("template_seagrass", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_TURTLE_EGG = block("template_turtle_egg", TextureKey.ALL);
+	public static final Model TEMPLATE_TWO_TURTLE_EGGS = block("template_two_turtle_eggs", TextureKey.ALL);
+	public static final Model TEMPLATE_THREE_TURTLE_EGGS = block("template_three_turtle_eggs", TextureKey.ALL);
+	public static final Model TEMPLATE_FOUR_TURTLE_EGGS = block("template_four_turtle_eggs", TextureKey.ALL);
+	public static final Model TEMPLATE_SINGLE_FACE = block("template_single_face", TextureKey.TEXTURE);
+	public static final Model GENERATED = item("generated", TextureKey.LAYER0);
+	public static final Model HANDHELD = item("handheld", TextureKey.LAYER0);
+	public static final Model HANDHELD_ROD = item("handheld_rod", TextureKey.LAYER0);
+	public static final Model TEMPLATE_SHULKER_BOX = item("template_shulker_box", TextureKey.PARTICLE);
+	public static final Model TEMPLATE_BED = item("template_bed", TextureKey.PARTICLE);
+	public static final Model TEMPLATE_BANNER = item("template_banner");
+	public static final Model TEMPLATE_SKULL = item("template_skull");
 
 	private static Model make(TextureKey... requiredTextures) {
 		return new Model(Optional.empty(), Optional.empty(), requiredTextures);

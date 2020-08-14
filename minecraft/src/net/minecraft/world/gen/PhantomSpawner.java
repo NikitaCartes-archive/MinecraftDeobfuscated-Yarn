@@ -25,7 +25,7 @@ public class PhantomSpawner implements Spawner {
 	public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
 		if (!spawnMonsters) {
 			return 0;
-		} else if (!world.getGameRules().getBoolean(GameRules.field_20637)) {
+		} else if (!world.getGameRules().getBoolean(GameRules.DO_INSOMNIA)) {
 			return 0;
 		} else {
 			Random random = world.random;
@@ -46,20 +46,20 @@ public class PhantomSpawner implements Spawner {
 								LocalDifficulty localDifficulty = world.getLocalDifficulty(blockPos);
 								if (localDifficulty.isHarderThan(random.nextFloat() * 3.0F)) {
 									ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).getStatHandler();
-									int j = MathHelper.clamp(serverStatHandler.getStat(Stats.field_15419.getOrCreateStat(Stats.field_15429)), 1, Integer.MAX_VALUE);
+									int j = MathHelper.clamp(serverStatHandler.getStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
 									int k = 24000;
 									if (random.nextInt(j) >= 72000) {
 										BlockPos blockPos2 = blockPos.up(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21));
 										BlockState blockState = world.getBlockState(blockPos2);
 										FluidState fluidState = world.getFluidState(blockPos2);
-										if (SpawnHelper.isClearForSpawn(world, blockPos2, blockState, fluidState, EntityType.field_6078)) {
+										if (SpawnHelper.isClearForSpawn(world, blockPos2, blockState, fluidState, EntityType.PHANTOM)) {
 											EntityData entityData = null;
 											int l = 1 + random.nextInt(localDifficulty.getGlobalDifficulty().getId() + 1);
 
 											for (int m = 0; m < l; m++) {
-												PhantomEntity phantomEntity = EntityType.field_6078.create(world);
+												PhantomEntity phantomEntity = EntityType.PHANTOM.create(world);
 												phantomEntity.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
-												entityData = phantomEntity.initialize(world, localDifficulty, SpawnReason.field_16459, entityData, null);
+												entityData = phantomEntity.initialize(world, localDifficulty, SpawnReason.NATURAL, entityData, null);
 												world.spawnEntityAndPassengers(phantomEntity);
 											}
 

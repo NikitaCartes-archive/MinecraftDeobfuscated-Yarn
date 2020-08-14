@@ -28,7 +28,7 @@ public class CartographyTableBlock extends Block {
 			return ActionResult.SUCCESS;
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-			player.incrementStat(Stats.field_19252);
+			player.incrementStat(Stats.INTERACT_WITH_CARTOGRAPHY_TABLE);
 			return ActionResult.CONSUME;
 		}
 	}

@@ -51,7 +51,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
 	public static void updatePressedStates() {
 		for (KeyBinding keyBinding : keysById.values()) {
-			if (keyBinding.boundKey.getCategory() == InputUtil.Type.field_1668 && keyBinding.boundKey.getCode() != InputUtil.UNKNOWN_KEY.getCode()) {
+			if (keyBinding.boundKey.getCategory() == InputUtil.Type.KEYSYM && keyBinding.boundKey.getCode() != InputUtil.UNKNOWN_KEY.getCode()) {
 				keyBinding.setPressed(InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), keyBinding.boundKey.getCode()));
 			}
 		}
@@ -72,7 +72,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 	}
 
 	public KeyBinding(String translationKey, int code, String category) {
-		this(translationKey, InputUtil.Type.field_1668, code, category);
+		this(translationKey, InputUtil.Type.KEYSYM, code, category);
 	}
 
 	public KeyBinding(String translationKey, InputUtil.Type type, int code, String category) {
@@ -119,7 +119,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 		this.boundKey = boundKey;
 	}
 
-	public int method_1430(KeyBinding keyBinding) {
+	public int compareTo(KeyBinding keyBinding) {
 		return this.category.equals(keyBinding.category)
 			? I18n.translate(this.translationKey).compareTo(I18n.translate(keyBinding.translationKey))
 			: ((Integer)categoryOrderMap.get(this.category)).compareTo((Integer)categoryOrderMap.get(keyBinding.category));
@@ -140,12 +140,12 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
 	public boolean matchesKey(int keyCode, int scanCode) {
 		return keyCode == InputUtil.UNKNOWN_KEY.getCode()
-			? this.boundKey.getCategory() == InputUtil.Type.field_1671 && this.boundKey.getCode() == scanCode
-			: this.boundKey.getCategory() == InputUtil.Type.field_1668 && this.boundKey.getCode() == keyCode;
+			? this.boundKey.getCategory() == InputUtil.Type.SCANCODE && this.boundKey.getCode() == scanCode
+			: this.boundKey.getCategory() == InputUtil.Type.KEYSYM && this.boundKey.getCode() == keyCode;
 	}
 
 	public boolean matchesMouse(int code) {
-		return this.boundKey.getCategory() == InputUtil.Type.field_1672 && this.boundKey.getCode() == code;
+		return this.boundKey.getCategory() == InputUtil.Type.MOUSE && this.boundKey.getCode() == code;
 	}
 
 	public Text getBoundKeyLocalizedText() {

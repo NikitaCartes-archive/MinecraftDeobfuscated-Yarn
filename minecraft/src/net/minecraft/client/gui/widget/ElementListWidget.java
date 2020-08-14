@@ -17,7 +17,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 	public boolean changeFocus(boolean lookForwards) {
 		boolean bl = super.changeFocus(lookForwards);
 		if (bl) {
-			this.ensureVisible(this.method_25336());
+			this.ensureVisible(this.getFocused());
 		}
 
 		return bl;

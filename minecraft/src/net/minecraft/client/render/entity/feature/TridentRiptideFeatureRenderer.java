@@ -23,7 +23,7 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 		this.aura.addCuboid(-8.0F, -16.0F, -8.0F, 16.0F, 32.0F, 16.0F);
 	}
 
-	public void method_4203(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (livingEntity.isUsingRiptide()) {

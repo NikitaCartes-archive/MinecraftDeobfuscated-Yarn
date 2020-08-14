@@ -19,7 +19,7 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 		super(featureRendererContext);
 	}
 
-	public void method_4198(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, SheepEntity sheepEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (!sheepEntity.isSheared() && !sheepEntity.isInvisible()) {

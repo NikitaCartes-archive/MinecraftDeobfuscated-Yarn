@@ -15,7 +15,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13628(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig
 	) {
 		float f = random.nextFloat() * (float) Math.PI;
@@ -36,7 +36,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 
 		for (int s = n; s <= n + q; s++) {
 			for (int t = p; t <= p + q; t++) {
-				if (o <= structureWorldAccess.getTopY(Heightmap.Type.field_13195, s, t)) {
+				if (o <= structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
 					return this.generateVeinPart(structureWorldAccess, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
 				}
 			}

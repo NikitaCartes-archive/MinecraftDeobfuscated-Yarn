@@ -6,9 +6,9 @@ import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 
-public class class_5509 extends Enchantment {
-	public class_5509(Enchantment.Rarity rarity, EquipmentSlot... equipmentSlots) {
-		super(rarity, EnchantmentTarget.field_26774, equipmentSlots);
+public class class_5511 extends Enchantment {
+	public class_5511(Enchantment.Rarity rarity, EquipmentSlot... equipmentSlots) {
+		super(rarity, EnchantmentTarget.AXE, equipmentSlots);
 	}
 
 	@Override

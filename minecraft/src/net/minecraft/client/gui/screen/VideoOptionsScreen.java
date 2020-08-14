@@ -24,11 +24,11 @@ import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class VideoOptionsScreen extends GameOptionsScreen {
-	private static final Text GRAPHICS_FABULOUS_TEXT = new TranslatableText("options.graphics.fabulous").formatted(Formatting.field_1056);
+	private static final Text GRAPHICS_FABULOUS_TEXT = new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC);
 	private static final Text GRAPHICS_WARNING_MESSAGE_TEXT = new TranslatableText(
 		"options.graphics.warning.message", GRAPHICS_FABULOUS_TEXT, GRAPHICS_FABULOUS_TEXT
 	);
-	private static final Text GRAPHICS_WARNING_TITLE_TEXT = new TranslatableText("options.graphics.warning.title").formatted(Formatting.field_1061);
+	private static final Text GRAPHICS_WARNING_TITLE_TEXT = new TranslatableText("options.graphics.warning.title").formatted(Formatting.RED);
 	private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = new TranslatableText("options.graphics.warning.accept");
 	private static final Text GRAPHICS_WARNING_CANCEL_TEXT = new TranslatableText("options.graphics.warning.cancel");
 	private static final Text NEWLINE_TEXT = new LiteralText("\n");
@@ -40,7 +40,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		Option.VSYNC,
 		Option.VIEW_BOBBING,
 		Option.GUI_SCALE,
-		Option.field_26778,
+		Option.ATTACK_INDICATOR,
+		Option.field_26806,
 		Option.GAMMA,
 		Option.CLOUDS,
 		Option.FULLSCREEN,
@@ -59,7 +60,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		super(parent, options, new TranslatableText("options.videoTitle"));
 		this.warningManager = parent.client.getVideoWarningManager();
 		this.warningManager.reset();
-		if (options.graphicsMode == GraphicsMode.field_25429) {
+		if (options.graphicsMode == GraphicsMode.FABULOUS) {
 			this.warningManager.acceptAfterWarnings();
 		}
 
@@ -103,24 +104,24 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 				String string = this.warningManager.getRendererWarning();
 				if (string != null) {
 					list.add(NEWLINE_TEXT);
-					list.add(new TranslatableText("options.graphics.warning.renderer", string).formatted(Formatting.field_1080));
+					list.add(new TranslatableText("options.graphics.warning.renderer", string).formatted(Formatting.GRAY));
 				}
 
 				String string2 = this.warningManager.getVendorWarning();
 				if (string2 != null) {
 					list.add(NEWLINE_TEXT);
-					list.add(new TranslatableText("options.graphics.warning.vendor", string2).formatted(Formatting.field_1080));
+					list.add(new TranslatableText("options.graphics.warning.vendor", string2).formatted(Formatting.GRAY));
 				}
 
 				String string3 = this.warningManager.getVersionWarning();
 				if (string3 != null) {
 					list.add(NEWLINE_TEXT);
-					list.add(new TranslatableText("options.graphics.warning.version", string3).formatted(Formatting.field_1080));
+					list.add(new TranslatableText("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
 				}
 
 				this.client
 					.openScreen(new DialogScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new DialogScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, buttonx -> {
-						this.gameOptions.graphicsMode = GraphicsMode.field_25429;
+						this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
 						MinecraftClient.getInstance().worldRenderer.reload();
 						this.warningManager.acceptAfterWarnings();
 						this.client.openScreen(this);
@@ -160,7 +161,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 		List<OrderedText> list = method_31048(this.list, mouseX, mouseY);
 		if (list != null) {
-			this.renderTooltip(matrices, list, mouseX, mouseY);
+			this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
 		}
 	}
 }

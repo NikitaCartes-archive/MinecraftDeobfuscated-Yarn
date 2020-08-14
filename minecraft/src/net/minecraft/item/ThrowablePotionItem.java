@@ -22,7 +22,7 @@ public class ThrowablePotionItem extends PotionItem {
 			world.spawnEntity(potionEntity);
 		}
 
-		user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		if (!user.abilities.creativeMode) {
 			itemStack.decrement(1);
 		}

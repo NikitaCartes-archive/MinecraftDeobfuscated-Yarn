@@ -55,7 +55,7 @@ public class ServerCommandSource implements CommandSource {
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String simpleName, Text name, MinecraftServer server, @Nullable Entity entity
 	) {
 		this(output, pos, rot, world, level, simpleName, name, server, entity, false, (context, success, result) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.field_9853);
+		}, EntityAnchorArgumentType.EntityAnchor.FEET);
 	}
 
 	protected ServerCommandSource(
@@ -352,8 +352,8 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	private void sendToOps(Text message) {
-		Text text = new TranslatableText("chat.type.admin", this.getDisplayName(), message).formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056});
-		if (this.server.getGameRules().getBoolean(GameRules.field_19400)) {
+		Text text = new TranslatableText("chat.type.admin", this.getDisplayName(), message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC});
+		if (this.server.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
 			for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity != this.output && this.server.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
 					serverPlayerEntity.sendSystemMessage(text, Util.NIL_UUID);
@@ -361,14 +361,14 @@ public class ServerCommandSource implements CommandSource {
 			}
 		}
 
-		if (this.output != this.server && this.server.getGameRules().getBoolean(GameRules.field_19397)) {
+		if (this.output != this.server && this.server.getGameRules().getBoolean(GameRules.LOG_ADMIN_COMMANDS)) {
 			this.server.sendSystemMessage(text, Util.NIL_UUID);
 		}
 	}
 
 	public void sendError(Text message) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.sendSystemMessage(new LiteralText("").append(message).formatted(Formatting.field_1061), Util.NIL_UUID);
+			this.output.sendSystemMessage(new LiteralText("").append(message).formatted(Formatting.RED), Util.NIL_UUID);
 		}
 	}
 

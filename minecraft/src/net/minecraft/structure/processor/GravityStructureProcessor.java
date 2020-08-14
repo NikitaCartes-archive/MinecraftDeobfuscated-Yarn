@@ -15,7 +15,7 @@ public class GravityStructureProcessor extends StructureProcessor {
 		instance -> instance.group(
 					Heightmap.Type.field_24772
 						.fieldOf("heightmap")
-						.orElse(Heightmap.Type.field_13194)
+						.orElse(Heightmap.Type.WORLD_SURFACE_WG)
 						.forGetter(gravityStructureProcessor -> gravityStructureProcessor.heightmap),
 					Codec.INT.fieldOf("offset").orElse(0).forGetter(gravityStructureProcessor -> gravityStructureProcessor.offset)
 				)
@@ -41,10 +41,10 @@ public class GravityStructureProcessor extends StructureProcessor {
 	) {
 		Heightmap.Type type;
 		if (worldView instanceof ServerWorld) {
-			if (this.heightmap == Heightmap.Type.field_13194) {
-				type = Heightmap.Type.field_13202;
-			} else if (this.heightmap == Heightmap.Type.field_13195) {
-				type = Heightmap.Type.field_13200;
+			if (this.heightmap == Heightmap.Type.WORLD_SURFACE_WG) {
+				type = Heightmap.Type.WORLD_SURFACE;
+			} else if (this.heightmap == Heightmap.Type.OCEAN_FLOOR_WG) {
+				type = Heightmap.Type.OCEAN_FLOOR;
 			} else {
 				type = this.heightmap;
 			}
@@ -61,6 +61,6 @@ public class GravityStructureProcessor extends StructureProcessor {
 
 	@Override
 	protected StructureProcessorType<?> getType() {
-		return StructureProcessorType.field_16989;
+		return StructureProcessorType.GRAVITY;
 	}
 }

@@ -12,7 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	public static final TagReader<ByteArrayTag> READER = new TagReader<ByteArrayTag>() {
-		public ByteArrayTag method_23232(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public ByteArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(192L);
 			int j = dataInput.readInt();
 			positionTracker.add(8L * (long)j);
@@ -123,17 +123,17 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 		return this.value.length;
 	}
 
-	public ByteTag method_10523(int i) {
+	public ByteTag get(int i) {
 		return ByteTag.of(this.value[i]);
 	}
 
-	public ByteTag method_17803(int i, ByteTag byteTag) {
+	public ByteTag set(int i, ByteTag byteTag) {
 		byte b = this.value[i];
 		this.value[i] = byteTag.getByte();
 		return ByteTag.of(b);
 	}
 
-	public void method_17805(int i, ByteTag byteTag) {
+	public void method_10531(int i, ByteTag byteTag) {
 		this.value = ArrayUtils.add(this.value, i, byteTag.getByte());
 	}
 
@@ -157,7 +157,7 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 		}
 	}
 
-	public ByteTag method_17804(int i) {
+	public ByteTag method_10536(int i) {
 		byte b = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
 		return ByteTag.of(b);

@@ -15,7 +15,7 @@ public class BiomeMoodSound {
 				)
 				.apply(instance, BiomeMoodSound::new)
 	);
-	public static final BiomeMoodSound CAVE = new BiomeMoodSound(SoundEvents.field_14564, 6000, 8, 2.0);
+	public static final BiomeMoodSound CAVE = new BiomeMoodSound(SoundEvents.AMBIENT_CAVE, 6000, 8, 2.0);
 	private SoundEvent event;
 	private int cultivationTicks;
 	private int spawnRange;

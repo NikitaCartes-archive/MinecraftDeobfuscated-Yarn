@@ -20,7 +20,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		return ID;
 	}
 
-	public BrewedPotionCriterion.Conditions method_8785(
+	public BrewedPotionCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Potion potion = null;

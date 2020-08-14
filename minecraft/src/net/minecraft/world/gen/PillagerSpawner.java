@@ -20,7 +20,7 @@ public class PillagerSpawner implements Spawner {
 	public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
 		if (!spawnMonsters) {
 			return 0;
-		} else if (!world.getGameRules().getBoolean(GameRules.field_21831)) {
+		} else if (!world.getGameRules().getBoolean(GameRules.DO_PATROL_SPAWNING)) {
 			return 0;
 		} else {
 			Random random = world.random;
@@ -53,7 +53,7 @@ public class PillagerSpawner implements Spawner {
 							} else {
 								Biome biome = world.getBiome(mutable);
 								Biome.Category category = biome.getCategory();
-								if (category == Biome.Category.field_9365) {
+								if (category == Biome.Category.MUSHROOM) {
 									return 0;
 								} else {
 									int m = 0;
@@ -61,7 +61,7 @@ public class PillagerSpawner implements Spawner {
 
 									for (int o = 0; o < n; o++) {
 										m++;
-										mutable.setY(world.getTopPosition(Heightmap.Type.field_13203, mutable).getY());
+										mutable.setY(world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY());
 										if (o == 0) {
 											if (!this.spawnPillager(world, mutable, random, true)) {
 												break;
@@ -89,12 +89,12 @@ public class PillagerSpawner implements Spawner {
 	 */
 	private boolean spawnPillager(ServerWorld world, BlockPos pos, Random random, boolean captain) {
 		BlockState blockState = world.getBlockState(pos);
-		if (!SpawnHelper.isClearForSpawn(world, pos, blockState, blockState.getFluidState(), EntityType.field_6105)) {
+		if (!SpawnHelper.isClearForSpawn(world, pos, blockState, blockState.getFluidState(), EntityType.PILLAGER)) {
 			return false;
-		} else if (!PatrolEntity.canSpawn(EntityType.field_6105, world, SpawnReason.field_16527, pos, random)) {
+		} else if (!PatrolEntity.canSpawn(EntityType.PILLAGER, world, SpawnReason.PATROL, pos, random)) {
 			return false;
 		} else {
-			PatrolEntity patrolEntity = EntityType.field_6105.create(world);
+			PatrolEntity patrolEntity = EntityType.PILLAGER.create(world);
 			if (patrolEntity != null) {
 				if (captain) {
 					patrolEntity.setPatrolLeader(true);
@@ -102,7 +102,7 @@ public class PillagerSpawner implements Spawner {
 				}
 
 				patrolEntity.updatePosition((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
-				patrolEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.field_16527, null, null);
+				patrolEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.PATROL, null, null);
 				world.spawnEntityAndPassengers(patrolEntity);
 				return true;
 			} else {

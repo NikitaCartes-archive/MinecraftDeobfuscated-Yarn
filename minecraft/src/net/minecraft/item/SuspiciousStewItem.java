@@ -44,6 +44,6 @@ public class SuspiciousStewItem extends Item {
 			}
 		}
 
-		return user instanceof PlayerEntity && ((PlayerEntity)user).abilities.creativeMode ? itemStack : new ItemStack(Items.field_8428);
+		return user instanceof PlayerEntity && ((PlayerEntity)user).abilities.creativeMode ? itemStack : new ItemStack(Items.BOWL);
 	}
 }

@@ -11,7 +11,7 @@ public class FillLayerFeature extends Feature<FillLayerFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_20312(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, FillLayerFeatureConfig fillLayerFeatureConfig
 	) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();

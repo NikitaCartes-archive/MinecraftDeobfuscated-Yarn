@@ -11,7 +11,7 @@ public class NoOpFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_23914(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		return true;

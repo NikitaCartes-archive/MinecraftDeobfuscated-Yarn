@@ -7,10 +7,10 @@ import net.minecraft.recipe.book.RecipeBookCategory;
 
 public class SmokerScreenHandler extends AbstractFurnaceScreenHandler {
 	public SmokerScreenHandler(int syncId, PlayerInventory playerInventory) {
-		super(ScreenHandlerType.field_17342, RecipeType.SMOKING, RecipeBookCategory.field_25766, syncId, playerInventory);
+		super(ScreenHandlerType.SMOKER, RecipeType.SMOKING, RecipeBookCategory.SMOKER, syncId, playerInventory);
 	}
 
 	public SmokerScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ScreenHandlerType.field_17342, RecipeType.SMOKING, RecipeBookCategory.field_25766, syncId, playerInventory, inventory, propertyDelegate);
+		super(ScreenHandlerType.SMOKER, RecipeType.SMOKING, RecipeBookCategory.SMOKER, syncId, playerInventory, inventory, propertyDelegate);
 	}
 }

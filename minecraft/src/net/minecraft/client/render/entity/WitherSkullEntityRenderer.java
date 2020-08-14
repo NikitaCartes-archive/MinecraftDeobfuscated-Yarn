@@ -22,23 +22,23 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity>
 		super(entityRenderDispatcher);
 	}
 
-	protected int method_24094(WitherSkullEntity witherSkullEntity, BlockPos blockPos) {
+	protected int getBlockLight(WitherSkullEntity witherSkullEntity, BlockPos blockPos) {
 		return 15;
 	}
 
-	public void method_4159(WitherSkullEntity witherSkullEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(WitherSkullEntity witherSkullEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		float h = MathHelper.lerpAngle(witherSkullEntity.prevYaw, witherSkullEntity.yaw, g);
 		float j = MathHelper.lerp(g, witherSkullEntity.prevPitch, witherSkullEntity.pitch);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_4160(witherSkullEntity)));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(witherSkullEntity)));
 		this.model.method_2821(0.0F, h, j);
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 		super.render(witherSkullEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_4160(WitherSkullEntity witherSkullEntity) {
+	public Identifier getTexture(WitherSkullEntity witherSkullEntity) {
 		return witherSkullEntity.isCharged() ? INVULNERABLE_TEXTURE : TEXTURE;
 	}
 }

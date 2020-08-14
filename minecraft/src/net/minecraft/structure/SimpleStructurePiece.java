@@ -37,7 +37,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 
 	protected void setStructureData(Structure structure, BlockPos pos, StructurePlacementData placementData) {
 		this.structure = structure;
-		this.setOrientation(Direction.field_11043);
+		this.setOrientation(Direction.NORTH);
 		this.pos = pos;
 		this.placementData = placementData;
 		this.boundingBox = structure.calculateBoundingBox(placementData, pos);
@@ -63,20 +63,20 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		this.placementData.setBoundingBox(boundingBox);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
 		if (this.structure.place(structureWorldAccess, this.pos, blockPos, this.placementData, random, 2)) {
-			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.field_10465)) {
+			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.tag != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
-					if (structureBlockMode == StructureBlockMode.field_12696) {
+					if (structureBlockMode == StructureBlockMode.DATA) {
 						this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, structureWorldAccess, random, boundingBox);
 					}
 				}
 			}
 
-			for (Structure.StructureBlockInfo structureBlockInfo2 : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.field_16540)) {
+			for (Structure.StructureBlockInfo structureBlockInfo2 : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW)) {
 				if (structureBlockInfo2.tag != null) {
 					String string = structureBlockInfo2.tag.getString("final_state");
 					BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
-					BlockState blockState = Blocks.field_10124.getDefaultState();
+					BlockState blockState = Blocks.AIR.getDefaultState();
 
 					try {
 						blockArgumentParser.parse(true);

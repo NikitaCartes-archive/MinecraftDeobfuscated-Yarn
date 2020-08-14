@@ -50,7 +50,7 @@ public class EditGameRulesScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		super.init();
 		this.ruleListWidget = new EditGameRulesScreen.RuleListWidget(this.gameRules);
 		this.children.add(this.ruleListWidget);
@@ -64,7 +64,7 @@ public class EditGameRulesScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class EditGameRulesScreen extends Screen {
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.tooltip != null) {
-			this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
+			this.renderOrderedTooltip(matrices, this.tooltip, mouseX, mouseY);
 		}
 	}
 
@@ -233,10 +233,10 @@ public class EditGameRulesScreen extends Screen {
 
 				private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, EditGameRulesScreen.RuleWidgetFactory<T> widgetFactory) {
 					Text text = new TranslatableText(key.getTranslationKey());
-					Text text2 = new LiteralText(key.getName()).formatted(Formatting.field_1054);
+					Text text2 = new LiteralText(key.getName()).formatted(Formatting.YELLOW);
 					T rule = gameRules.get(key);
 					String string = rule.serialize();
-					Text text3 = new TranslatableText("editGamerule.default", new LiteralText(string)).formatted(Formatting.field_1080);
+					Text text3 = new TranslatableText("editGamerule.default", new LiteralText(string)).formatted(Formatting.GRAY);
 					String string2 = key.getTranslationKey() + ".description";
 					List<OrderedText> list;
 					String string3;
@@ -261,7 +261,7 @@ public class EditGameRulesScreen extends Screen {
 					entry -> {
 						this.addEntry(
 							EditGameRulesScreen.this.new RuleCategoryWidget(
-								new TranslatableText(((GameRules.Category)entry.getKey()).getCategory()).formatted(new Formatting[]{Formatting.field_1067, Formatting.field_1054})
+								new TranslatableText(((GameRules.Category)entry.getKey()).getCategory()).formatted(new Formatting[]{Formatting.BOLD, Formatting.YELLOW})
 							)
 						);
 						((Map)entry.getValue())

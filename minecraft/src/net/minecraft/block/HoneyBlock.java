@@ -36,7 +36,7 @@ public class HoneyBlock extends TransparentBlock {
 
 	@Override
 	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
-		entity.playSound(SoundEvents.field_21074, 1.0F, 1.0F);
+		entity.playSound(SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, 1.0F, 1.0F);
 		if (!world.isClient) {
 			world.sendEntityStatus(entity, (byte)54);
 		}
@@ -93,7 +93,7 @@ public class HoneyBlock extends TransparentBlock {
 	private void addCollisionEffects(World world, Entity entity) {
 		if (hasHoneyBlockEffects(entity)) {
 			if (world.random.nextInt(5) == 0) {
-				entity.playSound(SoundEvents.field_21074, 1.0F, 1.0F);
+				entity.playSound(SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, 1.0F, 1.0F);
 			}
 
 			if (!world.isClient && world.random.nextInt(5) == 0) {
@@ -115,10 +115,10 @@ public class HoneyBlock extends TransparentBlock {
 	@Environment(EnvType.CLIENT)
 	private static void addParticles(Entity entity, int count) {
 		if (entity.world.isClient) {
-			BlockState blockState = Blocks.field_21211.getDefaultState();
+			BlockState blockState = Blocks.HONEY_BLOCK.getDefaultState();
 
 			for (int i = 0; i < count; i++) {
-				entity.world.addParticle(new BlockStateParticleEffect(ParticleTypes.field_11217, blockState), entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
+				entity.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
 			}
 		}
 	}

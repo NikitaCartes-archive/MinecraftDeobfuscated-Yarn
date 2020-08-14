@@ -18,18 +18,18 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class HorseMarkingFeatureRenderer extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
 	private static final Map<HorseMarking, Identifier> TEXTURES = Util.make(Maps.newEnumMap(HorseMarking.class), enumMap -> {
-		enumMap.put(HorseMarking.field_23808, null);
-		enumMap.put(HorseMarking.field_23809, new Identifier("textures/entity/horse/horse_markings_white.png"));
-		enumMap.put(HorseMarking.field_23810, new Identifier("textures/entity/horse/horse_markings_whitefield.png"));
-		enumMap.put(HorseMarking.field_23811, new Identifier("textures/entity/horse/horse_markings_whitedots.png"));
-		enumMap.put(HorseMarking.field_23812, new Identifier("textures/entity/horse/horse_markings_blackdots.png"));
+		enumMap.put(HorseMarking.NONE, null);
+		enumMap.put(HorseMarking.WHITE, new Identifier("textures/entity/horse/horse_markings_white.png"));
+		enumMap.put(HorseMarking.WHITE_FIELD, new Identifier("textures/entity/horse/horse_markings_whitefield.png"));
+		enumMap.put(HorseMarking.WHITE_DOTS, new Identifier("textures/entity/horse/horse_markings_whitedots.png"));
+		enumMap.put(HorseMarking.BLACK_DOTS, new Identifier("textures/entity/horse/horse_markings_blackdots.png"));
 	});
 
 	public HorseMarkingFeatureRenderer(FeatureRendererContext<HorseEntity, HorseEntityModel<HorseEntity>> featureRendererContext) {
 		super(featureRendererContext);
 	}
 
-	public void method_27152(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l
 	) {
 		Identifier identifier = (Identifier)TEXTURES.get(horseEntity.getMarking());

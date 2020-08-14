@@ -219,7 +219,7 @@ public class EntitySelectorOptions {
 					}
 
 					for (GameMode gameModex : GameMode.values()) {
-						if (gameModex != GameMode.field_9218 && gameModex.getName().toLowerCase(Locale.ROOT).startsWith(stringx)) {
+						if (gameModex != GameMode.NOT_SET && gameModex.getName().toLowerCase(Locale.ROOT).startsWith(stringx)) {
 							if (bl2) {
 								suggestionsBuilder.suggest('!' + gameModex.getName());
 							}
@@ -239,8 +239,8 @@ public class EntitySelectorOptions {
 					throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), "gamemode");
 				} else {
 					String string = entitySelectorReader.getReader().readUnquotedString();
-					GameMode gameMode = GameMode.byName(string, GameMode.field_9218);
-					if (gameMode == GameMode.field_9218) {
+					GameMode gameMode = GameMode.byName(string, GameMode.NOT_SET);
+					if (gameMode == GameMode.NOT_SET) {
 						entitySelectorReader.getReader().setCursor(i);
 						throw INVALID_MODE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
 					} else {
@@ -313,7 +313,7 @@ public class EntitySelectorOptions {
 								entitySelectorReader.getReader().setCursor(i);
 								return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
 							});
-							if (Objects.equals(EntityType.field_6097, entityType) && !bl) {
+							if (Objects.equals(EntityType.PLAYER, entityType) && !bl) {
 								entitySelectorReader.setIncludesNonPlayers(false);
 							}
 
@@ -500,9 +500,9 @@ public class EntitySelectorOptions {
 									return false;
 								} else {
 									LootContext lootContext = new LootContext.Builder(serverWorld)
-										.parameter(LootContextParameters.field_1226, entity)
-										.parameter(LootContextParameters.field_24424, entity.getPos())
-										.build(LootContextTypes.field_20762);
+										.parameter(LootContextParameters.THIS_ENTITY, entity)
+										.parameter(LootContextParameters.ORIGIN, entity.getPos())
+										.build(LootContextTypes.SELECTOR);
 									return bl ^ lootCondition.test(lootContext);
 								}
 							}

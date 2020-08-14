@@ -42,7 +42,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 		this.field_20826.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
 	}
 
-	public void method_22750(ConduitBlockEntity conduitBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(ConduitBlockEntity conduitBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		float g = (float)conduitBlockEntity.ticks + f;
 		if (!conduitBlockEntity.isActive()) {
 			float h = conduitBlockEntity.getRotation(0.0F);

@@ -38,7 +38,7 @@ public class PlayerActionC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeByte(this.direction.getId());
 	}
 
-	public void method_12361(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerAction(this);
 	}
 
@@ -55,12 +55,12 @@ public class PlayerActionC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public static enum Action {
-		field_12968,
-		field_12971,
-		field_12973,
-		field_12970,
-		field_12975,
-		field_12974,
-		field_12969;
+		START_DESTROY_BLOCK,
+		ABORT_DESTROY_BLOCK,
+		STOP_DESTROY_BLOCK,
+		DROP_ALL_ITEMS,
+		DROP_ITEM,
+		RELEASE_USE_ITEM,
+		SWAP_ITEM_WITH_OFFHAND;
 	}
 }

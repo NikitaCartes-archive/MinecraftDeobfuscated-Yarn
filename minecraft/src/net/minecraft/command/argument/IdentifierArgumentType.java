@@ -69,7 +69,7 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		return context.getArgument(name, Identifier.class);
 	}
 
-	public Identifier method_9446(StringReader stringReader) throws CommandSyntaxException {
+	public Identifier parse(StringReader stringReader) throws CommandSyntaxException {
 		return Identifier.fromCommandInput(stringReader);
 	}
 

@@ -20,13 +20,11 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		return ID;
 	}
 
-	public ChangedDimensionCriterion.Conditions method_8793(
+	public ChangedDimensionCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		RegistryKey<World> registryKey = jsonObject.has("from")
-			? RegistryKey.of(Registry.field_25298, new Identifier(JsonHelper.getString(jsonObject, "from")))
-			: null;
-		RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(Registry.field_25298, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
+		RegistryKey<World> registryKey = jsonObject.has("from") ? RegistryKey.of(Registry.DIMENSION, new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
+		RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(Registry.DIMENSION, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
 		return new ChangedDimensionCriterion.Conditions(extended, registryKey, registryKey2);
 	}
 

@@ -11,9 +11,9 @@ import net.minecraft.util.math.Direction;
 public class class_5459 {
 	public static class_5459.class_5460 method_30574(BlockPos blockPos, Direction.Axis axis, int i, Direction.Axis axis2, int j, Predicate<BlockPos> predicate) {
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
-		Direction direction = Direction.get(Direction.AxisDirection.field_11060, axis);
+		Direction direction = Direction.get(Direction.AxisDirection.NEGATIVE, axis);
 		Direction direction2 = direction.getOpposite();
-		Direction direction3 = Direction.get(Direction.AxisDirection.field_11060, axis2);
+		Direction direction3 = Direction.get(Direction.AxisDirection.NEGATIVE, axis2);
 		Direction direction4 = direction3.getOpposite();
 		int k = method_30575(predicate, mutable.set(blockPos), direction, i);
 		int l = method_30575(predicate, mutable.set(blockPos), direction2, i);

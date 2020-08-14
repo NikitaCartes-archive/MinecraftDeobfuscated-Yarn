@@ -22,11 +22,11 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 		this.addFeature(new ArmorFeatureRenderer<>(this, new GiantEntityModel(0.5F, true), new GiantEntityModel(1.0F, true)));
 	}
 
-	protected void method_3980(GiantEntity giantEntity, MatrixStack matrixStack, float f) {
+	protected void scale(GiantEntity giantEntity, MatrixStack matrixStack, float f) {
 		matrixStack.scale(this.scale, this.scale, this.scale);
 	}
 
-	public Identifier method_3981(GiantEntity giantEntity) {
+	public Identifier getTexture(GiantEntity giantEntity) {
 		return TEXTURE;
 	}
 }

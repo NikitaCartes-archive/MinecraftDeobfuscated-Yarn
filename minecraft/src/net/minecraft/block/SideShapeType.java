@@ -8,13 +8,13 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public enum SideShapeType {
-	field_25822 {
+	FULL {
 		@Override
 		public boolean matches(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 			return Block.isFaceFullSquare(state.getSidesShape(world, pos), direction);
 		}
 	},
-	field_25823 {
+	CENTER {
 		private final int radius = 1;
 		private final VoxelShape squareCuboid = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 10.0, 9.0);
 
@@ -23,7 +23,7 @@ public enum SideShapeType {
 			return !VoxelShapes.matchesAnywhere(state.getSidesShape(world, pos).getFace(direction), this.squareCuboid, BooleanBiFunction.ONLY_SECOND);
 		}
 	},
-	field_25824 {
+	RIGID {
 		private final int ringWidth = 2;
 		private final VoxelShape hollowSquareCuboid = VoxelShapes.combineAndSimplify(
 			VoxelShapes.fullCube(), Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST

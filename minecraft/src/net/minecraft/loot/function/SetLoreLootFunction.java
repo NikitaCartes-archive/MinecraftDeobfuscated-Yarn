@@ -36,7 +36,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25231;
+		return LootFunctionTypes.SET_LORE;
 	}
 
 	@Override
@@ -97,8 +97,8 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetLoreLootFunction> {
-		public void method_15969(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, setLoreLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, setLoreLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("replace", setLoreLootFunction.replace);
 			JsonArray jsonArray = new JsonArray();
 
@@ -112,7 +112,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public SetLoreLootFunction method_15968(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetLoreLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
 			List<Text> list = (List<Text>)Streams.stream(JsonHelper.getArray(jsonObject, "lore"))
 				.map(Text.Serializer::fromJson)

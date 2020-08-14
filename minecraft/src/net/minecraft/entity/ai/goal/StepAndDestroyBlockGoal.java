@@ -84,7 +84,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 					double d = 0.08;
 					((ServerWorld)world)
 						.spawnParticles(
-							new ItemStackParticleEffect(ParticleTypes.field_11218, new ItemStack(Items.field_8803)),
+							new ItemStackParticleEffect(ParticleTypes.ITEM, new ItemStack(Items.EGG)),
 							(double)blockPos2.getX() + 0.5,
 							(double)blockPos2.getY() + 0.7,
 							(double)blockPos2.getZ() + 0.5,
@@ -113,7 +113,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 						double e = random.nextGaussian() * 0.02;
 						double f = random.nextGaussian() * 0.02;
 						((ServerWorld)world)
-							.spawnParticles(ParticleTypes.field_11203, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5, 1, d, e, f, 0.15F);
+							.spawnParticles(ParticleTypes.POOF, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5, 1, d, e, f, 0.15F);
 					}
 
 					this.onDestroyBlock(world, blockPos2);
@@ -129,7 +129,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 		if (world.getBlockState(pos).isOf(this.targetBlock)) {
 			return pos;
 		} else {
-			BlockPos[] blockPoss = new BlockPos[]{pos.method_10074(), pos.west(), pos.east(), pos.north(), pos.south(), pos.method_10074().method_10074()};
+			BlockPos[] blockPoss = new BlockPos[]{pos.down(), pos.west(), pos.east(), pos.north(), pos.south(), pos.down().down()};
 
 			for (BlockPos blockPos : blockPoss) {
 				if (world.getBlockState(blockPos).isOf(this.targetBlock)) {
@@ -143,7 +143,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 
 	@Override
 	protected boolean isTargetPos(WorldView world, BlockPos pos) {
-		Chunk chunk = world.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.field_12803, false);
+		Chunk chunk = world.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
 		return chunk == null
 			? false
 			: chunk.getBlockState(pos).isOf(this.targetBlock) && chunk.getBlockState(pos.up()).isAir() && chunk.getBlockState(pos.up(2)).isAir();

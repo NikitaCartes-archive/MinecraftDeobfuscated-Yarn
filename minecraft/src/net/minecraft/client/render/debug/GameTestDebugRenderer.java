@@ -35,7 +35,7 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
-			GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523, GlStateManager.SrcFactor.field_22534, GlStateManager.DstFactor.field_22527
+			GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 		);
 		RenderSystem.color4f(0.0F, 1.0F, 0.0F, 0.75F);
 		RenderSystem.disableTexture();

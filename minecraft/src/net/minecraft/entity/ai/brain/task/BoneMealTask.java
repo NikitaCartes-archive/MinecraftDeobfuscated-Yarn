@@ -25,12 +25,12 @@ public class BoneMealTask extends Task<VillagerEntity> {
 	private Optional<BlockPos> pos = Optional.empty();
 
 	public BoneMealTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18446, MemoryModuleState.field_18457, MemoryModuleType.field_18445, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 	}
 
-	protected boolean method_26327(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		if (villagerEntity.age % 10 == 0 && (this.lastEndEntityAge == 0L || this.lastEndEntityAge + 160L <= (long)villagerEntity.age)) {
-			if (villagerEntity.getInventory().count(Items.field_8324) <= 0) {
+			if (villagerEntity.getInventory().count(Items.BONE_MEAL) <= 0) {
 				return false;
 			} else {
 				this.pos = this.findBoneMealPos(serverWorld, villagerEntity);
@@ -41,7 +41,7 @@ public class BoneMealTask extends Task<VillagerEntity> {
 		}
 	}
 
-	protected boolean method_26328(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		return this.duration < 80 && this.pos.isPresent();
 	}
 
@@ -72,9 +72,9 @@ public class BoneMealTask extends Task<VillagerEntity> {
 		return block instanceof CropBlock && !((CropBlock)block).isMature(blockState);
 	}
 
-	protected void method_26330(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		this.addLookWalkTargets(villagerEntity);
-		villagerEntity.equipStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8324));
+		villagerEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BONE_MEAL));
 		this.startTime = l;
 		this.duration = 0;
 	}
@@ -82,17 +82,17 @@ public class BoneMealTask extends Task<VillagerEntity> {
 	private void addLookWalkTargets(VillagerEntity villager) {
 		this.pos.ifPresent(blockPos -> {
 			BlockPosLookTarget blockPosLookTarget = new BlockPosLookTarget(blockPos);
-			villager.getBrain().remember(MemoryModuleType.field_18446, blockPosLookTarget);
-			villager.getBrain().remember(MemoryModuleType.field_18445, new WalkTarget(blockPosLookTarget, 0.5F, 1));
+			villager.getBrain().remember(MemoryModuleType.LOOK_TARGET, blockPosLookTarget);
+			villager.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPosLookTarget, 0.5F, 1));
 		});
 	}
 
-	protected void method_26331(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		villagerEntity.equipStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
+	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		this.lastEndEntityAge = (long)villagerEntity.age;
 	}
 
-	protected void method_26332(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		BlockPos blockPos = (BlockPos)this.pos.get();
 		if (l >= this.startTime && blockPos.isWithinDistance(villagerEntity.getPos(), 1.0)) {
 			ItemStack itemStack = ItemStack.EMPTY;
@@ -101,7 +101,7 @@ public class BoneMealTask extends Task<VillagerEntity> {
 
 			for (int j = 0; j < i; j++) {
 				ItemStack itemStack2 = simpleInventory.getStack(j);
-				if (itemStack2.getItem() == Items.field_8324) {
+				if (itemStack2.getItem() == Items.BONE_MEAL) {
 					itemStack = itemStack2;
 					break;
 				}

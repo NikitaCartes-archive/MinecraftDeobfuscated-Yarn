@@ -38,7 +38,7 @@ public class StructureManager {
 	public StructureManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
 		this.field_25189 = resourceManager;
 		this.dataFixer = dataFixer;
-		this.generatedPath = session.getDirectory(WorldSavePath.field_24185).normalize();
+		this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
 	}
 
 	public Structure getStructureOrBlank(Identifier id) {
@@ -153,7 +153,7 @@ public class StructureManager {
 		}
 
 		Structure structure = new Structure();
-		structure.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.field_19217, tag, tag.getInt("DataVersion")));
+		structure.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, tag, tag.getInt("DataVersion")));
 		return structure;
 	}
 

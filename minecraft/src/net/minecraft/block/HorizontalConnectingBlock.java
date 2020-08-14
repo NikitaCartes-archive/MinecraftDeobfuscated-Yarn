@@ -105,19 +105,19 @@ public class HorizontalConnectingBlock extends Block implements Waterloggable {
 		return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(state, blockState -> {
 			int i = 0;
 			if ((Boolean)blockState.get(NORTH)) {
-				i |= getDirectionMask(Direction.field_11043);
+				i |= getDirectionMask(Direction.NORTH);
 			}
 
 			if ((Boolean)blockState.get(EAST)) {
-				i |= getDirectionMask(Direction.field_11034);
+				i |= getDirectionMask(Direction.EAST);
 			}
 
 			if ((Boolean)blockState.get(SOUTH)) {
-				i |= getDirectionMask(Direction.field_11035);
+				i |= getDirectionMask(Direction.SOUTH);
 			}
 
 			if ((Boolean)blockState.get(WEST)) {
-				i |= getDirectionMask(Direction.field_11039);
+				i |= getDirectionMask(Direction.WEST);
 			}
 
 			return i;
@@ -137,11 +137,11 @@ public class HorizontalConnectingBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
-			case field_11464:
+			case CLOCKWISE_180:
 				return state.with(NORTH, state.get(SOUTH)).with(EAST, state.get(WEST)).with(SOUTH, state.get(NORTH)).with(WEST, state.get(EAST));
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return state.with(NORTH, state.get(EAST)).with(EAST, state.get(SOUTH)).with(SOUTH, state.get(WEST)).with(WEST, state.get(NORTH));
-			case field_11463:
+			case CLOCKWISE_90:
 				return state.with(NORTH, state.get(WEST)).with(EAST, state.get(NORTH)).with(SOUTH, state.get(EAST)).with(WEST, state.get(SOUTH));
 			default:
 				return state;
@@ -151,9 +151,9 @@ public class HorizontalConnectingBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
 		switch (mirror) {
-			case field_11300:
+			case LEFT_RIGHT:
 				return state.with(NORTH, state.get(SOUTH)).with(SOUTH, state.get(NORTH));
-			case field_11301:
+			case FRONT_BACK:
 				return state.with(EAST, state.get(WEST)).with(WEST, state.get(EAST));
 			default:
 				return super.mirror(state, mirror);

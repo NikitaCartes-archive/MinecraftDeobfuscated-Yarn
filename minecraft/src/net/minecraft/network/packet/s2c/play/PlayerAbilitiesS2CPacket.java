@@ -63,7 +63,7 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 		buf.writeFloat(this.walkSpeed);
 	}
 
-	public void method_11697(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerAbilities(this);
 	}
 

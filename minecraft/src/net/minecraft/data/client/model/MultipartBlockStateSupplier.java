@@ -50,11 +50,11 @@ public class MultipartBlockStateSupplier implements BlockStateSupplier {
 		return this.with(when, ImmutableList.of(blockStateVariant));
 	}
 
-	public JsonElement method_25765() {
+	public JsonElement get() {
 		StateManager<Block, BlockState> stateManager = this.block.getStateManager();
 		this.multiparts.forEach(multipart -> multipart.validate(stateManager));
 		JsonArray jsonArray = new JsonArray();
-		this.multiparts.stream().map(MultipartBlockStateSupplier.Multipart::method_25766).forEach(jsonArray::add);
+		this.multiparts.stream().map(MultipartBlockStateSupplier.Multipart::get).forEach(jsonArray::add);
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.add("multipart", jsonArray);
 		return jsonObject;
@@ -92,7 +92,7 @@ public class MultipartBlockStateSupplier implements BlockStateSupplier {
 		public void extraToJson(JsonObject json) {
 		}
 
-		public JsonElement method_25766() {
+		public JsonElement get() {
 			JsonObject jsonObject = new JsonObject();
 			this.extraToJson(jsonObject);
 			jsonObject.add("apply", BlockStateVariant.toJson(this.variants));

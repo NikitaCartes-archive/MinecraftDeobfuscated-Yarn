@@ -15,7 +15,7 @@ public class HopperScreenHandler extends ScreenHandler {
 	}
 
 	public HopperScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-		super(ScreenHandlerType.field_17337, syncId);
+		super(ScreenHandlerType.HOPPER, syncId);
 		this.inventory = inventory;
 		checkSize(inventory, 5);
 		inventory.onOpen(playerInventory.player);

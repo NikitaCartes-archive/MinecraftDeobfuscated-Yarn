@@ -46,12 +46,12 @@ public final class BitSetVoxelSet extends VoxelSet {
 			}
 		}
 
-		this.xMin = other.getMin(Direction.Axis.field_11048);
-		this.yMin = other.getMin(Direction.Axis.field_11052);
-		this.zMin = other.getMin(Direction.Axis.field_11051);
-		this.xMax = other.getMax(Direction.Axis.field_11048);
-		this.yMax = other.getMax(Direction.Axis.field_11052);
-		this.zMax = other.getMax(Direction.Axis.field_11051);
+		this.xMin = other.getMin(Direction.Axis.X);
+		this.yMin = other.getMin(Direction.Axis.Y);
+		this.zMin = other.getMin(Direction.Axis.Z);
+		this.xMax = other.getMax(Direction.Axis.X);
+		this.yMax = other.getMax(Direction.Axis.Y);
+		this.zMax = other.getMax(Direction.Axis.Z);
 	}
 
 	protected int getIndex(int x, int y, int z) {

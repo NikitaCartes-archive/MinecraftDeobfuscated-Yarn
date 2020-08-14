@@ -27,19 +27,19 @@ public class LadderBlock extends Block implements Waterloggable {
 
 	protected LadderBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction)state.get(FACING)) {
-			case field_11043:
+			case NORTH:
 				return NORTH_SHAPE;
-			case field_11035:
+			case SOUTH:
 				return SOUTH_SHAPE;
-			case field_11039:
+			case WEST:
 				return WEST_SHAPE;
-			case field_11034:
+			case EAST:
 			default:
 				return EAST_SHAPE;
 		}
@@ -59,7 +59,7 @@ public class LadderBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			if ((Boolean)state.get(WATERLOGGED)) {
 				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));

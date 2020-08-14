@@ -30,7 +30,7 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15251;
+		return SoundCategory.HOSTILE;
 	}
 
 	@Override
@@ -54,12 +54,12 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 
 	@Override
 	protected SoundEvent getSwimSound() {
-		return SoundEvents.field_14630;
+		return SoundEvents.ENTITY_HOSTILE_SWIM;
 	}
 
 	@Override
 	protected SoundEvent getSplashSound() {
-		return SoundEvents.field_14836;
+		return SoundEvents.ENTITY_HOSTILE_SPLASH;
 	}
 
 	@Override
@@ -69,17 +69,17 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14994;
+		return SoundEvents.ENTITY_HOSTILE_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14899;
+		return SoundEvents.ENTITY_HOSTILE_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getFallSound(int distance) {
-		return distance > 4 ? SoundEvents.field_15157 : SoundEvents.field_14754;
+		return distance > 4 ? SoundEvents.ENTITY_HOSTILE_BIG_FALL : SoundEvents.ENTITY_HOSTILE_SMALL_FALL;
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	}
 
 	public static boolean isSpawnDark(ServerWorldAccess serverWorldAccess, BlockPos pos, Random random) {
-		if (serverWorldAccess.getLightLevel(LightType.field_9284, pos) > random.nextInt(32)) {
+		if (serverWorldAccess.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
 			return false;
 		} else {
 			int i = serverWorldAccess.toServerWorld().isThundering() ? serverWorldAccess.getLightLevel(pos, 10) : serverWorldAccess.getLightLevel(pos);
@@ -99,7 +99,7 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	public static boolean canSpawnInDark(
 		EntityType<? extends HostileEntity> type, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random
 	) {
-		return serverWorldAccess.getDifficulty() != Difficulty.field_5801
+		return serverWorldAccess.getDifficulty() != Difficulty.PEACEFUL
 			&& isSpawnDark(serverWorldAccess, pos, random)
 			&& canMobSpawn(type, serverWorldAccess, spawnReason, pos, random);
 	}
@@ -107,11 +107,11 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	public static boolean canSpawnIgnoreLightLevel(
 		EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random
 	) {
-		return world.getDifficulty() != Difficulty.field_5801 && canMobSpawn(type, world, spawnReason, pos, random);
+		return world.getDifficulty() != Difficulty.PEACEFUL && canMobSpawn(type, world, spawnReason, pos, random);
 	}
 
 	public static DefaultAttributeContainer.Builder createHostileAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23721);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 		if (stack.getItem() instanceof RangedWeaponItem) {
 			Predicate<ItemStack> predicate = ((RangedWeaponItem)stack.getItem()).getHeldProjectiles();
 			ItemStack itemStack = RangedWeaponItem.getHeldProjectile(this, predicate);
-			return itemStack.isEmpty() ? new ItemStack(Items.field_8107) : itemStack;
+			return itemStack.isEmpty() ? new ItemStack(Items.ARROW) : itemStack;
 		} else {
 			return ItemStack.EMPTY;
 		}

@@ -19,12 +19,12 @@ public class SavannaVillageData {
 				Pair.of(StructurePoolElement.method_30425("village/savanna/town_centers/savanna_meeting_point_2"), 50),
 				Pair.of(StructurePoolElement.method_30425("village/savanna/town_centers/savanna_meeting_point_3"), 150),
 				Pair.of(StructurePoolElement.method_30425("village/savanna/town_centers/savanna_meeting_point_4"), 150),
-				Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/town_centers/savanna_meeting_point_1", StructureProcessorLists.field_26260), 2),
-				Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/town_centers/savanna_meeting_point_2", StructureProcessorLists.field_26260), 1),
-				Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/town_centers/savanna_meeting_point_3", StructureProcessorLists.field_26260), 3),
-				Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/town_centers/savanna_meeting_point_4", StructureProcessorLists.field_26260), 3)
+				Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/town_centers/savanna_meeting_point_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+				Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/town_centers/savanna_meeting_point_2", StructureProcessorLists.ZOMBIE_SAVANNA), 1),
+				Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/town_centers/savanna_meeting_point_3", StructureProcessorLists.ZOMBIE_SAVANNA), 3),
+				Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/town_centers/savanna_meeting_point_4", StructureProcessorLists.ZOMBIE_SAVANNA), 3)
 			),
-			StructurePool.Projection.field_16687
+			StructurePool.Projection.RIGID
 		)
 	);
 
@@ -37,27 +37,27 @@ public class SavannaVillageData {
 				new Identifier("village/savanna/streets"),
 				new Identifier("village/savanna/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/corner_01", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/corner_03", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_02", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_04", StructureProcessorLists.field_26268), 7),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_05", StructureProcessorLists.field_26268), 3),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_06", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_08", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_09", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_10", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_11", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_02", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_03", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_04", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_05", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_06", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_07", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/split_01", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/split_02", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/turn_01", StructureProcessorLists.field_26268), 3)
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/corner_01", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/corner_03", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_02", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_04", StructureProcessorLists.STREET_SAVANNA), 7),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_05", StructureProcessorLists.STREET_SAVANNA), 3),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_06", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_08", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_09", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_10", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/straight_11", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_02", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_03", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_04", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_05", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_06", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/crossroad_07", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/split_01", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/split_02", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/streets/turn_01", StructureProcessorLists.STREET_SAVANNA), 3)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -65,27 +65,27 @@ public class SavannaVillageData {
 				new Identifier("village/savanna/zombie/streets"),
 				new Identifier("village/savanna/zombie/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/corner_01", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/corner_03", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_02", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_04", StructureProcessorLists.field_26268), 7),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_05", StructureProcessorLists.field_26268), 3),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_06", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_08", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_09", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_10", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_11", StructureProcessorLists.field_26268), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_02", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_03", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_04", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_05", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_06", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_07", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/split_01", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/split_02", StructureProcessorLists.field_26268), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/turn_01", StructureProcessorLists.field_26268), 3)
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/corner_01", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/corner_03", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_02", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_04", StructureProcessorLists.STREET_SAVANNA), 7),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_05", StructureProcessorLists.STREET_SAVANNA), 3),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_06", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_08", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_09", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_10", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/straight_11", StructureProcessorLists.STREET_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_02", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_03", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_04", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_05", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_06", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/crossroad_07", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/split_01", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/split_02", StructureProcessorLists.STREET_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/streets/turn_01", StructureProcessorLists.STREET_SAVANNA), 3)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -118,15 +118,15 @@ public class SavannaVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/savanna/houses/savanna_weaponsmith_2"), 2),
 					Pair.of(StructurePoolElement.method_30425("village/savanna/houses/savanna_temple_1"), 2),
 					Pair.of(StructurePoolElement.method_30425("village/savanna/houses/savanna_temple_2"), 3),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_large_farm_1", StructureProcessorLists.field_26271), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_large_farm_2", StructureProcessorLists.field_26271), 6),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_small_farm", StructureProcessorLists.field_26271), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_large_farm_1", StructureProcessorLists.FARM_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_large_farm_2", StructureProcessorLists.FARM_SAVANNA), 6),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_small_farm", StructureProcessorLists.FARM_SAVANNA), 4),
 					Pair.of(StructurePoolElement.method_30425("village/savanna/houses/savanna_animal_pen_1"), 2),
 					Pair.of(StructurePoolElement.method_30425("village/savanna/houses/savanna_animal_pen_2"), 2),
 					Pair.of(StructurePoolElement.method_30425("village/savanna/houses/savanna_animal_pen_3"), 2),
 					Pair.of(StructurePoolElement.method_30438(), 5)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -134,40 +134,40 @@ public class SavannaVillageData {
 				new Identifier("village/savanna/zombie/houses"),
 				new Identifier("village/savanna/zombie/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_2", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_3", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_4", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_5", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_6", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_7", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_8", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_medium_house_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_medium_house_2", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_butchers_shop_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_butchers_shop_2", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_tool_smith_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_fletcher_house_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_shepherd_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_armorer_1", StructureProcessorLists.field_26260), 1),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_fisher_cottage_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_tannery_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_cartographer_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_library_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_mason_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_weaponsmith_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_weaponsmith_2", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_temple_1", StructureProcessorLists.field_26260), 1),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_temple_2", StructureProcessorLists.field_26260), 3),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_large_farm_1", StructureProcessorLists.field_26260), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_large_farm_2", StructureProcessorLists.field_26260), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_small_farm", StructureProcessorLists.field_26260), 4),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_animal_pen_1", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_animal_pen_2", StructureProcessorLists.field_26260), 2),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_animal_pen_3", StructureProcessorLists.field_26260), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_2", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_3", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_4", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_5", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_6", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_7", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_small_house_8", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_medium_house_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_medium_house_2", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_butchers_shop_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_butchers_shop_2", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_tool_smith_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_fletcher_house_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_shepherd_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_armorer_1", StructureProcessorLists.ZOMBIE_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_fisher_cottage_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_tannery_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_cartographer_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_library_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_mason_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_weaponsmith_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_weaponsmith_2", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_temple_1", StructureProcessorLists.ZOMBIE_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_temple_2", StructureProcessorLists.ZOMBIE_SAVANNA), 3),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_large_farm_1", StructureProcessorLists.ZOMBIE_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_large_farm_2", StructureProcessorLists.ZOMBIE_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_small_farm", StructureProcessorLists.ZOMBIE_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/houses/savanna_animal_pen_1", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_animal_pen_2", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/houses/savanna_animal_pen_3", StructureProcessorLists.ZOMBIE_SAVANNA), 2),
 					Pair.of(StructurePoolElement.method_30438(), 5)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -175,13 +175,13 @@ public class SavannaVillageData {
 				new Identifier("village/savanna/terminators"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_01", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_02", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_03", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_04", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/terminators/terminator_05", StructureProcessorLists.field_26268), 1)
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_01", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_02", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_03", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_04", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/terminators/terminator_05", StructureProcessorLists.STREET_SAVANNA), 1)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -189,21 +189,21 @@ public class SavannaVillageData {
 				new Identifier("village/savanna/zombie/terminators"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_01", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_02", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_03", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_04", StructureProcessorLists.field_26268), 1),
-					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/terminators/terminator_05", StructureProcessorLists.field_26268), 1)
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_01", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_02", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_03", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_04", StructureProcessorLists.STREET_SAVANNA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/zombie/terminators/terminator_05", StructureProcessorLists.STREET_SAVANNA), 1)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
 			new StructurePool(
 				new Identifier("village/savanna/trees"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26039), 1)),
-				StructurePool.Projection.field_16687
+				ImmutableList.of(Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.ACACIA), 1)),
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -212,12 +212,12 @@ public class SavannaVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.method_30425("village/savanna/savanna_lamp_post_01"), 4),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26039), 4),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26009), 4),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26010), 1),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.ACACIA), 4),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PILE_HAY), 4),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PILE_MELON), 1),
 					Pair.of(StructurePoolElement.method_30438(), 4)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -225,13 +225,13 @@ public class SavannaVillageData {
 				new Identifier("village/savanna/zombie/decor"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/savanna/savanna_lamp_post_01", StructureProcessorLists.field_26260), 4),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26039), 4),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26009), 4),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26010), 1),
+					Pair.of(StructurePoolElement.method_30426("village/savanna/savanna_lamp_post_01", StructureProcessorLists.ZOMBIE_SAVANNA), 4),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.ACACIA), 4),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PILE_HAY), 4),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PILE_MELON), 1),
 					Pair.of(StructurePoolElement.method_30438(), 4)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -243,7 +243,7 @@ public class SavannaVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/savanna/villagers/baby"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/savanna/villagers/unemployed"), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -254,7 +254,7 @@ public class SavannaVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/savanna/zombie/villagers/nitwit"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/savanna/zombie/villagers/unemployed"), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 	}

@@ -31,7 +31,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.options = options;
 	}
 
-	public void method_11753(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onUnlockRecipes(this);
 	}
 
@@ -46,7 +46,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 			this.recipeIdsToChange.add(buf.readIdentifier());
 		}
 
-		if (this.action == UnlockRecipesS2CPacket.Action.field_12416) {
+		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
 			i = buf.readVarInt();
 			this.recipeIdsToInit = Lists.<Identifier>newArrayList();
 
@@ -66,7 +66,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 			buf.writeIdentifier(identifier);
 		}
 
-		if (this.action == UnlockRecipesS2CPacket.Action.field_12416) {
+		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
 			buf.writeVarInt(this.recipeIdsToInit.size());
 
 			for (Identifier identifier : this.recipeIdsToInit) {
@@ -96,8 +96,8 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public static enum Action {
-		field_12416,
-		field_12415,
-		field_12417;
+		INIT,
+		ADD,
+		REMOVE;
 	}
 }

@@ -13,12 +13,12 @@ public class StartRidingTask<E extends LivingEntity> extends Task<E> {
 	public StartRidingTask(float f) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_22356,
-				MemoryModuleState.field_18456
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.RIDE_TARGET,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.field_23132 = f;
@@ -43,6 +43,6 @@ public class StartRidingTask<E extends LivingEntity> extends Task<E> {
 	}
 
 	private Entity getRideTarget(E entity) {
-		return (Entity)entity.getBrain().getOptionalMemory(MemoryModuleType.field_22356).get();
+		return (Entity)entity.getBrain().getOptionalMemory(MemoryModuleType.RIDE_TARGET).get();
 	}
 }

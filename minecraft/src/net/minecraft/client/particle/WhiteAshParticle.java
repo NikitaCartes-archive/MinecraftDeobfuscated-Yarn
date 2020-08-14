@@ -25,7 +25,7 @@ public class WhiteAshParticle extends AscendingParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_27150(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			Random random = clientWorld.random;
 			double j = (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1;
 			double k = (double)random.nextFloat() * -0.5 * (double)random.nextFloat() * 0.1 * 5.0;

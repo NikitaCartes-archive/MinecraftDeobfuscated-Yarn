@@ -12,7 +12,7 @@ public class SimpleRandomFeature extends Feature<SimpleRandomFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13953(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess,
 		ChunkGenerator chunkGenerator,
 		Random random,

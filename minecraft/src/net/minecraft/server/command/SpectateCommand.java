@@ -42,7 +42,7 @@ public class SpectateCommand {
 	private static int execute(ServerCommandSource source, @Nullable Entity entity, ServerPlayerEntity player) throws CommandSyntaxException {
 		if (player == entity) {
 			throw SPECTATE_SELF_EXCEPTION.create();
-		} else if (player.interactionManager.getGameMode() != GameMode.field_9219) {
+		} else if (player.interactionManager.getGameMode() != GameMode.SPECTATOR) {
 			throw NOT_SPECTATOR_EXCEPTION.create(player.getDisplayName());
 		} else {
 			player.setCameraEntity(entity);

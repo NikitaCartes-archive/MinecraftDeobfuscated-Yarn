@@ -87,7 +87,7 @@ public class Structure {
 						compoundTag.remove("x");
 						compoundTag.remove("y");
 						compoundTag.remove("z");
-						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, compoundTag.method_10553());
+						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, compoundTag.copy());
 					} else {
 						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, null);
 					}
@@ -115,7 +115,7 @@ public class Structure {
 	) {
 		if (structureBlockInfo.tag != null) {
 			list2.add(structureBlockInfo);
-		} else if (!structureBlockInfo.state.getBlock().hasDynamicBounds() && structureBlockInfo.state.isFullCube(EmptyBlockView.field_12294, BlockPos.ORIGIN)) {
+		} else if (!structureBlockInfo.state.getBlock().hasDynamicBounds() && structureBlockInfo.state.isFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN)) {
 			list.add(structureBlockInfo);
 		} else {
 			list3.add(structureBlockInfo);
@@ -153,7 +153,7 @@ public class Structure {
 				blockPos = new BlockPos(vec3d);
 			}
 
-			this.entities.add(new Structure.StructureEntityInfo(vec3d, blockPos, compoundTag.method_10553()));
+			this.entities.add(new Structure.StructureEntityInfo(vec3d, blockPos, compoundTag.copy()));
 		}
 	}
 
@@ -224,7 +224,7 @@ public class Structure {
 						if (structureBlockInfo.tag != null) {
 							BlockEntity blockEntity = serverWorldAccess.getBlockEntity(blockPos2);
 							Clearable.clear(blockEntity);
-							serverWorldAccess.setBlockState(blockPos2, Blocks.field_10499.getDefaultState(), 20);
+							serverWorldAccess.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), 20);
 						}
 
 						if (serverWorldAccess.setBlockState(blockPos2, blockState, i)) {
@@ -262,7 +262,7 @@ public class Structure {
 				}
 
 				boolean bl = true;
-				Direction[] directions = new Direction[]{Direction.field_11036, Direction.field_11043, Direction.field_11034, Direction.field_11035, Direction.field_11039};
+				Direction[] directions = new Direction[]{Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
 
 				while (bl && !list2.isEmpty()) {
 					bl = false;
@@ -370,7 +370,7 @@ public class Structure {
 		for (Structure.StructureBlockInfo structureBlockInfo : list) {
 			BlockPos blockPos2 = transform(structurePlacementData, structureBlockInfo.pos).add(pos);
 			Structure.StructureBlockInfo structureBlockInfo2 = new Structure.StructureBlockInfo(
-				blockPos2, structureBlockInfo.state, structureBlockInfo.tag != null ? structureBlockInfo.tag.method_10553() : null
+				blockPos2, structureBlockInfo.state, structureBlockInfo.tag != null ? structureBlockInfo.tag.copy() : null
 			);
 			Iterator<StructureProcessor> iterator = structurePlacementData.getProcessors().iterator();
 
@@ -392,7 +392,7 @@ public class Structure {
 		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
 			BlockPos blockPos = transformAround(structureEntityInfo.blockPos, blockMirror, blockRotation, pivot).add(pos);
 			if (area == null || area.contains(blockPos)) {
-				CompoundTag compoundTag = structureEntityInfo.tag.method_10553();
+				CompoundTag compoundTag = structureEntityInfo.tag.copy();
 				Vec3d vec3d = transformAround(structureEntityInfo.pos, blockMirror, blockRotation, pivot);
 				Vec3d vec3d2 = vec3d.add((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 				ListTag listTag = new ListTag();
@@ -406,7 +406,7 @@ public class Structure {
 					f += entity.yaw - entity.applyRotation(blockRotation);
 					entity.refreshPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, f, entity.pitch);
 					if (bl && entity instanceof MobEntity) {
-						((MobEntity)entity).initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.field_16474, null, compoundTag);
+						((MobEntity)entity).initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, compoundTag);
 					}
 
 					serverWorldAccess.spawnEntityAndPassengers(entity);
@@ -425,8 +425,8 @@ public class Structure {
 
 	public BlockPos getRotatedSize(BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case field_11465:
-			case field_11463:
+			case COUNTERCLOCKWISE_90:
+			case CLOCKWISE_90:
 				return new BlockPos(this.size.getZ(), this.size.getY(), this.size.getX());
 			default:
 				return this.size;
@@ -439,10 +439,10 @@ public class Structure {
 		int k = pos.getZ();
 		boolean bl = true;
 		switch (blockMirror) {
-			case field_11300:
+			case LEFT_RIGHT:
 				k = -k;
 				break;
-			case field_11301:
+			case FRONT_BACK:
 				i = -i;
 				break;
 			default:
@@ -452,11 +452,11 @@ public class Structure {
 		int l = pivot.getX();
 		int m = pivot.getZ();
 		switch (blockRotation) {
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return new BlockPos(l - m + k, j, l + m - i);
-			case field_11463:
+			case CLOCKWISE_90:
 				return new BlockPos(l + m - k, j, m - l + i);
-			case field_11464:
+			case CLOCKWISE_180:
 				return new BlockPos(l + l - i, j, m + m - k);
 			default:
 				return bl ? new BlockPos(i, j, k) : pos;
@@ -469,10 +469,10 @@ public class Structure {
 		double f = point.z;
 		boolean bl = true;
 		switch (blockMirror) {
-			case field_11300:
+			case LEFT_RIGHT:
 				f = 1.0 - f;
 				break;
-			case field_11301:
+			case FRONT_BACK:
 				d = 1.0 - d;
 				break;
 			default:
@@ -482,11 +482,11 @@ public class Structure {
 		int i = pivot.getX();
 		int j = pivot.getZ();
 		switch (blockRotation) {
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return new Vec3d((double)(i - j) + f, e, (double)(i + j + 1) - d);
-			case field_11463:
+			case CLOCKWISE_90:
 				return new Vec3d((double)(i + j + 1) - f, e, (double)(j - i) + d);
-			case field_11464:
+			case CLOCKWISE_180:
 				return new Vec3d((double)(i + i + 1) - d, e, (double)(j + j + 1) - f);
 			default:
 				return bl ? new Vec3d(d, e, f) : point;
@@ -500,20 +500,20 @@ public class Structure {
 	public static BlockPos applyTransformedOffset(BlockPos blockPos, BlockMirror blockMirror, BlockRotation blockRotation, int offsetX, int offsetZ) {
 		offsetX--;
 		offsetZ--;
-		int i = blockMirror == BlockMirror.field_11301 ? offsetX : 0;
-		int j = blockMirror == BlockMirror.field_11300 ? offsetZ : 0;
+		int i = blockMirror == BlockMirror.FRONT_BACK ? offsetX : 0;
+		int j = blockMirror == BlockMirror.LEFT_RIGHT ? offsetZ : 0;
 		BlockPos blockPos2 = blockPos;
 		switch (blockRotation) {
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				blockPos2 = blockPos.add(j, 0, offsetX - i);
 				break;
-			case field_11463:
+			case CLOCKWISE_90:
 				blockPos2 = blockPos.add(offsetZ - j, 0, i);
 				break;
-			case field_11464:
+			case CLOCKWISE_180:
 				blockPos2 = blockPos.add(offsetX - i, 0, offsetZ - j);
 				break;
-			case field_11467:
+			case NONE:
 				blockPos2 = blockPos.add(i, 0, j);
 		}
 
@@ -533,26 +533,26 @@ public class Structure {
 		int m = blockPos3.getZ() - 1;
 		BlockBox blockBox = new BlockBox(0, 0, 0, 0, 0, 0);
 		switch (blockRotation) {
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				blockBox = new BlockBox(i - j, 0, i + j - m, i - j + k, l, i + j);
 				break;
-			case field_11463:
+			case CLOCKWISE_90:
 				blockBox = new BlockBox(i + j - k, 0, j - i, i + j, l, j - i + m);
 				break;
-			case field_11464:
+			case CLOCKWISE_180:
 				blockBox = new BlockBox(i + i - k, 0, j + j - m, i + i, l, j + j);
 				break;
-			case field_11467:
+			case NONE:
 				blockBox = new BlockBox(0, 0, 0, k, l, m);
 		}
 
 		switch (blockMirror) {
-			case field_11300:
-				this.mirrorBoundingBox(blockRotation, m, k, blockBox, Direction.field_11043, Direction.field_11035);
+			case LEFT_RIGHT:
+				this.mirrorBoundingBox(blockRotation, m, k, blockBox, Direction.NORTH, Direction.SOUTH);
 				break;
-			case field_11301:
-				this.mirrorBoundingBox(blockRotation, k, m, blockBox, Direction.field_11039, Direction.field_11034);
-			case field_11302:
+			case FRONT_BACK:
+				this.mirrorBoundingBox(blockRotation, k, m, blockBox, Direction.WEST, Direction.EAST);
+			case NONE:
 		}
 
 		blockBox.offset(blockPos.getX(), blockPos.getY(), blockPos.getZ());
@@ -561,12 +561,12 @@ public class Structure {
 
 	private void mirrorBoundingBox(BlockRotation rotation, int offsetX, int offsetZ, BlockBox boundingBox, Direction direction, Direction direction2) {
 		BlockPos blockPos = BlockPos.ORIGIN;
-		if (rotation == BlockRotation.field_11463 || rotation == BlockRotation.field_11465) {
-			blockPos = blockPos.method_10079(rotation.rotate(direction), offsetZ);
-		} else if (rotation == BlockRotation.field_11464) {
-			blockPos = blockPos.method_10079(direction2, offsetX);
+		if (rotation == BlockRotation.CLOCKWISE_90 || rotation == BlockRotation.COUNTERCLOCKWISE_90) {
+			blockPos = blockPos.offset(rotation.rotate(direction), offsetZ);
+		} else if (rotation == BlockRotation.CLOCKWISE_180) {
+			blockPos = blockPos.offset(direction2, offsetX);
 		} else {
-			blockPos = blockPos.method_10079(direction, offsetX);
+			blockPos = blockPos.offset(direction, offsetX);
 		}
 
 		boundingBox.offset(blockPos.getX(), 0, blockPos.getZ());
@@ -736,7 +736,7 @@ public class Structure {
 	}
 
 	static class Palette implements Iterable<BlockState> {
-		public static final BlockState AIR = Blocks.field_10124.getDefaultState();
+		public static final BlockState AIR = Blocks.AIR.getDefaultState();
 		private final IdList<BlockState> ids = new IdList<>(16);
 		private int currentIndex;
 

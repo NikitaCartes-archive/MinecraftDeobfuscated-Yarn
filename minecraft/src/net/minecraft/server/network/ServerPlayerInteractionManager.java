@@ -30,8 +30,8 @@ public class ServerPlayerInteractionManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public ServerWorld world;
 	public ServerPlayerEntity player;
-	private GameMode gameMode = GameMode.field_9218;
-	private GameMode field_25715 = GameMode.field_9218;
+	private GameMode gameMode = GameMode.NOT_SET;
+	private GameMode field_25715 = GameMode.NOT_SET;
 	private boolean mining;
 	private int startMiningTime;
 	private BlockPos miningPos = BlockPos.ORIGIN;
@@ -54,7 +54,7 @@ public class ServerPlayerInteractionManager {
 		this.gameMode = gameMode;
 		gameMode.setAbilities(this.player.abilities);
 		this.player.sendAbilitiesUpdate();
-		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.field_12375, this.player));
+		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, this.player));
 		this.world.updateSleepingPlayers();
 	}
 
@@ -75,7 +75,7 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public void setGameModeIfNotPresent(GameMode gameMode) {
-		if (this.gameMode == GameMode.field_9218) {
+		if (this.gameMode == GameMode.NOT_SET) {
 			this.gameMode = gameMode;
 		}
 
@@ -130,7 +130,7 @@ public class ServerPlayerInteractionManager {
 			this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, false, "too high"));
 		} else {
 			this.player.resetLastAttackedTicks(false);
-			if (action == PlayerActionC2SPacket.Action.field_12968) {
+			if (action == PlayerActionC2SPacket.Action.START_DESTROY_BLOCK) {
 				if (!this.world.canPlayerModifyAt(this.player, pos)) {
 					this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, false, "may not interact"));
 					return;
@@ -164,7 +164,7 @@ public class ServerPlayerInteractionManager {
 								new PlayerActionResponseS2CPacket(
 									this.miningPos,
 									this.world.getBlockState(this.miningPos),
-									PlayerActionC2SPacket.Action.field_12968,
+									PlayerActionC2SPacket.Action.START_DESTROY_BLOCK,
 									false,
 									"abort destroying since another started (client insta mine, server disagreed)"
 								)
@@ -178,7 +178,7 @@ public class ServerPlayerInteractionManager {
 					this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, true, "actual start of destroying"));
 					this.blockBreakingProgress = i;
 				}
-			} else if (action == PlayerActionC2SPacket.Action.field_12973) {
+			} else if (action == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
 				if (pos.equals(this.miningPos)) {
 					int j = this.tickCounter - this.startMiningTime;
 					BlockState blockStatex = this.world.getBlockState(pos);
@@ -201,7 +201,7 @@ public class ServerPlayerInteractionManager {
 				}
 
 				this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, true, "stopped destroying"));
-			} else if (action == PlayerActionC2SPacket.Action.field_12971) {
+			} else if (action == PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK) {
 				this.mining = false;
 				if (!Objects.equals(this.miningPos, pos)) {
 					LOGGER.warn("Mismatch in destroy block pos: " + this.miningPos + " " + pos);
@@ -262,7 +262,7 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public ActionResult interactItem(ServerPlayerEntity player, World world, ItemStack stack, Hand hand) {
-		if (this.gameMode == GameMode.field_9219) {
+		if (this.gameMode == GameMode.SPECTATOR) {
 			return ActionResult.PASS;
 		} else if (player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
 			return ActionResult.PASS;
@@ -300,7 +300,7 @@ public class ServerPlayerInteractionManager {
 	public ActionResult interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
 		BlockPos blockPos = hitResult.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (this.gameMode == GameMode.field_9219) {
+		if (this.gameMode == GameMode.SPECTATOR) {
 			NamedScreenHandlerFactory namedScreenHandlerFactory = blockState.createScreenHandlerFactory(world, blockPos);
 			if (namedScreenHandlerFactory != null) {
 				player.openHandledScreen(namedScreenHandlerFactory);

@@ -38,15 +38,15 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return direction == Direction.field_11033 && !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !state.canPlaceAt(world, pos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
-		return hasTopRim(world, blockPos) || sideCoversSmallSquare(world, blockPos, Direction.field_11036);
+		BlockPos blockPos = pos.down();
+		return hasTopRim(world, blockPos) || sideCoversSmallSquare(world, blockPos, Direction.UP);
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	protected void updateNeighbors(World world, BlockPos pos) {
 		world.updateNeighborsAlways(pos, this);
-		world.updateNeighborsAlways(pos.method_10074(), this);
+		world.updateNeighborsAlways(pos.down(), this);
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	@Override
 	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		return direction == Direction.field_11036 ? this.getRedstoneOutput(state) : 0;
+		return direction == Direction.UP ? this.getRedstoneOutput(state) : 0;
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.field_15971;
+		return PistonBehavior.DESTROY;
 	}
 
 	protected abstract int getRedstoneOutput(World world, BlockPos pos);

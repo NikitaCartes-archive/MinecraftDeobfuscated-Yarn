@@ -79,12 +79,12 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.field_25320 = Sets.<RegistryKey<World>>newHashSet();
 
 		for (int j = 0; j < i; j++) {
-			this.field_25320.add(RegistryKey.of(Registry.field_25298, buf.readIdentifier()));
+			this.field_25320.add(RegistryKey.of(Registry.DIMENSION, buf.readIdentifier()));
 		}
 
 		this.registryManager = buf.decode(DynamicRegistryManager.Impl.CODEC);
 		this.field_25321 = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
-		this.dimensionId = RegistryKey.of(Registry.field_25298, buf.readIdentifier());
+		this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.maxPlayers = buf.readVarInt();
 		this.chunkLoadDistance = buf.readVarInt();
@@ -118,7 +118,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeBoolean(this.flatWorld);
 	}
 
-	public void method_11567(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGameJoin(this);
 	}
 

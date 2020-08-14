@@ -10,13 +10,13 @@ import net.minecraft.world.GameRules;
 
 public class ForgetAngryAtTargetTask<E extends MobEntity> extends Task<E> {
 	public ForgetAngryAtTargetTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_22333, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.ANGRY_AT, MemoryModuleState.VALUE_PRESENT));
 	}
 
-	protected void method_24629(ServerWorld serverWorld, E mobEntity, long l) {
-		LookTargetUtil.getEntity(mobEntity, MemoryModuleType.field_22333).ifPresent(livingEntity -> {
-			if (livingEntity.isDead() && (livingEntity.getType() != EntityType.field_6097 || serverWorld.getGameRules().getBoolean(GameRules.field_25401))) {
-				mobEntity.getBrain().forget(MemoryModuleType.field_22333);
+	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
+		LookTargetUtil.getEntity(mobEntity, MemoryModuleType.ANGRY_AT).ifPresent(livingEntity -> {
+			if (livingEntity.isDead() && (livingEntity.getType() != EntityType.PLAYER || serverWorld.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS))) {
+				mobEntity.getBrain().forget(MemoryModuleType.ANGRY_AT);
 			}
 		});
 	}

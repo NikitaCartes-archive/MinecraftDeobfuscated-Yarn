@@ -20,7 +20,7 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 		return Math.max(Math.abs(x1 - x2), Math.abs(z1 - z2));
 	}
 
-	public boolean method_14165(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		ChunkPos chunkPos = new ChunkPos(blockPos);
@@ -34,9 +34,9 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 					if (getDistance(START_BLOCK.getX(), START_BLOCK.getZ(), j, i) <= 16) {
 						mutable.set(j, START_BLOCK.getY(), i);
 						if (mutable.equals(START_BLOCK)) {
-							structureWorldAccess.setBlockState(mutable, Blocks.field_10445.getDefaultState(), 2);
+							structureWorldAccess.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), 2);
 						} else {
-							structureWorldAccess.setBlockState(mutable, Blocks.field_10340.getDefaultState(), 2);
+							structureWorldAccess.setBlockState(mutable, Blocks.STONE.getDefaultState(), 2);
 						}
 					}
 				}

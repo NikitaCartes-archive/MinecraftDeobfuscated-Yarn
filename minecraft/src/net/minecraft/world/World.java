@@ -66,10 +66,10 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class World implements WorldAccess, AutoCloseable {
 	protected static final Logger LOGGER = LogManager.getLogger();
-	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.field_25298), RegistryKey::getValue);
-	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.field_25298, new Identifier("overworld"));
-	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.field_25298, new Identifier("the_nether"));
-	public static final RegistryKey<World> END = RegistryKey.of(Registry.field_25298, new Identifier("the_end"));
+	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION), RegistryKey::getValue);
+	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.DIMENSION, new Identifier("overworld"));
+	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.DIMENSION, new Identifier("the_nether"));
+	public static final RegistryKey<World> END = RegistryKey.of(Registry.DIMENSION, new Identifier("the_end"));
 	private static final Direction[] DIRECTIONS = Direction.values();
 	public final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 	public final List<BlockEntity> tickingBlockEntities = Lists.<BlockEntity>newArrayList();
@@ -102,16 +102,16 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.dimension = dimensionType;
 		this.registryKey = registryKey;
 		this.isClient = bl;
-		if (dimensionType.method_31110() != 1.0) {
+		if (dimensionType.getCoordinateScale() != 1.0) {
 			this.border = new WorldBorder() {
 				@Override
 				public double getCenterX() {
-					return super.getCenterX() / dimensionType.method_31110();
+					return super.getCenterX() / dimensionType.getCoordinateScale();
 				}
 
 				@Override
 				public double getCenterZ() {
-					return super.getCenterZ() / dimensionType.method_31110();
+					return super.getCenterZ() / dimensionType.getCoordinateScale();
 				}
 			};
 		} else {
@@ -158,11 +158,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public WorldChunk getWorldChunk(BlockPos pos) {
-		return this.method_8497(pos.getX() >> 4, pos.getZ() >> 4);
+		return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
 	}
 
-	public WorldChunk method_8497(int i, int j) {
-		return (WorldChunk)this.getChunk(i, j, ChunkStatus.field_12803);
+	public WorldChunk getChunk(int i, int j) {
+		return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL);
 	}
 
 	@Override
@@ -214,7 +214,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 					if ((flags & 2) != 0
 						&& (!this.isClient || (flags & 4) == 0)
-						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.field_13875))) {
+						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
 						this.updateListeners(pos, blockState, state, flags);
 					}
 
@@ -281,34 +281,34 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public void updateNeighborsAlways(BlockPos pos, Block block) {
 		this.updateNeighbor(pos.west(), block, pos);
 		this.updateNeighbor(pos.east(), block, pos);
-		this.updateNeighbor(pos.method_10074(), block, pos);
+		this.updateNeighbor(pos.down(), block, pos);
 		this.updateNeighbor(pos.up(), block, pos);
 		this.updateNeighbor(pos.north(), block, pos);
 		this.updateNeighbor(pos.south(), block, pos);
 	}
 
 	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
-		if (direction != Direction.field_11039) {
+		if (direction != Direction.WEST) {
 			this.updateNeighbor(pos.west(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.field_11034) {
+		if (direction != Direction.EAST) {
 			this.updateNeighbor(pos.east(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.field_11033) {
-			this.updateNeighbor(pos.method_10074(), sourceBlock, pos);
+		if (direction != Direction.DOWN) {
+			this.updateNeighbor(pos.down(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.field_11036) {
+		if (direction != Direction.UP) {
 			this.updateNeighbor(pos.up(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.field_11043) {
+		if (direction != Direction.NORTH) {
 			this.updateNeighbor(pos.north(), sourceBlock, pos);
 		}
 
-		if (direction != Direction.field_11035) {
+		if (direction != Direction.SOUTH) {
 			this.updateNeighbor(pos.south(), sourceBlock, pos);
 		}
 	}
@@ -340,7 +340,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		int i;
 		if (x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000) {
 			if (this.isChunkLoaded(x >> 4, z >> 4)) {
-				i = this.method_8497(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
+				i = this.getChunk(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
 			} else {
 				i = 0;
 			}
@@ -359,9 +359,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
 		if (isHeightInvalid(pos)) {
-			return Blocks.field_10243.getDefaultState();
+			return Blocks.VOID_AIR.getDefaultState();
 		} else {
-			WorldChunk worldChunk = this.method_8497(pos.getX() >> 4, pos.getZ() >> 4);
+			WorldChunk worldChunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
 			return worldChunk.getBlockState(pos);
 		}
 	}
@@ -369,7 +369,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
 		if (isHeightInvalid(pos)) {
-			return Fluids.field_15906.getDefaultState();
+			return Fluids.EMPTY.getDefaultState();
 		} else {
 			WorldChunk worldChunk = this.getWorldChunk(pos);
 			return worldChunk.getFluidState(pos);
@@ -574,7 +574,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			}
 
 			if (blockEntity == null) {
-				blockEntity = this.getWorldChunk(pos).getBlockEntity(pos, WorldChunk.CreationType.field_12860);
+				blockEntity = this.getWorldChunk(pos).getBlockEntity(pos, WorldChunk.CreationType.IMMEDIATE);
 			}
 
 			if (blockEntity == null) {
@@ -645,13 +645,13 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		if (isHeightInvalid(pos)) {
 			return false;
 		} else {
-			Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.field_12803, false);
+			Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
 			return chunk == null ? false : chunk.getBlockState(pos).hasSolidTopSurface(this, pos, entity, direction);
 		}
 	}
 
 	public boolean isTopSolid(BlockPos pos, Entity entity) {
-		return this.isDirectionSolid(pos, entity, Direction.field_11036);
+		return this.isDirectionSolid(pos, entity, Direction.UP);
 	}
 
 	public void calculateAmbientDarkness() {
@@ -681,7 +681,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Nullable
 	@Override
 	public BlockView getExistingChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.field_12803, false);
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, false);
 	}
 
 	@Override
@@ -799,27 +799,27 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public int getReceivedStrongRedstonePower(BlockPos pos) {
 		int i = 0;
-		i = Math.max(i, this.getStrongRedstonePower(pos.method_10074(), Direction.field_11033));
+		i = Math.max(i, this.getStrongRedstonePower(pos.down(), Direction.DOWN));
 		if (i >= 15) {
 			return i;
 		} else {
-			i = Math.max(i, this.getStrongRedstonePower(pos.up(), Direction.field_11036));
+			i = Math.max(i, this.getStrongRedstonePower(pos.up(), Direction.UP));
 			if (i >= 15) {
 				return i;
 			} else {
-				i = Math.max(i, this.getStrongRedstonePower(pos.north(), Direction.field_11043));
+				i = Math.max(i, this.getStrongRedstonePower(pos.north(), Direction.NORTH));
 				if (i >= 15) {
 					return i;
 				} else {
-					i = Math.max(i, this.getStrongRedstonePower(pos.south(), Direction.field_11035));
+					i = Math.max(i, this.getStrongRedstonePower(pos.south(), Direction.SOUTH));
 					if (i >= 15) {
 						return i;
 					} else {
-						i = Math.max(i, this.getStrongRedstonePower(pos.west(), Direction.field_11039));
+						i = Math.max(i, this.getStrongRedstonePower(pos.west(), Direction.WEST));
 						if (i >= 15) {
 							return i;
 						} else {
-							i = Math.max(i, this.getStrongRedstonePower(pos.east(), Direction.field_11034));
+							i = Math.max(i, this.getStrongRedstonePower(pos.east(), Direction.EAST));
 							return i >= 15 ? i : i;
 						}
 					}
@@ -839,16 +839,16 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public boolean isReceivingRedstonePower(BlockPos pos) {
-		if (this.getEmittedRedstonePower(pos.method_10074(), Direction.field_11033) > 0) {
+		if (this.getEmittedRedstonePower(pos.down(), Direction.DOWN) > 0) {
 			return true;
-		} else if (this.getEmittedRedstonePower(pos.up(), Direction.field_11036) > 0) {
+		} else if (this.getEmittedRedstonePower(pos.up(), Direction.UP) > 0) {
 			return true;
-		} else if (this.getEmittedRedstonePower(pos.north(), Direction.field_11043) > 0) {
+		} else if (this.getEmittedRedstonePower(pos.north(), Direction.NORTH) > 0) {
 			return true;
-		} else if (this.getEmittedRedstonePower(pos.south(), Direction.field_11035) > 0) {
+		} else if (this.getEmittedRedstonePower(pos.south(), Direction.SOUTH) > 0) {
 			return true;
 		} else {
-			return this.getEmittedRedstonePower(pos.west(), Direction.field_11039) > 0 ? true : this.getEmittedRedstonePower(pos.east(), Direction.field_11034) > 0;
+			return this.getEmittedRedstonePower(pos.west(), Direction.WEST) > 0 ? true : this.getEmittedRedstonePower(pos.east(), Direction.EAST) > 0;
 		}
 	}
 
@@ -934,11 +934,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			return false;
 		} else if (!this.isSkyVisible(pos)) {
 			return false;
-		} else if (this.getTopPosition(Heightmap.Type.field_13197, pos).getY() > pos.getY()) {
+		} else if (this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()) {
 			return false;
 		} else {
 			Biome biome = this.getBiome(pos);
-			return biome.getPrecipitation() == Biome.Precipitation.field_9382 && biome.getTemperature(pos) >= 0.15F;
+			return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.getTemperature(pos) >= 0.15F;
 		}
 	}
 
@@ -981,16 +981,16 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public abstract Scoreboard getScoreboard();
 
 	public void updateComparators(BlockPos pos, Block block) {
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos = pos.offset(direction);
 			if (this.isChunkLoaded(blockPos)) {
 				BlockState blockState = this.getBlockState(blockPos);
-				if (blockState.isOf(Blocks.field_10377)) {
+				if (blockState.isOf(Blocks.COMPARATOR)) {
 					blockState.neighborUpdate(this, blockPos, block, pos, false);
 				} else if (blockState.isSolidBlock(this, blockPos)) {
 					blockPos = blockPos.offset(direction);
 					blockState = this.getBlockState(blockPos);
-					if (blockState.isOf(Blocks.field_10377)) {
+					if (blockState.isOf(Blocks.COMPARATOR)) {
 						blockState.neighborUpdate(this, blockPos, block, pos, false);
 					}
 				}
@@ -1073,6 +1073,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return this.biomeAccess;
 	}
 
+	/**
+	 * Checks if this world is a debug world.
+	 * 
+	 * <p>Debug worlds are not modifiable and are typically meant for development and debug use only.
+	 * See <a href="https://minecraft.gamepedia.com/Debug_mode">the minecraft wiki</a> as well.
+	 */
 	public final boolean isDebugWorld() {
 		return this.debugWorld;
 	}

@@ -21,22 +21,22 @@ public class IceBlock extends TransparentBlock {
 	@Override
 	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
 		super.afterBreak(world, player, pos, state, blockEntity, stack);
-		if (EnchantmentHelper.getLevel(Enchantments.field_9099, stack) == 0) {
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
 			if (world.getDimension().isUltrawarm()) {
 				world.removeBlock(pos, false);
 				return;
 			}
 
-			Material material = world.getBlockState(pos.method_10074()).getMaterial();
+			Material material = world.getBlockState(pos.down()).getMaterial();
 			if (material.blocksMovement() || material.isLiquid()) {
-				world.setBlockState(pos, Blocks.field_10382.getDefaultState());
+				world.setBlockState(pos, Blocks.WATER.getDefaultState());
 			}
 		}
 	}
 
 	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (world.getLightLevel(LightType.field_9282, pos) > 11 - state.getOpacity(world, pos)) {
+		if (world.getLightLevel(LightType.BLOCK, pos) > 11 - state.getOpacity(world, pos)) {
 			this.melt(state, world, pos);
 		}
 	}
@@ -45,13 +45,13 @@ public class IceBlock extends TransparentBlock {
 		if (world.getDimension().isUltrawarm()) {
 			world.removeBlock(pos, false);
 		} else {
-			world.setBlockState(pos, Blocks.field_10382.getDefaultState());
-			world.updateNeighbor(pos, Blocks.field_10382, pos);
+			world.setBlockState(pos, Blocks.WATER.getDefaultState());
+			world.updateNeighbor(pos, Blocks.WATER, pos);
 		}
 	}
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.field_15974;
+		return PistonBehavior.NORMAL;
 	}
 }

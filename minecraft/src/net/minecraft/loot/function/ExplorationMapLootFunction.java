@@ -26,8 +26,8 @@ import org.apache.logging.log4j.Logger;
 
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final StructureFeature<?> field_25032 = StructureFeature.field_24857;
-	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.field_88;
+	public static final StructureFeature<?> field_25032 = StructureFeature.BURIED_TREASURE;
+	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
 	private final StructureFeature<?> destination;
 	private final MapIcon.Type decoration;
 	private final byte zoom;
@@ -47,20 +47,20 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25223;
+		return LootFunctionTypes.EXPLORATION_MAP;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_24424);
+		return ImmutableSet.of(LootContextParameters.ORIGIN);
 	}
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		if (stack.getItem() != Items.field_8895) {
+		if (stack.getItem() != Items.MAP) {
 			return stack;
 		} else {
-			Vec3d vec3d = context.get(LootContextParameters.field_24424);
+			Vec3d vec3d = context.get(LootContextParameters.ORIGIN);
 			if (vec3d != null) {
 				ServerWorld serverWorld = context.getWorld();
 				BlockPos blockPos = serverWorld.locateStructure(this.destination, new BlockPos(vec3d), this.searchRadius, this.skipExistingChunks);
@@ -88,7 +88,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		private int searchRadius = 50;
 		private boolean skipExistingChunks = true;
 
-		protected ExplorationMapLootFunction.Builder method_501() {
+		protected ExplorationMapLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
@@ -119,8 +119,8 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<ExplorationMapLootFunction> {
-		public void method_505(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, explorationMapLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, explorationMapLootFunction, jsonSerializationContext);
 			if (!explorationMapLootFunction.destination.equals(ExplorationMapLootFunction.field_25032)) {
 				jsonObject.add("destination", jsonSerializationContext.serialize(explorationMapLootFunction.destination.getName()));
 			}
@@ -142,7 +142,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public ExplorationMapLootFunction method_504(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public ExplorationMapLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			StructureFeature<?> structureFeature = method_29039(jsonObject);
 			String string = jsonObject.has("decoration") ? JsonHelper.getString(jsonObject, "decoration") : "mansion";
 			MapIcon.Type type = ExplorationMapLootFunction.DEFAULT_DECORATION;

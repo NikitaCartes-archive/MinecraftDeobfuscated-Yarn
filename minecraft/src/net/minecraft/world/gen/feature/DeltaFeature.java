@@ -14,7 +14,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	private static final ImmutableList<Block> field_24133 = ImmutableList.of(
-		Blocks.field_9987, Blocks.field_10266, Blocks.field_10364, Blocks.field_10159, Blocks.field_9974, Blocks.field_10034, Blocks.field_10260
+		Blocks.BEDROCK, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER
 	);
 	private static final Direction[] field_23883 = Direction.values();
 
@@ -22,7 +22,7 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_27101(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig
 	) {
 		boolean bl = false;
@@ -65,7 +65,7 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		} else {
 			for (Direction direction : field_23883) {
 				boolean bl = worldAccess.getBlockState(blockPos.offset(direction)).isAir();
-				if (bl && direction != Direction.field_11036 || !bl && direction == Direction.field_11036) {
+				if (bl && direction != Direction.UP || !bl && direction == Direction.UP) {
 					return false;
 				}
 			}

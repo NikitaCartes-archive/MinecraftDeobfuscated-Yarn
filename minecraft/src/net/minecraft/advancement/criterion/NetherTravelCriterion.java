@@ -19,7 +19,7 @@ public class NetherTravelCriterion extends AbstractCriterion<NetherTravelCriteri
 		return ID;
 	}
 
-	public NetherTravelCriterion.Conditions method_9078(
+	public NetherTravelCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("entered"));

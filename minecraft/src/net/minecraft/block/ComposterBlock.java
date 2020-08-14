@@ -70,15 +70,15 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.3F, Items.JUNGLE_SAPLING);
 		registerCompostableItem(0.3F, Items.ACACIA_SAPLING);
 		registerCompostableItem(0.3F, Items.DARK_OAK_SAPLING);
-		registerCompostableItem(0.3F, Items.field_8309);
-		registerCompostableItem(0.3F, Items.field_8551);
+		registerCompostableItem(0.3F, Items.BEETROOT_SEEDS);
+		registerCompostableItem(0.3F, Items.DRIED_KELP);
 		registerCompostableItem(0.3F, Items.GRASS);
 		registerCompostableItem(0.3F, Items.KELP);
-		registerCompostableItem(0.3F, Items.field_8188);
-		registerCompostableItem(0.3F, Items.field_8706);
+		registerCompostableItem(0.3F, Items.MELON_SEEDS);
+		registerCompostableItem(0.3F, Items.PUMPKIN_SEEDS);
 		registerCompostableItem(0.3F, Items.SEAGRASS);
-		registerCompostableItem(0.3F, Items.field_16998);
-		registerCompostableItem(0.3F, Items.field_8317);
+		registerCompostableItem(0.3F, Items.SWEET_BERRIES);
+		registerCompostableItem(0.3F, Items.WHEAT_SEEDS);
 		registerCompostableItem(0.5F, Items.DRIED_KELP_BLOCK);
 		registerCompostableItem(0.5F, Items.TALL_GRASS);
 		registerCompostableItem(0.5F, Items.CACTUS);
@@ -87,24 +87,24 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.5F, Items.NETHER_SPROUTS);
 		registerCompostableItem(0.5F, Items.WEEPING_VINES);
 		registerCompostableItem(0.5F, Items.TWISTING_VINES);
-		registerCompostableItem(0.5F, Items.field_8497);
+		registerCompostableItem(0.5F, Items.MELON_SLICE);
 		registerCompostableItem(0.65F, Items.SEA_PICKLE);
 		registerCompostableItem(0.65F, Items.LILY_PAD);
 		registerCompostableItem(0.65F, Items.PUMPKIN);
 		registerCompostableItem(0.65F, Items.CARVED_PUMPKIN);
 		registerCompostableItem(0.65F, Items.MELON);
-		registerCompostableItem(0.65F, Items.field_8279);
-		registerCompostableItem(0.65F, Items.field_8186);
-		registerCompostableItem(0.65F, Items.field_8179);
-		registerCompostableItem(0.65F, Items.field_8116);
-		registerCompostableItem(0.65F, Items.field_8567);
-		registerCompostableItem(0.65F, Items.field_8861);
+		registerCompostableItem(0.65F, Items.APPLE);
+		registerCompostableItem(0.65F, Items.BEETROOT);
+		registerCompostableItem(0.65F, Items.CARROT);
+		registerCompostableItem(0.65F, Items.COCOA_BEANS);
+		registerCompostableItem(0.65F, Items.POTATO);
+		registerCompostableItem(0.65F, Items.WHEAT);
 		registerCompostableItem(0.65F, Items.BROWN_MUSHROOM);
 		registerCompostableItem(0.65F, Items.RED_MUSHROOM);
 		registerCompostableItem(0.65F, Items.MUSHROOM_STEM);
 		registerCompostableItem(0.65F, Items.CRIMSON_FUNGUS);
 		registerCompostableItem(0.65F, Items.WARPED_FUNGUS);
-		registerCompostableItem(0.65F, Items.field_8790);
+		registerCompostableItem(0.65F, Items.NETHER_WART);
 		registerCompostableItem(0.65F, Items.CRIMSON_ROOTS);
 		registerCompostableItem(0.65F, Items.WARPED_ROOTS);
 		registerCompostableItem(0.65F, Items.SHROOMLIGHT);
@@ -132,11 +132,11 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.85F, Items.RED_MUSHROOM_BLOCK);
 		registerCompostableItem(0.85F, Items.NETHER_WART_BLOCK);
 		registerCompostableItem(0.85F, Items.WARPED_WART_BLOCK);
-		registerCompostableItem(0.85F, Items.field_8229);
-		registerCompostableItem(0.85F, Items.field_8512);
-		registerCompostableItem(0.85F, Items.field_8423);
+		registerCompostableItem(0.85F, Items.BREAD);
+		registerCompostableItem(0.85F, Items.BAKED_POTATO);
+		registerCompostableItem(0.85F, Items.COOKIE);
 		registerCompostableItem(1.0F, Items.CAKE);
-		registerCompostableItem(1.0F, Items.field_8741);
+		registerCompostableItem(1.0F, Items.PUMPKIN_PIE);
 	}
 
 	private static void registerCompostableItem(float levelIncreaseChance, ItemConvertible item) {
@@ -155,13 +155,13 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			(double)pos.getX(),
 			(double)pos.getY(),
 			(double)pos.getZ(),
-			fill ? SoundEvents.field_17608 : SoundEvents.field_17607,
-			SoundCategory.field_15245,
+			fill ? SoundEvents.BLOCK_COMPOSTER_FILL_SUCCESS : SoundEvents.BLOCK_COMPOSTER_FILL,
+			SoundCategory.BLOCKS,
 			1.0F,
 			1.0F,
 			false
 		);
-		double d = blockState.getOutlineShape(world, pos).getEndingCoord(Direction.Axis.field_11052, 0.5, 0.5) + 0.03125;
+		double d = blockState.getOutlineShape(world, pos).getEndingCoord(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
 		double e = 0.13125F;
 		double f = 0.7375F;
 		Random random = world.getRandom();
@@ -171,7 +171,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			double h = random.nextGaussian() * 0.02;
 			double j = random.nextGaussian() * 0.02;
 			world.addParticle(
-				ParticleTypes.field_17741,
+				ParticleTypes.COMPOSTER,
 				(double)pos.getX() + 0.13125F + 0.7375F * (double)random.nextFloat(),
 				(double)pos.getY() + d + (double)random.nextFloat() * (1.0 - d),
 				(double)pos.getZ() + 0.13125F + 0.7375F * (double)random.nextFloat(),
@@ -243,13 +243,13 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			double d = (double)(world.random.nextFloat() * 0.7F) + 0.15F;
 			double e = (double)(world.random.nextFloat() * 0.7F) + 0.060000002F + 0.6;
 			double g = (double)(world.random.nextFloat() * 0.7F) + 0.15F;
-			ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + g, new ItemStack(Items.field_8324));
+			ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + g, new ItemStack(Items.BONE_MEAL));
 			itemEntity.setToDefaultPickupDelay();
 			world.spawnEntity(itemEntity);
 		}
 
 		BlockState blockState = emptyComposter(state, world, pos);
-		world.playSound(null, pos, SoundEvents.field_17606, SoundCategory.field_15245, 1.0F, 1.0F);
+		world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		return blockState;
 	}
 
@@ -280,7 +280,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Integer)state.get(LEVEL) == 7) {
 			world.setBlockState(pos, state.cycle(LEVEL), 3);
-			world.playSound(null, pos, SoundEvents.field_17609, SoundCategory.field_15245, 1.0F, 1.0F);
+			world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	}
 
@@ -308,7 +308,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
 		int i = (Integer)state.get(LEVEL);
 		if (i == 8) {
-			return new ComposterBlock.FullComposterInventory(state, world, pos, new ItemStack(Items.field_8324));
+			return new ComposterBlock.FullComposterInventory(state, world, pos, new ItemStack(Items.BONE_MEAL));
 		} else {
 			return (SidedInventory)(i < 7 ? new ComposterBlock.ComposterInventory(state, world, pos) : new ComposterBlock.DummyInventory());
 		}
@@ -334,12 +334,12 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 		@Override
 		public int[] getAvailableSlots(Direction side) {
-			return side == Direction.field_11036 ? new int[]{0} : new int[0];
+			return side == Direction.UP ? new int[]{0} : new int[0];
 		}
 
 		@Override
 		public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-			return !this.dirty && dir == Direction.field_11036 && ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem());
+			return !this.dirty && dir == Direction.UP && ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem());
 		}
 
 		@Override
@@ -400,7 +400,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 		@Override
 		public int[] getAvailableSlots(Direction side) {
-			return side == Direction.field_11033 ? new int[]{0} : new int[0];
+			return side == Direction.DOWN ? new int[]{0} : new int[0];
 		}
 
 		@Override
@@ -410,7 +410,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 		@Override
 		public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-			return !this.dirty && dir == Direction.field_11033 && stack.getItem() == Items.field_8324;
+			return !this.dirty && dir == Direction.DOWN && stack.getItem() == Items.BONE_MEAL;
 		}
 
 		@Override

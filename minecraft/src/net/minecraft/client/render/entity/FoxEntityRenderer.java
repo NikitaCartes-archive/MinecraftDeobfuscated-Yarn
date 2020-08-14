@@ -22,7 +22,7 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityMod
 		this.addFeature(new FoxHeldItemFeatureRenderer(this));
 	}
 
-	protected void method_18334(FoxEntity foxEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(FoxEntity foxEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(foxEntity, matrixStack, f, g, h);
 		if (foxEntity.isChasing() || foxEntity.isWalking()) {
 			float i = -MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch);
@@ -30,8 +30,8 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityMod
 		}
 	}
 
-	public Identifier method_18333(FoxEntity foxEntity) {
-		if (foxEntity.getFoxType() == FoxEntity.Type.field_17996) {
+	public Identifier getTexture(FoxEntity foxEntity) {
+		if (foxEntity.getFoxType() == FoxEntity.Type.RED) {
 			return foxEntity.isSleeping() ? SLEEPING_TEXTURE : TEXTURE;
 		} else {
 			return foxEntity.isSleeping() ? SLEEPING_SNOW_TEXTURE : SNOW_TEXTURE;

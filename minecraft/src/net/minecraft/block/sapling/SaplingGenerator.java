@@ -21,7 +21,7 @@ public abstract class SaplingGenerator {
 		if (configuredFeature == null) {
 			return false;
 		} else {
-			serverWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 4);
+			serverWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
 			configuredFeature.config.ignoreFluidCheck();
 			if (configuredFeature.generate(serverWorld, chunkGenerator, random, blockPos)) {
 				return true;
@@ -33,8 +33,8 @@ public abstract class SaplingGenerator {
 	}
 
 	private boolean method_24282(WorldAccess worldAccess, BlockPos blockPos) {
-		for (BlockPos blockPos2 : BlockPos.Mutable.iterate(blockPos.method_10074().north(2).west(2), blockPos.up().south(2).east(2))) {
-			if (worldAccess.getBlockState(blockPos2).isIn(BlockTags.field_20339)) {
+		for (BlockPos blockPos2 : BlockPos.Mutable.iterate(blockPos.down().north(2).west(2), blockPos.up().south(2).east(2))) {
+			if (worldAccess.getBlockState(blockPos2).isIn(BlockTags.FLOWERS)) {
 				return true;
 			}
 		}

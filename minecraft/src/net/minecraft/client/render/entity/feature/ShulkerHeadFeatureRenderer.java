@@ -20,7 +20,7 @@ public class ShulkerHeadFeatureRenderer extends FeatureRenderer<ShulkerEntity, S
 		super(featureRendererContext);
 	}
 
-	public void method_4115(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,

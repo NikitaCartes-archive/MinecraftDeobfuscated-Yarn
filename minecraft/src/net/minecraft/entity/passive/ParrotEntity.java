@@ -66,46 +66,46 @@ import net.minecraft.world.WorldAccess;
 public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final Predicate<MobEntity> CAN_IMITATE = new Predicate<MobEntity>() {
-		public boolean method_6590(@Nullable MobEntity mobEntity) {
+		public boolean test(@Nullable MobEntity mobEntity) {
 			return mobEntity != null && ParrotEntity.MOB_SOUNDS.containsKey(mobEntity.getType());
 		}
 	};
-	private static final Item COOKIE = Items.field_8423;
-	private static final Set<Item> TAMING_INGREDIENTS = Sets.<Item>newHashSet(Items.field_8317, Items.field_8188, Items.field_8706, Items.field_8309);
+	private static final Item COOKIE = Items.COOKIE;
+	private static final Set<Item> TAMING_INGREDIENTS = Sets.<Item>newHashSet(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
 	private static final Map<EntityType<?>, SoundEvent> MOB_SOUNDS = Util.make(Maps.<EntityType<?>, SoundEvent>newHashMap(), hashMap -> {
-		hashMap.put(EntityType.field_6099, SoundEvents.field_15199);
-		hashMap.put(EntityType.field_6084, SoundEvents.field_15190);
-		hashMap.put(EntityType.field_6046, SoundEvents.field_14547);
-		hashMap.put(EntityType.field_6123, SoundEvents.field_14647);
-		hashMap.put(EntityType.field_6086, SoundEvents.field_14777);
-		hashMap.put(EntityType.field_6116, SoundEvents.field_14854);
-		hashMap.put(EntityType.field_6128, SoundEvents.field_15022);
-		hashMap.put(EntityType.field_6090, SoundEvents.field_15113);
-		hashMap.put(EntityType.field_6107, SoundEvents.field_14577);
-		hashMap.put(EntityType.field_6118, SoundEvents.field_18813);
-		hashMap.put(EntityType.field_21973, SoundEvents.field_24634);
-		hashMap.put(EntityType.field_6071, SoundEvents.field_15185);
-		hashMap.put(EntityType.field_6065, SoundEvents.field_15064);
-		hashMap.put(EntityType.field_6102, SoundEvents.field_14963);
-		hashMap.put(EntityType.field_6078, SoundEvents.field_14957);
-		hashMap.put(EntityType.field_22281, SoundEvents.field_24635);
-		hashMap.put(EntityType.field_25751, SoundEvents.field_25727);
-		hashMap.put(EntityType.field_6105, SoundEvents.field_18815);
-		hashMap.put(EntityType.field_6134, SoundEvents.field_18816);
-		hashMap.put(EntityType.field_6109, SoundEvents.field_14768);
-		hashMap.put(EntityType.field_6125, SoundEvents.field_14683);
-		hashMap.put(EntityType.field_6137, SoundEvents.field_14587);
-		hashMap.put(EntityType.field_6069, SoundEvents.field_15098);
-		hashMap.put(EntityType.field_6079, SoundEvents.field_15190);
-		hashMap.put(EntityType.field_6098, SoundEvents.field_14885);
-		hashMap.put(EntityType.field_6059, SoundEvents.field_15032);
-		hashMap.put(EntityType.field_6117, SoundEvents.field_14790);
-		hashMap.put(EntityType.field_6145, SoundEvents.field_14796);
-		hashMap.put(EntityType.field_6119, SoundEvents.field_14555);
-		hashMap.put(EntityType.field_6076, SoundEvents.field_15073);
-		hashMap.put(EntityType.field_23696, SoundEvents.field_24633);
-		hashMap.put(EntityType.field_6051, SoundEvents.field_15220);
-		hashMap.put(EntityType.field_6054, SoundEvents.field_14676);
+		hashMap.put(EntityType.BLAZE, SoundEvents.ENTITY_PARROT_IMITATE_BLAZE);
+		hashMap.put(EntityType.CAVE_SPIDER, SoundEvents.ENTITY_PARROT_IMITATE_SPIDER);
+		hashMap.put(EntityType.CREEPER, SoundEvents.ENTITY_PARROT_IMITATE_CREEPER);
+		hashMap.put(EntityType.DROWNED, SoundEvents.ENTITY_PARROT_IMITATE_DROWNED);
+		hashMap.put(EntityType.ELDER_GUARDIAN, SoundEvents.ENTITY_PARROT_IMITATE_ELDER_GUARDIAN);
+		hashMap.put(EntityType.ENDER_DRAGON, SoundEvents.ENTITY_PARROT_IMITATE_ENDER_DRAGON);
+		hashMap.put(EntityType.ENDERMITE, SoundEvents.ENTITY_PARROT_IMITATE_ENDERMITE);
+		hashMap.put(EntityType.EVOKER, SoundEvents.ENTITY_PARROT_IMITATE_EVOKER);
+		hashMap.put(EntityType.GHAST, SoundEvents.ENTITY_PARROT_IMITATE_GHAST);
+		hashMap.put(EntityType.GUARDIAN, SoundEvents.ENTITY_PARROT_IMITATE_GUARDIAN);
+		hashMap.put(EntityType.HOGLIN, SoundEvents.ENTITY_PARROT_IMITATE_HOGLIN);
+		hashMap.put(EntityType.HUSK, SoundEvents.ENTITY_PARROT_IMITATE_HUSK);
+		hashMap.put(EntityType.ILLUSIONER, SoundEvents.ENTITY_PARROT_IMITATE_ILLUSIONER);
+		hashMap.put(EntityType.MAGMA_CUBE, SoundEvents.ENTITY_PARROT_IMITATE_MAGMA_CUBE);
+		hashMap.put(EntityType.PHANTOM, SoundEvents.ENTITY_PARROT_IMITATE_PHANTOM);
+		hashMap.put(EntityType.PIGLIN, SoundEvents.ENTITY_PARROT_IMITATE_PIGLIN);
+		hashMap.put(EntityType.PIGLIN_BRUTE, SoundEvents.ENTITY_PARROT_IMITATE_PIGLIN_BRUTE);
+		hashMap.put(EntityType.PILLAGER, SoundEvents.ENTITY_PARROT_IMITATE_PILLAGER);
+		hashMap.put(EntityType.RAVAGER, SoundEvents.ENTITY_PARROT_IMITATE_RAVAGER);
+		hashMap.put(EntityType.SHULKER, SoundEvents.ENTITY_PARROT_IMITATE_SHULKER);
+		hashMap.put(EntityType.SILVERFISH, SoundEvents.ENTITY_PARROT_IMITATE_SILVERFISH);
+		hashMap.put(EntityType.SKELETON, SoundEvents.ENTITY_PARROT_IMITATE_SKELETON);
+		hashMap.put(EntityType.SLIME, SoundEvents.ENTITY_PARROT_IMITATE_SLIME);
+		hashMap.put(EntityType.SPIDER, SoundEvents.ENTITY_PARROT_IMITATE_SPIDER);
+		hashMap.put(EntityType.STRAY, SoundEvents.ENTITY_PARROT_IMITATE_STRAY);
+		hashMap.put(EntityType.VEX, SoundEvents.ENTITY_PARROT_IMITATE_VEX);
+		hashMap.put(EntityType.VINDICATOR, SoundEvents.ENTITY_PARROT_IMITATE_VINDICATOR);
+		hashMap.put(EntityType.WITCH, SoundEvents.ENTITY_PARROT_IMITATE_WITCH);
+		hashMap.put(EntityType.WITHER, SoundEvents.ENTITY_PARROT_IMITATE_WITHER);
+		hashMap.put(EntityType.WITHER_SKELETON, SoundEvents.ENTITY_PARROT_IMITATE_WITHER_SKELETON);
+		hashMap.put(EntityType.ZOGLIN, SoundEvents.ENTITY_PARROT_IMITATE_ZOGLIN);
+		hashMap.put(EntityType.ZOMBIE, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE);
+		hashMap.put(EntityType.ZOMBIE_VILLAGER, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_VILLAGER);
 	});
 	public float flapProgress;
 	public float maxWingDeviation;
@@ -118,9 +118,9 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	public ParrotEntity(EntityType<? extends ParrotEntity> entityType, World world) {
 		super(entityType, world);
 		this.moveControl = new FlightMoveControl(this, 10, false);
-		this.setPathfindingPenalty(PathNodeType.field_9, -1.0F);
-		this.setPathfindingPenalty(PathNodeType.field_3, -1.0F);
-		this.setPathfindingPenalty(PathNodeType.field_21516, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.COCOA, -1.0F);
 	}
 
 	@Nullable
@@ -154,7 +154,10 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	public static DefaultAttributeContainer.Builder createParrotAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 6.0).add(EntityAttributes.field_23720, 0.4F).add(EntityAttributes.field_23719, 0.2F);
+		return MobEntity.createMobAttributes()
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 6.0)
+			.add(EntityAttributes.GENERIC_FLYING_SPEED, 0.4F)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F);
 	}
 
 	@Override
@@ -173,7 +176,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 
 	@Override
 	public void tickMovement() {
-		if (this.songSource == null || !this.songSource.isWithinDistance(this.getPos(), 3.46) || !this.world.getBlockState(this.songSource).isOf(Blocks.field_10223)) {
+		if (this.songSource == null || !this.songSource.isWithinDistance(this.getPos(), 3.46) || !this.world.getBlockState(this.songSource).isOf(Blocks.JUKEBOX)) {
 			this.songPlaying = false;
 			this.songSource = null;
 		}
@@ -249,7 +252,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 						this.getX(),
 						this.getY(),
 						this.getZ(),
-						SoundEvents.field_14960,
+						SoundEvents.ENTITY_PARROT_EAT,
 						this.getSoundCategory(),
 						1.0F,
 						1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
@@ -271,7 +274,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 				itemStack.decrement(1);
 			}
 
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5899, 900));
+			this.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 900));
 			if (player.isCreative() || !this.isInvulnerable()) {
 				this.damage(DamageSource.player(player), Float.MAX_VALUE);
 			}
@@ -294,13 +297,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	public static boolean canSpawn(EntityType<ParrotEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		BlockState blockState = world.getBlockState(pos.method_10074());
-		return (
-				blockState.isIn(BlockTags.field_15503)
-					|| blockState.isOf(Blocks.field_10219)
-					|| blockState.isIn(BlockTags.field_15475)
-					|| blockState.isOf(Blocks.field_10124)
-			)
+		BlockState blockState = world.getBlockState(pos.down());
+		return (blockState.isIn(BlockTags.LEAVES) || blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isIn(BlockTags.LOGS) || blockState.isOf(Blocks.AIR))
 			&& world.getBaseLightLevel(pos, 0) > 8;
 	}
 
@@ -336,36 +334,36 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	public static SoundEvent getRandomSound(World world, Random random) {
-		if (world.getDifficulty() != Difficulty.field_5801 && random.nextInt(1000) == 0) {
+		if (world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(1000) == 0) {
 			List<EntityType<?>> list = Lists.<EntityType<?>>newArrayList(MOB_SOUNDS.keySet());
 			return getSound((EntityType<?>)list.get(random.nextInt(list.size())));
 		} else {
-			return SoundEvents.field_15132;
+			return SoundEvents.ENTITY_PARROT_AMBIENT;
 		}
 	}
 
 	private static SoundEvent getSound(EntityType<?> imitate) {
-		return (SoundEvent)MOB_SOUNDS.getOrDefault(imitate, SoundEvents.field_15132);
+		return (SoundEvent)MOB_SOUNDS.getOrDefault(imitate, SoundEvents.ENTITY_PARROT_AMBIENT);
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15077;
+		return SoundEvents.ENTITY_PARROT_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15234;
+		return SoundEvents.ENTITY_PARROT_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_14602, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PARROT_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
 	protected float playFlySound(float distance) {
-		this.playSound(SoundEvents.field_14925, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15F, 1.0F);
 		return distance + this.maxWingDeviation / 2.0F;
 	}
 
@@ -385,7 +383,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15254;
+		return SoundCategory.NEUTRAL;
 	}
 
 	@Override

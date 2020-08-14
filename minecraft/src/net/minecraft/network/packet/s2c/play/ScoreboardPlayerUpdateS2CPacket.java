@@ -21,7 +21,7 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	}
 
 	public ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode mode, @Nullable String objectiveName, String playerName, int score) {
-		if (mode != ServerScoreboard.UpdateMode.field_13430 && objectiveName == null) {
+		if (mode != ServerScoreboard.UpdateMode.REMOVE && objectiveName == null) {
 			throw new IllegalArgumentException("Need an objective name");
 		} else {
 			this.playerName = playerName;
@@ -37,7 +37,7 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 		this.mode = buf.readEnumConstant(ServerScoreboard.UpdateMode.class);
 		String string = buf.readString(16);
 		this.objectiveName = Objects.equals(string, "") ? null : string;
-		if (this.mode != ServerScoreboard.UpdateMode.field_13430) {
+		if (this.mode != ServerScoreboard.UpdateMode.REMOVE) {
 			this.score = buf.readVarInt();
 		}
 	}
@@ -47,12 +47,12 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 		buf.writeString(this.playerName);
 		buf.writeEnumConstant(this.mode);
 		buf.writeString(this.objectiveName == null ? "" : this.objectiveName);
-		if (this.mode != ServerScoreboard.UpdateMode.field_13430) {
+		if (this.mode != ServerScoreboard.UpdateMode.REMOVE) {
 			buf.writeVarInt(this.score);
 		}
 	}
 
-	public void method_11866(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onScoreboardPlayerUpdate(this);
 	}
 

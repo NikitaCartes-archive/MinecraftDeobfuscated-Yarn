@@ -41,11 +41,11 @@ public class FishBucketItem extends BucketItem {
 
 	@Override
 	protected void playEmptyingSound(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos) {
-		world.playSound(player, pos, SoundEvents.field_14912, SoundCategory.field_15254, 1.0F, 1.0F);
+		world.playSound(player, pos, SoundEvents.ITEM_BUCKET_EMPTY_FISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 	}
 
 	private void spawnFish(ServerWorld serverWorld, ItemStack stack, BlockPos pos) {
-		Entity entity = this.fishType.spawnFromItemStack(serverWorld, stack, null, pos, SpawnReason.field_16473, true, false);
+		Entity entity = this.fishType.spawnFromItemStack(serverWorld, stack, null, pos, SpawnReason.BUCKET, true, false);
 		if (entity != null) {
 			((FishEntity)entity).setFromBucket(true);
 		}
@@ -54,11 +54,11 @@ public class FishBucketItem extends BucketItem {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		if (this.fishType == EntityType.field_6111) {
+		if (this.fishType == EntityType.TROPICAL_FISH) {
 			CompoundTag compoundTag = stack.getTag();
 			if (compoundTag != null && compoundTag.contains("BucketVariantTag", 3)) {
 				int i = compoundTag.getInt("BucketVariantTag");
-				Formatting[] formattings = new Formatting[]{Formatting.field_1056, Formatting.field_1080};
+				Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
 				String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);
 				String string2 = "color.minecraft." + TropicalFishEntity.getPatternDyeColor(i);
 

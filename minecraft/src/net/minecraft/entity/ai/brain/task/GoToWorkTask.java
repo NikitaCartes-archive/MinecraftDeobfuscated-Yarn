@@ -14,20 +14,20 @@ import net.minecraft.village.VillagerProfession;
 
 public class GoToWorkTask extends Task<VillagerEntity> {
 	public GoToWorkTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_25160, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleState.VALUE_PRESENT));
 	}
 
-	protected boolean method_18987(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		BlockPos blockPos = ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_25160).get()).getPos();
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+		BlockPos blockPos = ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos();
 		return blockPos.isWithinDistance(villagerEntity.getPos(), 2.0) || villagerEntity.isNatural();
 	}
 
-	protected void method_18988(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_25160).get();
-		villagerEntity.getBrain().forget(MemoryModuleType.field_25160);
-		villagerEntity.getBrain().remember(MemoryModuleType.field_18439, globalPos);
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get();
+		villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
+		villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
 		serverWorld.sendEntityStatus(villagerEntity, (byte)14);
-		if (villagerEntity.getVillagerData().getProfession() == VillagerProfession.field_17051) {
+		if (villagerEntity.getVillagerData().getProfession() == VillagerProfession.NONE) {
 			MinecraftServer minecraftServer = serverWorld.getServer();
 			Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension()))
 				.flatMap(serverWorldx -> serverWorldx.getPointOfInterestStorage().getType(globalPos.getPos()))

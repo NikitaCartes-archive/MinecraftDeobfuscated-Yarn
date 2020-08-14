@@ -104,7 +104,7 @@ public class ServerChunkManager extends ChunkManager {
 		this.initChunkCaches();
 	}
 
-	public ServerLightingProvider method_17293() {
+	public ServerLightingProvider getLightingProvider() {
 		return this.lightProvider;
 	}
 
@@ -173,7 +173,7 @@ public class ServerChunkManager extends ChunkManager {
 			long l = ChunkPos.toLong(chunkX, chunkZ);
 
 			for (int i = 0; i < 4; i++) {
-				if (l == this.chunkPosCache[i] && this.chunkStatusCache[i] == ChunkStatus.field_12803) {
+				if (l == this.chunkPosCache[i] && this.chunkStatusCache[i] == ChunkStatus.FULL) {
 					Chunk chunk = this.chunkCache[i];
 					return chunk instanceof WorldChunk ? (WorldChunk)chunk : null;
 				}
@@ -183,13 +183,13 @@ public class ServerChunkManager extends ChunkManager {
 			if (chunkHolder == null) {
 				return null;
 			} else {
-				Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)chunkHolder.getValidFutureFor(ChunkStatus.field_12803).getNow(null);
+				Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)chunkHolder.getValidFutureFor(ChunkStatus.FULL).getNow(null);
 				if (either == null) {
 					return null;
 				} else {
 					Chunk chunk2 = (Chunk)either.left().orElse(null);
 					if (chunk2 != null) {
-						this.putInCache(l, chunk2, ChunkStatus.field_12803);
+						this.putInCache(l, chunk2, ChunkStatus.FULL);
 						if (chunk2 instanceof WorldChunk) {
 							return (WorldChunk)chunk2;
 						}
@@ -251,7 +251,7 @@ public class ServerChunkManager extends ChunkManager {
 	@Override
 	public boolean isChunkLoaded(int x, int z) {
 		ChunkHolder chunkHolder = this.getChunkHolder(new ChunkPos(x, z).toLong());
-		int i = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.field_12803);
+		int i = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL);
 		return !this.isMissingForLevel(chunkHolder, i);
 	}
 
@@ -271,7 +271,7 @@ public class ServerChunkManager extends ChunkManager {
 					return (BlockView)optional.get();
 				}
 
-				if (chunkStatus == ChunkStatus.field_12805.getPrevious()) {
+				if (chunkStatus == ChunkStatus.LIGHT.getPrevious()) {
 					return null;
 				}
 
@@ -280,7 +280,7 @@ public class ServerChunkManager extends ChunkManager {
 		}
 	}
 
-	public World method_16434() {
+	public World getWorld() {
 		return this.world;
 	}
 
@@ -360,7 +360,7 @@ public class ServerChunkManager extends ChunkManager {
 		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
 		if (!bl) {
 			this.world.getProfiler().push("pollingChunks");
-			int i = this.world.getGameRules().getInt(GameRules.field_19399);
+			int i = this.world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED);
 			boolean bl3 = worldProperties.getTime() % 400L == 0L;
 			this.world.getProfiler().push("naturalSpawnCount");
 			int j = this.ticketManager.getSpawningChunkCount();

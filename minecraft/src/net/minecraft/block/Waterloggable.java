@@ -34,7 +34,7 @@ public interface Waterloggable extends FluidDrainable, FluidFillable {
 			world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(false)), 3);
 			return Fluids.WATER;
 		} else {
-			return Fluids.field_15906;
+			return Fluids.EMPTY;
 		}
 	}
 }

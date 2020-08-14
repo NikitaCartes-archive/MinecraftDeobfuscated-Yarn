@@ -61,30 +61,30 @@ public class HandledScreens {
 	}
 
 	static {
-		register(ScreenHandlerType.field_18664, GenericContainerScreen::new);
-		register(ScreenHandlerType.field_18665, GenericContainerScreen::new);
-		register(ScreenHandlerType.field_17326, GenericContainerScreen::new);
-		register(ScreenHandlerType.field_18666, GenericContainerScreen::new);
-		register(ScreenHandlerType.field_18667, GenericContainerScreen::new);
-		register(ScreenHandlerType.field_17327, GenericContainerScreen::new);
-		register(ScreenHandlerType.field_17328, Generic3x3ContainerScreen::new);
-		register(ScreenHandlerType.field_17329, AnvilScreen::new);
-		register(ScreenHandlerType.field_17330, BeaconScreen::new);
-		register(ScreenHandlerType.field_17331, BlastFurnaceScreen::new);
-		register(ScreenHandlerType.field_17332, BrewingStandScreen::new);
-		register(ScreenHandlerType.field_17333, CraftingScreen::new);
-		register(ScreenHandlerType.field_17334, EnchantmentScreen::new);
-		register(ScreenHandlerType.field_17335, FurnaceScreen::new);
-		register(ScreenHandlerType.field_17336, GrindstoneScreen::new);
-		register(ScreenHandlerType.field_17337, HopperScreen::new);
-		register(ScreenHandlerType.field_17338, LecternScreen::new);
-		register(ScreenHandlerType.field_17339, LoomScreen::new);
-		register(ScreenHandlerType.field_17340, MerchantScreen::new);
-		register(ScreenHandlerType.field_17341, ShulkerBoxScreen::new);
-		register(ScreenHandlerType.field_22484, SmithingScreen::new);
-		register(ScreenHandlerType.field_17342, SmokerScreen::new);
-		register(ScreenHandlerType.field_17343, CartographyTableScreen::new);
-		register(ScreenHandlerType.field_17625, StonecutterScreen::new);
+		register(ScreenHandlerType.GENERIC_9X1, GenericContainerScreen::new);
+		register(ScreenHandlerType.GENERIC_9X2, GenericContainerScreen::new);
+		register(ScreenHandlerType.GENERIC_9X3, GenericContainerScreen::new);
+		register(ScreenHandlerType.GENERIC_9X4, GenericContainerScreen::new);
+		register(ScreenHandlerType.GENERIC_9X5, GenericContainerScreen::new);
+		register(ScreenHandlerType.GENERIC_9X6, GenericContainerScreen::new);
+		register(ScreenHandlerType.GENERIC_3X3, Generic3x3ContainerScreen::new);
+		register(ScreenHandlerType.ANVIL, AnvilScreen::new);
+		register(ScreenHandlerType.BEACON, BeaconScreen::new);
+		register(ScreenHandlerType.BLAST_FURNACE, BlastFurnaceScreen::new);
+		register(ScreenHandlerType.BREWING_STAND, BrewingStandScreen::new);
+		register(ScreenHandlerType.CRAFTING, CraftingScreen::new);
+		register(ScreenHandlerType.ENCHANTMENT, EnchantmentScreen::new);
+		register(ScreenHandlerType.FURNACE, FurnaceScreen::new);
+		register(ScreenHandlerType.GRINDSTONE, GrindstoneScreen::new);
+		register(ScreenHandlerType.HOPPER, HopperScreen::new);
+		register(ScreenHandlerType.LECTERN, LecternScreen::new);
+		register(ScreenHandlerType.LOOM, LoomScreen::new);
+		register(ScreenHandlerType.MERCHANT, MerchantScreen::new);
+		register(ScreenHandlerType.SHULKER_BOX, ShulkerBoxScreen::new);
+		register(ScreenHandlerType.SMITHING, SmithingScreen::new);
+		register(ScreenHandlerType.SMOKER, SmokerScreen::new);
+		register(ScreenHandlerType.CARTOGRAPHY_TABLE, CartographyTableScreen::new);
+		register(ScreenHandlerType.STONECUTTER, StonecutterScreen::new);
 	}
 
 	@Environment(EnvType.CLIENT)

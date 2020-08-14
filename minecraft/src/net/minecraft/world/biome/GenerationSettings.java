@@ -32,26 +32,24 @@ import org.apache.logging.log4j.Logger;
 public class GenerationSettings {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final GenerationSettings INSTANCE = new GenerationSettings(
-		() -> ConfiguredSurfaceBuilders.field_26333, ImmutableMap.of(), ImmutableList.of(), ImmutableList.of()
+		() -> ConfiguredSurfaceBuilders.NOPE, ImmutableMap.of(), ImmutableList.of(), ImmutableList.of()
 	);
 	public static final MapCodec<GenerationSettings> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					ConfiguredSurfaceBuilder.field_25015.fieldOf("surface_builder").forGetter(generationSettings -> generationSettings.surfaceBuilder),
 					Codec.simpleMap(
 							GenerationStep.Carver.field_24770,
-							ConfiguredCarver.field_24828.listOf().promotePartial(Util.method_29188("Carver: ", LOGGER::error)),
+							ConfiguredCarver.field_26755.promotePartial(Util.method_29188("Carver: ", LOGGER::error)),
 							StringIdentifiable.method_28142(GenerationStep.Carver.values())
 						)
 						.fieldOf("carvers")
 						.forGetter(generationSettings -> generationSettings.carvers),
-					ConfiguredFeature.CODEC
-						.listOf()
+					ConfiguredFeature.field_26756
 						.promotePartial(Util.method_29188("Feature: ", LOGGER::error))
 						.listOf()
 						.fieldOf("features")
 						.forGetter(generationSettings -> generationSettings.features),
-					ConfiguredStructureFeature.REGISTRY_CODEC
-						.listOf()
+					ConfiguredStructureFeature.field_26757
 						.promotePartial(Util.method_29188("Structure start: ", LOGGER::error))
 						.fieldOf("starts")
 						.forGetter(generationSettings -> generationSettings.structureFeatures)

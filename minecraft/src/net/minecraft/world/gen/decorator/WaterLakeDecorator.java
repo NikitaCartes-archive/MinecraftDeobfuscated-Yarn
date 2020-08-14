@@ -10,7 +10,7 @@ public class WaterLakeDecorator extends Decorator<ChanceDecoratorConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_15930(DecoratorContext decoratorContext, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
 		if (random.nextInt(chanceDecoratorConfig.chance) == 0) {
 			int i = random.nextInt(16) + blockPos.getX();
 			int j = random.nextInt(16) + blockPos.getZ();

@@ -4,7 +4,7 @@ import net.minecraft.world.biome.layer.type.InitLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum ContinentLayer implements InitLayer {
-	field_16103;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource context, int x, int y) {

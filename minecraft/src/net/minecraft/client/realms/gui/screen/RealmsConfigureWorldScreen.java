@@ -72,7 +72,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 
 		this.left_x = this.width / 2 - 187;
 		this.right_x = this.width / 2 + 190;
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.playersButton = this.addButton(
 			new ButtonWidget(
 				this.buttonCenter(0, 3),
@@ -90,7 +90,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 				100,
 				20,
 				new TranslatableText("mco.configure.world.buttons.settings"),
-				buttonWidget -> this.client.openScreen(new RealmsSettingsScreen(this, this.server.method_25067()))
+				buttonWidget -> this.client.openScreen(new RealmsSettingsScreen(this, this.server.clone()))
 			)
 		);
 		this.subscriptionButton = this.addButton(
@@ -100,7 +100,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 				100,
 				20,
 				new TranslatableText("mco.configure.world.buttons.subscription"),
-				buttonWidget -> this.client.openScreen(new RealmsSubscriptionInfoScreen(this, this.server.method_25067(), this.parent))
+				buttonWidget -> this.client.openScreen(new RealmsSubscriptionInfoScreen(this, this.server.clone(), this.parent))
 			)
 		);
 
@@ -125,7 +125,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 				buttonWidget -> this.client
 						.openScreen(
 							new RealmsSlotOptionsScreen(
-								this, ((RealmsWorldOptions)this.server.slots.get(this.server.activeSlot)).method_25083(), this.server.worldType, this.server.activeSlot
+								this, ((RealmsWorldOptions)this.server.slots.get(this.server.activeSlot)).clone(), this.server.worldType, this.server.activeSlot
 							)
 						)
 			)
@@ -137,7 +137,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 				90,
 				20,
 				new TranslatableText("mco.configure.world.backup"),
-				buttonWidget -> this.client.openScreen(new RealmsBackupScreen(this, this.server.method_25067(), this.server.activeSlot))
+				buttonWidget -> this.client.openScreen(new RealmsBackupScreen(this, this.server.clone(), this.server.activeSlot))
 			)
 		);
 		this.resetWorldButton = this.addButton(
@@ -150,7 +150,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 				buttonWidget -> this.client
 						.openScreen(
 							new RealmsResetWorldScreen(
-								this, this.server.method_25067(), () -> this.client.openScreen(this.getNewScreen()), () -> this.client.openScreen(this.getNewScreen())
+								this, this.server.clone(), () -> this.client.openScreen(this.getNewScreen()), () -> this.client.openScreen(this.getNewScreen())
 							)
 						)
 			)
@@ -256,7 +256,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

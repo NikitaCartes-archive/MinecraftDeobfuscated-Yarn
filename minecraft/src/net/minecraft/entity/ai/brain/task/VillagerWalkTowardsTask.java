@@ -23,12 +23,12 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 	public VillagerWalkTowardsTask(MemoryModuleType<GlobalPos> destination, float speed, int completionRange, int maxRange, int maxRunTime) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_19293,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
+				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
 				destination,
-				MemoryModuleState.field_18456
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.destination = destination;
@@ -42,10 +42,10 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 		Brain<?> brain = villager.getBrain();
 		villager.releaseTicketFor(this.destination);
 		brain.forget(this.destination);
-		brain.remember(MemoryModuleType.field_19293, time);
+		brain.remember(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
 	}
 
-	protected void method_19509(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<?> brain = villagerEntity.getBrain();
 		brain.getOptionalMemory(this.destination)
 			.ifPresent(
@@ -68,16 +68,16 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 							return;
 						}
 
-						brain.remember(MemoryModuleType.field_18445, new WalkTarget(vec3d, this.speed, this.completionRange));
+						brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
 					} else if (!this.reachedDestination(serverWorld, villagerEntity, globalPos)) {
-						brain.remember(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
+						brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
 					}
 				}
 			);
 	}
 
 	private boolean shouldGiveUp(ServerWorld world, VillagerEntity villager) {
-		Optional<Long> optional = villager.getBrain().getOptionalMemory(MemoryModuleType.field_19293);
+		Optional<Long> optional = villager.getBrain().getOptionalMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 		return optional.isPresent() ? world.getTime() - (Long)optional.get() > (long)this.maxRunTime : false;
 	}
 

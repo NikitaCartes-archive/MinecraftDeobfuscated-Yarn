@@ -73,8 +73,13 @@ public class RegistryKey<T> {
 		return "ResourceKey[" + this.registry + " / " + this.value + ']';
 	}
 
-	public boolean method_31163(RegistryKey<? extends Registry<?>> registryKey) {
-		return this.registry.equals(registryKey.getValue());
+	/**
+	 * Returns whether this registry key belongs to the given registry (according to its type, not whether the registry actually contains this key).
+	 * 
+	 * @param registry the key of the registry that this registry key should be inside
+	 */
+	public boolean isOf(RegistryKey<? extends Registry<?>> registry) {
+		return this.registry.equals(registry.getValue());
 	}
 
 	public Identifier getValue() {

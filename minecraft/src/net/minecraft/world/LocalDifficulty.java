@@ -34,17 +34,17 @@ public class LocalDifficulty {
 	}
 
 	private float setLocalDifficulty(Difficulty difficulty, long timeOfDay, long inhabitedTime, float moonSize) {
-		if (difficulty == Difficulty.field_5801) {
+		if (difficulty == Difficulty.PEACEFUL) {
 			return 0.0F;
 		} else {
-			boolean bl = difficulty == Difficulty.field_5807;
+			boolean bl = difficulty == Difficulty.HARD;
 			float f = 0.75F;
 			float g = MathHelper.clamp(((float)timeOfDay + -72000.0F) / 1440000.0F, 0.0F, 1.0F) * 0.25F;
 			f += g;
 			float h = 0.0F;
 			h += MathHelper.clamp((float)inhabitedTime / 3600000.0F, 0.0F, 1.0F) * (bl ? 1.0F : 0.75F);
 			h += MathHelper.clamp(moonSize * 0.25F, 0.0F, g);
-			if (difficulty == Difficulty.field_5805) {
+			if (difficulty == Difficulty.EASY) {
 				h *= 0.5F;
 			}
 

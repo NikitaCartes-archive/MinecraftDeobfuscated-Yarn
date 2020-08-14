@@ -45,18 +45,18 @@ public class ModelElement {
 
 	private float[] getRotatedMatrix(Direction direction) {
 		switch (direction) {
-			case field_11033:
+			case DOWN:
 				return new float[]{this.from.getX(), 16.0F - this.to.getZ(), this.to.getX(), 16.0F - this.from.getZ()};
-			case field_11036:
+			case UP:
 				return new float[]{this.from.getX(), this.from.getZ(), this.to.getX(), this.to.getZ()};
-			case field_11043:
+			case NORTH:
 			default:
 				return new float[]{16.0F - this.to.getX(), 16.0F - this.to.getY(), 16.0F - this.from.getX(), 16.0F - this.from.getY()};
-			case field_11035:
+			case SOUTH:
 				return new float[]{this.from.getX(), 16.0F - this.to.getY(), this.to.getX(), 16.0F - this.from.getY()};
-			case field_11039:
+			case WEST:
 				return new float[]{this.from.getZ(), 16.0F - this.to.getY(), this.to.getZ(), 16.0F - this.from.getY()};
-			case field_11034:
+			case EAST:
 				return new float[]{16.0F - this.to.getZ(), 16.0F - this.to.getY(), 16.0F - this.from.getZ(), 16.0F - this.from.getY()};
 		}
 	}
@@ -66,7 +66,7 @@ public class ModelElement {
 		protected Deserializer() {
 		}
 
-		public ModelElement method_3406(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public ModelElement deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Vector3f vector3f = this.deserializeFrom(jsonObject);
 			Vector3f vector3f2 = this.deserializeTo(jsonObject);

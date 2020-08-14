@@ -15,15 +15,15 @@ public class PlainsFlowerBlockStateProvider extends BlockStateProvider {
 	);
 	public static final PlainsFlowerBlockStateProvider INSTANCE = new PlainsFlowerBlockStateProvider();
 	private static final BlockState[] TULIPS = new BlockState[]{
-		Blocks.field_10048.getDefaultState(), Blocks.field_10270.getDefaultState(), Blocks.field_10315.getDefaultState(), Blocks.field_10156.getDefaultState()
+		Blocks.ORANGE_TULIP.getDefaultState(), Blocks.RED_TULIP.getDefaultState(), Blocks.PINK_TULIP.getDefaultState(), Blocks.WHITE_TULIP.getDefaultState()
 	};
 	private static final BlockState[] FLOWERS = new BlockState[]{
-		Blocks.field_10449.getDefaultState(), Blocks.field_10573.getDefaultState(), Blocks.field_10554.getDefaultState(), Blocks.field_9995.getDefaultState()
+		Blocks.POPPY.getDefaultState(), Blocks.AZURE_BLUET.getDefaultState(), Blocks.OXEYE_DAISY.getDefaultState(), Blocks.CORNFLOWER.getDefaultState()
 	};
 
 	@Override
 	protected BlockStateProviderType<?> getType() {
-		return BlockStateProviderType.field_21307;
+		return BlockStateProviderType.PLAIN_FLOWER_PROVIDER;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class PlainsFlowerBlockStateProvider extends BlockStateProvider {
 		if (d < -0.8) {
 			return Util.getRandom(TULIPS, random);
 		} else {
-			return random.nextInt(3) > 0 ? Util.getRandom(FLOWERS, random) : Blocks.field_10182.getDefaultState();
+			return random.nextInt(3) > 0 ? Util.getRandom(FLOWERS, random) : Blocks.DANDELION.getDefaultState();
 		}
 	}
 }

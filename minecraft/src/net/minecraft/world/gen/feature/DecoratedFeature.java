@@ -14,7 +14,7 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_12892(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig
 	) {
 		MutableBoolean mutableBoolean = new MutableBoolean();

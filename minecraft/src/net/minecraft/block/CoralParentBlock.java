@@ -35,7 +35,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 			return true;
 		} else {
 			for (Direction direction : Direction.values()) {
-				if (world.getFluidState(pos.offset(direction)).isIn(FluidTags.field_15517)) {
+				if (world.getFluidState(pos.offset(direction)).isIn(FluidTags.WATER)) {
 					return true;
 				}
 			}
@@ -48,7 +48,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.isIn(FluidTags.field_15517) && fluidState.getLevel() == 8));
+		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8));
 	}
 
 	@Override
@@ -62,15 +62,15 @@ public class CoralParentBlock extends Block implements Waterloggable {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return direction == Direction.field_11033 && !this.canPlaceAt(state, world, pos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !this.canPlaceAt(state, world, pos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
-		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.field_11036);
+		BlockPos blockPos = pos.down();
+		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP);
 	}
 
 	@Override

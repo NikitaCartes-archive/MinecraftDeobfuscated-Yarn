@@ -22,7 +22,7 @@ public class LargeOakFoliagePlacer extends BlobFoliagePlacer {
 
 	@Override
 	protected FoliagePlacerType<?> getType() {
-		return FoliagePlacerType.field_24162;
+		return FoliagePlacerType.FANCY_FOLIAGE_PLACER;
 	}
 
 	@Override

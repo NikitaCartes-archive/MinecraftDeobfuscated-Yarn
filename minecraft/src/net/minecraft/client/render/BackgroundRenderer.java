@@ -31,7 +31,7 @@ public class BackgroundRenderer {
 
 	public static void render(Camera camera, float tickDelta, ClientWorld world, int i, float f) {
 		FluidState fluidState = camera.getSubmergedFluidState();
-		if (fluidState.isIn(FluidTags.field_15517)) {
+		if (fluidState.isIn(FluidTags.WATER)) {
 			long l = Util.getMeasuringTimeMs();
 			int j = world.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
 			if (lastWaterFogColorUpdateTime < 0L) {
@@ -58,7 +58,7 @@ public class BackgroundRenderer {
 				nextWaterFogColor = MathHelper.floor(h) << 16 | MathHelper.floor(r) << 8 | MathHelper.floor(s);
 				lastWaterFogColorUpdateTime = l;
 			}
-		} else if (fluidState.isIn(FluidTags.field_15518)) {
+		} else if (fluidState.isIn(FluidTags.LAVA)) {
 			red = 0.6F;
 			green = 0.1F;
 			blue = 0.0F;
@@ -121,9 +121,9 @@ public class BackgroundRenderer {
 			lastWaterFogColorUpdateTime = -1L;
 		}
 
-		double d = camera.getPos().y * world.method_28104().getHorizonShadingRatio();
-		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5919)) {
-			int jx = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.field_5919).getDuration();
+		double d = camera.getPos().y * world.getLevelProperties().getHorizonShadingRatio();
+		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
+			int jx = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
 			if (jx < 20) {
 				d *= (double)(1.0F - (float)jx / 20.0F);
 			} else {
@@ -131,7 +131,7 @@ public class BackgroundRenderer {
 			}
 		}
 
-		if (d < 1.0 && !fluidState.isIn(FluidTags.field_15518)) {
+		if (d < 1.0 && !fluidState.isIn(FluidTags.LAVA)) {
 			if (d < 0.0) {
 				d = 0.0;
 			}
@@ -148,7 +148,7 @@ public class BackgroundRenderer {
 			blue = blue * (1.0F - f) + blue * 0.6F * f;
 		}
 
-		if (fluidState.isIn(FluidTags.field_15517)) {
+		if (fluidState.isIn(FluidTags.WATER)) {
 			float ux = 0.0F;
 			if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
 				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
@@ -159,7 +159,7 @@ public class BackgroundRenderer {
 			red = red * (1.0F - ux) + red * vx * ux;
 			green = green * (1.0F - ux) + green * vx * ux;
 			blue = blue * (1.0F - ux) + blue * vx * ux;
-		} else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5925)) {
+		} else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.NIGHT_VISION)) {
 			float ux = GameRenderer.getNightVisionStrength((LivingEntity)camera.getFocusedEntity(), tickDelta);
 			float vx = Math.min(1.0F / red, Math.min(1.0F / green, 1.0F / blue));
 			red = red * (1.0F - ux) + red * vx * ux;
@@ -172,41 +172,41 @@ public class BackgroundRenderer {
 
 	public static void method_23792() {
 		RenderSystem.fogDensity(0.0F);
-		RenderSystem.fogMode(GlStateManager.FogMode.field_5097);
+		RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
 	}
 
 	public static void applyFog(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog) {
 		FluidState fluidState = camera.getSubmergedFluidState();
 		Entity entity = camera.getFocusedEntity();
-		if (fluidState.isIn(FluidTags.field_15517)) {
+		if (fluidState.isIn(FluidTags.WATER)) {
 			float f = 1.0F;
 			f = 0.05F;
 			if (entity instanceof ClientPlayerEntity) {
 				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
 				f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03F;
 				Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
-				if (biome.getCategory() == Biome.Category.field_9364) {
+				if (biome.getCategory() == Biome.Category.SWAMP) {
 					f += 0.005F;
 				}
 			}
 
 			RenderSystem.fogDensity(f);
-			RenderSystem.fogMode(GlStateManager.FogMode.field_5097);
+			RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
 		} else {
 			float f;
 			float g;
-			if (fluidState.isIn(FluidTags.field_15518)) {
-				if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.field_5918)) {
+			if (fluidState.isIn(FluidTags.LAVA)) {
+				if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 					f = 0.0F;
 					g = 3.0F;
 				} else {
 					f = 0.25F;
 					g = 1.0F;
 				}
-			} else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.field_5919)) {
-				int i = ((LivingEntity)entity).getStatusEffect(StatusEffects.field_5919).getDuration();
+			} else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) {
+				int i = ((LivingEntity)entity).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
 				float h = MathHelper.lerp(Math.min(1.0F, (float)i / 20.0F), viewDistance, 5.0F);
-				if (fogType == BackgroundRenderer.FogType.field_20945) {
+				if (fogType == BackgroundRenderer.FogType.FOG_SKY) {
 					f = 0.0F;
 					g = h * 0.8F;
 				} else {
@@ -216,7 +216,7 @@ public class BackgroundRenderer {
 			} else if (thickFog) {
 				f = viewDistance * 0.05F;
 				g = Math.min(viewDistance, 192.0F) * 0.5F;
-			} else if (fogType == BackgroundRenderer.FogType.field_20945) {
+			} else if (fogType == BackgroundRenderer.FogType.FOG_SKY) {
 				f = 0.0F;
 				g = viewDistance;
 			} else {
@@ -226,7 +226,7 @@ public class BackgroundRenderer {
 
 			RenderSystem.fogStart(f);
 			RenderSystem.fogEnd(g);
-			RenderSystem.fogMode(GlStateManager.FogMode.field_5095);
+			RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
 			RenderSystem.setupNvFogDistance();
 		}
 	}
@@ -237,7 +237,7 @@ public class BackgroundRenderer {
 
 	@Environment(EnvType.CLIENT)
 	public static enum FogType {
-		field_20945,
-		field_20946;
+		FOG_SKY,
+		FOG_TERRAIN;
 	}
 }

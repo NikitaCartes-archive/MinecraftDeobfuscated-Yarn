@@ -26,13 +26,11 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		this.shadowOpacity = 0.75F;
 	}
 
-	protected int method_24089(ExperienceOrbEntity experienceOrbEntity, BlockPos blockPos) {
+	protected int getBlockLight(ExperienceOrbEntity experienceOrbEntity, BlockPos blockPos) {
 		return MathHelper.clamp(super.getBlockLight(experienceOrbEntity, blockPos) + 7, 0, 15);
 	}
 
-	public void method_3966(
-		ExperienceOrbEntity experienceOrbEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
-	) {
+	public void render(ExperienceOrbEntity experienceOrbEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		int j = experienceOrbEntity.getOrbSize();
 		float h = (float)(j % 4 * 16 + 0) / 64.0F;
@@ -76,7 +74,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			.next();
 	}
 
-	public Identifier method_3967(ExperienceOrbEntity experienceOrbEntity) {
+	public Identifier getTexture(ExperienceOrbEntity experienceOrbEntity) {
 		return TEXTURE;
 	}
 }

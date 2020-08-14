@@ -39,7 +39,7 @@ public abstract class Sensor<E extends LivingEntity> {
 	public abstract Set<MemoryModuleType<?>> getOutputMemoryModules();
 
 	protected static boolean method_30954(LivingEntity livingEntity, LivingEntity livingEntity2) {
-		return livingEntity.getBrain().method_29519(MemoryModuleType.field_22355, livingEntity2)
+		return livingEntity.getBrain().method_29519(MemoryModuleType.ATTACK_TARGET, livingEntity2)
 			? field_26631.test(livingEntity, livingEntity2)
 			: field_26630.test(livingEntity, livingEntity2);
 	}

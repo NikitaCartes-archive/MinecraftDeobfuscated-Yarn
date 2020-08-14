@@ -19,7 +19,7 @@ public class WanderNearTargetGoal extends Goal {
 		this.mob = mob;
 		this.speed = speed;
 		this.maxDistance = maxDistance;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override

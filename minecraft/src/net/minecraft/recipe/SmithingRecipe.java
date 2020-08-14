@@ -27,7 +27,7 @@ public class SmithingRecipe implements Recipe<Inventory> {
 
 	@Override
 	public boolean matches(Inventory inv, World world) {
-		return this.base.method_8093(inv.getStack(0)) && this.addition.method_8093(inv.getStack(1));
+		return this.base.test(inv.getStack(0)) && this.addition.test(inv.getStack(1));
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class SmithingRecipe implements Recipe<Inventory> {
 		ItemStack itemStack = this.result.copy();
 		CompoundTag compoundTag = inv.getStack(0).getTag();
 		if (compoundTag != null) {
-			itemStack.setTag(compoundTag.method_10553());
+			itemStack.setTag(compoundTag.copy());
 		}
 
 		return itemStack;
@@ -53,13 +53,13 @@ public class SmithingRecipe implements Recipe<Inventory> {
 	}
 
 	public boolean method_30029(ItemStack itemStack) {
-		return this.addition.method_8093(itemStack);
+		return this.addition.test(itemStack);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.field_16329);
+		return new ItemStack(Blocks.SMITHING_TABLE);
 	}
 
 	@Override
@@ -69,30 +69,30 @@ public class SmithingRecipe implements Recipe<Inventory> {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.field_25387;
+		return RecipeSerializer.SMITHING;
 	}
 
 	@Override
 	public RecipeType<?> getType() {
-		return RecipeType.field_25388;
+		return RecipeType.SMITHING;
 	}
 
 	public static class Serializer implements RecipeSerializer<SmithingRecipe> {
-		public SmithingRecipe method_29544(Identifier identifier, JsonObject jsonObject) {
+		public SmithingRecipe read(Identifier identifier, JsonObject jsonObject) {
 			Ingredient ingredient = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "base"));
 			Ingredient ingredient2 = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "addition"));
 			ItemStack itemStack = ShapedRecipe.getItemStack(JsonHelper.getObject(jsonObject, "result"));
 			return new SmithingRecipe(identifier, ingredient, ingredient2, itemStack);
 		}
 
-		public SmithingRecipe method_29545(Identifier identifier, PacketByteBuf packetByteBuf) {
+		public SmithingRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
 			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 			Ingredient ingredient2 = Ingredient.fromPacket(packetByteBuf);
 			ItemStack itemStack = packetByteBuf.readItemStack();
 			return new SmithingRecipe(identifier, ingredient, ingredient2, itemStack);
 		}
 
-		public void method_29543(PacketByteBuf packetByteBuf, SmithingRecipe smithingRecipe) {
+		public void write(PacketByteBuf packetByteBuf, SmithingRecipe smithingRecipe) {
 			smithingRecipe.base.write(packetByteBuf);
 			smithingRecipe.addition.write(packetByteBuf);
 			packetByteBuf.writeItemStack(smithingRecipe.result);

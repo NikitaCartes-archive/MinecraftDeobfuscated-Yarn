@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5512;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.tutorial.TutorialStep;
@@ -54,12 +55,12 @@ public class GameOptions {
 	public int viewDistance = -1;
 	public float entityDistanceScaling = 1.0F;
 	public int maxFps = 120;
-	public CloudRenderMode cloudRenderMode = CloudRenderMode.field_18164;
-	public GraphicsMode graphicsMode = GraphicsMode.field_25428;
-	public AoMode ao = AoMode.field_18146;
+	public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
+	public GraphicsMode graphicsMode = GraphicsMode.FANCY;
+	public AoMode ao = AoMode.MAX;
 	public List<String> resourcePacks = Lists.<String>newArrayList();
 	public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
-	public ChatVisibility chatVisibility = ChatVisibility.field_7538;
+	public ChatVisibility chatVisibility = ChatVisibility.FULL;
 	public double chatOpacity = 1.0;
 	public double chatLineSpacing = 0.0;
 	public double textBackgroundOpacity = 0.5;
@@ -69,7 +70,7 @@ public class GameOptions {
 	public boolean advancedItemTooltips;
 	public boolean pauseOnLostFocus = true;
 	private final Set<PlayerModelPart> enabledPlayerModelParts = Sets.<PlayerModelPart>newHashSet(PlayerModelPart.values());
-	public Arm mainArm = Arm.field_6183;
+	public Arm mainArm = Arm.RIGHT;
 	public int overrideWidth;
 	public int overrideHeight;
 	public boolean heldItemTooltips = true;
@@ -81,9 +82,10 @@ public class GameOptions {
 	public int mipmapLevels = 4;
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
-	public AttackIndicator attackIndicator = AttackIndicator.field_18151;
-	public boolean field_26780 = true;
-	public TutorialStep tutorialStep = TutorialStep.field_5650;
+	public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
+	public class_5512 field_26808 = class_5512.field_26810;
+	public boolean field_26809 = true;
+	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
 	public boolean rawMouseInput = true;
@@ -119,9 +121,9 @@ public class GameOptions {
 	public final KeyBinding keyInventory = new KeyBinding("key.inventory", 69, "key.categories.inventory");
 	public final KeyBinding keySwapHands = new KeyBinding("key.swapOffhand", 70, "key.categories.inventory");
 	public final KeyBinding keyDrop = new KeyBinding("key.drop", 81, "key.categories.inventory");
-	public final KeyBinding keyUse = new KeyBinding("key.use", InputUtil.Type.field_1672, 1, "key.categories.gameplay");
-	public final KeyBinding keyAttack = new KeyBinding("key.attack", InputUtil.Type.field_1672, 0, "key.categories.gameplay");
-	public final KeyBinding keyPickItem = new KeyBinding("key.pickItem", InputUtil.Type.field_1672, 2, "key.categories.gameplay");
+	public final KeyBinding keyUse = new KeyBinding("key.use", InputUtil.Type.MOUSE, 1, "key.categories.gameplay");
+	public final KeyBinding keyAttack = new KeyBinding("key.attack", InputUtil.Type.MOUSE, 0, "key.categories.gameplay");
+	public final KeyBinding keyPickItem = new KeyBinding("key.pickItem", InputUtil.Type.MOUSE, 2, "key.categories.gameplay");
 	public final KeyBinding keyChat = new KeyBinding("key.chat", 84, "key.categories.multiplayer");
 	public final KeyBinding keyPlayerList = new KeyBinding("key.playerlist", 258, "key.categories.multiplayer");
 	public final KeyBinding keyCommand = new KeyBinding("key.command", 47, "key.categories.multiplayer");
@@ -175,9 +177,9 @@ public class GameOptions {
 	);
 	protected MinecraftClient client;
 	private final File optionsFile;
-	public Difficulty difficulty = Difficulty.field_5802;
+	public Difficulty difficulty = Difficulty.NORMAL;
 	public boolean hudHidden;
-	private Perspective field_26677 = Perspective.field_26664;
+	private Perspective field_26677 = Perspective.FIRST_PERSON;
 	public boolean debugEnabled;
 	public boolean debugProfilerEnabled;
 	public boolean debugTpsEnabled;
@@ -188,8 +190,8 @@ public class GameOptions {
 	public float fovEffectScale = 1.0F;
 	public double gamma;
 	public int guiScale;
-	public ParticlesMode particles = ParticlesMode.field_18197;
-	public NarratorMode narrator = NarratorMode.field_18176;
+	public ParticlesMode particles = ParticlesMode.ALL;
+	public NarratorMode narrator = NarratorMode.OFF;
 	public String language = "en_us";
 	public boolean syncChunkWrites;
 
@@ -203,7 +205,7 @@ public class GameOptions {
 		}
 
 		this.viewDistance = client.is64Bit() ? 12 : 8;
-		this.syncChunkWrites = Util.getOperatingSystem() == Util.OperatingSystem.field_1133;
+		this.syncChunkWrites = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
 		this.load();
 	}
 
@@ -264,9 +266,9 @@ public class GameOptions {
 			CompoundTag compoundTag2 = this.update(compoundTag);
 			if (!compoundTag2.contains("graphicsMode") && compoundTag2.contains("fancyGraphics")) {
 				if ("true".equals(compoundTag2.getString("fancyGraphics"))) {
-					this.graphicsMode = GraphicsMode.field_25428;
+					this.graphicsMode = GraphicsMode.FANCY;
 				} else {
-					this.graphicsMode = GraphicsMode.field_25427;
+					this.graphicsMode = GraphicsMode.FAST;
 				}
 			}
 
@@ -407,9 +409,9 @@ public class GameOptions {
 
 					if ("ao".equals(string)) {
 						if ("true".equals(string2)) {
-							this.ao = AoMode.field_18146;
+							this.ao = AoMode.MAX;
 						} else if ("false".equals(string2)) {
-							this.ao = AoMode.field_18144;
+							this.ao = AoMode.OFF;
 						} else {
 							this.ao = AoMode.byId(Integer.parseInt(string2));
 						}
@@ -417,20 +419,24 @@ public class GameOptions {
 
 					if ("renderClouds".equals(string)) {
 						if ("true".equals(string2)) {
-							this.cloudRenderMode = CloudRenderMode.field_18164;
+							this.cloudRenderMode = CloudRenderMode.FANCY;
 						} else if ("false".equals(string2)) {
-							this.cloudRenderMode = CloudRenderMode.field_18162;
+							this.cloudRenderMode = CloudRenderMode.OFF;
 						} else if ("fast".equals(string2)) {
-							this.cloudRenderMode = CloudRenderMode.field_18163;
+							this.cloudRenderMode = CloudRenderMode.FAST;
 						}
 					}
 
-					if ("shieldIndicator".equals(string)) {
+					if ("attackIndicator".equals(string)) {
 						this.attackIndicator = AttackIndicator.byId(Integer.parseInt(string2));
 					}
 
+					if ("shieldIndicator".equals(string)) {
+						this.field_26808 = class_5512.method_31259(Integer.parseInt(string2));
+					}
+
 					if ("useShieldOnCrouch".equals(string)) {
-						Option.field_26779.set(this, string2);
+						Option.field_26807.set(this, string2);
 					}
 
 					if ("resourcePacks".equals(string)) {
@@ -532,7 +538,7 @@ public class GameOptions {
 					}
 
 					if ("mainHand".equals(string)) {
-						this.mainArm = "left".equals(string2) ? Arm.field_6182 : Arm.field_6183;
+						this.mainArm = "left".equals(string2) ? Arm.LEFT : Arm.RIGHT;
 					}
 
 					if ("narrator".equals(string)) {
@@ -599,7 +605,7 @@ public class GameOptions {
 		} catch (RuntimeException var4) {
 		}
 
-		return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.field_19216, tag, i);
+		return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, tag, i);
 	}
 
 	private static float parseFloat(String string) {
@@ -651,13 +657,13 @@ public class GameOptions {
 				printWriter.println("ao:" + this.ao.getId());
 				printWriter.println("biomeBlendRadius:" + this.biomeBlendRadius);
 				switch (this.cloudRenderMode) {
-					case field_18164:
+					case FANCY:
 						printWriter.println("renderClouds:true");
 						break;
-					case field_18163:
+					case FAST:
 						printWriter.println("renderClouds:fast");
 						break;
-					case field_18162:
+					case OFF:
 						printWriter.println("renderClouds:false");
 				}
 
@@ -687,9 +693,10 @@ public class GameOptions {
 				printWriter.println("chatWidth:" + this.chatWidth);
 				printWriter.println("mipmapLevels:" + this.mipmapLevels);
 				printWriter.println("useNativeTransport:" + this.useNativeTransport);
-				printWriter.println("mainHand:" + (this.mainArm == Arm.field_6182 ? "left" : "right"));
-				printWriter.println("shieldIndicator:" + this.attackIndicator.getId());
-				printWriter.println("useShieldOnCrouch:" + Option.field_26779.get(this));
+				printWriter.println("mainHand:" + (this.mainArm == Arm.LEFT ? "left" : "right"));
+				printWriter.println("attackIndicator:" + this.attackIndicator.getId());
+				printWriter.println("shieldIndicator:" + this.field_26808.method_31258());
+				printWriter.println("useShieldOnCrouch:" + Option.field_26807.get(this));
 				printWriter.println("narrator:" + this.narrator.getId());
 				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
 				printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
@@ -752,7 +759,7 @@ public class GameOptions {
 			this.client
 				.player
 				.networkHandler
-				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm, this.field_26780));
+				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm, this.field_26809));
 		}
 	}
 
@@ -781,7 +788,7 @@ public class GameOptions {
 	}
 
 	public CloudRenderMode getCloudRenderMode() {
-		return this.viewDistance >= 4 ? this.cloudRenderMode : CloudRenderMode.field_18162;
+		return this.viewDistance >= 4 ? this.cloudRenderMode : CloudRenderMode.OFF;
 	}
 
 	public boolean shouldUseNativeTransport() {

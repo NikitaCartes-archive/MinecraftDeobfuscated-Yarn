@@ -30,7 +30,7 @@ public class AnimalMateGoal extends Goal {
 		this.world = animal.world;
 		this.entityClass = entityClass;
 		this.chance = chance;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override

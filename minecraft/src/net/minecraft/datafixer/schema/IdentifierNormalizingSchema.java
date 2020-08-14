@@ -16,7 +16,7 @@ public class IdentifierNormalizingSchema extends Schema {
 			return dynamicOps.getStringValue(object).map(IdentifierNormalizingSchema::normalize);
 		}
 
-		public <T> T method_28296(DynamicOps<T> dynamicOps, String string) {
+		public <T> T write(DynamicOps<T> dynamicOps, String string) {
 			return dynamicOps.createString(string);
 		}
 

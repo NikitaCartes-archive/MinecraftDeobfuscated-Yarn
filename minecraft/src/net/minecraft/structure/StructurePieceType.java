@@ -60,7 +60,7 @@ public interface StructurePieceType {
 	StructurePieceType BURIED_TREASURE = register(BuriedTreasureGenerator.Piece::new, "BTP");
 	StructurePieceType SHIPWRECK = register(ShipwreckGenerator.Piece::new, "Shipwreck");
 	StructurePieceType NETHER_FOSSIL = register(NetherFossilGenerator.Piece::new, "NeFos");
-	StructurePieceType field_25840 = register(PoolStructurePiece::new, "jigsaw");
+	StructurePieceType JIGSAW = register(PoolStructurePiece::new, "jigsaw");
 
 	StructurePiece load(StructureManager structureManager, CompoundTag tag);
 

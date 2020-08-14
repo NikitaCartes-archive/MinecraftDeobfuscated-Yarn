@@ -31,7 +31,7 @@ public class StonecutterBlock extends Block {
 
 	public StonecutterBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class StonecutterBlock extends Block {
 			return ActionResult.SUCCESS;
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-			player.incrementStat(Stats.field_19254);
+			player.incrementStat(Stats.INTERACT_WITH_STONECUTTER);
 			return ActionResult.CONSUME;
 		}
 	}
@@ -70,7 +70,7 @@ public class StonecutterBlock extends Block {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override

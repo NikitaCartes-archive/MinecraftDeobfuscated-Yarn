@@ -38,15 +38,15 @@ public class MusicDiscItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.isOf(Blocks.field_10223) && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
+		if (blockState.isOf(Blocks.JUKEBOX) && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
 			ItemStack itemStack = context.getStack();
 			if (!world.isClient) {
-				((JukeboxBlock)Blocks.field_10223).setRecord(world, blockPos, blockState, itemStack);
+				((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
 				world.syncWorldEvent(null, 1010, blockPos, Item.getRawId(this));
 				itemStack.decrement(1);
 				PlayerEntity playerEntity = context.getPlayer();
 				if (playerEntity != null) {
-					playerEntity.incrementStat(Stats.field_15375);
+					playerEntity.incrementStat(Stats.PLAY_RECORD);
 				}
 			}
 
@@ -63,7 +63,7 @@ public class MusicDiscItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(this.getDescription().formatted(Formatting.field_1080));
+		tooltip.add(this.getDescription().formatted(Formatting.GRAY));
 	}
 
 	@Environment(EnvType.CLIENT)

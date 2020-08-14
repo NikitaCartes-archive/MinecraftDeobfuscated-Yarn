@@ -36,10 +36,10 @@ public class MobNavigation extends EntityNavigation {
 	@Override
 	public Path findPathTo(BlockPos target, int distance) {
 		if (this.world.getBlockState(target).isAir()) {
-			BlockPos blockPos = target.method_10074();
+			BlockPos blockPos = target.down();
 
 			while (blockPos.getY() > 0 && this.world.getBlockState(blockPos).isAir()) {
-				blockPos = blockPos.method_10074();
+				blockPos = blockPos.down();
 			}
 
 			if (blockPos.getY() > 0) {
@@ -80,7 +80,7 @@ public class MobNavigation extends EntityNavigation {
 			Block block = this.world.getBlockState(new BlockPos(this.entity.getX(), (double)i, this.entity.getZ())).getBlock();
 			int j = 0;
 
-			while (block == Blocks.field_10382) {
+			while (block == Blocks.WATER) {
 				block = this.world.getBlockState(new BlockPos(this.entity.getX(), (double)(++i), this.entity.getZ())).getBlock();
 				if (++j > 16) {
 					return MathHelper.floor(this.entity.getY());
@@ -195,7 +195,7 @@ public class MobNavigation extends EntityNavigation {
 							return false;
 						}
 
-						if (pathNodeType == PathNodeType.field_3 || pathNodeType == PathNodeType.field_9 || pathNodeType == PathNodeType.field_17) {
+						if (pathNodeType == PathNodeType.DAMAGE_FIRE || pathNodeType == PathNodeType.DANGER_FIRE || pathNodeType == PathNodeType.DAMAGE_OTHER) {
 							return false;
 						}
 					}
@@ -207,10 +207,10 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	protected boolean canWalkOnPath(PathNodeType pathType) {
-		if (pathType == PathNodeType.field_18) {
+		if (pathType == PathNodeType.WATER) {
 			return false;
 		} else {
-			return pathType == PathNodeType.field_14 ? false : pathType != PathNodeType.field_7;
+			return pathType == PathNodeType.LAVA ? false : pathType != PathNodeType.OPEN;
 		}
 	}
 
@@ -221,7 +221,7 @@ public class MobNavigation extends EntityNavigation {
 		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(x, y, z), new BlockPos(x + xSize - 1, y + ySize - 1, z + zSize - 1))) {
 			double d = (double)blockPos.getX() + 0.5 - entityPos.x;
 			double e = (double)blockPos.getZ() + 0.5 - entityPos.z;
-			if (!(d * lookVecX + e * lookVecZ < 0.0) && !this.world.getBlockState(blockPos).canPathfindThrough(this.world, blockPos, NavigationType.field_50)) {
+			if (!(d * lookVecX + e * lookVecZ < 0.0) && !this.world.getBlockState(blockPos).canPathfindThrough(this.world, blockPos, NavigationType.LAND)) {
 				return false;
 			}
 		}

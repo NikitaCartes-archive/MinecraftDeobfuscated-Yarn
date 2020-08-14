@@ -19,7 +19,7 @@ public class SlimeOverlayFeatureRenderer<T extends LivingEntity> extends Feature
 		super(featureRendererContext);
 	}
 
-	public void method_23200(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (!livingEntity.isInvisible()) {

@@ -58,9 +58,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class AbstractBlock {
-	protected static final Direction[] FACINGS = new Direction[]{
-		Direction.field_11039, Direction.field_11034, Direction.field_11043, Direction.field_11035, Direction.field_11033, Direction.field_11036
-	};
+	protected static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
 	protected final Material material;
 	protected final boolean collidable;
 	protected final float resistance;
@@ -89,17 +87,17 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	public void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags, int i) {
+	public void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
 	}
 
 	@Deprecated
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		switch (type) {
-			case field_50:
+			case LAND:
 				return !state.isFullCube(world, pos);
-			case field_48:
-				return world.getFluidState(pos).isIn(FluidTags.field_15517);
-			case field_51:
+			case WATER:
+				return world.getFluidState(pos).isIn(FluidTags.WATER);
+			case AIR:
 				return !state.isFullCube(world, pos);
 			default:
 				return false;
@@ -136,6 +134,17 @@ public abstract class AbstractBlock {
 		}
 	}
 
+	/**
+	 * Called when this block is used by a player.
+	 * This, by default, is bound to using the right mouse button.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution when overriding this method.
+	 * The logical side can be checked using {@link net.minecraft.world.World#isClient() world.isClient()}.
+	 * 
+	 * <p>If the action result is successful on a logical client, then the action will be sent to the logical server for processing.
+	 * 
+	 * @return an action result that specifies if using the block was successful.
+	 */
 	@Deprecated
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		return ActionResult.PASS;
@@ -148,7 +157,7 @@ public abstract class AbstractBlock {
 
 	@Deprecated
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Deprecated
@@ -168,7 +177,7 @@ public abstract class AbstractBlock {
 
 	@Deprecated
 	public FluidState getFluidState(BlockState state) {
-		return Fluids.field_15906.getDefaultState();
+		return Fluids.EMPTY.getDefaultState();
 	}
 
 	@Deprecated
@@ -177,9 +186,16 @@ public abstract class AbstractBlock {
 	}
 
 	public AbstractBlock.OffsetType getOffsetType() {
-		return AbstractBlock.OffsetType.field_10656;
+		return AbstractBlock.OffsetType.NONE;
 	}
 
+	/**
+	 * Applies a block rotation to a block state.
+	 * 
+	 * <p>By default, this returns the provided block state.
+	 * 
+	 * @return the rotated block state
+	 */
 	@Deprecated
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state;
@@ -206,7 +222,7 @@ public abstract class AbstractBlock {
 		if (identifier == LootTables.EMPTY) {
 			return Collections.emptyList();
 		} else {
-			LootContext lootContext = builder.parameter(LootContextParameters.field_1224, state).build(LootContextTypes.field_1172);
+			LootContext lootContext = builder.parameter(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
 			ServerWorld serverWorld = lootContext.getWorld();
 			LootTable lootTable = serverWorld.getServer().getLootManager().getTable(identifier);
 			return lootTable.generateLoot(lootContext);
@@ -301,7 +317,7 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
 	}
 
 	@Deprecated
@@ -543,7 +559,7 @@ public abstract class AbstractBlock {
 		}
 
 		public final boolean hasSolidTopSurface(BlockView world, BlockPos pos, Entity entity) {
-			return this.hasSolidTopSurface(world, pos, entity, Direction.field_11036);
+			return this.hasSolidTopSurface(world, pos, entity, Direction.UP);
 		}
 
 		public final boolean hasSolidTopSurface(BlockView world, BlockPos pos, Entity entity, Direction direction) {
@@ -552,13 +568,13 @@ public abstract class AbstractBlock {
 
 		public Vec3d getModelOffset(BlockView world, BlockPos pos) {
 			AbstractBlock.OffsetType offsetType = this.getBlock().getOffsetType();
-			if (offsetType == AbstractBlock.OffsetType.field_10656) {
+			if (offsetType == AbstractBlock.OffsetType.NONE) {
 				return Vec3d.ZERO;
 			} else {
 				long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
 				return new Vec3d(
 					((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5,
-					offsetType == AbstractBlock.OffsetType.field_10655 ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0,
+					offsetType == AbstractBlock.OffsetType.XYZ ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0,
 					((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5
 				);
 			}
@@ -572,11 +588,11 @@ public abstract class AbstractBlock {
 			this.getBlock().neighborUpdate(this.asBlockState(), world, pos, block, posFrom, notify);
 		}
 
-		public final void method_30101(WorldAccess worldAccess, BlockPos blockPos, int i) {
-			this.updateNeighbors(worldAccess, blockPos, i, 512);
+		public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags) {
+			this.updateNeighbors(world, pos, flags, 512);
 		}
 
-		public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags, int i) {
+		public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
 			this.getBlock();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -584,16 +600,16 @@ public abstract class AbstractBlock {
 				mutable.set(pos, direction);
 				BlockState blockState = world.getBlockState(mutable);
 				BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), world, mutable, pos);
-				Block.replace(blockState, blockState2, world, mutable, flags, i);
+				Block.replace(blockState, blockState2, world, mutable, flags, maxUpdateDepth);
 			}
 		}
 
-		public final void method_30102(WorldAccess worldAccess, BlockPos blockPos, int i) {
-			this.prepare(worldAccess, blockPos, i, 512);
+		public final void prepare(WorldAccess world, BlockPos pos, int flags) {
+			this.prepare(world, pos, flags, 512);
 		}
 
-		public void prepare(WorldAccess world, BlockPos pos, int flags, int i) {
-			this.getBlock().prepare(this.asBlockState(), world, pos, flags, i);
+		public void prepare(WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
+			this.getBlock().prepare(this.asBlockState(), world, pos, flags, maxUpdateDepth);
 		}
 
 		public void onBlockAdded(World world, BlockPos pos, BlockState state, boolean notify) {
@@ -616,8 +632,8 @@ public abstract class AbstractBlock {
 			this.getBlock().onEntityCollision(this.asBlockState(), world, pos, entity);
 		}
 
-		public void onStacksDropped(ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
-			this.getBlock().onStacksDropped(this.asBlockState(), serverWorld, pos, stack);
+		public void onStacksDropped(ServerWorld world, BlockPos pos, ItemStack stack) {
+			this.getBlock().onStacksDropped(this.asBlockState(), world, pos, stack);
 		}
 
 		public List<ItemStack> getDroppedStacks(LootContext.Builder builder) {
@@ -704,7 +720,7 @@ public abstract class AbstractBlock {
 		}
 
 		public boolean isSideSolidFullSquare(BlockView world, BlockPos pos, Direction direction) {
-			return this.isSideSolid(world, pos, direction, SideShapeType.field_25822);
+			return this.isSideSolid(world, pos, direction, SideShapeType.FULL);
 		}
 
 		public boolean isSideSolid(BlockView world, BlockPos pos, Direction direction, SideShapeType shapeType) {
@@ -736,32 +752,32 @@ public abstract class AbstractBlock {
 
 			private ShapeCache(BlockState state) {
 				Block block = state.getBlock();
-				this.fullOpaque = state.isOpaqueFullCube(EmptyBlockView.field_12294, BlockPos.ORIGIN);
-				this.translucent = block.isTranslucent(state, EmptyBlockView.field_12294, BlockPos.ORIGIN);
-				this.lightSubtracted = block.getOpacity(state, EmptyBlockView.field_12294, BlockPos.ORIGIN);
+				this.fullOpaque = state.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				this.translucent = block.isTranslucent(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				this.lightSubtracted = block.getOpacity(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 				if (!state.isOpaque()) {
 					this.extrudedFaces = null;
 				} else {
 					this.extrudedFaces = new VoxelShape[DIRECTIONS.length];
-					VoxelShape voxelShape = block.getCullingShape(state, EmptyBlockView.field_12294, BlockPos.ORIGIN);
+					VoxelShape voxelShape = block.getCullingShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 
 					for (Direction direction : DIRECTIONS) {
 						this.extrudedFaces[direction.ordinal()] = VoxelShapes.extrudeFace(voxelShape, direction);
 					}
 				}
 
-				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.field_12294, BlockPos.ORIGIN, ShapeContext.absent());
+				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
 				this.exceedsCube = Arrays.stream(Direction.Axis.values())
 					.anyMatch(axis -> this.collisionShape.getMin(axis) < 0.0 || this.collisionShape.getMax(axis) > 1.0);
 				this.solidSides = new boolean[DIRECTIONS.length * SHAPE_TYPE_LENGTH];
 
 				for (Direction direction2 : DIRECTIONS) {
 					for (SideShapeType sideShapeType : SideShapeType.values()) {
-						this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.field_12294, BlockPos.ORIGIN, direction2);
+						this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
 					}
 				}
 
-				this.isFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.field_12294, BlockPos.ORIGIN));
+				this.isFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
 			}
 
 			public boolean isSideSolid(Direction direction, SideShapeType shapeType) {
@@ -779,9 +795,9 @@ public abstract class AbstractBlock {
 	}
 
 	public static enum OffsetType {
-		field_10656,
-		field_10657,
-		field_10655;
+		NONE,
+		XZ,
+		XYZ;
 	}
 
 	public static class Settings {
@@ -801,7 +817,7 @@ public abstract class AbstractBlock {
 		private boolean opaque = true;
 		private boolean isAir;
 		private AbstractBlock.TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(
-					world, pos, Direction.field_11036
+					world, pos, Direction.UP
 				)
 				&& state.getLuminance() < 14;
 		private AbstractBlock.ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos);
@@ -855,12 +871,20 @@ public abstract class AbstractBlock {
 			return settings;
 		}
 
+		/**
+		 * Specifies that a block should have no collision bounds.
+		 * 
+		 * <p>This also marks a block as non-opaque.
+		 */
 		public AbstractBlock.Settings noCollision() {
 			this.collidable = false;
 			this.opaque = false;
 			return this;
 		}
 
+		/**
+		 * Specifies that a block should be non-opaque and light should be allowed to pass through.
+		 */
 		public AbstractBlock.Settings nonOpaque() {
 			this.opaque = false;
 			return this;
@@ -897,6 +921,9 @@ public abstract class AbstractBlock {
 			return this;
 		}
 
+		/**
+		 * Specifies that a block is broken instantly.
+		 */
 		public AbstractBlock.Settings breakInstantly() {
 			return this.strength(0.0F);
 		}
@@ -911,16 +938,29 @@ public abstract class AbstractBlock {
 			return this;
 		}
 
+		/**
+		 * Specifies that a block's collision bounds can dynamically resize.
+		 * By default, block collision bounds are cached for performance.
+		 * By invoking this method, the game will not cache the block collision bounds and instead calculate the collision bounds when needed.
+		 */
 		public AbstractBlock.Settings dynamicBounds() {
 			this.dynamicBounds = true;
 			return this;
 		}
 
+		/**
+		 * Specifies that a block drops nothing when broken.
+		 */
 		public AbstractBlock.Settings dropsNothing() {
 			this.lootTableId = LootTables.EMPTY;
 			return this;
 		}
 
+		/**
+		 * Specifies that a block should drop the same items as a provided block.
+		 * 
+		 * @param source the block to copy item drops from
+		 */
 		public AbstractBlock.Settings dropsLike(Block source) {
 			this.lootTableId = source.getLootTableId();
 			return this;
@@ -931,6 +971,11 @@ public abstract class AbstractBlock {
 			return this;
 		}
 
+		/**
+		 * Specifies logic that calculates whether an entity can spawn on a block.
+		 * 
+		 * @param predicate the predicate used to calculate whether an entity can spawn on this block
+		 */
 		public AbstractBlock.Settings allowsSpawning(AbstractBlock.TypedContextPredicate<EntityType<?>> predicate) {
 			this.allowsSpawningPredicate = predicate;
 			return this;
@@ -941,6 +986,9 @@ public abstract class AbstractBlock {
 			return this;
 		}
 
+		/**
+		 * Specifies logic that calculates whether an entity should suffocate if inside of a block.
+		 */
 		public AbstractBlock.Settings suffocates(AbstractBlock.ContextPredicate predicate) {
 			this.suffocationPredicate = predicate;
 			return this;

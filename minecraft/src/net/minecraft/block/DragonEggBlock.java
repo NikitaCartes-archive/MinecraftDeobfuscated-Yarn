@@ -50,7 +50,7 @@ public class DragonEggBlock extends FallingBlock {
 						double e = MathHelper.lerp(d, (double)blockPos.getX(), (double)pos.getX()) + (world.random.nextDouble() - 0.5) + 0.5;
 						double k = MathHelper.lerp(d, (double)blockPos.getY(), (double)pos.getY()) + world.random.nextDouble() - 0.5;
 						double l = MathHelper.lerp(d, (double)blockPos.getZ(), (double)pos.getZ()) + (world.random.nextDouble() - 0.5) + 0.5;
-						world.addParticle(ParticleTypes.field_11214, e, k, l, (double)f, (double)g, (double)h);
+						world.addParticle(ParticleTypes.PORTAL, e, k, l, (double)f, (double)g, (double)h);
 					}
 				} else {
 					world.setBlockState(blockPos, state, 2);

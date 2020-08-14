@@ -16,8 +16,8 @@ public class FlightMoveControl extends MoveControl {
 
 	@Override
 	public void tick() {
-		if (this.state == MoveControl.State.field_6378) {
-			this.state = MoveControl.State.field_6377;
+		if (this.state == MoveControl.State.MOVE_TO) {
+			this.state = MoveControl.State.WAIT;
 			this.entity.setNoGravity(true);
 			double d = this.targetX - this.entity.getX();
 			double e = this.targetY - this.entity.getY();
@@ -33,9 +33,9 @@ public class FlightMoveControl extends MoveControl {
 			this.entity.yaw = this.changeAngle(this.entity.yaw, h, 90.0F);
 			float i;
 			if (this.entity.isOnGround()) {
-				i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.field_23719));
+				i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 			} else {
-				i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.field_23720));
+				i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_FLYING_SPEED));
 			}
 
 			this.entity.setMovementSpeed(i);

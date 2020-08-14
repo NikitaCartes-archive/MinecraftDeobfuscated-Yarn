@@ -22,7 +22,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		super(codec);
 	}
 
-	protected boolean method_28638(
+	protected boolean shouldStartAt(
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		long l,
@@ -48,7 +48,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28639(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
@@ -63,7 +63,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			this.children.add(mineshaftRoom);
 			mineshaftRoom.placeJigsaw(mineshaftRoom, this.children, this.random);
 			this.setBoundingBoxFromChildren();
-			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.field_13691) {
+			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
 				int k = -5;
 				int l = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
 				this.boundingBox.offset(0, l, 0);
@@ -78,8 +78,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	}
 
 	public static enum Type implements StringIdentifiable {
-		field_13692("normal"),
-		field_13691("mesa");
+		NORMAL("normal"),
+		MESA("mesa");
 
 		public static final Codec<MineshaftFeature.Type> field_24839 = StringIdentifiable.createCodec(MineshaftFeature.Type::values, MineshaftFeature.Type::byName);
 		private static final Map<String, MineshaftFeature.Type> nameMap = (Map<String, MineshaftFeature.Type>)Arrays.stream(values())
@@ -99,7 +99,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		}
 
 		public static MineshaftFeature.Type byIndex(int index) {
-			return index >= 0 && index < values().length ? values()[index] : field_13692;
+			return index >= 0 && index < values().length ? values()[index] : NORMAL;
 		}
 
 		@Override

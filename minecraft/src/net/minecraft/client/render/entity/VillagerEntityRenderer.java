@@ -22,11 +22,11 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 
-	public Identifier method_4151(VillagerEntity villagerEntity) {
+	public Identifier getTexture(VillagerEntity villagerEntity) {
 		return TEXTURE;
 	}
 
-	protected void method_4149(VillagerEntity villagerEntity, MatrixStack matrixStack, float f) {
+	protected void scale(VillagerEntity villagerEntity, MatrixStack matrixStack, float f) {
 		float g = 0.9375F;
 		if (villagerEntity.isBaby()) {
 			g = (float)((double)g * 0.5);

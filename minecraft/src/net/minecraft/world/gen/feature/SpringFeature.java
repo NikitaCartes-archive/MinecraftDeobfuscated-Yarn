@@ -12,13 +12,13 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13979(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig
 	) {
 		if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.up()).getBlock())) {
 			return false;
 		} else if (springFeatureConfig.requiresBlockBelow
-			&& !springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.method_10074()).getBlock())) {
+			&& !springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.down()).getBlock())) {
 			return false;
 		} else {
 			BlockState blockState = structureWorldAccess.getBlockState(blockPos);
@@ -43,7 +43,7 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 					j++;
 				}
 
-				if (springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.method_10074()).getBlock())) {
+				if (springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.down()).getBlock())) {
 					j++;
 				}
 
@@ -64,7 +64,7 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 					k++;
 				}
 
-				if (structureWorldAccess.isAir(blockPos.method_10074())) {
+				if (structureWorldAccess.isAir(blockPos.down())) {
 					k++;
 				}
 

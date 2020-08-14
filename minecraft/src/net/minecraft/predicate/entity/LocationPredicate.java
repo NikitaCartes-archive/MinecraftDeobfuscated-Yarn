@@ -210,7 +210,7 @@ public class LocationPredicate {
 				? (RegistryKey)Identifier.CODEC
 					.parse(JsonOps.INSTANCE, jsonObject.get("dimension"))
 					.resultOrPartial(field_24732::error)
-					.map(identifier -> RegistryKey.of(Registry.field_25298, identifier))
+					.map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier))
 					.orElse(null)
 				: null;
 			StructureFeature<?> structureFeature = jsonObject.has("feature")

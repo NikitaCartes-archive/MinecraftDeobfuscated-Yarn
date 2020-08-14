@@ -291,14 +291,14 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	public ModelTransformation getTransformations() {
-		Transformation transformation = this.getTransformation(ModelTransformation.Mode.field_4323);
-		Transformation transformation2 = this.getTransformation(ModelTransformation.Mode.field_4320);
-		Transformation transformation3 = this.getTransformation(ModelTransformation.Mode.field_4321);
-		Transformation transformation4 = this.getTransformation(ModelTransformation.Mode.field_4322);
-		Transformation transformation5 = this.getTransformation(ModelTransformation.Mode.field_4316);
-		Transformation transformation6 = this.getTransformation(ModelTransformation.Mode.field_4317);
-		Transformation transformation7 = this.getTransformation(ModelTransformation.Mode.field_4318);
-		Transformation transformation8 = this.getTransformation(ModelTransformation.Mode.field_4319);
+		Transformation transformation = this.getTransformation(ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND);
+		Transformation transformation2 = this.getTransformation(ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND);
+		Transformation transformation3 = this.getTransformation(ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND);
+		Transformation transformation4 = this.getTransformation(ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND);
+		Transformation transformation5 = this.getTransformation(ModelTransformation.Mode.HEAD);
+		Transformation transformation6 = this.getTransformation(ModelTransformation.Mode.GUI);
+		Transformation transformation7 = this.getTransformation(ModelTransformation.Mode.GROUND);
+		Transformation transformation8 = this.getTransformation(ModelTransformation.Mode.FIXED);
 		return new ModelTransformation(
 			transformation, transformation2, transformation3, transformation4, transformation5, transformation6, transformation7, transformation8
 		);
@@ -316,7 +316,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<JsonUnbakedModel> {
-		public JsonUnbakedModel method_3451(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public JsonUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			List<ModelElement> list = this.deserializeElements(jsonDeserializationContext, jsonObject);
 			String string = this.deserializeParent(jsonObject);

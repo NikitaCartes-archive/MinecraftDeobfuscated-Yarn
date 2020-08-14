@@ -42,7 +42,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	public CocoaBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -63,21 +63,21 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		Block block = world.getBlockState(pos.offset(state.get(FACING))).getBlock();
-		return block.isIn(BlockTags.field_15474);
+		return block.isIn(BlockTags.JUNGLE_LOGS);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		int i = (Integer)state.get(AGE);
 		switch ((Direction)state.get(FACING)) {
-			case field_11035:
+			case SOUTH:
 				return AGE_TO_SOUTH_SHAPE[i];
-			case field_11043:
+			case NORTH:
 			default:
 				return AGE_TO_NORTH_SHAPE[i];
-			case field_11039:
+			case WEST:
 				return AGE_TO_WEST_SHAPE[i];
-			case field_11034:
+			case EAST:
 				return AGE_TO_EAST_SHAPE[i];
 		}
 	}
@@ -104,7 +104,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction == state.get(FACING) && !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 

@@ -51,14 +51,14 @@ public abstract class PathAwareEntity extends MobEntity {
 			this.updateForLeashLength(f);
 			if (f > 10.0F) {
 				this.detachLeash(true, true);
-				this.goalSelector.disableControl(Goal.Control.field_18405);
+				this.goalSelector.disableControl(Goal.Control.MOVE);
 			} else if (f > 6.0F) {
 				double d = (entity.getX() - this.getX()) / (double)f;
 				double e = (entity.getY() - this.getY()) / (double)f;
 				double g = (entity.getZ() - this.getZ()) / (double)f;
 				this.setVelocity(this.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
 			} else {
-				this.goalSelector.enableControl(Goal.Control.field_18405);
+				this.goalSelector.enableControl(Goal.Control.MOVE);
 				float h = 2.0F;
 				Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.getY() - this.getY(), entity.getZ() - this.getZ())
 					.normalize()

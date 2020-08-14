@@ -39,7 +39,7 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 		super(featureRendererContext);
 	}
 
-	public void method_4191(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LlamaEntity llamaEntity, float f, float g, float h, float j, float k, float l
 	) {
 		DyeColor dyeColor = llamaEntity.getCarpetColor();
@@ -55,7 +55,7 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 		}
 
 		this.getContextModel().copyStateTo(this.model);
-		this.model.method_22962(llamaEntity, f, g, j, k, l);
+		this.model.setAngles(llamaEntity, f, g, j, k, l);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 	}

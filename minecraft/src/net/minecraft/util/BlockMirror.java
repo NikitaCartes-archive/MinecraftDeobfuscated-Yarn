@@ -4,9 +4,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
 
 public enum BlockMirror {
-	field_11302(DirectionTransformation.field_23292),
-	field_11300(DirectionTransformation.field_23267),
-	field_11301(DirectionTransformation.field_23323);
+	NONE(DirectionTransformation.IDENTITY),
+	LEFT_RIGHT(DirectionTransformation.INVERT_Z),
+	FRONT_BACK(DirectionTransformation.INVERT_X);
 
 	private final DirectionTransformation directionTransformation;
 
@@ -18,9 +18,9 @@ public enum BlockMirror {
 		int i = fullTurn / 2;
 		int j = rotation > i ? rotation - fullTurn : rotation;
 		switch (this) {
-			case field_11301:
+			case FRONT_BACK:
 				return (fullTurn - j) % fullTurn;
-			case field_11300:
+			case LEFT_RIGHT:
 				return (i - j + fullTurn) % fullTurn;
 			default:
 				return rotation;
@@ -29,16 +29,16 @@ public enum BlockMirror {
 
 	public BlockRotation getRotation(Direction direction) {
 		Direction.Axis axis = direction.getAxis();
-		return (this != field_11300 || axis != Direction.Axis.field_11051) && (this != field_11301 || axis != Direction.Axis.field_11048)
-			? BlockRotation.field_11467
-			: BlockRotation.field_11464;
+		return (this != LEFT_RIGHT || axis != Direction.Axis.Z) && (this != FRONT_BACK || axis != Direction.Axis.X)
+			? BlockRotation.NONE
+			: BlockRotation.CLOCKWISE_180;
 	}
 
 	public Direction apply(Direction direction) {
-		if (this == field_11301 && direction.getAxis() == Direction.Axis.field_11048) {
+		if (this == FRONT_BACK && direction.getAxis() == Direction.Axis.X) {
 			return direction.getOpposite();
 		} else {
-			return this == field_11300 && direction.getAxis() == Direction.Axis.field_11051 ? direction.getOpposite() : direction;
+			return this == LEFT_RIGHT && direction.getAxis() == Direction.Axis.Z ? direction.getOpposite() : direction;
 		}
 	}
 

@@ -34,7 +34,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5505;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
@@ -51,6 +50,7 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
@@ -118,17 +118,17 @@ public class LevelStorage {
 			(GeneratorOptions)dataResult.resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error))
 				.orElseGet(
 					() -> {
-						Registry<DimensionType> registry = (Registry<DimensionType>)class_5505.method_31148(Registry.DIMENSION_TYPE_KEY)
+						Registry<DimensionType> registry = (Registry<DimensionType>)RegistryLookupCodec.of(Registry.DIMENSION_TYPE_KEY)
 							.codec()
 							.parse(dynamic3)
 							.resultOrPartial(Util.method_29188("Dimension type registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get dimension registry"));
-						Registry<Biome> registry2 = (Registry<Biome>)class_5505.method_31148(Registry.BIOME_KEY)
+						Registry<Biome> registry2 = (Registry<Biome>)RegistryLookupCodec.of(Registry.BIOME_KEY)
 							.codec()
 							.parse(dynamic3)
 							.resultOrPartial(Util.method_29188("Biome registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get biome registry"));
-						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)class_5505.method_31148(Registry.field_26374)
+						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)RegistryLookupCodec.of(Registry.NOISE_SETTINGS_WORLDGEN)
 							.codec()
 							.parse(dynamic3)
 							.resultOrPartial(Util.method_29188("Noise settings registry: ", LOGGER::error))
@@ -198,12 +198,12 @@ public class LevelStorage {
 	@Nullable
 	private static DataPackSettings method_29583(File file, DataFixer dataFixer) {
 		try {
-			CompoundTag compoundTag = NbtIo.method_30613(file);
+			CompoundTag compoundTag = NbtIo.readCompressed(file);
 			CompoundTag compoundTag2 = compoundTag.getCompound("Data");
 			compoundTag2.remove("Player");
 			int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
 			Dynamic<Tag> dynamic = dataFixer.update(
-				DataFixTypes.field_19212.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion()
+				DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion()
 			);
 			return (DataPackSettings)dynamic.get("DataPacks").result().map(LevelStorage::method_29580).orElse(DataPackSettings.SAFE_MODE);
 		} catch (Exception var6) {
@@ -215,13 +215,13 @@ public class LevelStorage {
 	private static BiFunction<File, DataFixer, LevelProperties> readLevelProperties(DynamicOps<Tag> dynamicOps, DataPackSettings dataPackSettings) {
 		return (file, dataFixer) -> {
 			try {
-				CompoundTag compoundTag = NbtIo.method_30613(file);
+				CompoundTag compoundTag = NbtIo.readCompressed(file);
 				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
 				CompoundTag compoundTag3 = compoundTag2.contains("Player", 10) ? compoundTag2.getCompound("Player") : null;
 				compoundTag2.remove("Player");
 				int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
 				Dynamic<Tag> dynamic = dataFixer.update(
-					DataFixTypes.field_19212.getTypeReference(), new Dynamic<>(dynamicOps, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion()
+					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(dynamicOps, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion()
 				);
 				Pair<GeneratorOptions, Lifecycle> pair = method_29010(dynamic, dataFixer, i);
 				SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
@@ -237,12 +237,12 @@ public class LevelStorage {
 	private BiFunction<File, DataFixer, LevelSummary> method_29014(File file, boolean bl) {
 		return (file2, dataFixer) -> {
 			try {
-				CompoundTag compoundTag = NbtIo.method_30613(file2);
+				CompoundTag compoundTag = NbtIo.readCompressed(file2);
 				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
 				compoundTag2.remove("Player");
 				int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
 				Dynamic<Tag> dynamic = dataFixer.update(
-					DataFixTypes.field_19212.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion()
+					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion()
 				);
 				SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
 				int j = saveVersionInfo.getLevelFormatVersion();
@@ -368,7 +368,7 @@ public class LevelStorage {
 
 			try {
 				File file2 = File.createTempFile("level", ".dat", file);
-				NbtIo.method_30614(compoundTag3, file2);
+				NbtIo.writeCompressed(compoundTag3, file2);
 				File file3 = new File(file, "level.dat_old");
 				File file4 = new File(file, "level.dat");
 				Util.backupAndReplace(file4, file2, file3);
@@ -392,7 +392,7 @@ public class LevelStorage {
 
 				try {
 					Files.walkFileTree(this.directory, new SimpleFileVisitor<Path>() {
-						public FileVisitResult method_27019(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
+						public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
 							if (!path.equals(path)) {
 								LevelStorage.LOGGER.debug("Deleting {}", path);
 								Files.delete(path);
@@ -401,7 +401,7 @@ public class LevelStorage {
 							return FileVisitResult.CONTINUE;
 						}
 
-						public FileVisitResult method_27018(Path path, IOException iOException) throws IOException {
+						public FileVisitResult postVisitDirectory(Path path, IOException iOException) throws IOException {
 							if (iOException != null) {
 								throw iOException;
 							} else {
@@ -438,10 +438,10 @@ public class LevelStorage {
 			if (file.exists()) {
 				File file2 = new File(file, "level.dat");
 				if (file2.exists()) {
-					CompoundTag compoundTag = NbtIo.method_30613(file2);
+					CompoundTag compoundTag = NbtIo.readCompressed(file2);
 					CompoundTag compoundTag2 = compoundTag.getCompound("Data");
 					compoundTag2.putString("LevelName", name);
-					NbtIo.method_30614(compoundTag, file2);
+					NbtIo.writeCompressed(compoundTag, file2);
 				}
 			}
 		}
@@ -465,7 +465,7 @@ public class LevelStorage {
 			try {
 				final Path path3 = Paths.get(this.directoryName);
 				Files.walkFileTree(this.directory, new SimpleFileVisitor<Path>() {
-					public FileVisitResult method_246(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
+					public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
 						if (path.endsWith("session.lock")) {
 							return FileVisitResult.CONTINUE;
 						} else {

@@ -17,8 +17,8 @@ import net.minecraft.text.TranslatableText;
 
 public class TeamMsgCommand {
 	private static final Style STYLE = Style.EMPTY
-		.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, new TranslatableText("chat.type.team.hover")))
-		.withClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/teammsg "));
+		.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.type.team.hover")))
+		.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teammsg "));
 	private static final SimpleCommandExceptionType NO_TEAM_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.teammsg.failed.noteam"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

@@ -38,9 +38,9 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
-				.with(FACING, Direction.field_11043)
+				.with(FACING, Direction.NORTH)
 				.with(OPEN, Boolean.valueOf(false))
-				.with(HALF, BlockHalf.field_12617)
+				.with(HALF, BlockHalf.BOTTOM)
 				.with(POWERED, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
@@ -49,17 +49,17 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if (!(Boolean)state.get(OPEN)) {
-			return state.get(HALF) == BlockHalf.field_12619 ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
+			return state.get(HALF) == BlockHalf.TOP ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
 		} else {
 			switch ((Direction)state.get(FACING)) {
-				case field_11043:
+				case NORTH:
 				default:
 					return NORTH_SHAPE;
-				case field_11035:
+				case SOUTH:
 					return SOUTH_SHAPE;
-				case field_11039:
+				case WEST:
 					return WEST_SHAPE;
-				case field_11034:
+				case EAST:
 					return EAST_SHAPE;
 			}
 		}
@@ -68,11 +68,11 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		switch (type) {
-			case field_50:
+			case LAND:
 				return (Boolean)state.get(OPEN);
-			case field_48:
+			case WATER:
 				return (Boolean)state.get(WATERLOGGED);
-			case field_51:
+			case AIR:
 				return (Boolean)state.get(OPEN);
 			default:
 				return false;
@@ -129,11 +129,9 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		Direction direction = ctx.getSide();
 		if (!ctx.canReplaceExisting() && direction.getAxis().isHorizontal()) {
-			blockState = blockState.with(FACING, direction)
-				.with(HALF, ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5 ? BlockHalf.field_12619 : BlockHalf.field_12617);
+			blockState = blockState.with(FACING, direction).with(HALF, ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
 		} else {
-			blockState = blockState.with(FACING, ctx.getPlayerFacing().getOpposite())
-				.with(HALF, direction == Direction.field_11036 ? BlockHalf.field_12617 : BlockHalf.field_12619);
+			blockState = blockState.with(FACING, ctx.getPlayerFacing().getOpposite()).with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
 		}
 
 		if (ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos())) {

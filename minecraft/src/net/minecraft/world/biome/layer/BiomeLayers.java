@@ -99,55 +99,55 @@ public class BiomeLayers {
 	private static <T extends LayerSampler, C extends LayerSampleContext<T>> LayerFactory<T> build(
 		boolean old, int biomeSize, int riverSize, LongFunction<C> contextProvider
 	) {
-		LayerFactory<T> layerFactory = ContinentLayer.field_16103.create((LayerSampleContext<T>)contextProvider.apply(1L));
-		layerFactory = ScaleLayer.field_16198.create((LayerSampleContext<T>)contextProvider.apply(2000L), layerFactory);
-		layerFactory = IncreaseEdgeCurvatureLayer.field_16058.create((LayerSampleContext<T>)contextProvider.apply(1L), layerFactory);
-		layerFactory = ScaleLayer.field_16196.create((LayerSampleContext<T>)contextProvider.apply(2001L), layerFactory);
-		layerFactory = IncreaseEdgeCurvatureLayer.field_16058.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
-		layerFactory = IncreaseEdgeCurvatureLayer.field_16058.create((LayerSampleContext<T>)contextProvider.apply(50L), layerFactory);
-		layerFactory = IncreaseEdgeCurvatureLayer.field_16058.create((LayerSampleContext<T>)contextProvider.apply(70L), layerFactory);
-		layerFactory = AddIslandLayer.field_16158.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
-		LayerFactory<T> layerFactory2 = OceanTemperatureLayer.field_16105.create((LayerSampleContext<T>)contextProvider.apply(2L));
-		layerFactory2 = stack(2001L, ScaleLayer.field_16196, layerFactory2, 6, contextProvider);
-		layerFactory = AddColdClimatesLayer.field_16059.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
-		layerFactory = IncreaseEdgeCurvatureLayer.field_16058.create((LayerSampleContext<T>)contextProvider.apply(3L), layerFactory);
-		layerFactory = AddClimateLayers.AddTemperateBiomesLayer.field_17399.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
-		layerFactory = AddClimateLayers.AddCoolBiomesLayer.field_17401.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
-		layerFactory = AddClimateLayers.AddSpecialBiomesLayer.field_16051.create((LayerSampleContext<T>)contextProvider.apply(3L), layerFactory);
-		layerFactory = ScaleLayer.field_16196.create((LayerSampleContext<T>)contextProvider.apply(2002L), layerFactory);
-		layerFactory = ScaleLayer.field_16196.create((LayerSampleContext<T>)contextProvider.apply(2003L), layerFactory);
-		layerFactory = IncreaseEdgeCurvatureLayer.field_16058.create((LayerSampleContext<T>)contextProvider.apply(4L), layerFactory);
-		layerFactory = AddMushroomIslandLayer.field_16055.create((LayerSampleContext<T>)contextProvider.apply(5L), layerFactory);
-		layerFactory = AddDeepOceanLayer.field_16052.create((LayerSampleContext<T>)contextProvider.apply(4L), layerFactory);
-		layerFactory = stack(1000L, ScaleLayer.field_16196, layerFactory, 0, contextProvider);
-		LayerFactory<T> layerFactory3 = stack(1000L, ScaleLayer.field_16196, layerFactory, 0, contextProvider);
-		layerFactory3 = SimpleLandNoiseLayer.field_16157.create((LayerSampleContext)contextProvider.apply(100L), layerFactory3);
+		LayerFactory<T> layerFactory = ContinentLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(1L));
+		layerFactory = ScaleLayer.FUZZY.create((LayerSampleContext<T>)contextProvider.apply(2000L), layerFactory);
+		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(1L), layerFactory);
+		layerFactory = ScaleLayer.NORMAL.create((LayerSampleContext<T>)contextProvider.apply(2001L), layerFactory);
+		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
+		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(50L), layerFactory);
+		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(70L), layerFactory);
+		layerFactory = AddIslandLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
+		LayerFactory<T> layerFactory2 = OceanTemperatureLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(2L));
+		layerFactory2 = stack(2001L, ScaleLayer.NORMAL, layerFactory2, 6, contextProvider);
+		layerFactory = AddColdClimatesLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
+		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(3L), layerFactory);
+		layerFactory = AddClimateLayers.AddTemperateBiomesLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
+		layerFactory = AddClimateLayers.AddCoolBiomesLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(2L), layerFactory);
+		layerFactory = AddClimateLayers.AddSpecialBiomesLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(3L), layerFactory);
+		layerFactory = ScaleLayer.NORMAL.create((LayerSampleContext<T>)contextProvider.apply(2002L), layerFactory);
+		layerFactory = ScaleLayer.NORMAL.create((LayerSampleContext<T>)contextProvider.apply(2003L), layerFactory);
+		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(4L), layerFactory);
+		layerFactory = AddMushroomIslandLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(5L), layerFactory);
+		layerFactory = AddDeepOceanLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(4L), layerFactory);
+		layerFactory = stack(1000L, ScaleLayer.NORMAL, layerFactory, 0, contextProvider);
+		LayerFactory<T> layerFactory3 = stack(1000L, ScaleLayer.NORMAL, layerFactory, 0, contextProvider);
+		layerFactory3 = SimpleLandNoiseLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(100L), layerFactory3);
 		LayerFactory<T> layerFactory4 = new SetBaseBiomesLayer(old).create((LayerSampleContext<T>)contextProvider.apply(200L), layerFactory);
-		layerFactory4 = AddBambooJungleLayer.field_16120.create((LayerSampleContext)contextProvider.apply(1001L), layerFactory4);
-		layerFactory4 = stack(1000L, ScaleLayer.field_16196, layerFactory4, 2, contextProvider);
-		layerFactory4 = EaseBiomeEdgeLayer.field_16091.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4);
-		LayerFactory<T> layerFactory5 = stack(1000L, ScaleLayer.field_16196, layerFactory3, 2, contextProvider);
-		layerFactory4 = AddHillsLayer.field_16134.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4, layerFactory5);
-		layerFactory3 = stack(1000L, ScaleLayer.field_16196, layerFactory3, 2, contextProvider);
-		layerFactory3 = stack(1000L, ScaleLayer.field_16196, layerFactory3, riverSize, contextProvider);
-		layerFactory3 = NoiseToRiverLayer.field_16168.create((LayerSampleContext)contextProvider.apply(1L), layerFactory3);
-		layerFactory3 = SmoothenShorelineLayer.field_16171.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory3);
-		layerFactory4 = AddSunflowerPlainsLayer.field_16155.create((LayerSampleContext)contextProvider.apply(1001L), layerFactory4);
+		layerFactory4 = AddBambooJungleLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1001L), layerFactory4);
+		layerFactory4 = stack(1000L, ScaleLayer.NORMAL, layerFactory4, 2, contextProvider);
+		layerFactory4 = EaseBiomeEdgeLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4);
+		LayerFactory<T> layerFactory5 = stack(1000L, ScaleLayer.NORMAL, layerFactory3, 2, contextProvider);
+		layerFactory4 = AddHillsLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4, layerFactory5);
+		layerFactory3 = stack(1000L, ScaleLayer.NORMAL, layerFactory3, 2, contextProvider);
+		layerFactory3 = stack(1000L, ScaleLayer.NORMAL, layerFactory3, riverSize, contextProvider);
+		layerFactory3 = NoiseToRiverLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1L), layerFactory3);
+		layerFactory3 = SmoothenShorelineLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory3);
+		layerFactory4 = AddSunflowerPlainsLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1001L), layerFactory4);
 
 		for (int i = 0; i < biomeSize; i++) {
-			layerFactory4 = ScaleLayer.field_16196.create((LayerSampleContext)contextProvider.apply((long)(1000 + i)), layerFactory4);
+			layerFactory4 = ScaleLayer.NORMAL.create((LayerSampleContext)contextProvider.apply((long)(1000 + i)), layerFactory4);
 			if (i == 0) {
-				layerFactory4 = IncreaseEdgeCurvatureLayer.field_16058.create((LayerSampleContext)contextProvider.apply(3L), layerFactory4);
+				layerFactory4 = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(3L), layerFactory4);
 			}
 
 			if (i == 1 || biomeSize == 1) {
-				layerFactory4 = AddEdgeBiomesLayer.field_16184.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4);
+				layerFactory4 = AddEdgeBiomesLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4);
 			}
 		}
 
-		layerFactory4 = SmoothenShorelineLayer.field_16171.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4);
-		layerFactory4 = AddRiversLayer.field_16161.create((LayerSampleContext)contextProvider.apply(100L), layerFactory4, layerFactory3);
-		return ApplyOceanTemperatureLayer.field_16121.create((LayerSampleContext<T>)contextProvider.apply(100L), layerFactory4, layerFactory2);
+		layerFactory4 = SmoothenShorelineLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4);
+		layerFactory4 = AddRiversLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(100L), layerFactory4, layerFactory3);
+		return ApplyOceanTemperatureLayer.INSTANCE.create((LayerSampleContext<T>)contextProvider.apply(100L), layerFactory4, layerFactory2);
 	}
 
 	public static BiomeLayerSampler build(long seed, boolean old, int biomeSize, int riverSize) {

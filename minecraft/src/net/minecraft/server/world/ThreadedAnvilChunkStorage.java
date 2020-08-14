@@ -142,7 +142,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.chunkGenerator = chunkGenerator;
 		this.mainThreadExecutor = mainThreadExecutor;
 		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(workerExecutor, "worldgen");
-		MessageListener<Runnable> messageListener = MessageListener.create("main", mainThreadExecutor::method_18858);
+		MessageListener<Runnable> messageListener = MessageListener.create("main", mainThreadExecutor::send);
 		this.worldGenerationProgressListener = worldGenerationProgressListener;
 		TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(workerExecutor, "light");
 		this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), workerExecutor, Integer.MAX_VALUE);
@@ -280,7 +280,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkPos pos) {
-		return this.getRegion(pos, 2, i -> ChunkStatus.field_12803)
+		return this.getRegion(pos, 2, i -> ChunkStatus.FULL)
 			.thenApplyAsync(either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)), this.mainThreadExecutor);
 	}
 
@@ -438,7 +438,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
 		ChunkPos chunkPos = holder.getPos();
-		if (requiredStatus == ChunkStatus.field_12798) {
+		if (requiredStatus == ChunkStatus.EMPTY) {
 			return this.loadChunk(chunkPos);
 		} else {
 			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = holder.getChunkAt(requiredStatus.getPrevious(), this);
@@ -448,14 +448,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					if (!optional.isPresent()) {
 						return CompletableFuture.completedFuture(either);
 					} else {
-						if (requiredStatus == ChunkStatus.field_12805) {
-							this.ticketManager.addTicketWithLevel(ChunkTicketType.field_19270, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.field_12795), chunkPos);
+						if (requiredStatus == ChunkStatus.LIGHT) {
+							this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), chunkPos);
 						}
 
 						Chunk chunk = (Chunk)optional.get();
 						if (chunk.getStatus().isAtLeast(requiredStatus)) {
 							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex;
-							if (requiredStatus == ChunkStatus.field_12805) {
+							if (requiredStatus == ChunkStatus.LIGHT) {
 								completableFuturex = this.upgradeChunk(holder, requiredStatus);
 							} else {
 								completableFuturex = requiredStatus.runLoadTask(
@@ -551,9 +551,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	protected void releaseLightTicket(ChunkPos pos) {
 		this.mainThreadExecutor
-			.method_18858(
+			.send(
 				Util.debugRunnable(
-					() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.field_19270, pos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.field_12795), pos),
+					() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), pos),
 					() -> "release light ticket " + pos
 				)
 			);
@@ -571,10 +571,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> convertToFullChunk(ChunkHolder chunkHolder) {
-		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getFutureFor(ChunkStatus.field_12803.getPrevious());
+		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getFutureFor(ChunkStatus.FULL.getPrevious());
 		return completableFuture.thenApplyAsync(either -> {
 			ChunkStatus chunkStatus = ChunkHolder.getTargetStatusForLevel(chunkHolder.getLevel());
-			return !chunkStatus.isAtLeast(ChunkStatus.field_12803) ? ChunkHolder.UNLOADED_CHUNK : either.mapLeft(chunk -> {
+			return !chunkStatus.isAtLeast(ChunkStatus.FULL) ? ChunkHolder.UNLOADED_CHUNK : either.mapLeft(chunk -> {
 				ChunkPos chunkPos = chunkHolder.getPos();
 				WorldChunk worldChunk;
 				if (chunk instanceof ReadOnlyChunk) {
@@ -617,7 +617,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkTickable(ChunkHolder holder) {
 		ChunkPos chunkPos = holder.getPos();
-		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(chunkPos, 1, i -> ChunkStatus.field_12803);
+		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(chunkPos, 1, i -> ChunkStatus.FULL);
 		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(either -> either.flatMap(list -> {
 				WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
 				worldChunk.runPostProcessing();
@@ -633,7 +633,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkAccessible(ChunkHolder holder) {
-		return holder.getChunkAt(ChunkStatus.field_12803, this).thenApplyAsync(either -> either.mapLeft(chunk -> {
+		return holder.getChunkAt(ChunkStatus.FULL, this).thenApplyAsync(either -> either.mapLeft(chunk -> {
 				WorldChunk worldChunk = (WorldChunk)chunk;
 				worldChunk.disableTickSchedulers();
 				return worldChunk;
@@ -660,7 +660,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 						return false;
 					}
 
-					if (chunkStatus == ChunkStatus.field_12798 && chunk.getStructureStarts().values().stream().noneMatch(StructureStart::hasChildren)) {
+					if (chunkStatus == ChunkStatus.EMPTY && chunk.getStructureStarts().values().stream().noneMatch(StructureStart::hasChildren)) {
 						return false;
 					}
 				}
@@ -819,7 +819,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private boolean doesNotGenerateChunks(ServerPlayerEntity player) {
-		return player.isSpectator() && !this.world.getGameRules().getBoolean(GameRules.field_19402);
+		return player.isSpectator() && !this.world.getGameRules().getBoolean(GameRules.SPECTATORS_GENERATE_CHUNKS);
 	}
 
 	void handlePlayerAddedOrRemoved(ServerPlayerEntity player, boolean added) {

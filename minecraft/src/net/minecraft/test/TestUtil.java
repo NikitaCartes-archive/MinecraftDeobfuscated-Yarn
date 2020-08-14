@@ -39,12 +39,12 @@ public class TestUtil {
 		gameTest.addListener(new TestListener() {
 			@Override
 			public void onStarted(GameTest test) {
-				TestUtil.createBeacon(test, Blocks.field_9996);
+				TestUtil.createBeacon(test, Blocks.LIGHT_GRAY_STAINED_GLASS);
 			}
 
 			@Override
 			public void onFailed(GameTest test) {
-				TestUtil.createBeacon(test, test.isRequired() ? Blocks.field_10272 : Blocks.field_10227);
+				TestUtil.createBeacon(test, test.isRequired() ? Blocks.RED_STAINED_GLASS : Blocks.ORANGE_STAINED_GLASS);
 				TestUtil.createLectern(test, Util.getInnermostMessage(test.getThrowable()));
 				TestUtil.handleTestFail(test);
 			}
@@ -90,7 +90,7 @@ public class TestUtil {
 	private static void handleTestFail(GameTest test) {
 		Throwable throwable = test.getThrowable();
 		String string = (test.isRequired() ? "" : "(optional) ") + test.getStructurePath() + " failed! " + Util.getInnermostMessage(throwable);
-		sendMessage(test.getWorld(), test.isRequired() ? Formatting.field_1061 : Formatting.field_1054, string);
+		sendMessage(test.getWorld(), test.isRequired() ? Formatting.RED : Formatting.YELLOW, string);
 		if (throwable instanceof PositionedException) {
 			PositionedException positionedException = (PositionedException)throwable;
 			addDebugMarker(test.getWorld(), positionedException.getPos(), positionedException.getDebugMessage());
@@ -103,15 +103,15 @@ public class TestUtil {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
 		BlockPos blockPos2 = new BlockPos(-1, -1, -1);
-		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.field_11302, test.method_29402(), blockPos);
-		serverWorld.setBlockState(blockPos3, Blocks.field_10327.getDefaultState().rotate(test.method_29402()));
+		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, test.method_29402(), blockPos);
+		serverWorld.setBlockState(blockPos3, Blocks.BEACON.getDefaultState().rotate(test.method_29402()));
 		BlockPos blockPos4 = blockPos3.add(0, 1, 0);
 		serverWorld.setBlockState(blockPos4, glass.getDefaultState());
 
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				BlockPos blockPos5 = blockPos3.add(i, -1, j);
-				serverWorld.setBlockState(blockPos5, Blocks.field_10085.getDefaultState());
+				serverWorld.setBlockState(blockPos5, Blocks.IRON_BLOCK.getDefaultState());
 			}
 		}
 	}
@@ -120,15 +120,15 @@ public class TestUtil {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
 		BlockPos blockPos2 = new BlockPos(-1, 1, -1);
-		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.field_11302, test.method_29402(), blockPos);
-		serverWorld.setBlockState(blockPos3, Blocks.field_16330.getDefaultState().rotate(test.method_29402()));
+		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, test.method_29402(), blockPos);
+		serverWorld.setBlockState(blockPos3, Blocks.LECTERN.getDefaultState().rotate(test.method_29402()));
 		BlockState blockState = serverWorld.getBlockState(blockPos3);
 		ItemStack itemStack = createBook(test.getStructurePath(), test.isRequired(), message);
 		LecternBlock.putBookIfAbsent(serverWorld, blockPos3, blockState, itemStack);
 	}
 
 	private static ItemStack createBook(String structureName, boolean required, String message) {
-		ItemStack itemStack = new ItemStack(Items.field_8674);
+		ItemStack itemStack = new ItemStack(Items.WRITABLE_BOOK);
 		ListTag listTag = new ListTag();
 		StringBuffer stringBuffer = new StringBuffer();
 		Arrays.stream(structureName.split("\\.")).forEach(string -> stringBuffer.append(string).append('\n'));
@@ -159,7 +159,7 @@ public class TestUtil {
 		testManager.clear();
 		BlockPos blockPos = pos.add(-radius, 0, -radius);
 		BlockPos blockPos2 = pos.add(radius, 0, radius);
-		BlockPos.stream(blockPos, blockPos2).filter(blockPosx -> world.getBlockState(blockPosx).isOf(Blocks.field_10465)).forEach(blockPosx -> {
+		BlockPos.stream(blockPos, blockPos2).filter(blockPosx -> world.getBlockState(blockPosx).isOf(Blocks.STRUCTURE_BLOCK)).forEach(blockPosx -> {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(blockPosx);
 			BlockPos blockPos2x = structureBlockBlockEntity.getPos();
 			BlockBox blockBox = StructureTestUtil.method_29410(structureBlockBlockEntity);

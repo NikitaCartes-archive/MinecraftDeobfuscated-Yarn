@@ -78,12 +78,12 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
 		World world = entity.getWorld();
 		boolean bl = world != null;
-		BlockState blockState = bl ? entity.getCachedState() : Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.field_11035);
-		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.field_12569;
+		BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
 		Block block = blockState.getBlock();
 		if (block instanceof AbstractChestBlock) {
 			AbstractChestBlock<?> abstractChestBlock = (AbstractChestBlock<?>)block;
-			boolean bl2 = chestType != ChestType.field_12569;
+			boolean bl2 = chestType != ChestType.SINGLE;
 			matrices.push();
 			float f = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
 			matrices.translate(0.5, 0.5, 0.5);
@@ -103,7 +103,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(entity, chestType, this.christmas);
 			VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
 			if (bl2) {
-				if (chestType == ChestType.field_12574) {
+				if (chestType == ChestType.LEFT) {
 					this.render(matrices, vertexConsumer, this.doubleChestLeftLid, this.doubleChestLeftLatch, this.doubleChestLeftBase, g, i, overlay);
 				} else {
 					this.render(matrices, vertexConsumer, this.doubleChestRightLid, this.doubleChestRightLatch, this.doubleChestRightBase, g, i, overlay);

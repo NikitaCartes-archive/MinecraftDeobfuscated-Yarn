@@ -20,11 +20,11 @@ public class EggEntity extends ThrownItemEntity {
 	}
 
 	public EggEntity(World world, LivingEntity owner) {
-		super(EntityType.field_6144, owner, world);
+		super(EntityType.EGG, owner, world);
 	}
 
 	public EggEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6144, x, y, z, world);
+		super(EntityType.EGG, x, y, z, world);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -36,7 +36,7 @@ public class EggEntity extends ThrownItemEntity {
 			for (int i = 0; i < 8; i++) {
 				this.world
 					.addParticle(
-						new ItemStackParticleEffect(ParticleTypes.field_11218, this.getStack()),
+						new ItemStackParticleEffect(ParticleTypes.ITEM, this.getStack()),
 						this.getX(),
 						this.getY(),
 						this.getZ(),
@@ -65,7 +65,7 @@ public class EggEntity extends ThrownItemEntity {
 				}
 
 				for (int j = 0; j < i; j++) {
-					ChickenEntity chickenEntity = EntityType.field_6132.create(this.world);
+					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.world);
 					chickenEntity.setBreedingAge(-24000);
 					chickenEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
 					this.world.spawnEntity(chickenEntity);
@@ -79,6 +79,6 @@ public class EggEntity extends ThrownItemEntity {
 
 	@Override
 	protected Item getDefaultItem() {
-		return Items.field_8803;
+		return Items.EGG;
 	}
 }

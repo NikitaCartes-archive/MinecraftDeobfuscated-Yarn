@@ -26,7 +26,7 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		this.addFeature(new ShulkerHeadFeatureRenderer(this));
 	}
 
-	public Vec3d method_23189(ShulkerEntity shulkerEntity, float f) {
+	public Vec3d getPositionOffset(ShulkerEntity shulkerEntity, float f) {
 		int i = shulkerEntity.getTeleportLerpTimer();
 		if (i > 0 && shulkerEntity.hasAttachedBlock()) {
 			BlockPos blockPos = shulkerEntity.getAttachedBlock();
@@ -42,8 +42,8 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		}
 	}
 
-	public boolean method_4112(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
-		if (super.method_4068(shulkerEntity, frustum, d, e, f)) {
+	public boolean shouldRender(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
+		if (super.shouldRender(shulkerEntity, frustum, d, e, f)) {
 			return true;
 		} else {
 			if (shulkerEntity.getTeleportLerpTimer() > 0 && shulkerEntity.hasAttachedBlock()) {
@@ -58,11 +58,11 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		}
 	}
 
-	public Identifier method_4111(ShulkerEntity shulkerEntity) {
+	public Identifier getTexture(ShulkerEntity shulkerEntity) {
 		return shulkerEntity.getColor() == null ? TEXTURE : COLORED_TEXTURES[shulkerEntity.getColor().getId()];
 	}
 
-	protected void method_4114(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(shulkerEntity, matrixStack, f, g + 180.0F, h);
 		matrixStack.translate(0.0, 0.5, 0.0);
 		matrixStack.multiply(shulkerEntity.getAttachedFace().getOpposite().getRotationQuaternion());

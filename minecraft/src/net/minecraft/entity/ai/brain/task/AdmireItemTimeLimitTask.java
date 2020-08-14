@@ -15,37 +15,37 @@ public class AdmireItemTimeLimitTask<E extends PiglinEntity> extends Task<E> {
 	public AdmireItemTimeLimitTask(int timeLimit, int cooldown) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_22334,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_22332,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_25813,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_25814,
-				MemoryModuleState.field_18458
+				MemoryModuleType.ADMIRING_ITEM,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.DISABLE_WALK_TO_ADMIRE_ITEM,
+				MemoryModuleState.REGISTERED
 			)
 		);
 		this.timeLimit = timeLimit;
 		this.cooldown = cooldown;
 	}
 
-	protected boolean method_30337(ServerWorld serverWorld, E piglinEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
 		return piglinEntity.getOffHandStack().isEmpty();
 	}
 
-	protected void method_30338(ServerWorld serverWorld, E piglinEntity, long l) {
+	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
 		Brain<PiglinEntity> brain = piglinEntity.getBrain();
-		Optional<Integer> optional = brain.getOptionalMemory(MemoryModuleType.field_25813);
+		Optional<Integer> optional = brain.getOptionalMemory(MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM);
 		if (!optional.isPresent()) {
-			brain.remember(MemoryModuleType.field_25813, 0);
+			brain.remember(MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM, 0);
 		} else {
 			int i = (Integer)optional.get();
 			if (i > this.timeLimit) {
-				brain.forget(MemoryModuleType.field_22334);
-				brain.forget(MemoryModuleType.field_25813);
-				brain.remember(MemoryModuleType.field_25814, true, (long)this.cooldown);
+				brain.forget(MemoryModuleType.ADMIRING_ITEM);
+				brain.forget(MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM);
+				brain.remember(MemoryModuleType.DISABLE_WALK_TO_ADMIRE_ITEM, true, (long)this.cooldown);
 			} else {
-				brain.remember(MemoryModuleType.field_25813, i + 1);
+				brain.remember(MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM, i + 1);
 			}
 		}
 	}

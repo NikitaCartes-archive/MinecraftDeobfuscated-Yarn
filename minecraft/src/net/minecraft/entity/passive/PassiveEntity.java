@@ -126,7 +126,7 @@ public abstract class PassiveEntity extends PathAwareEntity {
 		if (this.world.isClient) {
 			if (this.happyTicksRemaining > 0) {
 				if (this.happyTicksRemaining % 4 == 0) {
-					this.world.addParticle(ParticleTypes.field_11211, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
+					this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
 				}
 
 				this.happyTicksRemaining--;

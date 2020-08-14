@@ -70,7 +70,7 @@ import net.minecraft.world.WorldView;
 
 public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddleable {
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS);
-	private static final Ingredient ATTRACTING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.field_23254);
+	private static final Ingredient ATTRACTING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.WARPED_FUNGUS_ON_A_STICK);
 	private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> COLD = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -81,18 +81,18 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	public StriderEntity(EntityType<? extends StriderEntity> entityType, World world) {
 		super(entityType, world);
 		this.inanimate = true;
-		this.setPathfindingPenalty(PathNodeType.field_18, -1.0F);
-		this.setPathfindingPenalty(PathNodeType.field_14, 0.0F);
-		this.setPathfindingPenalty(PathNodeType.field_9, 0.0F);
-		this.setPathfindingPenalty(PathNodeType.field_3, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.LAVA, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
 	}
 
 	public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess worldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random) {
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 
 		do {
-			mutable.move(Direction.field_11036);
-		} while (worldAccess.getFluidState(mutable).isIn(FluidTags.field_15518));
+			mutable.move(Direction.UP);
+		} while (worldAccess.getFluidState(mutable).isIn(FluidTags.LAVA));
 
 		return worldAccess.getBlockState(mutable).isAir();
 	}
@@ -140,7 +140,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	public void saddle(@Nullable SoundCategory sound) {
 		this.saddledComponent.setSaddled(true);
 		if (sound != null) {
-			this.world.playSoundFromEntity(null, this, SoundEvents.field_23798, sound, 0.5F, 1.0F);
+			this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_STRIDER_SADDLE, sound, 0.5F, 1.0F);
 		}
 	}
 
@@ -169,7 +169,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	public boolean canWalkOnFluid(Fluid fluid) {
-		return fluid.isIn(FluidTags.field_15518);
+		return fluid.isIn(FluidTags.LAVA);
 	}
 
 	@Override
@@ -186,7 +186,8 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			return false;
 		} else {
 			PlayerEntity playerEntity = (PlayerEntity)entity;
-			return playerEntity.getMainHandStack().getItem() == Items.field_23254 || playerEntity.getOffHandStack().getItem() == Items.field_23254;
+			return playerEntity.getMainHandStack().getItem() == Items.WARPED_FUNGUS_ON_A_STICK
+				|| playerEntity.getOffHandStack().getItem() == Items.WARPED_FUNGUS_ON_A_STICK;
 		}
 	}
 
@@ -220,12 +221,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 			for (double f = d; f > e; f--) {
 				set.add(mutable.toImmutable());
-				mutable.move(Direction.field_11033);
+				mutable.move(Direction.DOWN);
 			}
 		}
 
 		for (BlockPos blockPos : set) {
-			if (!this.world.getFluidState(blockPos).isIn(FluidTags.field_15518)) {
+			if (!this.world.getFluidState(blockPos).isIn(FluidTags.LAVA)) {
 				double g = this.world.getDismountHeight(blockPos);
 				if (Dismounting.canDismountInBlock(g)) {
 					Vec3d vec3d2 = Vec3d.ofCenter(blockPos, g);
@@ -251,12 +252,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	public float getSpeed() {
-		return (float)this.getAttributeValue(EntityAttributes.field_23719) * (this.isCold() ? 0.66F : 1.0F);
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66F : 1.0F);
 	}
 
 	@Override
 	public float getSaddledSpeed() {
-		return (float)this.getAttributeValue(EntityAttributes.field_23719) * (this.isCold() ? 0.23F : 0.55F);
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23F : 0.55F);
 	}
 
 	@Override
@@ -271,7 +272,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(this.isInLava() ? SoundEvents.field_23206 : SoundEvents.field_23205, 1.0F, 1.0F);
+		this.playSound(this.isInLava() ? SoundEvents.ENTITY_STRIDER_STEP_LAVA : SoundEvents.ENTITY_STRIDER_STEP, 1.0F, 1.0F);
 	}
 
 	@Override
@@ -292,14 +293,14 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Override
 	public void tick() {
 		if (this.method_30079() && this.random.nextInt(140) == 0) {
-			this.playSound(SoundEvents.field_23201, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY, 1.0F, this.getSoundPitch());
 		} else if (this.method_30078() && this.random.nextInt(60) == 0) {
-			this.playSound(SoundEvents.field_23202, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0F, this.getSoundPitch());
 		}
 
 		BlockState blockState = this.world.getBlockState(this.getBlockPos());
 		BlockState blockState2 = this.getLandingBlockState();
-		boolean bl = blockState.isIn(BlockTags.field_23209) || blockState2.isIn(BlockTags.field_23209) || this.getFluidHeight(FluidTags.field_15518) > 0.0;
+		boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
 		this.setCold(!bl);
 		super.tick();
 		this.updateFloating();
@@ -322,8 +323,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	private void updateFloating() {
 		if (this.isInLava()) {
 			ShapeContext shapeContext = ShapeContext.of(this);
-			if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true)
-				&& !this.world.getFluidState(this.getBlockPos().up()).isIn(FluidTags.field_15518)) {
+			if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.world.getFluidState(this.getBlockPos().up()).isIn(FluidTags.LAVA)) {
 				this.onGround = true;
 			} else {
 				this.setVelocity(this.getVelocity().multiply(0.5).add(0.0, 0.05, 0.0));
@@ -332,27 +332,27 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	public static DefaultAttributeContainer.Builder createStriderAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23719, 0.175F).add(EntityAttributes.field_23717, 16.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.175F).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0);
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return !this.method_30078() && !this.method_30079() ? SoundEvents.field_23200 : null;
+		return !this.method_30078() && !this.method_30079() ? SoundEvents.ENTITY_STRIDER_AMBIENT : null;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_23204;
+		return SoundEvents.ENTITY_STRIDER_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_23203;
+		return SoundEvents.ENTITY_STRIDER_DEATH;
 	}
 
 	@Override
 	protected boolean canAddPassenger(Entity passenger) {
-		return this.getPassengerList().isEmpty() && !this.isSubmergedIn(FluidTags.field_15518);
+		return this.getPassengerList().isEmpty() && !this.isSubmergedIn(FluidTags.LAVA);
 	}
 
 	@Override
@@ -372,27 +372,27 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		if (world.getBlockState(pos).getFluidState().isIn(FluidTags.field_15518)) {
+		if (world.getBlockState(pos).getFluidState().isIn(FluidTags.LAVA)) {
 			return 10.0F;
 		} else {
 			return this.isInLava() ? Float.NEGATIVE_INFINITY : 0.0F;
 		}
 	}
 
-	public StriderEntity method_26343(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.field_23214.create(serverWorld);
+	public StriderEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.STRIDER.create(serverWorld);
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.method_8093(stack);
+		return BREEDING_INGREDIENT.test(stack);
 	}
 
 	@Override
 	protected void dropInventory() {
 		super.dropInventory();
 		if (this.isSaddled()) {
-			this.dropItem(Items.field_8175);
+			this.dropItem(Items.SADDLE);
 		}
 	}
 
@@ -409,7 +409,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (!actionResult.isAccepted()) {
 				ItemStack itemStack = player.getStackInHand(hand);
-				return itemStack.getItem() == Items.field_8175 ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
+				return itemStack.getItem() == Items.SADDLE ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
 			} else {
 				if (bl && !this.isSilent()) {
 					this.world
@@ -418,7 +418,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 							this.getX(),
 							this.getY(),
 							this.getZ(),
-							SoundEvents.field_23207,
+							SoundEvents.ENTITY_STRIDER_EAT,
 							this.getSoundCategory(),
 							1.0F,
 							1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
@@ -446,12 +446,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		} else {
 			Object var7;
 			if (this.random.nextInt(30) == 0) {
-				MobEntity mobEntity = EntityType.field_6050.create(serverWorldAccess.toServerWorld());
+				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorldAccess.toServerWorld());
 				var7 = this.method_30336(serverWorldAccess, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false));
-				mobEntity.equipStack(EquipmentSlot.field_6173, new ItemStack(Items.field_23254));
+				mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
 				this.saddle(null);
 			} else if (this.random.nextInt(10) == 0) {
-				PassiveEntity passiveEntity = EntityType.field_23214.create(serverWorldAccess.toServerWorld());
+				PassiveEntity passiveEntity = EntityType.STRIDER.create(serverWorldAccess.toServerWorld());
 				passiveEntity.setBreedingAge(-24000);
 				var7 = this.method_30336(serverWorldAccess, difficulty, passiveEntity, null);
 			} else {
@@ -464,7 +464,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	private EntityData method_30336(ServerWorldAccess serverWorldAccess, LocalDifficulty localDifficulty, MobEntity mobEntity, @Nullable EntityData entityData) {
 		mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-		mobEntity.initialize(serverWorldAccess, localDifficulty, SpawnReason.field_16460, entityData, null);
+		mobEntity.initialize(serverWorldAccess, localDifficulty, SpawnReason.JOCKEY, entityData, null);
 		mobEntity.startRiding(this, true);
 		return new PassiveEntity.PassiveData(0.0F);
 	}
@@ -482,12 +482,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		@Override
 		protected boolean canWalkOnPath(PathNodeType pathType) {
-			return pathType != PathNodeType.field_14 && pathType != PathNodeType.field_3 && pathType != PathNodeType.field_9 ? super.canWalkOnPath(pathType) : true;
+			return pathType != PathNodeType.LAVA && pathType != PathNodeType.DAMAGE_FIRE && pathType != PathNodeType.DANGER_FIRE ? super.canWalkOnPath(pathType) : true;
 		}
 
 		@Override
 		public boolean isValidPosition(BlockPos pos) {
-			return this.world.getBlockState(pos).isOf(Blocks.field_10164) || super.isValidPosition(pos);
+			return this.world.getBlockState(pos).isOf(Blocks.LAVA) || super.isValidPosition(pos);
 		}
 	}
 
@@ -521,7 +521,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
-			return world.getBlockState(pos).isOf(Blocks.field_10164) && world.getBlockState(pos.up()).canPathfindThrough(world, pos, NavigationType.field_50);
+			return world.getBlockState(pos).isOf(Blocks.LAVA) && world.getBlockState(pos.up()).canPathfindThrough(world, pos, NavigationType.LAND);
 		}
 	}
 }

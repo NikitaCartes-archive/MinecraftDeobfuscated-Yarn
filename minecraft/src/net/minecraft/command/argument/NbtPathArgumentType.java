@@ -44,7 +44,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		return context.getArgument(name, NbtPathArgumentType.NbtPath.class);
 	}
 
-	public NbtPathArgumentType.NbtPath method_9362(StringReader stringReader) throws CommandSyntaxException {
+	public NbtPathArgumentType.NbtPath parse(StringReader stringReader) throws CommandSyntaxException {
 		List<NbtPathArgumentType.PathNode> list = Lists.<NbtPathArgumentType.PathNode>newArrayList();
 		int i = stringReader.getCursor();
 		Object2IntMap<NbtPathArgumentType.PathNode> object2IntMap = new Object2IntOpenHashMap<>();
@@ -249,7 +249,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 					mutableBoolean.setTrue();
 				});
 				if (mutableBoolean.isFalse()) {
-					CompoundTag compoundTag = this.filter.method_10553();
+					CompoundTag compoundTag = this.filter.copy();
 					listTag.add(compoundTag);
 					results.add(compoundTag);
 				}
@@ -272,7 +272,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 					i++;
 				} else {
 					for (int k = 0; k < j; k++) {
-						Tag tag = listTag.method_10534(k);
+						Tag tag = listTag.get(k);
 						if (this.predicate.test(tag)) {
 							Tag tag2 = (Tag)source.get();
 							if (!tag2.equals(tag) && listTag.setTag(k, tag2)) {
@@ -293,8 +293,8 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 				ListTag listTag = (ListTag)current;
 
 				for (int j = listTag.size() - 1; j >= 0; j--) {
-					if (this.predicate.test(listTag.method_10534(j))) {
-						listTag.method_10536(j);
+					if (this.predicate.test(listTag.get(j))) {
+						listTag.remove(j);
 						i++;
 					}
 				}
@@ -331,7 +331,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 				CompoundTag compoundTag = (CompoundTag)current;
 				Tag tag = compoundTag.get(this.name);
 				if (tag == null) {
-					Tag var6 = this.filter.method_10553();
+					Tag var6 = this.filter.copy();
 					compoundTag.put(this.name, var6);
 					results.add(var6);
 				} else if (this.predicate.test(tag)) {
@@ -466,7 +466,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 				int i = abstractListTag.size();
 				int j = this.index < 0 ? i + this.index : this.index;
 				if (0 <= j && j < i) {
-					abstractListTag.method_10536(j);
+					abstractListTag.remove(j);
 					return 1;
 				}
 			}

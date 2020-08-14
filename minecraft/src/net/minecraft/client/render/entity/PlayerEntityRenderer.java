@@ -57,14 +57,14 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.addFeature(new StuckStingersFeatureRenderer<>(this));
 	}
 
-	public void method_4215(
+	public void render(
 		AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		this.setModelPose(abstractClientPlayerEntity);
-		super.method_4054(abstractClientPlayerEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(abstractClientPlayerEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Vec3d method_23206(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
+	public Vec3d getPositionOffset(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
 		return abstractClientPlayerEntity.isInSneakingPose() ? new Vec3d(0.0, -0.125, 0.0) : super.getPositionOffset(abstractClientPlayerEntity, f);
 	}
 
@@ -78,20 +78,20 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			ItemStack itemStack = abstractClientPlayerEntity.getMainHandStack();
 			ItemStack itemStack2 = abstractClientPlayerEntity.getOffHandStack();
 			playerEntityModel.setVisible(true);
-			playerEntityModel.helmet.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.field_7563);
-			playerEntityModel.jacket.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.field_7564);
-			playerEntityModel.leftPantLeg.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.field_7566);
-			playerEntityModel.rightPantLeg.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.field_7565);
-			playerEntityModel.leftSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.field_7568);
-			playerEntityModel.rightSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.field_7570);
+			playerEntityModel.helmet.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.HAT);
+			playerEntityModel.jacket.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.JACKET);
+			playerEntityModel.leftPantLeg.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_PANTS_LEG);
+			playerEntityModel.rightPantLeg.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_PANTS_LEG);
+			playerEntityModel.leftSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_SLEEVE);
+			playerEntityModel.rightSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_SLEEVE);
 			playerEntityModel.sneaking = abstractClientPlayerEntity.isInSneakingPose();
-			BipedEntityModel.ArmPose armPose = getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5808);
-			BipedEntityModel.ArmPose armPose2 = getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5810);
+			BipedEntityModel.ArmPose armPose = getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN_HAND);
+			BipedEntityModel.ArmPose armPose2 = getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF_HAND);
 			if (armPose.method_30156()) {
-				armPose2 = abstractClientPlayerEntity.getOffHandStack().isEmpty() ? BipedEntityModel.ArmPose.field_3409 : BipedEntityModel.ArmPose.field_3410;
+				armPose2 = abstractClientPlayerEntity.getOffHandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
 			}
 
-			if (abstractClientPlayerEntity.getMainArm() == Arm.field_6183) {
+			if (abstractClientPlayerEntity.getMainArm() == Arm.RIGHT) {
 				playerEntityModel.rightArmPose = armPose;
 				playerEntityModel.leftArmPose = armPose2;
 			} else {
@@ -102,34 +102,34 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	private static BipedEntityModel.ArmPose getArmPose(AbstractClientPlayerEntity abstractClientPlayerEntity, ItemStack itemStack, ItemStack itemStack2, Hand hand) {
-		BipedEntityModel.ArmPose armPose = BipedEntityModel.ArmPose.field_3409;
-		ItemStack itemStack3 = hand == Hand.field_5808 ? itemStack : itemStack2;
+		BipedEntityModel.ArmPose armPose = BipedEntityModel.ArmPose.EMPTY;
+		ItemStack itemStack3 = hand == Hand.MAIN_HAND ? itemStack : itemStack2;
 		if (!itemStack3.isEmpty()) {
-			armPose = BipedEntityModel.ArmPose.field_3410;
+			armPose = BipedEntityModel.ArmPose.ITEM;
 			boolean bl = abstractClientPlayerEntity.isUsingItem() && itemStack3 == abstractClientPlayerEntity.getActiveItem();
-			boolean bl2 = !bl && hand == Hand.field_5810 && abstractClientPlayerEntity.isBlocking();
+			boolean bl2 = !bl && hand == Hand.OFF_HAND && abstractClientPlayerEntity.isBlocking();
 			if (!bl && !bl2) {
-				boolean bl3 = itemStack.getItem() == Items.field_8399;
+				boolean bl3 = itemStack.getItem() == Items.CROSSBOW;
 				boolean bl4 = CrossbowItem.isCharged(itemStack);
-				boolean bl5 = itemStack2.getItem() == Items.field_8399;
+				boolean bl5 = itemStack2.getItem() == Items.CROSSBOW;
 				boolean bl6 = CrossbowItem.isCharged(itemStack2);
 				if (bl3 && bl4) {
-					armPose = BipedEntityModel.ArmPose.field_3408;
+					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
 				}
 
-				if (bl5 && bl6 && itemStack.getItem().getUseAction(itemStack) == UseAction.field_8952) {
-					armPose = BipedEntityModel.ArmPose.field_3408;
+				if (bl5 && bl6 && itemStack.getItem().getUseAction(itemStack) == UseAction.NONE) {
+					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
 				}
 			} else {
 				UseAction useAction = itemStack3.getUseAction();
-				if (useAction == UseAction.field_8949) {
-					armPose = BipedEntityModel.ArmPose.field_3406;
-				} else if (useAction == UseAction.field_8953) {
-					armPose = BipedEntityModel.ArmPose.field_3403;
-				} else if (useAction == UseAction.field_8951) {
-					armPose = BipedEntityModel.ArmPose.field_3407;
-				} else if (useAction == UseAction.field_8947 && hand == abstractClientPlayerEntity.getActiveHand()) {
-					armPose = BipedEntityModel.ArmPose.field_3405;
+				if (useAction == UseAction.BLOCK) {
+					armPose = BipedEntityModel.ArmPose.BLOCK;
+				} else if (useAction == UseAction.BOW) {
+					armPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
+				} else if (useAction == UseAction.SPEAR) {
+					armPose = BipedEntityModel.ArmPose.THROW_SPEAR;
+				} else if (useAction == UseAction.CROSSBOW && hand == abstractClientPlayerEntity.getActiveHand()) {
+					armPose = BipedEntityModel.ArmPose.CROSSBOW_CHARGE;
 				}
 			}
 		}
@@ -137,16 +137,16 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		return armPose;
 	}
 
-	public Identifier method_4216(AbstractClientPlayerEntity abstractClientPlayerEntity) {
+	public Identifier getTexture(AbstractClientPlayerEntity abstractClientPlayerEntity) {
 		return abstractClientPlayerEntity.getSkinTexture();
 	}
 
-	protected void method_4217(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f) {
+	protected void scale(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f) {
 		float g = 0.9375F;
 		matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
 	}
 
-	protected void method_4213(
+	protected void renderLabelIfPresent(
 		AbstractClientPlayerEntity abstractClientPlayerEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		double d = this.dispatcher.getSquaredDistanceToCamera(abstractClientPlayerEntity);
@@ -187,14 +187,14 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.sneaking = false;
 		playerEntityModel.leaningPitch = 0.0F;
-		playerEntityModel.method_17087(player, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+		playerEntityModel.setAngles(player, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 		arm.pitch = 0.0F;
 		arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
 		sleeve.pitch = 0.0F;
 		sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
 	}
 
-	protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
 		float i = abstractClientPlayerEntity.getLeaningPitch(h);
 		if (abstractClientPlayerEntity.isFallFlying()) {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);

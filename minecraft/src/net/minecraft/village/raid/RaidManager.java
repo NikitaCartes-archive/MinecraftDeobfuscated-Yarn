@@ -87,7 +87,7 @@ public class RaidManager extends PersistentState {
 				BlockPos blockPos = player.getBlockPos();
 				List<PointOfInterest> list = (List<PointOfInterest>)this.world
 					.getPointOfInterestStorage()
-					.getInCircle(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.field_18488)
+					.getInCircle(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 					.collect(Collectors.toList());
 				int i = 0;
 				Vec3d vec3d = Vec3d.ZERO;
@@ -117,7 +117,7 @@ public class RaidManager extends PersistentState {
 				} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
 					bl = true;
 				} else {
-					player.removeStatusEffect(StatusEffects.field_16595);
+					player.removeStatusEffect(StatusEffects.BAD_OMEN);
 					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, (byte)43));
 				}
 
@@ -125,7 +125,7 @@ public class RaidManager extends PersistentState {
 					raid.start(player);
 					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, (byte)43));
 					if (!raid.hasSpawned()) {
-						player.incrementStat(Stats.field_19256);
+						player.incrementStat(Stats.RAID_TRIGGER);
 						Criteria.VOLUNTARY_EXILE.trigger(player);
 					}
 				}

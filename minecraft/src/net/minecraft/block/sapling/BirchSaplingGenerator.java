@@ -10,6 +10,6 @@ public class BirchSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	@Override
 	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
-		return bl ? ConfiguredFeatures.field_26094 : ConfiguredFeatures.field_26038;
+		return bl ? ConfiguredFeatures.BIRCH_BEES_005 : ConfiguredFeatures.BIRCH;
 	}
 }

@@ -33,11 +33,9 @@ public abstract class AbstractFireBlock extends Block {
 	}
 
 	public static BlockState getState(BlockView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		return SoulFireBlock.isSoulBase(blockState.getBlock())
-			? Blocks.field_22089.getDefaultState()
-			: ((FireBlock)Blocks.field_10036).getStateForPosition(world, pos);
+		return SoulFireBlock.isSoulBase(blockState.getBlock()) ? Blocks.SOUL_FIRE.getDefaultState() : ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
 	}
 
 	@Override
@@ -53,23 +51,23 @@ public abstract class AbstractFireBlock extends Block {
 				(double)pos.getX() + 0.5,
 				(double)pos.getY() + 0.5,
 				(double)pos.getZ() + 0.5,
-				SoundEvents.field_14993,
-				SoundCategory.field_15245,
+				SoundEvents.BLOCK_FIRE_AMBIENT,
+				SoundCategory.BLOCKS,
 				1.0F + random.nextFloat(),
 				random.nextFloat() * 0.7F + 0.3F,
 				false
 			);
 		}
 
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.field_11036)) {
+		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
 			if (this.isFlammable(world.getBlockState(pos.west()))) {
 				for (int i = 0; i < 2; i++) {
 					double d = (double)pos.getX() + random.nextDouble() * 0.1F;
 					double e = (double)pos.getY() + random.nextDouble();
 					double f = (double)pos.getZ() + random.nextDouble();
-					world.addParticle(ParticleTypes.field_11237, d, e, f, 0.0, 0.0, 0.0);
+					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 
@@ -78,7 +76,7 @@ public abstract class AbstractFireBlock extends Block {
 					double d = (double)(pos.getX() + 1) - random.nextDouble() * 0.1F;
 					double e = (double)pos.getY() + random.nextDouble();
 					double f = (double)pos.getZ() + random.nextDouble();
-					world.addParticle(ParticleTypes.field_11237, d, e, f, 0.0, 0.0, 0.0);
+					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 
@@ -87,7 +85,7 @@ public abstract class AbstractFireBlock extends Block {
 					double d = (double)pos.getX() + random.nextDouble();
 					double e = (double)pos.getY() + random.nextDouble();
 					double f = (double)pos.getZ() + random.nextDouble() * 0.1F;
-					world.addParticle(ParticleTypes.field_11237, d, e, f, 0.0, 0.0, 0.0);
+					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 
@@ -96,7 +94,7 @@ public abstract class AbstractFireBlock extends Block {
 					double d = (double)pos.getX() + random.nextDouble();
 					double e = (double)pos.getY() + random.nextDouble();
 					double f = (double)(pos.getZ() + 1) - random.nextDouble() * 0.1F;
-					world.addParticle(ParticleTypes.field_11237, d, e, f, 0.0, 0.0, 0.0);
+					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 
@@ -105,7 +103,7 @@ public abstract class AbstractFireBlock extends Block {
 					double d = (double)pos.getX() + random.nextDouble();
 					double e = (double)(pos.getY() + 1) - random.nextDouble() * 0.1F;
 					double f = (double)pos.getZ() + random.nextDouble();
-					world.addParticle(ParticleTypes.field_11237, d, e, f, 0.0, 0.0, 0.0);
+					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 		} else {
@@ -113,7 +111,7 @@ public abstract class AbstractFireBlock extends Block {
 				double d = (double)pos.getX() + random.nextDouble();
 				double e = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
 				double f = (double)pos.getZ() + random.nextDouble();
-				world.addParticle(ParticleTypes.field_11237, d, e, f, 0.0, 0.0, 0.0);
+				world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 			}
 		}
 	}
@@ -138,7 +136,7 @@ public abstract class AbstractFireBlock extends Block {
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			if (method_30366(world)) {
-				Optional<AreaHelper> optional = AreaHelper.method_30485(world, pos, Direction.Axis.field_11048);
+				Optional<AreaHelper> optional = AreaHelper.method_30485(world, pos, Direction.Axis.X);
 				if (optional.isPresent()) {
 					((AreaHelper)optional.get()).createPortal();
 					return;
@@ -175,7 +173,7 @@ public abstract class AbstractFireBlock extends Block {
 			boolean bl = false;
 
 			for (Direction direction2 : Direction.values()) {
-				if (world.getBlockState(mutable.set(blockPos).move(direction2)).isOf(Blocks.field_10540)) {
+				if (world.getBlockState(mutable.set(blockPos).move(direction2)).isOf(Blocks.OBSIDIAN)) {
 					bl = true;
 					break;
 				}

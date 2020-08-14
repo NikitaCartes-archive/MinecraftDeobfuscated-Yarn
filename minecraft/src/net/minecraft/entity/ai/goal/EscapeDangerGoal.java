@@ -21,7 +21,7 @@ public class EscapeDangerGoal extends Goal {
 	public EscapeDangerGoal(PathAwareEntity mob, double speed) {
 		this.mob = mob;
 		this.speed = speed;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class EscapeDangerGoal extends Goal {
 			for (int m = j - rangeY; m <= j + rangeY; m++) {
 				for (int n = k - rangeX; n <= k + rangeX; n++) {
 					mutable.set(l, m, n);
-					if (blockView.getFluidState(mutable).isIn(FluidTags.field_15517)) {
+					if (blockView.getFluidState(mutable).isIn(FluidTags.WATER)) {
 						float g = (float)((l - i) * (l - i) + (m - j) * (m - j) + (n - k) * (n - k));
 						if (g < f) {
 							f = g;

@@ -89,7 +89,7 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> supplier) {
-		return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.field_24469.ordinal(), () -> {
+		return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.HIGH.ordinal(), () -> {
 				if (!this.closed.get()) {
 					messageListener.send(supplier.get());
 				}
@@ -109,7 +109,7 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	private void method_27945() {
-		this.field_24468.send(new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.field_24470.ordinal(), this::writeResult));
+		this.field_24468.send(new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.LOW.ordinal(), this::writeResult));
 	}
 
 	private void write(ChunkPos pos, StorageIoWorker.Result result) {
@@ -125,7 +125,7 @@ public class StorageIoWorker implements AutoCloseable {
 	public void close() throws IOException {
 		if (this.closed.compareAndSet(false, true)) {
 			CompletableFuture<Unit> completableFuture = this.field_24468
-				.ask(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.field_24469.ordinal(), () -> messageListener.send(Unit.field_17274)));
+				.ask(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.HIGH.ordinal(), () -> messageListener.send(Unit.INSTANCE)));
 
 			try {
 				completableFuture.join();
@@ -150,8 +150,8 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	static enum Priority {
-		field_24469,
-		field_24470;
+		HIGH,
+		LOW;
 	}
 
 	static class Result {

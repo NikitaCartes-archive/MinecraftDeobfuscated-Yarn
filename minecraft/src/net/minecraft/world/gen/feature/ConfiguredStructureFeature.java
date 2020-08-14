@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -17,7 +18,12 @@ import net.minecraft.world.gen.chunk.StructureConfig;
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
 	public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE
 		.dispatch(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
-	public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.field_25915, CODEC);
+	public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(
+		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC
+	);
+	public static final Codec<List<Supplier<ConfiguredStructureFeature<?, ?>>>> field_26757 = RegistryElementCodec.method_31194(
+		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC
+	);
 	public final F feature;
 	public final FC config;
 

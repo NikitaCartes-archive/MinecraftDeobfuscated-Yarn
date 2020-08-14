@@ -47,27 +47,27 @@ public class HoglinBrain {
 		addIdleTasks(brain);
 		addFightTasks(brain);
 		addAvoidTasks(brain);
-		brain.setCoreActivities(ImmutableSet.of(Activity.field_18594));
-		brain.setDefaultActivity(Activity.field_18595);
+		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
+		brain.setDefaultActivity(Activity.IDLE);
 		brain.resetPossibleActivities();
 		return brain;
 	}
 
 	private static void addCoreTasks(Brain<HoglinEntity> brain) {
-		brain.setTaskList(Activity.field_18594, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
 	}
 
 	private static void addIdleTasks(Brain<HoglinEntity> brain) {
 		brain.setTaskList(
-			Activity.field_18595,
+			Activity.IDLE,
 			10,
 			ImmutableList.of(
-				new PacifyTask(MemoryModuleType.field_22474, 200),
-				new BreedTask(EntityType.field_21973, 0.6F),
-				GoToRememberedPositionTask.toBlock(MemoryModuleType.field_22474, 1.0F, 8, true),
+				new PacifyTask(MemoryModuleType.NEAREST_REPELLENT, 200),
+				new BreedTask(EntityType.HOGLIN, 0.6F),
+				GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_REPELLENT, 1.0F, 8, true),
 				new UpdateAttackTargetTask(HoglinBrain::getNearestVisibleTargetablePlayer),
 				new ConditionalTask<PathAwareEntity>(
-					HoglinEntity::isAdult, (Task<? super PathAwareEntity>)GoToRememberedPositionTask.toEntity(MemoryModuleType.field_22345, 0.4F, 8, false)
+					HoglinEntity::isAdult, (Task<? super PathAwareEntity>)GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, 0.4F, 8, false)
 				),
 				new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0F), IntRange.between(30, 60)),
 				new WalkTowardClosestAdultTask(WALK_TOWARD_CLOSEST_ADULT_RANGE, 0.6F),
@@ -78,32 +78,32 @@ public class HoglinBrain {
 
 	private static void addFightTasks(Brain<HoglinEntity> brain) {
 		brain.setTaskList(
-			Activity.field_22396,
+			Activity.FIGHT,
 			10,
 			ImmutableList.of(
-				new PacifyTask(MemoryModuleType.field_22474, 200),
-				new BreedTask(EntityType.field_21973, 0.6F),
+				new PacifyTask(MemoryModuleType.NEAREST_REPELLENT, 200),
+				new BreedTask(EntityType.HOGLIN, 0.6F),
 				new RangedApproachTask(1.0F),
 				new ConditionalTask<>(HoglinEntity::isAdult, new MeleeAttackTask(40)),
 				new ConditionalTask<>(PassiveEntity::isBaby, new MeleeAttackTask(15)),
 				new ForgetAttackTargetTask(),
-				new ForgetTask(HoglinBrain::hasBreedTarget, MemoryModuleType.field_22355)
+				new ForgetTask(HoglinBrain::hasBreedTarget, MemoryModuleType.ATTACK_TARGET)
 			),
-			MemoryModuleType.field_22355
+			MemoryModuleType.ATTACK_TARGET
 		);
 	}
 
 	private static void addAvoidTasks(Brain<HoglinEntity> brain) {
 		brain.setTaskList(
-			Activity.field_22399,
+			Activity.AVOID,
 			10,
 			ImmutableList.of(
-				GoToRememberedPositionTask.toEntity(MemoryModuleType.field_22357, 1.3F, 15, false),
+				GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, 1.3F, 15, false),
 				makeRandomWalkTask(),
 				new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0F), IntRange.between(30, 60)),
-				new ForgetTask(HoglinBrain::method_25947, MemoryModuleType.field_22357)
+				new ForgetTask(HoglinBrain::method_25947, MemoryModuleType.AVOID_TARGET)
 			),
-			MemoryModuleType.field_22357
+			MemoryModuleType.AVOID_TARGET
 		);
 	}
 
@@ -114,18 +114,18 @@ public class HoglinBrain {
 	protected static void refreshActivities(HoglinEntity hoglin) {
 		Brain<HoglinEntity> brain = hoglin.getBrain();
 		Activity activity = (Activity)brain.getFirstPossibleNonCoreActivity().orElse(null);
-		brain.resetPossibleActivities(ImmutableList.of(Activity.field_22396, Activity.field_22399, Activity.field_18595));
+		brain.resetPossibleActivities(ImmutableList.of(Activity.FIGHT, Activity.AVOID, Activity.IDLE));
 		Activity activity2 = (Activity)brain.getFirstPossibleNonCoreActivity().orElse(null);
 		if (activity != activity2) {
 			method_30083(hoglin).ifPresent(hoglin::method_30081);
 		}
 
-		hoglin.setAttacking(brain.hasMemoryModule(MemoryModuleType.field_22355));
+		hoglin.setAttacking(brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET));
 	}
 
 	protected static void onAttacking(HoglinEntity hoglin, LivingEntity target) {
 		if (!hoglin.isBaby()) {
-			if (target.getType() == EntityType.field_22281 && hasMoreHoglinsAround(hoglin)) {
+			if (target.getType() == EntityType.PIGLIN && hasMoreHoglinsAround(hoglin)) {
 				avoid(hoglin, target);
 				askAdultsToAvoid(hoglin, target);
 			} else {
@@ -140,23 +140,25 @@ public class HoglinBrain {
 
 	private static void avoidEnemy(HoglinEntity hoglin, LivingEntity target) {
 		Brain<HoglinEntity> brain = hoglin.getBrain();
-		LivingEntity livingEntity = LookTargetUtil.getCloserEntity(hoglin, brain.getOptionalMemory(MemoryModuleType.field_22357), target);
-		livingEntity = LookTargetUtil.getCloserEntity(hoglin, brain.getOptionalMemory(MemoryModuleType.field_22355), livingEntity);
+		LivingEntity livingEntity = LookTargetUtil.getCloserEntity(hoglin, brain.getOptionalMemory(MemoryModuleType.AVOID_TARGET), target);
+		livingEntity = LookTargetUtil.getCloserEntity(hoglin, brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET), livingEntity);
 		avoid(hoglin, livingEntity);
 	}
 
 	private static void avoid(HoglinEntity hoglin, LivingEntity target) {
-		hoglin.getBrain().forget(MemoryModuleType.field_22355);
-		hoglin.getBrain().forget(MemoryModuleType.field_18445);
-		hoglin.getBrain().remember(MemoryModuleType.field_22357, target, (long)AVOID_MEMORY_DURATION.choose(hoglin.world.random));
+		hoglin.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+		hoglin.getBrain().forget(MemoryModuleType.WALK_TARGET);
+		hoglin.getBrain().remember(MemoryModuleType.AVOID_TARGET, target, (long)AVOID_MEMORY_DURATION.choose(hoglin.world.random));
 	}
 
 	private static Optional<? extends LivingEntity> getNearestVisibleTargetablePlayer(HoglinEntity hoglin) {
-		return !isNearPlayer(hoglin) && !hasBreedTarget(hoglin) ? hoglin.getBrain().getOptionalMemory(MemoryModuleType.field_22354) : Optional.empty();
+		return !isNearPlayer(hoglin) && !hasBreedTarget(hoglin)
+			? hoglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER)
+			: Optional.empty();
 	}
 
 	static boolean isWarpedFungusAround(HoglinEntity hoglin, BlockPos pos) {
-		Optional<BlockPos> optional = hoglin.getBrain().getOptionalMemory(MemoryModuleType.field_22474);
+		Optional<BlockPos> optional = hoglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_REPELLENT);
 		return optional.isPresent() && ((BlockPos)optional.get()).isWithinDistance(pos, 8.0);
 	}
 
@@ -168,16 +170,16 @@ public class HoglinBrain {
 		if (hoglin.isBaby()) {
 			return false;
 		} else {
-			int i = (Integer)hoglin.getBrain().getOptionalMemory(MemoryModuleType.field_22347).orElse(0);
-			int j = (Integer)hoglin.getBrain().getOptionalMemory(MemoryModuleType.field_22348).orElse(0) + 1;
+			int i = (Integer)hoglin.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT).orElse(0);
+			int j = (Integer)hoglin.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT).orElse(0) + 1;
 			return i > j;
 		}
 	}
 
 	protected static void onAttacked(HoglinEntity hoglin, LivingEntity attacker) {
 		Brain<HoglinEntity> brain = hoglin.getBrain();
-		brain.forget(MemoryModuleType.field_22353);
-		brain.forget(MemoryModuleType.field_18448);
+		brain.forget(MemoryModuleType.PACIFIED);
+		brain.forget(MemoryModuleType.BREED_TARGET);
 		if (hoglin.isBaby()) {
 			avoidEnemy(hoglin, attacker);
 		} else {
@@ -186,9 +188,9 @@ public class HoglinBrain {
 	}
 
 	private static void targetEnemy(HoglinEntity hoglin, LivingEntity target) {
-		if (!hoglin.getBrain().hasActivity(Activity.field_22399) || target.getType() != EntityType.field_22281) {
+		if (!hoglin.getBrain().hasActivity(Activity.AVOID) || target.getType() != EntityType.PIGLIN) {
 			if (EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(target)) {
-				if (target.getType() != EntityType.field_21973) {
+				if (target.getType() != EntityType.HOGLIN) {
 					if (!LookTargetUtil.isNewTargetTooFar(hoglin, target, 4.0)) {
 						setAttackTarget(hoglin, target);
 						askAdultsForHelp(hoglin, target);
@@ -200,9 +202,9 @@ public class HoglinBrain {
 
 	private static void setAttackTarget(HoglinEntity hoglin, LivingEntity target) {
 		Brain<HoglinEntity> brain = hoglin.getBrain();
-		brain.forget(MemoryModuleType.field_19293);
-		brain.forget(MemoryModuleType.field_18448);
-		brain.remember(MemoryModuleType.field_22355, target, 200L);
+		brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+		brain.forget(MemoryModuleType.BREED_TARGET);
+		brain.remember(MemoryModuleType.ATTACK_TARGET, target, 200L);
 	}
 
 	private static void askAdultsForHelp(HoglinEntity hoglin, LivingEntity target) {
@@ -211,7 +213,7 @@ public class HoglinBrain {
 
 	private static void setAttackTargetIfCloser(HoglinEntity hoglin, LivingEntity targetCandidate) {
 		if (!isNearPlayer(hoglin)) {
-			Optional<LivingEntity> optional = hoglin.getBrain().getOptionalMemory(MemoryModuleType.field_22355);
+			Optional<LivingEntity> optional = hoglin.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
 			LivingEntity livingEntity = LookTargetUtil.getCloserEntity(hoglin, optional, targetCandidate);
 			setAttackTarget(hoglin, livingEntity);
 		}
@@ -222,28 +224,28 @@ public class HoglinBrain {
 	}
 
 	private static SoundEvent method_30082(HoglinEntity hoglinEntity, Activity activity) {
-		if (activity == Activity.field_22399 || hoglinEntity.canConvert()) {
-			return SoundEvents.field_22261;
-		} else if (activity == Activity.field_22396) {
-			return SoundEvents.field_22257;
+		if (activity == Activity.AVOID || hoglinEntity.canConvert()) {
+			return SoundEvents.ENTITY_HOGLIN_RETREAT;
+		} else if (activity == Activity.FIGHT) {
+			return SoundEvents.ENTITY_HOGLIN_ANGRY;
 		} else {
-			return method_30085(hoglinEntity) ? SoundEvents.field_22261 : SoundEvents.field_22256;
+			return method_30085(hoglinEntity) ? SoundEvents.ENTITY_HOGLIN_RETREAT : SoundEvents.ENTITY_HOGLIN_AMBIENT;
 		}
 	}
 
 	private static List<HoglinEntity> getAdultHoglinsAround(HoglinEntity hoglin) {
-		return (List<HoglinEntity>)hoglin.getBrain().getOptionalMemory(MemoryModuleType.field_22344).orElse(ImmutableList.of());
+		return (List<HoglinEntity>)hoglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS).orElse(ImmutableList.of());
 	}
 
 	private static boolean method_30085(HoglinEntity hoglinEntity) {
-		return hoglinEntity.getBrain().hasMemoryModule(MemoryModuleType.field_22474);
+		return hoglinEntity.getBrain().hasMemoryModule(MemoryModuleType.NEAREST_REPELLENT);
 	}
 
 	private static boolean hasBreedTarget(HoglinEntity hoglin) {
-		return hoglin.getBrain().hasMemoryModule(MemoryModuleType.field_18448);
+		return hoglin.getBrain().hasMemoryModule(MemoryModuleType.BREED_TARGET);
 	}
 
 	protected static boolean isNearPlayer(HoglinEntity hoglin) {
-		return hoglin.getBrain().hasMemoryModule(MemoryModuleType.field_22353);
+		return hoglin.getBrain().hasMemoryModule(MemoryModuleType.PACIFIED);
 	}
 }

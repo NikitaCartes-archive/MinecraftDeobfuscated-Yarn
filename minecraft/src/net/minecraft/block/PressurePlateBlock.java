@@ -36,18 +36,18 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	@Override
 	protected void playPressSound(WorldAccess world, BlockPos pos) {
 		if (this.material != Material.WOOD && this.material != Material.NETHER_WOOD) {
-			world.playSound(null, pos, SoundEvents.field_15217, SoundCategory.field_15245, 0.3F, 0.6F);
+			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
 		} else {
-			world.playSound(null, pos, SoundEvents.field_14961, SoundCategory.field_15245, 0.3F, 0.8F);
+			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.8F);
 		}
 	}
 
 	@Override
 	protected void playDepressSound(WorldAccess world, BlockPos pos) {
 		if (this.material != Material.WOOD && this.material != Material.NETHER_WOOD) {
-			world.playSound(null, pos, SoundEvents.field_15116, SoundCategory.field_15245, 0.3F, 0.5F);
+			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
 		} else {
-			world.playSound(null, pos, SoundEvents.field_15002, SoundCategory.field_15245, 0.3F, 0.7F);
+			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.7F);
 		}
 	}
 
@@ -56,10 +56,10 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 		Box box = BOX.offset(pos);
 		List<? extends Entity> list;
 		switch (this.type) {
-			case field_11361:
+			case EVERYTHING:
 				list = world.getOtherEntities(null, box);
 				break;
-			case field_11362:
+			case MOBS:
 				list = world.getNonSpectatingEntities(LivingEntity.class, box);
 				break;
 			default:
@@ -83,7 +83,7 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	}
 
 	public static enum ActivationRule {
-		field_11361,
-		field_11362;
+		EVERYTHING,
+		MOBS;
 	}
 }

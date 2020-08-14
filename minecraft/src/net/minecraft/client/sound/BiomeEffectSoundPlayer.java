@@ -78,12 +78,11 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 						this.player.getEyeY() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange(),
 						this.player.getZ() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange()
 					);
-					int j = world.getLightLevel(LightType.field_9284, blockPos);
+					int j = world.getLightLevel(LightType.SKY, blockPos);
 					if (j > 0) {
 						this.moodPercentage = this.moodPercentage - (float)j / (float)world.getMaxLightLevel() * 0.001F;
 					} else {
-						this.moodPercentage = this.moodPercentage
-							- (float)(world.getLightLevel(LightType.field_9282, blockPos) - 1) / (float)biomeMoodSound.getCultivationTicks();
+						this.moodPercentage = this.moodPercentage - (float)(world.getLightLevel(LightType.BLOCK, blockPos) - 1) / (float)biomeMoodSound.getCultivationTicks();
 					}
 
 					if (this.moodPercentage >= 1.0F) {
@@ -113,7 +112,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 		private int strength;
 
 		public MusicLoop(SoundEvent sound) {
-			super(sound, SoundCategory.field_15256);
+			super(sound, SoundCategory.AMBIENT);
 			this.repeat = true;
 			this.repeatDelay = 0;
 			this.volume = 1.0F;

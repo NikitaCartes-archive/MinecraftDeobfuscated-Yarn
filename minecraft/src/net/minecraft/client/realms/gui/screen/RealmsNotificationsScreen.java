@@ -27,7 +27,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.checkIfMcoEnabled();
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 	}
 
 	@Override

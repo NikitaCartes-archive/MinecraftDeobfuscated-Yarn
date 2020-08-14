@@ -15,7 +15,7 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_16709(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig
 	) {
 		if (blockPos.getY() < 5) {
@@ -39,9 +39,9 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 	}
 
 	private boolean canPlacePileBlock(WorldAccess world, BlockPos pos, Random random) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		return blockState.isOf(Blocks.field_10194) ? random.nextBoolean() : blockState.isSideSolidFullSquare(world, blockPos, Direction.field_11036);
+		return blockState.isOf(Blocks.GRASS_PATH) ? random.nextBoolean() : blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
 	}
 
 	private void addPileBlock(WorldAccess world, BlockPos pos, Random random, BlockPileFeatureConfig config) {

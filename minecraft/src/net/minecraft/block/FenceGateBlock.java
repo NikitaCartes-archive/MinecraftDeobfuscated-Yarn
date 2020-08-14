@@ -51,9 +51,9 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if ((Boolean)state.get(IN_WALL)) {
-			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.field_11048 ? IN_WALL_X_AXIS_SHAPE : IN_WALL_Z_AXIS_SHAPE;
+			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_SHAPE : IN_WALL_Z_AXIS_SHAPE;
 		} else {
-			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.field_11048 ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
+			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
 		}
 	}
 
@@ -73,27 +73,27 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		if ((Boolean)state.get(OPEN)) {
 			return VoxelShapes.empty();
 		} else {
-			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.field_11051 ? Z_AXIS_COLLISION_SHAPE : X_AXIS_COLLISION_SHAPE;
+			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.Z ? Z_AXIS_COLLISION_SHAPE : X_AXIS_COLLISION_SHAPE;
 		}
 	}
 
 	@Override
 	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
 		if ((Boolean)state.get(IN_WALL)) {
-			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.field_11048 ? IN_WALL_X_AXIS_CULL_SHAPE : IN_WALL_Z_AXIS_CULL_SHAPE;
+			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_CULL_SHAPE : IN_WALL_Z_AXIS_CULL_SHAPE;
 		} else {
-			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.field_11048 ? X_AXIS_CULL_SHAPE : Z_AXIS_CULL_SHAPE;
+			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.X ? X_AXIS_CULL_SHAPE : Z_AXIS_CULL_SHAPE;
 		}
 	}
 
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		switch (type) {
-			case field_50:
+			case LAND:
 				return (Boolean)state.get(OPEN);
-			case field_48:
+			case WATER:
 				return false;
-			case field_51:
+			case AIR:
 				return (Boolean)state.get(OPEN);
 			default:
 				return false;
@@ -107,13 +107,13 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		boolean bl = world.isReceivingRedstonePower(blockPos);
 		Direction direction = ctx.getPlayerFacing();
 		Direction.Axis axis = direction.getAxis();
-		boolean bl2 = axis == Direction.Axis.field_11051 && (this.isWall(world.getBlockState(blockPos.west())) || this.isWall(world.getBlockState(blockPos.east())))
-			|| axis == Direction.Axis.field_11048 && (this.isWall(world.getBlockState(blockPos.north())) || this.isWall(world.getBlockState(blockPos.south())));
+		boolean bl2 = axis == Direction.Axis.Z && (this.isWall(world.getBlockState(blockPos.west())) || this.isWall(world.getBlockState(blockPos.east())))
+			|| axis == Direction.Axis.X && (this.isWall(world.getBlockState(blockPos.north())) || this.isWall(world.getBlockState(blockPos.south())));
 		return this.getDefaultState().with(FACING, direction).with(OPEN, Boolean.valueOf(bl)).with(POWERED, Boolean.valueOf(bl)).with(IN_WALL, Boolean.valueOf(bl2));
 	}
 
 	private boolean isWall(BlockState state) {
-		return state.getBlock().isIn(BlockTags.field_15504);
+		return state.getBlock().isIn(BlockTags.WALLS);
 	}
 
 	@Override

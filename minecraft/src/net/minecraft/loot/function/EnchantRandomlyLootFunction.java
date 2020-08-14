@@ -40,7 +40,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25216;
+		return LootFunctionTypes.ENCHANT_RANDOMLY;
 	}
 
 	@Override
@@ -48,11 +48,11 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		Random random = context.getRandom();
 		Enchantment enchantment;
 		if (this.enchantments.isEmpty()) {
-			boolean bl = stack.getItem() == Items.field_8529;
+			boolean bl = stack.getItem() == Items.BOOK;
 			List<Enchantment> list = (List<Enchantment>)Registry.ENCHANTMENT
 				.stream()
 				.filter(Enchantment::isAvailableForRandomSelection)
-				.filter(enchantmentx -> bl || enchantmentx.isAcceptableItem(stack))
+				.filter(enchantmentx -> bl || enchantmentx.isAcceptableItem(stack, false))
 				.collect(Collectors.toList());
 			if (list.isEmpty()) {
 				LOGGER.warn("Couldn't find a compatible enchantment for {}", stack);
@@ -69,8 +69,8 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 
 	private static ItemStack method_26266(ItemStack itemStack, Enchantment enchantment, Random random) {
 		int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
-		if (itemStack.getItem() == Items.field_8529) {
-			itemStack = new ItemStack(Items.field_8598);
+		if (itemStack.getItem() == Items.BOOK) {
+			itemStack = new ItemStack(Items.ENCHANTED_BOOK);
 			EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry(enchantment, i));
 		} else {
 			itemStack.addEnchantment(enchantment, i);
@@ -86,7 +86,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	public static class Builder extends ConditionalLootFunction.Builder<EnchantRandomlyLootFunction.Builder> {
 		private final Set<Enchantment> enchantments = Sets.<Enchantment>newHashSet();
 
-		protected EnchantRandomlyLootFunction.Builder method_25991() {
+		protected EnchantRandomlyLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
@@ -102,8 +102,8 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<EnchantRandomlyLootFunction> {
-		public void method_491(JsonObject jsonObject, EnchantRandomlyLootFunction enchantRandomlyLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, enchantRandomlyLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, EnchantRandomlyLootFunction enchantRandomlyLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, enchantRandomlyLootFunction, jsonSerializationContext);
 			if (!enchantRandomlyLootFunction.enchantments.isEmpty()) {
 				JsonArray jsonArray = new JsonArray();
 
@@ -120,7 +120,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public EnchantRandomlyLootFunction method_490(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public EnchantRandomlyLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			List<Enchantment> list = Lists.<Enchantment>newArrayList();
 			if (jsonObject.has("enchantments")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "enchantments")) {

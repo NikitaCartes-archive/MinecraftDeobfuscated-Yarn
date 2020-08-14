@@ -86,7 +86,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 		private List<TreeDecorator> decorators = ImmutableList.of();
 		private int maxWaterDepth;
 		private boolean ignoreVines;
-		private Heightmap.Type heightmap = Heightmap.Type.field_13200;
+		private Heightmap.Type heightmap = Heightmap.Type.OCEAN_FLOOR;
 
 		public Builder(
 			BlockStateProvider trunkProvider, BlockStateProvider leavesProvider, FoliagePlacer foliagePlacer, TrunkPlacer trunkPlacer, FeatureSize minimumSize

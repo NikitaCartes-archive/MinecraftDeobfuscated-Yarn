@@ -125,7 +125,7 @@ public class OceanRuinGenerator {
 	) {
 		int i = pos.getX();
 		int j = pos.getZ();
-		BlockPos blockPos = Structure.transformAround(new BlockPos(15, 0, 15), BlockMirror.field_11302, rotation, BlockPos.ORIGIN).add(i, 0, j);
+		BlockPos blockPos = Structure.transformAround(new BlockPos(15, 0, 15), BlockMirror.NONE, rotation, BlockPos.ORIGIN).add(i, 0, j);
 		BlockBox blockBox = BlockBox.create(i, 0, j, blockPos.getX(), 0, blockPos.getZ());
 		BlockPos blockPos2 = new BlockPos(Math.min(i, blockPos.getX()), 0, Math.min(j, blockPos.getZ()));
 		List<BlockPos> list = getRoomPositions(random, blockPos2.getX(), blockPos2.getZ());
@@ -138,7 +138,7 @@ public class OceanRuinGenerator {
 				int n = blockPos3.getX();
 				int o = blockPos3.getZ();
 				BlockRotation blockRotation = BlockRotation.random(random);
-				BlockPos blockPos4 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.field_11302, blockRotation, BlockPos.ORIGIN).add(n, 0, o);
+				BlockPos blockPos4 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(n, 0, o);
 				BlockBox blockBox2 = BlockBox.create(n, 0, o, blockPos4.getX(), 0, blockPos4.getZ());
 				if (!blockBox2.intersects(blockBox)) {
 					method_14822(manager, blockPos3, blockRotation, pieces, random, config, false, 0.8F);
@@ -170,10 +170,10 @@ public class OceanRuinGenerator {
 		boolean large,
 		float integrity
 	) {
-		if (config.biomeType == OceanRuinFeature.BiomeType.field_14532) {
+		if (config.biomeType == OceanRuinFeature.BiomeType.WARM) {
 			Identifier identifier = large ? getRandomBigWarmRuin(random) : getRandomWarmRuin(random);
 			pieces.add(new OceanRuinGenerator.Piece(manager, identifier, pos, rotation, integrity, config.biomeType, large));
-		} else if (config.biomeType == OceanRuinFeature.BiomeType.field_14528) {
+		} else if (config.biomeType == OceanRuinFeature.BiomeType.COLD) {
 			Identifier[] identifiers = large ? BIG_BRICK_RUINS : BRICK_RUINS;
 			Identifier[] identifiers2 = large ? BIG_CRACKED_RUINS : CRACKED_RUINS;
 			Identifier[] identifiers3 = large ? BIG_MOSSY_RUINS : MOSSY_RUINS;
@@ -224,7 +224,7 @@ public class OceanRuinGenerator {
 			Structure structure = structureManager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirror(BlockMirror.field_11302)
+				.setMirror(BlockMirror.NONE)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);
 		}
@@ -243,24 +243,23 @@ public class OceanRuinGenerator {
 		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
 				serverWorldAccess.setBlockState(
-					pos,
-					Blocks.field_10034.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(serverWorldAccess.getFluidState(pos).isIn(FluidTags.field_15517))),
-					2
+					pos, Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(serverWorldAccess.getFluidState(pos).isIn(FluidTags.WATER))), 2
 				);
 				BlockEntity blockEntity = serverWorldAccess.getBlockEntity(pos);
 				if (blockEntity instanceof ChestBlockEntity) {
-					((ChestBlockEntity)blockEntity).setLootTable(this.large ? LootTables.field_300 : LootTables.field_397, random.nextLong());
+					((ChestBlockEntity)blockEntity)
+						.setLootTable(this.large ? LootTables.UNDERWATER_RUIN_BIG_CHEST : LootTables.UNDERWATER_RUIN_SMALL_CHEST, random.nextLong());
 				}
 			} else if ("drowned".equals(metadata)) {
-				DrownedEntity drownedEntity = EntityType.field_6123.create(serverWorldAccess.toServerWorld());
+				DrownedEntity drownedEntity = EntityType.DROWNED.create(serverWorldAccess.toServerWorld());
 				drownedEntity.setPersistent();
 				drownedEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-				drownedEntity.initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(pos), SpawnReason.field_16474, null, null);
+				drownedEntity.initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
 				serverWorldAccess.spawnEntityAndPassengers(drownedEntity);
 				if (pos.getY() > serverWorldAccess.getSeaLevel()) {
-					serverWorldAccess.setBlockState(pos, Blocks.field_10124.getDefaultState(), 2);
+					serverWorldAccess.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 				} else {
-					serverWorldAccess.setBlockState(pos, Blocks.field_10382.getDefaultState(), 2);
+					serverWorldAccess.setBlockState(pos, Blocks.WATER.getDefaultState(), 2);
 				}
 			}
 		}
@@ -279,10 +278,10 @@ public class OceanRuinGenerator {
 				.clearProcessors()
 				.addProcessor(new BlockRotStructureProcessor(this.integrity))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-			int i = structureWorldAccess.getTopY(Heightmap.Type.field_13195, this.pos.getX(), this.pos.getZ());
+			int i = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
 			this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
 			BlockPos blockPos2 = Structure.transformAround(
-					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.field_11302, this.rotation, BlockPos.ORIGIN
+					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.NONE, this.rotation, BlockPos.ORIGIN
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, structureWorldAccess, blockPos2), this.pos.getZ());
@@ -303,7 +302,7 @@ public class OceanRuinGenerator {
 				BlockState blockState = blockView.getBlockState(mutable);
 
 				for (FluidState fluidState = blockView.getFluidState(mutable);
-					(blockState.isAir() || fluidState.isIn(FluidTags.field_15517) || blockState.getBlock().isIn(BlockTags.field_15467)) && o > 1;
+					(blockState.isAir() || fluidState.isIn(FluidTags.WATER) || blockState.getBlock().isIn(BlockTags.ICE)) && o > 1;
 					fluidState = blockView.getFluidState(mutable)
 				) {
 					mutable.set(m, --o, n);

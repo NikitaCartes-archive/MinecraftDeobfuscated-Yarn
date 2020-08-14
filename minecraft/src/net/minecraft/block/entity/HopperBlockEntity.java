@@ -38,7 +38,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	private long lastTickTime;
 
 	public HopperBlockEntity() {
-		super(BlockEntityType.field_11888);
+		super(BlockEntityType.HOPPER);
 	}
 
 	@Override
@@ -180,7 +180,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public static boolean extract(Hopper hopper) {
 		Inventory inventory = getInputInventory(hopper);
 		if (inventory != null) {
-			Direction direction = Direction.field_11033;
+			Direction direction = Direction.DOWN;
 			return isInventoryEmpty(inventory, direction) ? false : getAvailableSlots(inventory, direction).anyMatch(i -> extract(hopper, inventory, i, direction));
 		} else {
 			for (ItemEntity itemEntity : getInputItemEntities(hopper)) {

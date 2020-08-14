@@ -40,7 +40,7 @@ public class FontManager implements AutoCloseable {
 	private final TextureManager textureManager;
 	private Map<Identifier, Identifier> idOverrides = ImmutableMap.of();
 	private final ResourceReloadListener resourceReloadListener = new SinglePreparationResourceReloadListener<Map<Identifier, List<Font>>>() {
-		protected Map<Identifier, List<Font>> method_18638(ResourceManager resourceManager, Profiler profiler) {
+		protected Map<Identifier, List<Font>> prepare(ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 			Map<Identifier, List<Font>> map = Maps.<Identifier, List<Font>>newHashMap();
@@ -155,7 +155,7 @@ public class FontManager implements AutoCloseable {
 			return map;
 		}
 
-		protected void method_18635(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler) {
+		protected void apply(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
 			profiler.push("closing");
 			FontManager.this.fontStorages.values().forEach(FontStorage::close);

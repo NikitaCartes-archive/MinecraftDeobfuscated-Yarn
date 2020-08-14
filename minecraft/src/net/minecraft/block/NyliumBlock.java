@@ -20,14 +20,14 @@ public class NyliumBlock extends Block implements Fertilizable {
 	private static boolean stayAlive(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.up();
 		BlockState blockState = world.getBlockState(blockPos);
-		int i = ChunkLightProvider.getRealisticOpacity(world, state, pos, blockState, blockPos, Direction.field_11036, blockState.getOpacity(world, blockPos));
+		int i = ChunkLightProvider.getRealisticOpacity(world, state, pos, blockState, blockPos, Direction.UP, blockState.getOpacity(world, blockPos));
 		return i < world.getMaxLightLevel();
 	}
 
 	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!stayAlive(state, world, pos)) {
-			world.setBlockState(pos, Blocks.field_10515.getDefaultState());
+			world.setBlockState(pos, Blocks.NETHERRACK.getDefaultState());
 		}
 	}
 
@@ -45,9 +45,9 @@ public class NyliumBlock extends Block implements Fertilizable {
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		BlockState blockState = world.getBlockState(pos);
 		BlockPos blockPos = pos.up();
-		if (blockState.isOf(Blocks.field_22120)) {
+		if (blockState.isOf(Blocks.CRIMSON_NYLIUM)) {
 			NetherForestVegetationFeature.method_26264(world, random, blockPos, ConfiguredFeatures.Configs.CRIMSON_ROOTS_CONFIG, 3, 1);
-		} else if (blockState.isOf(Blocks.field_22113)) {
+		} else if (blockState.isOf(Blocks.WARPED_NYLIUM)) {
 			NetherForestVegetationFeature.method_26264(world, random, blockPos, ConfiguredFeatures.Configs.WARPED_ROOTS_CONFIG, 3, 1);
 			NetherForestVegetationFeature.method_26264(world, random, blockPos, ConfiguredFeatures.Configs.NETHER_SPROUTS_CONFIG, 3, 1);
 			if (random.nextInt(8) == 0) {

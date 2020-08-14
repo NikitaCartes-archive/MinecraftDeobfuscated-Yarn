@@ -8,7 +8,7 @@ public class HeightmapWorldSurfaceDecorator extends HeightmapDecorator<NopeDecor
 		super(codec);
 	}
 
-	protected Heightmap.Type method_30464(NopeDecoratorConfig nopeDecoratorConfig) {
-		return Heightmap.Type.field_13194;
+	protected Heightmap.Type getHeightmapType(NopeDecoratorConfig nopeDecoratorConfig) {
+		return Heightmap.Type.WORLD_SURFACE_WG;
 	}
 }

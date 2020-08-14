@@ -31,7 +31,7 @@ public class RecipeToast implements Toast {
 		}
 
 		if (this.recipes.isEmpty()) {
-			return Toast.Visibility.field_2209;
+			return Toast.Visibility.HIDE;
 		} else {
 			manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 			RenderSystem.color3f(1.0F, 1.0F, 1.0F);
@@ -45,7 +45,7 @@ public class RecipeToast implements Toast {
 			manager.getGame().getItemRenderer().renderInGui(itemStack, 3, 3);
 			RenderSystem.popMatrix();
 			manager.getGame().getItemRenderer().renderInGui(recipe.getOutput(), 8, 8);
-			return startTime - this.startTime >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
+			return startTime - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		}
 	}
 

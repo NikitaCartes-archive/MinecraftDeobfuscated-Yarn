@@ -31,15 +31,15 @@ public class NetherPortalBlock extends Block {
 
 	public NetherPortalBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(AXIS, Direction.Axis.field_11048));
+		this.setDefaultState(this.stateManager.getDefaultState().with(AXIS, Direction.Axis.X));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction.Axis)state.get(AXIS)) {
-			case field_11051:
+			case Z:
 				return Z_SHAPE;
-			case field_11048:
+			case X:
 			default:
 				return X_SHAPE;
 		}
@@ -49,11 +49,11 @@ public class NetherPortalBlock extends Block {
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getDimension().isNatural() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
 			while (world.getBlockState(pos).isOf(this)) {
-				pos = pos.method_10074();
+				pos = pos.down();
 			}
 
-			if (world.getBlockState(pos).allowsSpawning(world, pos, EntityType.field_6050)) {
-				Entity entity = EntityType.field_6050.spawn(world, null, null, null, pos.up(), SpawnReason.field_16474, false, false);
+			if (world.getBlockState(pos).allowsSpawning(world, pos, EntityType.ZOMBIFIED_PIGLIN)) {
+				Entity entity = EntityType.ZOMBIFIED_PIGLIN.spawn(world, null, null, null, pos.up(), SpawnReason.STRUCTURE, false, false);
 				if (entity != null) {
 					entity.method_30229();
 				}
@@ -67,7 +67,7 @@ public class NetherPortalBlock extends Block {
 		Direction.Axis axis2 = state.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
 		return !bl && !newState.isOf(this) && !new AreaHelper(world, pos, axis2).wasAlreadyValid()
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
@@ -86,8 +86,8 @@ public class NetherPortalBlock extends Block {
 				(double)pos.getX() + 0.5,
 				(double)pos.getY() + 0.5,
 				(double)pos.getZ() + 0.5,
-				SoundEvents.field_14802,
-				SoundCategory.field_15245,
+				SoundEvents.BLOCK_PORTAL_AMBIENT,
+				SoundCategory.BLOCKS,
 				0.5F,
 				random.nextFloat() * 0.4F + 0.8F,
 				false
@@ -110,7 +110,7 @@ public class NetherPortalBlock extends Block {
 				j = (double)(random.nextFloat() * 2.0F * (float)k);
 			}
 
-			world.addParticle(ParticleTypes.field_11214, d, e, f, g, h, j);
+			world.addParticle(ParticleTypes.PORTAL, d, e, f, g, h, j);
 		}
 	}
 
@@ -123,13 +123,13 @@ public class NetherPortalBlock extends Block {
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
-			case field_11465:
-			case field_11463:
+			case COUNTERCLOCKWISE_90:
+			case CLOCKWISE_90:
 				switch ((Direction.Axis)state.get(AXIS)) {
-					case field_11051:
-						return state.with(AXIS, Direction.Axis.field_11048);
-					case field_11048:
-						return state.with(AXIS, Direction.Axis.field_11051);
+					case Z:
+						return state.with(AXIS, Direction.Axis.X);
+					case X:
+						return state.with(AXIS, Direction.Axis.Z);
 					default:
 						return state;
 				}

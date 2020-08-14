@@ -42,7 +42,7 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		return modelPart;
 	}
 
-	public void method_3546(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		List<Pair<BannerPattern, DyeColor>> list = bannerBlockEntity.getPatterns();
 		if (list != null) {
 			float g = 0.6666667F;

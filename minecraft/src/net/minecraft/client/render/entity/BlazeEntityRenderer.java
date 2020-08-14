@@ -15,11 +15,11 @@ public class BlazeEntityRenderer extends MobEntityRenderer<BlazeEntity, BlazeEnt
 		super(entityRenderDispatcher, new BlazeEntityModel<>(), 0.5F);
 	}
 
-	protected int method_24085(BlazeEntity blazeEntity, BlockPos blockPos) {
+	protected int getBlockLight(BlazeEntity blazeEntity, BlockPos blockPos) {
 		return 15;
 	}
 
-	public Identifier method_3881(BlazeEntity blazeEntity) {
+	public Identifier getTexture(BlazeEntity blazeEntity) {
 		return TEXTURE;
 	}
 }

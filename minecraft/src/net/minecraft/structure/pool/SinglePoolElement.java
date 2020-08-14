@@ -60,7 +60,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	public SinglePoolElement(Structure structure) {
-		this(Either.right(structure), () -> StructureProcessorLists.field_26688, StructurePool.Projection.field_16687);
+		this(Either.right(structure), () -> StructureProcessorLists.EMPTY, StructurePool.Projection.RIGID);
 	}
 
 	private Structure method_27233(StructureManager structureManager) {
@@ -72,14 +72,14 @@ public class SinglePoolElement extends StructurePoolElement {
 	) {
 		Structure structure = this.method_27233(structureManager);
 		List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(
-			blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.field_10465, mirroredAndRotated
+			blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated
 		);
 		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 
 		for (Structure.StructureBlockInfo structureBlockInfo : list) {
 			if (structureBlockInfo.tag != null) {
 				StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
-				if (structureBlockMode == StructureBlockMode.field_12696) {
+				if (structureBlockMode == StructureBlockMode.DATA) {
 					list2.add(structureBlockInfo);
 				}
 			}
@@ -91,7 +91,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	@Override
 	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
 		Structure structure = this.method_27233(structureManager);
-		List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.field_16540, true);
+		List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
 		Collections.shuffle(list, random);
 		return list;
 	}
@@ -149,7 +149,7 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType<?> getType() {
-		return StructurePoolElementType.field_16973;
+		return StructurePoolElementType.SINGLE_POOL_ELEMENT;
 	}
 
 	public String toString() {

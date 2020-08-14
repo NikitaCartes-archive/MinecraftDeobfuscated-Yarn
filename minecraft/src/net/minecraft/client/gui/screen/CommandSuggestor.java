@@ -50,10 +50,10 @@ import net.minecraft.util.math.Vec2f;
 @Environment(EnvType.CLIENT)
 public class CommandSuggestor {
 	private static final Pattern BACKSLASH_S_PATTERN = Pattern.compile("(\\s+)");
-	private static final Style field_25885 = Style.EMPTY.withColor(Formatting.field_1061);
-	private static final Style field_25886 = Style.EMPTY.withColor(Formatting.field_1080);
+	private static final Style field_25885 = Style.EMPTY.withColor(Formatting.RED);
+	private static final Style field_25886 = Style.EMPTY.withColor(Formatting.GRAY);
 	private static final List<Style> field_25887 = (List<Style>)Stream.of(
-			Formatting.field_1075, Formatting.field_1054, Formatting.field_1060, Formatting.field_1076, Formatting.field_1065
+			Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD
 		)
 		.map(Style.EMPTY::withColor)
 		.collect(ImmutableList.toImmutableList());
@@ -256,7 +256,7 @@ public class CommandSuggestor {
 		this.x = 0;
 		this.width = this.owner.width;
 		if (this.messages.isEmpty()) {
-			this.showUsages(Formatting.field_1080);
+			this.showUsages(Formatting.GRAY);
 		}
 
 		this.window = null;

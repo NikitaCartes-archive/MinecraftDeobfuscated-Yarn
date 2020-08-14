@@ -50,13 +50,13 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		this.legs[3].roll = (float) Math.PI;
 	}
 
-	public void method_3557(BedBlockEntity bedBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(BedBlockEntity bedBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.BED_TEXTURES[bedBlockEntity.getColor().getId()];
 		World world = bedBlockEntity.getWorld();
 		if (world != null) {
 			BlockState blockState = bedBlockEntity.getCachedState();
 			DoubleBlockProperties.PropertySource<? extends BedBlockEntity> propertySource = DoubleBlockProperties.toPropertySource(
-				BlockEntityType.field_11910,
+				BlockEntityType.BED,
 				BedBlock::getBedPart,
 				BedBlock::getOppositePartDirection,
 				ChestBlock.FACING,
@@ -67,11 +67,11 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 			);
 			int k = propertySource.apply(new LightmapCoordinatesRetriever<>()).get(i);
 			this.method_3558(
-				matrixStack, vertexConsumerProvider, blockState.get(BedBlock.PART) == BedPart.field_12560, blockState.get(BedBlock.FACING), spriteIdentifier, k, j, false
+				matrixStack, vertexConsumerProvider, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), spriteIdentifier, k, j, false
 			);
 		} else {
-			this.method_3558(matrixStack, vertexConsumerProvider, true, Direction.field_11035, spriteIdentifier, i, j, false);
-			this.method_3558(matrixStack, vertexConsumerProvider, false, Direction.field_11035, spriteIdentifier, i, j, true);
+			this.method_3558(matrixStack, vertexConsumerProvider, true, Direction.SOUTH, spriteIdentifier, i, j, false);
+			this.method_3558(matrixStack, vertexConsumerProvider, false, Direction.SOUTH, spriteIdentifier, i, j, true);
 		}
 	}
 

@@ -13,23 +13,21 @@ public class PlantBlock extends Block {
 	}
 
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isOf(Blocks.field_10219)
-			|| floor.isOf(Blocks.field_10566)
-			|| floor.isOf(Blocks.field_10253)
-			|| floor.isOf(Blocks.field_10520)
-			|| floor.isOf(Blocks.field_10362);
+		return floor.isOf(Blocks.GRASS_BLOCK)
+			|| floor.isOf(Blocks.DIRT)
+			|| floor.isOf(Blocks.COARSE_DIRT)
+			|| floor.isOf(Blocks.PODZOL)
+			|| floor.isOf(Blocks.FARMLAND);
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+		return !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		return this.canPlantOnTop(world.getBlockState(blockPos), world, blockPos);
 	}
 
@@ -40,6 +38,6 @@ public class PlantBlock extends Block {
 
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-		return type == NavigationType.field_51 && !this.collidable ? true : super.canPathfindThrough(state, world, pos, type);
+		return type == NavigationType.AIR && !this.collidable ? true : super.canPathfindThrough(state, world, pos, type);
 	}
 }

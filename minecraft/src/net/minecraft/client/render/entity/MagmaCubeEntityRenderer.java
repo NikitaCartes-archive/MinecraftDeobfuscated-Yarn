@@ -17,15 +17,15 @@ public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, 
 		super(entityRenderDispatcher, new MagmaCubeEntityModel<>(), 0.25F);
 	}
 
-	protected int method_24090(MagmaCubeEntity magmaCubeEntity, BlockPos blockPos) {
+	protected int getBlockLight(MagmaCubeEntity magmaCubeEntity, BlockPos blockPos) {
 		return 15;
 	}
 
-	public Identifier method_4001(MagmaCubeEntity magmaCubeEntity) {
+	public Identifier getTexture(MagmaCubeEntity magmaCubeEntity) {
 		return TEXTURE;
 	}
 
-	protected void method_4000(MagmaCubeEntity magmaCubeEntity, MatrixStack matrixStack, float f) {
+	protected void scale(MagmaCubeEntity magmaCubeEntity, MatrixStack matrixStack, float f) {
 		int i = magmaCubeEntity.getSize();
 		float g = MathHelper.lerp(f, magmaCubeEntity.lastStretch, magmaCubeEntity.stretch) / ((float)i * 0.5F + 1.0F);
 		float h = 1.0F / (g + 1.0F);

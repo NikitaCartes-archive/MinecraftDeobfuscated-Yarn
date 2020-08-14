@@ -54,7 +54,7 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.focusedBinding != null) {
-			this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.Type.field_1672.createFromCode(button));
+			this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(button));
 			this.focusedBinding = null;
 			KeyBinding.updateKeysByCode();
 			return true;

@@ -48,7 +48,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	public ChestBlockEntity() {
-		this(BlockEntityType.field_11914);
+		this(BlockEntityType.CHEST);
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		this.lastAnimationAngle = this.animationAngle;
 		float f = 0.1F;
 		if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
-			this.playSound(SoundEvents.field_14982);
+			this.playSound(SoundEvents.BLOCK_CHEST_OPEN);
 		}
 
 		if (this.viewerCount == 0 && this.animationAngle > 0.0F || this.viewerCount > 0 && this.animationAngle < 1.0F) {
@@ -107,7 +107,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 			float h = 0.5F;
 			if (this.animationAngle < 0.5F && g >= 0.5F) {
-				this.playSound(SoundEvents.field_14823);
+				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE);
 			}
 
 			if (this.animationAngle < 0.0F) {
@@ -152,17 +152,17 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 	private void playSound(SoundEvent soundEvent) {
 		ChestType chestType = this.getCachedState().get(ChestBlock.CHEST_TYPE);
-		if (chestType != ChestType.field_12574) {
+		if (chestType != ChestType.LEFT) {
 			double d = (double)this.pos.getX() + 0.5;
 			double e = (double)this.pos.getY() + 0.5;
 			double f = (double)this.pos.getZ() + 0.5;
-			if (chestType == ChestType.field_12571) {
+			if (chestType == ChestType.RIGHT) {
 				Direction direction = ChestBlock.getFacing(this.getCachedState());
 				d += (double)direction.getOffsetX() * 0.5;
 				f += (double)direction.getOffsetZ() * 0.5;
 			}
 
-			this.world.playSound(null, d, e, f, soundEvent, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+			this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 		}
 	}
 

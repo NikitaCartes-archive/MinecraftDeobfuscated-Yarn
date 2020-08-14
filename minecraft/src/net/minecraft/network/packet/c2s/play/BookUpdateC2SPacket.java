@@ -38,7 +38,7 @@ public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeEnumConstant(this.hand);
 	}
 
-	public void method_12236(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onBookUpdate(this);
 	}
 

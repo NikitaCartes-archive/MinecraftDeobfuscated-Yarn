@@ -157,9 +157,7 @@ public class Properties {
 	 * 
 	 * <p>This property only allows a block to be oriented to the X and Z axes.
 	 */
-	public static final EnumProperty<Direction.Axis> HORIZONTAL_AXIS = EnumProperty.of(
-		"axis", Direction.Axis.class, Direction.Axis.field_11048, Direction.Axis.field_11051
-	);
+	public static final EnumProperty<Direction.Axis> HORIZONTAL_AXIS = EnumProperty.of("axis", Direction.Axis.class, Direction.Axis.X, Direction.Axis.Z);
 	/**
 	 * A property that specifies the axis a block is oriented to.
 	 */
@@ -192,20 +190,20 @@ public class Properties {
 	 * A property that specifies the direction a block is facing.
 	 */
 	public static final DirectionProperty FACING = DirectionProperty.of(
-		"facing", Direction.field_11043, Direction.field_11034, Direction.field_11035, Direction.field_11039, Direction.field_11036, Direction.field_11033
+		"facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN
 	);
 	/**
 	 * A property that specifies the direction a hopper's output faces.
 	 * 
 	 * <p>This property does not allow the hopper's output to face upwards.
 	 */
-	public static final DirectionProperty HOPPER_FACING = DirectionProperty.of("facing", (Predicate<Direction>)(facing -> facing != Direction.field_11036));
+	public static final DirectionProperty HOPPER_FACING = DirectionProperty.of("facing", (Predicate<Direction>)(facing -> facing != Direction.UP));
 	/**
 	 * A property that specifies the direction a block is facing.
 	 * 
 	 * <p>This property only allows a block to face in one of the cardinal directions (north, south, east and west).
 	 */
-	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.field_11062);
+	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
 	/**
 	 * A property that specifies the orientation of a jigsaw.
 	 */
@@ -270,7 +268,7 @@ public class Properties {
 	public static final EnumProperty<RailShape> STRAIGHT_RAIL_SHAPE = EnumProperty.of(
 		"shape",
 		RailShape.class,
-		(Predicate)(shape -> shape != RailShape.field_12663 && shape != RailShape.field_12672 && shape != RailShape.field_12664 && shape != RailShape.field_12671)
+		(Predicate)(shape -> shape != RailShape.NORTH_EAST && shape != RailShape.NORTH_WEST && shape != RailShape.SOUTH_EAST && shape != RailShape.SOUTH_WEST)
 	);
 	/**
 	 * A property that specifies the age of a block on a scale of 0 to 1.

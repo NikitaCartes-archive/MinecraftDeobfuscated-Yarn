@@ -30,14 +30,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class CompoundTag implements Tag {
-	public static final Codec<CompoundTag> field_25128 = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
+	public static final Codec<CompoundTag> CODEC = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
 		Tag tag = dynamic.convert(NbtOps.INSTANCE).getValue();
 		return tag instanceof CompoundTag ? DataResult.success((CompoundTag)tag) : DataResult.error("Not a compound tag: " + tag);
 	}, compoundTag -> new Dynamic<>(NbtOps.INSTANCE, compoundTag));
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern PATTERN = Pattern.compile("[A-Za-z0-9._+-]+");
 	public static final TagReader<CompoundTag> READER = new TagReader<CompoundTag>() {
-		public CompoundTag method_23240(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public CompoundTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(384L);
 			if (i > 512) {
 				throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
@@ -393,7 +393,7 @@ public class CompoundTag implements Tag {
 		return crashReport;
 	}
 
-	public CompoundTag method_10553() {
+	public CompoundTag copy() {
 		Map<String, Tag> map = Maps.<String, Tag>newHashMap(Maps.transformValues(this.tags, Tag::copy));
 		return new CompoundTag(map);
 	}
@@ -509,7 +509,7 @@ public class CompoundTag implements Tag {
 		}
 	}
 
-	protected Map<String, Tag> method_29143() {
+	protected Map<String, Tag> toMap() {
 		return Collections.unmodifiableMap(this.tags);
 	}
 }

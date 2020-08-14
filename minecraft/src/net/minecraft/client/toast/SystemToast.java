@@ -86,7 +86,7 @@ public class SystemToast implements Toast {
 			}
 		}
 
-		return startTime - this.startTime < 5000L ? Toast.Visibility.field_2210 : Toast.Visibility.field_2209;
+		return startTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
 	private void drawPart(MatrixStack matrices, ToastManager manager, int width, int textureV, int y, int height) {
@@ -107,7 +107,7 @@ public class SystemToast implements Toast {
 		this.justUpdated = true;
 	}
 
-	public SystemToast.Type method_1989() {
+	public SystemToast.Type getType() {
 		return this.type;
 	}
 
@@ -125,25 +125,25 @@ public class SystemToast implements Toast {
 	}
 
 	public static void addWorldAccessFailureToast(MinecraftClient client, String worldName) {
-		add(client.getToastManager(), SystemToast.Type.field_23774, new TranslatableText("selectWorld.access_failure"), new LiteralText(worldName));
+		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.access_failure"), new LiteralText(worldName));
 	}
 
 	public static void addWorldDeleteFailureToast(MinecraftClient client, String worldName) {
-		add(client.getToastManager(), SystemToast.Type.field_23774, new TranslatableText("selectWorld.delete_failure"), new LiteralText(worldName));
+		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.delete_failure"), new LiteralText(worldName));
 	}
 
 	public static void addPackCopyFailure(MinecraftClient client, String directory) {
-		add(client.getToastManager(), SystemToast.Type.field_25445, new TranslatableText("pack.copyFailure"), new LiteralText(directory));
+		add(client.getToastManager(), SystemToast.Type.PACK_COPY_FAILURE, new TranslatableText("pack.copyFailure"), new LiteralText(directory));
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		field_2218,
-		field_2219,
-		field_2220,
-		field_25039,
-		field_21809,
-		field_23774,
-		field_25445;
+		TUTORIAL_HINT,
+		NARRATOR_TOGGLE,
+		WORLD_BACKUP,
+		WORLD_GEN_SETTINGS_TRANSFER,
+		PACK_LOAD_FAILURE,
+		WORLD_ACCESS_FAILURE,
+		PACK_COPY_FAILURE;
 	}
 }

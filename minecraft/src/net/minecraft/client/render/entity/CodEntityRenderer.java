@@ -17,11 +17,11 @@ public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityMod
 		super(entityRenderDispatcher, new CodEntityModel<>(), 0.3F);
 	}
 
-	public Identifier method_3897(CodEntity codEntity) {
+	public Identifier getTexture(CodEntity codEntity) {
 		return TEXTURE;
 	}
 
-	protected void method_3896(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(codEntity, matrixStack, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(i));

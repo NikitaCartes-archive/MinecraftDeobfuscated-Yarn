@@ -65,11 +65,11 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
 	private static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
-	private static final Text field_26606 = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.field_1061);
-	private static final Text field_26607 = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.field_1061);
-	private static final Text field_26608 = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.field_1065);
-	private static final Text field_26609 = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.field_1065);
-	private static final Text field_26610 = new TranslatableText("selectWorld.locked").formatted(Formatting.field_1061);
+	private static final Text field_26606 = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
+	private static final Text field_26607 = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
+	private static final Text field_26608 = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
+	private static final Text field_26609 = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
+	private static final Text field_26610 = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
 	private final SelectWorldScreen parent;
 	@Nullable
 	private List<LevelSummary> levels;
@@ -137,7 +137,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		return this.parent.getFocused() == this;
 	}
 
-	public void method_20157(@Nullable WorldListWidget.Entry entry) {
+	public void setSelected(@Nullable WorldListWidget.Entry entry) {
 		super.setSelected(entry);
 		if (entry != null) {
 			LevelSummary levelSummary = entry.level;
@@ -254,7 +254,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			if (this.level.isLocked()) {
 				return true;
 			} else {
-				WorldListWidget.this.method_20157(this);
+				WorldListWidget.this.setSelected(this);
 				this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
 				if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
 					this.play();
@@ -388,7 +388,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
 				DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
 				GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
-				Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.field_24186), this.client);
+				Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
 				if (generatorOptions.isLegacyCustomizedType()) {
 					this.client
 						.openScreen(
@@ -418,7 +418,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		private void start() {
-			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			if (this.client.getLevelStorage().levelExists(this.level.getName())) {
 				this.method_29990();
 				this.client.startIntegratedServer(this.level.getName());

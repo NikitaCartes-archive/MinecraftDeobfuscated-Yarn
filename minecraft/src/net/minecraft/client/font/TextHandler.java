@@ -115,27 +115,34 @@ public class TextHandler {
 	}
 
 	/**
-	 * Trim a text to be at most {@code maxWidth} wide.
+	 * Gets the style at the {@code x} position in a text.
 	 * 
-	 * @return the trimmed text
+	 * @return a style
 	 * 
-	 * @param maxWidth the max width of the trimmed text
+	 * @param x the position in the text
 	 */
 	@Nullable
-	public Style trimToWidth(StringVisitable text, int maxWidth) {
-		TextHandler.WidthLimitingVisitor widthLimitingVisitor = new TextHandler.WidthLimitingVisitor((float)maxWidth);
+	public Style getStyleAt(StringVisitable text, int x) {
+		TextHandler.WidthLimitingVisitor widthLimitingVisitor = new TextHandler.WidthLimitingVisitor((float)x);
 		return (Style)text.visit(
 				(style, string) -> TextVisitFactory.visitFormatted(string, style, widthLimitingVisitor) ? Optional.empty() : Optional.of(style), Style.EMPTY
 			)
 			.orElse(null);
 	}
 
+	/**
+	 * Gets the style at the {@code x} position in a text.
+	 * 
+	 * @return a style
+	 * 
+	 * @param x the position in the text
+	 */
 	@Nullable
-	public Style method_30876(OrderedText orderedText, int i) {
-		TextHandler.WidthLimitingVisitor widthLimitingVisitor = new TextHandler.WidthLimitingVisitor((float)i);
+	public Style getStyleAt(OrderedText text, int x) {
+		TextHandler.WidthLimitingVisitor widthLimitingVisitor = new TextHandler.WidthLimitingVisitor((float)x);
 		MutableObject<Style> mutableObject = new MutableObject<>();
-		orderedText.accept((ix, style, j) -> {
-			if (!widthLimitingVisitor.accept(ix, style, j)) {
+		text.accept((i, style, j) -> {
+			if (!widthLimitingVisitor.accept(i, style, j)) {
 				mutableObject.setValue(style);
 				return false;
 			} else {

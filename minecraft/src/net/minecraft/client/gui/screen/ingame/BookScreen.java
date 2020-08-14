@@ -201,7 +201,7 @@ public class BookScreen extends Screen {
 		ClickEvent clickEvent = style.getClickEvent();
 		if (clickEvent == null) {
 			return false;
-		} else if (clickEvent.getAction() == ClickEvent.Action.field_11748) {
+		} else if (clickEvent.getAction() == ClickEvent.Action.CHANGE_PAGE) {
 			String string = clickEvent.getValue();
 
 			try {
@@ -212,7 +212,7 @@ public class BookScreen extends Screen {
 			}
 		} else {
 			boolean bl = super.handleTextClick(style);
-			if (bl && clickEvent.getAction() == ClickEvent.Action.field_11750) {
+			if (bl && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
 				this.client.openScreen(null);
 			}
 
@@ -233,7 +233,7 @@ public class BookScreen extends Screen {
 					int l = j / 9;
 					if (l >= 0 && l < this.cachedPage.size()) {
 						OrderedText orderedText = (OrderedText)this.cachedPage.get(l);
-						return this.client.textRenderer.getTextHandler().method_30876(orderedText, i);
+						return this.client.textRenderer.getTextHandler().getStyleAt(orderedText, i);
 					} else {
 						return null;
 					}
@@ -247,7 +247,7 @@ public class BookScreen extends Screen {
 	}
 
 	public static List<String> readPages(CompoundTag tag) {
-		ListTag listTag = tag.getList("pages", 8).method_10612();
+		ListTag listTag = tag.getList("pages", 8).copy();
 		Builder<String> builder = ImmutableList.builder();
 
 		for (int i = 0; i < listTag.size(); i++) {
@@ -269,10 +269,10 @@ public class BookScreen extends Screen {
 
 		static BookScreen.Contents create(ItemStack stack) {
 			Item item = stack.getItem();
-			if (item == Items.field_8360) {
+			if (item == Items.WRITTEN_BOOK) {
 				return new BookScreen.WrittenBookContents(stack);
 			} else {
-				return (BookScreen.Contents)(item == Items.field_8674 ? new BookScreen.WritableBookContents(stack) : BookScreen.EMPTY_PROVIDER);
+				return (BookScreen.Contents)(item == Items.WRITABLE_BOOK ? new BookScreen.WritableBookContents(stack) : BookScreen.EMPTY_PROVIDER);
 			}
 		}
 	}
@@ -313,7 +313,7 @@ public class BookScreen extends Screen {
 			CompoundTag compoundTag = stack.getTag();
 			return (List<String>)(compoundTag != null && WrittenBookItem.isValid(compoundTag)
 				? BookScreen.readPages(compoundTag)
-				: ImmutableList.of(Text.Serializer.toJson(new TranslatableText("book.invalid.tag").formatted(Formatting.field_1079))));
+				: ImmutableList.of(Text.Serializer.toJson(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED))));
 		}
 
 		@Override

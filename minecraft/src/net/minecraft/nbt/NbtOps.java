@@ -51,11 +51,11 @@ public class NbtOps implements DynamicOps<Tag> {
 	protected NbtOps() {
 	}
 
-	public Tag method_10668() {
+	public Tag empty() {
 		return EndTag.INSTANCE;
 	}
 
-	public <U> U method_29146(DynamicOps<U> dynamicOps, Tag tag) {
+	public <U> U convertTo(DynamicOps<U> dynamicOps, Tag tag) {
 		switch (tag.getType()) {
 			case 0:
 				return dynamicOps.empty();
@@ -88,47 +88,47 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public DataResult<Number> method_10645(Tag tag) {
+	public DataResult<Number> getNumberValue(Tag tag) {
 		return tag instanceof AbstractNumberTag ? DataResult.success(((AbstractNumberTag)tag).getNumber()) : DataResult.error("Not a number");
 	}
 
-	public Tag method_10660(Number number) {
+	public Tag createNumeric(Number number) {
 		return DoubleTag.of(number.doubleValue());
 	}
 
-	public Tag method_10640(byte b) {
+	public Tag createByte(byte b) {
 		return ByteTag.of(b);
 	}
 
-	public Tag method_10635(short s) {
+	public Tag createShort(short s) {
 		return ShortTag.of(s);
 	}
 
-	public Tag method_10661(int i) {
+	public Tag createInt(int i) {
 		return IntTag.of(i);
 	}
 
-	public Tag method_10654(long l) {
+	public Tag createLong(long l) {
 		return LongTag.of(l);
 	}
 
-	public Tag method_10662(float f) {
+	public Tag createFloat(float f) {
 		return FloatTag.of(f);
 	}
 
-	public Tag method_10652(double d) {
+	public Tag createDouble(double d) {
 		return DoubleTag.of(d);
 	}
 
-	public Tag method_23253(boolean bl) {
+	public Tag createBoolean(boolean bl) {
 		return ByteTag.of(bl);
 	}
 
-	public DataResult<String> method_10656(Tag tag) {
+	public DataResult<String> getStringValue(Tag tag) {
 		return tag instanceof StringTag ? DataResult.success(tag.asString()) : DataResult.error("Not a string");
 	}
 
-	public Tag method_10639(String string) {
+	public Tag createString(String string) {
 		return StringTag.of(string);
 	}
 
@@ -164,7 +164,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		list.forEach(tagx -> abstractListTag.add(tagx));
 	}
 
-	public DataResult<Tag> method_29156(Tag tag, Tag tag2) {
+	public DataResult<Tag> mergeToList(Tag tag, Tag tag2) {
 		if (!(tag instanceof AbstractListTag) && !(tag instanceof EndTag)) {
 			return DataResult.error("mergeToList called with not a list: " + tag, tag);
 		} else {
@@ -174,7 +174,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public DataResult<Tag> method_29155(Tag tag, List<Tag> list) {
+	public DataResult<Tag> mergeToList(Tag tag, List<Tag> list) {
 		if (!(tag instanceof AbstractListTag) && !(tag instanceof EndTag)) {
 			return DataResult.error("mergeToList called with not a list: " + tag, tag);
 		} else {
@@ -186,7 +186,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public DataResult<Tag> method_29157(Tag tag, Tag tag2, Tag tag3) {
+	public DataResult<Tag> mergeToMap(Tag tag, Tag tag2, Tag tag3) {
 		if (!(tag instanceof CompoundTag) && !(tag instanceof EndTag)) {
 			return DataResult.error("mergeToMap called with not a map: " + tag, tag);
 		} else if (!(tag2 instanceof StringTag)) {
@@ -203,7 +203,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public DataResult<Tag> method_29154(Tag tag, MapLike<Tag> mapLike) {
+	public DataResult<Tag> mergeToMap(Tag tag, MapLike<Tag> mapLike) {
 		if (!(tag instanceof CompoundTag) && !(tag instanceof EndTag)) {
 			return DataResult.error("mergeToMap called with not a map: " + tag, tag);
 		} else {
@@ -226,43 +226,43 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public DataResult<Stream<Pair<Tag, Tag>>> method_10669(Tag tag) {
+	public DataResult<Stream<Pair<Tag, Tag>>> getMapValues(Tag tag) {
 		if (!(tag instanceof CompoundTag)) {
 			return DataResult.error("Not a map: " + tag);
 		} else {
 			CompoundTag compoundTag = (CompoundTag)tag;
-			return DataResult.success(compoundTag.getKeys().stream().map(string -> Pair.of(this.method_10639(string), compoundTag.get(string))));
+			return DataResult.success(compoundTag.getKeys().stream().map(string -> Pair.of(this.createString(string), compoundTag.get(string))));
 		}
 	}
 
-	public DataResult<Consumer<BiConsumer<Tag, Tag>>> method_29162(Tag tag) {
+	public DataResult<Consumer<BiConsumer<Tag, Tag>>> getMapEntries(Tag tag) {
 		if (!(tag instanceof CompoundTag)) {
 			return DataResult.error("Not a map: " + tag);
 		} else {
 			CompoundTag compoundTag = (CompoundTag)tag;
-			return DataResult.success(biConsumer -> compoundTag.getKeys().forEach(string -> biConsumer.accept(this.method_10639(string), compoundTag.get(string))));
+			return DataResult.success(biConsumer -> compoundTag.getKeys().forEach(string -> biConsumer.accept(this.createString(string), compoundTag.get(string))));
 		}
 	}
 
-	public DataResult<MapLike<Tag>> method_29163(Tag tag) {
+	public DataResult<MapLike<Tag>> getMap(Tag tag) {
 		if (!(tag instanceof CompoundTag)) {
 			return DataResult.error("Not a map: " + tag);
 		} else {
 			final CompoundTag compoundTag = (CompoundTag)tag;
 			return DataResult.success(new MapLike<Tag>() {
 				@Nullable
-				public Tag method_29167(Tag tag) {
+				public Tag get(Tag tag) {
 					return compoundTag.get(tag.asString());
 				}
 
 				@Nullable
-				public Tag method_29165(String string) {
+				public Tag get(String string) {
 					return compoundTag.get(string);
 				}
 
 				@Override
 				public Stream<Pair<Tag, Tag>> entries() {
-					return compoundTag.getKeys().stream().map(string -> Pair.of(NbtOps.this.method_10639(string), compoundTag.get(string)));
+					return compoundTag.getKeys().stream().map(string -> Pair.of(NbtOps.this.createString(string), compoundTag.get(string)));
 				}
 
 				public String toString() {
@@ -272,17 +272,17 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public Tag method_10655(Stream<Pair<Tag, Tag>> stream) {
+	public Tag createMap(Stream<Pair<Tag, Tag>> stream) {
 		CompoundTag compoundTag = new CompoundTag();
 		stream.forEach(pair -> compoundTag.put(((Tag)pair.getFirst()).asString(), (Tag)pair.getSecond()));
 		return compoundTag;
 	}
 
-	public DataResult<Stream<Tag>> method_10664(Tag tag) {
+	public DataResult<Stream<Tag>> getStream(Tag tag) {
 		return tag instanceof AbstractListTag ? DataResult.success(((AbstractListTag)tag).stream().map(tagx -> tagx)) : DataResult.error("Not a list");
 	}
 
-	public DataResult<Consumer<Consumer<Tag>>> method_29164(Tag tag) {
+	public DataResult<Consumer<Consumer<Tag>>> getList(Tag tag) {
 		if (tag instanceof AbstractListTag) {
 			AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
 			return DataResult.success(abstractListTag::forEach);
@@ -291,31 +291,31 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public DataResult<ByteBuffer> method_10646(Tag tag) {
+	public DataResult<ByteBuffer> getByteBuffer(Tag tag) {
 		return tag instanceof ByteArrayTag ? DataResult.success(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray())) : DynamicOps.super.getByteBuffer(tag);
 	}
 
-	public Tag method_10657(ByteBuffer byteBuffer) {
+	public Tag createByteList(ByteBuffer byteBuffer) {
 		return new ByteArrayTag(DataFixUtils.toArray(byteBuffer));
 	}
 
-	public DataResult<IntStream> method_10651(Tag tag) {
+	public DataResult<IntStream> getIntStream(Tag tag) {
 		return tag instanceof IntArrayTag ? DataResult.success(Arrays.stream(((IntArrayTag)tag).getIntArray())) : DynamicOps.super.getIntStream(tag);
 	}
 
-	public Tag method_10663(IntStream intStream) {
+	public Tag createIntList(IntStream intStream) {
 		return new IntArrayTag(intStream.toArray());
 	}
 
-	public DataResult<LongStream> method_10637(Tag tag) {
+	public DataResult<LongStream> getLongStream(Tag tag) {
 		return tag instanceof LongArrayTag ? DataResult.success(Arrays.stream(((LongArrayTag)tag).getLongArray())) : DynamicOps.super.getLongStream(tag);
 	}
 
-	public Tag method_10643(LongStream longStream) {
+	public Tag createLongList(LongStream longStream) {
 		return new LongArrayTag(longStream.toArray());
 	}
 
-	public Tag method_10665(Stream<Tag> stream) {
+	public Tag createList(Stream<Tag> stream) {
 		PeekingIterator<Tag> peekingIterator = Iterators.peekingIterator(stream.iterator());
 		if (!peekingIterator.hasNext()) {
 			return new ListTag();
@@ -345,7 +345,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public Tag method_10648(Tag tag, String string) {
+	public Tag remove(Tag tag, String string) {
 		if (tag instanceof CompoundTag) {
 			CompoundTag compoundTag = (CompoundTag)tag;
 			CompoundTag compoundTag2 = new CompoundTag();
@@ -370,24 +370,24 @@ public class NbtOps implements DynamicOps<Tag> {
 			super(NbtOps.this);
 		}
 
-		protected CompoundTag method_29168() {
+		protected CompoundTag initBuilder() {
 			return new CompoundTag();
 		}
 
-		protected CompoundTag method_29169(String string, Tag tag, CompoundTag compoundTag) {
+		protected CompoundTag append(String string, Tag tag, CompoundTag compoundTag) {
 			compoundTag.put(string, tag);
 			return compoundTag;
 		}
 
-		protected DataResult<Tag> method_29170(CompoundTag compoundTag, Tag tag) {
+		protected DataResult<Tag> build(CompoundTag compoundTag, Tag tag) {
 			if (tag == null || tag == EndTag.INSTANCE) {
 				return DataResult.success(compoundTag);
 			} else if (!(tag instanceof CompoundTag)) {
 				return DataResult.error("mergeToMap called with not a map: " + tag, tag);
 			} else {
-				CompoundTag compoundTag2 = new CompoundTag(Maps.<String, Tag>newHashMap(((CompoundTag)tag).method_29143()));
+				CompoundTag compoundTag2 = new CompoundTag(Maps.<String, Tag>newHashMap(((CompoundTag)tag).toMap()));
 
-				for (Entry<String, Tag> entry : compoundTag.method_29143().entrySet()) {
+				for (Entry<String, Tag> entry : compoundTag.toMap().entrySet()) {
 					compoundTag2.put((String)entry.getKey(), (Tag)entry.getValue());
 				}
 

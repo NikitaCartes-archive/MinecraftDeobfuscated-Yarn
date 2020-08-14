@@ -161,15 +161,15 @@ import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 
 public enum NetworkState {
-	field_20590(
+	HANDSHAKING(
 		-1,
-		createPacketHandlerInitializer().setup(NetworkSide.field_11941, new NetworkState.PacketHandler().register(HandshakeC2SPacket.class, HandshakeC2SPacket::new))
+		createPacketHandlerInitializer().setup(NetworkSide.SERVERBOUND, new NetworkState.PacketHandler().register(HandshakeC2SPacket.class, HandshakeC2SPacket::new))
 	),
-	field_20591(
+	PLAY(
 		0,
 		createPacketHandlerInitializer()
 			.setup(
-				NetworkSide.field_11942,
+				NetworkSide.CLIENTBOUND,
 				new NetworkState.PacketHandler()
 					.register(EntitySpawnS2CPacket.class, EntitySpawnS2CPacket::new)
 					.register(ExperienceOrbSpawnS2CPacket.class, ExperienceOrbSpawnS2CPacket::new)
@@ -265,7 +265,7 @@ public enum NetworkState {
 					.register(SynchronizeTagsS2CPacket.class, SynchronizeTagsS2CPacket::new)
 			)
 			.setup(
-				NetworkSide.field_11941,
+				NetworkSide.SERVERBOUND,
 				new NetworkState.PacketHandler()
 					.register(TeleportConfirmC2SPacket.class, TeleportConfirmC2SPacket::new)
 					.register(QueryBlockNbtC2SPacket.class, QueryBlockNbtC2SPacket::new)
@@ -317,27 +317,27 @@ public enum NetworkState {
 					.register(PlayerInteractItemC2SPacket.class, PlayerInteractItemC2SPacket::new)
 			)
 	),
-	field_20592(
+	STATUS(
 		1,
 		createPacketHandlerInitializer()
 			.setup(
-				NetworkSide.field_11941,
+				NetworkSide.SERVERBOUND,
 				new NetworkState.PacketHandler()
 					.register(QueryRequestC2SPacket.class, QueryRequestC2SPacket::new)
 					.register(QueryPingC2SPacket.class, QueryPingC2SPacket::new)
 			)
 			.setup(
-				NetworkSide.field_11942,
+				NetworkSide.CLIENTBOUND,
 				new NetworkState.PacketHandler()
 					.register(QueryResponseS2CPacket.class, QueryResponseS2CPacket::new)
 					.register(QueryPongS2CPacket.class, QueryPongS2CPacket::new)
 			)
 	),
-	field_20593(
+	LOGIN(
 		2,
 		createPacketHandlerInitializer()
 			.setup(
-				NetworkSide.field_11942,
+				NetworkSide.CLIENTBOUND,
 				new NetworkState.PacketHandler()
 					.register(LoginDisconnectS2CPacket.class, LoginDisconnectS2CPacket::new)
 					.register(LoginHelloS2CPacket.class, LoginHelloS2CPacket::new)
@@ -346,7 +346,7 @@ public enum NetworkState {
 					.register(LoginQueryRequestS2CPacket.class, LoginQueryRequestS2CPacket::new)
 			)
 			.setup(
-				NetworkSide.field_11941,
+				NetworkSide.SERVERBOUND,
 				new NetworkState.PacketHandler()
 					.register(LoginHelloC2SPacket.class, LoginHelloC2SPacket::new)
 					.register(LoginKeyC2SPacket.class, LoginKeyC2SPacket::new)

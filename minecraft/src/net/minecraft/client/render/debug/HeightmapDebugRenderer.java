@@ -78,17 +78,17 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 
 	private Vector3f method_27037(Heightmap.Type type) {
 		switch (type) {
-			case field_13194:
+			case WORLD_SURFACE_WG:
 				return new Vector3f(1.0F, 1.0F, 0.0F);
-			case field_13195:
+			case OCEAN_FLOOR_WG:
 				return new Vector3f(1.0F, 0.0F, 1.0F);
-			case field_13202:
+			case WORLD_SURFACE:
 				return new Vector3f(0.0F, 0.7F, 0.0F);
-			case field_13200:
+			case OCEAN_FLOOR:
 				return new Vector3f(0.0F, 0.0F, 0.5F);
-			case field_13197:
+			case MOTION_BLOCKING:
 				return new Vector3f(0.0F, 0.3F, 0.3F);
-			case field_13203:
+			case MOTION_BLOCKING_NO_LEAVES:
 				return new Vector3f(0.0F, 0.5F, 0.5F);
 			default:
 				return new Vector3f(0.0F, 0.0F, 0.0F);

@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class FireAspectEnchantment extends Enchantment {
 	protected FireAspectEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9074, slotTypes);
+		super(weight, EnchantmentTarget.WEAPON, slotTypes);
 	}
 
 	@Override

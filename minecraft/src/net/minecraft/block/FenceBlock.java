@@ -61,14 +61,14 @@ public class FenceBlock extends HorizontalConnectingBlock {
 	}
 
 	private boolean isFence(Block block) {
-		return block.isIn(BlockTags.field_16584) && block.isIn(BlockTags.field_17619) == this.getDefaultState().isIn(BlockTags.field_17619);
+		return block.isIn(BlockTags.FENCES) && block.isIn(BlockTags.WOODEN_FENCES) == this.getDefaultState().isIn(BlockTags.WOODEN_FENCES);
 	}
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			return itemStack.getItem() == Items.field_8719 ? ActionResult.SUCCESS : ActionResult.PASS;
+			return itemStack.getItem() == Items.LEAD ? ActionResult.SUCCESS : ActionResult.PASS;
 		} else {
 			return LeadItem.attachHeldMobsToBlock(player, world, pos);
 		}
@@ -88,18 +88,10 @@ public class FenceBlock extends HorizontalConnectingBlock {
 		BlockState blockState3 = blockView.getBlockState(blockPos4);
 		BlockState blockState4 = blockView.getBlockState(blockPos5);
 		return super.getPlacementState(ctx)
-			.with(
-				NORTH, Boolean.valueOf(this.canConnect(blockState, blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.field_11035), Direction.field_11035))
-			)
-			.with(
-				EAST, Boolean.valueOf(this.canConnect(blockState2, blockState2.isSideSolidFullSquare(blockView, blockPos3, Direction.field_11039), Direction.field_11039))
-			)
-			.with(
-				SOUTH, Boolean.valueOf(this.canConnect(blockState3, blockState3.isSideSolidFullSquare(blockView, blockPos4, Direction.field_11043), Direction.field_11043))
-			)
-			.with(
-				WEST, Boolean.valueOf(this.canConnect(blockState4, blockState4.isSideSolidFullSquare(blockView, blockPos5, Direction.field_11034), Direction.field_11034))
-			)
+			.with(NORTH, Boolean.valueOf(this.canConnect(blockState, blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.SOUTH), Direction.SOUTH)))
+			.with(EAST, Boolean.valueOf(this.canConnect(blockState2, blockState2.isSideSolidFullSquare(blockView, blockPos3, Direction.WEST), Direction.WEST)))
+			.with(SOUTH, Boolean.valueOf(this.canConnect(blockState3, blockState3.isSideSolidFullSquare(blockView, blockPos4, Direction.NORTH), Direction.NORTH)))
+			.with(WEST, Boolean.valueOf(this.canConnect(blockState4, blockState4.isSideSolidFullSquare(blockView, blockPos5, Direction.EAST), Direction.EAST)))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
@@ -109,7 +101,7 @@ public class FenceBlock extends HorizontalConnectingBlock {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return direction.getAxis().getType() == Direction.Type.field_11062
+		return direction.getAxis().getType() == Direction.Type.HORIZONTAL
 			? state.with(
 				(Property)FACING_PROPERTIES.get(direction),
 				Boolean.valueOf(this.canConnect(newState, newState.isSideSolidFullSquare(world, posFrom, direction.getOpposite()), direction.getOpposite()))

@@ -18,9 +18,9 @@ public class SayCommand {
 					TranslatableText translatableText = new TranslatableText("chat.type.announcement", commandContext.getSource().getDisplayName(), text);
 					Entity entity = commandContext.getSource().getEntity();
 					if (entity != null) {
-						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(translatableText, MessageType.field_11737, entity.getUuid());
+						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(translatableText, MessageType.CHAT, entity.getUuid());
 					} else {
-						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(translatableText, MessageType.field_11735, Util.NIL_UUID);
+						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(translatableText, MessageType.SYSTEM, Util.NIL_UUID);
 					}
 
 					return 1;

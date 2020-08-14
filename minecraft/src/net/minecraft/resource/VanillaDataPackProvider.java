@@ -8,7 +8,7 @@ public class VanillaDataPackProvider implements ResourcePackProvider {
 	@Override
 	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
 		ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
-			"vanilla", false, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.field_14281, ResourcePackSource.field_25348
+			"vanilla", false, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.PACK_SOURCE_BUILTIN
 		);
 		if (resourcePackProfile != null) {
 			consumer.accept(resourcePackProfile);

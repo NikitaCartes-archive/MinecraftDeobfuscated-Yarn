@@ -19,10 +19,10 @@ public class InvertedLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25235;
+		return LootConditionTypes.INVERTED;
 	}
 
-	public final boolean method_888(LootContext lootContext) {
+	public final boolean test(LootContext lootContext) {
 		return !this.term.test(lootContext);
 	}
 
@@ -43,11 +43,11 @@ public class InvertedLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<InvertedLootCondition> {
-		public void method_892(JsonObject jsonObject, InvertedLootCondition invertedLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, InvertedLootCondition invertedLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("term", jsonSerializationContext.serialize(invertedLootCondition.term));
 		}
 
-		public InvertedLootCondition method_891(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public InvertedLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LootCondition lootCondition = JsonHelper.deserialize(jsonObject, "term", jsonDeserializationContext, LootCondition.class);
 			return new InvertedLootCondition(lootCondition);
 		}

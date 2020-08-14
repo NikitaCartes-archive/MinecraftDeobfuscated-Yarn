@@ -69,13 +69,13 @@ public class LecternBlock extends BlockWithEntity {
 	protected LecternBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
@@ -113,13 +113,13 @@ public class LecternBlock extends BlockWithEntity {
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction)state.get(FACING)) {
-			case field_11043:
+			case NORTH:
 				return NORTH_SHAPE;
-			case field_11035:
+			case SOUTH:
 				return SOUTH_SHAPE;
-			case field_11034:
+			case EAST:
 				return EAST_SHAPE;
-			case field_11039:
+			case WEST:
 				return WEST_SHAPE;
 			default:
 				return BASE_SHAPE;
@@ -165,7 +165,7 @@ public class LecternBlock extends BlockWithEntity {
 			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
 			lecternBlockEntity.setBook(book.split(1));
 			setHasBook(world, pos, state, true);
-			world.playSound(null, pos, SoundEvents.field_17482, SoundCategory.field_15245, 1.0F, 1.0F);
+			world.playSound(null, pos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	}
 
@@ -186,7 +186,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	private static void updateNeighborAlways(World world, BlockPos pos, BlockState state) {
-		world.updateNeighborsAlways(pos.method_10074(), state.getBlock());
+		world.updateNeighborsAlways(pos.down(), state.getBlock());
 	}
 
 	@Override
@@ -202,7 +202,7 @@ public class LecternBlock extends BlockWithEntity {
 			}
 
 			if ((Boolean)state.get(POWERED)) {
-				world.updateNeighborsAlways(pos.method_10074(), this);
+				world.updateNeighborsAlways(pos.down(), this);
 			}
 
 			super.onStateReplaced(state, world, pos, newState, moved);
@@ -238,7 +238,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Override
 	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		return direction == Direction.field_11036 && state.get(POWERED) ? 15 : 0;
+		return direction == Direction.UP && state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
@@ -268,7 +268,7 @@ public class LecternBlock extends BlockWithEntity {
 			return ActionResult.success(world.isClient);
 		} else {
 			ItemStack itemStack = player.getStackInHand(hand);
-			return !itemStack.isEmpty() && !itemStack.getItem().isIn(ItemTags.field_21465) ? ActionResult.CONSUME : ActionResult.PASS;
+			return !itemStack.isEmpty() && !itemStack.getItem().isIn(ItemTags.LECTERN_BOOKS) ? ActionResult.CONSUME : ActionResult.PASS;
 		}
 	}
 
@@ -282,7 +282,7 @@ public class LecternBlock extends BlockWithEntity {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof LecternBlockEntity) {
 			player.openHandledScreen((LecternBlockEntity)blockEntity);
-			player.incrementStat(Stats.field_17485);
+			player.incrementStat(Stats.INTERACT_WITH_LECTERN);
 		}
 	}
 

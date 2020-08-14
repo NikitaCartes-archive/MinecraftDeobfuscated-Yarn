@@ -48,8 +48,8 @@ import org.apache.commons.lang3.mutable.MutableInt;
 public class BookEditScreen extends Screen {
 	private static final Text field_25893 = new TranslatableText("book.editTitle");
 	private static final Text field_25894 = new TranslatableText("book.finalizeWarning");
-	private static final OrderedText field_25895 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.field_1074));
-	private static final OrderedText field_25896 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.field_1080));
+	private static final OrderedText field_25895 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.BLACK));
+	private static final OrderedText field_25896 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.GRAY));
 	private final PlayerEntity player;
 	private final ItemStack itemStack;
 	private boolean dirty;
@@ -89,7 +89,7 @@ public class BookEditScreen extends Screen {
 		this.hand = hand;
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null) {
-			ListTag listTag = compoundTag.getList("pages", 8).method_10612();
+			ListTag listTag = compoundTag.getList("pages", 8).copy();
 
 			for (int i = 0; i < listTag.size(); i++) {
 				this.pages.add(listTag.getString(i));
@@ -100,7 +100,7 @@ public class BookEditScreen extends Screen {
 			this.pages.add("");
 		}
 
-		this.field_25892 = new TranslatableText("book.byAuthor", playerEntity.getName()).formatted(Formatting.field_1063);
+		this.field_25892 = new TranslatableText("book.byAuthor", playerEntity.getName()).formatted(Formatting.DARK_GRAY);
 	}
 
 	private void method_27584(String string) {
@@ -126,7 +126,7 @@ public class BookEditScreen extends Screen {
 	@Override
 	protected void init() {
 		this.invalidatePageContent();
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.signButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, new TranslatableText("book.signButton"), buttonWidget -> {
 			this.signing = true;
 			this.updateButtons();
@@ -180,7 +180,7 @@ public class BookEditScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void updateButtons() {
@@ -431,7 +431,7 @@ public class BookEditScreen extends Screen {
 		RenderSystem.color4f(0.0F, 0.0F, 255.0F, 255.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();
-		RenderSystem.logicOp(GlStateManager.LogicOp.field_5110);
+		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
 
 		for (Rect2i rect2i : rect2is) {

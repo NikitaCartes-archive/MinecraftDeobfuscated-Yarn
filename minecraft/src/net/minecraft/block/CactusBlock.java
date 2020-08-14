@@ -40,7 +40,7 @@ public class CactusBlock extends Block {
 		if (world.isAir(blockPos)) {
 			int i = 1;
 
-			while (world.getBlockState(pos.method_10087(i)).isOf(this)) {
+			while (world.getBlockState(pos.down(i)).isOf(this)) {
 				i++;
 			}
 
@@ -79,16 +79,16 @@ public class CactusBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockState blockState = world.getBlockState(pos.offset(direction));
 			Material material = blockState.getMaterial();
-			if (material.isSolid() || world.getFluidState(pos.offset(direction)).isIn(FluidTags.field_15518)) {
+			if (material.isSolid() || world.getFluidState(pos.offset(direction)).isIn(FluidTags.LAVA)) {
 				return false;
 			}
 		}
 
-		BlockState blockState2 = world.getBlockState(pos.method_10074());
-		return (blockState2.isOf(Blocks.field_10029) || blockState2.isOf(Blocks.field_10102) || blockState2.isOf(Blocks.field_10534))
+		BlockState blockState2 = world.getBlockState(pos.down());
+		return (blockState2.isOf(Blocks.CACTUS) || blockState2.isOf(Blocks.SAND) || blockState2.isOf(Blocks.RED_SAND))
 			&& !world.getBlockState(pos.up()).getMaterial().isLiquid();
 	}
 

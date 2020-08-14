@@ -23,7 +23,7 @@ public class EndRodBlock extends FacingBlock {
 
 	protected EndRodBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11036));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override
@@ -39,12 +39,12 @@ public class EndRodBlock extends FacingBlock {
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch (((Direction)state.get(FACING)).getAxis()) {
-			case field_11048:
+			case X:
 			default:
 				return X_SHAPE;
-			case field_11051:
+			case Z:
 				return Z_SHAPE;
-			case field_11052:
+			case Y:
 				return Y_SHAPE;
 		}
 	}
@@ -68,7 +68,7 @@ public class EndRodBlock extends FacingBlock {
 		double g = (double)(0.4F - (random.nextFloat() + random.nextFloat()) * 0.4F);
 		if (random.nextInt(5) == 0) {
 			world.addParticle(
-				ParticleTypes.field_11207,
+				ParticleTypes.END_ROD,
 				d + (double)direction.getOffsetX() * g,
 				e + (double)direction.getOffsetY() * g,
 				f + (double)direction.getOffsetZ() * g,
@@ -86,7 +86,7 @@ public class EndRodBlock extends FacingBlock {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.field_15974;
+		return PistonBehavior.NORMAL;
 	}
 
 	@Override

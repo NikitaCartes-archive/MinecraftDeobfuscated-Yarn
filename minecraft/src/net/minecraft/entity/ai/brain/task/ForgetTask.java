@@ -12,7 +12,7 @@ public class ForgetTask<E extends LivingEntity> extends Task<E> {
 	private final MemoryModuleType<?> memory;
 
 	public ForgetTask(Predicate<E> condition, MemoryModuleType<?> memory) {
-		super(ImmutableMap.of(memory, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(memory, MemoryModuleState.VALUE_PRESENT));
 		this.condition = condition;
 		this.memory = memory;
 	}

@@ -26,22 +26,22 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 		super(ImmutableMap.of(), minRunTime, maxRunTime);
 	}
 
-	protected boolean method_19951(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		BlockPos blockPos = villagerEntity.getBlockPos();
 		this.raid = serverWorld.getRaidAt(blockPos);
 		return this.raid != null && this.raid.hasWon() && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity, blockPos);
 	}
 
-	protected boolean method_19952(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		return this.raid != null && !this.raid.hasStopped();
 	}
 
-	protected void method_19953(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		this.raid = null;
 		villagerEntity.getBrain().refreshActivities(serverWorld.getTimeOfDay(), serverWorld.getTime());
 	}
 
-	protected void method_19954(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Random random = villagerEntity.getRandom();
 		if (random.nextInt(100) == 0) {
 			villagerEntity.playCelebrateSound();
@@ -59,13 +59,13 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 	}
 
 	private ItemStack createFirework(DyeColor color, int flight) {
-		ItemStack itemStack = new ItemStack(Items.field_8639, 1);
-		ItemStack itemStack2 = new ItemStack(Items.field_8450);
+		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 1);
+		ItemStack itemStack2 = new ItemStack(Items.FIREWORK_STAR);
 		CompoundTag compoundTag = itemStack2.getOrCreateSubTag("Explosion");
 		List<Integer> list = Lists.<Integer>newArrayList();
 		list.add(color.getFireworkColor());
 		compoundTag.putIntArray("Colors", list);
-		compoundTag.putByte("Type", (byte)FireworkItem.Type.field_7970.getId());
+		compoundTag.putByte("Type", (byte)FireworkItem.Type.BURST.getId());
 		CompoundTag compoundTag2 = itemStack.getOrCreateSubTag("Fireworks");
 		ListTag listTag = new ListTag();
 		CompoundTag compoundTag3 = itemStack2.getSubTag("Explosion");

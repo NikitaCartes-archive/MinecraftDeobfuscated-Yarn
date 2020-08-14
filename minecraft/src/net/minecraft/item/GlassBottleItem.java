@@ -34,24 +34,22 @@ public class GlassBottleItem extends Item {
 		if (!list.isEmpty()) {
 			AreaEffectCloudEntity areaEffectCloudEntity = (AreaEffectCloudEntity)list.get(0);
 			areaEffectCloudEntity.setRadius(areaEffectCloudEntity.getRadius() - 0.5F);
-			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.field_15029, SoundCategory.field_15254, 1.0F, 1.0F);
-			return TypedActionResult.method_29237(this.fill(itemStack, user, new ItemStack(Items.field_8613)), world.isClient());
+			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+			return TypedActionResult.method_29237(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
 		} else {
-			HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.field_1345);
-			if (hitResult.getType() == HitResult.Type.field_1333) {
+			HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
+			if (hitResult.getType() == HitResult.Type.MISS) {
 				return TypedActionResult.pass(itemStack);
 			} else {
-				if (hitResult.getType() == HitResult.Type.field_1332) {
+				if (hitResult.getType() == HitResult.Type.BLOCK) {
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					if (!world.canPlayerModifyAt(user, blockPos)) {
 						return TypedActionResult.pass(itemStack);
 					}
 
-					if (world.getFluidState(blockPos).isIn(FluidTags.field_15517)) {
-						world.playSound(user, user.getX(), user.getY(), user.getZ(), SoundEvents.field_14779, SoundCategory.field_15254, 1.0F, 1.0F);
-						return TypedActionResult.method_29237(
-							this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991)), world.isClient()
-						);
+					if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
+						world.playSound(user, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+						return TypedActionResult.method_29237(this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)), world.isClient());
 					}
 				}
 
@@ -61,7 +59,7 @@ public class GlassBottleItem extends Item {
 	}
 
 	protected ItemStack fill(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
-		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		return ItemUsage.method_30012(itemStack, playerEntity, itemStack2);
 	}
 }

@@ -29,7 +29,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	private final int[] cookingTotalTimes = new int[4];
 
 	public CampfireBlockEntity() {
-		super(BlockEntityType.field_17380);
+		super(BlockEntityType.CAMPFIRE);
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 						+ (double)((float)direction.rotateYClockwise().getOffsetZ() * 0.3125F);
 
 					for (int k = 0; k < 4; k++) {
-						world.addParticle(ParticleTypes.field_11251, d, e, g, 0.0, 5.0E-4, 0.0);
+						world.addParticle(ParticleTypes.SMOKE, d, e, g, 0.0, 5.0E-4, 0.0);
 					}
 				}
 			}

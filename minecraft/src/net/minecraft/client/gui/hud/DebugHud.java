@@ -65,12 +65,12 @@ import net.minecraft.world.chunk.light.LightingProvider;
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
 	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.make(new EnumMap(Heightmap.Type.class), enumMap -> {
-		enumMap.put(Heightmap.Type.field_13194, "SW");
-		enumMap.put(Heightmap.Type.field_13202, "S");
-		enumMap.put(Heightmap.Type.field_13195, "OW");
-		enumMap.put(Heightmap.Type.field_13200, "O");
-		enumMap.put(Heightmap.Type.field_13197, "M");
-		enumMap.put(Heightmap.Type.field_13203, "ML");
+		enumMap.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
+		enumMap.put(Heightmap.Type.WORLD_SURFACE, "S");
+		enumMap.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");
+		enumMap.put(Heightmap.Type.OCEAN_FLOOR, "O");
+		enumMap.put(Heightmap.Type.MOTION_BLOCKING, "M");
+		enumMap.put(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, "ML");
 	});
 	private final MinecraftClient client;
 	private final TextRenderer fontRenderer;
@@ -186,16 +186,16 @@ public class DebugHud extends DrawableHelper {
 			Direction direction = entity.getHorizontalFacing();
 			String string2;
 			switch (direction) {
-				case field_11043:
+				case NORTH:
 					string2 = "Towards negative Z";
 					break;
-				case field_11035:
+				case SOUTH:
 					string2 = "Towards positive Z";
 					break;
-				case field_11039:
+				case WEST:
 					string2 = "Towards negative X";
 					break;
-				case field_11034:
+				case EAST:
 					string2 = "Towards positive X";
 					break;
 				default:
@@ -259,18 +259,18 @@ public class DebugHud extends DrawableHelper {
 					if (worldChunk.isEmpty()) {
 						list.add("Waiting for chunk...");
 					} else {
-						int i = this.client.world.method_2935().getLightingProvider().getLight(blockPos, 0);
-						int j = this.client.world.getLightLevel(LightType.field_9284, blockPos);
-						int k = this.client.world.getLightLevel(LightType.field_9282, blockPos);
+						int i = this.client.world.getChunkManager().getLightingProvider().getLight(blockPos, 0);
+						int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
+						int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
 						list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
 						WorldChunk worldChunk2 = this.getChunk();
 						if (worldChunk2 != null) {
 							LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
 							list.add(
 								"Server Light: ("
-									+ lightingProvider.get(LightType.field_9284).getLightLevel(blockPos)
+									+ lightingProvider.get(LightType.SKY).getLightLevel(blockPos)
 									+ " sky, "
-									+ lightingProvider.get(LightType.field_9282).getLightLevel(blockPos)
+									+ lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos)
 									+ " block)"
 							);
 						} else {
@@ -334,7 +334,7 @@ public class DebugHud extends DrawableHelper {
 
 			ServerWorld serverWorld = this.getServerWorld();
 			if (serverWorld != null) {
-				SpawnHelper.Info info = serverWorld.method_14178().getSpawnInfo();
+				SpawnHelper.Info info = serverWorld.getChunkManager().getSpawnInfo();
 				if (info != null) {
 					Object2IntMap<SpawnGroup> object2IntMap = info.getGroupToCount();
 					int kx = info.getSpawningChunkCount();
@@ -385,8 +385,8 @@ public class DebugHud extends DrawableHelper {
 		if (this.chunkFuture == null) {
 			ServerWorld serverWorld = this.getServerWorld();
 			if (serverWorld != null) {
-				this.chunkFuture = serverWorld.method_14178()
-					.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.field_12803, false)
+				this.chunkFuture = serverWorld.getChunkManager()
+					.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false)
 					.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
 			}
 
@@ -400,7 +400,7 @@ public class DebugHud extends DrawableHelper {
 
 	private WorldChunk getClientChunk() {
 		if (this.chunk == null) {
-			this.chunk = this.client.world.method_8497(this.pos.x, this.pos.z);
+			this.chunk = this.client.world.getChunk(this.pos.x, this.pos.z);
 		}
 
 		return this.chunk;
@@ -430,11 +430,11 @@ public class DebugHud extends DrawableHelper {
 		if (this.client.hasReducedDebugInfo()) {
 			return list;
 		} else {
-			if (this.blockHit.getType() == HitResult.Type.field_1332) {
+			if (this.blockHit.getType() == HitResult.Type.BLOCK) {
 				BlockPos blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				list.add("");
-				list.add(Formatting.field_1073 + "Targeted Block: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
+				list.add(Formatting.UNDERLINE + "Targeted Block: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
 				list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : blockState.getEntries().entrySet()) {
@@ -446,11 +446,11 @@ public class DebugHud extends DrawableHelper {
 				}
 			}
 
-			if (this.fluidHit.getType() == HitResult.Type.field_1332) {
+			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
 				BlockPos blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
 				FluidState fluidState = this.client.world.getFluidState(blockPos);
 				list.add("");
-				list.add(Formatting.field_1073 + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
+				list.add(Formatting.UNDERLINE + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
 				list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : fluidState.getEntries().entrySet()) {
@@ -465,7 +465,7 @@ public class DebugHud extends DrawableHelper {
 			Entity entity = this.client.targetedEntity;
 			if (entity != null) {
 				list.add("");
-				list.add(Formatting.field_1073 + "Targeted Entity");
+				list.add(Formatting.UNDERLINE + "Targeted Entity");
 				list.add(String.valueOf(Registry.ENTITY_TYPE.getId(entity.getType())));
 			}
 
@@ -478,9 +478,9 @@ public class DebugHud extends DrawableHelper {
 		Comparable<?> comparable = (Comparable<?>)propEntry.getValue();
 		String string = Util.getValueAsString(property, comparable);
 		if (Boolean.TRUE.equals(comparable)) {
-			string = Formatting.field_1060 + string;
+			string = Formatting.GREEN + string;
 		} else if (Boolean.FALSE.equals(comparable)) {
-			string = Formatting.field_1061 + string;
+			string = Formatting.RED + string;
 		}
 
 		return property.getName() + ": " + string;

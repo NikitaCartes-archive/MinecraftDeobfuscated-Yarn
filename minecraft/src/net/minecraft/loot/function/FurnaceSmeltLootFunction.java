@@ -21,7 +21,7 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25218;
+		return LootFunctionTypes.FURNACE_SMELT;
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<FurnaceSmeltLootFunction> {
-		public FurnaceSmeltLootFunction method_29324(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public FurnaceSmeltLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			return new FurnaceSmeltLootFunction(lootConditions);
 		}
 	}

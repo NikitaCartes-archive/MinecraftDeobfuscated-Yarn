@@ -65,7 +65,7 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 		return ImmutableList.<ModelPart>of(this.head, this.torso, this.rightLeg, this.leftLeg, this.arms, this.rightAttackingArm, this.leftAttackingArm);
 	}
 
-	public void method_17094(T illagerEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T illagerEntity, float f, float g, float h, float i, float j) {
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.arms.pivotY = 3.0F;
@@ -100,13 +100,13 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 		}
 
 		IllagerEntity.State state = illagerEntity.getState();
-		if (state == IllagerEntity.State.field_7211) {
+		if (state == IllagerEntity.State.ATTACKING) {
 			if (illagerEntity.getMainHandStack().isEmpty()) {
 				CrossbowPosing.method_29352(this.leftAttackingArm, this.rightAttackingArm, true, this.handSwingProgress, h);
 			} else {
 				CrossbowPosing.method_29351(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, this.handSwingProgress, h);
 			}
-		} else if (state == IllagerEntity.State.field_7212) {
+		} else if (state == IllagerEntity.State.SPELLCASTING) {
 			this.rightAttackingArm.pivotZ = 0.0F;
 			this.rightAttackingArm.pivotX = -5.0F;
 			this.leftAttackingArm.pivotZ = 0.0F;
@@ -117,17 +117,17 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 			this.leftAttackingArm.roll = (float) (-Math.PI * 3.0 / 4.0);
 			this.rightAttackingArm.yaw = 0.0F;
 			this.leftAttackingArm.yaw = 0.0F;
-		} else if (state == IllagerEntity.State.field_7208) {
+		} else if (state == IllagerEntity.State.BOW_AND_ARROW) {
 			this.rightAttackingArm.yaw = -0.1F + this.head.yaw;
 			this.rightAttackingArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 			this.leftAttackingArm.pitch = -0.9424779F + this.head.pitch;
 			this.leftAttackingArm.yaw = this.head.yaw - 0.4F;
 			this.leftAttackingArm.roll = (float) (Math.PI / 2);
-		} else if (state == IllagerEntity.State.field_7213) {
+		} else if (state == IllagerEntity.State.CROSSBOW_HOLD) {
 			CrossbowPosing.hold(this.rightAttackingArm, this.leftAttackingArm, this.head, true);
-		} else if (state == IllagerEntity.State.field_7210) {
+		} else if (state == IllagerEntity.State.CROSSBOW_CHARGE) {
 			CrossbowPosing.charge(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, true);
-		} else if (state == IllagerEntity.State.field_19012) {
+		} else if (state == IllagerEntity.State.CELEBRATING) {
 			this.rightAttackingArm.pivotZ = 0.0F;
 			this.rightAttackingArm.pivotX = -5.0F;
 			this.rightAttackingArm.pitch = MathHelper.cos(h * 0.6662F) * 0.05F;
@@ -140,14 +140,14 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 			this.leftAttackingArm.yaw = 0.0F;
 		}
 
-		boolean bl = state == IllagerEntity.State.field_7207;
+		boolean bl = state == IllagerEntity.State.CROSSED;
 		this.arms.visible = bl;
 		this.leftAttackingArm.visible = !bl;
 		this.rightAttackingArm.visible = !bl;
 	}
 
 	private ModelPart method_2813(Arm arm) {
-		return arm == Arm.field_6182 ? this.leftAttackingArm : this.rightAttackingArm;
+		return arm == Arm.LEFT ? this.leftAttackingArm : this.rightAttackingArm;
 	}
 
 	public ModelPart method_2812() {

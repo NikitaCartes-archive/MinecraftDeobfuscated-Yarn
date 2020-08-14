@@ -21,7 +21,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.field_6118, 1, 2, 4));
+	private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
 	public OceanMonumentFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
@@ -32,7 +32,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		return false;
 	}
 
-	protected boolean method_28642(
+	protected boolean shouldStartAt(
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		long l,
@@ -50,7 +50,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		}
 
 		for (Biome biome3 : biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 29)) {
-			if (biome3.getCategory() != Biome.Category.field_9367 && biome3.getCategory() != Biome.Category.field_9369) {
+			if (biome3.getCategory() != Biome.Category.OCEAN && biome3.getCategory() != Biome.Category.RIVER) {
 				return false;
 			}
 		}
@@ -75,7 +75,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28643(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
@@ -90,7 +90,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		private void method_16588(int chunkX, int chunkZ) {
 			int i = chunkX * 16 - 29;
 			int j = chunkZ * 16 - 29;
-			Direction direction = Direction.Type.field_11062.random(this.random);
+			Direction direction = Direction.Type.HORIZONTAL.random(this.random);
 			this.children.add(new OceanMonumentGenerator.Base(this.random, i, j, direction));
 			this.setBoundingBoxFromChildren();
 			this.field_13717 = true;

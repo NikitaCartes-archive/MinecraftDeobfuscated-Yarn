@@ -30,7 +30,7 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28947(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
@@ -48,9 +48,9 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 
 			for (BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l); n > m; n--) {
 				BlockState blockState = blockView.getBlockState(mutable);
-				mutable.move(Direction.field_11033);
+				mutable.move(Direction.DOWN);
 				BlockState blockState2 = blockView.getBlockState(mutable);
-				if (blockState.isAir() && (blockState2.isOf(Blocks.field_10114) || blockState2.isSideSolidFullSquare(blockView, mutable, Direction.field_11036))) {
+				if (blockState.isAir() && (blockState2.isOf(Blocks.SOUL_SAND) || blockState2.isSideSolidFullSquare(blockView, mutable, Direction.UP))) {
 					break;
 				}
 			}

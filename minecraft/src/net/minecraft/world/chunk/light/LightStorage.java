@@ -284,23 +284,23 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 							long o;
 							long p;
 							switch (direction) {
-								case field_11033:
+								case DOWN:
 									o = BlockPos.asLong(i + n, j, k + m);
 									p = BlockPos.asLong(i + n, j - 1, k + m);
 									break;
-								case field_11036:
+								case UP:
 									o = BlockPos.asLong(i + n, j + 16 - 1, k + m);
 									p = BlockPos.asLong(i + n, j + 16, k + m);
 									break;
-								case field_11043:
+								case NORTH:
 									o = BlockPos.asLong(i + m, j + n, k);
 									p = BlockPos.asLong(i + m, j + n, k - 1);
 									break;
-								case field_11035:
+								case SOUTH:
 									o = BlockPos.asLong(i + m, j + n, k + 16 - 1);
 									p = BlockPos.asLong(i + m, j + n, k + 16);
 									break;
-								case field_11039:
+								case WEST:
 									o = BlockPos.asLong(i, j + m, k + n);
 									p = BlockPos.asLong(i - 1, j + m, k + n);
 									break;

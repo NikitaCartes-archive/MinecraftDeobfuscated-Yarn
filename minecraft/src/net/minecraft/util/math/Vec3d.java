@@ -199,9 +199,9 @@ public class Vec3d implements Position {
 	}
 
 	public Vec3d floorAlongAxes(EnumSet<Direction.Axis> axes) {
-		double d = axes.contains(Direction.Axis.field_11048) ? (double)MathHelper.floor(this.x) : this.x;
-		double e = axes.contains(Direction.Axis.field_11052) ? (double)MathHelper.floor(this.y) : this.y;
-		double f = axes.contains(Direction.Axis.field_11051) ? (double)MathHelper.floor(this.z) : this.z;
+		double d = axes.contains(Direction.Axis.X) ? (double)MathHelper.floor(this.x) : this.x;
+		double e = axes.contains(Direction.Axis.Y) ? (double)MathHelper.floor(this.y) : this.y;
+		double f = axes.contains(Direction.Axis.Z) ? (double)MathHelper.floor(this.z) : this.z;
 		return new Vec3d(d, e, f);
 	}
 
@@ -224,7 +224,7 @@ public class Vec3d implements Position {
 		return this.z;
 	}
 
-	public Vec3d method_31222(Vec3d vec3d) {
+	public Vec3d method_31253(Vec3d vec3d) {
 		Vec3d vec3d2 = vec3d.normalize();
 		double d = this.dotProduct(vec3d);
 		return vec3d2.multiply(d, d, d);

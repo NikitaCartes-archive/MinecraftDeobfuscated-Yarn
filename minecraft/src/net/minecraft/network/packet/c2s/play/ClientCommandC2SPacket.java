@@ -42,7 +42,7 @@ public class ClientCommandC2SPacket implements Packet<ServerPlayPacketListener> 
 		buf.writeVarInt(this.mountJumpHeight);
 	}
 
-	public void method_12364(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClientCommand(this);
 	}
 
@@ -55,14 +55,14 @@ public class ClientCommandC2SPacket implements Packet<ServerPlayPacketListener> 
 	}
 
 	public static enum Mode {
-		field_12979,
-		field_12984,
-		field_12986,
-		field_12981,
-		field_12985,
-		field_12987,
-		field_12980,
-		field_12988,
-		field_12982;
+		PRESS_SHIFT_KEY,
+		RELEASE_SHIFT_KEY,
+		STOP_SLEEPING,
+		START_SPRINTING,
+		STOP_SPRINTING,
+		START_RIDING_JUMP,
+		STOP_RIDING_JUMP,
+		OPEN_INVENTORY,
+		START_FALL_FLYING;
 	}
 }

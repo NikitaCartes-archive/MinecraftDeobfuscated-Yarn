@@ -30,9 +30,7 @@ import org.apache.logging.log4j.Logger;
 public class GameRules {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<GameRules.Key<?>, GameRules.Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> key.name));
-	public static final GameRules.Key<GameRules.BooleanRule> field_19387 = register(
-		"doFireTick", GameRules.Category.field_24098, GameRules.BooleanRule.create(true)
-	);
+	public static final GameRules.Key<GameRules.BooleanRule> DO_FIRE_TICK = register("doFireTick", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true));
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether mobs can modify the world.
 	 * 
@@ -45,54 +43,48 @@ public class GameRules {
 	 * <li>Whether a wither killing an entity will place or drop a wither rose
 	 * </ul>
 	 */
-	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_GRIEFING = register(
-		"mobGriefing", GameRules.Category.field_24095, GameRules.BooleanRule.create(true)
-	);
+	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_GRIEFING = register("mobGriefing", GameRules.Category.MOBS, GameRules.BooleanRule.create(true));
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether player inventories should be persist through respawning.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> KEEP_INVENTORY = register(
-		"keepInventory", GameRules.Category.field_24094, GameRules.BooleanRule.create(false)
+		"keepInventory", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether mobs can spawn naturally.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_SPAWNING = register(
-		"doMobSpawning", GameRules.Category.field_24096, GameRules.BooleanRule.create(true)
+		"doMobSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether mobs should drop loot on death.
 	 */
-	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_LOOT = register(
-		"doMobLoot", GameRules.Category.field_24097, GameRules.BooleanRule.create(true)
-	);
+	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_LOOT = register("doMobLoot", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether blocks should drop their items when broken.
 	 */
-	public static final GameRules.Key<GameRules.BooleanRule> DO_TILE_DROPS = register(
-		"doTileDrops", GameRules.Category.field_24097, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DO_TILE_DROPS = register("doTileDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_ENTITY_DROPS = register(
+		"doEntityDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_19393 = register(
-		"doEntityDrops", GameRules.Category.field_24097, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> COMMAND_BLOCK_OUTPUT = register(
+		"commandBlockOutput", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_19394 = register(
-		"commandBlockOutput", GameRules.Category.field_24099, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> NATURAL_REGENERATION = register(
+		"naturalRegeneration", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_19395 = register(
-		"naturalRegeneration", GameRules.Category.field_24094, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DO_DAYLIGHT_CYCLE = register(
+		"doDaylightCycle", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_19396 = register(
-		"doDaylightCycle", GameRules.Category.field_24098, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> LOG_ADMIN_COMMANDS = register(
+		"logAdminCommands", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_19397 = register(
-		"logAdminCommands", GameRules.Category.field_24099, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> SHOW_DEATH_MESSAGES = register(
+		"showDeathMessages", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_19398 = register(
-		"showDeathMessages", GameRules.Category.field_24099, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.Key<GameRules.IntRule> field_19399 = register("randomTickSpeed", GameRules.Category.field_24098, GameRules.IntRule.create(3));
-	public static final GameRules.Key<GameRules.BooleanRule> field_19400 = register(
-		"sendCommandFeedback", GameRules.Category.field_24099, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.IntRule> RANDOM_TICK_SPEED = register("randomTickSpeed", GameRules.Category.UPDATES, GameRules.IntRule.create(3));
+	public static final GameRules.Key<GameRules.BooleanRule> SEND_COMMAND_FEEDBACK = register(
+		"sendCommandFeedback", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether clients' {@linkplain net.minecraft.client.gui.hud.DebugHud debug HUD}s show reduced information.
@@ -101,7 +93,7 @@ public class GameRules {
 	 * In vanilla, this includes the visibility of coordinates on the clients' debug HUDs.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> REDUCED_DEBUG_INFO = register(
-		"reducedDebugInfo", GameRules.Category.field_24100, GameRules.BooleanRule.create(false, (server, rule) -> {
+		"reducedDebugInfo", GameRules.Category.MISC, GameRules.BooleanRule.create(false, (server, rule) -> {
 			byte b = (byte)(rule.get() ? 22 : 23);
 
 			for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
@@ -109,75 +101,65 @@ public class GameRules {
 			}
 		})
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_19402 = register(
-		"spectatorsGenerateChunks", GameRules.Category.field_24094, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> SPECTATORS_GENERATE_CHUNKS = register(
+		"spectatorsGenerateChunks", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.IntRule> field_19403 = register("spawnRadius", GameRules.Category.field_24094, GameRules.IntRule.create(10));
-	public static final GameRules.Key<GameRules.BooleanRule> field_19404 = register(
-		"disableElytraMovementCheck", GameRules.Category.field_24094, GameRules.BooleanRule.create(false)
+	public static final GameRules.Key<GameRules.IntRule> SPAWN_RADIUS = register("spawnRadius", GameRules.Category.PLAYER, GameRules.IntRule.create(10));
+	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_ELYTRA_MOVEMENT_CHECK = register(
+		"disableElytraMovementCheck", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
 	/**
 	 * A {@linkplain Rule game rule} which regulates the number of entities that can be crammed into a block space before they incur cramming damage.
 	 */
-	public static final GameRules.Key<GameRules.IntRule> MAX_ENTITY_CRAMMING = register(
-		"maxEntityCramming", GameRules.Category.field_24095, GameRules.IntRule.create(24)
+	public static final GameRules.Key<GameRules.IntRule> MAX_ENTITY_CRAMMING = register("maxEntityCramming", GameRules.Category.MOBS, GameRules.IntRule.create(24));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_WEATHER_CYCLE = register(
+		"doWeatherCycle", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_19406 = register(
-		"doWeatherCycle", GameRules.Category.field_24098, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DO_LIMITED_CRAFTING = register(
+		"doLimitedCrafting", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_19407 = register(
-		"doLimitedCrafting", GameRules.Category.field_24094, GameRules.BooleanRule.create(false)
-	);
-	public static final GameRules.Key<GameRules.IntRule> field_19408 = register(
-		"maxCommandChainLength", GameRules.Category.field_24100, GameRules.IntRule.create(65536)
+	public static final GameRules.Key<GameRules.IntRule> MAX_COMMAND_CHAIN_LENGTH = register(
+		"maxCommandChainLength", GameRules.Category.MISC, GameRules.IntRule.create(65536)
 	);
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether a player's advancements should be announced in chat.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> ANNOUNCE_ADVANCEMENTS = register(
-		"announceAdvancements", GameRules.Category.field_24099, GameRules.BooleanRule.create(true)
+		"announceAdvancements", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether raids should occur.
 	 * 
 	 * <p>If this rule is set to {@code true} while raids are occurring, the raids will be stopped.
 	 */
-	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_RAIDS = register(
-		"disableRaids", GameRules.Category.field_24095, GameRules.BooleanRule.create(false)
-	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_20637 = register(
-		"doInsomnia", GameRules.Category.field_24096, GameRules.BooleanRule.create(true)
-	);
+	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_RAIDS = register("disableRaids", GameRules.Category.MOBS, GameRules.BooleanRule.create(false));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_INSOMNIA = register("doInsomnia", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true));
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether a player should immediately respawn upon death.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DO_IMMEDIATE_RESPAWN = register(
-		"doImmediateRespawn", GameRules.Category.field_24094, GameRules.BooleanRule.create(false, (server, rule) -> {
+		"doImmediateRespawn", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false, (server, rule) -> {
 			for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
 				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, rule.get() ? 1.0F : 0.0F));
 			}
 		})
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_20634 = register(
-		"drowningDamage", GameRules.Category.field_24094, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DROWNING_DAMAGE = register(
+		"drowningDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_20635 = register(
-		"fallDamage", GameRules.Category.field_24094, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> FALL_DAMAGE = register("fallDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> FIRE_DAMAGE = register("fireDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_PATROL_SPAWNING = register(
+		"doPatrolSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_20636 = register(
-		"fireDamage", GameRules.Category.field_24094, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DO_TRADER_SPAWNING = register(
+		"doTraderSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_21831 = register(
-		"doPatrolSpawning", GameRules.Category.field_24096, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> FORGIVE_DEAD_PLAYERS = register(
+		"forgiveDeadPlayers", GameRules.Category.MOBS, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_21832 = register(
-		"doTraderSpawning", GameRules.Category.field_24096, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_25401 = register(
-		"forgiveDeadPlayers", GameRules.Category.field_24095, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.Key<GameRules.BooleanRule> field_25402 = register(
-		"universalAnger", GameRules.Category.field_24095, GameRules.BooleanRule.create(false)
+	public static final GameRules.Key<GameRules.BooleanRule> UNIVERSAL_ANGER = register(
+		"universalAnger", GameRules.Category.MOBS, GameRules.BooleanRule.create(false)
 	);
 	private final Map<GameRules.Key<?>, GameRules.Rule<?>> rules;
 
@@ -312,29 +294,29 @@ public class GameRules {
 			return this.value ? 1 : 0;
 		}
 
-		protected GameRules.BooleanRule method_20761() {
+		protected GameRules.BooleanRule getThis() {
 			return this;
 		}
 
-		protected GameRules.BooleanRule method_27327() {
+		protected GameRules.BooleanRule copy() {
 			return new GameRules.BooleanRule(this.type, this.value);
 		}
 
 		@Environment(EnvType.CLIENT)
-		public void method_27326(GameRules.BooleanRule booleanRule, @Nullable MinecraftServer minecraftServer) {
+		public void setValue(GameRules.BooleanRule booleanRule, @Nullable MinecraftServer minecraftServer) {
 			this.value = booleanRule.value;
 			this.changed(minecraftServer);
 		}
 	}
 
 	public static enum Category {
-		field_24094("gamerule.category.player"),
-		field_24095("gamerule.category.mobs"),
-		field_24096("gamerule.category.spawning"),
-		field_24097("gamerule.category.drops"),
-		field_24098("gamerule.category.updates"),
-		field_24099("gamerule.category.chat"),
-		field_24100("gamerule.category.misc");
+		PLAYER("gamerule.category.player"),
+		MOBS("gamerule.category.mobs"),
+		SPAWNING("gamerule.category.spawning"),
+		DROPS("gamerule.category.drops"),
+		UPDATES("gamerule.category.updates"),
+		CHAT("gamerule.category.chat"),
+		MISC("gamerule.category.misc");
 
 		private final String category;
 
@@ -414,16 +396,16 @@ public class GameRules {
 			return this.value;
 		}
 
-		protected GameRules.IntRule method_20770() {
+		protected GameRules.IntRule getThis() {
 			return this;
 		}
 
-		protected GameRules.IntRule method_27333() {
+		protected GameRules.IntRule copy() {
 			return new GameRules.IntRule(this.type, this.value);
 		}
 
 		@Environment(EnvType.CLIENT)
-		public void method_27331(GameRules.IntRule intRule, @Nullable MinecraftServer minecraftServer) {
+		public void setValue(GameRules.IntRule intRule, @Nullable MinecraftServer minecraftServer) {
 			this.value = intRule.value;
 			this.changed(minecraftServer);
 		}

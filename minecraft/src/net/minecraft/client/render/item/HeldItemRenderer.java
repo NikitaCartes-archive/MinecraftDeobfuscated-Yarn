@@ -16,7 +16,6 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -72,12 +71,12 @@ public class HeldItemRenderer {
 		this.client.getTextureManager().bindTexture(this.client.player.getSkinTexture());
 		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.renderManager.<AbstractClientPlayerEntity>getRenderer(this.client.player);
 		matrices.push();
-		float f = arm == Arm.field_6183 ? 1.0F : -1.0F;
+		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
 		matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(92.0F));
 		matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0F));
 		matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(f * -41.0F));
 		matrices.translate((double)(f * 0.3F), -1.1F, 0.45F);
-		if (arm == Arm.field_6183) {
+		if (arm == Arm.RIGHT) {
 			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, this.client.player);
 		} else {
 			playerEntityRenderer.renderLeftArm(matrices, vertexConsumers, light, this.client.player);
@@ -89,7 +88,7 @@ public class HeldItemRenderer {
 	private void renderMapInOneHand(
 		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float equipProgress, Arm arm, float swingProgress, ItemStack stack
 	) {
-		float f = arm == Arm.field_6183 ? 1.0F : -1.0F;
+		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
 		matrices.translate((double)(f * 0.125F), -0.125, 0.0);
 		if (!this.client.player.isInvisible()) {
 			matrices.push();
@@ -125,8 +124,8 @@ public class HeldItemRenderer {
 		if (!this.client.player.isInvisible()) {
 			matrices.push();
 			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
-			this.renderArm(matrices, vertexConsumers, light, Arm.field_6183);
-			this.renderArm(matrices, vertexConsumers, light, Arm.field_6182);
+			this.renderArm(matrices, vertexConsumers, light, Arm.RIGHT);
+			this.renderArm(matrices, vertexConsumers, light, Arm.LEFT);
 			matrices.pop();
 		}
 
@@ -155,7 +154,7 @@ public class HeldItemRenderer {
 	}
 
 	private void renderArmHoldingItem(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float equipProgress, float swingProgress, Arm arm) {
-		boolean bl = arm != Arm.field_6182;
+		boolean bl = arm != Arm.LEFT;
 		float f = bl ? 1.0F : -1.0F;
 		float g = MathHelper.sqrt(swingProgress);
 		float h = -0.3F * MathHelper.sin(g * (float) Math.PI);
@@ -191,7 +190,7 @@ public class HeldItemRenderer {
 		}
 
 		float h = 1.0F - (float)Math.pow((double)g, 27.0);
-		int i = arm == Arm.field_6183 ? 1 : -1;
+		int i = arm == Arm.RIGHT ? 1 : -1;
 		matrices.translate((double)(h * 0.6F * (float)i), (double)(h * -0.5F), (double)(h * 0.0F));
 		matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)i * h * 90.0F));
 		matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(h * 10.0F));
@@ -199,7 +198,7 @@ public class HeldItemRenderer {
 	}
 
 	private void applySwingOffset(MatrixStack matrices, Arm arm, float swingProgress) {
-		int i = arm == Arm.field_6183 ? 1 : -1;
+		int i = arm == Arm.RIGHT ? 1 : -1;
 		float f = MathHelper.sin(swingProgress * swingProgress * (float) Math.PI);
 		matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)i * (45.0F + f * -20.0F)));
 		float g = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
@@ -209,38 +208,38 @@ public class HeldItemRenderer {
 	}
 
 	private void applyEquipOffset(MatrixStack matrices, Arm arm, float equipProgress) {
-		int i = arm == Arm.field_6183 ? 1 : -1;
+		int i = arm == Arm.RIGHT ? 1 : -1;
 		matrices.translate((double)((float)i * 0.56F), (double)(-0.52F + equipProgress * -0.6F), -0.72F);
 	}
 
 	public void renderItem(float tickDelta, MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, ClientPlayerEntity player, int light) {
 		float f = player.getHandSwingProgress(tickDelta);
-		Hand hand = MoreObjects.firstNonNull(player.preferredHand, Hand.field_5808);
+		Hand hand = MoreObjects.firstNonNull(player.preferredHand, Hand.MAIN_HAND);
 		float g = MathHelper.lerp(tickDelta, player.prevPitch, player.pitch);
 		boolean bl = true;
 		boolean bl2 = true;
 		if (player.isUsingItem()) {
 			ItemStack itemStack = player.getActiveItem();
-			if (itemStack.getItem() == Items.field_8102 || itemStack.getItem() == Items.field_8399) {
-				bl = player.getActiveHand() == Hand.field_5808;
+			if (itemStack.getItem() == Items.BOW || itemStack.getItem() == Items.CROSSBOW) {
+				bl = player.getActiveHand() == Hand.MAIN_HAND;
 				bl2 = !bl;
 			}
 
 			Hand hand2 = player.getActiveHand();
-			if (hand2 == Hand.field_5808) {
+			if (hand2 == Hand.MAIN_HAND) {
 				ItemStack itemStack2 = player.getOffHandStack();
-				if (itemStack2.getItem() == Items.field_8399 && CrossbowItem.isCharged(itemStack2)) {
+				if (itemStack2.getItem() == Items.CROSSBOW && CrossbowItem.isCharged(itemStack2)) {
 					bl2 = false;
 				}
 			}
 		} else {
 			ItemStack itemStackx = player.getMainHandStack();
 			ItemStack itemStack3 = player.getOffHandStack();
-			if (itemStackx.getItem() == Items.field_8399 && CrossbowItem.isCharged(itemStackx)) {
+			if (itemStackx.getItem() == Items.CROSSBOW && CrossbowItem.isCharged(itemStackx)) {
 				bl2 = !bl;
 			}
 
-			if (itemStack3.getItem() == Items.field_8399 && CrossbowItem.isCharged(itemStack3)) {
+			if (itemStack3.getItem() == Items.CROSSBOW && CrossbowItem.isCharged(itemStack3)) {
 				bl = !itemStackx.isEmpty();
 				bl2 = !bl;
 			}
@@ -251,15 +250,15 @@ public class HeldItemRenderer {
 		matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion((player.getPitch(tickDelta) - h) * 0.1F));
 		matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((player.getYaw(tickDelta) - i) * 0.1F));
 		if (bl) {
-			float j = hand == Hand.field_5808 ? f : 0.0F;
+			float j = hand == Hand.MAIN_HAND ? f : 0.0F;
 			float k = 1.0F - MathHelper.lerp(tickDelta, this.prevEquipProgressMainHand, this.equipProgressMainHand);
-			this.renderFirstPersonItem(player, tickDelta, g, Hand.field_5808, j, this.mainHand, k, matrices, vertexConsumers, light);
+			this.renderFirstPersonItem(player, tickDelta, g, Hand.MAIN_HAND, j, this.mainHand, k, matrices, vertexConsumers, light);
 		}
 
 		if (bl2) {
-			float j = hand == Hand.field_5810 ? f : 0.0F;
+			float j = hand == Hand.OFF_HAND ? f : 0.0F;
 			float k = 1.0F - MathHelper.lerp(tickDelta, this.prevEquipProgressOffHand, this.equipProgressOffHand);
-			this.renderFirstPersonItem(player, tickDelta, g, Hand.field_5810, j, this.offHand, k, matrices, vertexConsumers, light);
+			this.renderFirstPersonItem(player, tickDelta, g, Hand.OFF_HAND, j, this.offHand, k, matrices, vertexConsumers, light);
 		}
 
 		vertexConsumers.draw();
@@ -277,22 +276,22 @@ public class HeldItemRenderer {
 		VertexConsumerProvider vertexConsumers,
 		int light
 	) {
-		boolean bl = hand == Hand.field_5808;
+		boolean bl = hand == Hand.MAIN_HAND;
 		Arm arm = bl ? player.getMainArm() : player.getMainArm().getOpposite();
 		matrices.push();
 		if (item.isEmpty()) {
 			if (bl && !player.isInvisible()) {
 				this.renderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
 			}
-		} else if (item.getItem() == Items.field_8204) {
+		} else if (item.getItem() == Items.FILLED_MAP) {
 			if (bl && this.offHand.isEmpty()) {
 				this.renderMapInBothHands(matrices, vertexConsumers, light, pitch, equipProgress, swingProgress);
 			} else {
 				this.renderMapInOneHand(matrices, vertexConsumers, light, equipProgress, arm, swingProgress, item);
 			}
-		} else if (item.getItem() == Items.field_8399) {
+		} else if (item.getItem() == Items.CROSSBOW) {
 			boolean bl2 = CrossbowItem.isCharged(item);
-			boolean bl3 = arm == Arm.field_6183;
+			boolean bl3 = arm == Arm.RIGHT;
 			int i = bl3 ? 1 : -1;
 			if (player.isUsingItem() && player.getItemUseTimeLeft() > 0 && player.getActiveHand() == hand) {
 				this.applyEquipOffset(matrices, arm, equipProgress);
@@ -329,26 +328,34 @@ public class HeldItemRenderer {
 				}
 			}
 
-			this.renderItem(player, item, bl3 ? ModelTransformation.Mode.field_4322 : ModelTransformation.Mode.field_4321, !bl3, matrices, vertexConsumers, light);
+			this.renderItem(
+				player,
+				item,
+				bl3 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND,
+				!bl3,
+				matrices,
+				vertexConsumers,
+				light
+			);
 		} else {
-			boolean bl2 = arm == Arm.field_6183;
+			boolean bl2 = arm == Arm.RIGHT;
 			boolean bl3 = player.isUsingItem() && player.getActiveHand() == hand;
-			boolean bl4 = !bl3 && hand == Hand.field_5810 && player.isBlocking();
+			boolean bl4 = !bl3 && hand == Hand.OFF_HAND && player.isBlocking();
 			if (bl3 || bl4) {
 				int l = bl2 ? 1 : -1;
 				switch (item.getUseAction()) {
-					case field_8952:
+					case NONE:
 						this.applyEquipOffset(matrices, arm, equipProgress);
 						break;
-					case field_8950:
-					case field_8946:
+					case EAT:
+					case DRINK:
 						this.applyEatOrDrinkTransformation(matrices, tickDelta, arm, item);
 						this.applyEquipOffset(matrices, arm, equipProgress);
 						break;
-					case field_8949:
+					case BLOCK:
 						this.applyEquipOffset(matrices, arm, equipProgress);
 						break;
-					case field_8953:
+					case BOW:
 						this.applyEquipOffset(matrices, arm, equipProgress);
 						matrices.translate((double)((float)l * -0.2785682F), 0.18344387F, 0.15731531F);
 						matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-13.935F));
@@ -363,7 +370,7 @@ public class HeldItemRenderer {
 
 						if (hx > 0.1F) {
 							float j = MathHelper.sin((gxx - 0.1F) * 1.3F);
-							float k = BowItem.method_31211((int)gxx) - 0.1F;
+							float k = hx - 0.1F;
 							float m = j * k;
 							matrices.translate((double)(m * 0.0F), (double)(m * 0.004F), (double)(m * 0.0F));
 						}
@@ -372,7 +379,7 @@ public class HeldItemRenderer {
 						matrices.scale(1.0F, 1.0F, 1.0F + hx * 0.2F);
 						matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion((float)l * 45.0F));
 						break;
-					case field_8951:
+					case SPEAR:
 						this.applyEquipOffset(matrices, arm, equipProgress);
 						matrices.translate((double)((float)l * -0.5F), 0.7F, 0.1F);
 						matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-55.0F));
@@ -411,7 +418,15 @@ public class HeldItemRenderer {
 				this.applySwingOffset(matrices, arm, swingProgress);
 			}
 
-			this.renderItem(player, item, bl2 ? ModelTransformation.Mode.field_4322 : ModelTransformation.Mode.field_4321, !bl2, matrices, vertexConsumers, light);
+			this.renderItem(
+				player,
+				item,
+				bl2 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND,
+				!bl2,
+				matrices,
+				vertexConsumers,
+				light
+			);
 		}
 
 		matrices.pop();
@@ -453,7 +468,7 @@ public class HeldItemRenderer {
 	}
 
 	public void resetEquipProgress(Hand hand) {
-		if (hand == Hand.field_5808) {
+		if (hand == Hand.MAIN_HAND) {
 			this.equipProgressMainHand = 0.0F;
 			this.prevEquipProgressMainHand = 0.0F;
 		} else {

@@ -22,17 +22,17 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25246;
+		return LootConditionTypes.DAMAGE_SOURCE_PROPERTIES;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_24424, LootContextParameters.field_1231);
+		return ImmutableSet.of(LootContextParameters.ORIGIN, LootContextParameters.DAMAGE_SOURCE);
 	}
 
-	public boolean method_834(LootContext lootContext) {
-		DamageSource damageSource = lootContext.get(LootContextParameters.field_1231);
-		Vec3d vec3d = lootContext.get(LootContextParameters.field_24424);
+	public boolean test(LootContext lootContext) {
+		DamageSource damageSource = lootContext.get(LootContextParameters.DAMAGE_SOURCE);
+		Vec3d vec3d = lootContext.get(LootContextParameters.ORIGIN);
 		return vec3d != null && damageSource != null && this.predicate.test(lootContext.getWorld(), vec3d, damageSource);
 	}
 
@@ -41,13 +41,13 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<DamageSourcePropertiesLootCondition> {
-		public void method_838(
+		public void toJson(
 			JsonObject jsonObject, DamageSourcePropertiesLootCondition damageSourcePropertiesLootCondition, JsonSerializationContext jsonSerializationContext
 		) {
 			jsonObject.add("predicate", damageSourcePropertiesLootCondition.predicate.toJson());
 		}
 
-		public DamageSourcePropertiesLootCondition method_839(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public DamageSourcePropertiesLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.fromJson(jsonObject.get("predicate"));
 			return new DamageSourcePropertiesLootCondition(damageSourcePredicate);
 		}

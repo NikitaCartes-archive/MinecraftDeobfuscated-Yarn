@@ -24,7 +24,7 @@ public class MegaJungleTrunkPlacer extends GiantTrunkPlacer {
 
 	@Override
 	protected TrunkPlacerType<?> getType() {
-		return TrunkPlacerType.field_24172;
+		return TrunkPlacerType.MEGA_JUNGLE_TRUNK_PLACER;
 	}
 
 	@Override

@@ -34,15 +34,15 @@ public class DamageTracker {
 		Optional<BlockPos> optional = this.entity.getClimbingPos();
 		if (optional.isPresent()) {
 			BlockState blockState = this.entity.world.getBlockState((BlockPos)optional.get());
-			if (blockState.isOf(Blocks.field_9983) || blockState.isIn(BlockTags.field_15487)) {
+			if (blockState.isOf(Blocks.LADDER) || blockState.isIn(BlockTags.TRAPDOORS)) {
 				this.fallDeathSuffix = "ladder";
-			} else if (blockState.isOf(Blocks.field_10597)) {
+			} else if (blockState.isOf(Blocks.VINE)) {
 				this.fallDeathSuffix = "vines";
-			} else if (blockState.isOf(Blocks.field_22123) || blockState.isOf(Blocks.field_22124)) {
+			} else if (blockState.isOf(Blocks.WEEPING_VINES) || blockState.isOf(Blocks.WEEPING_VINES_PLANT)) {
 				this.fallDeathSuffix = "weeping_vines";
-			} else if (blockState.isOf(Blocks.field_23078) || blockState.isOf(Blocks.field_23079)) {
+			} else if (blockState.isOf(Blocks.TWISTING_VINES) || blockState.isOf(Blocks.TWISTING_VINES_PLANT)) {
 				this.fallDeathSuffix = "twisting_vines";
-			} else if (blockState.isOf(Blocks.field_16492)) {
+			} else if (blockState.isOf(Blocks.SCAFFOLDING)) {
 				this.fallDeathSuffix = "scaffolding";
 			} else {
 				this.fallDeathSuffix = "other_climbable";

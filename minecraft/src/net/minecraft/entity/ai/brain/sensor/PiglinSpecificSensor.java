@@ -30,25 +30,25 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.of(
-			MemoryModuleType.field_18442,
-			MemoryModuleType.field_18441,
-			MemoryModuleType.field_25360,
-			MemoryModuleType.field_22342,
-			MemoryModuleType.field_22349,
-			MemoryModuleType.field_22339,
-			MemoryModuleType.field_22340,
-			MemoryModuleType.field_22343,
-			MemoryModuleType.field_25755,
-			MemoryModuleType.field_22347,
-			MemoryModuleType.field_22348,
-			MemoryModuleType.field_22474
+			MemoryModuleType.VISIBLE_MOBS,
+			MemoryModuleType.MOBS,
+			MemoryModuleType.NEAREST_VISIBLE_NEMESIS,
+			MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD,
+			MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM,
+			MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN,
+			MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN,
+			MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS,
+			MemoryModuleType.NEARBY_ADULT_PIGLINS,
+			MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT,
+			MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT,
+			MemoryModuleType.NEAREST_REPELLENT
 		);
 	}
 
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		Brain<?> brain = entity.getBrain();
-		brain.remember(MemoryModuleType.field_22474, findSoulFire(world, entity));
+		brain.remember(MemoryModuleType.NEAREST_REPELLENT, findSoulFire(world, entity));
 		Optional<MobEntity> optional = Optional.empty();
 		Optional<HoglinEntity> optional2 = Optional.empty();
 		Optional<HoglinEntity> optional3 = Optional.empty();
@@ -60,7 +60,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		List<AbstractPiglinEntity> list = Lists.<AbstractPiglinEntity>newArrayList();
 		List<AbstractPiglinEntity> list2 = Lists.<AbstractPiglinEntity>newArrayList();
 
-		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.field_18442).orElse(ImmutableList.of())) {
+		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of())) {
 			if (livingEntity instanceof HoglinEntity) {
 				HoglinEntity hoglinEntity = (HoglinEntity)livingEntity;
 				if (hoglinEntity.isBaby() && !optional3.isPresent()) {
@@ -98,22 +98,22 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 			}
 		}
 
-		for (LivingEntity livingEntity2 : (List)brain.getOptionalMemory(MemoryModuleType.field_18441).orElse(ImmutableList.of())) {
+		for (LivingEntity livingEntity2 : (List)brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {
 			if (livingEntity2 instanceof AbstractPiglinEntity && ((AbstractPiglinEntity)livingEntity2).isAdult()) {
 				list2.add((AbstractPiglinEntity)livingEntity2);
 			}
 		}
 
-		brain.remember(MemoryModuleType.field_25360, optional);
-		brain.remember(MemoryModuleType.field_22339, optional2);
-		brain.remember(MemoryModuleType.field_22340, optional3);
-		brain.remember(MemoryModuleType.field_22346, optional5);
-		brain.remember(MemoryModuleType.field_22342, optional6);
-		brain.remember(MemoryModuleType.field_22349, optional7);
-		brain.remember(MemoryModuleType.field_25755, list2);
-		brain.remember(MemoryModuleType.field_22343, list);
-		brain.remember(MemoryModuleType.field_22347, list.size());
-		brain.remember(MemoryModuleType.field_22348, i);
+		brain.remember(MemoryModuleType.NEAREST_VISIBLE_NEMESIS, optional);
+		brain.remember(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, optional2);
+		brain.remember(MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, optional3);
+		brain.remember(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, optional5);
+		brain.remember(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, optional6);
+		brain.remember(MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, optional7);
+		brain.remember(MemoryModuleType.NEARBY_ADULT_PIGLINS, list2);
+		brain.remember(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, list);
+		brain.remember(MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, list.size());
+		brain.remember(MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, i);
 	}
 
 	private static Optional<BlockPos> findSoulFire(ServerWorld world, LivingEntity entity) {
@@ -122,7 +122,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 
 	private static boolean method_24648(ServerWorld serverWorld, BlockPos blockPos) {
 		BlockState blockState = serverWorld.getBlockState(blockPos);
-		boolean bl = blockState.isIn(BlockTags.field_22465);
-		return bl && blockState.isOf(Blocks.field_23860) ? CampfireBlock.isLitCampfire(blockState) : bl;
+		boolean bl = blockState.isIn(BlockTags.PIGLIN_REPELLENTS);
+		return bl && blockState.isOf(Blocks.SOUL_CAMPFIRE) ? CampfireBlock.isLitCampfire(blockState) : bl;
 	}
 }

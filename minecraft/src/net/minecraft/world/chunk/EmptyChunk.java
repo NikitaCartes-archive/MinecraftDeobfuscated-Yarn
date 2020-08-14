@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_5504;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,11 +18,12 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public class EmptyChunk extends WorldChunk {
-	private static final Biome[] BIOMES = Util.make(new Biome[BiomeArray.DEFAULT_LENGTH], biomes -> Arrays.fill(biomes, class_5504.field_26734));
+	private static final Biome[] BIOMES = Util.make(new Biome[BiomeArray.DEFAULT_LENGTH], biomes -> Arrays.fill(biomes, BuiltinBiomes.PLAINS));
 
 	public EmptyChunk(World world, ChunkPos pos) {
 		super(world, pos, new BiomeArray(world.getRegistryManager().get(Registry.BIOME_KEY), BIOMES));
@@ -31,7 +31,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
-		return Blocks.field_10243.getDefaultState();
+		return Blocks.VOID_AIR.getDefaultState();
 	}
 
 	@Nullable
@@ -42,7 +42,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
-		return Fluids.field_15906.getDefaultState();
+		return Fluids.EMPTY.getDefaultState();
 	}
 
 	@Nullable
@@ -110,6 +110,6 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public ChunkHolder.LevelType getLevelType() {
-		return ChunkHolder.LevelType.field_13876;
+		return ChunkHolder.LevelType.BORDER;
 	}
 }

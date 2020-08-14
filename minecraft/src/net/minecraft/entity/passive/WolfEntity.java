@@ -66,7 +66,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	private static final TrackedData<Integer> ANGER_TIME = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = livingEntity -> {
 		EntityType<?> entityType = livingEntity.getType();
-		return entityType == EntityType.field_6115 || entityType == EntityType.field_6140 || entityType == EntityType.field_17943;
+		return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.FOX;
 	};
 	private float begAnimationProgress;
 	private float lastBegAnimationProgress;
@@ -106,20 +106,23 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	}
 
 	public static DefaultAttributeContainer.Builder createWolfAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23719, 0.3F).add(EntityAttributes.field_23716, 8.0).add(EntityAttributes.field_23721, 2.0);
+		return MobEntity.createMobAttributes()
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(BEGGING, false);
-		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.field_7964.getId());
+		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
 		this.dataTracker.startTracking(ANGER_TIME, 0);
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_14772, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_WOLF_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -142,22 +145,22 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		if (this.hasAngerTime()) {
-			return SoundEvents.field_14575;
+			return SoundEvents.ENTITY_WOLF_GROWL;
 		} else if (this.random.nextInt(3) == 0) {
-			return this.isTamed() && this.getHealth() < 10.0F ? SoundEvents.field_14807 : SoundEvents.field_14922;
+			return this.isTamed() && this.getHealth() < 10.0F ? SoundEvents.ENTITY_WOLF_WHINE : SoundEvents.ENTITY_WOLF_PANT;
 		} else {
-			return SoundEvents.field_14724;
+			return SoundEvents.ENTITY_WOLF_AMBIENT;
 		}
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15218;
+		return SoundEvents.ENTITY_WOLF_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14659;
+		return SoundEvents.ENTITY_WOLF_DEATH;
 	}
 
 	@Override
@@ -199,7 +202,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 				}
 			} else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
 				if (this.shakeProgress == 0.0F) {
-					this.playSound(SoundEvents.field_15042, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+					this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				}
 
 				this.lastShakeProgress = this.shakeProgress;
@@ -219,7 +222,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 					for (int j = 0; j < i; j++) {
 						float g = (this.random.nextFloat() * 2.0F - 1.0F) * this.getWidth() * 0.5F;
 						float h = (this.random.nextFloat() * 2.0F - 1.0F) * this.getWidth() * 0.5F;
-						this.world.addParticle(ParticleTypes.field_11202, this.getX() + (double)g, (double)(f + 0.8F), this.getZ() + (double)h, vec3d.x, vec3d.y, vec3d.z);
+						this.world.addParticle(ParticleTypes.SPLASH, this.getX() + (double)g, (double)(f + 0.8F), this.getZ() + (double)h, vec3d.x, vec3d.y, vec3d.z);
 					}
 				}
 			}
@@ -309,7 +312,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.field_23721)));
+		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.dealDamage(this, target);
 		}
@@ -321,13 +324,13 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	public void setTamed(boolean tamed) {
 		super.setTamed(tamed);
 		if (tamed) {
-			this.getAttributeInstance(EntityAttributes.field_23716).setBaseValue(20.0);
+			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(20.0);
 			this.setHealth(20.0F);
 		} else {
-			this.getAttributeInstance(EntityAttributes.field_23716).setBaseValue(8.0);
+			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(8.0);
 		}
 
-		this.getAttributeInstance(EntityAttributes.field_23721).setBaseValue(4.0);
+		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(4.0);
 	}
 
 	@Override
@@ -335,7 +338,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (this.world.isClient) {
-			boolean bl = this.isOwner(player) || this.isTamed() || item == Items.field_8606 && !this.isTamed() && !this.hasAngerTime();
+			boolean bl = this.isOwner(player) || this.isTamed() || item == Items.BONE && !this.isTamed() && !this.hasAngerTime();
 			return bl ? ActionResult.CONSUME : ActionResult.PASS;
 		} else {
 			if (this.isTamed()) {
@@ -370,7 +373,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 
 					return ActionResult.SUCCESS;
 				}
-			} else if (item == Items.field_8606 && !this.hasAngerTime()) {
+			} else if (item == Items.BONE && !this.hasAngerTime()) {
 				if (!player.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -460,8 +463,8 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		this.dataTracker.set(COLLAR_COLOR, color.getId());
 	}
 
-	public WolfEntity method_6717(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		WolfEntity wolfEntity = EntityType.field_6055.create(serverWorld);
+	public WolfEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		WolfEntity wolfEntity = EntityType.WOLF.create(serverWorld);
 		UUID uUID = this.getOwnerUuid();
 		if (uUID != null) {
 			wolfEntity.setOwnerUuid(uUID);

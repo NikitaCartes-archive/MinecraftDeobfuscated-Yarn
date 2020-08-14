@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 
 public class ThornsEnchantment extends Enchantment {
 	public ThornsEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9071, slotTypes);
+		super(weight, EnchantmentTarget.ARMOR_CHEST, slotTypes);
 	}
 
 	@Override
@@ -30,14 +30,14 @@ public class ThornsEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.getItem() instanceof ArmorItem ? true : super.isAcceptableItem(stack);
+	public boolean isAcceptableItem(ItemStack stack, boolean bl) {
+		return stack.getItem() instanceof ArmorItem ? true : super.isAcceptableItem(stack, bl);
 	}
 
 	@Override
 	public void onUserDamaged(LivingEntity user, Entity attacker, int level) {
 		Random random = user.getRandom();
-		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.field_9097, user);
+		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.THORNS, user);
 		if (shouldDamageAttacker(level, random)) {
 			if (attacker != null) {
 				attacker.damage(DamageSource.thorns(user), (float)getDamageAmount(level, random));

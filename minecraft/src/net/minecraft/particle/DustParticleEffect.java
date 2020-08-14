@@ -23,7 +23,7 @@ public class DustParticleEffect implements ParticleEffect {
 				.apply(instance, DustParticleEffect::new)
 	);
 	public static final ParticleEffect.Factory<DustParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<DustParticleEffect>() {
-		public DustParticleEffect method_10287(ParticleType<DustParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			float f = (float)stringReader.readDouble();
 			stringReader.expect(' ');
@@ -35,7 +35,7 @@ public class DustParticleEffect implements ParticleEffect {
 			return new DustParticleEffect(f, g, h, i);
 		}
 
-		public DustParticleEffect method_10288(ParticleType<DustParticleEffect> particleType, PacketByteBuf packetByteBuf) {
+		public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, PacketByteBuf packetByteBuf) {
 			return new DustParticleEffect(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
 		}
 	};
@@ -66,7 +66,7 @@ public class DustParticleEffect implements ParticleEffect {
 
 	@Override
 	public ParticleType<DustParticleEffect> getType() {
-		return ParticleTypes.field_11212;
+		return ParticleTypes.DUST;
 	}
 
 	@Environment(EnvType.CLIENT)

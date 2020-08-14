@@ -26,7 +26,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		return false;
 	}
 
-	protected boolean method_28625(
+	protected boolean shouldStartAt(
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		long l,
@@ -50,21 +50,21 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		BlockRotation blockRotation = BlockRotation.random(random);
 		int i = 5;
 		int j = 5;
-		if (blockRotation == BlockRotation.field_11463) {
+		if (blockRotation == BlockRotation.CLOCKWISE_90) {
 			i = -5;
-		} else if (blockRotation == BlockRotation.field_11464) {
+		} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
 			i = -5;
 			j = -5;
-		} else if (blockRotation == BlockRotation.field_11465) {
+		} else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
 			j = -5;
 		}
 
 		int k = (chunkX << 4) + 7;
 		int l = (chunkZ << 4) + 7;
-		int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.field_13194);
-		int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.field_13194);
-		int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.field_13194);
-		int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.field_13194);
+		int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG);
+		int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG);
+		int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG);
+		int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG);
 		return Math.min(Math.min(m, n), Math.min(o, p));
 	}
 
@@ -73,7 +73,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28626(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,

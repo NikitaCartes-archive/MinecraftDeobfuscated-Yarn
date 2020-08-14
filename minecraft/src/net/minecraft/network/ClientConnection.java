@@ -89,7 +89,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.address = this.channel.remoteAddress();
 
 		try {
-			this.setState(NetworkState.field_20590);
+			this.setState(NetworkState.HANDSHAKING);
 		} catch (Throwable var3) {
 			LOGGER.fatal(var3);
 		}
@@ -132,7 +132,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 	}
 
-	protected void method_10770(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
 		if (this.channel.isOpen()) {
 			try {
 				handlePacket(packet, this.packetListener);
@@ -255,7 +255,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Environment(EnvType.CLIENT)
 	public static ClientConnection connect(InetAddress address, int port, boolean shouldUseNativeTransport) {
-		final ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11942);
+		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		Class<? extends SocketChannel> class_;
 		Lazy<? extends EventLoopGroup> lazy;
 		if (Epoll.isAvailable() && shouldUseNativeTransport) {
@@ -280,9 +280,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 						channel.pipeline()
 							.addLast("timeout", new ReadTimeoutHandler(30))
 							.addLast("splitter", new SplitterHandler())
-							.addLast("decoder", new DecoderHandler(NetworkSide.field_11942))
+							.addLast("decoder", new DecoderHandler(NetworkSide.CLIENTBOUND))
 							.addLast("prepender", new SizePrepender())
-							.addLast("encoder", new PacketEncoder(NetworkSide.field_11941))
+							.addLast("encoder", new PacketEncoder(NetworkSide.SERVERBOUND))
 							.addLast("packet_handler", clientConnection);
 					}
 				}
@@ -295,7 +295,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Environment(EnvType.CLIENT)
 	public static ClientConnection connectLocal(SocketAddress address) {
-		final ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11942);
+		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		new Bootstrap().group(CLIENT_IO_GROUP_LOCAL.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {

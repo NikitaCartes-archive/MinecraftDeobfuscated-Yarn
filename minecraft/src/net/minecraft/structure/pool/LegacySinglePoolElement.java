@@ -31,7 +31,7 @@ public class LegacySinglePoolElement extends SinglePoolElement {
 
 	@Override
 	public StructurePoolElementType<?> getType() {
-		return StructurePoolElementType.field_24016;
+		return StructurePoolElementType.LEGACY_SINGLE_POOL_ELEMENT;
 	}
 
 	@Override

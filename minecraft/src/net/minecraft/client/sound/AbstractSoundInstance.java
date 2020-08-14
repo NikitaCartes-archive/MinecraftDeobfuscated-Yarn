@@ -18,7 +18,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected double z;
 	protected boolean repeat;
 	protected int repeatDelay;
-	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.field_5476;
+	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.LINEAR;
 	protected boolean field_18935;
 	protected boolean looping;
 
@@ -42,7 +42,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 		if (weightedSoundSet == null) {
 			this.sound = SoundManager.MISSING_SOUND;
 		} else {
-			this.sound = weightedSoundSet.method_4887();
+			this.sound = weightedSoundSet.getSound();
 		}
 
 		return weightedSoundSet;

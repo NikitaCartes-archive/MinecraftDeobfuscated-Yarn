@@ -46,11 +46,11 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			ItemScatterer.spawn(this.world, this, this);
 			if (!this.world.isClient) {
 				Entity entity = damageSource.getSource();
-				if (entity != null && entity.getType() == EntityType.field_6097) {
+				if (entity != null && entity.getType() == EntityType.PLAYER) {
 					PiglinBrain.onGuardedBlockBroken((PlayerEntity)entity, true);
 				}
 			}
@@ -191,14 +191,12 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			}
 
 			this.lootTableId = null;
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.parameter(LootContextParameters.field_24424, this.getPos())
-				.random(this.lootSeed);
+			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).parameter(LootContextParameters.ORIGIN, this.getPos()).random(this.lootSeed);
 			if (player != null) {
-				builder.luck(player.getLuck()).parameter(LootContextParameters.field_1226, player);
+				builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
 			}
 
-			lootTable.supplyInventory(this, builder.build(LootContextTypes.field_1179));
+			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
 		}
 	}
 

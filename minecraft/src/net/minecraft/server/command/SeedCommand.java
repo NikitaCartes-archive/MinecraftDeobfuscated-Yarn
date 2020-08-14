@@ -20,9 +20,9 @@ public class SeedCommand {
 						Text text = Texts.bracketed(
 							new LiteralText(String.valueOf(l))
 								.styled(
-									style -> style.withColor(Formatting.field_1060)
-											.withClickEvent(new ClickEvent(ClickEvent.Action.field_21462, String.valueOf(l)))
-											.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, new TranslatableText("chat.copy.click")))
+									style -> style.withColor(Formatting.GREEN)
+											.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(l)))
+											.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.copy.click")))
 											.withInsertion(String.valueOf(l))
 								)
 						);

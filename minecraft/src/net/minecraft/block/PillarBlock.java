@@ -12,19 +12,19 @@ public class PillarBlock extends Block {
 
 	public PillarBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.getDefaultState().with(AXIS, Direction.Axis.field_11052));
+		this.setDefaultState(this.getDefaultState().with(AXIS, Direction.Axis.Y));
 	}
 
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
-			case field_11465:
-			case field_11463:
+			case COUNTERCLOCKWISE_90:
+			case CLOCKWISE_90:
 				switch ((Direction.Axis)state.get(AXIS)) {
-					case field_11048:
-						return state.with(AXIS, Direction.Axis.field_11051);
-					case field_11051:
-						return state.with(AXIS, Direction.Axis.field_11048);
+					case X:
+						return state.with(AXIS, Direction.Axis.Z);
+					case Z:
+						return state.with(AXIS, Direction.Axis.X);
 					default:
 						return state;
 				}

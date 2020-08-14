@@ -55,11 +55,11 @@ public class SkullBlock extends AbstractSkullBlock {
 	}
 
 	public static enum Type implements SkullBlock.SkullType {
-		field_11512,
-		field_11513,
-		field_11510,
-		field_11508,
-		field_11507,
-		field_11511;
+		SKELETON,
+		WITHER_SKELETON,
+		PLAYER,
+		ZOMBIE,
+		CREEPER,
+		DRAGON;
 	}
 }

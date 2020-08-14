@@ -14,28 +14,28 @@ public class OreBlock extends Block {
 	}
 
 	protected int getExperienceWhenMined(Random random) {
-		if (this == Blocks.field_10418) {
+		if (this == Blocks.COAL_ORE) {
 			return MathHelper.nextInt(random, 0, 2);
-		} else if (this == Blocks.field_10442) {
+		} else if (this == Blocks.DIAMOND_ORE) {
 			return MathHelper.nextInt(random, 3, 7);
-		} else if (this == Blocks.field_10013) {
+		} else if (this == Blocks.EMERALD_ORE) {
 			return MathHelper.nextInt(random, 3, 7);
-		} else if (this == Blocks.field_10090) {
+		} else if (this == Blocks.LAPIS_ORE) {
 			return MathHelper.nextInt(random, 2, 5);
-		} else if (this == Blocks.field_10213) {
+		} else if (this == Blocks.NETHER_QUARTZ_ORE) {
 			return MathHelper.nextInt(random, 2, 5);
 		} else {
-			return this == Blocks.field_23077 ? MathHelper.nextInt(random, 0, 1) : 0;
+			return this == Blocks.NETHER_GOLD_ORE ? MathHelper.nextInt(random, 0, 1) : 0;
 		}
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, serverWorld, pos, stack);
-		if (EnchantmentHelper.getLevel(Enchantments.field_9099, stack) == 0) {
-			int i = this.getExperienceWhenMined(serverWorld.random);
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
+		super.onStacksDropped(state, world, pos, stack);
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
+			int i = this.getExperienceWhenMined(world.random);
 			if (i > 0) {
-				this.dropExperience(serverWorld, pos, i);
+				this.dropExperience(world, pos, i);
 			}
 		}
 	}

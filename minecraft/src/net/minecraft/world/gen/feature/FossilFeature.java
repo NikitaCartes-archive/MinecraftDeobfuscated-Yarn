@@ -43,7 +43,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13236(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockRotation blockRotation = BlockRotation.random(random);
@@ -65,12 +65,12 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int m = 0; m < blockPos2.getX(); m++) {
 			for (int n = 0; n < blockPos2.getZ(); n++) {
-				l = Math.min(l, structureWorldAccess.getTopY(Heightmap.Type.field_13195, blockPos.getX() + m + j, blockPos.getZ() + n + k));
+				l = Math.min(l, structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
 			}
 		}
 
 		int m = Math.max(l - 15 - random.nextInt(10), 10);
-		BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos.add(j, m, k), BlockMirror.field_11302, blockRotation);
+		BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
 		structure.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, 4);

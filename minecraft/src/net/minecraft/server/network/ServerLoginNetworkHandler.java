@@ -39,7 +39,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private final byte[] nonce = new byte[4];
 	private final MinecraftServer server;
 	public final ClientConnection connection;
-	private ServerLoginNetworkHandler.State state = ServerLoginNetworkHandler.State.field_14170;
+	private ServerLoginNetworkHandler.State state = ServerLoginNetworkHandler.State.HELLO;
 	private int loginTicks;
 	private GameProfile profile;
 	private final String serverId = "";
@@ -53,12 +53,12 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	}
 
 	public void tick() {
-		if (this.state == ServerLoginNetworkHandler.State.field_14168) {
+		if (this.state == ServerLoginNetworkHandler.State.READY_TO_ACCEPT) {
 			this.acceptPlayer();
-		} else if (this.state == ServerLoginNetworkHandler.State.field_14171) {
+		} else if (this.state == ServerLoginNetworkHandler.State.DELAY_ACCEPT) {
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity == null) {
-				this.state = ServerLoginNetworkHandler.State.field_14168;
+				this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 				this.server.getPlayerManager().onPlayerConnect(this.connection, this.player);
 				this.player = null;
 			}
@@ -93,7 +93,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		if (text != null) {
 			this.disconnect(text);
 		} else {
-			this.state = ServerLoginNetworkHandler.State.field_14172;
+			this.state = ServerLoginNetworkHandler.State.ACCEPTED;
 			if (this.server.getNetworkCompressionThreshold() >= 0 && !this.connection.isLocal()) {
 				this.connection
 					.send(
@@ -105,7 +105,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			this.connection.send(new LoginSuccessS2CPacket(this.profile));
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity != null) {
-				this.state = ServerLoginNetworkHandler.State.field_14171;
+				this.state = ServerLoginNetworkHandler.State.DELAY_ACCEPT;
 				this.player = this.server.getPlayerManager().createPlayer(this.profile);
 			} else {
 				this.server.getPlayerManager().onPlayerConnect(this.connection, this.server.getPlayerManager().createPlayer(this.profile));
@@ -124,25 +124,25 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 
 	@Override
 	public void onHello(LoginHelloC2SPacket packet) {
-		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14170, "Unexpected hello packet");
+		Validate.validState(this.state == ServerLoginNetworkHandler.State.HELLO, "Unexpected hello packet");
 		this.profile = packet.getProfile();
 		if (this.server.isOnlineMode() && !this.connection.isLocal()) {
-			this.state = ServerLoginNetworkHandler.State.field_14175;
+			this.state = ServerLoginNetworkHandler.State.KEY;
 			this.connection.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic(), this.nonce));
 		} else {
-			this.state = ServerLoginNetworkHandler.State.field_14168;
+			this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 		}
 	}
 
 	@Override
 	public void onKey(LoginKeyC2SPacket packet) {
-		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14175, "Unexpected key packet");
+		Validate.validState(this.state == ServerLoginNetworkHandler.State.KEY, "Unexpected key packet");
 		PrivateKey privateKey = this.server.getKeyPair().getPrivate();
 		if (!Arrays.equals(this.nonce, packet.decryptNonce(privateKey))) {
 			throw new IllegalStateException("Invalid nonce!");
 		} else {
 			this.secretKey = packet.decryptSecretKey(privateKey);
-			this.state = ServerLoginNetworkHandler.State.field_14169;
+			this.state = ServerLoginNetworkHandler.State.AUTHENTICATING;
 			this.connection.setupEncryption(this.secretKey);
 			Thread thread = new Thread("User Authenticator #" + authenticatorThreadId.incrementAndGet()) {
 				public void run() {
@@ -159,11 +159,11 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 						if (ServerLoginNetworkHandler.this.profile != null) {
 							ServerLoginNetworkHandler.LOGGER
 								.info("UUID of player {} is {}", ServerLoginNetworkHandler.this.profile.getName(), ServerLoginNetworkHandler.this.profile.getId());
-							ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.field_14168;
+							ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 						} else if (ServerLoginNetworkHandler.this.server.isSinglePlayer()) {
 							ServerLoginNetworkHandler.LOGGER.warn("Failed to verify username but will let them in anyway!");
 							ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
-							ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.field_14168;
+							ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 						} else {
 							ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.unverified_username"));
 							ServerLoginNetworkHandler.LOGGER.error("Username '{}' tried to join with an invalid session", gameProfile.getName());
@@ -172,7 +172,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 						if (ServerLoginNetworkHandler.this.server.isSinglePlayer()) {
 							ServerLoginNetworkHandler.LOGGER.warn("Authentication servers are down but will let them in anyway!");
 							ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
-							ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.field_14168;
+							ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 						} else {
 							ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.authservers_down"));
 							ServerLoginNetworkHandler.LOGGER.error("Couldn't verify username because servers are unavailable");
@@ -204,12 +204,12 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	}
 
 	static enum State {
-		field_14170,
-		field_14175,
-		field_14169,
-		field_14173,
-		field_14168,
-		field_14171,
-		field_14172;
+		HELLO,
+		KEY,
+		AUTHENTICATING,
+		NEGOTIATING,
+		READY_TO_ACCEPT,
+		DELAY_ACCEPT,
+		ACCEPTED;
 	}
 }

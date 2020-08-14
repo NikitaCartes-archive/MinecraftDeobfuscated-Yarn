@@ -13,11 +13,11 @@ public class UnderwaterDiskFeature extends DiskFeature {
 	}
 
 	@Override
-	public boolean method_13005(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig
 	) {
-		return !structureWorldAccess.getFluidState(blockPos).isIn(FluidTags.field_15517)
+		return !structureWorldAccess.getFluidState(blockPos).isIn(FluidTags.WATER)
 			? false
-			: super.method_13005(structureWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig);
+			: super.generate(structureWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig);
 	}
 }

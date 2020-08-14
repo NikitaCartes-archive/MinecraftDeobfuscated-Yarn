@@ -61,19 +61,17 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		BlockPos blockPos = new BlockPos(x, y, z);
 		FluidState fluidState = world.getFluidState(blockPos);
 		BlockState blockState = world.getBlockState(blockPos);
-		if (fluidState.isEmpty() && blockState.canPathfindThrough(world, blockPos.method_10074(), NavigationType.field_48) && blockState.isAir()) {
-			return PathNodeType.field_16;
+		if (fluidState.isEmpty() && blockState.canPathfindThrough(world, blockPos.down(), NavigationType.WATER) && blockState.isAir()) {
+			return PathNodeType.BREACH;
 		} else {
-			return fluidState.isIn(FluidTags.field_15517) && blockState.canPathfindThrough(world, blockPos, NavigationType.field_48)
-				? PathNodeType.field_18
-				: PathNodeType.field_22;
+			return fluidState.isIn(FluidTags.WATER) && blockState.canPathfindThrough(world, blockPos, NavigationType.WATER) ? PathNodeType.WATER : PathNodeType.BLOCKED;
 		}
 	}
 
 	@Nullable
 	private PathNode getPathNodeInWater(int x, int y, int z) {
 		PathNodeType pathNodeType = this.getNodeType(x, y, z);
-		return (!this.canJumpOutOfWater || pathNodeType != PathNodeType.field_16) && pathNodeType != PathNodeType.field_18 ? null : this.getNode(x, y, z);
+		return (!this.canJumpOutOfWater || pathNodeType != PathNodeType.BREACH) && pathNodeType != PathNodeType.WATER ? null : this.getNode(x, y, z);
 	}
 
 	@Nullable
@@ -91,7 +89,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 			}
 		}
 
-		return pathNodeType == PathNodeType.field_7 ? pathNode : pathNode;
+		return pathNodeType == PathNodeType.OPEN ? pathNode : pathNode;
 	}
 
 	private PathNodeType getNodeType(int x, int y, int z) {
@@ -102,18 +100,18 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 				for (int k = z; k < z + this.entityBlockZSize; k++) {
 					FluidState fluidState = this.cachedWorld.getFluidState(mutable.set(i, j, k));
 					BlockState blockState = this.cachedWorld.getBlockState(mutable.set(i, j, k));
-					if (fluidState.isEmpty() && blockState.canPathfindThrough(this.cachedWorld, mutable.method_10074(), NavigationType.field_48) && blockState.isAir()) {
-						return PathNodeType.field_16;
+					if (fluidState.isEmpty() && blockState.canPathfindThrough(this.cachedWorld, mutable.down(), NavigationType.WATER) && blockState.isAir()) {
+						return PathNodeType.BREACH;
 					}
 
-					if (!fluidState.isIn(FluidTags.field_15517)) {
-						return PathNodeType.field_22;
+					if (!fluidState.isIn(FluidTags.WATER)) {
+						return PathNodeType.BLOCKED;
 					}
 				}
 			}
 		}
 
 		BlockState blockState2 = this.cachedWorld.getBlockState(mutable);
-		return blockState2.canPathfindThrough(this.cachedWorld, mutable, NavigationType.field_48) ? PathNodeType.field_18 : PathNodeType.field_22;
+		return blockState2.canPathfindThrough(this.cachedWorld, mutable, NavigationType.WATER) ? PathNodeType.WATER : PathNodeType.BLOCKED;
 	}
 }

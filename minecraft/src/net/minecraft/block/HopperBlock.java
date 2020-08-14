@@ -49,21 +49,21 @@ public class HopperBlock extends BlockWithEntity {
 
 	public HopperBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11033).with(ENABLED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.DOWN).with(ENABLED, Boolean.valueOf(true)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction)state.get(FACING)) {
-			case field_11033:
+			case DOWN:
 				return DOWN_SHAPE;
-			case field_11043:
+			case NORTH:
 				return NORTH_SHAPE;
-			case field_11035:
+			case SOUTH:
 				return SOUTH_SHAPE;
-			case field_11039:
+			case WEST:
 				return WEST_SHAPE;
-			case field_11034:
+			case EAST:
 				return EAST_SHAPE;
 			default:
 				return DEFAULT_SHAPE;
@@ -73,15 +73,15 @@ public class HopperBlock extends BlockWithEntity {
 	@Override
 	public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
 		switch ((Direction)state.get(FACING)) {
-			case field_11033:
+			case DOWN:
 				return DOWN_RAY_TRACE_SHAPE;
-			case field_11043:
+			case NORTH:
 				return NORTH_RAY_TRACE_SHAPE;
-			case field_11035:
+			case SOUTH:
 				return SOUTH_RAY_TRACE_SHAPE;
-			case field_11039:
+			case WEST:
 				return WEST_RAY_TRACE_SHAPE;
-			case field_11034:
+			case EAST:
 				return EAST_RAY_TRACE_SHAPE;
 			default:
 				return Hopper.INSIDE_SHAPE;
@@ -91,9 +91,7 @@ public class HopperBlock extends BlockWithEntity {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		Direction direction = ctx.getSide().getOpposite();
-		return this.getDefaultState()
-			.with(FACING, direction.getAxis() == Direction.Axis.field_11052 ? Direction.field_11033 : direction)
-			.with(ENABLED, Boolean.valueOf(true));
+		return this.getDefaultState().with(FACING, direction.getAxis() == Direction.Axis.Y ? Direction.DOWN : direction).with(ENABLED, Boolean.valueOf(true));
 	}
 
 	@Override
@@ -126,7 +124,7 @@ public class HopperBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof HopperBlockEntity) {
 				player.openHandledScreen((HopperBlockEntity)blockEntity);
-				player.incrementStat(Stats.field_15366);
+				player.incrementStat(Stats.INSPECT_HOPPER);
 			}
 
 			return ActionResult.CONSUME;
@@ -160,7 +158,7 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override

@@ -19,11 +19,11 @@ public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVill
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "zombie_villager"));
 	}
 
-	public Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {
+	public Identifier getTexture(ZombieVillagerEntity zombieVillagerEntity) {
 		return TEXTURE;
 	}
 
-	protected boolean method_25452(ZombieVillagerEntity zombieVillagerEntity) {
+	protected boolean isShaking(ZombieVillagerEntity zombieVillagerEntity) {
 		return zombieVillagerEntity.isConverting();
 	}
 }

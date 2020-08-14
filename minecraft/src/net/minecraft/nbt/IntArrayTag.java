@@ -12,7 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class IntArrayTag extends AbstractListTag<IntTag> {
 	public static final TagReader<IntArrayTag> READER = new TagReader<IntArrayTag>() {
-		public IntArrayTag method_23246(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public IntArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(192L);
 			int j = dataInput.readInt();
 			positionTracker.add(32L * (long)j);
@@ -90,7 +90,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 		return stringBuilder.append(']').toString();
 	}
 
-	public IntArrayTag method_10591() {
+	public IntArrayTag copy() {
 		int[] is = new int[this.value.length];
 		System.arraycopy(this.value, 0, is, 0, this.value.length);
 		return new IntArrayTag(is);
@@ -128,17 +128,17 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 		return this.value.length;
 	}
 
-	public IntTag method_10589(int i) {
+	public IntTag get(int i) {
 		return IntTag.of(this.value[i]);
 	}
 
-	public IntTag method_17806(int i, IntTag intTag) {
+	public IntTag set(int i, IntTag intTag) {
 		int j = this.value[i];
 		this.value[i] = intTag.getInt();
 		return IntTag.of(j);
 	}
 
-	public void method_17808(int i, IntTag intTag) {
+	public void add(int i, IntTag intTag) {
 		this.value = ArrayUtils.add(this.value, i, intTag.getInt());
 	}
 
@@ -162,7 +162,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 		}
 	}
 
-	public IntTag method_17807(int i) {
+	public IntTag remove(int i) {
 		int j = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
 		return IntTag.of(j);

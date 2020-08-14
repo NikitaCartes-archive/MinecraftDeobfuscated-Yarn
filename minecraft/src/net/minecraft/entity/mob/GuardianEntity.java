@@ -61,7 +61,7 @@ public class GuardianEntity extends HostileEntity {
 	public GuardianEntity(EntityType<? extends GuardianEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 10;
-		this.setPathfindingPenalty(PathNodeType.field_18, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 		this.moveControl = new GuardianEntity.GuardianMoveControl(this);
 		this.spikesExtension = this.random.nextFloat();
 		this.prevSpikesExtension = this.spikesExtension;
@@ -77,17 +77,17 @@ public class GuardianEntity extends HostileEntity {
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, GuardianEntity.class, 12.0F, 0.01F));
 		this.goalSelector.add(9, new LookAroundGoal(this));
-		this.wanderGoal.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
-		goToWalkTargetGoal.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.wanderGoal.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+		goToWalkTargetGoal.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		this.targetSelector.add(1, new FollowTargetGoal(this, LivingEntity.class, 10, true, false, new GuardianEntity.GuardianTargetPredicate(this)));
 	}
 
 	public static DefaultAttributeContainer.Builder createGuardianAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23721, 6.0)
-			.add(EntityAttributes.field_23719, 0.5)
-			.add(EntityAttributes.field_23717, 16.0)
-			.add(EntityAttributes.field_23716, 30.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0);
 	}
 
 	@Override
@@ -169,17 +169,17 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14714 : SoundEvents.field_14968;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_GUARDIAN_AMBIENT : SoundEvents.ENTITY_GUARDIAN_AMBIENT_LAND;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14679 : SoundEvents.field_14758;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_GUARDIAN_HURT : SoundEvents.ENTITY_GUARDIAN_HURT_LAND;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15138 : SoundEvents.field_15232;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_GUARDIAN_DEATH : SoundEvents.ENTITY_GUARDIAN_DEATH_LAND;
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return world.getFluidState(pos).isIn(FluidTags.field_15517) ? 10.0F + world.getBrightness(pos) - 0.5F : super.getPathfindingFavor(pos, world);
+		return world.getFluidState(pos).isIn(FluidTags.WATER) ? 10.0F + world.getBrightness(pos) - 0.5F : super.getPathfindingFavor(pos, world);
 	}
 
 	@Override
@@ -209,7 +209,7 @@ public class GuardianEntity extends HostileEntity {
 						this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
-					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(this.getBlockPos().method_10074(), this);
+					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(this.getBlockPos().down(), this);
 				} else if (this.areSpikesRetracted()) {
 					if (this.spikesExtensionRate < 0.5F) {
 						this.spikesExtensionRate = 4.0F;
@@ -236,7 +236,7 @@ public class GuardianEntity extends HostileEntity {
 					for (int i = 0; i < 2; i++) {
 						this.world
 							.addParticle(
-								ParticleTypes.field_11247,
+								ParticleTypes.BUBBLE,
 								this.getParticleX(0.5) - vec3d.x * 1.5,
 								this.getRandomBodyY() - vec3d.y * 1.5,
 								this.getParticleZ(0.5) - vec3d.z * 1.5,
@@ -268,7 +268,7 @@ public class GuardianEntity extends HostileEntity {
 
 						while (j < h) {
 							j += 1.8 - d + this.random.nextDouble() * (1.7 - d);
-							this.world.addParticle(ParticleTypes.field_11247, this.getX() + e * j, this.getEyeY() + f * j, this.getZ() + g * j, 0.0, 0.0, 0.0);
+							this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + e * j, this.getEyeY() + f * j, this.getZ() + g * j, 0.0, 0.0, 0.0);
 						}
 					}
 				}
@@ -294,7 +294,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	protected SoundEvent getFlopSound() {
-		return SoundEvents.field_14584;
+		return SoundEvents.ENTITY_GUARDIAN_FLOP;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -318,8 +318,8 @@ public class GuardianEntity extends HostileEntity {
 
 	public static boolean canSpawn(EntityType<? extends GuardianEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return (random.nextInt(20) == 0 || !world.isSkyVisibleAllowingSea(pos))
-			&& world.getDifficulty() != Difficulty.field_5801
-			&& (spawnReason == SpawnReason.field_16469 || world.getFluidState(pos).isIn(FluidTags.field_15517));
+			&& world.getDifficulty() != Difficulty.PEACEFUL
+			&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
 	}
 
 	@Override
@@ -347,7 +347,7 @@ public class GuardianEntity extends HostileEntity {
 	public void travel(Vec3d movementInput) {
 		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
 			this.updateVelocity(0.1F, movementInput);
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (!this.areSpikesRetracted() && this.getTarget() == null) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
@@ -365,7 +365,7 @@ public class GuardianEntity extends HostileEntity {
 		public FireBeamGoal(GuardianEntity guardian) {
 			this.guardian = guardian;
 			this.elder = guardian instanceof ElderGuardianEntity;
-			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
 		@Override
@@ -410,7 +410,7 @@ public class GuardianEntity extends HostileEntity {
 					}
 				} else if (this.beamTicks >= this.guardian.getWarmupTime()) {
 					float f = 1.0F;
-					if (this.guardian.world.getDifficulty() == Difficulty.field_5807) {
+					if (this.guardian.world.getDifficulty() == Difficulty.HARD) {
 						f += 2.0F;
 					}
 
@@ -419,7 +419,7 @@ public class GuardianEntity extends HostileEntity {
 					}
 
 					livingEntity.damage(DamageSource.magic(this.guardian, this.guardian), f);
-					livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.getAttributeValue(EntityAttributes.field_23721));
+					livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
 					this.guardian.setTarget(null);
 				}
 
@@ -438,7 +438,7 @@ public class GuardianEntity extends HostileEntity {
 
 		@Override
 		public void tick() {
-			if (this.state == MoveControl.State.field_6378 && !this.guardian.getNavigation().isIdle()) {
+			if (this.state == MoveControl.State.MOVE_TO && !this.guardian.getNavigation().isIdle()) {
 				Vec3d vec3d = new Vec3d(this.targetX - this.guardian.getX(), this.targetY - this.guardian.getY(), this.targetZ - this.guardian.getZ());
 				double d = vec3d.length();
 				double e = vec3d.x / d;
@@ -447,7 +447,7 @@ public class GuardianEntity extends HostileEntity {
 				float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) - 90.0F;
 				this.guardian.yaw = this.changeAngle(this.guardian.yaw, h, 90.0F);
 				this.guardian.bodyYaw = this.guardian.yaw;
-				float i = (float)(this.speed * this.guardian.getAttributeValue(EntityAttributes.field_23719));
+				float i = (float)(this.speed * this.guardian.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				float j = MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i);
 				this.guardian.setMovementSpeed(j);
 				double k = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.5) * 0.05;
@@ -484,7 +484,7 @@ public class GuardianEntity extends HostileEntity {
 			this.owner = owner;
 		}
 
-		public boolean method_7064(@Nullable LivingEntity livingEntity) {
+		public boolean test(@Nullable LivingEntity livingEntity) {
 			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity) && livingEntity.squaredDistanceTo(this.owner) > 9.0;
 		}
 	}

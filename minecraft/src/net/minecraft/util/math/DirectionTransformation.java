@@ -13,54 +13,54 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 
 public enum DirectionTransformation implements StringIdentifiable {
-	field_23292("identity", AxisTransformation.field_23362, false, false, false),
-	field_23299("rot_180_face_xy", AxisTransformation.field_23362, true, true, false),
-	field_23300("rot_180_face_xz", AxisTransformation.field_23362, true, false, true),
-	field_23301("rot_180_face_yz", AxisTransformation.field_23362, false, true, true),
-	field_23302("rot_120_nnn", AxisTransformation.field_23365, false, false, false),
-	field_23303("rot_120_nnp", AxisTransformation.field_23366, true, false, true),
-	field_23304("rot_120_npn", AxisTransformation.field_23366, false, true, true),
-	field_23305("rot_120_npp", AxisTransformation.field_23365, true, false, true),
-	field_23306("rot_120_pnn", AxisTransformation.field_23366, true, true, false),
-	field_23307("rot_120_pnp", AxisTransformation.field_23365, true, true, false),
-	field_23308("rot_120_ppn", AxisTransformation.field_23365, false, true, true),
-	field_23309("rot_120_ppp", AxisTransformation.field_23366, false, false, false),
-	field_23310("rot_180_edge_xy_neg", AxisTransformation.field_23363, true, true, true),
-	field_23311("rot_180_edge_xy_pos", AxisTransformation.field_23363, false, false, true),
-	field_23312("rot_180_edge_xz_neg", AxisTransformation.field_23367, true, true, true),
-	field_23313("rot_180_edge_xz_pos", AxisTransformation.field_23367, false, true, false),
-	field_23314("rot_180_edge_yz_neg", AxisTransformation.field_23364, true, true, true),
-	field_23315("rot_180_edge_yz_pos", AxisTransformation.field_23364, true, false, false),
-	field_23316("rot_90_x_neg", AxisTransformation.field_23364, false, false, true),
-	field_23317("rot_90_x_pos", AxisTransformation.field_23364, false, true, false),
-	field_23318("rot_90_y_neg", AxisTransformation.field_23367, true, false, false),
-	field_23319("rot_90_y_pos", AxisTransformation.field_23367, false, false, true),
-	field_23320("rot_90_z_neg", AxisTransformation.field_23363, false, true, false),
-	field_23321("rot_90_z_pos", AxisTransformation.field_23363, true, false, false),
-	field_23322("inversion", AxisTransformation.field_23362, true, true, true),
-	field_23323("invert_x", AxisTransformation.field_23362, true, false, false),
-	field_23266("invert_y", AxisTransformation.field_23362, false, true, false),
-	field_23267("invert_z", AxisTransformation.field_23362, false, false, true),
-	field_23268("rot_60_ref_nnn", AxisTransformation.field_23366, true, true, true),
-	field_23269("rot_60_ref_nnp", AxisTransformation.field_23365, true, false, false),
-	field_23270("rot_60_ref_npn", AxisTransformation.field_23365, false, false, true),
-	field_23271("rot_60_ref_npp", AxisTransformation.field_23366, false, false, true),
-	field_23272("rot_60_ref_pnn", AxisTransformation.field_23365, false, true, false),
-	field_23273("rot_60_ref_pnp", AxisTransformation.field_23366, true, false, false),
-	field_23274("rot_60_ref_ppn", AxisTransformation.field_23366, false, true, false),
-	field_23275("rot_60_ref_ppp", AxisTransformation.field_23365, true, true, true),
-	field_23276("swap_xy", AxisTransformation.field_23363, false, false, false),
-	field_23277("swap_yz", AxisTransformation.field_23364, false, false, false),
-	field_23278("swap_xz", AxisTransformation.field_23367, false, false, false),
-	field_23279("swap_neg_xy", AxisTransformation.field_23363, true, true, false),
-	field_23280("swap_neg_yz", AxisTransformation.field_23364, false, true, true),
-	field_23281("swap_neg_xz", AxisTransformation.field_23367, true, false, true),
-	field_23282("rot_90_ref_x_neg", AxisTransformation.field_23364, true, false, true),
-	field_23283("rot_90_ref_x_pos", AxisTransformation.field_23364, true, true, false),
-	field_23284("rot_90_ref_y_neg", AxisTransformation.field_23367, true, true, false),
-	field_23285("rot_90_ref_y_pos", AxisTransformation.field_23367, false, true, true),
-	field_23286("rot_90_ref_z_neg", AxisTransformation.field_23363, false, true, true),
-	field_23287("rot_90_ref_z_pos", AxisTransformation.field_23363, true, false, true);
+	IDENTITY("identity", AxisTransformation.P123, false, false, false),
+	ROT_180_FACE_XY("rot_180_face_xy", AxisTransformation.P123, true, true, false),
+	ROT_180_FACE_XZ("rot_180_face_xz", AxisTransformation.P123, true, false, true),
+	ROT_180_FACE_YZ("rot_180_face_yz", AxisTransformation.P123, false, true, true),
+	ROT_120_NNN("rot_120_nnn", AxisTransformation.P231, false, false, false),
+	ROT_120_NNP("rot_120_nnp", AxisTransformation.P312, true, false, true),
+	ROT_120_NPN("rot_120_npn", AxisTransformation.P312, false, true, true),
+	ROT_120_NPP("rot_120_npp", AxisTransformation.P231, true, false, true),
+	ROT_120_PNN("rot_120_pnn", AxisTransformation.P312, true, true, false),
+	ROT_120_PNP("rot_120_pnp", AxisTransformation.P231, true, true, false),
+	ROT_120_PPN("rot_120_ppn", AxisTransformation.P231, false, true, true),
+	ROT_120_PPP("rot_120_ppp", AxisTransformation.P312, false, false, false),
+	ROT_180_EDGE_XY_NEG("rot_180_edge_xy_neg", AxisTransformation.P213, true, true, true),
+	ROT_180_EDGE_XY_POS("rot_180_edge_xy_pos", AxisTransformation.P213, false, false, true),
+	ROT_180_EDGE_XZ_NEG("rot_180_edge_xz_neg", AxisTransformation.P321, true, true, true),
+	ROT_180_EDGE_XZ_POS("rot_180_edge_xz_pos", AxisTransformation.P321, false, true, false),
+	ROT_180_EDGE_YZ_NEG("rot_180_edge_yz_neg", AxisTransformation.P132, true, true, true),
+	ROT_180_EDGE_YZ_POS("rot_180_edge_yz_pos", AxisTransformation.P132, true, false, false),
+	ROT_90_X_NEG("rot_90_x_neg", AxisTransformation.P132, false, false, true),
+	ROT_90_X_POS("rot_90_x_pos", AxisTransformation.P132, false, true, false),
+	ROT_90_Y_NEG("rot_90_y_neg", AxisTransformation.P321, true, false, false),
+	ROT_90_Y_POS("rot_90_y_pos", AxisTransformation.P321, false, false, true),
+	ROT_90_Z_NEG("rot_90_z_neg", AxisTransformation.P213, false, true, false),
+	ROT_90_Z_POS("rot_90_z_pos", AxisTransformation.P213, true, false, false),
+	INVERSION("inversion", AxisTransformation.P123, true, true, true),
+	INVERT_X("invert_x", AxisTransformation.P123, true, false, false),
+	INVERT_Y("invert_y", AxisTransformation.P123, false, true, false),
+	INVERT_Z("invert_z", AxisTransformation.P123, false, false, true),
+	ROT_60_REF_NNN("rot_60_ref_nnn", AxisTransformation.P312, true, true, true),
+	ROT_60_REF_NNP("rot_60_ref_nnp", AxisTransformation.P231, true, false, false),
+	ROT_60_REF_NPN("rot_60_ref_npn", AxisTransformation.P231, false, false, true),
+	ROT_60_REF_NPP("rot_60_ref_npp", AxisTransformation.P312, false, false, true),
+	ROT_60_REF_PNN("rot_60_ref_pnn", AxisTransformation.P231, false, true, false),
+	ROT_60_REF_PNP("rot_60_ref_pnp", AxisTransformation.P312, true, false, false),
+	ROT_60_REF_PPN("rot_60_ref_ppn", AxisTransformation.P312, false, true, false),
+	ROT_60_REF_PPP("rot_60_ref_ppp", AxisTransformation.P231, true, true, true),
+	SWAP_XY("swap_xy", AxisTransformation.P213, false, false, false),
+	SWAP_YZ("swap_yz", AxisTransformation.P132, false, false, false),
+	SWAP_XZ("swap_xz", AxisTransformation.P321, false, false, false),
+	SWAP_NEG_XY("swap_neg_xy", AxisTransformation.P213, true, true, false),
+	SWAP_NEG_YZ("swap_neg_yz", AxisTransformation.P132, false, true, true),
+	SWAP_NEG_XZ("swap_neg_xz", AxisTransformation.P321, true, false, true),
+	ROT_90_REF_X_NEG("rot_90_ref_x_neg", AxisTransformation.P132, true, false, true),
+	ROT_90_REF_X_POS("rot_90_ref_x_pos", AxisTransformation.P132, true, true, false),
+	ROT_90_REF_Y_NEG("rot_90_ref_y_neg", AxisTransformation.P321, true, true, false),
+	ROT_90_REF_Y_POS("rot_90_ref_y_pos", AxisTransformation.P321, false, true, true),
+	ROT_90_REF_Z_NEG("rot_90_ref_z_neg", AxisTransformation.P213, false, true, true),
+	ROT_90_REF_Z_POS("rot_90_ref_z_pos", AxisTransformation.P213, true, false, true);
 
 	private final Matrix3f matrix;
 	private final String name;
@@ -104,7 +104,7 @@ public enum DirectionTransformation implements StringIdentifiable {
 	private static final DirectionTransformation[] INVERSES = (DirectionTransformation[])Arrays.stream(values())
 		.map(
 			directionTransformation -> (DirectionTransformation)Arrays.stream(values())
-					.filter(directionTransformation2 -> directionTransformation.prepend(directionTransformation2) == field_23292)
+					.filter(directionTransformation2 -> directionTransformation.prepend(directionTransformation2) == IDENTITY)
 					.findAny()
 					.get()
 		)
@@ -159,11 +159,11 @@ public enum DirectionTransformation implements StringIdentifiable {
 
 	public boolean shouldFlipDirection(Direction.Axis axis) {
 		switch (axis) {
-			case field_11048:
+			case X:
 				return this.flipX;
-			case field_11052:
+			case Y:
 				return this.flipY;
-			case field_11051:
+			case Z:
 			default:
 				return this.flipZ;
 		}

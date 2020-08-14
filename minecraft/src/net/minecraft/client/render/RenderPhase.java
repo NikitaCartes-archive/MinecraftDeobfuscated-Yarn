@@ -23,37 +23,31 @@ public abstract class RenderPhase {
 	});
 	protected static final RenderPhase.Transparency ADDITIVE_TRANSPARENCY = new RenderPhase.Transparency("additive_transparency", () -> {
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.field_22534, GlStateManager.DstFactor.field_22518);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
 	}, () -> {
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
 	});
 	protected static final RenderPhase.Transparency LIGHTNING_TRANSPARENCY = new RenderPhase.Transparency("lightning_transparency", () -> {
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22518);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
 	}, () -> {
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
 	});
-	protected static final RenderPhase.Transparency GLINT_TRANSPARENCY = new RenderPhase.Transparency(
-		"glint_transparency",
-		() -> {
-			RenderSystem.enableBlend();
-			RenderSystem.blendFuncSeparate(
-				GlStateManager.SrcFactor.field_22543, GlStateManager.DstFactor.field_22518, GlStateManager.SrcFactor.field_22544, GlStateManager.DstFactor.field_22518
-			);
-		},
-		() -> {
-			RenderSystem.disableBlend();
-			RenderSystem.defaultBlendFunc();
-		}
-	);
+	protected static final RenderPhase.Transparency GLINT_TRANSPARENCY = new RenderPhase.Transparency("glint_transparency", () -> {
+		RenderSystem.enableBlend();
+		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_COLOR, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
+	}, () -> {
+		RenderSystem.disableBlend();
+		RenderSystem.defaultBlendFunc();
+	});
 	protected static final RenderPhase.Transparency CRUMBLING_TRANSPARENCY = new RenderPhase.Transparency(
 		"crumbling_transparency",
 		() -> {
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				GlStateManager.SrcFactor.field_22533, GlStateManager.DstFactor.field_22526, GlStateManager.SrcFactor.field_22534, GlStateManager.DstFactor.field_22527
+				GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 			);
 		},
 		() -> {
@@ -66,7 +60,10 @@ public abstract class RenderPhase {
 		() -> {
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523, GlStateManager.SrcFactor.field_22534, GlStateManager.DstFactor.field_22523
+				GlStateManager.SrcFactor.SRC_ALPHA,
+				GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA,
+				GlStateManager.SrcFactor.ONE,
+				GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
 			);
 		},
 		() -> {

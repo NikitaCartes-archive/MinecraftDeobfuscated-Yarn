@@ -82,7 +82,7 @@ public class LeavesBlock extends Block {
 	}
 
 	private static int getDistanceFromLog(BlockState state) {
-		if (BlockTags.field_15475.contains(state.getBlock())) {
+		if (BlockTags.LOGS.contains(state.getBlock())) {
 			return 0;
 		} else {
 			return state.getBlock() instanceof LeavesBlock ? (Integer)state.get(DISTANCE) : 7;
@@ -94,13 +94,13 @@ public class LeavesBlock extends Block {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (world.hasRain(pos.up())) {
 			if (random.nextInt(15) == 1) {
-				BlockPos blockPos = pos.method_10074();
+				BlockPos blockPos = pos.down();
 				BlockState blockState = world.getBlockState(blockPos);
-				if (!blockState.isOpaque() || !blockState.isSideSolidFullSquare(world, blockPos, Direction.field_11036)) {
+				if (!blockState.isOpaque() || !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
 					double d = (double)pos.getX() + random.nextDouble();
 					double e = (double)pos.getY() - 0.05;
 					double f = (double)pos.getZ() + random.nextDouble();
-					world.addParticle(ParticleTypes.field_11232, d, e, f, 0.0, 0.0, 0.0);
+					world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 		}

@@ -99,7 +99,7 @@ public class ShipwreckGenerator {
 			Structure structure = manager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirror(BlockMirror.field_11302)
+				.setMirror(BlockMirror.NONE)
 				.setPosition(ShipwreckGenerator.field_14536)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);
@@ -108,11 +108,11 @@ public class ShipwreckGenerator {
 		@Override
 		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
 			if ("map_chest".equals(metadata)) {
-				LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, pos.method_10074(), LootTables.field_841);
+				LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, pos.down(), LootTables.SHIPWRECK_MAP_CHEST);
 			} else if ("treasure_chest".equals(metadata)) {
-				LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, pos.method_10074(), LootTables.field_665);
+				LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, pos.down(), LootTables.SHIPWRECK_TREASURE_CHEST);
 			} else if ("supply_chest".equals(metadata)) {
-				LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, pos.method_10074(), LootTables.field_880);
+				LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, pos.down(), LootTables.SHIPWRECK_SUPPLY_CHEST);
 			}
 		}
 
@@ -129,7 +129,7 @@ public class ShipwreckGenerator {
 			int i = 256;
 			int j = 0;
 			BlockPos blockPos2 = this.structure.getSize();
-			Heightmap.Type type = this.grounded ? Heightmap.Type.field_13194 : Heightmap.Type.field_13195;
+			Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
 			int k = blockPos2.getX() * blockPos2.getZ();
 			if (k == 0) {
 				j = structureWorldAccess.getTopY(type, this.pos.getX(), this.pos.getZ());

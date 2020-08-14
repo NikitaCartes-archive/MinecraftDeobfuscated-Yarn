@@ -42,7 +42,7 @@ public class ItemEntity extends Entity {
 	}
 
 	public ItemEntity(World world, double x, double y, double z) {
-		this(EntityType.field_6052, world);
+		this(EntityType.ITEM, world);
 		this.updatePosition(x, y, z);
 		this.yaw = this.random.nextFloat() * 360.0F;
 		this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
@@ -87,9 +87,9 @@ public class ItemEntity extends Entity {
 			this.prevZ = this.getZ();
 			Vec3d vec3d = this.getVelocity();
 			float f = this.getStandingEyeHeight() - 0.11111111F;
-			if (this.isTouchingWater() && this.getFluidHeight(FluidTags.field_15517) > (double)f) {
+			if (this.isTouchingWater() && this.getFluidHeight(FluidTags.WATER) > (double)f) {
 				this.applyBuoyancy();
-			} else if (this.isInLava() && this.getFluidHeight(FluidTags.field_15518) > (double)f) {
+			} else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > (double)f) {
 				this.method_24348();
 			} else if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
@@ -105,7 +105,7 @@ public class ItemEntity extends Entity {
 			}
 
 			if (!this.onGround || squaredHorizontalLength(this.getVelocity()) > 1.0E-5F || (this.age + this.getEntityId()) % 4 == 0) {
-				this.move(MovementType.field_6308, this.getVelocity());
+				this.move(MovementType.SELF, this.getVelocity());
 				float g = 0.98F;
 				if (this.onGround) {
 					g = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
@@ -125,8 +125,8 @@ public class ItemEntity extends Entity {
 				|| MathHelper.floor(this.prevZ) != MathHelper.floor(this.getZ());
 			int i = bl ? 2 : 40;
 			if (this.age % i == 0) {
-				if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.field_15518) && !this.isFireImmune()) {
-					this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+				if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA) && !this.isFireImmune()) {
+					this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
 				if (!this.world.isClient && this.canMerge()) {
@@ -234,7 +234,7 @@ public class ItemEntity extends Entity {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.field_8137 && source.isExplosive()) {
+		} else if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.NETHER_STAR && source.isExplosive()) {
 			return false;
 		} else if (!this.getStack().getItem().damage(source)) {
 			return false;
@@ -303,7 +303,7 @@ public class ItemEntity extends Entity {
 					itemStack.setCount(i);
 				}
 
-				player.increaseStat(Stats.field_15392.getOrCreateStat(item), i);
+				player.increaseStat(Stats.PICKED_UP.getOrCreateStat(item), i);
 				player.method_29499(this);
 			}
 		}

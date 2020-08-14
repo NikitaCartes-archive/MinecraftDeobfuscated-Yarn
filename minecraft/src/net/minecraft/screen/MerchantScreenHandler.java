@@ -32,7 +32,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 	}
 
 	public MerchantScreenHandler(int syncId, PlayerInventory playerInventory, Trader trader) {
-		super(ScreenHandlerType.field_17340, syncId);
+		super(ScreenHandlerType.MERCHANT, syncId);
 		this.trader = trader;
 		this.traderInventory = new TraderInventory(trader);
 		this.addSlot(new Slot(this.traderInventory, 0, 136, 37));
@@ -155,7 +155,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 	private void playYesSound() {
 		if (!this.trader.getTraderWorld().isClient) {
 			Entity entity = (Entity)this.trader;
-			this.trader.getTraderWorld().playSound(entity.getX(), entity.getY(), entity.getZ(), this.trader.getYesSound(), SoundCategory.field_15254, 1.0F, 1.0F, false);
+			this.trader.getTraderWorld().playSound(entity.getX(), entity.getY(), entity.getZ(), this.trader.getYesSound(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
 		}
 	}
 

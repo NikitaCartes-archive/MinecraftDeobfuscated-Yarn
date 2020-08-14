@@ -15,23 +15,23 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 	private static final ImmutableList<Block> field_24132 = ImmutableList.of(
-		Blocks.field_10164,
-		Blocks.field_9987,
-		Blocks.field_10092,
-		Blocks.field_10114,
-		Blocks.field_10266,
-		Blocks.field_10364,
-		Blocks.field_10159,
-		Blocks.field_9974,
-		Blocks.field_10034,
-		Blocks.field_10260
+		Blocks.LAVA,
+		Blocks.BEDROCK,
+		Blocks.MAGMA_BLOCK,
+		Blocks.SOUL_SAND,
+		Blocks.NETHER_BRICKS,
+		Blocks.NETHER_BRICK_FENCE,
+		Blocks.NETHER_BRICK_STAIRS,
+		Blocks.NETHER_WART,
+		Blocks.CHEST,
+		Blocks.SPAWNER
 	);
 
 	public BasaltColumnsFeature(Codec<BasaltColumnsFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean method_27097(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess,
 		ChunkGenerator chunkGenerator,
 		Random random,
@@ -76,15 +76,15 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 
 				for (BlockPos.Mutable mutable = blockPos3.mutableCopy(); m >= 0; m--) {
 					if (method_27095(worldAccess, i, mutable)) {
-						this.setBlockState(worldAccess, mutable, Blocks.field_22091.getDefaultState());
-						mutable.move(Direction.field_11036);
+						this.setBlockState(worldAccess, mutable, Blocks.BASALT.getDefaultState());
+						mutable.move(Direction.UP);
 						bl = true;
 					} else {
-						if (!worldAccess.getBlockState(mutable).isOf(Blocks.field_22091)) {
+						if (!worldAccess.getBlockState(mutable).isOf(Blocks.BASALT)) {
 							break;
 						}
 
-						mutable.move(Direction.field_11036);
+						mutable.move(Direction.UP);
 					}
 				}
 			}
@@ -101,7 +101,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 				return mutable;
 			}
 
-			mutable.move(Direction.field_11033);
+			mutable.move(Direction.DOWN);
 		}
 
 		return null;
@@ -111,8 +111,8 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		if (!method_27095(worldAccess, i, mutable)) {
 			return false;
 		} else {
-			BlockState blockState = worldAccess.getBlockState(mutable.move(Direction.field_11033));
-			mutable.move(Direction.field_11036);
+			BlockState blockState = worldAccess.getBlockState(mutable.move(Direction.DOWN));
+			mutable.move(Direction.UP);
 			return !blockState.isAir() && !field_24132.contains(blockState.getBlock());
 		}
 	}
@@ -130,7 +130,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 				return mutable;
 			}
 
-			mutable.move(Direction.field_11036);
+			mutable.move(Direction.UP);
 		}
 
 		return null;
@@ -138,6 +138,6 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 
 	private static boolean method_27095(WorldAccess worldAccess, int i, BlockPos blockPos) {
 		BlockState blockState = worldAccess.getBlockState(blockPos);
-		return blockState.isAir() || blockState.isOf(Blocks.field_10164) && blockPos.getY() <= i;
+		return blockState.isAir() || blockState.isOf(Blocks.LAVA) && blockPos.getY() <= i;
 	}
 }

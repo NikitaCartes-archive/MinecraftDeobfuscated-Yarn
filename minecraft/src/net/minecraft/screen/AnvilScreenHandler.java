@@ -32,13 +32,13 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 	}
 
 	public AnvilScreenHandler(int syncId, PlayerInventory inventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.field_17329, syncId, inventory, context);
+		super(ScreenHandlerType.ANVIL, syncId, inventory, context);
 		this.addProperty(this.levelCost);
 	}
 
 	@Override
 	protected boolean canUse(BlockState state) {
-		return state.isIn(BlockTags.field_15486);
+		return state.isIn(BlockTags.ANVIL);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		this.levelCost.set(0);
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 			BlockState blockState = world.getBlockState(blockPos);
-			if (!player.abilities.creativeMode && blockState.isIn(BlockTags.field_15486) && player.getRandom().nextFloat() < 0.12F) {
+			if (!player.abilities.creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
 				BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 				if (blockState2 == null) {
 					world.removeBlock(blockPos, false);
@@ -101,7 +101,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			j += itemStack.getRepairCost() + (itemStack3.isEmpty() ? 0 : itemStack3.getRepairCost());
 			this.repairItemUsage = 0;
 			if (!itemStack3.isEmpty()) {
-				boolean bl = itemStack3.getItem() == Items.field_8598 && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
+				boolean bl = itemStack3.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
 				if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
 					int l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					if (l <= 0) {
@@ -151,8 +151,8 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 							int q = (Integer)map.getOrDefault(enchantment, 0);
 							int r = (Integer)map2.get(enchantment);
 							r = q == r ? r + 1 : Math.max(r, q);
-							boolean bl4 = enchantment.isAcceptableItem(itemStack);
-							if (this.player.abilities.creativeMode || itemStack.getItem() == Items.field_8598) {
+							boolean bl4 = enchantment.isAcceptableItem(itemStack, bl);
+							if (this.player.abilities.creativeMode || itemStack.getItem() == Items.ENCHANTED_BOOK) {
 								bl4 = true;
 							}
 
@@ -174,16 +174,16 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 								map.put(enchantment, r);
 								int s = 0;
 								switch (enchantment.getRarity()) {
-									case field_9087:
+									case COMMON:
 										s = 1;
 										break;
-									case field_9090:
+									case UNCOMMON:
 										s = 2;
 										break;
-									case field_9088:
+									case RARE:
 										s = 4;
 										break;
-									case field_9091:
+									case VERY_RARE:
 										s = 8;
 								}
 

@@ -124,7 +124,7 @@ public class ExecuteCommand {
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
 											.withPosition(Vec3ArgumentType.getVec3(commandContext, "pos"))
-											.withEntityAnchor(EntityAnchorArgumentType.EntityAnchor.field_9853)
+											.withEntityAnchor(EntityAnchorArgumentType.EntityAnchor.FEET)
 								)
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, commandContext -> {
@@ -623,9 +623,9 @@ public class ExecuteCommand {
 	private static boolean testLootCondition(ServerCommandSource serverCommandSource, LootCondition lootCondition) {
 		ServerWorld serverWorld = serverCommandSource.getWorld();
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
-			.parameter(LootContextParameters.field_24424, serverCommandSource.getPosition())
-			.optionalParameter(LootContextParameters.field_1226, serverCommandSource.getEntity());
-		return lootCondition.test(builder.build(LootContextTypes.field_20761));
+			.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition())
+			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity());
+		return lootCondition.test(builder.build(LootContextTypes.COMMAND));
 	}
 
 	private static Collection<ServerCommandSource> getSourceOrEmptyForConditionFork(CommandContext<ServerCommandSource> context, boolean positive, boolean value) {
@@ -705,7 +705,7 @@ public class ExecuteCommand {
 						BlockPos blockPos2 = new BlockPos(m, l, k);
 						BlockPos blockPos3 = blockPos2.add(blockPos);
 						BlockState blockState = world.getBlockState(blockPos2);
-						if (!masked || !blockState.isOf(Blocks.field_10124)) {
+						if (!masked || !blockState.isOf(Blocks.AIR)) {
 							if (blockState != world.getBlockState(blockPos3)) {
 								return OptionalInt.empty();
 							}

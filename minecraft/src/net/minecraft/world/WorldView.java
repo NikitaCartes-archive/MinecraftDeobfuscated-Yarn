@@ -55,7 +55,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Override
 	default Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		Chunk chunk = this.getChunk(biomeX >> 2, biomeZ >> 2, ChunkStatus.field_12794, false);
+		Chunk chunk = this.getChunk(biomeX >> 2, biomeZ >> 2, ChunkStatus.BIOMES, false);
 		return chunk != null && chunk.getBiomeArray() != null
 			? chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ)
 			: this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
@@ -91,7 +91,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 			if (!this.isSkyVisible(blockPos)) {
 				return false;
 			} else {
-				for (BlockPos var4 = blockPos.method_10074(); var4.getY() > pos.getY(); var4 = var4.method_10074()) {
+				for (BlockPos var4 = blockPos.down(); var4.getY() > pos.getY(); var4 = var4.down()) {
 					BlockState blockState = this.getBlockState(var4);
 					if (blockState.getOpacity(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
 						return false;
@@ -117,7 +117,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	}
 
 	default Chunk getChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.field_12803, true);
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, true);
 	}
 
 	default Chunk getChunk(int chunkX, int chunkZ, ChunkStatus status) {
@@ -127,11 +127,11 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	@Nullable
 	@Override
 	default BlockView getExistingChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.field_12798, false);
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
 	}
 
 	default boolean isWater(BlockPos pos) {
-		return this.getFluidState(pos).isIn(FluidTags.field_15517);
+		return this.getFluidState(pos).isIn(FluidTags.WATER);
 	}
 
 	default boolean containsFluid(Box box) {

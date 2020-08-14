@@ -29,7 +29,7 @@ public class PotionItem extends Item {
 
 	@Override
 	public ItemStack getStackForRender() {
-		return PotionUtil.setPotion(super.getStackForRender(), Potions.field_8991);
+		return PotionUtil.setPotion(super.getStackForRender(), Potions.WATER);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class PotionItem extends Item {
 		}
 
 		if (playerEntity != null) {
-			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 			if (!playerEntity.abilities.creativeMode) {
 				stack.decrement(1);
 			}
@@ -58,11 +58,11 @@ public class PotionItem extends Item {
 
 		if (playerEntity == null || !playerEntity.abilities.creativeMode) {
 			if (stack.isEmpty()) {
-				return new ItemStack(Items.field_8469);
+				return new ItemStack(Items.GLASS_BOTTLE);
 			}
 
 			if (playerEntity != null) {
-				playerEntity.inventory.insertStack(new ItemStack(Items.field_8469));
+				playerEntity.inventory.insertStack(new ItemStack(Items.GLASS_BOTTLE));
 			}
 		}
 
@@ -76,7 +76,7 @@ public class PotionItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.field_8946;
+		return UseAction.DRINK;
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class PotionItem extends Item {
 	public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
 		if (this.isIn(group)) {
 			for (Potion potion : Registry.POTION) {
-				if (potion != Potions.field_8984) {
+				if (potion != Potions.EMPTY) {
 					stacks.add(PotionUtil.setPotion(new ItemStack(this), potion));
 				}
 			}

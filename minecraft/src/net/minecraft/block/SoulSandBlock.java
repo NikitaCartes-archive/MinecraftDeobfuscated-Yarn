@@ -40,7 +40,7 @@ public class SoulSandBlock extends Block {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		if (direction == Direction.field_11036 && newState.isOf(Blocks.field_10382)) {
+		if (direction == Direction.UP && newState.isOf(Blocks.WATER)) {
 			world.getBlockTickScheduler().schedule(pos, this, 20);
 		}
 

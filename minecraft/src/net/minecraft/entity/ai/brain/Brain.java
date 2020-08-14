@@ -49,7 +49,7 @@ public class Brain<E extends LivingEntity> {
 	private final Map<Activity, Set<MemoryModuleType<?>>> forgettingActivityMemories = Maps.<Activity, Set<MemoryModuleType<?>>>newHashMap();
 	private Set<Activity> coreActivities = Sets.<Activity>newHashSet();
 	private final Set<Activity> possibleActivities = Sets.<Activity>newHashSet();
-	private Activity defaultActivity = Activity.field_18595;
+	private Activity defaultActivity = Activity.IDLE;
 	private long activityStartTime = -9999L;
 
 	public static <E extends LivingEntity> Brain.Profile<E> createProfile(
@@ -97,7 +97,7 @@ public class Brain<E extends LivingEntity> {
 							.map(memory -> new Brain.MemoryEntry(memoryModuleType, Optional.of(memory)));
 					}
 
-					public <T> RecordBuilder<T> method_28316(Brain<E> brain, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
+					public <T> RecordBuilder<T> encode(Brain<E> brain, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
 						brain.streamMemories().forEach(memoryEntry -> memoryEntry.serialize(dynamicOps, recordBuilder));
 						return recordBuilder;
 					}
@@ -147,7 +147,7 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	public boolean hasMemoryModule(MemoryModuleType<?> type) {
-		return this.isMemoryInState(type, MemoryModuleState.field_18456);
+		return this.isMemoryInState(type, MemoryModuleState.VALUE_PRESENT);
 	}
 
 	public <U> void forget(MemoryModuleType<U> type) {
@@ -188,9 +188,9 @@ public class Brain<E extends LivingEntity> {
 		Optional<? extends Memory<?>> optional = (Optional<? extends Memory<?>>)this.memories.get(type);
 		return optional == null
 			? false
-			: state == MemoryModuleState.field_18458
-				|| state == MemoryModuleState.field_18456 && optional.isPresent()
-				|| state == MemoryModuleState.field_18457 && !optional.isPresent();
+			: state == MemoryModuleState.REGISTERED
+				|| state == MemoryModuleState.VALUE_PRESENT && optional.isPresent()
+				|| state == MemoryModuleState.VALUE_ABSENT && !optional.isPresent();
 	}
 
 	public Schedule getSchedule() {
@@ -212,7 +212,7 @@ public class Brain<E extends LivingEntity> {
 		for (Map<Activity, Set<Task<? super E>>> map : this.tasks.values()) {
 			for (Set<Task<? super E>> set : map.values()) {
 				for (Task<? super E> task : set) {
-					if (task.getStatus() == Task.Status.field_18338) {
+					if (task.getStatus() == Task.Status.RUNNING) {
 						list.add(task);
 					}
 				}
@@ -294,7 +294,7 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	public void setTaskList(Activity activity, int begin, ImmutableList<? extends Task<? super E>> tasks, MemoryModuleType<?> memoryType) {
-		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set = ImmutableSet.of(Pair.of(memoryType, MemoryModuleState.field_18456));
+		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set = ImmutableSet.of(Pair.of(memoryType, MemoryModuleState.VALUE_PRESENT));
 		Set<MemoryModuleType<?>> set2 = ImmutableSet.of(memoryType);
 		this.setTaskList(activity, this.indexTaskList(begin, tasks), set, set2);
 	}
@@ -386,7 +386,7 @@ public class Brain<E extends LivingEntity> {
 				Activity activity = (Activity)entry.getKey();
 				if (this.possibleActivities.contains(activity)) {
 					for (Task<? super E> task : (Set)entry.getValue()) {
-						if (task.getStatus() == Task.Status.field_18337) {
+						if (task.getStatus() == Task.Status.STOPPED) {
 							task.tryStarting(world, entity, l);
 						}
 					}

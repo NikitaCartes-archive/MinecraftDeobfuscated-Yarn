@@ -26,7 +26,7 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 
 	@Override
 	protected TreeDecoratorType<?> getType() {
-		return TreeDecoratorType.field_21322;
+		return TreeDecoratorType.COCOA;
 	}
 
 	@Override
@@ -34,12 +34,12 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 		if (!(random.nextFloat() >= this.probability)) {
 			int i = ((BlockPos)logPositions.get(0)).getY();
 			logPositions.stream().filter(blockPos -> blockPos.getY() - i <= 2).forEach(blockPos -> {
-				for (Direction direction : Direction.Type.field_11062) {
+				for (Direction direction : Direction.Type.HORIZONTAL) {
 					if (random.nextFloat() <= 0.25F) {
 						Direction direction2 = direction.getOpposite();
 						BlockPos blockPos2 = blockPos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
 						if (Feature.isAir(world, blockPos2)) {
-							BlockState blockState = Blocks.field_10302.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction);
+							BlockState blockState = Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction);
 							this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
 						}
 					}

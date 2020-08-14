@@ -34,7 +34,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Override
 	protected LlamaEntity createChild() {
-		return EntityType.field_17714.create(this.world);
+		return EntityType.TRADER_LLAMA.create(this.world);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	public EntityData initialize(
 		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		if (spawnReason == SpawnReason.field_16467) {
+		if (spawnReason == SpawnReason.EVENT) {
 			this.setBreedingAge(0);
 		}
 
@@ -120,7 +120,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		public DefendTraderGoal(LlamaEntity llama) {
 			super(llama, false);
 			this.llama = llama;
-			this.setControls(EnumSet.of(Goal.Control.field_18408));
+			this.setControls(EnumSet.of(Goal.Control.TARGET));
 		}
 
 		@Override

@@ -55,7 +55,7 @@ public class TurtleEggBlock extends Block {
 		if (this.breaksEgg(world, entity)) {
 			if (!world.isClient && world.random.nextInt(inverseChance) == 0) {
 				BlockState blockState = world.getBlockState(blockPos);
-				if (blockState.isOf(Blocks.field_10195)) {
+				if (blockState.isOf(Blocks.TURTLE_EGG)) {
 					this.breakEgg(world, blockPos, blockState);
 				}
 			}
@@ -63,7 +63,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	private void breakEgg(World world, BlockPos pos, BlockState state) {
-		world.playSound(null, pos, SoundEvents.field_14687, SoundCategory.field_15245, 0.7F, 0.9F + world.random.nextFloat() * 0.2F);
+		world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7F, 0.9F + world.random.nextFloat() * 0.2F);
 		int i = (Integer)state.get(EGGS);
 		if (i <= 1) {
 			world.breakBlock(pos, false);
@@ -78,15 +78,15 @@ public class TurtleEggBlock extends Block {
 		if (this.shouldHatchProgress(world) && isSand(world, pos)) {
 			int i = (Integer)state.get(HATCH);
 			if (i < 2) {
-				world.playSound(null, pos, SoundEvents.field_15109, SoundCategory.field_15245, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+				world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 				world.setBlockState(pos, state.with(HATCH, Integer.valueOf(i + 1)), 2);
 			} else {
-				world.playSound(null, pos, SoundEvents.field_14902, SoundCategory.field_15245, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+				world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 				world.removeBlock(pos, false);
 
 				for (int j = 0; j < state.get(EGGS); j++) {
 					world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
-					TurtleEntity turtleEntity = EntityType.field_6113.create(world);
+					TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
 					turtleEntity.setBreedingAge(-24000);
 					turtleEntity.setHomePos(pos);
 					turtleEntity.refreshPositionAndAngles((double)pos.getX() + 0.3 + (double)j * 0.2, (double)pos.getY(), (double)pos.getZ() + 0.3, 0.0F, 0.0F);
@@ -97,11 +97,11 @@ public class TurtleEggBlock extends Block {
 	}
 
 	public static boolean isSand(BlockView blockView, BlockPos blockPos) {
-		return method_29952(blockView, blockPos.method_10074());
+		return method_29952(blockView, blockPos.down());
 	}
 
 	public static boolean method_29952(BlockView blockView, BlockPos blockPos) {
-		return blockView.getBlockState(blockPos).isIn(BlockTags.field_15466);
+		return blockView.getBlockState(blockPos).isIn(BlockTags.SAND);
 	}
 
 	@Override

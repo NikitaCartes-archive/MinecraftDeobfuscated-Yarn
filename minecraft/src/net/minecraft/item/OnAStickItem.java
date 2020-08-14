@@ -31,7 +31,7 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 				if (itemSteerable.consumeOnAStickItem()) {
 					itemStack.damage(this.damagePerUse, user, p -> p.sendToolBreakStatus(hand));
 					if (itemStack.isEmpty()) {
-						ItemStack itemStack2 = new ItemStack(Items.field_8378);
+						ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
 						itemStack2.setTag(itemStack.getTag());
 						return TypedActionResult.success(itemStack2);
 					}
@@ -40,7 +40,7 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 				}
 			}
 
-			user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			user.incrementStat(Stats.USED.getOrCreateStat(this));
 			return TypedActionResult.pass(itemStack);
 		}
 	}

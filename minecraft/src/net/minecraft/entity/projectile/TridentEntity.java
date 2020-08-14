@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 public class TridentEntity extends PersistentProjectileEntity {
 	private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private ItemStack tridentStack = new ItemStack(Items.field_8547);
+	private ItemStack tridentStack = new ItemStack(Items.TRIDENT);
 	private boolean dealtDamage;
 	public int returnTimer;
 
@@ -37,14 +37,14 @@ public class TridentEntity extends PersistentProjectileEntity {
 	}
 
 	public TridentEntity(World world, LivingEntity owner, ItemStack stack) {
-		super(EntityType.field_6127, owner, world);
+		super(EntityType.TRIDENT, owner, world);
 		this.tridentStack = stack.copy();
 		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(stack));
 		this.dataTracker.set(ENCHANTED, stack.hasGlint());
 	}
 
 	public TridentEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6127, x, y, z, world);
+		super(EntityType.TRIDENT, x, y, z, world);
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public class TridentEntity extends PersistentProjectileEntity {
 		this.dataTracker.startTracking(ENCHANTED, false);
 	}
 
-	public void method_31208(ItemStack itemStack) {
-		if (itemStack.getItem() == Items.field_8547 || itemStack.isEmpty()) {
+	public void method_31240(ItemStack itemStack) {
+		if (itemStack.getItem() == Items.TRIDENT || itemStack.isEmpty()) {
 			this.tridentStack = itemStack.copy();
 		}
 	}
@@ -70,7 +70,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 		if ((this.dealtDamage || this.isNoClip()) && entity != null) {
 			int i = this.dataTracker.get(LOYALTY);
 			if (i > 0 && !this.isOwnerAlive()) {
-				if (!this.world.isClient && this.pickupType == PersistentProjectileEntity.PickupPermission.field_7593) {
+				if (!this.world.isClient && this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
@@ -86,7 +86,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 				double d = 0.05 * (double)i;
 				this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
 				if (this.returnTimer == 0) {
-					this.playSound(SoundEvents.field_14698, 10.0F, 1.0F);
+					this.playSound(SoundEvents.ITEM_TRIDENT_RETURN, 10.0F, 1.0F);
 				}
 
 				this.returnTimer++;
@@ -129,9 +129,9 @@ public class TridentEntity extends PersistentProjectileEntity {
 		Entity entity2 = this.getOwner();
 		DamageSource damageSource = DamageSource.trident(this, (Entity)(entity2 == null ? this : entity2));
 		this.dealtDamage = true;
-		SoundEvent soundEvent = SoundEvents.field_15213;
+		SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
 		if (entity.damage(damageSource, f)) {
-			if (entity.getType() == EntityType.field_6091) {
+			if (entity.getType() == EntityType.ENDERMAN) {
 				return;
 			}
 
@@ -151,11 +151,11 @@ public class TridentEntity extends PersistentProjectileEntity {
 		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
 			BlockPos blockPos = entity.getBlockPos();
 			if (this.world.isSkyVisible(blockPos)) {
-				LightningEntity lightningEntity = EntityType.field_6112.create(this.world);
+				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);
 				lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
 				lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
 				this.world.spawnEntity(lightningEntity);
-				soundEvent = SoundEvents.field_14896;
+				soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
 				g = 5.0F;
 			}
 		}
@@ -165,7 +165,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 
 	@Override
 	protected SoundEvent getHitSound() {
-		return SoundEvents.field_15104;
+		return SoundEvents.ITEM_TRIDENT_HIT_GROUND;
 	}
 
 	@Override
@@ -197,7 +197,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 	@Override
 	public void age() {
 		int i = this.dataTracker.get(LOYALTY);
-		if (this.pickupType != PersistentProjectileEntity.PickupPermission.field_7593 || i <= 0) {
+		if (this.pickupType != PersistentProjectileEntity.PickupPermission.ALLOWED || i <= 0) {
 			super.age();
 		}
 	}

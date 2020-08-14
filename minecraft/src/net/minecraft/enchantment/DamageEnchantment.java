@@ -15,7 +15,7 @@ public class DamageEnchantment extends Enchantment {
 	public final int typeIndex;
 
 	public DamageEnchantment(Enchantment.Rarity weight, int typeIndex, EquipmentSlot... slots) {
-		super(weight, EnchantmentTarget.field_9074, slots);
+		super(weight, EnchantmentTarget.WEAPON, slots);
 		this.typeIndex = typeIndex;
 	}
 
@@ -56,7 +56,7 @@ public class DamageEnchantment extends Enchantment {
 			LivingEntity livingEntity = (LivingEntity)target;
 			if (this.typeIndex == 2 && livingEntity.getGroup() == EntityGroup.ARTHROPOD) {
 				int i = 20 + user.getRandom().nextInt(10 * level);
-				livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5909, i, 3));
+				livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, i, 3));
 			}
 		}
 	}

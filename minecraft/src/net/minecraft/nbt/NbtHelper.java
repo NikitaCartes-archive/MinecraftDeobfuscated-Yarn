@@ -129,11 +129,11 @@ public final class NbtHelper {
 				return listTag2.isEmpty();
 			} else {
 				for (int i = 0; i < listTag.size(); i++) {
-					Tag tag2 = listTag.method_10534(i);
+					Tag tag2 = listTag.get(i);
 					boolean bl = false;
 
 					for (int j = 0; j < listTag2.size(); j++) {
-						if (matches(tag2, listTag2.method_10534(j), equalValue)) {
+						if (matches(tag2, listTag2.get(j), equalValue)) {
 							bl = true;
 							break;
 						}
@@ -196,7 +196,7 @@ public final class NbtHelper {
 
 	public static BlockState toBlockState(CompoundTag tag) {
 		if (!tag.contains("Name", 8)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			Block block = Registry.BLOCK.get(new Identifier(tag.getString("Name")));
 			BlockState blockState = block.getDefaultState();

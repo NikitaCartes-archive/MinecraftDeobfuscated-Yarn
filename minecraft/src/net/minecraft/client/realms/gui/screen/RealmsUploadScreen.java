@@ -80,7 +80,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.backButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.BACK, buttonWidget -> this.onBack()));
 		this.backButton.visible = false;
 		this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCancel()));
@@ -101,7 +101,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void onBack() {
@@ -307,7 +307,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 										long m = file.length();
 										SizeUnit sizeUnit = SizeUnit.getLargestUnit(m);
 										SizeUnit sizeUnit2 = SizeUnit.getLargestUnit(5368709120L);
-										if (SizeUnit.humanReadableSize(m, sizeUnit).equals(SizeUnit.humanReadableSize(5368709120L, sizeUnit2)) && sizeUnit != SizeUnit.field_20200) {
+										if (SizeUnit.humanReadableSize(m, sizeUnit).equals(SizeUnit.humanReadableSize(5368709120L, sizeUnit2)) && sizeUnit != SizeUnit.B) {
 											SizeUnit sizeUnit3 = SizeUnit.values()[sizeUnit.ordinal() - 1];
 											this.method_27460(
 												new TranslatableText("mco.upload.size.failure.line1", this.selectedLevel.getDisplayName()),

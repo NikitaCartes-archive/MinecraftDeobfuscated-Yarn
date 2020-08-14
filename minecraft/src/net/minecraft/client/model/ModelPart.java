@@ -31,13 +31,13 @@ public class ModelPart {
 	private final ObjectList<ModelPart> children = new ObjectArrayList<>();
 
 	public ModelPart(Model model) {
-		model.method_22696(this);
+		model.accept(this);
 		this.setTextureSize(model.textureWidth, model.textureHeight);
 	}
 
 	public ModelPart(Model model, int textureOffsetU, int textureOffsetV) {
 		this(model.textureWidth, model.textureHeight, textureOffsetU, textureOffsetV);
-		model.method_22696(this);
+		model.accept(this);
 	}
 
 	public ModelPart(int textureWidth, int textureHeight, int textureOffsetU, int textureOffsetV) {
@@ -249,22 +249,20 @@ public class ModelPart {
 			float q = (float)v + sizeZ;
 			float r = (float)v + sizeZ + sizeY;
 			this.sides[2] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex6, vertex5, vertex, vertex2}, k, p, l, q, textureWidth, textureHeight, mirror, Direction.field_11033
+				new ModelPart.Vertex[]{vertex6, vertex5, vertex, vertex2}, k, p, l, q, textureWidth, textureHeight, mirror, Direction.DOWN
 			);
-			this.sides[3] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, l, q, m, p, textureWidth, textureHeight, mirror, Direction.field_11036
-			);
+			this.sides[3] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, l, q, m, p, textureWidth, textureHeight, mirror, Direction.UP);
 			this.sides[1] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex, vertex5, vertex8, vertex4}, j, q, k, r, textureWidth, textureHeight, mirror, Direction.field_11039
+				new ModelPart.Vertex[]{vertex, vertex5, vertex8, vertex4}, j, q, k, r, textureWidth, textureHeight, mirror, Direction.WEST
 			);
 			this.sides[4] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex2, vertex, vertex4, vertex3}, k, q, l, r, textureWidth, textureHeight, mirror, Direction.field_11043
+				new ModelPart.Vertex[]{vertex2, vertex, vertex4, vertex3}, k, q, l, r, textureWidth, textureHeight, mirror, Direction.NORTH
 			);
 			this.sides[0] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex6, vertex2, vertex3, vertex7}, l, q, n, r, textureWidth, textureHeight, mirror, Direction.field_11034
+				new ModelPart.Vertex[]{vertex6, vertex2, vertex3, vertex7}, l, q, n, r, textureWidth, textureHeight, mirror, Direction.EAST
 			);
 			this.sides[5] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, n, q, o, r, textureWidth, textureHeight, mirror, Direction.field_11035
+				new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, n, q, o, r, textureWidth, textureHeight, mirror, Direction.SOUTH
 			);
 		}
 	}

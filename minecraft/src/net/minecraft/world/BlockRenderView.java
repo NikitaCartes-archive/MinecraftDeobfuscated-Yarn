@@ -25,6 +25,6 @@ public interface BlockRenderView extends BlockView {
 	}
 
 	default boolean isSkyVisible(BlockPos pos) {
-		return this.getLightLevel(LightType.field_9284, pos) >= this.getMaxLightLevel();
+		return this.getLightLevel(LightType.SKY, pos) >= this.getMaxLightLevel();
 	}
 }

@@ -17,11 +17,19 @@ public class HugeFungusFeatureConfig implements FeatureConfig {
 				.apply(instance, HugeFungusFeatureConfig::new)
 	);
 	public static final HugeFungusFeatureConfig CRIMSON_FUNGUS_CONFIG = new HugeFungusFeatureConfig(
-		Blocks.field_22120.getDefaultState(), Blocks.field_22118.getDefaultState(), Blocks.field_10541.getDefaultState(), Blocks.field_22122.getDefaultState(), true
+		Blocks.CRIMSON_NYLIUM.getDefaultState(),
+		Blocks.CRIMSON_STEM.getDefaultState(),
+		Blocks.NETHER_WART_BLOCK.getDefaultState(),
+		Blocks.SHROOMLIGHT.getDefaultState(),
+		true
 	);
 	public static final HugeFungusFeatureConfig CRIMSON_FUNGUS_NOT_PLANTED_CONFIG;
 	public static final HugeFungusFeatureConfig WARPED_FUNGUS_CONFIG = new HugeFungusFeatureConfig(
-		Blocks.field_22113.getDefaultState(), Blocks.field_22111.getDefaultState(), Blocks.field_22115.getDefaultState(), Blocks.field_22122.getDefaultState(), true
+		Blocks.WARPED_NYLIUM.getDefaultState(),
+		Blocks.WARPED_STEM.getDefaultState(),
+		Blocks.WARPED_WART_BLOCK.getDefaultState(),
+		Blocks.SHROOMLIGHT.getDefaultState(),
+		true
 	);
 	public static final HugeFungusFeatureConfig WARPED_FUNGUS_NOT_PLANTED_CONFIG;
 	public final BlockState validBaseBlock;

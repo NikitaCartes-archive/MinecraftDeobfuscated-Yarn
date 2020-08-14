@@ -18,7 +18,7 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 		return ID;
 	}
 
-	public ItemDurabilityChangedCriterion.Conditions method_8962(
+	public ItemDurabilityChangedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));

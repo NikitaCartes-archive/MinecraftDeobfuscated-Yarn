@@ -88,27 +88,27 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	public static DefaultAttributeContainer.Builder createGhastAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 10.0).add(EntityAttributes.field_23717, 100.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0);
 	}
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15251;
+		return SoundCategory.HOSTILE;
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14566;
+		return SoundEvents.ENTITY_GHAST_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15054;
+		return SoundEvents.ENTITY_GHAST_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14648;
+		return SoundEvents.ENTITY_GHAST_DEATH;
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	public static boolean canSpawn(EntityType<GhastEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getDifficulty() != Difficulty.field_5801 && random.nextInt(20) == 0 && canMobSpawn(type, world, spawnReason, pos, random);
+		return world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && canMobSpawn(type, world, spawnReason, pos, random);
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		public FlyRandomlyGoal(GhastEntity ghast) {
 			this.ghast = ghast;
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -192,7 +192,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public void tick() {
-			if (this.state == MoveControl.State.field_6378) {
+			if (this.state == MoveControl.State.MOVE_TO) {
 				if (this.collisionCheckCooldown-- <= 0) {
 					this.collisionCheckCooldown = this.collisionCheckCooldown + this.ghast.getRandom().nextInt(5) + 2;
 					Vec3d vec3d = new Vec3d(this.targetX - this.ghast.getX(), this.targetY - this.ghast.getY(), this.targetZ - this.ghast.getZ());
@@ -201,7 +201,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 					if (this.willCollide(vec3d, MathHelper.ceil(d))) {
 						this.ghast.setVelocity(this.ghast.getVelocity().add(vec3d.multiply(0.1)));
 					} else {
-						this.state = MoveControl.State.field_6377;
+						this.state = MoveControl.State.WAIT;
 					}
 				}
 			}
@@ -226,7 +226,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		public LookAtTargetGoal(GhastEntity ghast) {
 			this.ghast = ghast;
-			this.setControls(EnumSet.of(Goal.Control.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.LOOK));
 		}
 
 		@Override

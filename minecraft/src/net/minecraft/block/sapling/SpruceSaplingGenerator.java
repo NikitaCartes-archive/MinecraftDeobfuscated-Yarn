@@ -10,12 +10,12 @@ public class SpruceSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
 	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
-		return ConfiguredFeatures.field_26041;
+		return ConfiguredFeatures.SPRUCE;
 	}
 
 	@Nullable
 	@Override
 	protected ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random random) {
-		return random.nextBoolean() ? ConfiguredFeatures.field_26047 : ConfiguredFeatures.field_26048;
+		return random.nextBoolean() ? ConfiguredFeatures.MEGA_SPRUCE : ConfiguredFeatures.MEGA_PINE;
 	}
 }

@@ -64,7 +64,7 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 		this.leftFrontLeg.pivotZ--;
 	}
 
-	public void method_22962(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.torso.pitch = (float) (Math.PI / 2);

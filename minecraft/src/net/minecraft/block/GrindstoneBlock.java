@@ -93,37 +93,37 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	protected GrindstoneBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(FACE, WallMountLocation.field_12471));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.WALL));
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	private VoxelShape getShape(BlockState state) {
 		Direction direction = state.get(FACING);
 		switch ((WallMountLocation)state.get(FACE)) {
-			case field_12475:
-				if (direction != Direction.field_11043 && direction != Direction.field_11035) {
+			case FLOOR:
+				if (direction != Direction.NORTH && direction != Direction.SOUTH) {
 					return X_FLOOR_SHAPE;
 				}
 
 				return Z_FLOOR_SHAPE;
-			case field_12471:
-				if (direction == Direction.field_11043) {
+			case WALL:
+				if (direction == Direction.NORTH) {
 					return NORTH_WALL_SHAPE;
-				} else if (direction == Direction.field_11035) {
+				} else if (direction == Direction.SOUTH) {
 					return SOUTH_WALL_SHAPE;
 				} else {
-					if (direction == Direction.field_11034) {
+					if (direction == Direction.EAST) {
 						return EAST_WALL_SHAPE;
 					}
 
 					return WEST_WALL_SHAPE;
 				}
-			case field_12473:
-				if (direction != Direction.field_11043 && direction != Direction.field_11035) {
+			case CEILING:
+				if (direction != Direction.NORTH && direction != Direction.SOUTH) {
 					return X_CEILING_SHAPE;
 				}
 
@@ -154,7 +154,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 			return ActionResult.SUCCESS;
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-			player.incrementStat(Stats.field_21779);
+			player.incrementStat(Stats.INTERACT_WITH_GRINDSTONE);
 			return ActionResult.CONSUME;
 		}
 	}

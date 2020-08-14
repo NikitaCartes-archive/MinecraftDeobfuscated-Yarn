@@ -22,7 +22,7 @@ public class RevengeGoal extends TrackTargetGoal {
 	public RevengeGoal(PathAwareEntity mob, Class<?>... noRevengeTypes) {
 		super(mob, true);
 		this.noRevengeTypes = noRevengeTypes;
-		this.setControls(EnumSet.of(Goal.Control.field_18408));
+		this.setControls(EnumSet.of(Goal.Control.TARGET));
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class RevengeGoal extends TrackTargetGoal {
 		int i = this.mob.getLastAttackedTime();
 		LivingEntity livingEntity = this.mob.getAttacker();
 		if (i != this.lastAttackedTime && livingEntity != null) {
-			if (livingEntity.getType() == EntityType.field_6097 && this.mob.world.getGameRules().getBoolean(GameRules.field_25402)) {
+			if (livingEntity.getType() == EntityType.PLAYER && this.mob.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
 				return false;
 			} else {
 				for (Class<?> class_ : this.noRevengeTypes) {

@@ -3,7 +3,7 @@ package net.minecraft.world.biome.source;
 import net.minecraft.world.biome.Biome;
 
 public enum VoronoiBiomeAccessType implements BiomeAccessType {
-	field_20644;
+	INSTANCE;
 
 	@Override
 	public Biome getBiome(long seed, int x, int y, int z, BiomeAccess.Storage storage) {

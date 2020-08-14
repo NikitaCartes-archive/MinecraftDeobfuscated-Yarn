@@ -302,11 +302,11 @@ public class SpreadPlayersCommand {
 		public int getY(BlockView blockView, int i) {
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.x, (double)(i + 1), this.z);
 			boolean bl = blockView.getBlockState(mutable).isAir();
-			mutable.move(Direction.field_11033);
+			mutable.move(Direction.DOWN);
 			boolean bl2 = blockView.getBlockState(mutable).isAir();
 
 			while (mutable.getY() > 0) {
-				mutable.move(Direction.field_11033);
+				mutable.move(Direction.DOWN);
 				boolean bl3 = blockView.getBlockState(mutable).isAir();
 				if (!bl3 && bl2 && bl) {
 					return mutable.getY() + 1;

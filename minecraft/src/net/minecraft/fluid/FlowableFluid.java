@@ -58,7 +58,7 @@ public abstract class FlowableFluid extends Fluid {
 		double e = 0.0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			mutable.set(pos, direction);
 			FluidState fluidState = world.getFluidState(mutable);
 			if (this.method_15748(fluidState)) {
@@ -66,7 +66,7 @@ public abstract class FlowableFluid extends Fluid {
 				float g = 0.0F;
 				if (f == 0.0F) {
 					if (!world.getBlockState(mutable).getMaterial().blocksMovement()) {
-						BlockPos blockPos = mutable.method_10074();
+						BlockPos blockPos = mutable.down();
 						FluidState fluidState2 = world.getFluidState(blockPos);
 						if (this.method_15748(fluidState2)) {
 							f = fluidState2.getHeight();
@@ -88,7 +88,7 @@ public abstract class FlowableFluid extends Fluid {
 
 		Vec3d vec3d = new Vec3d(d, 0.0, e);
 		if ((Boolean)state.get(FALLING)) {
-			for (Direction direction2 : Direction.Type.field_11062) {
+			for (Direction direction2 : Direction.Type.HORIZONTAL) {
 				mutable.set(pos, direction2);
 				if (this.method_15749(world, mutable, direction2) || this.method_15749(world, mutable.up(), direction2)) {
 					vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
@@ -109,7 +109,7 @@ public abstract class FlowableFluid extends Fluid {
 		FluidState fluidState = world.getFluidState(pos);
 		if (fluidState.getFluid().matchesType(this)) {
 			return false;
-		} else if (direction == Direction.field_11036) {
+		} else if (direction == Direction.UP) {
 			return true;
 		} else {
 			return blockState.getMaterial() == Material.ICE ? false : blockState.isSideSolidFullSquare(world, pos, direction);
@@ -119,11 +119,11 @@ public abstract class FlowableFluid extends Fluid {
 	protected void tryFlow(WorldAccess world, BlockPos fluidPos, FluidState state) {
 		if (!state.isEmpty()) {
 			BlockState blockState = world.getBlockState(fluidPos);
-			BlockPos blockPos = fluidPos.method_10074();
+			BlockPos blockPos = fluidPos.down();
 			BlockState blockState2 = world.getBlockState(blockPos);
 			FluidState fluidState = this.getUpdatedState(world, blockPos, blockState2);
-			if (this.canFlow(world, fluidPos, blockState, Direction.field_11033, blockPos, blockState2, world.getFluidState(blockPos), fluidState.getFluid())) {
-				this.flow(world, blockPos, blockState2, Direction.field_11033, fluidState);
+			if (this.canFlow(world, fluidPos, blockState, Direction.DOWN, blockPos, blockState2, world.getFluidState(blockPos), fluidState.getFluid())) {
+				this.flow(world, blockPos, blockState2, Direction.DOWN, fluidState);
 				if (this.method_15740(world, fluidPos) >= 3) {
 					this.method_15744(world, fluidPos, state, blockState);
 				}
@@ -158,7 +158,7 @@ public abstract class FlowableFluid extends Fluid {
 		int i = 0;
 		int j = 0;
 
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos = pos.offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
 			FluidState fluidState = blockState.getFluidState();
@@ -172,7 +172,7 @@ public abstract class FlowableFluid extends Fluid {
 		}
 
 		if (this.isInfinite() && j >= 2) {
-			BlockState blockState2 = world.getBlockState(pos.method_10074());
+			BlockState blockState2 = world.getBlockState(pos.down());
 			FluidState fluidState2 = blockState2.getFluidState();
 			if (blockState2.getMaterial().isSolid() || this.isMatchingAndStill(fluidState2)) {
 				return this.getStill(false);
@@ -182,13 +182,11 @@ public abstract class FlowableFluid extends Fluid {
 		BlockPos blockPos2 = pos.up();
 		BlockState blockState3 = world.getBlockState(blockPos2);
 		FluidState fluidState3 = blockState3.getFluidState();
-		if (!fluidState3.isEmpty() && fluidState3.getFluid().matchesType(this) && this.receivesFlow(Direction.field_11036, world, pos, state, blockPos2, blockState3)
-			)
-		 {
+		if (!fluidState3.isEmpty() && fluidState3.getFluid().matchesType(this) && this.receivesFlow(Direction.UP, world, pos, state, blockPos2, blockState3)) {
 			return this.getFlowing(8, true);
 		} else {
 			int k = i - this.getLevelDecreasePerBlock(world);
-			return k <= 0 ? Fluids.field_15906.getDefaultState() : this.getFlowing(k, false);
+			return k <= 0 ? Fluids.EMPTY.getDefaultState() : this.getFlowing(k, false);
 		}
 	}
 
@@ -271,7 +269,7 @@ public abstract class FlowableFluid extends Fluid {
 	) {
 		int j = 1000;
 
-		for (Direction direction2 : Direction.Type.field_11062) {
+		for (Direction direction2 : Direction.Type.HORIZONTAL) {
 			if (direction2 != direction) {
 				BlockPos blockPos3 = blockPos.offset(direction2);
 				short s = method_15747(blockPos2, blockPos3);
@@ -283,7 +281,7 @@ public abstract class FlowableFluid extends Fluid {
 				FluidState fluidState = pair.getSecond();
 				if (this.canFlowThrough(world, this.getFlowing(), blockPos, blockState, direction2, blockPos3, blockState2, fluidState)) {
 					boolean bl = short2BooleanMap.computeIfAbsent(s, ix -> {
-						BlockPos blockPos2x = blockPos3.method_10074();
+						BlockPos blockPos2x = blockPos3.down();
 						BlockState blockState2x = world.getBlockState(blockPos2x);
 						return this.method_15736(world, this.getFlowing(), blockPos3, blockState2, blockPos2x, blockState2x);
 					});
@@ -305,7 +303,7 @@ public abstract class FlowableFluid extends Fluid {
 	}
 
 	private boolean method_15736(BlockView world, Fluid fluid, BlockPos pos, BlockState state, BlockPos fromPos, BlockState fromState) {
-		if (!this.receivesFlow(Direction.field_11033, world, pos, state, fromPos, fromState)) {
+		if (!this.receivesFlow(Direction.DOWN, world, pos, state, fromPos, fromState)) {
 			return false;
 		} else {
 			return fromState.getFluidState().getFluid().matchesType(this) ? true : this.canFill(world, fromPos, fromState, fluid);
@@ -329,7 +327,7 @@ public abstract class FlowableFluid extends Fluid {
 	private int method_15740(WorldView world, BlockPos pos) {
 		int i = 0;
 
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos = pos.offset(direction);
 			FluidState fluidState = world.getFluidState(blockPos);
 			if (this.isMatchingAndStill(fluidState)) {
@@ -346,7 +344,7 @@ public abstract class FlowableFluid extends Fluid {
 		Short2ObjectMap<Pair<BlockState, FluidState>> short2ObjectMap = new Short2ObjectOpenHashMap<>();
 		Short2BooleanMap short2BooleanMap = new Short2BooleanOpenHashMap();
 
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos = pos.offset(direction);
 			short s = method_15747(pos, blockPos);
 			Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, ix -> {
@@ -357,7 +355,7 @@ public abstract class FlowableFluid extends Fluid {
 			FluidState fluidState = pair.getSecond();
 			FluidState fluidState2 = this.getUpdatedState(world, blockPos, blockState);
 			if (this.canFlowThrough(world, fluidState2.getFluid(), pos, state, direction, blockPos, blockState, fluidState)) {
-				BlockPos blockPos2 = blockPos.method_10074();
+				BlockPos blockPos2 = blockPos.down();
 				boolean bl = short2BooleanMap.computeIfAbsent(s, ix -> {
 					BlockState blockState2 = world.getBlockState(blockPos2);
 					return this.method_15736(world, this.getFlowing(), blockPos, blockState, blockPos2, blockState2);
@@ -388,10 +386,10 @@ public abstract class FlowableFluid extends Fluid {
 		if (block instanceof FluidFillable) {
 			return ((FluidFillable)block).canFillWithFluid(world, pos, state, fluid);
 		} else if (!(block instanceof DoorBlock)
-			&& !block.isIn(BlockTags.field_15500)
-			&& block != Blocks.field_9983
-			&& block != Blocks.field_10424
-			&& block != Blocks.field_10422) {
+			&& !block.isIn(BlockTags.SIGNS)
+			&& block != Blocks.LADDER
+			&& block != Blocks.SUGAR_CANE
+			&& block != Blocks.BUBBLE_COLUMN) {
 			Material material = state.getMaterial();
 			return material != Material.PORTAL
 					&& material != Material.STRUCTURE_VOID
@@ -432,7 +430,7 @@ public abstract class FlowableFluid extends Fluid {
 			int i = this.getNextTickDelay(world, pos, state, fluidState);
 			if (fluidState.isEmpty()) {
 				state = fluidState;
-				world.setBlockState(pos, Blocks.field_10124.getDefaultState(), 3);
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
 			} else if (!fluidState.equals(state)) {
 				state = fluidState;
 				BlockState blockState = fluidState.getBlockState();

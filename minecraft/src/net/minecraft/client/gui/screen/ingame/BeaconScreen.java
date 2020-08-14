@@ -145,11 +145,11 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		int j = (this.height - this.backgroundHeight) / 2;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		this.itemRenderer.zOffset = 100.0F;
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.field_22020), i + 20, j + 109);
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.field_8687), i + 41, j + 109);
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.field_8477), i + 41 + 22, j + 109);
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.field_8695), i + 42 + 44, j + 109);
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.field_8620), i + 42 + 66, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.EMERALD), i + 41, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.DIAMOND), i + 41 + 22, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.GOLD_INGOT), i + 42 + 44, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.IRON_INGOT), i + 42 + 66, j + 109);
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
@@ -253,7 +253,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		private Text method_30902(StatusEffect statusEffect, boolean bl) {
 			MutableText mutableText = new TranslatableText(statusEffect.getTranslationKey());
-			if (!bl && statusEffect != StatusEffects.field_5924) {
+			if (!bl && statusEffect != StatusEffects.REGENERATION) {
 				mutableText.append(" II");
 			}
 

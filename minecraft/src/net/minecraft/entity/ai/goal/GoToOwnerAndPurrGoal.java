@@ -14,7 +14,7 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 		super(cat, speed, range, 6);
 		this.cat = cat;
 		this.lowestY = -2;
-		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
 	}
 
 	@Override
@@ -52,6 +52,6 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 
 	@Override
 	protected boolean isTargetPos(WorldView world, BlockPos pos) {
-		return world.isAir(pos.up()) && world.getBlockState(pos).getBlock().isIn(BlockTags.field_16443);
+		return world.isAir(pos.up()) && world.getBlockState(pos).getBlock().isIn(BlockTags.BEDS);
 	}
 }

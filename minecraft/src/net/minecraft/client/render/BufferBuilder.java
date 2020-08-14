@@ -233,11 +233,11 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		this.elementOffset = this.elementOffset + this.currentElement.getSize();
 		VertexFormatElement vertexFormatElement = (VertexFormatElement)immutableList.get(this.currentElementId);
 		this.currentElement = vertexFormatElement;
-		if (vertexFormatElement.getType() == VertexFormatElement.Type.field_1629) {
+		if (vertexFormatElement.getType() == VertexFormatElement.Type.PADDING) {
 			this.nextElement();
 		}
 
-		if (this.colorFixed && this.currentElement.getType() == VertexFormatElement.Type.field_1632) {
+		if (this.colorFixed && this.currentElement.getType() == VertexFormatElement.Type.COLOR) {
 			BufferVertexConsumer.super.color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha);
 		}
 	}

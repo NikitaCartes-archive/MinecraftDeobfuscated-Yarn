@@ -59,58 +59,58 @@ import net.minecraft.world.gen.trunk.MegaJungleTrunkPlacer;
 import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
 
 public class ConfiguredFeatures {
-	public static final ConfiguredFeature<?, ?> field_26040 = register(
-		"end_spike", Feature.field_13522.configure(new EndSpikeFeatureConfig(false, ImmutableList.of(), null))
+	public static final ConfiguredFeature<?, ?> END_SPIKE = register(
+		"end_spike", Feature.END_SPIKE.configure(new EndSpikeFeatureConfig(false, ImmutableList.of(), null))
 	);
-	public static final ConfiguredFeature<?, ?> field_26091 = register(
+	public static final ConfiguredFeature<?, ?> END_GATEWAY = register(
 		"end_gateway",
-		Feature.field_13564
+		Feature.END_GATEWAY
 			.configure(EndGatewayFeatureConfig.createConfig(ServerWorld.END_SPAWN_POS, true))
-			.method_23388(Decorator.field_14230.configure(DecoratorConfig.DEFAULT))
+			.decorate(Decorator.END_GATEWAY.configure(DecoratorConfig.DEFAULT))
 	);
-	public static final ConfiguredFeature<?, ?> field_26118 = register(
-		"end_gateway_delayed", Feature.field_13564.configure(EndGatewayFeatureConfig.createConfig())
+	public static final ConfiguredFeature<?, ?> END_GATEWAY_DELAYED = register(
+		"end_gateway_delayed", Feature.END_GATEWAY.configure(EndGatewayFeatureConfig.createConfig())
 	);
-	public static final ConfiguredFeature<?, ?> field_26119 = register(
-		"chorus_plant", Feature.field_13552.configure(FeatureConfig.DEFAULT).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).repeatRandomly(4)
+	public static final ConfiguredFeature<?, ?> CHORUS_PLANT = register(
+		"chorus_plant", Feature.CHORUS_PLANT.configure(FeatureConfig.DEFAULT).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).repeatRandomly(4)
 	);
-	public static final ConfiguredFeature<?, ?> field_26120 = register("end_island", Feature.field_13574.configure(FeatureConfig.DEFAULT));
-	public static final ConfiguredFeature<?, ?> field_26121 = register(
-		"end_island_decorated", field_26120.method_23388(Decorator.field_14251.configure(DecoratorConfig.DEFAULT))
+	public static final ConfiguredFeature<?, ?> END_ISLAND = register("end_island", Feature.END_ISLAND.configure(FeatureConfig.DEFAULT));
+	public static final ConfiguredFeature<?, ?> END_ISLAND_DECORATED = register(
+		"end_island_decorated", END_ISLAND.decorate(Decorator.END_ISLAND.configure(DecoratorConfig.DEFAULT))
 	);
-	public static final ConfiguredFeature<?, ?> field_26122 = register(
+	public static final ConfiguredFeature<?, ?> DELTA = register(
 		"delta",
-		Feature.field_23885
+		Feature.DELTA_FEATURE
 			.configure(
 				new DeltaFeatureConfig(
 					ConfiguredFeatures.States.LAVA_BLOCK, ConfiguredFeatures.States.MAGMA_BLOCK, UniformIntDistribution.of(3, 4), UniformIntDistribution.of(0, 2)
 				)
 			)
-			.method_23388(Decorator.field_25860.configure(new CountConfig(40)))
+			.decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(40)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26123 = register(
+	public static final ConfiguredFeature<?, ?> SMALL_BASALT_COLUMNS = register(
 		"small_basalt_columns",
-		Feature.field_23884
+		Feature.BASALT_COLUMNS
 			.configure(new BasaltColumnsFeatureConfig(UniformIntDistribution.of(1), UniformIntDistribution.of(1, 3)))
-			.method_23388(Decorator.field_25860.configure(new CountConfig(4)))
+			.decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(4)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26124 = register(
+	public static final ConfiguredFeature<?, ?> LARGE_BASALT_COLUMNS = register(
 		"large_basalt_columns",
-		Feature.field_23884
+		Feature.BASALT_COLUMNS
 			.configure(new BasaltColumnsFeatureConfig(UniformIntDistribution.of(2, 1), UniformIntDistribution.of(5, 5)))
-			.method_23388(Decorator.field_25860.configure(new CountConfig(2)))
+			.decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(2)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26125 = register(
+	public static final ConfiguredFeature<?, ?> BASALT_BLOBS = register(
 		"basalt_blobs",
-		Feature.field_23886
+		Feature.NETHERRACK_REPLACE_BLOBS
 			.configure(new NetherrackReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BASALT, UniformIntDistribution.of(3, 4)))
 			.method_30377(128)
 			.spreadHorizontally()
 			.repeat(75)
 	);
-	public static final ConfiguredFeature<?, ?> field_26126 = register(
+	public static final ConfiguredFeature<?, ?> BLACKSTONE_BLOBS = register(
 		"blackstone_blobs",
-		Feature.field_23886
+		Feature.NETHERRACK_REPLACE_BLOBS
 			.configure(
 				new NetherrackReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BLACKSTONE, UniformIntDistribution.of(3, 4))
 			)
@@ -118,68 +118,70 @@ public class ConfiguredFeatures {
 			.spreadHorizontally()
 			.repeat(25)
 	);
-	public static final ConfiguredFeature<?, ?> field_26127 = register(
-		"glowstone_extra", Feature.field_13568.configure(FeatureConfig.DEFAULT).method_23388(Decorator.field_25875.configure(new CountConfig(10)))
+	public static final ConfiguredFeature<?, ?> GLOWSTONE_EXTRA = register(
+		"glowstone_extra", Feature.GLOWSTONE_BLOB.configure(FeatureConfig.DEFAULT).decorate(Decorator.GLOWSTONE.configure(new CountConfig(10)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26128 = register(
-		"glowstone", Feature.field_13568.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
+	public static final ConfiguredFeature<?, ?> GLOWSTONE = register(
+		"glowstone", Feature.GLOWSTONE_BLOB.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26129 = register(
+	public static final ConfiguredFeature<?, ?> CRIMSON_FOREST_VEGETATION = register(
 		"crimson_forest_vegetation",
-		Feature.field_22186.configure(ConfiguredFeatures.Configs.CRIMSON_ROOTS_CONFIG).method_23388(Decorator.field_25860.configure(new CountConfig(6)))
+		Feature.NETHER_FOREST_VEGETATION
+			.configure(ConfiguredFeatures.Configs.CRIMSON_ROOTS_CONFIG)
+			.decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(6)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26130 = register(
+	public static final ConfiguredFeature<?, ?> WARPED_FOREST_VEGETATION = register(
 		"warped_forest_vegetation",
-		Feature.field_22186.configure(ConfiguredFeatures.Configs.WARPED_ROOTS_CONFIG).method_23388(Decorator.field_25860.configure(new CountConfig(5)))
+		Feature.NETHER_FOREST_VEGETATION.configure(ConfiguredFeatures.Configs.WARPED_ROOTS_CONFIG).decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(5)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26131 = register(
+	public static final ConfiguredFeature<?, ?> NETHER_SPROUTS = register(
 		"nether_sprouts",
-		Feature.field_22186.configure(ConfiguredFeatures.Configs.NETHER_SPROUTS_CONFIG).method_23388(Decorator.field_25860.configure(new CountConfig(4)))
+		Feature.NETHER_FOREST_VEGETATION
+			.configure(ConfiguredFeatures.Configs.NETHER_SPROUTS_CONFIG)
+			.decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(4)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26132 = register(
-		"twisting_vines", Feature.field_23088.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
+	public static final ConfiguredFeature<?, ?> TWISTING_VINES = register(
+		"twisting_vines", Feature.TWISTING_VINES.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26133 = register(
-		"weeping_vines", Feature.field_22187.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
+	public static final ConfiguredFeature<?, ?> WEEPING_VINES = register(
+		"weeping_vines", Feature.WEEPING_VINES.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26134 = register(
-		"basalt_pillar", Feature.field_22188.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
+	public static final ConfiguredFeature<?, ?> BASALT_PILLAR = register(
+		"basalt_pillar", Feature.BASALT_PILLAR.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26135 = register(
-		"seagrass_cold", Feature.SEAGRASS.configure(new ProbabilityConfig(0.3F)).repeat(32).method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+	public static final ConfiguredFeature<?, ?> SEAGRASS_COLD = register(
+		"seagrass_cold", Feature.SEAGRASS.configure(new ProbabilityConfig(0.3F)).repeat(32).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_26136 = register(
-		"seagrass_deep_cold",
-		Feature.SEAGRASS.configure(new ProbabilityConfig(0.8F)).repeat(40).method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+	public static final ConfiguredFeature<?, ?> SEAGRASS_DEEP_COLD = register(
+		"seagrass_deep_cold", Feature.SEAGRASS.configure(new ProbabilityConfig(0.8F)).repeat(40).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_26137 = register(
-		"seagrass_normal", Feature.SEAGRASS.configure(new ProbabilityConfig(0.3F)).repeat(48).method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+	public static final ConfiguredFeature<?, ?> SEAGRASS_NORMAL = register(
+		"seagrass_normal", Feature.SEAGRASS.configure(new ProbabilityConfig(0.3F)).repeat(48).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_26138 = register(
-		"seagrass_river", Feature.SEAGRASS.configure(new ProbabilityConfig(0.4F)).repeat(48).method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+	public static final ConfiguredFeature<?, ?> SEAGRASS_RIVER = register(
+		"seagrass_river", Feature.SEAGRASS.configure(new ProbabilityConfig(0.4F)).repeat(48).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_26139 = register(
-		"seagrass_deep", Feature.SEAGRASS.configure(new ProbabilityConfig(0.8F)).repeat(48).method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+	public static final ConfiguredFeature<?, ?> SEAGRASS_DEEP = register(
+		"seagrass_deep", Feature.SEAGRASS.configure(new ProbabilityConfig(0.8F)).repeat(48).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_26140 = register(
-		"seagrass_swamp", Feature.SEAGRASS.configure(new ProbabilityConfig(0.6F)).repeat(64).method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+	public static final ConfiguredFeature<?, ?> SEAGRASS_SWAMP = register(
+		"seagrass_swamp", Feature.SEAGRASS.configure(new ProbabilityConfig(0.6F)).repeat(64).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_25949 = register(
-		"seagrass_warm", Feature.SEAGRASS.configure(new ProbabilityConfig(0.3F)).repeat(80).method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+	public static final ConfiguredFeature<?, ?> SEAGRASS_WARM = register(
+		"seagrass_warm", Feature.SEAGRASS.configure(new ProbabilityConfig(0.3F)).repeat(80).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_25950 = register(
-		"seagrass_deep_warm",
-		Feature.SEAGRASS.configure(new ProbabilityConfig(0.8F)).repeat(80).method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+	public static final ConfiguredFeature<?, ?> SEAGRASS_DEEP_WARM = register(
+		"seagrass_deep_warm", Feature.SEAGRASS.configure(new ProbabilityConfig(0.8F)).repeat(80).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_25951 = register(
-		"sea_pickle", Feature.field_13575.configure(new CountConfig(20)).method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP).applyChance(16)
+	public static final ConfiguredFeature<?, ?> SEA_PICKLE = register(
+		"sea_pickle", Feature.SEA_PICKLE.configure(new CountConfig(20)).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP).applyChance(16)
 	);
-	public static final ConfiguredFeature<?, ?> field_25952 = register(
-		"ice_spike", Feature.field_13562.configure(FeatureConfig.DEFAULT).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).repeat(3)
+	public static final ConfiguredFeature<?, ?> ICE_SPIKE = register(
+		"ice_spike", Feature.ICE_SPIKE.configure(FeatureConfig.DEFAULT).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).repeat(3)
 	);
-	public static final ConfiguredFeature<?, ?> field_25953 = register(
+	public static final ConfiguredFeature<?, ?> ICE_PATCH = register(
 		"ice_patch",
-		Feature.field_13551
+		Feature.ICE_PATCH
 			.configure(
 				new DiskFeatureConfig(
 					ConfiguredFeatures.States.PACKED_ICE,
@@ -196,19 +198,19 @@ public class ConfiguredFeatures {
 					)
 				)
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeat(2)
 	);
-	public static final ConfiguredFeature<?, ?> field_25954 = register(
+	public static final ConfiguredFeature<?, ?> FOREST_ROCK = register(
 		"forest_rock",
-		Feature.field_13584
+		Feature.FOREST_ROCK
 			.configure(new SingleStateFeatureConfig(ConfiguredFeatures.States.MOSSY_COBBLESTONE))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeatRandomly(2)
 	);
-	public static final ConfiguredFeature<?, ?> field_25955 = register(
+	public static final ConfiguredFeature<?, ?> SEAGRASS_SIMPLE = register(
 		"seagrass_simple",
-		Feature.field_13518
+		Feature.SIMPLE_BLOCK
 			.configure(
 				new SimpleBlockFeatureConfig(
 					ConfiguredFeatures.States.SEAGRASS,
@@ -217,86 +219,83 @@ public class ConfiguredFeatures {
 					ImmutableList.of(ConfiguredFeatures.States.WATER_BLOCK)
 				)
 			)
-			.method_23388(Decorator.field_14229.configure(new CarvingMaskDecoratorConfig(GenerationStep.Carver.field_13166, 0.1F)))
+			.decorate(Decorator.CARVING_MASK.configure(new CarvingMaskDecoratorConfig(GenerationStep.Carver.LIQUID, 0.1F)))
 	);
-	public static final ConfiguredFeature<?, ?> field_25956 = register(
+	public static final ConfiguredFeature<?, ?> ICEBERG_PACKED = register(
 		"iceberg_packed",
-		Feature.field_13544
+		Feature.ICEBERG
 			.configure(new SingleStateFeatureConfig(ConfiguredFeatures.States.PACKED_ICE))
-			.method_23388(Decorator.field_14243.configure(NopeDecoratorConfig.INSTANCE))
+			.decorate(Decorator.ICEBERG.configure(NopeDecoratorConfig.INSTANCE))
 			.applyChance(16)
 	);
-	public static final ConfiguredFeature<?, ?> field_25957 = register(
+	public static final ConfiguredFeature<?, ?> ICEBERG_BLUE = register(
 		"iceberg_blue",
-		Feature.field_13544
+		Feature.ICEBERG
 			.configure(new SingleStateFeatureConfig(ConfiguredFeatures.States.BLUE_ICE))
-			.method_23388(Decorator.field_14243.configure(NopeDecoratorConfig.INSTANCE))
+			.decorate(Decorator.ICEBERG.configure(NopeDecoratorConfig.INSTANCE))
 			.applyChance(200)
 	);
-	public static final ConfiguredFeature<?, ?> field_25958 = register(
+	public static final ConfiguredFeature<?, ?> KELP_COLD = register(
 		"kelp_cold",
-		Feature.field_13535
+		Feature.KELP
 			.configure(FeatureConfig.DEFAULT)
-			.method_23388(ConfiguredFeatures.Decorators.TOP_SOLID_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.TOP_SOLID_HEIGHTMAP)
 			.spreadHorizontally()
-			.method_23388(Decorator.field_25864.configure(new CountNoiseBiasedDecoratorConfig(120, 80.0, 0.0)))
+			.decorate(Decorator.COUNT_NOISE_BIASED.configure(new CountNoiseBiasedDecoratorConfig(120, 80.0, 0.0)))
 	);
-	public static final ConfiguredFeature<?, ?> field_25959 = register(
+	public static final ConfiguredFeature<?, ?> KELP_WARM = register(
 		"kelp_warm",
-		Feature.field_13535
+		Feature.KELP
 			.configure(FeatureConfig.DEFAULT)
-			.method_23388(ConfiguredFeatures.Decorators.TOP_SOLID_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.TOP_SOLID_HEIGHTMAP)
 			.spreadHorizontally()
-			.method_23388(Decorator.field_25864.configure(new CountNoiseBiasedDecoratorConfig(80, 80.0, 0.0)))
+			.decorate(Decorator.COUNT_NOISE_BIASED.configure(new CountNoiseBiasedDecoratorConfig(80, 80.0, 0.0)))
 	);
-	public static final ConfiguredFeature<?, ?> field_25960 = register(
+	public static final ConfiguredFeature<?, ?> BLUE_ICE = register(
 		"blue_ice",
-		Feature.field_13560
+		Feature.BLUE_ICE
 			.configure(FeatureConfig.DEFAULT)
-			.method_23388(Decorator.field_25870.configure(new RangeDecoratorConfig(30, 32, 64)))
+			.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(30, 32, 64)))
 			.spreadHorizontally()
 			.repeatRandomly(19)
 	);
-	public static final ConfiguredFeature<?, ?> field_25961 = register(
-		"bamboo_light",
-		Feature.field_13540.configure(new ProbabilityConfig(0.0F)).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(16)
+	public static final ConfiguredFeature<?, ?> BAMBOO_LIGHT = register(
+		"bamboo_light", Feature.BAMBOO.configure(new ProbabilityConfig(0.0F)).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(16)
 	);
-	public static final ConfiguredFeature<?, ?> field_25962 = register(
+	public static final ConfiguredFeature<?, ?> BAMBOO = register(
 		"bamboo",
-		Feature.field_13540
+		Feature.BAMBOO
 			.configure(new ProbabilityConfig(0.2F))
-			.method_23388(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
 			.spreadHorizontally()
-			.method_23388(Decorator.field_25864.configure(new CountNoiseBiasedDecoratorConfig(160, 80.0, 0.3)))
+			.decorate(Decorator.COUNT_NOISE_BIASED.configure(new CountNoiseBiasedDecoratorConfig(160, 80.0, 0.3)))
 	);
-	public static final ConfiguredFeature<?, ?> field_25963 = register(
-		"vines", Feature.field_13559.configure(FeatureConfig.DEFAULT).spreadHorizontally().repeat(50)
-	);
-	public static final ConfiguredFeature<?, ?> field_25964 = register(
+	public static final ConfiguredFeature<?, ?> VINES = register("vines", Feature.VINES.configure(FeatureConfig.DEFAULT).spreadHorizontally().repeat(50));
+	public static final ConfiguredFeature<?, ?> LAKE_WATER = register(
 		"lake_water",
-		Feature.field_13573
+		Feature.LAKE
 			.configure(new SingleStateFeatureConfig(ConfiguredFeatures.States.WATER_BLOCK))
-			.method_23388(Decorator.field_14242.configure(new ChanceDecoratorConfig(4)))
+			.decorate(Decorator.WATER_LAKE.configure(new ChanceDecoratorConfig(4)))
 	);
-	public static final ConfiguredFeature<?, ?> field_25965 = register(
+	public static final ConfiguredFeature<?, ?> LAKE_LAVA = register(
 		"lake_lava",
-		Feature.field_13573
+		Feature.LAKE
 			.configure(new SingleStateFeatureConfig(ConfiguredFeatures.States.LAVA_BLOCK))
-			.method_23388(Decorator.field_14237.configure(new ChanceDecoratorConfig(80)))
+			.decorate(Decorator.LAVA_LAKE.configure(new ChanceDecoratorConfig(80)))
 	);
-	public static final ConfiguredFeature<?, ?> field_25966 = register(
+	public static final ConfiguredFeature<?, ?> DISK_CLAY = register(
 		"disk_clay",
-		Feature.field_13509
+		Feature.DISK
 			.configure(
 				new DiskFeatureConfig(
 					ConfiguredFeatures.States.CLAY, UniformIntDistribution.of(2, 1), 1, ImmutableList.of(ConfiguredFeatures.States.DIRT, ConfiguredFeatures.States.CLAY)
 				)
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_25967 = register(
+	public static final ConfiguredFeature<?, ?> DISK_GRAVEL = register(
 		"disk_gravel",
-		Feature.field_13509
+		Feature.DISK
 			.configure(
 				new DiskFeatureConfig(
 					ConfiguredFeatures.States.GRAVEL,
@@ -305,11 +304,11 @@ public class ConfiguredFeatures {
 					ImmutableList.of(ConfiguredFeatures.States.DIRT, ConfiguredFeatures.States.GRASS_BLOCK)
 				)
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_25968 = register(
+	public static final ConfiguredFeature<?, ?> DISK_SAND = register(
 		"disk_sand",
-		Feature.field_13509
+		Feature.DISK
 			.configure(
 				new DiskFeatureConfig(
 					ConfiguredFeatures.States.SAND,
@@ -318,117 +317,115 @@ public class ConfiguredFeatures {
 					ImmutableList.of(ConfiguredFeatures.States.DIRT, ConfiguredFeatures.States.GRASS_BLOCK)
 				)
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
 			.repeat(3)
 	);
-	public static final ConfiguredFeature<?, ?> field_25969 = register("freeze_top_layer", Feature.field_13539.configure(FeatureConfig.DEFAULT));
-	public static final ConfiguredFeature<?, ?> field_25970 = register("bonus_chest", Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT));
-	public static final ConfiguredFeature<?, ?> field_25971 = register("void_start_platform", Feature.field_13591.configure(FeatureConfig.DEFAULT));
-	public static final ConfiguredFeature<?, ?> field_25972 = register(
-		"monster_room", Feature.field_13579.configure(FeatureConfig.DEFAULT).method_30377(256).spreadHorizontally().repeat(8)
+	public static final ConfiguredFeature<?, ?> FREEZE_TOP_LAYER = register("freeze_top_layer", Feature.FREEZE_TOP_LAYER.configure(FeatureConfig.DEFAULT));
+	public static final ConfiguredFeature<?, ?> BONUS_CHEST = register("bonus_chest", Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT));
+	public static final ConfiguredFeature<?, ?> VOID_START_PLATFORM = register("void_start_platform", Feature.VOID_START_PLATFORM.configure(FeatureConfig.DEFAULT));
+	public static final ConfiguredFeature<?, ?> MONSTER_ROOM = register(
+		"monster_room", Feature.MONSTER_ROOM.configure(FeatureConfig.DEFAULT).method_30377(256).spreadHorizontally().repeat(8)
 	);
-	public static final ConfiguredFeature<?, ?> field_25973 = register(
-		"desert_well", Feature.field_13592.configure(FeatureConfig.DEFAULT).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(1000)
+	public static final ConfiguredFeature<?, ?> DESERT_WELL = register(
+		"desert_well", Feature.DESERT_WELL.configure(FeatureConfig.DEFAULT).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(1000)
 	);
-	public static final ConfiguredFeature<?, ?> field_25974 = register("fossil", Feature.field_13516.configure(FeatureConfig.DEFAULT).applyChance(64));
-	public static final ConfiguredFeature<?, ?> field_26002 = register(
+	public static final ConfiguredFeature<?, ?> FOSSIL = register("fossil", Feature.FOSSIL.configure(FeatureConfig.DEFAULT).applyChance(64));
+	public static final ConfiguredFeature<?, ?> SPRING_LAVA_DOUBLE = register(
 		"spring_lava_double",
-		Feature.field_13513
+		Feature.SPRING_FEATURE
 			.configure(ConfiguredFeatures.Configs.LAVA_SPRING_CONFIG)
-			.method_23388(Decorator.field_25872.configure(new RangeDecoratorConfig(8, 16, 256)))
+			.decorate(Decorator.RANGE_VERY_BIASED.configure(new RangeDecoratorConfig(8, 16, 256)))
 			.spreadHorizontally()
 			.repeat(40)
 	);
-	public static final ConfiguredFeature<?, ?> field_26003 = register(
+	public static final ConfiguredFeature<?, ?> SPRING_LAVA = register(
 		"spring_lava",
-		Feature.field_13513
+		Feature.SPRING_FEATURE
 			.configure(ConfiguredFeatures.Configs.LAVA_SPRING_CONFIG)
-			.method_23388(Decorator.field_25872.configure(new RangeDecoratorConfig(8, 16, 256)))
+			.decorate(Decorator.RANGE_VERY_BIASED.configure(new RangeDecoratorConfig(8, 16, 256)))
 			.spreadHorizontally()
 			.repeat(20)
 	);
-	public static final ConfiguredFeature<?, ?> field_26004 = register(
+	public static final ConfiguredFeature<?, ?> SPRING_DELTA = register(
 		"spring_delta",
-		Feature.field_13513
+		Feature.SPRING_FEATURE
 			.configure(
 				new SpringFeatureConfig(
 					ConfiguredFeatures.States.LAVA_FLUID,
 					true,
 					4,
 					1,
-					ImmutableSet.of(Blocks.field_10515, Blocks.field_10114, Blocks.field_10255, Blocks.field_10092, Blocks.field_23869)
+					ImmutableSet.of(Blocks.NETHERRACK, Blocks.SOUL_SAND, Blocks.GRAVEL, Blocks.MAGMA_BLOCK, Blocks.BLACKSTONE)
 				)
 			)
-			.method_23388(ConfiguredFeatures.Decorators.NETHER_SPRING)
+			.decorate(ConfiguredFeatures.Decorators.NETHER_SPRING)
 			.spreadHorizontally()
 			.repeat(16)
 	);
-	public static final ConfiguredFeature<?, ?> field_26005 = register(
+	public static final ConfiguredFeature<?, ?> SPRING_CLOSED = register(
 		"spring_closed",
-		Feature.field_13513
+		Feature.SPRING_FEATURE
 			.configure(ConfiguredFeatures.Configs.ENCLOSED_NETHER_SPRING_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.NETHER_ORE)
+			.decorate(ConfiguredFeatures.Decorators.NETHER_ORE)
 			.spreadHorizontally()
 			.repeat(16)
 	);
-	public static final ConfiguredFeature<?, ?> field_26006 = register(
+	public static final ConfiguredFeature<?, ?> SPRING_CLOSED_DOUBLE = register(
 		"spring_closed_double",
-		Feature.field_13513
+		Feature.SPRING_FEATURE
 			.configure(ConfiguredFeatures.Configs.ENCLOSED_NETHER_SPRING_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.NETHER_ORE)
+			.decorate(ConfiguredFeatures.Decorators.NETHER_ORE)
 			.spreadHorizontally()
 			.repeat(32)
 	);
-	public static final ConfiguredFeature<?, ?> field_26007 = register(
+	public static final ConfiguredFeature<?, ?> SPRING_OPEN = register(
 		"spring_open",
-		Feature.field_13513
-			.configure(new SpringFeatureConfig(ConfiguredFeatures.States.LAVA_FLUID, false, 4, 1, ImmutableSet.of(Blocks.field_10515)))
-			.method_23388(ConfiguredFeatures.Decorators.NETHER_SPRING)
+		Feature.SPRING_FEATURE
+			.configure(new SpringFeatureConfig(ConfiguredFeatures.States.LAVA_FLUID, false, 4, 1, ImmutableSet.of(Blocks.NETHERRACK)))
+			.decorate(ConfiguredFeatures.Decorators.NETHER_SPRING)
 			.spreadHorizontally()
 			.repeat(8)
 	);
-	public static final ConfiguredFeature<?, ?> field_26008 = register(
+	public static final ConfiguredFeature<?, ?> SPRING_WATER = register(
 		"spring_water",
-		Feature.field_13513
+		Feature.SPRING_FEATURE
 			.configure(
-				new SpringFeatureConfig(
-					ConfiguredFeatures.States.WATER_FLUID, true, 4, 1, ImmutableSet.of(Blocks.field_10340, Blocks.field_10474, Blocks.field_10508, Blocks.field_10115)
-				)
+				new SpringFeatureConfig(ConfiguredFeatures.States.WATER_FLUID, true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE))
 			)
-			.method_23388(Decorator.field_25871.configure(new RangeDecoratorConfig(8, 8, 256)))
+			.decorate(Decorator.RANGE_BIASED.configure(new RangeDecoratorConfig(8, 8, 256)))
 			.spreadHorizontally()
 			.repeat(50)
 	);
-	public static final ConfiguredFeature<?, ?> field_26009 = register(
-		"pile_hay", Feature.field_21221.configure(new BlockPileFeatureConfig(new PillarBlockStateProvider(Blocks.field_10359)))
+	public static final ConfiguredFeature<?, ?> PILE_HAY = register(
+		"pile_hay", Feature.BLOCK_PILE.configure(new BlockPileFeatureConfig(new PillarBlockStateProvider(Blocks.HAY_BLOCK)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26010 = register(
-		"pile_melon", Feature.field_21221.configure(new BlockPileFeatureConfig(new SimpleBlockStateProvider(ConfiguredFeatures.States.MELON)))
+	public static final ConfiguredFeature<?, ?> PILE_MELON = register(
+		"pile_melon", Feature.BLOCK_PILE.configure(new BlockPileFeatureConfig(new SimpleBlockStateProvider(ConfiguredFeatures.States.MELON)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26011 = register(
-		"pile_snow", Feature.field_21221.configure(new BlockPileFeatureConfig(new SimpleBlockStateProvider(ConfiguredFeatures.States.SNOW)))
+	public static final ConfiguredFeature<?, ?> PILE_SNOW = register(
+		"pile_snow", Feature.BLOCK_PILE.configure(new BlockPileFeatureConfig(new SimpleBlockStateProvider(ConfiguredFeatures.States.SNOW)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26012 = register(
+	public static final ConfiguredFeature<?, ?> PILE_ICE = register(
 		"pile_ice",
-		Feature.field_21221
+		Feature.BLOCK_PILE
 			.configure(
 				new BlockPileFeatureConfig(
 					new WeightedBlockStateProvider().addState(ConfiguredFeatures.States.BLUE_ICE, 1).addState(ConfiguredFeatures.States.PACKED_ICE, 5)
 				)
 			)
 	);
-	public static final ConfiguredFeature<?, ?> field_26013 = register(
+	public static final ConfiguredFeature<?, ?> PILE_PUMPKIN = register(
 		"pile_pumpkin",
-		Feature.field_21221
+		Feature.BLOCK_PILE
 			.configure(
 				new BlockPileFeatureConfig(
 					new WeightedBlockStateProvider().addState(ConfiguredFeatures.States.PUMPKIN, 19).addState(ConfiguredFeatures.States.JACK_O_LANTERN, 1)
 				)
 			)
 	);
-	public static final ConfiguredFeature<?, ?> field_26014 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_FIRE = register(
 		"patch_fire",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.FIRE), SimpleBlockPlacer.INSTANCE)
 					.tries(64)
@@ -436,11 +433,11 @@ public class ConfiguredFeatures {
 					.cannotProject()
 					.build()
 			)
-			.method_23388(ConfiguredFeatures.Decorators.FIRE)
+			.decorate(ConfiguredFeatures.Decorators.FIRE)
 	);
-	public static final ConfiguredFeature<?, ?> field_26015 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_SOUL_FIRE = register(
 		"patch_soul_fire",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.SOUL_FIRE), new SimpleBlockPlacer())
 					.tries(64)
@@ -448,11 +445,11 @@ public class ConfiguredFeatures {
 					.cannotProject()
 					.build()
 			)
-			.method_23388(ConfiguredFeatures.Decorators.FIRE)
+			.decorate(ConfiguredFeatures.Decorators.FIRE)
 	);
-	public static final ConfiguredFeature<?, ?> field_26016 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_BROWN_MUSHROOM = register(
 		"patch_brown_mushroom",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.BROWN_MUSHROOM), SimpleBlockPlacer.INSTANCE)
 					.tries(64)
@@ -460,9 +457,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<?, ?> field_26017 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_RED_MUSHROOM = register(
 		"patch_red_mushroom",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.RED_MUSHROOM), SimpleBlockPlacer.INSTANCE)
 					.tries(64)
@@ -470,9 +467,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<?, ?> field_26018 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_CRIMSON_ROOTS = register(
 		"patch_crimson_roots",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.CRIMSON_ROOTS), new SimpleBlockPlacer())
 					.tries(64)
@@ -481,22 +478,22 @@ public class ConfiguredFeatures {
 			)
 			.method_30377(128)
 	);
-	public static final ConfiguredFeature<?, ?> field_26019 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_SUNFLOWER = register(
 		"patch_sunflower",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.SUNFLOWER), new DoublePlantPlacer())
 					.tries(64)
 					.cannotProject()
 					.build()
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26020 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_PUMPKIN = register(
 		"patch_pumpkin",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.PUMPKIN), SimpleBlockPlacer.INSTANCE)
 					.tries(64)
@@ -504,77 +501,71 @@ public class ConfiguredFeatures {
 					.cannotProject()
 					.build()
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 			.applyChance(32)
 	);
-	public static final ConfiguredFeature<?, ?> field_26021 = register(
-		"patch_taiga_grass", Feature.field_21220.configure(ConfiguredFeatures.Configs.TAIGA_GRASS_CONFIG)
+	public static final ConfiguredFeature<?, ?> PATCH_TAIGA_GRASS = register(
+		"patch_taiga_grass", Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.TAIGA_GRASS_CONFIG)
 	);
-	public static final ConfiguredFeature<?, ?> field_26022 = register(
-		"patch_berry_bush", Feature.field_21220.configure(ConfiguredFeatures.Configs.SWEET_BERRY_BUSH_CONFIG)
+	public static final ConfiguredFeature<?, ?> PATCH_BERRY_BUSH = register(
+		"patch_berry_bush", Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.SWEET_BERRY_BUSH_CONFIG)
 	);
-	public static final ConfiguredFeature<?, ?> field_26023 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_GRASS_PLAIN = register(
 		"patch_grass_plain",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.GRASS_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
-			.method_23388(Decorator.field_25863.configure(new CountNoiseDecoratorConfig(-0.8, 5, 10)))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(Decorator.COUNT_NOISE.configure(new CountNoiseDecoratorConfig(-0.8, 5, 10)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26024 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_GRASS_FOREST = register(
 		"patch_grass_forest",
-		Feature.field_21220.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(2)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(2)
 	);
-	public static final ConfiguredFeature<?, ?> field_26025 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_GRASS_BADLANDS = register(
 		"patch_grass_badlands",
-		Feature.field_21220.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 	);
-	public static final ConfiguredFeature<?, ?> field_26026 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_GRASS_SAVANNA = register(
 		"patch_grass_savanna",
-		Feature.field_21220.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(20)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(20)
 	);
-	public static final ConfiguredFeature<?, ?> field_26027 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_GRASS_NORMAL = register(
 		"patch_grass_normal",
-		Feature.field_21220.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(5)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(5)
 	);
-	public static final ConfiguredFeature<?, ?> field_25975 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_GRASS_TAIGA_2 = register(
 		"patch_grass_taiga_2",
-		Feature.field_21220.configure(ConfiguredFeatures.Configs.TAIGA_GRASS_CONFIG).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.TAIGA_GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 	);
-	public static final ConfiguredFeature<?, ?> field_25976 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_GRASS_TAIGA = register(
 		"patch_grass_taiga",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.TAIGA_GRASS_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 			.repeat(7)
 	);
-	public static final ConfiguredFeature<?, ?> field_25977 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_GRASS_JUNGLE = register(
 		"patch_grass_jungle",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.LUSH_GRASS_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 			.repeat(25)
 	);
-	public static final ConfiguredFeature<?, ?> field_25978 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_DEAD_BUSH_2 = register(
 		"patch_dead_bush_2",
-		Feature.field_21220
-			.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
-			.repeat(2)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(2)
 	);
-	public static final ConfiguredFeature<?, ?> field_25979 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_DEAD_BUSH = register(
 		"patch_dead_bush",
-		Feature.field_21220.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 	);
-	public static final ConfiguredFeature<?, ?> field_25980 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_DEAD_BUSH_BADLANDS = register(
 		"patch_dead_bush_badlands",
-		Feature.field_21220
-			.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
-			.repeat(20)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(20)
 	);
-	public static final ConfiguredFeature<?, ?> field_25981 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_MELON = register(
 		"patch_melon",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.MELON), SimpleBlockPlacer.INSTANCE)
 					.tries(64)
@@ -583,56 +574,56 @@ public class ConfiguredFeatures {
 					.cannotProject()
 					.build()
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 	);
-	public static final ConfiguredFeature<?, ?> field_25982 = register(
-		"patch_berry_sparse", field_26022.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+	public static final ConfiguredFeature<?, ?> PATCH_BERRY_SPARSE = register(
+		"patch_berry_sparse", PATCH_BERRY_BUSH.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 	);
-	public static final ConfiguredFeature<?, ?> field_25983 = register(
-		"patch_berry_decorated", field_26022.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(12)
+	public static final ConfiguredFeature<?, ?> PATCH_BERRY_DECORATED = register(
+		"patch_berry_decorated", PATCH_BERRY_BUSH.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(12)
 	);
-	public static final ConfiguredFeature<?, ?> field_25984 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_WATERLILLY = register(
 		"patch_waterlilly",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.LILY_PAD), SimpleBlockPlacer.INSTANCE).tries(10).build()
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 			.repeat(4)
 	);
-	public static final ConfiguredFeature<?, ?> field_25985 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_TALL_GRASS_2 = register(
 		"patch_tall_grass_2",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.TALL_GRASS_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP)
 			.spreadHorizontally()
-			.method_23388(Decorator.field_25863.configure(new CountNoiseDecoratorConfig(-0.8, 0, 7)))
+			.decorate(Decorator.COUNT_NOISE.configure(new CountNoiseDecoratorConfig(-0.8, 0, 7)))
 	);
-	public static final ConfiguredFeature<?, ?> field_25986 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_TALL_GRASS = register(
 		"patch_tall_grass",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.TALL_GRASS_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeat(7)
 	);
-	public static final ConfiguredFeature<?, ?> field_25988 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_LARGE_FERN = register(
 		"patch_large_fern",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.LARGE_FERN), new DoublePlantPlacer())
 					.tries(64)
 					.cannotProject()
 					.build()
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeat(7)
 	);
-	public static final ConfiguredFeature<?, ?> field_25989 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_CACTUS = register(
 		"patch_cactus",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.CACTUS), new ColumnPlacer(1, 2))
 					.tries(10)
@@ -640,279 +631,279 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<?, ?> field_25990 = register(
-		"patch_cactus_desert", field_25989.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(10)
+	public static final ConfiguredFeature<?, ?> PATCH_CACTUS_DESERT = register(
+		"patch_cactus_desert", PATCH_CACTUS.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_25991 = register(
-		"patch_cactus_decorated", field_25989.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(5)
+	public static final ConfiguredFeature<?, ?> PATCH_CACTUS_DECORATED = register(
+		"patch_cactus_decorated", PATCH_CACTUS.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(5)
 	);
-	public static final ConfiguredFeature<?, ?> field_25992 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_SUGAR_CANE_SWAMP = register(
 		"patch_sugar_cane_swamp",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 			.repeat(20)
 	);
-	public static final ConfiguredFeature<?, ?> field_25993 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_SUGAR_CANE_DESERT = register(
 		"patch_sugar_cane_desert",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 			.repeat(60)
 	);
-	public static final ConfiguredFeature<?, ?> field_25994 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_SUGAR_CANE_BADLANDS = register(
 		"patch_sugar_cane_badlands",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 			.repeat(13)
 	);
-	public static final ConfiguredFeature<?, ?> field_25995 = register(
+	public static final ConfiguredFeature<?, ?> PATCH_SUGAR_CANE = register(
 		"patch_sugar_cane",
-		Feature.field_21220
+		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 			.repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_25996 = register("brown_mushroom_nether", field_26016.method_30377(128).applyChance(2));
-	public static final ConfiguredFeature<?, ?> field_25997 = register("red_mushroom_nether", field_26017.method_30377(128).applyChance(2));
-	public static final ConfiguredFeature<?, ?> field_25998 = register(
-		"brown_mushroom_normal", field_26016.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(4)
+	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_NETHER = register("brown_mushroom_nether", PATCH_BROWN_MUSHROOM.method_30377(128).applyChance(2));
+	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_NETHER = register("red_mushroom_nether", PATCH_RED_MUSHROOM.method_30377(128).applyChance(2));
+	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_NORMAL = register(
+		"brown_mushroom_normal", PATCH_BROWN_MUSHROOM.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(4)
 	);
-	public static final ConfiguredFeature<?, ?> field_25999 = register(
-		"red_mushroom_normal", field_26017.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(8)
+	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_NORMAL = register(
+		"red_mushroom_normal", PATCH_RED_MUSHROOM.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(8)
 	);
-	public static final ConfiguredFeature<?, ?> field_26000 = register(
-		"brown_mushroom_taiga", field_26016.applyChance(4).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_TAIGA = register(
+		"brown_mushroom_taiga", PATCH_BROWN_MUSHROOM.applyChance(4).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_26001 = register(
-		"red_mushroom_taiga", field_26017.applyChance(8).method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_TAIGA = register(
+		"red_mushroom_taiga", PATCH_RED_MUSHROOM.applyChance(8).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 	);
-	public static final ConfiguredFeature<?, ?> field_26055 = register("brown_mushroom_giant", field_26000.repeat(3));
-	public static final ConfiguredFeature<?, ?> field_26056 = register("red_mushroom_giant", field_26001.repeat(3));
-	public static final ConfiguredFeature<?, ?> field_26057 = register("brown_mushroom_swamp", field_26000.repeat(8));
-	public static final ConfiguredFeature<?, ?> field_26058 = register("red_mushroom_swamp", field_26001.repeat(8));
-	public static final ConfiguredFeature<?, ?> field_26059 = register(
+	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_GIANT = register("brown_mushroom_giant", BROWN_MUSHROOM_TAIGA.repeat(3));
+	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_GIANT = register("red_mushroom_giant", RED_MUSHROOM_TAIGA.repeat(3));
+	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_SWAMP = register("brown_mushroom_swamp", BROWN_MUSHROOM_TAIGA.repeat(8));
+	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_SWAMP = register("red_mushroom_swamp", RED_MUSHROOM_TAIGA.repeat(8));
+	public static final ConfiguredFeature<?, ?> ORE_MAGMA = register(
 		"ore_magma",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.MAGMA_BLOCK, 33))
-			.method_23388(Decorator.field_14244.configure(NopeDecoratorConfig.INSTANCE))
+			.decorate(Decorator.MAGMA.configure(NopeDecoratorConfig.INSTANCE))
 			.spreadHorizontally()
 			.repeat(4)
 	);
-	public static final ConfiguredFeature<?, ?> field_26060 = register(
+	public static final ConfiguredFeature<?, ?> ORE_SOUL_SAND = register(
 		"ore_soul_sand",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.SOUL_SAND, 12))
 			.method_30377(32)
 			.spreadHorizontally()
 			.repeat(12)
 	);
-	public static final ConfiguredFeature<?, ?> field_26061 = register(
+	public static final ConfiguredFeature<?, ?> ORE_GOLD_DELTAS = register(
 		"ore_gold_deltas",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.NETHER_GOLD_ORE, 10))
-			.method_23388(ConfiguredFeatures.Decorators.NETHER_ORE)
+			.decorate(ConfiguredFeatures.Decorators.NETHER_ORE)
 			.spreadHorizontally()
 			.repeat(20)
 	);
-	public static final ConfiguredFeature<?, ?> field_26062 = register(
+	public static final ConfiguredFeature<?, ?> ORE_QUARTZ_DELTAS = register(
 		"ore_quartz_deltas",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.NETHER_QUARTZ_ORE, 14))
-			.method_23388(ConfiguredFeatures.Decorators.NETHER_ORE)
+			.decorate(ConfiguredFeatures.Decorators.NETHER_ORE)
 			.spreadHorizontally()
 			.repeat(32)
 	);
-	public static final ConfiguredFeature<?, ?> field_26063 = register(
+	public static final ConfiguredFeature<?, ?> ORE_GOLD_NETHER = register(
 		"ore_gold_nether",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.NETHER_GOLD_ORE, 10))
-			.method_23388(ConfiguredFeatures.Decorators.NETHER_ORE)
+			.decorate(ConfiguredFeatures.Decorators.NETHER_ORE)
 			.spreadHorizontally()
 			.repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26064 = register(
+	public static final ConfiguredFeature<?, ?> ORE_QUARTZ_NETHER = register(
 		"ore_quartz_nether",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.NETHER_QUARTZ_ORE, 14))
-			.method_23388(ConfiguredFeatures.Decorators.NETHER_ORE)
+			.decorate(ConfiguredFeatures.Decorators.NETHER_ORE)
 			.spreadHorizontally()
 			.repeat(16)
 	);
-	public static final ConfiguredFeature<?, ?> field_26065 = register(
+	public static final ConfiguredFeature<?, ?> ORE_GRAVEL_NETHER = register(
 		"ore_gravel_nether",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.GRAVEL, 33))
-			.method_23388(Decorator.field_25870.configure(new RangeDecoratorConfig(5, 0, 37)))
+			.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(5, 0, 37)))
 			.spreadHorizontally()
 			.repeat(2)
 	);
-	public static final ConfiguredFeature<?, ?> field_26066 = register(
+	public static final ConfiguredFeature<?, ?> ORE_BLACKSTONE = register(
 		"ore_blackstone",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.BLACKSTONE, 33))
-			.method_23388(Decorator.field_25870.configure(new RangeDecoratorConfig(5, 10, 37)))
+			.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(5, 10, 37)))
 			.spreadHorizontally()
 			.repeat(2)
 	);
-	public static final ConfiguredFeature<?, ?> field_26067 = register(
+	public static final ConfiguredFeature<?, ?> ORE_DIRT = register(
 		"ore_dirt",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIRT, 33))
 			.method_30377(256)
 			.spreadHorizontally()
 			.repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26068 = register(
+	public static final ConfiguredFeature<?, ?> ORE_GRAVEL = register(
 		"ore_gravel",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GRAVEL, 33))
 			.method_30377(256)
 			.spreadHorizontally()
 			.repeat(8)
 	);
-	public static final ConfiguredFeature<?, ?> field_26069 = register(
+	public static final ConfiguredFeature<?, ?> ORE_GRANITE = register(
 		"ore_granite",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GRANITE, 33))
 			.method_30377(80)
 			.spreadHorizontally()
 			.repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26070 = register(
+	public static final ConfiguredFeature<?, ?> ORE_DIORITE = register(
 		"ore_diorite",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIORITE, 33))
 			.method_30377(80)
 			.spreadHorizontally()
 			.repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26071 = register(
+	public static final ConfiguredFeature<?, ?> ORE_ANDESITE = register(
 		"ore_andesite",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.ANDESITE, 33))
 			.method_30377(80)
 			.spreadHorizontally()
 			.repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> field_26072 = register(
+	public static final ConfiguredFeature<?, ?> ORE_COAL = register(
 		"ore_coal",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COAL_ORE, 17))
 			.method_30377(128)
 			.spreadHorizontally()
 			.repeat(20)
 	);
-	public static final ConfiguredFeature<?, ?> field_26073 = register(
+	public static final ConfiguredFeature<?, ?> ORE_IRON = register(
 		"ore_iron",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.IRON_ORE, 9))
 			.method_30377(64)
 			.spreadHorizontally()
 			.repeat(20)
 	);
-	public static final ConfiguredFeature<?, ?> field_26074 = register(
+	public static final ConfiguredFeature<?, ?> ORE_GOLD_EXTRA = register(
 		"ore_gold_extra",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GOLD_ORE, 9))
-			.method_23388(Decorator.field_25870.configure(new RangeDecoratorConfig(32, 32, 80)))
+			.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(32, 32, 80)))
 			.spreadHorizontally()
 			.repeat(20)
 	);
-	public static final ConfiguredFeature<?, ?> field_26075 = register(
+	public static final ConfiguredFeature<?, ?> ORE_GOLD = register(
 		"ore_gold",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GOLD_ORE, 9))
 			.method_30377(32)
 			.spreadHorizontally()
 			.repeat(2)
 	);
-	public static final ConfiguredFeature<?, ?> field_26076 = register(
+	public static final ConfiguredFeature<?, ?> ORE_REDSTONE = register(
 		"ore_redstone",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.REDSTONE_ORE, 8))
 			.method_30377(16)
 			.spreadHorizontally()
 			.repeat(8)
 	);
-	public static final ConfiguredFeature<?, ?> field_26077 = register(
+	public static final ConfiguredFeature<?, ?> ORE_DIAMOND = register(
 		"ore_diamond",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIAMOND_ORE, 8))
 			.method_30377(16)
 			.spreadHorizontally()
 	);
-	public static final ConfiguredFeature<?, ?> field_26078 = register(
+	public static final ConfiguredFeature<?, ?> ORE_LAPIS = register(
 		"ore_lapis",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.LAPIS_ORE, 7))
-			.method_23388(Decorator.field_25873.configure(new DepthAverageDecoratorConfig(16, 16)))
+			.decorate(Decorator.DEPTH_AVERAGE.configure(new DepthAverageDecoratorConfig(16, 16)))
 			.spreadHorizontally()
 	);
-	public static final ConfiguredFeature<?, ?> field_26079 = register(
+	public static final ConfiguredFeature<?, ?> ORE_INFESTED = register(
 		"ore_infested",
-		Feature.field_13517
+		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.INFESTED_STONE, 9))
 			.method_30377(64)
 			.spreadHorizontally()
 			.repeat(7)
 	);
-	public static final ConfiguredFeature<?, ?> field_26080 = register(
+	public static final ConfiguredFeature<?, ?> ORE_EMERALD = register(
 		"ore_emerald",
-		Feature.field_13594
+		Feature.EMERALD_ORE
 			.configure(new EmeraldOreFeatureConfig(ConfiguredFeatures.States.STONE, ConfiguredFeatures.States.EMERALD_ORE))
-			.method_23388(Decorator.field_14268.configure(DecoratorConfig.DEFAULT))
+			.decorate(Decorator.EMERALD_ORE.configure(DecoratorConfig.DEFAULT))
 	);
-	public static final ConfiguredFeature<?, ?> field_26028 = register(
+	public static final ConfiguredFeature<?, ?> ORE_DEBRIS_LARGE = register(
 		"ore_debris_large",
-		Feature.field_22189
+		Feature.NO_SURFACE_ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_NETHER, ConfiguredFeatures.States.ANCIENT_DEBRIS, 3))
-			.method_23388(Decorator.field_25873.configure(new DepthAverageDecoratorConfig(16, 8)))
+			.decorate(Decorator.DEPTH_AVERAGE.configure(new DepthAverageDecoratorConfig(16, 8)))
 			.spreadHorizontally()
 	);
-	public static final ConfiguredFeature<?, ?> field_26029 = register(
+	public static final ConfiguredFeature<?, ?> ORE_DEBRIS_SMALL = register(
 		"ore_debris_small",
-		Feature.field_22189
+		Feature.NO_SURFACE_ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_NETHER, ConfiguredFeatures.States.ANCIENT_DEBRIS, 2))
-			.method_23388(Decorator.field_25870.configure(new RangeDecoratorConfig(8, 16, 128)))
+			.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(8, 16, 128)))
 			.spreadHorizontally()
 	);
-	public static final ConfiguredFeature<?, ?> field_26030 = register(
+	public static final ConfiguredFeature<?, ?> CRIMSON_FUNGI = register(
 		"crimson_fungi",
-		Feature.field_22185.configure(HugeFungusFeatureConfig.CRIMSON_FUNGUS_NOT_PLANTED_CONFIG).method_23388(Decorator.field_25860.configure(new CountConfig(8)))
+		Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.CRIMSON_FUNGUS_NOT_PLANTED_CONFIG).decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(8)))
 	);
-	public static final ConfiguredFeature<HugeFungusFeatureConfig, ?> field_26031 = register(
-		"crimson_fungi_planted", Feature.field_22185.configure(HugeFungusFeatureConfig.CRIMSON_FUNGUS_CONFIG)
+	public static final ConfiguredFeature<HugeFungusFeatureConfig, ?> CRIMSON_FUNGI_PLANTED = register(
+		"crimson_fungi_planted", Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.CRIMSON_FUNGUS_CONFIG)
 	);
-	public static final ConfiguredFeature<?, ?> field_26032 = register(
+	public static final ConfiguredFeature<?, ?> WARPED_FUNGI = register(
 		"warped_fungi",
-		Feature.field_22185.configure(HugeFungusFeatureConfig.WARPED_FUNGUS_NOT_PLANTED_CONFIG).method_23388(Decorator.field_25860.configure(new CountConfig(8)))
+		Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.WARPED_FUNGUS_NOT_PLANTED_CONFIG).decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(8)))
 	);
-	public static final ConfiguredFeature<HugeFungusFeatureConfig, ?> field_26033 = register(
-		"warped_fungi_planted", Feature.field_22185.configure(HugeFungusFeatureConfig.WARPED_FUNGUS_CONFIG)
+	public static final ConfiguredFeature<HugeFungusFeatureConfig, ?> WARPED_FUNGI_PLANTED = register(
+		"warped_fungi_planted", Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.WARPED_FUNGUS_CONFIG)
 	);
-	public static final ConfiguredFeature<?, ?> field_26034 = register(
+	public static final ConfiguredFeature<?, ?> HUGE_BROWN_MUSHROOM = register(
 		"huge_brown_mushroom",
-		Feature.field_13531
+		Feature.HUGE_BROWN_MUSHROOM
 			.configure(
 				new HugeMushroomFeatureConfig(
 					new SimpleBlockStateProvider(ConfiguredFeatures.States.BROWN_MUSHROOM_BLOCK), new SimpleBlockStateProvider(ConfiguredFeatures.States.MUSHROOM_STEM), 3
 				)
 			)
 	);
-	public static final ConfiguredFeature<?, ?> field_26035 = register(
+	public static final ConfiguredFeature<?, ?> HUGE_RED_MUSHROOM = register(
 		"huge_red_mushroom",
-		Feature.field_13571
+		Feature.HUGE_RED_MUSHROOM
 			.configure(
 				new HugeMushroomFeatureConfig(
 					new SimpleBlockStateProvider(ConfiguredFeatures.States.RED_MUSHROOM_BLOCK), new SimpleBlockStateProvider(ConfiguredFeatures.States.MUSHROOM_STEM), 2
 				)
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26036 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> OAK = register(
 		"oak",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
@@ -925,9 +916,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26037 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> DARK_OAK = register(
 		"dark_oak",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.DARK_OAK_LOG),
@@ -937,14 +928,14 @@ public class ConfiguredFeatures {
 						new ThreeLayersFeatureSize(1, 1, 0, 1, 2, OptionalInt.empty())
 					)
 					.maxWaterDepth(Integer.MAX_VALUE)
-					.heightmap(Heightmap.Type.field_13197)
+					.heightmap(Heightmap.Type.MOTION_BLOCKING)
 					.ignoreVines()
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26038 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> BIRCH = register(
 		"birch",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LOG),
@@ -957,9 +948,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26039 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> ACACIA = register(
 		"acacia",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.ACACIA_LOG),
@@ -972,9 +963,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26041 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> SPRUCE = register(
 		"spruce",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
@@ -987,9 +978,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26042 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> PINE = register(
 		"pine",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
@@ -1002,9 +993,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26043 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> JUNGLE_TREE = register(
 		"jungle_tree",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
@@ -1018,9 +1009,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26044 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> FANCY_OAK = register(
 		"fancy_oak",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
@@ -1030,13 +1021,13 @@ public class ConfiguredFeatures {
 						new TwoLayersFeatureSize(0, 0, 0, OptionalInt.of(4))
 					)
 					.ignoreVines()
-					.heightmap(Heightmap.Type.field_13197)
+					.heightmap(Heightmap.Type.MOTION_BLOCKING)
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26045 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> JUNGLE_TREE_NO_VINE = register(
 		"jungle_tree_no_vine",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
@@ -1049,9 +1040,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26046 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> MEGA_JUNGLE_TREE = register(
 		"mega_jungle_tree",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
@@ -1064,9 +1055,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26047 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> MEGA_SPRUCE = register(
 		"mega_spruce",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
@@ -1079,9 +1070,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26048 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> MEGA_PINE = register(
 		"mega_pine",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
@@ -1094,9 +1085,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26049 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> SUPER_BIRCH_BEES_0002 = register(
 		"super_birch_bees_0002",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LOG),
@@ -1110,9 +1101,9 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<?, ?> field_26050 = register(
+	public static final ConfiguredFeature<?, ?> SWAMP_TREE = register(
 		"swamp_tree",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
@@ -1125,12 +1116,12 @@ public class ConfiguredFeatures {
 					.decorators(ImmutableList.of(LeaveVineTreeDecorator.INSTANCE))
 					.build()
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26051 = register(
+	public static final ConfiguredFeature<?, ?> JUNGLE_BUSH = register(
 		"jungle_bush",
-		Feature.field_24134
+		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
@@ -1139,115 +1130,106 @@ public class ConfiguredFeatures {
 						new StraightTrunkPlacer(1, 0, 0),
 						new TwoLayersFeatureSize(0, 0, 0)
 					)
-					.heightmap(Heightmap.Type.field_13203)
+					.heightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26052 = register(
-		"oak_bees_0002",
-		Feature.field_24134.configure(field_26036.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.VERY_RARE_BEEHIVES_TREES)))
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> OAK_BEES_0002 = register(
+		"oak_bees_0002", Feature.TREE.configure(OAK.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.VERY_RARE_BEEHIVES_TREES)))
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26053 = register(
-		"oak_bees_002",
-		Feature.field_24134.configure(field_26036.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.REGULAR_BEEHIVES_TREES)))
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> OAK_BEES_002 = register(
+		"oak_bees_002", Feature.TREE.configure(OAK.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.REGULAR_BEEHIVES_TREES)))
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26054 = register(
-		"oak_bees_005", Feature.field_24134.configure(field_26036.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.MORE_BEEHIVES_TREES)))
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> OAK_BEES_005 = register(
+		"oak_bees_005", Feature.TREE.configure(OAK.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.MORE_BEEHIVES_TREES)))
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26092 = register(
-		"birch_bees_0002",
-		Feature.field_24134.configure(field_26038.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.VERY_RARE_BEEHIVES_TREES)))
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> BIRCH_BEES_0002 = register(
+		"birch_bees_0002", Feature.TREE.configure(BIRCH.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.VERY_RARE_BEEHIVES_TREES)))
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26093 = register(
-		"birch_bees_002",
-		Feature.field_24134.configure(field_26038.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.REGULAR_BEEHIVES_TREES)))
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> BIRCH_BEES_002 = register(
+		"birch_bees_002", Feature.TREE.configure(BIRCH.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.REGULAR_BEEHIVES_TREES)))
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26094 = register(
-		"birch_bees_005",
-		Feature.field_24134.configure(field_26038.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.MORE_BEEHIVES_TREES)))
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> BIRCH_BEES_005 = register(
+		"birch_bees_005", Feature.TREE.configure(BIRCH.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.MORE_BEEHIVES_TREES)))
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26095 = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> FANCY_OAK_BEES_0002 = register(
 		"fancy_oak_bees_0002",
-		Feature.field_24134.configure(field_26044.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.VERY_RARE_BEEHIVES_TREES)))
+		Feature.TREE.configure(FANCY_OAK.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.VERY_RARE_BEEHIVES_TREES)))
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26096 = register(
-		"fancy_oak_bees_002",
-		Feature.field_24134.configure(field_26044.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.REGULAR_BEEHIVES_TREES)))
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> FANCY_OAK_BEES_002 = register(
+		"fancy_oak_bees_002", Feature.TREE.configure(FANCY_OAK.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.REGULAR_BEEHIVES_TREES)))
 	);
-	public static final ConfiguredFeature<TreeFeatureConfig, ?> field_26097 = register(
-		"fancy_oak_bees_005",
-		Feature.field_24134.configure(field_26044.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.MORE_BEEHIVES_TREES)))
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> FANCY_OAK_BEES_005 = register(
+		"fancy_oak_bees_005", Feature.TREE.configure(FANCY_OAK.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.MORE_BEEHIVES_TREES)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26098 = register(
+	public static final ConfiguredFeature<?, ?> OAK_BADLANDS = register(
 		"oak_badlands",
-		field_26036.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(5, 0.1F, 1)))
+		OAK.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(5, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26099 = register(
+	public static final ConfiguredFeature<?, ?> SPRUCE_SNOWY = register(
 		"spruce_snowy",
-		field_26041.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
+		SPRUCE.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26100 = register(
+	public static final ConfiguredFeature<?, ?> FLOWER_WARM = register(
 		"flower_warm",
 		Feature.FLOWER
 			.configure(ConfiguredFeatures.Configs.DEFAULT_FLOWER_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeat(4)
 	);
-	public static final ConfiguredFeature<?, ?> field_26101 = register(
+	public static final ConfiguredFeature<?, ?> FLOWER_DEFAULT = register(
 		"flower_default",
 		Feature.FLOWER
 			.configure(ConfiguredFeatures.Configs.DEFAULT_FLOWER_CONFIG)
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeat(2)
 	);
-	public static final ConfiguredFeature<?, ?> field_26102 = register(
+	public static final ConfiguredFeature<?, ?> FLOWER_FOREST = register(
 		"flower_forest",
 		Feature.FLOWER
 			.configure(new RandomPatchFeatureConfig.Builder(ForestFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.INSTANCE).tries(64).build())
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeat(100)
 	);
-	public static final ConfiguredFeature<?, ?> field_26103 = register(
+	public static final ConfiguredFeature<?, ?> FLOWER_SWAMP = register(
 		"flower_swamp",
 		Feature.FLOWER
 			.configure(
 				new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.BLUE_ORCHID), SimpleBlockPlacer.INSTANCE).tries(64).build()
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 	);
-	public static final ConfiguredFeature<?, ?> field_26104 = register(
+	public static final ConfiguredFeature<?, ?> FLOWER_PLAIN = register(
 		"flower_plain",
 		Feature.FLOWER.configure(new RandomPatchFeatureConfig.Builder(PlainsFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.INSTANCE).tries(64).build())
 	);
-	public static final ConfiguredFeature<?, ?> field_26105 = register(
+	public static final ConfiguredFeature<?, ?> FLOWER_PLAIN_DECORATED = register(
 		"flower_plain_decorated",
-		field_26104.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.HEIGHTMAP)
+		FLOWER_PLAIN.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP)
 			.spreadHorizontally()
-			.method_23388(Decorator.field_25863.configure(new CountNoiseDecoratorConfig(-0.8, 15, 4)))
+			.decorate(Decorator.COUNT_NOISE.configure(new CountNoiseDecoratorConfig(-0.8, 15, 4)))
 	);
 	private static final ImmutableList<Supplier<ConfiguredFeature<?, ?>>> FOREST_FLOWER_VEGETATION_CONFIGS = ImmutableList.of(
-		() -> Feature.field_21220
+		() -> Feature.RANDOM_PATCH
 				.configure(
 					new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.LILAC), new DoublePlantPlacer())
 						.tries(64)
 						.cannotProject()
 						.build()
 				),
-		() -> Feature.field_21220
+		() -> Feature.RANDOM_PATCH
 				.configure(
 					new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.ROSE_BUSH), new DoublePlantPlacer())
 						.tries(64)
 						.cannotProject()
 						.build()
 				),
-		() -> Feature.field_21220
+		() -> Feature.RANDOM_PATCH
 				.configure(
 					new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.PEONY), new DoublePlantPlacer())
 						.tries(64)
@@ -1261,200 +1243,198 @@ public class ConfiguredFeatures {
 						.build()
 				)
 	);
-	public static final ConfiguredFeature<?, ?> field_26106 = register(
+	public static final ConfiguredFeature<?, ?> FOREST_FLOWER_VEGETATION_COMMON = register(
 		"forest_flower_vegetation_common",
-		Feature.field_13555
+		Feature.SIMPLE_RANDOM_SELECTOR
 			.configure(new SimpleRandomFeatureConfig(FOREST_FLOWER_VEGETATION_CONFIGS))
 			.repeat(UniformIntDistribution.of(-1, 4))
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeat(5)
 	);
-	public static final ConfiguredFeature<?, ?> field_26107 = register(
+	public static final ConfiguredFeature<?, ?> FOREST_FLOWER_VEGETATION = register(
 		"forest_flower_vegetation",
-		Feature.field_13555
+		Feature.SIMPLE_RANDOM_SELECTOR
 			.configure(new SimpleRandomFeatureConfig(FOREST_FLOWER_VEGETATION_CONFIGS))
 			.repeat(UniformIntDistribution.of(-3, 4))
-			.method_23388(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.repeat(5)
 	);
-	public static final ConfiguredFeature<?, ?> field_26108 = register(
+	public static final ConfiguredFeature<?, ?> DARK_FOREST_VEGETATION_BROWN = register(
 		"dark_forest_vegetation_brown",
-		Feature.field_13593
+		Feature.RANDOM_SELECTOR
 			.configure(
 				new RandomFeatureConfig(
 					ImmutableList.of(
-						field_26034.withChance(0.025F),
-						field_26035.withChance(0.05F),
-						field_26037.withChance(0.6666667F),
-						field_26038.withChance(0.2F),
-						field_26044.withChance(0.1F)
+						HUGE_BROWN_MUSHROOM.withChance(0.025F),
+						HUGE_RED_MUSHROOM.withChance(0.05F),
+						DARK_OAK.withChance(0.6666667F),
+						BIRCH.withChance(0.2F),
+						FANCY_OAK.withChance(0.1F)
 					),
-					field_26036
+					OAK
 				)
 			)
-			.method_23388(Decorator.field_14239.configure(DecoratorConfig.DEFAULT))
+			.decorate(Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT))
 	);
-	public static final ConfiguredFeature<?, ?> field_26109 = register(
+	public static final ConfiguredFeature<?, ?> DARK_FOREST_VEGETATION_RED = register(
 		"dark_forest_vegetation_red",
-		Feature.field_13593
+		Feature.RANDOM_SELECTOR
 			.configure(
 				new RandomFeatureConfig(
 					ImmutableList.of(
-						field_26035.withChance(0.025F),
-						field_26034.withChance(0.05F),
-						field_26037.withChance(0.6666667F),
-						field_26038.withChance(0.2F),
-						field_26044.withChance(0.1F)
+						HUGE_RED_MUSHROOM.withChance(0.025F),
+						HUGE_BROWN_MUSHROOM.withChance(0.05F),
+						DARK_OAK.withChance(0.6666667F),
+						BIRCH.withChance(0.2F),
+						FANCY_OAK.withChance(0.1F)
 					),
-					field_26036
+					OAK
 				)
 			)
-			.method_23388(Decorator.field_14239.configure(DecoratorConfig.DEFAULT))
+			.decorate(Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT))
 	);
-	public static final ConfiguredFeature<?, ?> field_26110 = register(
+	public static final ConfiguredFeature<?, ?> WARM_OCEAN_VEGETATION = register(
 		"warm_ocean_vegetation",
-		Feature.field_13555
+		Feature.SIMPLE_RANDOM_SELECTOR
 			.configure(
 				new SimpleRandomFeatureConfig(
 					ImmutableList.of(
-						() -> Feature.field_13525.configure(FeatureConfig.DEFAULT),
-						() -> Feature.field_13546.configure(FeatureConfig.DEFAULT),
-						() -> Feature.field_13585.configure(FeatureConfig.DEFAULT)
+						() -> Feature.CORAL_TREE.configure(FeatureConfig.DEFAULT),
+						() -> Feature.CORAL_CLAW.configure(FeatureConfig.DEFAULT),
+						() -> Feature.CORAL_MUSHROOM.configure(FeatureConfig.DEFAULT)
 					)
 				)
 			)
-			.method_23388(ConfiguredFeatures.Decorators.TOP_SOLID_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.TOP_SOLID_HEIGHTMAP)
 			.spreadHorizontally()
-			.method_23388(Decorator.field_25864.configure(new CountNoiseBiasedDecoratorConfig(20, 400.0, 0.0)))
+			.decorate(Decorator.COUNT_NOISE_BIASED.configure(new CountNoiseBiasedDecoratorConfig(20, 400.0, 0.0)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26111 = register(
+	public static final ConfiguredFeature<?, ?> FOREST_FLOWER_TREES = register(
 		"forest_flower_trees",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26093.withChance(0.2F), field_26096.withChance(0.1F)), field_26053))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(6, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(BIRCH_BEES_002.withChance(0.2F), FANCY_OAK_BEES_002.withChance(0.1F)), OAK_BEES_002))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(6, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26112 = register(
+	public static final ConfiguredFeature<?, ?> TAIGA_VEGETATION = register(
 		"taiga_vegetation",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26042.withChance(0.33333334F)), field_26041))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(PINE.withChance(0.33333334F)), SPRUCE))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26113 = register(
+	public static final ConfiguredFeature<?, ?> TREES_SHATTERED_SAVANNA = register(
 		"trees_shattered_savanna",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26039.withChance(0.8F)), field_26036))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(ACACIA.withChance(0.8F)), OAK))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26114 = register(
+	public static final ConfiguredFeature<?, ?> TREES_SAVANNA = register(
 		"trees_savanna",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26039.withChance(0.8F)), field_26036))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(1, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(ACACIA.withChance(0.8F)), OAK))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(1, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26115 = register(
+	public static final ConfiguredFeature<?, ?> BIRCH_TALL = register(
 		"birch_tall",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26049.withChance(0.5F)), field_26092))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(SUPER_BIRCH_BEES_0002.withChance(0.5F)), BIRCH_BEES_0002))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26376 = register(
+	public static final ConfiguredFeature<?, ?> TREES_BIRCH = register(
 		"trees_birch",
-		field_26092.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
+		BIRCH_BEES_0002.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26116 = register(
+	public static final ConfiguredFeature<?, ?> TREES_MOUNTAIN_EDGE = register(
 		"trees_mountain_edge",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26041.withChance(0.666F), field_26044.withChance(0.1F)), field_26036))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(3, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(SPRUCE.withChance(0.666F), FANCY_OAK.withChance(0.1F)), OAK))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(3, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26117 = register(
+	public static final ConfiguredFeature<?, ?> TREES_MOUNTAIN = register(
 		"trees_mountain",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26041.withChance(0.666F), field_26044.withChance(0.1F)), field_26036))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(SPRUCE.withChance(0.666F), FANCY_OAK.withChance(0.1F)), OAK))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26081 = register(
+	public static final ConfiguredFeature<?, ?> TREES_WATER = register(
 		"trees_water",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26044.withChance(0.1F)), field_26036))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(FANCY_OAK.withChance(0.1F)), OAK))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26082 = register(
+	public static final ConfiguredFeature<?, ?> BIRCH_OTHER = register(
 		"birch_other",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26092.withChance(0.2F), field_26095.withChance(0.1F)), field_26052))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(BIRCH_BEES_0002.withChance(0.2F), FANCY_OAK_BEES_0002.withChance(0.1F)), OAK_BEES_0002))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26083 = register(
+	public static final ConfiguredFeature<?, ?> PLAIN_VEGETATION = register(
 		"plain_vegetation",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26097.withChance(0.33333334F)), field_26054))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(0, 0.05F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(FANCY_OAK_BEES_005.withChance(0.33333334F)), OAK_BEES_005))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.05F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26084 = register(
+	public static final ConfiguredFeature<?, ?> TREES_JUNGLE_EDGE = register(
 		"trees_jungle_edge",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26044.withChance(0.1F), field_26051.withChance(0.5F)), field_26043))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(FANCY_OAK.withChance(0.1F), JUNGLE_BUSH.withChance(0.5F)), JUNGLE_TREE))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26085 = register(
+	public static final ConfiguredFeature<?, ?> TREES_GIANT_SPRUCE = register(
 		"trees_giant_spruce",
-		Feature.field_13593
-			.configure(new RandomFeatureConfig(ImmutableList.of(field_26047.withChance(0.33333334F), field_26042.withChance(0.33333334F)), field_26041))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(MEGA_SPRUCE.withChance(0.33333334F), PINE.withChance(0.33333334F)), SPRUCE))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26086 = register(
+	public static final ConfiguredFeature<?, ?> TREES_GIANT = register(
 		"trees_giant",
-		Feature.field_13593
+		Feature.RANDOM_SELECTOR
 			.configure(
-				new RandomFeatureConfig(
-					ImmutableList.of(field_26047.withChance(0.025641026F), field_26048.withChance(0.30769232F), field_26042.withChance(0.33333334F)), field_26041
-				)
+				new RandomFeatureConfig(ImmutableList.of(MEGA_SPRUCE.withChance(0.025641026F), MEGA_PINE.withChance(0.30769232F), PINE.withChance(0.33333334F)), SPRUCE)
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26087 = register(
+	public static final ConfiguredFeature<?, ?> TREES_JUNGLE = register(
 		"trees_jungle",
-		Feature.field_13593
+		Feature.RANDOM_SELECTOR
 			.configure(
-				new RandomFeatureConfig(ImmutableList.of(field_26044.withChance(0.1F), field_26051.withChance(0.5F), field_26046.withChance(0.33333334F)), field_26043)
+				new RandomFeatureConfig(ImmutableList.of(FANCY_OAK.withChance(0.1F), JUNGLE_BUSH.withChance(0.5F), MEGA_JUNGLE_TREE.withChance(0.33333334F)), JUNGLE_TREE)
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(50, 0.1F, 1)))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(50, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26088 = register(
+	public static final ConfiguredFeature<?, ?> BAMBOO_VEGETATION = register(
 		"bamboo_vegetation",
-		Feature.field_13593
+		Feature.RANDOM_SELECTOR
 			.configure(
 				new RandomFeatureConfig(
-					ImmutableList.of(field_26044.withChance(0.05F), field_26051.withChance(0.15F), field_26046.withChance(0.7F)),
-					Feature.field_21220.configure(ConfiguredFeatures.Configs.LUSH_GRASS_CONFIG)
+					ImmutableList.of(FANCY_OAK.withChance(0.05F), JUNGLE_BUSH.withChance(0.15F), MEGA_JUNGLE_TREE.withChance(0.7F)),
+					Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.LUSH_GRASS_CONFIG)
 				)
 			)
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.method_23388(Decorator.field_25865.configure(new CountExtraDecoratorConfig(30, 0.1F, 1)))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(30, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> field_26089 = register(
+	public static final ConfiguredFeature<?, ?> MUSHROOM_FIELD_VEGETATION = register(
 		"mushroom_field_vegetation",
-		Feature.field_13550
-			.configure(new RandomBooleanFeatureConfig(() -> field_26035, () -> field_26034))
-			.method_23388(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+		Feature.RANDOM_BOOLEAN_SELECTOR
+			.configure(new RandomBooleanFeatureConfig(() -> HUGE_RED_MUSHROOM, () -> HUGE_BROWN_MUSHROOM))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 	);
 
 	private static <FC extends FeatureConfig> ConfiguredFeature<FC, ?> register(String id, ConfiguredFeature<FC, ?> configuredFeature) {
@@ -1512,10 +1492,10 @@ public class ConfiguredFeatures {
 			.needsWater()
 			.build();
 		public static final SpringFeatureConfig LAVA_SPRING_CONFIG = new SpringFeatureConfig(
-			ConfiguredFeatures.States.LAVA_FLUID, true, 4, 1, ImmutableSet.of(Blocks.field_10340, Blocks.field_10474, Blocks.field_10508, Blocks.field_10115)
+			ConfiguredFeatures.States.LAVA_FLUID, true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE)
 		);
 		public static final SpringFeatureConfig ENCLOSED_NETHER_SPRING_CONFIG = new SpringFeatureConfig(
-			ConfiguredFeatures.States.LAVA_FLUID, false, 5, 0, ImmutableSet.of(Blocks.field_10515)
+			ConfiguredFeatures.States.LAVA_FLUID, false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK)
 		);
 		public static final BlockPileFeatureConfig CRIMSON_ROOTS_CONFIG = new BlockPileFeatureConfig(
 			new WeightedBlockStateProvider()
@@ -1539,109 +1519,109 @@ public class ConfiguredFeatures {
 		public static final BeehiveTreeDecorator VERY_RARE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.002F);
 		public static final BeehiveTreeDecorator REGULAR_BEEHIVES_TREES = new BeehiveTreeDecorator(0.02F);
 		public static final BeehiveTreeDecorator MORE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.05F);
-		public static final ConfiguredDecorator<CountConfig> FIRE = Decorator.field_14235.configure(new CountConfig(10));
-		public static final ConfiguredDecorator<NopeDecoratorConfig> HEIGHTMAP = Decorator.field_25867.configure(DecoratorConfig.DEFAULT);
-		public static final ConfiguredDecorator<NopeDecoratorConfig> TOP_SOLID_HEIGHTMAP = Decorator.field_14231.configure(DecoratorConfig.DEFAULT);
-		public static final ConfiguredDecorator<NopeDecoratorConfig> HEIGHTMAP_WORLD_SURFACE = Decorator.field_25869.configure(DecoratorConfig.DEFAULT);
-		public static final ConfiguredDecorator<NopeDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = Decorator.field_25868.configure(DecoratorConfig.DEFAULT);
-		public static final ConfiguredDecorator<RangeDecoratorConfig> NETHER_ORE = Decorator.field_25870.configure(new RangeDecoratorConfig(10, 20, 128));
-		public static final ConfiguredDecorator<RangeDecoratorConfig> NETHER_SPRING = Decorator.field_25870.configure(new RangeDecoratorConfig(4, 8, 128));
-		public static final ConfiguredDecorator<?> SPREAD_32_ABOVE = Decorator.field_25874.configure(NopeDecoratorConfig.INSTANCE);
+		public static final ConfiguredDecorator<CountConfig> FIRE = Decorator.FIRE.configure(new CountConfig(10));
+		public static final ConfiguredDecorator<NopeDecoratorConfig> HEIGHTMAP = Decorator.HEIGHTMAP.configure(DecoratorConfig.DEFAULT);
+		public static final ConfiguredDecorator<NopeDecoratorConfig> TOP_SOLID_HEIGHTMAP = Decorator.TOP_SOLID_HEIGHTMAP.configure(DecoratorConfig.DEFAULT);
+		public static final ConfiguredDecorator<NopeDecoratorConfig> HEIGHTMAP_WORLD_SURFACE = Decorator.HEIGHTMAP_WORLD_SURFACE.configure(DecoratorConfig.DEFAULT);
+		public static final ConfiguredDecorator<NopeDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = Decorator.HEIGHTMAP_SPREAD_DOUBLE.configure(DecoratorConfig.DEFAULT);
+		public static final ConfiguredDecorator<RangeDecoratorConfig> NETHER_ORE = Decorator.RANGE.configure(new RangeDecoratorConfig(10, 20, 128));
+		public static final ConfiguredDecorator<RangeDecoratorConfig> NETHER_SPRING = Decorator.RANGE.configure(new RangeDecoratorConfig(4, 8, 128));
+		public static final ConfiguredDecorator<?> SPREAD_32_ABOVE = Decorator.SPREAD_32_ABOVE.configure(NopeDecoratorConfig.INSTANCE);
 		public static final ConfiguredDecorator<?> SQUARE_HEIGHTMAP = HEIGHTMAP.spreadHorizontally();
 		public static final ConfiguredDecorator<?> SQUARE_HEIGHTMAP_SPREAD_DOUBLE = HEIGHTMAP_SPREAD_DOUBLE.spreadHorizontally();
 		public static final ConfiguredDecorator<?> SQUARE_TOP_SOLID_HEIGHTMAP = TOP_SOLID_HEIGHTMAP.spreadHorizontally();
 	}
 
 	public static final class States {
-		protected static final BlockState GRASS = Blocks.field_10479.getDefaultState();
-		protected static final BlockState FERN = Blocks.field_10112.getDefaultState();
-		protected static final BlockState PODZOL = Blocks.field_10520.getDefaultState();
-		protected static final BlockState COARSE_DIRT = Blocks.field_10253.getDefaultState();
-		protected static final BlockState MYCELIUM = Blocks.field_10402.getDefaultState();
-		protected static final BlockState SNOW_BLOCK = Blocks.field_10491.getDefaultState();
-		protected static final BlockState ICE = Blocks.field_10295.getDefaultState();
-		protected static final BlockState OAK_LOG = Blocks.field_10431.getDefaultState();
-		protected static final BlockState OAK_LEAVES = Blocks.field_10503.getDefaultState();
-		protected static final BlockState JUNGLE_LOG = Blocks.field_10306.getDefaultState();
-		protected static final BlockState JUNGLE_LEAVES = Blocks.field_10335.getDefaultState();
-		protected static final BlockState SPRUCE_LOG = Blocks.field_10037.getDefaultState();
-		protected static final BlockState SPRUCE_LEAVES = Blocks.field_9988.getDefaultState();
-		protected static final BlockState ACACIA_LOG = Blocks.field_10533.getDefaultState();
-		protected static final BlockState ACACIA_LEAVES = Blocks.field_10098.getDefaultState();
-		protected static final BlockState BIRCH_LOG = Blocks.field_10511.getDefaultState();
-		protected static final BlockState BIRCH_LEAVES = Blocks.field_10539.getDefaultState();
-		protected static final BlockState DARK_OAK_LOG = Blocks.field_10010.getDefaultState();
-		protected static final BlockState DARK_OAK_LEAVES = Blocks.field_10035.getDefaultState();
-		protected static final BlockState GRASS_BLOCK = Blocks.field_10219.getDefaultState();
-		protected static final BlockState LARGE_FERN = Blocks.field_10313.getDefaultState();
-		protected static final BlockState TALL_GRASS = Blocks.field_10214.getDefaultState();
-		protected static final BlockState LILAC = Blocks.field_10378.getDefaultState();
-		protected static final BlockState ROSE_BUSH = Blocks.field_10430.getDefaultState();
-		protected static final BlockState PEONY = Blocks.field_10003.getDefaultState();
-		protected static final BlockState BROWN_MUSHROOM = Blocks.field_10251.getDefaultState();
-		protected static final BlockState RED_MUSHROOM = Blocks.field_10559.getDefaultState();
-		protected static final BlockState PACKED_ICE = Blocks.field_10225.getDefaultState();
-		protected static final BlockState BLUE_ICE = Blocks.field_10384.getDefaultState();
-		protected static final BlockState LILY_OF_THE_VALLEY = Blocks.field_10548.getDefaultState();
-		protected static final BlockState BLUE_ORCHID = Blocks.field_10086.getDefaultState();
-		protected static final BlockState POPPY = Blocks.field_10449.getDefaultState();
-		protected static final BlockState DANDELION = Blocks.field_10182.getDefaultState();
-		protected static final BlockState DEAD_BUSH = Blocks.field_10428.getDefaultState();
-		protected static final BlockState MELON = Blocks.field_10545.getDefaultState();
-		protected static final BlockState PUMPKIN = Blocks.field_10261.getDefaultState();
-		protected static final BlockState SWEET_BERRY_BUSH = Blocks.field_16999.getDefaultState().with(SweetBerryBushBlock.AGE, Integer.valueOf(3));
-		protected static final BlockState FIRE = Blocks.field_10036.getDefaultState();
-		protected static final BlockState SOUL_FIRE = Blocks.field_22089.getDefaultState();
-		protected static final BlockState NETHERRACK = Blocks.field_10515.getDefaultState();
-		protected static final BlockState SOUL_SOIL = Blocks.field_22090.getDefaultState();
-		protected static final BlockState CRIMSON_ROOTS = Blocks.field_22125.getDefaultState();
-		protected static final BlockState LILY_PAD = Blocks.field_10588.getDefaultState();
-		protected static final BlockState SNOW = Blocks.field_10477.getDefaultState();
-		protected static final BlockState JACK_O_LANTERN = Blocks.field_10009.getDefaultState();
-		protected static final BlockState SUNFLOWER = Blocks.field_10583.getDefaultState();
-		protected static final BlockState CACTUS = Blocks.field_10029.getDefaultState();
-		protected static final BlockState SUGAR_CANE = Blocks.field_10424.getDefaultState();
-		protected static final BlockState RED_MUSHROOM_BLOCK = Blocks.field_10240.getDefaultState().with(MushroomBlock.DOWN, Boolean.valueOf(false));
-		protected static final BlockState BROWN_MUSHROOM_BLOCK = Blocks.field_10580
+		protected static final BlockState GRASS = Blocks.GRASS.getDefaultState();
+		protected static final BlockState FERN = Blocks.FERN.getDefaultState();
+		protected static final BlockState PODZOL = Blocks.PODZOL.getDefaultState();
+		protected static final BlockState COARSE_DIRT = Blocks.COARSE_DIRT.getDefaultState();
+		protected static final BlockState MYCELIUM = Blocks.MYCELIUM.getDefaultState();
+		protected static final BlockState SNOW_BLOCK = Blocks.SNOW_BLOCK.getDefaultState();
+		protected static final BlockState ICE = Blocks.ICE.getDefaultState();
+		protected static final BlockState OAK_LOG = Blocks.OAK_LOG.getDefaultState();
+		protected static final BlockState OAK_LEAVES = Blocks.OAK_LEAVES.getDefaultState();
+		protected static final BlockState JUNGLE_LOG = Blocks.JUNGLE_LOG.getDefaultState();
+		protected static final BlockState JUNGLE_LEAVES = Blocks.JUNGLE_LEAVES.getDefaultState();
+		protected static final BlockState SPRUCE_LOG = Blocks.SPRUCE_LOG.getDefaultState();
+		protected static final BlockState SPRUCE_LEAVES = Blocks.SPRUCE_LEAVES.getDefaultState();
+		protected static final BlockState ACACIA_LOG = Blocks.ACACIA_LOG.getDefaultState();
+		protected static final BlockState ACACIA_LEAVES = Blocks.ACACIA_LEAVES.getDefaultState();
+		protected static final BlockState BIRCH_LOG = Blocks.BIRCH_LOG.getDefaultState();
+		protected static final BlockState BIRCH_LEAVES = Blocks.BIRCH_LEAVES.getDefaultState();
+		protected static final BlockState DARK_OAK_LOG = Blocks.DARK_OAK_LOG.getDefaultState();
+		protected static final BlockState DARK_OAK_LEAVES = Blocks.DARK_OAK_LEAVES.getDefaultState();
+		protected static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
+		protected static final BlockState LARGE_FERN = Blocks.LARGE_FERN.getDefaultState();
+		protected static final BlockState TALL_GRASS = Blocks.TALL_GRASS.getDefaultState();
+		protected static final BlockState LILAC = Blocks.LILAC.getDefaultState();
+		protected static final BlockState ROSE_BUSH = Blocks.ROSE_BUSH.getDefaultState();
+		protected static final BlockState PEONY = Blocks.PEONY.getDefaultState();
+		protected static final BlockState BROWN_MUSHROOM = Blocks.BROWN_MUSHROOM.getDefaultState();
+		protected static final BlockState RED_MUSHROOM = Blocks.RED_MUSHROOM.getDefaultState();
+		protected static final BlockState PACKED_ICE = Blocks.PACKED_ICE.getDefaultState();
+		protected static final BlockState BLUE_ICE = Blocks.BLUE_ICE.getDefaultState();
+		protected static final BlockState LILY_OF_THE_VALLEY = Blocks.LILY_OF_THE_VALLEY.getDefaultState();
+		protected static final BlockState BLUE_ORCHID = Blocks.BLUE_ORCHID.getDefaultState();
+		protected static final BlockState POPPY = Blocks.POPPY.getDefaultState();
+		protected static final BlockState DANDELION = Blocks.DANDELION.getDefaultState();
+		protected static final BlockState DEAD_BUSH = Blocks.DEAD_BUSH.getDefaultState();
+		protected static final BlockState MELON = Blocks.MELON.getDefaultState();
+		protected static final BlockState PUMPKIN = Blocks.PUMPKIN.getDefaultState();
+		protected static final BlockState SWEET_BERRY_BUSH = Blocks.SWEET_BERRY_BUSH.getDefaultState().with(SweetBerryBushBlock.AGE, Integer.valueOf(3));
+		protected static final BlockState FIRE = Blocks.FIRE.getDefaultState();
+		protected static final BlockState SOUL_FIRE = Blocks.SOUL_FIRE.getDefaultState();
+		protected static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
+		protected static final BlockState SOUL_SOIL = Blocks.SOUL_SOIL.getDefaultState();
+		protected static final BlockState CRIMSON_ROOTS = Blocks.CRIMSON_ROOTS.getDefaultState();
+		protected static final BlockState LILY_PAD = Blocks.LILY_PAD.getDefaultState();
+		protected static final BlockState SNOW = Blocks.SNOW.getDefaultState();
+		protected static final BlockState JACK_O_LANTERN = Blocks.JACK_O_LANTERN.getDefaultState();
+		protected static final BlockState SUNFLOWER = Blocks.SUNFLOWER.getDefaultState();
+		protected static final BlockState CACTUS = Blocks.CACTUS.getDefaultState();
+		protected static final BlockState SUGAR_CANE = Blocks.SUGAR_CANE.getDefaultState();
+		protected static final BlockState RED_MUSHROOM_BLOCK = Blocks.RED_MUSHROOM_BLOCK.getDefaultState().with(MushroomBlock.DOWN, Boolean.valueOf(false));
+		protected static final BlockState BROWN_MUSHROOM_BLOCK = Blocks.BROWN_MUSHROOM_BLOCK
 			.getDefaultState()
 			.with(MushroomBlock.UP, Boolean.valueOf(true))
 			.with(MushroomBlock.DOWN, Boolean.valueOf(false));
-		protected static final BlockState MUSHROOM_STEM = Blocks.field_10556
+		protected static final BlockState MUSHROOM_STEM = Blocks.MUSHROOM_STEM
 			.getDefaultState()
 			.with(MushroomBlock.UP, Boolean.valueOf(false))
 			.with(MushroomBlock.DOWN, Boolean.valueOf(false));
 		protected static final FluidState WATER_FLUID = Fluids.WATER.getDefaultState();
 		protected static final FluidState LAVA_FLUID = Fluids.LAVA.getDefaultState();
-		protected static final BlockState WATER_BLOCK = Blocks.field_10382.getDefaultState();
-		protected static final BlockState LAVA_BLOCK = Blocks.field_10164.getDefaultState();
-		protected static final BlockState DIRT = Blocks.field_10566.getDefaultState();
-		protected static final BlockState GRAVEL = Blocks.field_10255.getDefaultState();
-		protected static final BlockState GRANITE = Blocks.field_10474.getDefaultState();
-		protected static final BlockState DIORITE = Blocks.field_10508.getDefaultState();
-		protected static final BlockState ANDESITE = Blocks.field_10115.getDefaultState();
-		protected static final BlockState COAL_ORE = Blocks.field_10418.getDefaultState();
-		protected static final BlockState IRON_ORE = Blocks.field_10212.getDefaultState();
-		protected static final BlockState GOLD_ORE = Blocks.field_10571.getDefaultState();
-		protected static final BlockState REDSTONE_ORE = Blocks.field_10080.getDefaultState();
-		protected static final BlockState DIAMOND_ORE = Blocks.field_10442.getDefaultState();
-		protected static final BlockState LAPIS_ORE = Blocks.field_10090.getDefaultState();
-		protected static final BlockState STONE = Blocks.field_10340.getDefaultState();
-		protected static final BlockState EMERALD_ORE = Blocks.field_10013.getDefaultState();
-		protected static final BlockState INFESTED_STONE = Blocks.field_10277.getDefaultState();
-		protected static final BlockState SAND = Blocks.field_10102.getDefaultState();
-		protected static final BlockState CLAY = Blocks.field_10460.getDefaultState();
-		protected static final BlockState MOSSY_COBBLESTONE = Blocks.field_9989.getDefaultState();
-		protected static final BlockState SEAGRASS = Blocks.field_10376.getDefaultState();
-		protected static final BlockState MAGMA_BLOCK = Blocks.field_10092.getDefaultState();
-		protected static final BlockState SOUL_SAND = Blocks.field_10114.getDefaultState();
-		protected static final BlockState NETHER_GOLD_ORE = Blocks.field_23077.getDefaultState();
-		protected static final BlockState NETHER_QUARTZ_ORE = Blocks.field_10213.getDefaultState();
-		protected static final BlockState BLACKSTONE = Blocks.field_23869.getDefaultState();
-		protected static final BlockState ANCIENT_DEBRIS = Blocks.field_22109.getDefaultState();
-		protected static final BlockState BASALT = Blocks.field_22091.getDefaultState();
-		protected static final BlockState CRIMSON_FUNGUS = Blocks.field_22121.getDefaultState();
-		protected static final BlockState WARPED_FUNGUS = Blocks.field_22114.getDefaultState();
-		protected static final BlockState WARPED_ROOTS = Blocks.field_22116.getDefaultState();
-		protected static final BlockState NETHER_SPROUTS = Blocks.field_22117.getDefaultState();
+		protected static final BlockState WATER_BLOCK = Blocks.WATER.getDefaultState();
+		protected static final BlockState LAVA_BLOCK = Blocks.LAVA.getDefaultState();
+		protected static final BlockState DIRT = Blocks.DIRT.getDefaultState();
+		protected static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
+		protected static final BlockState GRANITE = Blocks.GRANITE.getDefaultState();
+		protected static final BlockState DIORITE = Blocks.DIORITE.getDefaultState();
+		protected static final BlockState ANDESITE = Blocks.ANDESITE.getDefaultState();
+		protected static final BlockState COAL_ORE = Blocks.COAL_ORE.getDefaultState();
+		protected static final BlockState IRON_ORE = Blocks.IRON_ORE.getDefaultState();
+		protected static final BlockState GOLD_ORE = Blocks.GOLD_ORE.getDefaultState();
+		protected static final BlockState REDSTONE_ORE = Blocks.REDSTONE_ORE.getDefaultState();
+		protected static final BlockState DIAMOND_ORE = Blocks.DIAMOND_ORE.getDefaultState();
+		protected static final BlockState LAPIS_ORE = Blocks.LAPIS_ORE.getDefaultState();
+		protected static final BlockState STONE = Blocks.STONE.getDefaultState();
+		protected static final BlockState EMERALD_ORE = Blocks.EMERALD_ORE.getDefaultState();
+		protected static final BlockState INFESTED_STONE = Blocks.INFESTED_STONE.getDefaultState();
+		protected static final BlockState SAND = Blocks.SAND.getDefaultState();
+		protected static final BlockState CLAY = Blocks.CLAY.getDefaultState();
+		protected static final BlockState MOSSY_COBBLESTONE = Blocks.MOSSY_COBBLESTONE.getDefaultState();
+		protected static final BlockState SEAGRASS = Blocks.SEAGRASS.getDefaultState();
+		protected static final BlockState MAGMA_BLOCK = Blocks.MAGMA_BLOCK.getDefaultState();
+		protected static final BlockState SOUL_SAND = Blocks.SOUL_SAND.getDefaultState();
+		protected static final BlockState NETHER_GOLD_ORE = Blocks.NETHER_GOLD_ORE.getDefaultState();
+		protected static final BlockState NETHER_QUARTZ_ORE = Blocks.NETHER_QUARTZ_ORE.getDefaultState();
+		protected static final BlockState BLACKSTONE = Blocks.BLACKSTONE.getDefaultState();
+		protected static final BlockState ANCIENT_DEBRIS = Blocks.ANCIENT_DEBRIS.getDefaultState();
+		protected static final BlockState BASALT = Blocks.BASALT.getDefaultState();
+		protected static final BlockState CRIMSON_FUNGUS = Blocks.CRIMSON_FUNGUS.getDefaultState();
+		protected static final BlockState WARPED_FUNGUS = Blocks.WARPED_FUNGUS.getDefaultState();
+		protected static final BlockState WARPED_ROOTS = Blocks.WARPED_ROOTS.getDefaultState();
+		protected static final BlockState NETHER_SPROUTS = Blocks.NETHER_SPROUTS.getDefaultState();
 	}
 }

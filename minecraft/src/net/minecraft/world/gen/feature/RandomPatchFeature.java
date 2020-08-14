@@ -14,13 +14,13 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_23401(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig
 	) {
 		BlockState blockState = randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
 		BlockPos blockPos2;
 		if (randomPatchFeatureConfig.project) {
-			blockPos2 = structureWorldAccess.getTopPosition(Heightmap.Type.field_13194, blockPos);
+			blockPos2 = structureWorldAccess.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, blockPos);
 		} else {
 			blockPos2 = blockPos;
 		}
@@ -35,7 +35,7 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 				random.nextInt(randomPatchFeatureConfig.spreadY + 1) - random.nextInt(randomPatchFeatureConfig.spreadY + 1),
 				random.nextInt(randomPatchFeatureConfig.spreadZ + 1) - random.nextInt(randomPatchFeatureConfig.spreadZ + 1)
 			);
-			BlockPos blockPos3 = mutable.method_10074();
+			BlockPos blockPos3 = mutable.down();
 			BlockState blockState2 = structureWorldAccess.getBlockState(blockPos3);
 			if ((structureWorldAccess.isAir(mutable) || randomPatchFeatureConfig.canReplace && structureWorldAccess.getBlockState(mutable).getMaterial().isReplaceable())
 				&& blockState.canPlaceAt(structureWorldAccess, mutable)
@@ -43,10 +43,10 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 				&& !randomPatchFeatureConfig.blacklist.contains(blockState2)
 				&& (
 					!randomPatchFeatureConfig.needsWater
-						|| structureWorldAccess.getFluidState(blockPos3.west()).isIn(FluidTags.field_15517)
-						|| structureWorldAccess.getFluidState(blockPos3.east()).isIn(FluidTags.field_15517)
-						|| structureWorldAccess.getFluidState(blockPos3.north()).isIn(FluidTags.field_15517)
-						|| structureWorldAccess.getFluidState(blockPos3.south()).isIn(FluidTags.field_15517)
+						|| structureWorldAccess.getFluidState(blockPos3.west()).isIn(FluidTags.WATER)
+						|| structureWorldAccess.getFluidState(blockPos3.east()).isIn(FluidTags.WATER)
+						|| structureWorldAccess.getFluidState(blockPos3.north()).isIn(FluidTags.WATER)
+						|| structureWorldAccess.getFluidState(blockPos3.south()).isIn(FluidTags.WATER)
 				)) {
 				randomPatchFeatureConfig.blockPlacer.method_23403(structureWorldAccess, mutable, blockState, random);
 				i++;

@@ -79,7 +79,7 @@ public class TeleportCommand {
 																	commandContext.getSource().getWorld(),
 																	Vec3ArgumentType.getPosArgument(commandContext, "location"),
 																	null,
-																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.field_9853)
+																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.FEET)
 																)
 														)
 														.then(
@@ -189,27 +189,27 @@ public class TeleportCommand {
 		Vec2f vec2f = rotation == null ? null : rotation.toAbsoluteRotation(source);
 		Set<PlayerPositionLookS2CPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
 		if (location.isXRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12400);
+			set.add(PlayerPositionLookS2CPacket.Flag.X);
 		}
 
 		if (location.isYRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12398);
+			set.add(PlayerPositionLookS2CPacket.Flag.Y);
 		}
 
 		if (location.isZRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12403);
+			set.add(PlayerPositionLookS2CPacket.Flag.Z);
 		}
 
 		if (rotation == null) {
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12397);
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12401);
+			set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
+			set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
 		} else {
 			if (rotation.isXRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.field_12397);
+				set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
 			}
 
 			if (rotation.isYRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.field_12401);
+				set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
 			}
 		}
 
@@ -250,7 +250,7 @@ public class TeleportCommand {
 		} else {
 			if (target instanceof ServerPlayerEntity) {
 				ChunkPos chunkPos = new ChunkPos(new BlockPos(x, y, z));
-				world.method_14178().addTicket(ChunkTicketType.field_19347, chunkPos, 1, target.getEntityId());
+				world.getChunkManager().addTicket(ChunkTicketType.field_19347, chunkPos, 1, target.getEntityId());
 				target.stopRiding();
 				if (((ServerPlayerEntity)target).isSleeping()) {
 					((ServerPlayerEntity)target).wakeUp(true, true);

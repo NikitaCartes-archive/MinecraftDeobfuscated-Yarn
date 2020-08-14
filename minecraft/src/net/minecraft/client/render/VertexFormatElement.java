@@ -21,7 +21,7 @@ public class VertexFormatElement {
 			this.type = type;
 		} else {
 			LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
-			this.type = VertexFormatElement.Type.field_1636;
+			this.type = VertexFormatElement.Type.UV;
 		}
 
 		this.format = format;
@@ -31,7 +31,7 @@ public class VertexFormatElement {
 	}
 
 	private boolean isValidType(int index, VertexFormatElement.Type type) {
-		return index == 0 || type == VertexFormatElement.Type.field_1636;
+		return index == 0 || type == VertexFormatElement.Type.UV;
 	}
 
 	public final VertexFormatElement.Format getFormat() {
@@ -88,13 +88,13 @@ public class VertexFormatElement {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Format {
-		field_1623(4, "Float", 5126),
-		field_1624(1, "Unsigned Byte", 5121),
-		field_1621(1, "Byte", 5120),
-		field_1622(2, "Unsigned Short", 5123),
-		field_1625(2, "Short", 5122),
-		field_1619(4, "Unsigned Int", 5125),
-		field_1617(4, "Int", 5124);
+		FLOAT(4, "Float", 5126),
+		UBYTE(1, "Unsigned Byte", 5121),
+		BYTE(1, "Byte", 5120),
+		USHORT(2, "Unsigned Short", 5123),
+		SHORT(2, "Short", 5122),
+		UINT(4, "Unsigned Int", 5125),
+		INT(4, "Int", 5124);
 
 		private final int size;
 		private final String name;
@@ -121,22 +121,22 @@ public class VertexFormatElement {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		field_1633("Position", (i, j, k, l, m) -> {
+		POSITION("Position", (i, j, k, l, m) -> {
 			GlStateManager.vertexPointer(i, j, k, l);
 			GlStateManager.enableClientState(32884);
 		}, i -> GlStateManager.disableClientState(32884)),
-		field_1635("Normal", (i, j, k, l, m) -> {
+		NORMAL("Normal", (i, j, k, l, m) -> {
 			GlStateManager.normalPointer(j, k, l);
 			GlStateManager.enableClientState(32885);
 		}, i -> GlStateManager.disableClientState(32885)),
-		field_1632("Vertex Color", (i, j, k, l, m) -> {
+		COLOR("Vertex Color", (i, j, k, l, m) -> {
 			GlStateManager.colorPointer(i, j, k, l);
 			GlStateManager.enableClientState(32886);
 		}, i -> {
 			GlStateManager.disableClientState(32886);
 			GlStateManager.clearCurrentColor();
 		}),
-		field_1636("UV", (i, j, k, l, m) -> {
+		UV("UV", (i, j, k, l, m) -> {
 			GlStateManager.clientActiveTexture(33984 + m);
 			GlStateManager.texCoordPointer(i, j, k, l);
 			GlStateManager.enableClientState(32888);
@@ -146,10 +146,10 @@ public class VertexFormatElement {
 			GlStateManager.disableClientState(32888);
 			GlStateManager.clientActiveTexture(33984);
 		}),
-		field_1629("Padding", (i, j, k, l, m) -> {
+		PADDING("Padding", (i, j, k, l, m) -> {
 		}, i -> {
 		}),
-		field_20782("Generic", (i, j, k, l, m) -> {
+		GENERIC("Generic", (i, j, k, l, m) -> {
 			GlStateManager.enableVertexAttribArray(m);
 			GlStateManager.vertexAttribPointer(m, i, j, false, k, l);
 		}, GlStateManager::method_22607);

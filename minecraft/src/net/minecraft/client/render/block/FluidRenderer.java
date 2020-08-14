@@ -32,9 +32,9 @@ public class FluidRenderer {
 	private Sprite waterOverlaySprite;
 
 	protected void onResourceReload() {
-		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.field_10164.getDefaultState()).getSprite();
+		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.LAVA.getDefaultState()).getSprite();
 		this.lavaSprites[1] = ModelLoader.LAVA_FLOW.getSprite();
-		this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.field_10382.getDefaultState()).getSprite();
+		this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getSprite();
 		this.waterSprites[1] = ModelLoader.WATER_FLOW.getSprite();
 		this.waterOverlaySprite = ModelLoader.WATER_OVERLAY.getSprite();
 	}
@@ -70,27 +70,27 @@ public class FluidRenderer {
 	}
 
 	public boolean render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state) {
-		boolean bl = state.isIn(FluidTags.field_15518);
+		boolean bl = state.isIn(FluidTags.LAVA);
 		Sprite[] sprites = bl ? this.lavaSprites : this.waterSprites;
 		BlockState blockState = world.getBlockState(pos);
 		int i = bl ? 16777215 : BiomeColors.getWaterColor(world, pos);
 		float f = (float)(i >> 16 & 0xFF) / 255.0F;
 		float g = (float)(i >> 8 & 0xFF) / 255.0F;
 		float h = (float)(i & 0xFF) / 255.0F;
-		boolean bl2 = !isSameFluid(world, pos, Direction.field_11036, state);
-		boolean bl3 = method_29708(world, pos, state, blockState, Direction.field_11033) && !isSideCovered(world, pos, Direction.field_11033, 0.8888889F);
-		boolean bl4 = method_29708(world, pos, state, blockState, Direction.field_11043);
-		boolean bl5 = method_29708(world, pos, state, blockState, Direction.field_11035);
-		boolean bl6 = method_29708(world, pos, state, blockState, Direction.field_11039);
-		boolean bl7 = method_29708(world, pos, state, blockState, Direction.field_11034);
+		boolean bl2 = !isSameFluid(world, pos, Direction.UP, state);
+		boolean bl3 = method_29708(world, pos, state, blockState, Direction.DOWN) && !isSideCovered(world, pos, Direction.DOWN, 0.8888889F);
+		boolean bl4 = method_29708(world, pos, state, blockState, Direction.NORTH);
+		boolean bl5 = method_29708(world, pos, state, blockState, Direction.SOUTH);
+		boolean bl6 = method_29708(world, pos, state, blockState, Direction.WEST);
+		boolean bl7 = method_29708(world, pos, state, blockState, Direction.EAST);
 		if (!bl2 && !bl3 && !bl7 && !bl6 && !bl4 && !bl5) {
 			return false;
 		} else {
 			boolean bl8 = false;
-			float j = world.getBrightness(Direction.field_11033, true);
-			float k = world.getBrightness(Direction.field_11036, true);
-			float l = world.getBrightness(Direction.field_11043, true);
-			float m = world.getBrightness(Direction.field_11039, true);
+			float j = world.getBrightness(Direction.DOWN, true);
+			float k = world.getBrightness(Direction.UP, true);
+			float l = world.getBrightness(Direction.NORTH, true);
+			float m = world.getBrightness(Direction.WEST, true);
 			float n = this.getNorthWestCornerFluidHeight(world, pos, state.getFluid());
 			float o = this.getNorthWestCornerFluidHeight(world, pos.south(), state.getFluid());
 			float p = this.getNorthWestCornerFluidHeight(world, pos.east().south(), state.getFluid());
@@ -100,7 +100,7 @@ public class FluidRenderer {
 			double r = (double)(pos.getZ() & 15);
 			float s = 0.001F;
 			float t = bl3 ? 0.001F : 0.0F;
-			if (bl2 && !isSideCovered(world, pos, Direction.field_11036, Math.min(Math.min(n, o), Math.min(p, q)))) {
+			if (bl2 && !isSideCovered(world, pos, Direction.UP, Math.min(Math.min(n, o), Math.min(p, q)))) {
 				bl8 = true;
 				n -= 0.001F;
 				o -= 0.001F;
@@ -175,7 +175,7 @@ public class FluidRenderer {
 				float wx = sprites[0].getMaxU();
 				float yx = sprites[0].getMinV();
 				float aax = sprites[0].getMaxV();
-				int al = this.getLight(world, pos.method_10074());
+				int al = this.getLight(world, pos.down());
 				float xx = j * f;
 				float zx = j * g;
 				float abx = j * h;
@@ -202,7 +202,7 @@ public class FluidRenderer {
 					ao = d + 1.0;
 					ap = r + 0.001F;
 					aq = r + 0.001F;
-					direction = Direction.field_11043;
+					direction = Direction.NORTH;
 					bl9 = bl4;
 				} else if (am == 1) {
 					wx = p;
@@ -211,7 +211,7 @@ public class FluidRenderer {
 					ao = d;
 					ap = r + 1.0 - 0.001F;
 					aq = r + 1.0 - 0.001F;
-					direction = Direction.field_11035;
+					direction = Direction.SOUTH;
 					bl9 = bl5;
 				} else if (am == 2) {
 					wx = o;
@@ -220,7 +220,7 @@ public class FluidRenderer {
 					ao = d + 0.001F;
 					ap = r + 1.0;
 					aq = r;
-					direction = Direction.field_11039;
+					direction = Direction.WEST;
 					bl9 = bl6;
 				} else {
 					wx = q;
@@ -229,7 +229,7 @@ public class FluidRenderer {
 					ao = d + 1.0 - 0.001F;
 					ap = r;
 					aq = r + 1.0;
-					direction = Direction.field_11034;
+					direction = Direction.EAST;
 					bl9 = bl7;
 				}
 

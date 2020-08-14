@@ -34,12 +34,12 @@ public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 
 	private static boolean tryShearBlock(ServerWorld world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
-		if (blockState.isIn(BlockTags.field_20340)) {
+		if (blockState.isIn(BlockTags.BEEHIVES)) {
 			int i = (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL);
 			if (i >= 5) {
-				world.playSound(null, pos, SoundEvents.field_20611, SoundCategory.field_15245, 1.0F, 1.0F);
+				world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				BeehiveBlock.dropHoneycomb(world, pos);
-				((BeehiveBlock)blockState.getBlock()).takeHoney(world, blockState, pos, null, BeehiveBlockEntity.BeeState.field_20429);
+				((BeehiveBlock)blockState.getBlock()).takeHoney(world, blockState, pos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
 				return true;
 			}
 		}
@@ -52,7 +52,7 @@ public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 			if (livingEntity instanceof Shearable) {
 				Shearable shearable = (Shearable)livingEntity;
 				if (shearable.isShearable()) {
-					shearable.sheared(SoundCategory.field_15245);
+					shearable.sheared(SoundCategory.BLOCKS);
 					return true;
 				}
 			}

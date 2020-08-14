@@ -35,21 +35,21 @@ public class TripwireHookBlock extends Block {
 	public TripwireHookBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction)state.get(FACING)) {
-			case field_11034:
+			case EAST:
 			default:
 				return WEST_SHAPE;
-			case field_11039:
+			case WEST:
 				return EAST_SHAPE;
-			case field_11035:
+			case SOUTH:
 				return NORTH_SHAPE;
-			case field_11043:
+			case NORTH:
 				return SOUTH_SHAPE;
 		}
 	}
@@ -65,7 +65,7 @@ public class TripwireHookBlock extends Block {
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
@@ -105,16 +105,16 @@ public class TripwireHookBlock extends Block {
 		BlockState[] blockStates = new BlockState[42];
 
 		for (int k = 1; k < 42; k++) {
-			BlockPos blockPos = pos.method_10079(direction, k);
+			BlockPos blockPos = pos.offset(direction, k);
 			BlockState blockState2 = world.getBlockState(blockPos);
-			if (blockState2.isOf(Blocks.field_10348)) {
+			if (blockState2.isOf(Blocks.TRIPWIRE_HOOK)) {
 				if (blockState2.get(FACING) == direction.getOpposite()) {
 					j = k;
 				}
 				break;
 			}
 
-			if (!blockState2.isOf(Blocks.field_10589) && k != i) {
+			if (!blockState2.isOf(Blocks.TRIPWIRE) && k != i) {
 				blockStates[k] = null;
 				bl4 = false;
 			} else {
@@ -137,7 +137,7 @@ public class TripwireHookBlock extends Block {
 		bl5 &= bl4;
 		BlockState blockState3 = this.getDefaultState().with(ATTACHED, Boolean.valueOf(bl4)).with(POWERED, Boolean.valueOf(bl5));
 		if (j > 0) {
-			BlockPos blockPosx = pos.method_10079(direction, j);
+			BlockPos blockPosx = pos.offset(direction, j);
 			Direction direction2 = direction.getOpposite();
 			world.setBlockState(blockPosx, blockState3.with(FACING, direction2), 3);
 			this.updateNeighborsOnAxis(world, blockPosx, direction2);
@@ -154,7 +154,7 @@ public class TripwireHookBlock extends Block {
 
 		if (bl2 != bl4) {
 			for (int l = 1; l < j; l++) {
-				BlockPos blockPos2 = pos.method_10079(direction, l);
+				BlockPos blockPos2 = pos.offset(direction, l);
 				BlockState blockState4 = blockStates[l];
 				if (blockState4 != null) {
 					world.setBlockState(blockPos2, blockState4.with(ATTACHED, Boolean.valueOf(bl4)), 3);
@@ -172,13 +172,13 @@ public class TripwireHookBlock extends Block {
 
 	private void playSound(World world, BlockPos pos, boolean attached, boolean on, boolean detached, boolean off) {
 		if (on && !off) {
-			world.playSound(null, pos, SoundEvents.field_14674, SoundCategory.field_15245, 0.4F, 0.6F);
+			world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_CLICK_ON, SoundCategory.BLOCKS, 0.4F, 0.6F);
 		} else if (!on && off) {
-			world.playSound(null, pos, SoundEvents.field_14787, SoundCategory.field_15245, 0.4F, 0.5F);
+			world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_CLICK_OFF, SoundCategory.BLOCKS, 0.4F, 0.5F);
 		} else if (attached && !detached) {
-			world.playSound(null, pos, SoundEvents.field_14859, SoundCategory.field_15245, 0.4F, 0.7F);
+			world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_ATTACH, SoundCategory.BLOCKS, 0.4F, 0.7F);
 		} else if (!attached && detached) {
-			world.playSound(null, pos, SoundEvents.field_14595, SoundCategory.field_15245, 0.4F, 1.2F / (world.random.nextFloat() * 0.2F + 0.9F));
+			world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_DETACH, SoundCategory.BLOCKS, 0.4F, 1.2F / (world.random.nextFloat() * 0.2F + 0.9F));
 		}
 	}
 

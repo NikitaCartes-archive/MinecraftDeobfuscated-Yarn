@@ -16,7 +16,7 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 		super(codec);
 	}
 
-	public boolean method_27106(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess,
 		ChunkGenerator chunkGenerator,
 		Random random,
@@ -24,9 +24,7 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 		NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig
 	) {
 		Block block = netherrackReplaceBlobsFeatureConfig.field_25849.getBlock();
-		BlockPos blockPos2 = method_27107(
-			structureWorldAccess, blockPos.mutableCopy().method_27158(Direction.Axis.field_11052, 1, structureWorldAccess.getHeight() - 1), block
-		);
+		BlockPos blockPos2 = method_27107(structureWorldAccess, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, structureWorldAccess.getHeight() - 1), block);
 		if (blockPos2 == null) {
 			return false;
 		} else {
@@ -57,7 +55,7 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 				return mutable;
 			}
 
-			mutable.move(Direction.field_11033);
+			mutable.move(Direction.DOWN);
 		}
 
 		return null;

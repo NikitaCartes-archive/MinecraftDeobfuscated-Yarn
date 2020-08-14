@@ -13,15 +13,15 @@ public class IcePatchFeature extends DiskFeature {
 	}
 
 	@Override
-	public boolean method_13005(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig
 	) {
 		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
-			blockPos = blockPos.method_10074();
+			blockPos = blockPos.down();
 		}
 
-		return !structureWorldAccess.getBlockState(blockPos).isOf(Blocks.field_10491)
+		return !structureWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)
 			? false
-			: super.method_13005(structureWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig);
+			: super.generate(structureWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig);
 	}
 }

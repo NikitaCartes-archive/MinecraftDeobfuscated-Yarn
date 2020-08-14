@@ -22,7 +22,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 
 public class NbtIo {
-	public static CompoundTag method_30613(File file) throws IOException {
+	public static CompoundTag readCompressed(File file) throws IOException {
 		InputStream inputStream = new FileInputStream(file);
 		Throwable var2 = null;
 
@@ -76,12 +76,12 @@ public class NbtIo {
 		return var3;
 	}
 
-	public static void method_30614(CompoundTag compoundTag, File file) throws IOException {
+	public static void writeCompressed(CompoundTag tag, File file) throws IOException {
 		OutputStream outputStream = new FileOutputStream(file);
 		Throwable var3 = null;
 
 		try {
-			writeCompressed(compoundTag, outputStream);
+			writeCompressed(tag, outputStream);
 		} catch (Throwable var12) {
 			var3 = var12;
 			throw var12;
@@ -222,8 +222,8 @@ public class NbtIo {
 		}
 	}
 
-	public static CompoundTag read(DataInput dataInput) throws IOException {
-		return read(dataInput, PositionTracker.DEFAULT);
+	public static CompoundTag read(DataInput input) throws IOException {
+		return read(input, PositionTracker.DEFAULT);
 	}
 
 	public static CompoundTag read(DataInput input, PositionTracker tracker) throws IOException {

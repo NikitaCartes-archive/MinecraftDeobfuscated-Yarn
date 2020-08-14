@@ -8,9 +8,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public enum ParticlesMode {
-	field_18197(0, "options.particles.all"),
-	field_18198(1, "options.particles.decreased"),
-	field_18199(2, "options.particles.minimal");
+	ALL(0, "options.particles.all"),
+	DECREASED(1, "options.particles.decreased"),
+	MINIMAL(2, "options.particles.minimal");
 
 	private static final ParticlesMode[] VALUES = (ParticlesMode[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(ParticlesMode::getId))

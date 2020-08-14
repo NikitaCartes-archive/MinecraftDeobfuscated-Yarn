@@ -54,7 +54,7 @@ public final class EntityPredicates {
 	public static final Predicate<Entity> EXCEPT_CREATIVE_OR_SPECTATOR = entity -> !(entity instanceof PlayerEntity)
 			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative();
 	public static final Predicate<Entity> EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL = entity -> !(entity instanceof PlayerEntity)
-			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative() && entity.world.getDifficulty() != Difficulty.field_5801;
+			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative() && entity.world.getDifficulty() != Difficulty.PEACEFUL;
 	public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
 
 	public static Predicate<Entity> maxDistance(double x, double y, double z, double d) {
@@ -64,8 +64,8 @@ public final class EntityPredicates {
 
 	public static Predicate<Entity> canBePushedBy(Entity entity) {
 		AbstractTeam abstractTeam = entity.getScoreboardTeam();
-		AbstractTeam.CollisionRule collisionRule = abstractTeam == null ? AbstractTeam.CollisionRule.field_1437 : abstractTeam.getCollisionRule();
-		return (Predicate<Entity>)(collisionRule == AbstractTeam.CollisionRule.field_1435
+		AbstractTeam.CollisionRule collisionRule = abstractTeam == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam.getCollisionRule();
+		return (Predicate<Entity>)(collisionRule == AbstractTeam.CollisionRule.NEVER
 			? Predicates.alwaysFalse()
 			: EXCEPT_SPECTATOR.and(
 				entity2 -> {
@@ -73,14 +73,14 @@ public final class EntityPredicates {
 						return false;
 					} else if (!entity.world.isClient || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).isMainPlayer()) {
 						AbstractTeam abstractTeam2 = entity2.getScoreboardTeam();
-						AbstractTeam.CollisionRule collisionRule2 = abstractTeam2 == null ? AbstractTeam.CollisionRule.field_1437 : abstractTeam2.getCollisionRule();
-						if (collisionRule2 == AbstractTeam.CollisionRule.field_1435) {
+						AbstractTeam.CollisionRule collisionRule2 = abstractTeam2 == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam2.getCollisionRule();
+						if (collisionRule2 == AbstractTeam.CollisionRule.NEVER) {
 							return false;
 						} else {
 							boolean bl = abstractTeam != null && abstractTeam.isEqual(abstractTeam2);
-							return (collisionRule == AbstractTeam.CollisionRule.field_1440 || collisionRule2 == AbstractTeam.CollisionRule.field_1440) && bl
+							return (collisionRule == AbstractTeam.CollisionRule.PUSH_OWN_TEAM || collisionRule2 == AbstractTeam.CollisionRule.PUSH_OWN_TEAM) && bl
 								? false
-								: collisionRule != AbstractTeam.CollisionRule.field_1434 && collisionRule2 != AbstractTeam.CollisionRule.field_1434 || bl;
+								: collisionRule != AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS && collisionRule2 != AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS || bl;
 						}
 					} else {
 						return false;
@@ -109,7 +109,7 @@ public final class EntityPredicates {
 			this.stack = stack;
 		}
 
-		public boolean method_5916(@Nullable Entity entity) {
+		public boolean test(@Nullable Entity entity) {
 			if (!entity.isAlive()) {
 				return false;
 			} else if (!(entity instanceof LivingEntity)) {

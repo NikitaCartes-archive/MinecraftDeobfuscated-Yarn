@@ -60,10 +60,10 @@ public class TripwireBlock extends Block {
 		BlockView blockView = ctx.getWorld();
 		BlockPos blockPos = ctx.getBlockPos();
 		return this.getDefaultState()
-			.with(NORTH, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.north()), Direction.field_11043)))
-			.with(EAST, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.east()), Direction.field_11034)))
-			.with(SOUTH, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.south()), Direction.field_11035)))
-			.with(WEST, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.west()), Direction.field_11039)));
+			.with(NORTH, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.north()), Direction.NORTH)))
+			.with(EAST, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.east()), Direction.EAST)))
+			.with(SOUTH, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.south()), Direction.SOUTH)))
+			.with(WEST, Boolean.valueOf(this.shouldConnectTo(blockView.getBlockState(blockPos.west()), Direction.WEST)));
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class TripwireBlock extends Block {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && !player.getMainHandStack().isEmpty() && player.getMainHandStack().getItem() == Items.field_8868) {
+		if (!world.isClient && !player.getMainHandStack().isEmpty() && player.getMainHandStack().getItem() == Items.SHEARS) {
 			world.setBlockState(pos, state.with(DISARMED, Boolean.valueOf(true)), 4);
 		}
 
@@ -97,9 +97,9 @@ public class TripwireBlock extends Block {
 	}
 
 	private void update(World world, BlockPos pos, BlockState state) {
-		for (Direction direction : new Direction[]{Direction.field_11035, Direction.field_11039}) {
+		for (Direction direction : new Direction[]{Direction.SOUTH, Direction.WEST}) {
 			for (int i = 1; i < 42; i++) {
-				BlockPos blockPos = pos.method_10079(direction, i);
+				BlockPos blockPos = pos.offset(direction, i);
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isOf(this.hookBlock)) {
 					if (blockState.get(TripwireHookBlock.FACING) == direction.getOpposite()) {
@@ -164,11 +164,11 @@ public class TripwireBlock extends Block {
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
-			case field_11464:
+			case CLOCKWISE_180:
 				return state.with(NORTH, state.get(SOUTH)).with(EAST, state.get(WEST)).with(SOUTH, state.get(NORTH)).with(WEST, state.get(EAST));
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return state.with(NORTH, state.get(EAST)).with(EAST, state.get(SOUTH)).with(SOUTH, state.get(WEST)).with(WEST, state.get(NORTH));
-			case field_11463:
+			case CLOCKWISE_90:
 				return state.with(NORTH, state.get(WEST)).with(EAST, state.get(NORTH)).with(SOUTH, state.get(EAST)).with(WEST, state.get(SOUTH));
 			default:
 				return state;
@@ -178,9 +178,9 @@ public class TripwireBlock extends Block {
 	@Override
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
 		switch (mirror) {
-			case field_11300:
+			case LEFT_RIGHT:
 				return state.with(NORTH, state.get(SOUTH)).with(SOUTH, state.get(NORTH));
-			case field_11301:
+			case FRONT_BACK:
 				return state.with(EAST, state.get(WEST)).with(WEST, state.get(EAST));
 			default:
 				return super.mirror(state, mirror);

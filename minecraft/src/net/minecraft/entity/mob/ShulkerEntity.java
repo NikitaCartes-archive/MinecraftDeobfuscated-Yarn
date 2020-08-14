@@ -86,12 +86,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15251;
+		return SoundCategory.HOSTILE;
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14690;
+		return SoundEvents.ENTITY_SHULKER_AMBIENT;
 	}
 
 	@Override
@@ -103,25 +103,25 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15160;
+		return SoundEvents.ENTITY_SHULKER_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return this.isClosed() ? SoundEvents.field_15135 : SoundEvents.field_15229;
+		return this.isClosed() ? SoundEvents.ENTITY_SHULKER_HURT_CLOSED : SoundEvents.ENTITY_SHULKER_HURT;
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(ATTACHED_FACE, Direction.field_11033);
+		this.dataTracker.startTracking(ATTACHED_FACE, Direction.DOWN);
 		this.dataTracker.startTracking(ATTACHED_BLOCK, Optional.empty());
 		this.dataTracker.startTracking(PEEK_AMOUNT, (byte)0);
 		this.dataTracker.startTracking(COLOR, (byte)16);
 	}
 
 	public static DefaultAttributeContainer.Builder createShulkerAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 30.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0);
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		} else if (!this.world.isClient) {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir()) {
-				if (blockState.isOf(Blocks.field_10008)) {
+				if (blockState.isOf(Blocks.MOVING_PISTON)) {
 					Direction direction = blockState.get(PistonBlock.FACING);
 					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
@@ -186,7 +186,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					} else {
 						this.tryTeleport();
 					}
-				} else if (blockState.isOf(Blocks.field_10379)) {
+				} else if (blockState.isOf(Blocks.PISTON_HEAD)) {
 					Direction direction = blockState.get(PistonHeadBlock.FACING);
 					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
@@ -242,7 +242,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					for (Entity entity : list) {
 						if (!(entity instanceof ShulkerEntity) && !entity.noClip) {
 							entity.move(
-								MovementType.field_6309, new Vec3d(g * (double)direction3.getOffsetX(), g * (double)direction3.getOffsetY(), g * (double)direction3.getOffsetZ())
+								MovementType.SHULKER, new Vec3d(g * (double)direction3.getOffsetX(), g * (double)direction3.getOffsetY(), g * (double)direction3.getOffsetZ())
 							);
 						}
 					}
@@ -253,7 +253,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	public void move(MovementType type, Vec3d movement) {
-		if (type == MovementType.field_6306) {
+		if (type == MovementType.SHULKER_BOX) {
 			this.tryTeleport();
 		} else {
 			super.move(type, movement);
@@ -303,7 +303,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					Direction direction = this.findAttachSide(blockPos2);
 					if (direction != null) {
 						this.dataTracker.set(ATTACHED_FACE, direction);
-						this.playSound(SoundEvents.field_14915, 1.0F, 1.0F);
+						this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos2));
 						this.dataTracker.set(PEEK_AMOUNT, (byte)0);
 						this.setTarget(null);
@@ -400,12 +400,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	public void setPeekAmount(int peekAmount) {
 		if (!this.world.isClient) {
-			this.getAttributeInstance(EntityAttributes.field_23724).removeModifier(COVERED_ARMOR_BONUS);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_BONUS);
 			if (peekAmount == 0) {
-				this.getAttributeInstance(EntityAttributes.field_23724).addPersistentModifier(COVERED_ARMOR_BONUS);
-				this.playSound(SoundEvents.field_15050, 1.0F, 1.0F);
+				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
+				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);
 			} else {
-				this.playSound(SoundEvents.field_15017, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_SHULKER_OPEN, 1.0F, 1.0F);
 			}
 		}
 
@@ -505,16 +505,16 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return ShulkerEntity.this.world.getDifficulty() == Difficulty.field_5801 ? false : super.canStart();
+			return ShulkerEntity.this.world.getDifficulty() == Difficulty.PEACEFUL ? false : super.canStart();
 		}
 
 		@Override
 		protected Box getSearchBox(double distance) {
 			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
-			if (direction.getAxis() == Direction.Axis.field_11048) {
+			if (direction.getAxis() == Direction.Axis.X) {
 				return this.mob.getBoundingBox().expand(4.0, distance, distance);
 			} else {
-				return direction.getAxis() == Direction.Axis.field_11051
+				return direction.getAxis() == Direction.Axis.Z
 					? this.mob.getBoundingBox().expand(distance, distance, 4.0)
 					: this.mob.getBoundingBox().expand(distance, 4.0, distance);
 			}
@@ -534,10 +534,10 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		@Override
 		protected Box getSearchBox(double distance) {
 			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
-			if (direction.getAxis() == Direction.Axis.field_11048) {
+			if (direction.getAxis() == Direction.Axis.X) {
 				return this.mob.getBoundingBox().expand(4.0, distance, distance);
 			} else {
-				return direction.getAxis() == Direction.Axis.field_11051
+				return direction.getAxis() == Direction.Axis.Z
 					? this.mob.getBoundingBox().expand(distance, distance, 4.0)
 					: this.mob.getBoundingBox().expand(distance, 4.0, distance);
 			}
@@ -548,13 +548,13 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		private int counter;
 
 		public ShootBulletGoal() {
-			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = ShulkerEntity.this.getTarget();
-			return livingEntity != null && livingEntity.isAlive() ? ShulkerEntity.this.world.getDifficulty() != Difficulty.field_5801 : false;
+			return livingEntity != null && livingEntity.isAlive() ? ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL : false;
 		}
 
 		@Override
@@ -570,7 +570,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public void tick() {
-			if (ShulkerEntity.this.world.getDifficulty() != Difficulty.field_5801) {
+			if (ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL) {
 				this.counter--;
 				LivingEntity livingEntity = ShulkerEntity.this.getTarget();
 				ShulkerEntity.this.getLookControl().lookAt(livingEntity, 180.0F, 180.0F);
@@ -580,7 +580,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 						this.counter = 20 + ShulkerEntity.this.random.nextInt(10) * 20 / 2;
 						ShulkerEntity.this.world
 							.spawnEntity(new ShulkerBulletEntity(ShulkerEntity.this.world, ShulkerEntity.this, livingEntity, ShulkerEntity.this.getAttachedFace().getAxis()));
-						ShulkerEntity.this.playSound(SoundEvents.field_15000, 2.0F, (ShulkerEntity.this.random.nextFloat() - ShulkerEntity.this.random.nextFloat()) * 0.2F + 1.0F);
+						ShulkerEntity.this.playSound(
+							SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (ShulkerEntity.this.random.nextFloat() - ShulkerEntity.this.random.nextFloat()) * 0.2F + 1.0F
+						);
 					}
 				} else {
 					ShulkerEntity.this.setTarget(null);

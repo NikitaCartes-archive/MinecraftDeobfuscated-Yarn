@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class RingBellTask extends Task<LivingEntity> {
 	public RingBellTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18440, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT));
 	}
 
 	@Override
@@ -25,10 +25,10 @@ public class RingBellTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.field_18440).get()).getPos();
+		BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.MEETING_POINT).get()).getPos();
 		if (blockPos.isWithinDistance(entity.getBlockPos(), 3.0)) {
 			BlockState blockState = world.getBlockState(blockPos);
-			if (blockState.isOf(Blocks.field_16332)) {
+			if (blockState.isOf(Blocks.BELL)) {
 				BellBlock bellBlock = (BellBlock)blockState.getBlock();
 				bellBlock.ring(world, blockPos, null);
 			}

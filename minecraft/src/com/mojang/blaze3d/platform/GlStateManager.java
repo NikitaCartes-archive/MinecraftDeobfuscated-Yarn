@@ -230,15 +230,15 @@ public class GlStateManager {
 	public static String initFramebufferSupport(GLCapabilities capabilities) {
 		RenderSystem.assertThread(RenderSystem::isInInitPhase);
 		if (capabilities.OpenGL30) {
-			fboBlitMode = GlStateManager.FBOBlitMode.field_25253;
+			fboBlitMode = GlStateManager.FBOBlitMode.BASE;
 		} else if (capabilities.GL_EXT_framebuffer_blit) {
-			fboBlitMode = GlStateManager.FBOBlitMode.field_25254;
+			fboBlitMode = GlStateManager.FBOBlitMode.EXT;
 		} else {
-			fboBlitMode = GlStateManager.FBOBlitMode.field_25255;
+			fboBlitMode = GlStateManager.FBOBlitMode.NONE;
 		}
 
 		if (capabilities.OpenGL30) {
-			fboMode = GlStateManager.FBOMode.field_4981;
+			fboMode = GlStateManager.FBOMode.BASE;
 			FramebufferInfo.FRAME_BUFFER = 36160;
 			FramebufferInfo.RENDER_BUFFER = 36161;
 			FramebufferInfo.COLOR_ATTACHMENT = 36064;
@@ -250,7 +250,7 @@ public class GlStateManager {
 			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_READ_BUFFER = 36060;
 			return "OpenGL 3.0";
 		} else if (capabilities.GL_ARB_framebuffer_object) {
-			fboMode = GlStateManager.FBOMode.field_4983;
+			fboMode = GlStateManager.FBOMode.ARB;
 			FramebufferInfo.FRAME_BUFFER = 36160;
 			FramebufferInfo.RENDER_BUFFER = 36161;
 			FramebufferInfo.COLOR_ATTACHMENT = 36064;
@@ -262,7 +262,7 @@ public class GlStateManager {
 			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_READ_BUFFER = 36060;
 			return "ARB_framebuffer_object extension";
 		} else if (capabilities.GL_EXT_framebuffer_object) {
-			fboMode = GlStateManager.FBOMode.field_4984;
+			fboMode = GlStateManager.FBOMode.EXT;
 			FramebufferInfo.FRAME_BUFFER = 36160;
 			FramebufferInfo.RENDER_BUFFER = 36161;
 			FramebufferInfo.COLOR_ATTACHMENT = 36064;
@@ -431,13 +431,13 @@ public class GlStateManager {
 	public static void bindFramebuffer(int target, int framebuffer) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboMode) {
-			case field_4981:
+			case BASE:
 				GL30.glBindFramebuffer(target, framebuffer);
 				break;
-			case field_4983:
+			case ARB:
 				ARBFramebufferObject.glBindFramebuffer(target, framebuffer);
 				break;
-			case field_4984:
+			case EXT:
 				EXTFramebufferObject.glBindFramebufferEXT(target, framebuffer);
 		}
 	}
@@ -445,17 +445,17 @@ public class GlStateManager {
 	public static int getFramebufferDepthAttachment() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboMode) {
-			case field_4981:
+			case BASE:
 				if (GL30.glGetFramebufferAttachmentParameteri(36160, 36096, 36048) == 5890) {
 					return GL30.glGetFramebufferAttachmentParameteri(36160, 36096, 36049);
 				}
 				break;
-			case field_4983:
+			case ARB:
 				if (ARBFramebufferObject.glGetFramebufferAttachmentParameteri(36160, 36096, 36048) == 5890) {
 					return ARBFramebufferObject.glGetFramebufferAttachmentParameteri(36160, 36096, 36049);
 				}
 				break;
-			case field_4984:
+			case EXT:
 				if (EXTFramebufferObject.glGetFramebufferAttachmentParameteriEXT(36160, 36096, 36048) == 5890) {
 					return EXTFramebufferObject.glGetFramebufferAttachmentParameteriEXT(36160, 36096, 36049);
 				}
@@ -467,25 +467,25 @@ public class GlStateManager {
 	public static void blitFramebuffer(int i, int j, int k, int l, int m, int n, int o, int p, int q, int r) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboBlitMode) {
-			case field_25253:
+			case BASE:
 				GL30.glBlitFramebuffer(i, j, k, l, m, n, o, p, q, r);
 				break;
-			case field_25254:
+			case EXT:
 				EXTFramebufferBlit.glBlitFramebufferEXT(i, j, k, l, m, n, o, p, q, r);
-			case field_25255:
+			case NONE:
 		}
 	}
 
 	public static void deleteFramebuffers(int framebuffers) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboMode) {
-			case field_4981:
+			case BASE:
 				GL30.glDeleteFramebuffers(framebuffers);
 				break;
-			case field_4983:
+			case ARB:
 				ARBFramebufferObject.glDeleteFramebuffers(framebuffers);
 				break;
-			case field_4984:
+			case EXT:
 				EXTFramebufferObject.glDeleteFramebuffersEXT(framebuffers);
 		}
 	}
@@ -493,11 +493,11 @@ public class GlStateManager {
 	public static int genFramebuffers() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboMode) {
-			case field_4981:
+			case BASE:
 				return GL30.glGenFramebuffers();
-			case field_4983:
+			case ARB:
 				return ARBFramebufferObject.glGenFramebuffers();
-			case field_4984:
+			case EXT:
 				return EXTFramebufferObject.glGenFramebuffersEXT();
 			default:
 				return -1;
@@ -507,11 +507,11 @@ public class GlStateManager {
 	public static int checkFramebufferStatus(int target) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboMode) {
-			case field_4981:
+			case BASE:
 				return GL30.glCheckFramebufferStatus(target);
-			case field_4983:
+			case ARB:
 				return ARBFramebufferObject.glCheckFramebufferStatus(target);
-			case field_4984:
+			case EXT:
 				return EXTFramebufferObject.glCheckFramebufferStatusEXT(target);
 			default:
 				return -1;
@@ -521,13 +521,13 @@ public class GlStateManager {
 	public static void framebufferTexture2D(int target, int attachment, int textureTarget, int texture, int level) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboMode) {
-			case field_4981:
+			case BASE:
 				GL30.glFramebufferTexture2D(target, attachment, textureTarget, texture, level);
 				break;
-			case field_4983:
+			case ARB:
 				ARBFramebufferObject.glFramebufferTexture2D(target, attachment, textureTarget, texture, level);
 				break;
-			case field_4984:
+			case EXT:
 				EXTFramebufferObject.glFramebufferTexture2DEXT(target, attachment, textureTarget, texture, level);
 		}
 	}
@@ -685,21 +685,21 @@ public class GlStateManager {
 	}
 
 	public static void setupEndPortalTexGen() {
-		texGenMode(GlStateManager.TexCoord.field_5154, 9216);
-		texGenMode(GlStateManager.TexCoord.field_5155, 9216);
-		texGenMode(GlStateManager.TexCoord.field_5156, 9216);
-		texGenParam(GlStateManager.TexCoord.field_5154, 9474, getBuffer(1.0F, 0.0F, 0.0F, 0.0F));
-		texGenParam(GlStateManager.TexCoord.field_5155, 9474, getBuffer(0.0F, 1.0F, 0.0F, 0.0F));
-		texGenParam(GlStateManager.TexCoord.field_5156, 9474, getBuffer(0.0F, 0.0F, 1.0F, 0.0F));
-		enableTexGen(GlStateManager.TexCoord.field_5154);
-		enableTexGen(GlStateManager.TexCoord.field_5155);
-		enableTexGen(GlStateManager.TexCoord.field_5156);
+		texGenMode(GlStateManager.TexCoord.S, 9216);
+		texGenMode(GlStateManager.TexCoord.T, 9216);
+		texGenMode(GlStateManager.TexCoord.R, 9216);
+		texGenParam(GlStateManager.TexCoord.S, 9474, getBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+		texGenParam(GlStateManager.TexCoord.T, 9474, getBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+		texGenParam(GlStateManager.TexCoord.R, 9474, getBuffer(0.0F, 0.0F, 1.0F, 0.0F));
+		enableTexGen(GlStateManager.TexCoord.S);
+		enableTexGen(GlStateManager.TexCoord.T);
+		enableTexGen(GlStateManager.TexCoord.R);
 	}
 
 	public static void clearTexGen() {
-		disableTexGen(GlStateManager.TexCoord.field_5154);
-		disableTexGen(GlStateManager.TexCoord.field_5155);
-		disableTexGen(GlStateManager.TexCoord.field_5156);
+		disableTexGen(GlStateManager.TexCoord.S);
+		disableTexGen(GlStateManager.TexCoord.T);
+		disableTexGen(GlStateManager.TexCoord.R);
 	}
 
 	public static void mulTextureByProjModelView() {
@@ -863,13 +863,13 @@ public class GlStateManager {
 	private static GlStateManager.TexGenCoordState getGenCoordState(GlStateManager.TexCoord coord) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		switch (coord) {
-			case field_5154:
+			case S:
 				return TEX_GEN.s;
-			case field_5155:
+			case T:
 				return TEX_GEN.t;
-			case field_5156:
+			case R:
 				return TEX_GEN.r;
-			case field_5157:
+			case Q:
 				return TEX_GEN.q;
 			default:
 				return TEX_GEN.s;
@@ -996,10 +996,10 @@ public class GlStateManager {
 
 	public static void viewport(int x, int y, int width, int height) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		GlStateManager.Viewport.field_5169.x = x;
-		GlStateManager.Viewport.field_5169.y = y;
-		GlStateManager.Viewport.field_5169.width = width;
-		GlStateManager.Viewport.field_5169.height = height;
+		GlStateManager.Viewport.INSTANCE.x = x;
+		GlStateManager.Viewport.INSTANCE.y = y;
+		GlStateManager.Viewport.INSTANCE.width = width;
+		GlStateManager.Viewport.INSTANCE.height = height;
 		GL11.glViewport(x, y, width, height);
 	}
 
@@ -1258,7 +1258,7 @@ public class GlStateManager {
 	}
 
 	public static boolean supportsGl30() {
-		return fboBlitMode != GlStateManager.FBOBlitMode.field_25255;
+		return fboBlitMode != GlStateManager.FBOBlitMode.NONE;
 	}
 
 	@Deprecated
@@ -1377,20 +1377,20 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum DstFactor {
-		field_22514(32771),
-		field_22515(32769),
-		field_22516(772),
-		field_22517(774),
-		field_22518(1),
-		field_22519(32772),
-		field_22520(32770),
-		field_22521(773),
-		field_22522(775),
-		field_22523(771),
-		field_22524(769),
-		field_22525(770),
-		field_22526(768),
-		field_22527(0);
+		CONSTANT_ALPHA(32771),
+		CONSTANT_COLOR(32769),
+		DST_ALPHA(772),
+		DST_COLOR(774),
+		ONE(1),
+		ONE_MINUS_CONSTANT_ALPHA(32772),
+		ONE_MINUS_CONSTANT_COLOR(32770),
+		ONE_MINUS_DST_ALPHA(773),
+		ONE_MINUS_DST_COLOR(775),
+		ONE_MINUS_SRC_ALPHA(771),
+		ONE_MINUS_SRC_COLOR(769),
+		SRC_ALPHA(770),
+		SRC_COLOR(768),
+		ZERO(0);
 
 		public final int field_22528;
 
@@ -1401,24 +1401,24 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum FBOBlitMode {
-		field_25253,
-		field_25254,
-		field_25255;
+		BASE,
+		EXT,
+		NONE;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum FBOMode {
-		field_4981,
-		field_4983,
-		field_4984;
+		BASE,
+		ARB,
+		EXT;
 	}
 
 	@Deprecated
 	@Environment(EnvType.CLIENT)
 	public static enum FogMode {
-		field_5095(9729),
-		field_5096(2048),
-		field_5097(2049);
+		LINEAR(9729),
+		EXP(2048),
+		EXP2(2049);
 
 		public final int value;
 
@@ -1442,22 +1442,22 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum LogicOp {
-		field_5120(5377),
-		field_5112(5380),
-		field_5117(5378),
-		field_5103(5376),
-		field_5118(5379),
-		field_5113(5388),
-		field_5119(5385),
-		field_5109(5386),
-		field_5114(5390),
-		field_5115(5381),
-		field_5104(5384),
-		field_5105(5383),
-		field_5116(5389),
-		field_5110(5387),
-		field_5107(5391),
-		field_5111(5382);
+		AND(5377),
+		AND_INVERTED(5380),
+		AND_REVERSE(5378),
+		CLEAR(5376),
+		COPY(5379),
+		COPY_INVERTED(5388),
+		EQUIV(5385),
+		INVERT(5386),
+		NAND(5390),
+		NOOP(5381),
+		NOR(5384),
+		OR(5383),
+		OR_INVERTED(5389),
+		OR_REVERSE(5387),
+		SET(5391),
+		XOR(5382);
 
 		public final int value;
 
@@ -1488,21 +1488,21 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum SrcFactor {
-		field_22530(32771),
-		field_22531(32769),
-		field_22532(772),
-		field_22533(774),
-		field_22534(1),
-		field_22535(32772),
-		field_22536(32770),
-		field_22537(773),
-		field_22538(775),
-		field_22539(771),
-		field_22540(769),
-		field_22541(770),
-		field_22542(776),
-		field_22543(768),
-		field_22544(0);
+		CONSTANT_ALPHA(32771),
+		CONSTANT_COLOR(32769),
+		DST_ALPHA(772),
+		DST_COLOR(774),
+		ONE(1),
+		ONE_MINUS_CONSTANT_ALPHA(32772),
+		ONE_MINUS_CONSTANT_COLOR(32770),
+		ONE_MINUS_DST_ALPHA(773),
+		ONE_MINUS_DST_COLOR(775),
+		ONE_MINUS_SRC_ALPHA(771),
+		ONE_MINUS_SRC_COLOR(769),
+		SRC_ALPHA(770),
+		SRC_ALPHA_SATURATE(776),
+		SRC_COLOR(768),
+		ZERO(0);
 
 		public final int field_22545;
 
@@ -1536,10 +1536,10 @@ public class GlStateManager {
 	@Deprecated
 	@Environment(EnvType.CLIENT)
 	public static enum TexCoord {
-		field_5154,
-		field_5155,
-		field_5156,
-		field_5157;
+		S,
+		T,
+		R,
+		Q;
 	}
 
 	@Deprecated
@@ -1578,7 +1578,7 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Viewport {
-		field_5169;
+		INSTANCE;
 
 		protected int x;
 		protected int y;

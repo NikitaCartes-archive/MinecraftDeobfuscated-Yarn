@@ -23,7 +23,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	@Nullable
 	private Text customName;
 	@Nullable
-	private DyeColor baseColor = DyeColor.field_7952;
+	private DyeColor baseColor = DyeColor.WHITE;
 	@Nullable
 	private ListTag patternListTag;
 	private boolean patternListTagRead;
@@ -31,7 +31,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	private List<Pair<BannerPattern, DyeColor>> patterns;
 
 	public BannerBlockEntity() {
-		super(BlockEntityType.field_11905);
+		super(BlockEntityType.BANNER);
 	}
 
 	public BannerBlockEntity(DyeColor baseColor) {
@@ -45,7 +45,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		ListTag listTag = null;
 		CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
 		if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
-			listTag = compoundTag.getList("Patterns", 10).method_10612();
+			listTag = compoundTag.getList("Patterns", 10).copy();
 		}
 
 		return listTag;
@@ -135,7 +135,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	@Environment(EnvType.CLIENT)
 	public static List<Pair<BannerPattern, DyeColor>> method_24280(DyeColor dyeColor, @Nullable ListTag listTag) {
 		List<Pair<BannerPattern, DyeColor>> list = Lists.<Pair<BannerPattern, DyeColor>>newArrayList();
-		list.add(Pair.of(BannerPattern.field_11834, dyeColor));
+		list.add(Pair.of(BannerPattern.BASE, dyeColor));
 		if (listTag != null) {
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag = listTag.getCompound(i);
@@ -155,7 +155,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
 			ListTag listTag = compoundTag.getList("Patterns", 10);
 			if (!listTag.isEmpty()) {
-				listTag.method_10536(listTag.size() - 1);
+				listTag.remove(listTag.size() - 1);
 				if (listTag.isEmpty()) {
 					stack.removeSubTag("BlockEntityTag");
 				}
@@ -167,7 +167,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public ItemStack getPickStack(BlockState state) {
 		ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.getColorForState(() -> state)));
 		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-			itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
+			itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.copy());
 		}
 
 		if (this.customName != null) {

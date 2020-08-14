@@ -24,7 +24,7 @@ public class ArmorStandItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		Direction direction = context.getSide();
-		if (direction == Direction.field_11033) {
+		if (direction == Direction.DOWN) {
 			return ActionResult.FAIL;
 		} else {
 			World world = context.getWorld();
@@ -32,12 +32,12 @@ public class ArmorStandItem extends Item {
 			BlockPos blockPos = itemPlacementContext.getBlockPos();
 			ItemStack itemStack = context.getStack();
 			Vec3d vec3d = Vec3d.ofBottomCenter(blockPos);
-			Box box = EntityType.field_6131.getDimensions().method_30231(vec3d.getX(), vec3d.getY(), vec3d.getZ());
+			Box box = EntityType.ARMOR_STAND.getDimensions().method_30231(vec3d.getX(), vec3d.getY(), vec3d.getZ());
 			if (world.doesNotCollide(null, box, entity -> true) && world.getOtherEntities(null, box).isEmpty()) {
 				if (world instanceof ServerWorld) {
 					ServerWorld serverWorld = (ServerWorld)world;
-					ArmorStandEntity armorStandEntity = EntityType.field_6131
-						.create(serverWorld, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.field_16465, true, true);
+					ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND
+						.create(serverWorld, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
 					if (armorStandEntity == null) {
 						return ActionResult.FAIL;
 					}
@@ -48,7 +48,7 @@ public class ArmorStandItem extends Item {
 					this.setRotations(armorStandEntity, world.random);
 					world.spawnEntity(armorStandEntity);
 					world.playSound(
-						null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.field_14969, SoundCategory.field_15245, 0.75F, 0.8F
+						null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75F, 0.8F
 					);
 				}
 

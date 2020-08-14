@@ -17,7 +17,7 @@ import net.minecraft.text.Text;
 
 public class ListTag extends AbstractListTag<Tag> {
 	public static final TagReader<ListTag> READER = new TagReader<ListTag>() {
-		public ListTag method_23249(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public ListTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(296L);
 			if (i > 512) {
 				throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
@@ -111,7 +111,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public Tag method_10536(int i) {
+	public Tag remove(int i) {
 		Tag tag = (Tag)this.value.remove(i);
 		this.forgetTypeIfEmpty();
 		return tag;
@@ -211,13 +211,13 @@ public class ListTag extends AbstractListTag<Tag> {
 		return this.value.size();
 	}
 
-	public Tag method_10534(int i) {
+	public Tag get(int i) {
 		return (Tag)this.value.get(i);
 	}
 
 	@Override
-	public Tag method_10606(int i, Tag tag) {
-		Tag tag2 = this.method_10534(i);
+	public Tag set(int i, Tag tag) {
+		Tag tag2 = this.get(i);
 		if (!this.setTag(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		} else {
@@ -226,7 +226,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public void method_10531(int i, Tag tag) {
+	public void add(int i, Tag tag) {
 		if (!this.addTag(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		}
@@ -263,7 +263,7 @@ public class ListTag extends AbstractListTag<Tag> {
 		}
 	}
 
-	public ListTag method_10612() {
+	public ListTag copy() {
 		Iterable<Tag> iterable = (Iterable<Tag>)(TagReaders.of(this.type).isImmutable() ? this.value : Iterables.transform(this.value, Tag::copy));
 		List<Tag> list = Lists.<Tag>newArrayList(iterable);
 		return new ListTag(list, this.type);

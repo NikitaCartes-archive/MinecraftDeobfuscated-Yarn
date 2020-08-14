@@ -28,10 +28,10 @@ public class NarratorManager implements ClientChatListener {
 	public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
 		if (!MinecraftClient.getInstance().shouldBlockMessages(senderUuid)) {
 			NarratorMode narratorMode = getNarratorOption();
-			if (narratorMode != NarratorMode.field_18176 && this.narrator.active()) {
-				if (narratorMode == NarratorMode.field_18177
-					|| narratorMode == NarratorMode.field_18178 && messageType == MessageType.field_11737
-					|| narratorMode == NarratorMode.field_18179 && messageType == MessageType.field_11735) {
+			if (narratorMode != NarratorMode.OFF && this.narrator.active()) {
+				if (narratorMode == NarratorMode.ALL
+					|| narratorMode == NarratorMode.CHAT && messageType == MessageType.CHAT
+					|| narratorMode == NarratorMode.SYSTEM && messageType == MessageType.SYSTEM) {
 					Text text;
 					if (message instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)message).getKey())) {
 						text = new TranslatableText("chat.type.text.narrate", ((TranslatableText)message).getArgs());
@@ -47,7 +47,7 @@ public class NarratorManager implements ClientChatListener {
 
 	public void narrate(String text) {
 		NarratorMode narratorMode = getNarratorOption();
-		if (this.narrator.active() && narratorMode != NarratorMode.field_18176 && narratorMode != NarratorMode.field_18178 && !text.isEmpty()) {
+		if (this.narrator.active() && narratorMode != NarratorMode.OFF && narratorMode != NarratorMode.CHAT && !text.isEmpty()) {
 			this.narrator.clear();
 			this.narrate(true, text);
 		}
@@ -70,14 +70,14 @@ public class NarratorManager implements ClientChatListener {
 		this.narrator.say(new TranslatableText("options.narrator").append(" : ").append(option.getName()).getString(), true);
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		if (this.narrator.active()) {
-			if (option == NarratorMode.field_18176) {
-				SystemToast.show(toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.disabled"), null);
+			if (option == NarratorMode.OFF) {
+				SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled"), null);
 			} else {
-				SystemToast.show(toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.enabled"), option.getName());
+				SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.enabled"), option.getName());
 			}
 		} else {
 			SystemToast.show(
-				toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.disabled"), new TranslatableText("options.narrator.notavailable")
+				toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled"), new TranslatableText("options.narrator.notavailable")
 			);
 		}
 	}
@@ -87,7 +87,7 @@ public class NarratorManager implements ClientChatListener {
 	}
 
 	public void clear() {
-		if (getNarratorOption() != NarratorMode.field_18176 && this.narrator.active()) {
+		if (getNarratorOption() != NarratorMode.OFF && this.narrator.active()) {
 			this.narrator.clear();
 		}
 	}

@@ -24,7 +24,7 @@ public class ItemEntry extends LeafEntry {
 
 	@Override
 	public LootPoolEntryType getType() {
-		return LootPoolEntryTypes.field_25207;
+		return LootPoolEntryTypes.ITEM;
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public class ItemEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<ItemEntry> {
-		public void method_412(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
-			super.method_442(jsonObject, itemEntry, jsonSerializationContext);
+		public void addEntryFields(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
+			super.addEntryFields(jsonObject, itemEntry, jsonSerializationContext);
 			Identifier identifier = Registry.ITEM.getId(itemEntry.item);
 			if (identifier == null) {
 				throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);
@@ -47,7 +47,7 @@ public class ItemEntry extends LeafEntry {
 			}
 		}
 
-		protected ItemEntry method_413(
+		protected ItemEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Item item = JsonHelper.getItem(jsonObject, "name");

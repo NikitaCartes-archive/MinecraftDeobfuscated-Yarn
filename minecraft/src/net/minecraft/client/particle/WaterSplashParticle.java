@@ -25,7 +25,7 @@ public class WaterSplashParticle extends RainSplashParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3102(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			WaterSplashParticle waterSplashParticle = new WaterSplashParticle(clientWorld, d, e, f, g, h, i);
 			waterSplashParticle.setSprite(this.spriteProvider);
 			return waterSplashParticle;

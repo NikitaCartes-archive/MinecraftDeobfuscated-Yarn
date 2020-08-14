@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5512;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -244,13 +245,18 @@ public abstract class Option {
 		gameOptions.ao = AoMode.byId(gameOptions.ao.getId() + integer);
 		MinecraftClient.getInstance().worldRenderer.reload();
 	}, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.ao.getTranslationKey())));
-	public static final CyclingOption field_26778 = new CyclingOption(
-		"options.shieldIndicator",
+	public static final CyclingOption ATTACK_INDICATOR = new CyclingOption(
+		"options.attackIndicator",
 		(gameOptions, integer) -> gameOptions.attackIndicator = AttackIndicator.byId(gameOptions.attackIndicator.getId() + integer),
 		(gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.attackIndicator.getTranslationKey()))
 	);
-	public static final BooleanOption field_26779 = new BooleanOption(
-		"options.useShieldOnCrouch", gameOptions -> gameOptions.field_26780, (gameOptions, boolean_) -> gameOptions.field_26780 = boolean_
+	public static final CyclingOption field_26806 = new CyclingOption(
+		"options.shieldIndicator",
+		(gameOptions, integer) -> gameOptions.field_26808 = class_5512.method_31259(gameOptions.field_26808.method_31258() + integer),
+		(gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.field_26808.method_31260()))
+	);
+	public static final BooleanOption field_26807 = new BooleanOption(
+		"options.useShieldOnCrouch", gameOptions -> gameOptions.field_26809, (gameOptions, boolean_) -> gameOptions.field_26809 = boolean_
 	);
 	public static final CyclingOption VISIBILITY = new CyclingOption(
 		"options.chat.visibility",
@@ -259,7 +265,7 @@ public abstract class Option {
 	);
 	private static final Text FAST_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fast.tooltip");
 	private static final Text FABULOUS_GRAPHICS_TOOLTIP = new TranslatableText(
-		"options.graphics.fabulous.tooltip", new TranslatableText("options.graphics.fabulous").formatted(Formatting.field_1056)
+		"options.graphics.fabulous.tooltip", new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC)
 	);
 	private static final Text FANCY_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fancy.tooltip");
 	public static final CyclingOption GRAPHICS = new CyclingOption(
@@ -267,12 +273,12 @@ public abstract class Option {
 		(options, count) -> {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			VideoWarningManager videoWarningManager = minecraftClient.getVideoWarningManager();
-			if (options.graphicsMode == GraphicsMode.field_25428 && videoWarningManager.canWarn()) {
+			if (options.graphicsMode == GraphicsMode.FANCY && videoWarningManager.canWarn()) {
 				videoWarningManager.scheduleWarning();
 			} else {
 				options.graphicsMode = options.graphicsMode.next();
-				if (options.graphicsMode == GraphicsMode.field_25429 && (!GlStateManager.supportsGl30() || videoWarningManager.hasCancelledAfterWarning())) {
-					options.graphicsMode = GraphicsMode.field_25427;
+				if (options.graphicsMode == GraphicsMode.FABULOUS && (!GlStateManager.supportsGl30() || videoWarningManager.hasCancelledAfterWarning())) {
+					options.graphicsMode = GraphicsMode.FAST;
 				}
 
 				minecraftClient.worldRenderer.reload();
@@ -280,19 +286,19 @@ public abstract class Option {
 		},
 		(options, cyclingOption) -> {
 			switch (options.graphicsMode) {
-				case field_25427:
+				case FAST:
 					cyclingOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FAST_GRAPHICS_TOOLTIP, 200));
 					break;
-				case field_25428:
+				case FANCY:
 					cyclingOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FANCY_GRAPHICS_TOOLTIP, 200));
 					break;
-				case field_25429:
+				case FABULOUS:
 					cyclingOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FABULOUS_GRAPHICS_TOOLTIP, 200));
 			}
 
 			MutableText mutableText = new TranslatableText(options.graphicsMode.getTranslationKey());
-			return options.graphicsMode == GraphicsMode.field_25429
-				? cyclingOption.method_30501(mutableText.formatted(Formatting.field_1056))
+			return options.graphicsMode == GraphicsMode.FABULOUS
+				? cyclingOption.method_30501(mutableText.formatted(Formatting.ITALIC))
 				: cyclingOption.method_30501(mutableText);
 		}
 	);
@@ -316,7 +322,7 @@ public abstract class Option {
 			if (NarratorManager.INSTANCE.isActive()) {
 				gameOptions.narrator = NarratorMode.byId(gameOptions.narrator.getId() + integer);
 			} else {
-				gameOptions.narrator = NarratorMode.field_18176;
+				gameOptions.narrator = NarratorMode.OFF;
 			}
 
 			NarratorManager.INSTANCE.addToast(gameOptions.narrator);

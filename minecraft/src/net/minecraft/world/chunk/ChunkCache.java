@@ -87,7 +87,7 @@ public class ChunkCache implements BlockView, CollisionView {
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
 		if (World.isHeightInvalid(pos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			Chunk chunk = this.method_22354(pos);
 			return chunk.getBlockState(pos);
@@ -107,7 +107,7 @@ public class ChunkCache implements BlockView, CollisionView {
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
 		if (World.isHeightInvalid(pos)) {
-			return Fluids.field_15906.getDefaultState();
+			return Fluids.EMPTY.getDefaultState();
 		} else {
 			Chunk chunk = this.method_22354(pos);
 			return chunk.getFluidState(pos);

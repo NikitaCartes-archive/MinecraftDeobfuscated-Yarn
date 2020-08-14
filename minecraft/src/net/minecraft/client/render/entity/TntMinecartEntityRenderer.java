@@ -16,7 +16,7 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 		super(entityRenderDispatcher);
 	}
 
-	protected void method_4137(
+	protected void renderBlock(
 		TntMinecartEntity tntMinecartEntity, float f, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		int j = tntMinecartEntity.getFuseTicks();

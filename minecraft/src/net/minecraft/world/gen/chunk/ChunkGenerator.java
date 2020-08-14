@@ -52,10 +52,10 @@ import net.minecraft.world.gen.feature.StructureFeature;
  * Biome placement starts here, however all vanilla and most modded chunk generators delegate this to a {@linkplain net.minecraft.world.biome.source.BiomeSource biome source}.
  */
 public abstract class ChunkGenerator {
-	public static final Codec<ChunkGenerator> field_24746 = Registry.CHUNK_GENERATOR.dispatchStable(ChunkGenerator::getCodec, Function.identity());
+	public static final Codec<ChunkGenerator> CODEC = Registry.CHUNK_GENERATOR.dispatchStable(ChunkGenerator::getCodec, Function.identity());
 	protected final BiomeSource biomeSource;
 	protected final BiomeSource field_24747;
-	private final StructuresConfig config;
+	private final StructuresConfig structuresConfig;
 	private final long worldSeed;
 	private final List<ChunkPos> strongholds = Lists.<ChunkPos>newArrayList();
 
@@ -66,18 +66,18 @@ public abstract class ChunkGenerator {
 	public ChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, StructuresConfig structuresConfig, long worldSeed) {
 		this.biomeSource = biomeSource;
 		this.field_24747 = biomeSource2;
-		this.config = structuresConfig;
+		this.structuresConfig = structuresConfig;
 		this.worldSeed = worldSeed;
 	}
 
 	private void generateStrongholdPositions() {
 		if (this.strongholds.isEmpty()) {
-			StrongholdConfig strongholdConfig = this.config.getStronghold();
+			StrongholdConfig strongholdConfig = this.structuresConfig.getStronghold();
 			if (strongholdConfig != null && strongholdConfig.getCount() != 0) {
 				List<Biome> list = Lists.<Biome>newArrayList();
 
 				for (Biome biome : this.biomeSource.getBiomes()) {
-					if (biome.getGenerationSettings().hasStructureFeature(StructureFeature.field_24852)) {
+					if (biome.getGenerationSettings().hasStructureFeature(StructureFeature.STRONGHOLD)) {
 						list.add(biome);
 					}
 				}
@@ -167,7 +167,7 @@ public abstract class ChunkGenerator {
 	public BlockPos locateStructure(ServerWorld world, StructureFeature<?> feature, BlockPos center, int radius, boolean skipExistingChunks) {
 		if (!this.biomeSource.hasStructureFeature(feature)) {
 			return null;
-		} else if (feature == StructureFeature.field_24852) {
+		} else if (feature == StructureFeature.STRONGHOLD) {
 			this.generateStrongholdPositions();
 			BlockPos blockPos = null;
 			double d = Double.MAX_VALUE;
@@ -187,7 +187,7 @@ public abstract class ChunkGenerator {
 
 			return blockPos;
 		} else {
-			StructureConfig structureConfig = this.config.getForType(feature);
+			StructureConfig structureConfig = this.structuresConfig.getForType(feature);
 			return structureConfig == null
 				? null
 				: feature.locateStructure(world, world.getStructureAccessor(), center, radius, skipExistingChunks, world.getSeed(), structureConfig);
@@ -218,8 +218,8 @@ public abstract class ChunkGenerator {
 	public void populateEntities(ChunkRegion region) {
 	}
 
-	public StructuresConfig getConfig() {
-		return this.config;
+	public StructuresConfig getStructuresConfig() {
+		return this.structuresConfig;
 	}
 
 	public int getSpawnHeight() {
@@ -246,9 +246,7 @@ public abstract class ChunkGenerator {
 	) {
 		ChunkPos chunkPos = chunk.getPos();
 		Biome biome = this.biomeSource.getBiomeForNoiseGen((chunkPos.x << 2) + 2, 0, (chunkPos.z << 2) + 2);
-		this.setStructureStart(
-			ConfiguredStructureFeatures.field_26302, dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome
-		);
+		this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome);
 
 		for (Supplier<ConfiguredStructureFeature<?, ?>> supplier : biome.getGenerationSettings().getStructureFeatures()) {
 			this.setStructureStart(
@@ -269,7 +267,7 @@ public abstract class ChunkGenerator {
 	) {
 		StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), configuredStructureFeature.feature, chunk);
 		int i = structureStart != null ? structureStart.getReferences() : 0;
-		StructureConfig structureConfig = this.config.getForType(configuredStructureFeature.feature);
+		StructureConfig structureConfig = this.structuresConfig.getForType(configuredStructureFeature.feature);
 		if (structureConfig != null) {
 			StructureStart<?> structureStart2 = configuredStructureFeature.tryPlaceStart(
 				dynamicRegistryManager, this, this.biomeSource, structureManager, worldSeed, chunkPos, biome, i, structureConfig
@@ -341,7 +339,7 @@ public abstract class ChunkGenerator {
 
 	static {
 		Registry.register(Registry.CHUNK_GENERATOR, "noise", NoiseChunkGenerator.CODEC);
-		Registry.register(Registry.CHUNK_GENERATOR, "flat", FlatChunkGenerator.field_24769);
-		Registry.register(Registry.CHUNK_GENERATOR, "debug", DebugChunkGenerator.field_24768);
+		Registry.register(Registry.CHUNK_GENERATOR, "flat", FlatChunkGenerator.CODEC);
+		Registry.register(Registry.CHUNK_GENERATOR, "debug", DebugChunkGenerator.CODEC);
 	}
 }

@@ -19,7 +19,7 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 
 public class AreaHelper {
-	private static final AbstractBlock.ContextPredicate field_25883 = (blockState, blockView, blockPos) -> blockState.isOf(Blocks.field_10540);
+	private static final AbstractBlock.ContextPredicate field_25883 = (blockState, blockView, blockPos) -> blockState.isOf(Blocks.OBSIDIAN);
 	private final WorldAccess world;
 	private final Direction.Axis axis;
 	private final Direction negativeDir;
@@ -38,7 +38,7 @@ public class AreaHelper {
 		if (optional.isPresent()) {
 			return optional;
 		} else {
-			Direction.Axis axis2 = axis == Direction.Axis.field_11048 ? Direction.Axis.field_11051 : Direction.Axis.field_11048;
+			Direction.Axis axis2 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
 			return Optional.of(new AreaHelper(worldAccess, blockPos, axis2)).filter(predicate);
 		}
 	}
@@ -46,7 +46,7 @@ public class AreaHelper {
 	public AreaHelper(WorldAccess world, BlockPos blockPos, Direction.Axis axis) {
 		this.world = world;
 		this.axis = axis;
-		this.negativeDir = axis == Direction.Axis.field_11048 ? Direction.field_11039 : Direction.field_11035;
+		this.negativeDir = axis == Direction.Axis.X ? Direction.WEST : Direction.SOUTH;
 		this.lowerCorner = this.method_30492(blockPos);
 		if (this.lowerCorner == null) {
 			this.lowerCorner = blockPos;
@@ -64,13 +64,13 @@ public class AreaHelper {
 	private BlockPos method_30492(BlockPos blockPos) {
 		int i = Math.max(0, blockPos.getY() - 21);
 
-		while (blockPos.getY() > i && validStateInsidePortal(this.world.getBlockState(blockPos.method_10074()))) {
-			blockPos = blockPos.method_10074();
+		while (blockPos.getY() > i && validStateInsidePortal(this.world.getBlockState(blockPos.down()))) {
+			blockPos = blockPos.down();
 		}
 
 		Direction direction = this.negativeDir.getOpposite();
 		int j = this.method_30493(blockPos, direction) - 1;
-		return j < 0 ? null : blockPos.method_10079(direction, j);
+		return j < 0 ? null : blockPos.offset(direction, j);
 	}
 
 	private int method_30495() {
@@ -91,7 +91,7 @@ public class AreaHelper {
 				break;
 			}
 
-			BlockState blockState2 = this.world.getBlockState(mutable.move(Direction.field_11033));
+			BlockState blockState2 = this.world.getBlockState(mutable.move(Direction.DOWN));
 			if (!field_25883.test(blockState2, this.world, mutable)) {
 				break;
 			}
@@ -108,7 +108,7 @@ public class AreaHelper {
 
 	private boolean method_30491(BlockPos.Mutable mutable, int i) {
 		for (int j = 0; j < this.width; j++) {
-			BlockPos.Mutable mutable2 = mutable.set(this.lowerCorner).move(Direction.field_11036, i).move(this.negativeDir, j);
+			BlockPos.Mutable mutable2 = mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, j);
 			if (!field_25883.test(this.world.getBlockState(mutable2), this.world, mutable2)) {
 				return false;
 			}
@@ -119,24 +119,24 @@ public class AreaHelper {
 
 	private int method_30490(BlockPos.Mutable mutable) {
 		for (int i = 0; i < 21; i++) {
-			mutable.set(this.lowerCorner).move(Direction.field_11036, i).move(this.negativeDir, -1);
+			mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, -1);
 			if (!field_25883.test(this.world.getBlockState(mutable), this.world, mutable)) {
 				return i;
 			}
 
-			mutable.set(this.lowerCorner).move(Direction.field_11036, i).move(this.negativeDir, this.width);
+			mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, this.width);
 			if (!field_25883.test(this.world.getBlockState(mutable), this.world, mutable)) {
 				return i;
 			}
 
 			for (int j = 0; j < this.width; j++) {
-				mutable.set(this.lowerCorner).move(Direction.field_11036, i).move(this.negativeDir, j);
+				mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, j);
 				BlockState blockState = this.world.getBlockState(mutable);
 				if (!validStateInsidePortal(blockState)) {
 					return i;
 				}
 
-				if (blockState.isOf(Blocks.field_10316)) {
+				if (blockState.isOf(Blocks.NETHER_PORTAL)) {
 					this.foundPortalBlocks++;
 				}
 			}
@@ -146,7 +146,7 @@ public class AreaHelper {
 	}
 
 	private static boolean validStateInsidePortal(BlockState blockState) {
-		return blockState.isAir() || blockState.isIn(BlockTags.field_21952) || blockState.isOf(Blocks.field_10316);
+		return blockState.isAir() || blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.NETHER_PORTAL);
 	}
 
 	public boolean isValid() {
@@ -154,8 +154,8 @@ public class AreaHelper {
 	}
 
 	public void createPortal() {
-		BlockState blockState = Blocks.field_10316.getDefaultState().with(NetherPortalBlock.AXIS, this.axis);
-		BlockPos.iterate(this.lowerCorner, this.lowerCorner.method_10079(Direction.field_11036, this.height - 1).method_10079(this.negativeDir, this.width - 1))
+		BlockState blockState = Blocks.NETHER_PORTAL.getDefaultState().with(NetherPortalBlock.AXIS, this.axis);
+		BlockPos.iterate(this.lowerCorner, this.lowerCorner.offset(Direction.UP, this.height - 1).offset(this.negativeDir, this.width - 1))
 			.forEach(blockPos -> this.world.setBlockState(blockPos, blockState, 18));
 	}
 
@@ -177,13 +177,13 @@ public class AreaHelper {
 
 		double h;
 		if (e > 0.0) {
-			Direction.Axis axis2 = Direction.Axis.field_11052;
+			Direction.Axis axis2 = Direction.Axis.Y;
 			h = MathHelper.clamp(MathHelper.getLerpProgress(vec3d.getComponentAlongAxis(axis2) - (double)blockPos.method_30558(axis2), 0.0, e), 0.0, 1.0);
 		} else {
 			h = 0.0;
 		}
 
-		Direction.Axis axis2 = axis == Direction.Axis.field_11048 ? Direction.Axis.field_11051 : Direction.Axis.field_11048;
+		Direction.Axis axis2 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
 		double i = vec3d.getComponentAlongAxis(axis2) - ((double)blockPos.method_30558(axis2) + 0.5);
 		return new Vec3d(g, h, i);
 	}
@@ -201,7 +201,7 @@ public class AreaHelper {
 		double h = (double)entityDimensions.width / 2.0 + (d - (double)entityDimensions.width) * vec3d.getX();
 		double j = (e - (double)entityDimensions.height) * vec3d.getY();
 		double k = 0.5 + vec3d.getZ();
-		boolean bl = axis2 == Direction.Axis.field_11048;
+		boolean bl = axis2 == Direction.Axis.X;
 		Vec3d vec3d4 = new Vec3d((double)blockPos.getX() + (bl ? h : k), (double)blockPos.getY() + j, (double)blockPos.getZ() + (bl ? k : h));
 		return new TeleportTarget(vec3d4, vec3d3, f + (float)i, g);
 	}

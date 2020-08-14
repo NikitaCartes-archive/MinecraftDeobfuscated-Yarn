@@ -45,7 +45,7 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 		return context.<PosArgument>getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
 	}
 
-	public PosArgument method_9699(StringReader stringReader) throws CommandSyntaxException {
+	public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		return (PosArgument)(stringReader.canRead() && stringReader.peek() == '^' ? LookingPosArgument.parse(stringReader) : DefaultPosArgument.parse(stringReader));
 	}
 
@@ -62,7 +62,7 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 				collection = ((CommandSource)context.getSource()).getBlockPositionSuggestions();
 			}
 
-			return CommandSource.suggestPositions(string, collection, builder, CommandManager.getCommandValidator(this::method_9699));
+			return CommandSource.suggestPositions(string, collection, builder, CommandManager.getCommandValidator(this::parse));
 		}
 	}
 

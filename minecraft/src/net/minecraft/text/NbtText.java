@@ -34,7 +34,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 	@Nullable
 	private static NbtPathArgumentType.NbtPath parsePath(String rawPath) {
 		try {
-			return new NbtPathArgumentType().method_9362(new StringReader(rawPath));
+			return new NbtPathArgumentType().parse(new StringReader(rawPath));
 		} catch (CommandSyntaxException var2) {
 			return null;
 		}
@@ -98,7 +98,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		@Nullable
 		private PosArgument parsePos(String rawPos) {
 			try {
-				return BlockPosArgumentType.blockPos().method_9699(new StringReader(rawPos));
+				return BlockPosArgumentType.blockPos().parse(new StringReader(rawPos));
 			} catch (CommandSyntaxException var3) {
 				return null;
 			}
@@ -115,7 +115,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 			return this.rawPos;
 		}
 
-		public NbtText.BlockNbtText method_10850() {
+		public NbtText.BlockNbtText copy() {
 			return new NbtText.BlockNbtText(this.rawPath, this.path, this.interpret, this.rawPos, this.pos);
 		}
 
@@ -184,7 +184,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 			return this.rawSelector;
 		}
 
-		public NbtText.EntityNbtText method_27697() {
+		public NbtText.EntityNbtText copy() {
 			return new NbtText.EntityNbtText(this.rawPath, this.path, this.interpret, this.rawSelector, this.selector);
 		}
 
@@ -243,7 +243,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 			return this.id;
 		}
 
-		public NbtText.StorageNbtText method_27698() {
+		public NbtText.StorageNbtText copy() {
 			return new NbtText.StorageNbtText(this.rawPath, this.path, this.interpret, this.id);
 		}
 

@@ -111,7 +111,7 @@ public class Identifier implements Comparable<Identifier> {
 		return 31 * this.namespace.hashCode() + this.path.hashCode();
 	}
 
-	public int method_12833(Identifier identifier) {
+	public int compareTo(Identifier identifier) {
 		int i = this.path.compareTo(identifier.path);
 		if (i == 0) {
 			i = this.namespace.compareTo(identifier.namespace);
@@ -176,11 +176,11 @@ public class Identifier implements Comparable<Identifier> {
 	}
 
 	public static class Serializer implements JsonDeserializer<Identifier>, com.google.gson.JsonSerializer<Identifier> {
-		public Identifier method_12840(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public Identifier deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			return new Identifier(JsonHelper.asString(jsonElement, "location"));
 		}
 
-		public JsonElement method_12839(Identifier identifier, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(Identifier identifier, Type type, JsonSerializationContext jsonSerializationContext) {
 			return new JsonPrimitive(identifier.toString());
 		}
 	}

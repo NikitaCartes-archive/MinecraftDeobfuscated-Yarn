@@ -27,11 +27,11 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 		super(featureRendererContext);
 	}
 
-	public void method_17161(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
-		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.field_6174);
-		if (itemStack.getItem() == Items.field_8833) {
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
+		if (itemStack.getItem() == Items.ELYTRA) {
 			Identifier identifier;
 			if (livingEntity instanceof AbstractClientPlayerEntity) {
 				AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
@@ -39,7 +39,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 					identifier = abstractClientPlayerEntity.getElytraTexture();
 				} else if (abstractClientPlayerEntity.canRenderCapeTexture()
 					&& abstractClientPlayerEntity.getCapeTexture() != null
-					&& abstractClientPlayerEntity.isPartVisible(PlayerModelPart.field_7559)) {
+					&& abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE)) {
 					identifier = abstractClientPlayerEntity.getCapeTexture();
 				} else {
 					identifier = SKIN;
@@ -51,7 +51,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 			matrixStack.push();
 			matrixStack.translate(0.0, 0.0, 0.125);
 			this.getContextModel().copyStateTo(this.elytra);
-			this.elytra.method_17079(livingEntity, f, g, j, k, l);
+			this.elytra.setAngles(livingEntity, f, g, j, k, l);
 			VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
 				vertexConsumerProvider, RenderLayer.getArmorCutoutNoCull(identifier), false, itemStack.hasGlint()
 			);

@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 
 public class IntTag extends AbstractNumberTag {
 	public static final TagReader<IntTag> READER = new TagReader<IntTag>() {
-		public IntTag method_23248(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public IntTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(96L);
 			return IntTag.of(dataInput.readInt());
 		}
@@ -58,7 +58,7 @@ public class IntTag extends AbstractNumberTag {
 		return String.valueOf(this.value);
 	}
 
-	public IntTag method_10592() {
+	public IntTag copy() {
 		return this;
 	}
 

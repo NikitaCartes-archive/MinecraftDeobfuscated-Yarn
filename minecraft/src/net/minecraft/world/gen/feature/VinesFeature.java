@@ -16,7 +16,7 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_14201(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
@@ -27,8 +27,8 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 			mutable.setY(i);
 			if (structureWorldAccess.isAir(mutable)) {
 				for (Direction direction : DIRECTIONS) {
-					if (direction != Direction.field_11033 && VineBlock.shouldConnectTo(structureWorldAccess, mutable, direction)) {
-						structureWorldAccess.setBlockState(mutable, Blocks.field_10597.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
+					if (direction != Direction.DOWN && VineBlock.shouldConnectTo(structureWorldAccess, mutable, direction)) {
+						structureWorldAccess.setBlockState(mutable, Blocks.VINE.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
 						break;
 					}
 				}

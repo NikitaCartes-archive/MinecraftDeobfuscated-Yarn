@@ -115,22 +115,22 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	}
 
 	protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
-		this.method_30901(matrices, this.getTooltipFromItem(stack), x, y);
+		this.renderTooltip(matrices, this.getTooltipFromItem(stack), x, y);
 	}
 
 	public List<Text> getTooltipFromItem(ItemStack stack) {
-		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934);
+		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
 	}
 
 	public void renderTooltip(MatrixStack matrices, Text text, int x, int y) {
-		this.renderTooltip(matrices, Arrays.asList(text.asOrderedText()), x, y);
+		this.renderOrderedTooltip(matrices, Arrays.asList(text.asOrderedText()), x, y);
 	}
 
-	public void method_30901(MatrixStack matrixStack, List<Text> list, int i, int j) {
-		this.renderTooltip(matrixStack, Lists.transform(list, Text::asOrderedText), i, j);
+	public void renderTooltip(MatrixStack matrices, List<Text> lines, int x, int y) {
+		this.renderOrderedTooltip(matrices, Lists.transform(lines, Text::asOrderedText), x, y);
 	}
 
-	public void renderTooltip(MatrixStack matrices, List<? extends OrderedText> lines, int x, int y) {
+	public void renderOrderedTooltip(MatrixStack matrices, List<? extends OrderedText> lines, int x, int y) {
 		if (!lines.isEmpty()) {
 			int i = 0;
 
@@ -205,22 +205,22 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 		}
 	}
 
-	protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int i, int j) {
+	protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int x, int y) {
 		if (style != null && style.getHoverEvent() != null) {
 			HoverEvent hoverEvent = style.getHoverEvent();
-			HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.field_24343);
+			HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ITEM);
 			if (itemStackContent != null) {
-				this.renderTooltip(matrices, itemStackContent.asStack(), i, j);
+				this.renderTooltip(matrices, itemStackContent.asStack(), x, y);
 			} else {
-				HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.field_24344);
+				HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ENTITY);
 				if (entityContent != null) {
 					if (this.client.options.advancedItemTooltips) {
-						this.method_30901(matrices, entityContent.asTooltip(), i, j);
+						this.renderTooltip(matrices, entityContent.asTooltip(), x, y);
 					}
 				} else {
-					Text text = hoverEvent.getValue(HoverEvent.Action.field_24342);
+					Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
 					if (text != null) {
-						this.renderTooltip(matrices, this.client.textRenderer.wrapLines(text, Math.max(this.width / 2, 200)), i, j);
+						this.renderOrderedTooltip(matrices, this.client.textRenderer.wrapLines(text, Math.max(this.width / 2, 200)), x, y);
 					}
 				}
 			}
@@ -240,7 +240,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 					this.insertText(style.getInsertion(), false);
 				}
 			} else if (clickEvent != null) {
-				if (clickEvent.getAction() == ClickEvent.Action.field_11749) {
+				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
 					if (!this.client.options.chatLinks) {
 						return false;
 					}
@@ -265,14 +265,14 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 					} catch (URISyntaxException var5) {
 						LOGGER.error("Can't open url for {}", clickEvent, var5);
 					}
-				} else if (clickEvent.getAction() == ClickEvent.Action.field_11746) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.OPEN_FILE) {
 					URI uRIx = new File(clickEvent.getValue()).toURI();
 					this.openLink(uRIx);
-				} else if (clickEvent.getAction() == ClickEvent.Action.field_11745) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
 					this.insertText(clickEvent.getValue(), true);
-				} else if (clickEvent.getAction() == ClickEvent.Action.field_11750) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
 					this.sendMessage(clickEvent.getValue(), false);
-				} else if (clickEvent.getAction() == ClickEvent.Action.field_21462) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
 					this.client.keyboard.setClipboard(clickEvent.getValue());
 				} else {
 					LOGGER.error("Don't know how to handle {}", clickEvent);

@@ -28,7 +28,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	public BarrelBlockEntity() {
-		this(BlockEntityType.field_16411);
+		this(BlockEntityType.BARREL);
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 			BlockState blockState = this.getCachedState();
 			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
 			if (!bl) {
-				this.playSound(blockState, SoundEvents.field_17604);
+				this.playSound(blockState, SoundEvents.BLOCK_BARREL_OPEN);
 				this.setOpen(blockState, true);
 			}
 
@@ -107,14 +107,14 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 			this.scheduleUpdate();
 		} else {
 			BlockState blockState = this.getCachedState();
-			if (!blockState.isOf(Blocks.field_16328)) {
+			if (!blockState.isOf(Blocks.BARREL)) {
 				this.markRemoved();
 				return;
 			}
 
 			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
 			if (bl) {
-				this.playSound(blockState, SoundEvents.field_17603);
+				this.playSound(blockState, SoundEvents.BLOCK_BARREL_CLOSE);
 				this.setOpen(blockState, false);
 			}
 		}
@@ -136,6 +136,6 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 		double d = (double)this.pos.getX() + 0.5 + (double)vec3i.getX() / 2.0;
 		double e = (double)this.pos.getY() + 0.5 + (double)vec3i.getY() / 2.0;
 		double f = (double)this.pos.getZ() + 0.5 + (double)vec3i.getZ() / 2.0;
-		this.world.playSound(null, d, e, f, soundEvent, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+		this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 	}
 }

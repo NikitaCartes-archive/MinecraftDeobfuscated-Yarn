@@ -17,16 +17,16 @@ public class SpawnLocating {
 		Biome biome = world.getBiome(mutable);
 		boolean bl = world.getDimension().hasCeiling();
 		BlockState blockState = biome.getGenerationSettings().getSurfaceConfig().getTopMaterial();
-		if (validSpawnNeeded && !blockState.getBlock().isIn(BlockTags.field_15478)) {
+		if (validSpawnNeeded && !blockState.getBlock().isIn(BlockTags.VALID_SPAWN)) {
 			return null;
 		} else {
-			WorldChunk worldChunk = world.method_8497(x >> 4, z >> 4);
-			int i = bl ? world.method_14178().getChunkGenerator().getSpawnHeight() : worldChunk.sampleHeightmap(Heightmap.Type.field_13197, x & 15, z & 15);
+			WorldChunk worldChunk = world.getChunk(x >> 4, z >> 4);
+			int i = bl ? world.getChunkManager().getChunkGenerator().getSpawnHeight() : worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, x & 15, z & 15);
 			if (i < 0) {
 				return null;
 			} else {
-				int j = worldChunk.sampleHeightmap(Heightmap.Type.field_13202, x & 15, z & 15);
-				if (j <= i && j > worldChunk.sampleHeightmap(Heightmap.Type.field_13200, x & 15, z & 15)) {
+				int j = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x & 15, z & 15);
+				if (j <= i && j > worldChunk.sampleHeightmap(Heightmap.Type.OCEAN_FLOOR, x & 15, z & 15)) {
 					return null;
 				} else {
 					for (int k = i + 1; k >= 0; k--) {

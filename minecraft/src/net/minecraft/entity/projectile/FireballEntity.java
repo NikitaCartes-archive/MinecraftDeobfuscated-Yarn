@@ -22,11 +22,11 @@ public class FireballEntity extends AbstractFireballEntity {
 
 	@Environment(EnvType.CLIENT)
 	public FireballEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.field_6066, x, y, z, velocityX, velocityY, velocityZ, world);
+		super(EntityType.FIREBALL, x, y, z, velocityX, velocityY, velocityZ, world);
 	}
 
 	public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.field_6066, owner, velocityX, velocityY, velocityZ, world);
+		super(EntityType.FIREBALL, owner, velocityX, velocityY, velocityZ, world);
 	}
 
 	@Override
@@ -36,13 +36,7 @@ public class FireballEntity extends AbstractFireballEntity {
 			boolean bl = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 			this.world
 				.createExplosion(
-					null,
-					this.getX(),
-					this.getY(),
-					this.getZ(),
-					(float)this.explosionPower,
-					bl,
-					bl ? Explosion.DestructionType.field_18687 : Explosion.DestructionType.field_18685
+					null, this.getX(), this.getY(), this.getZ(), (float)this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE
 				);
 			this.remove();
 		}

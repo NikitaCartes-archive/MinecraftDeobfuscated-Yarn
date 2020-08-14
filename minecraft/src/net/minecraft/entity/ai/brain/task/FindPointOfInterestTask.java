@@ -46,15 +46,15 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 		MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2
 	) {
 		Builder<MemoryModuleType<?>, MemoryModuleState> builder = ImmutableMap.builder();
-		builder.put(memoryModuleType, MemoryModuleState.field_18457);
+		builder.put(memoryModuleType, MemoryModuleState.VALUE_ABSENT);
 		if (memoryModuleType2 != memoryModuleType) {
-			builder.put(memoryModuleType2, MemoryModuleState.field_18457);
+			builder.put(memoryModuleType2, MemoryModuleState.VALUE_ABSENT);
 		}
 
 		return builder.build();
 	}
 
-	protected boolean method_20816(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
 		if (this.onlyRunIfChild && pathAwareEntity.isBaby()) {
 			return false;
 		} else if (this.positionExpireTimeLimit == 0L) {
@@ -65,7 +65,7 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 		}
 	}
 
-	protected void method_20817(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		this.positionExpireTimeLimit = l + 20L + (long)serverWorld.getRandom().nextInt(20);
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 		this.foundPositionsToExpiry.long2ObjectEntrySet().removeIf(entry -> !((FindPointOfInterestTask.RetryMarker)entry.getValue()).method_29927(l));
@@ -81,7 +81,7 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 			}
 		};
 		Set<BlockPos> set = (Set<BlockPos>)pointOfInterestStorage.method_30957(
-				this.poiType.getCompletionCondition(), predicate, pathAwareEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.field_18487
+				this.poiType.getCompletionCondition(), predicate, pathAwareEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE
 			)
 			.limit(5L)
 			.collect(Collectors.toSet());

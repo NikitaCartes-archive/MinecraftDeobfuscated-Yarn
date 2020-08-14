@@ -6,7 +6,7 @@ import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 import net.minecraft.world.biome.layer.util.LayerSampler;
 
 public enum AddRiversLayer implements MergingLayer, IdentityCoordinateTransformer {
-	field_16161;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource context, LayerSampler sampler1, LayerSampler sampler2, int x, int z) {

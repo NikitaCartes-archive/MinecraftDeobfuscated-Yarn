@@ -17,7 +17,7 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 		return ID;
 	}
 
-	public RecipeUnlockedCriterion.Conditions method_9106(
+	public RecipeUnlockedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe"));

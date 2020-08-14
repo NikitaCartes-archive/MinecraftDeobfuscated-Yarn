@@ -33,7 +33,7 @@ public class EntitySetHeadYawS2CPacket implements Packet<ClientPlayPacketListene
 		buf.writeByte(this.headYaw);
 	}
 
-	public void method_11788(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntitySetHeadYaw(this);
 	}
 

@@ -38,7 +38,7 @@ public class TemptGoal extends Goal {
 		this.speed = speed;
 		this.food = food;
 		this.canBeScared = canBeScared;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		if (!(mob.getNavigation() instanceof MobNavigation) && !(mob.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
 		}
@@ -58,7 +58,7 @@ public class TemptGoal extends Goal {
 	}
 
 	protected boolean isTemptedBy(ItemStack stack) {
-		return this.food.method_8093(stack);
+		return this.food.test(stack);
 	}
 
 	@Override

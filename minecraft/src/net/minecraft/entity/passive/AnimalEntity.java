@@ -34,8 +34,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	protected AnimalEntity(EntityType<? extends AnimalEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.field_9, 16.0F);
-		this.setPathfindingPenalty(PathNodeType.field_3, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
-				this.world.addParticle(ParticleTypes.field_11201, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+				this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return world.getBlockState(pos.method_10074()).isOf(Blocks.field_10219) ? 10.0F : world.getBrightness(pos) - 0.5F;
+		return world.getBlockState(pos.down()).isOf(Blocks.GRASS_BLOCK) ? 10.0F : world.getBrightness(pos) - 0.5F;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	public static boolean isValidNaturalSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getBlockState(pos.method_10074()).isOf(Blocks.field_10219) && world.getBaseLightLevel(pos, 0) > 8;
+		return world.getBlockState(pos.down()).isOf(Blocks.GRASS_BLOCK) && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.getItem() == Items.field_8861;
+		return stack.getItem() == Items.WHEAT;
 	}
 
 	@Override
@@ -211,7 +211,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 			}
 
 			if (serverPlayerEntity != null) {
-				serverPlayerEntity.incrementStat(Stats.field_15410);
+				serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
 				Criteria.BRED_ANIMALS.trigger(serverPlayerEntity, this, other, passiveEntity);
 			}
 
@@ -237,7 +237,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
-				this.world.addParticle(ParticleTypes.field_11201, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+				this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 			}
 		} else {
 			super.handleStatus(status);

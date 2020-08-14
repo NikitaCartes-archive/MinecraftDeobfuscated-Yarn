@@ -63,8 +63,8 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 				0,
 				new HoldInHandsGoal<>(
 					this,
-					PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8997),
-					SoundEvents.field_18315,
+					PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.INVISIBILITY),
+					SoundEvents.ENTITY_WANDERING_TRADER_DISAPPEARED,
 					wanderingTraderEntity -> this.world.isNight() && !wanderingTraderEntity.isInvisible()
 				)
 			);
@@ -72,7 +72,10 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 			.add(
 				0,
 				new HoldInHandsGoal<>(
-					this, new ItemStack(Items.field_8103), SoundEvents.field_18314, wanderingTraderEntity -> this.world.isDay() && wanderingTraderEntity.isInvisible()
+					this,
+					new ItemStack(Items.MILK_BUCKET),
+					SoundEvents.ENTITY_WANDERING_TRADER_REAPPEARED,
+					wanderingTraderEntity -> this.world.isDay() && wanderingTraderEntity.isInvisible()
 				)
 			);
 		this.goalSelector.add(1, new StopFollowingCustomerGoal(this));
@@ -106,9 +109,9 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() != Items.field_8086 && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
-			if (hand == Hand.field_5808) {
-				player.incrementStat(Stats.field_15384);
+		if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
+			if (hand == Hand.MAIN_HAND) {
+				player.incrementStat(Stats.TALKED_TO_VILLAGER);
 			}
 
 			if (this.getOffers().isEmpty()) {
@@ -180,33 +183,33 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.hasCustomer() ? SoundEvents.field_17751 : SoundEvents.field_17747;
+		return this.hasCustomer() ? SoundEvents.ENTITY_WANDERING_TRADER_TRADE : SoundEvents.ENTITY_WANDERING_TRADER_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_17749;
+		return SoundEvents.ENTITY_WANDERING_TRADER_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_17748;
+		return SoundEvents.ENTITY_WANDERING_TRADER_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getDrinkSound(ItemStack stack) {
 		Item item = stack.getItem();
-		return item == Items.field_8103 ? SoundEvents.field_18316 : SoundEvents.field_18313;
+		return item == Items.MILK_BUCKET ? SoundEvents.ENTITY_WANDERING_TRADER_DRINK_MILK : SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION;
 	}
 
 	@Override
 	protected SoundEvent getTradingSound(boolean sold) {
-		return sold ? SoundEvents.field_17752 : SoundEvents.field_17750;
+		return sold ? SoundEvents.ENTITY_WANDERING_TRADER_YES : SoundEvents.ENTITY_WANDERING_TRADER_NO;
 	}
 
 	@Override
 	public SoundEvent getYesSound() {
-		return SoundEvents.field_17752;
+		return SoundEvents.ENTITY_WANDERING_TRADER_YES;
 	}
 
 	public void setDespawnDelay(int delay) {
@@ -249,7 +252,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 			this.trader = trader;
 			this.proximityDistance = proximityDistance;
 			this.speed = speed;
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override

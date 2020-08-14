@@ -13,7 +13,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13110(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		float f = (float)(random.nextInt(3) + 4);
@@ -22,7 +22,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 			for (int j = MathHelper.floor(-f); j <= MathHelper.ceil(f); j++) {
 				for (int k = MathHelper.floor(-f); k <= MathHelper.ceil(f); k++) {
 					if ((float)(j * j + k * k) <= (f + 1.0F) * (f + 1.0F)) {
-						this.setBlockState(structureWorldAccess, blockPos.add(j, i, k), Blocks.field_10471.getDefaultState());
+						this.setBlockState(structureWorldAccess, blockPos.add(j, i, k), Blocks.END_STONE.getDefaultState());
 					}
 				}
 			}

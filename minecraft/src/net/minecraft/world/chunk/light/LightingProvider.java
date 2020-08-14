@@ -77,16 +77,16 @@ public class LightingProvider implements LightingView {
 	}
 
 	public ChunkLightingView get(LightType lightType) {
-		if (lightType == LightType.field_9282) {
-			return (ChunkLightingView)(this.blockLightProvider == null ? ChunkLightingView.Empty.field_15812 : this.blockLightProvider);
+		if (lightType == LightType.BLOCK) {
+			return (ChunkLightingView)(this.blockLightProvider == null ? ChunkLightingView.Empty.INSTANCE : this.blockLightProvider);
 		} else {
-			return (ChunkLightingView)(this.skyLightProvider == null ? ChunkLightingView.Empty.field_15812 : this.skyLightProvider);
+			return (ChunkLightingView)(this.skyLightProvider == null ? ChunkLightingView.Empty.INSTANCE : this.skyLightProvider);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public String displaySectionLevel(LightType lightType, ChunkSectionPos chunkSectionPos) {
-		if (lightType == LightType.field_9282) {
+		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
 				return this.blockLightProvider.displaySectionLevel(chunkSectionPos.asLong());
 			}
@@ -98,7 +98,7 @@ public class LightingProvider implements LightingView {
 	}
 
 	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
-		if (lightType == LightType.field_9282) {
+		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
 				this.blockLightProvider.enqueueSectionData(pos.asLong(), nibbles, bl);
 			}

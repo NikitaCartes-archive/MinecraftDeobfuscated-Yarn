@@ -23,7 +23,7 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		return ID;
 	}
 
-	public FishingRodHookedCriterion.Conditions method_8941(
+	public FishingRodHookedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("rod"));
@@ -63,7 +63,7 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 			} else {
 				if (this.caughtItem != ItemPredicate.ANY) {
 					boolean bl = false;
-					Entity entity = hookedEntityContext.get(LootContextParameters.field_1226);
+					Entity entity = hookedEntityContext.get(LootContextParameters.THIS_ENTITY);
 					if (entity instanceof ItemEntity) {
 						ItemEntity itemEntity = (ItemEntity)entity;
 						if (this.caughtItem.test(itemEntity.getStack())) {

@@ -9,7 +9,7 @@ public class SequenceEntry extends CombinedEntry {
 
 	@Override
 	public LootPoolEntryType getType() {
-		return LootPoolEntryTypes.field_25213;
+		return LootPoolEntryTypes.GROUP;
 	}
 
 	@Override

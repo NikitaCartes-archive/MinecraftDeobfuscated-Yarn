@@ -14,11 +14,11 @@ public class SilverfishEntityRenderer extends MobEntityRenderer<SilverfishEntity
 		super(entityRenderDispatcher, new SilverfishEntityModel<>(), 0.3F);
 	}
 
-	protected float method_4107(SilverfishEntity silverfishEntity) {
+	protected float getLyingAngle(SilverfishEntity silverfishEntity) {
 		return 180.0F;
 	}
 
-	public Identifier method_4108(SilverfishEntity silverfishEntity) {
+	public Identifier getTexture(SilverfishEntity silverfishEntity) {
 		return TEXTURE;
 	}
 }

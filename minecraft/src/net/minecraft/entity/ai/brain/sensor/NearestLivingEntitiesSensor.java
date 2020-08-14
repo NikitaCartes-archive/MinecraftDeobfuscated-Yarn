@@ -18,14 +18,14 @@ public class NearestLivingEntitiesSensor extends Sensor<LivingEntity> {
 		List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, box, livingEntity2 -> livingEntity2 != entity && livingEntity2.isAlive());
 		list.sort(Comparator.comparingDouble(entity::squaredDistanceTo));
 		Brain<?> brain = entity.getBrain();
-		brain.remember(MemoryModuleType.field_18441, list);
+		brain.remember(MemoryModuleType.MOBS, list);
 		brain.remember(
-			MemoryModuleType.field_18442, (List<LivingEntity>)list.stream().filter(livingEntity2 -> method_30954(entity, livingEntity2)).collect(Collectors.toList())
+			MemoryModuleType.VISIBLE_MOBS, (List<LivingEntity>)list.stream().filter(livingEntity2 -> method_30954(entity, livingEntity2)).collect(Collectors.toList())
 		);
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_18441, MemoryModuleType.field_18442);
+		return ImmutableSet.of(MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS);
 	}
 }

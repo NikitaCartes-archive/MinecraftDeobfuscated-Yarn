@@ -22,7 +22,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 		super(featureRendererContext);
 	}
 
-	public void method_4177(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,
@@ -36,10 +36,10 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 	) {
 		if (abstractClientPlayerEntity.canRenderCapeTexture()
 			&& !abstractClientPlayerEntity.isInvisible()
-			&& abstractClientPlayerEntity.isPartVisible(PlayerModelPart.field_7559)
+			&& abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE)
 			&& abstractClientPlayerEntity.getCapeTexture() != null) {
-			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.field_6174);
-			if (itemStack.getItem() != Items.field_8833) {
+			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
+			if (itemStack.getItem() != Items.ELYTRA) {
 				matrixStack.push();
 				matrixStack.translate(0.0, 0.0, 0.125);
 				double d = MathHelper.lerp((double)h, abstractClientPlayerEntity.prevCapeX, abstractClientPlayerEntity.capeX)

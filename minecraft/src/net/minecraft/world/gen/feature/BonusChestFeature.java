@@ -22,7 +22,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_12817(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		ChunkPos chunkPos = new ChunkPos(blockPos);
@@ -35,13 +35,13 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 		for (Integer integer : list) {
 			for (Integer integer2 : list2) {
 				mutable.set(integer, 0, integer2);
-				BlockPos blockPos2 = structureWorldAccess.getTopPosition(Heightmap.Type.field_13203, mutable);
+				BlockPos blockPos2 = structureWorldAccess.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable);
 				if (structureWorldAccess.isAir(blockPos2) || structureWorldAccess.getBlockState(blockPos2).getCollisionShape(structureWorldAccess, blockPos2).isEmpty()) {
-					structureWorldAccess.setBlockState(blockPos2, Blocks.field_10034.getDefaultState(), 2);
+					structureWorldAccess.setBlockState(blockPos2, Blocks.CHEST.getDefaultState(), 2);
 					LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos2, LootTables.SPAWN_BONUS_CHEST);
-					BlockState blockState = Blocks.field_10336.getDefaultState();
+					BlockState blockState = Blocks.TORCH.getDefaultState();
 
-					for (Direction direction : Direction.Type.field_11062) {
+					for (Direction direction : Direction.Type.HORIZONTAL) {
 						BlockPos blockPos3 = blockPos2.offset(direction);
 						if (blockState.canPlaceAt(structureWorldAccess, blockPos3)) {
 							structureWorldAccess.setBlockState(blockPos3, blockState, 2);

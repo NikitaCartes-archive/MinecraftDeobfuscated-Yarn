@@ -27,8 +27,8 @@ public class DoubleBlockProperties {
 			return DoubleBlockProperties.PropertyRetriever::getFallback;
 		} else {
 			DoubleBlockProperties.Type type = (DoubleBlockProperties.Type)typeMapper.apply(state);
-			boolean bl = type == DoubleBlockProperties.Type.field_21783;
-			boolean bl2 = type == DoubleBlockProperties.Type.field_21784;
+			boolean bl = type == DoubleBlockProperties.Type.SINGLE;
+			boolean bl2 = type == DoubleBlockProperties.Type.FIRST;
 			if (bl) {
 				return new DoubleBlockProperties.PropertySource.Single<>(blockEntity);
 			} else {
@@ -36,7 +36,7 @@ public class DoubleBlockProperties {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isOf(state.getBlock())) {
 					DoubleBlockProperties.Type type2 = (DoubleBlockProperties.Type)typeMapper.apply(blockState);
-					if (type2 != DoubleBlockProperties.Type.field_21783 && type != type2 && blockState.get(directionProperty) == state.get(directionProperty)) {
+					if (type2 != DoubleBlockProperties.Type.SINGLE && type != type2 && blockState.get(directionProperty) == state.get(directionProperty)) {
 						if (fallbackTester.test(world, blockPos)) {
 							return DoubleBlockProperties.PropertyRetriever::getFallback;
 						}
@@ -96,8 +96,8 @@ public class DoubleBlockProperties {
 	}
 
 	public static enum Type {
-		field_21783,
-		field_21784,
-		field_21785;
+		SINGLE,
+		FIRST,
+		SECOND;
 	}
 }

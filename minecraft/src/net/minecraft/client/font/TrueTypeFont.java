@@ -46,7 +46,7 @@ public class TrueTypeFont implements Font {
 	}
 
 	@Nullable
-	public TrueTypeFont.TtfGlyph method_2051(int i) {
+	public TrueTypeFont.TtfGlyph getGlyph(int i) {
 		if (this.excludedCharacters.contains(i)) {
 			return null;
 		} else {
@@ -151,7 +151,7 @@ public class TrueTypeFont implements Font {
 
 		@Override
 		public void upload(int x, int y) {
-			NativeImage nativeImage = new NativeImage(NativeImage.Format.field_4998, this.width, this.height, false);
+			NativeImage nativeImage = new NativeImage(NativeImage.Format.LUMINANCE, this.width, this.height, false);
 			nativeImage.makeGlyphBitmapSubpixel(
 				TrueTypeFont.this.info,
 				this.glyphIndex,

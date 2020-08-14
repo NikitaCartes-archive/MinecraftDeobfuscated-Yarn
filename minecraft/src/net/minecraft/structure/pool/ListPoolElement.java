@@ -74,7 +74,7 @@ public class ListPoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType<?> getType() {
-		return StructurePoolElementType.field_16974;
+		return StructurePoolElementType.LIST_POOL_ELEMENT;
 	}
 
 	@Override

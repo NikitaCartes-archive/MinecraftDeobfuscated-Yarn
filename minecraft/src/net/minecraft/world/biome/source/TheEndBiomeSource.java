@@ -5,66 +5,68 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5505;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class TheEndBiomeSource extends BiomeSource {
-	public static final Codec<TheEndBiomeSource> field_24730 = RecordCodecBuilder.create(
+	public static final Codec<TheEndBiomeSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					class_5505.method_31148(Registry.BIOME_KEY).forGetter(theEndBiomeSource -> theEndBiomeSource.field_26699),
-					Codec.LONG.fieldOf("seed").stable().forGetter(theEndBiomeSource -> theEndBiomeSource.field_24731)
+					RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(theEndBiomeSource -> theEndBiomeSource.biomeRegistry),
+					Codec.LONG.fieldOf("seed").stable().forGetter(theEndBiomeSource -> theEndBiomeSource.seed)
 				)
 				.apply(instance, instance.stable(TheEndBiomeSource::new))
 	);
 	private final SimplexNoiseSampler noise;
-	private final Registry<Biome> field_26699;
-	private final long field_24731;
-	private final Biome field_26700;
-	private final Biome field_26701;
-	private final Biome field_26702;
-	private final Biome field_26703;
-	private final Biome field_26704;
+	private final Registry<Biome> biomeRegistry;
+	private final long seed;
+	private final Biome centerBiome;
+	private final Biome highlandsBiome;
+	private final Biome midlandsBiome;
+	private final Biome smallIslandsBiome;
+	private final Biome barrensBiome;
 
-	public TheEndBiomeSource(Registry<Biome> registry, long l) {
+	public TheEndBiomeSource(Registry<Biome> biomeRegistry, long seed) {
 		this(
-			registry,
-			l,
-			registry.method_31140(Biomes.field_9411),
-			registry.method_31140(Biomes.field_9442),
-			registry.method_31140(Biomes.field_9447),
-			registry.method_31140(Biomes.field_9457),
-			registry.method_31140(Biomes.field_9465)
+			biomeRegistry,
+			seed,
+			biomeRegistry.getOrThrow(BiomeKeys.THE_END),
+			biomeRegistry.getOrThrow(BiomeKeys.END_HIGHLANDS),
+			biomeRegistry.getOrThrow(BiomeKeys.END_MIDLANDS),
+			biomeRegistry.getOrThrow(BiomeKeys.SMALL_END_ISLANDS),
+			biomeRegistry.getOrThrow(BiomeKeys.END_BARRENS)
 		);
 	}
 
-	private TheEndBiomeSource(Registry<Biome> registry, long l, Biome biome, Biome biome2, Biome biome3, Biome biome4, Biome biome5) {
-		super(ImmutableList.of(biome, biome2, biome3, biome4, biome5));
-		this.field_26699 = registry;
-		this.field_24731 = l;
-		this.field_26700 = biome;
-		this.field_26701 = biome2;
-		this.field_26702 = biome3;
-		this.field_26703 = biome4;
-		this.field_26704 = biome5;
-		ChunkRandom chunkRandom = new ChunkRandom(l);
+	private TheEndBiomeSource(
+		Registry<Biome> biomeRegistry, long seed, Biome centerBiome, Biome highlandsBiome, Biome midlandsBiome, Biome smallIslandsBiome, Biome barrensBiome
+	) {
+		super(ImmutableList.of(centerBiome, highlandsBiome, midlandsBiome, smallIslandsBiome, barrensBiome));
+		this.biomeRegistry = biomeRegistry;
+		this.seed = seed;
+		this.centerBiome = centerBiome;
+		this.highlandsBiome = highlandsBiome;
+		this.midlandsBiome = midlandsBiome;
+		this.smallIslandsBiome = smallIslandsBiome;
+		this.barrensBiome = barrensBiome;
+		ChunkRandom chunkRandom = new ChunkRandom(seed);
 		chunkRandom.consume(17292);
 		this.noise = new SimplexNoiseSampler(chunkRandom);
 	}
 
 	@Override
-	protected Codec<? extends BiomeSource> method_28442() {
-		return field_24730;
+	protected Codec<? extends BiomeSource> getCodec() {
+		return CODEC;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public BiomeSource withSeed(long seed) {
-		return new TheEndBiomeSource(this.field_26699, seed, this.field_26700, this.field_26701, this.field_26702, this.field_26703, this.field_26704);
+		return new TheEndBiomeSource(this.biomeRegistry, seed, this.centerBiome, this.highlandsBiome, this.midlandsBiome, this.smallIslandsBiome, this.barrensBiome);
 	}
 
 	@Override
@@ -72,21 +74,21 @@ public class TheEndBiomeSource extends BiomeSource {
 		int i = biomeX >> 2;
 		int j = biomeZ >> 2;
 		if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
-			return this.field_26700;
+			return this.centerBiome;
 		} else {
 			float f = getNoiseAt(this.noise, i * 2 + 1, j * 2 + 1);
 			if (f > 40.0F) {
-				return this.field_26701;
+				return this.highlandsBiome;
 			} else if (f >= 0.0F) {
-				return this.field_26702;
+				return this.midlandsBiome;
 			} else {
-				return f < -20.0F ? this.field_26703 : this.field_26704;
+				return f < -20.0F ? this.smallIslandsBiome : this.barrensBiome;
 			}
 		}
 	}
 
-	public boolean method_28479(long l) {
-		return this.field_24731 == l;
+	public boolean isSeedEqual(long seed) {
+		return this.seed == seed;
 	}
 
 	public static float getNoiseAt(SimplexNoiseSampler simplexNoiseSampler, int i, int j) {

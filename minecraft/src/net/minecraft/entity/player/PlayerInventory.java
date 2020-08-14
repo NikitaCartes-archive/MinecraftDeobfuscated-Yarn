@@ -200,7 +200,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		if (itemStack.isEmpty()) {
 			itemStack = new ItemStack(item, 0);
 			if (stack.hasTag()) {
-				itemStack.setTag(stack.getTag().method_10553());
+				itemStack.setTag(stack.getTag().copy());
 			}
 
 			this.setStack(slot, itemStack);
@@ -514,7 +514,7 @@ public class PlayerInventory implements Inventory, Nameable {
 				ItemStack itemStack = this.armor.get(i);
 				if ((!damageSource.isFire() || !itemStack.getItem().isFireproof()) && itemStack.getItem() instanceof ArmorItem) {
 					int j = i;
-					itemStack.damage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.field_6178, j)));
+					itemStack.damage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
 				}
 			}
 		}

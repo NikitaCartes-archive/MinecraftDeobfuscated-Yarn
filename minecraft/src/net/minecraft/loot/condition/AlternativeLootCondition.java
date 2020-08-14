@@ -22,10 +22,10 @@ public class AlternativeLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25236;
+		return LootConditionTypes.ALTERNATIVE;
 	}
 
-	public final boolean method_825(LootContext lootContext) {
+	public final boolean test(LootContext lootContext) {
 		return this.predicate.test(lootContext);
 	}
 
@@ -64,11 +64,11 @@ public class AlternativeLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<AlternativeLootCondition> {
-		public void method_828(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
 		}
 
-		public AlternativeLootCondition method_829(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public AlternativeLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "terms", jsonDeserializationContext, LootCondition[].class);
 			return new AlternativeLootCondition(lootConditions);
 		}

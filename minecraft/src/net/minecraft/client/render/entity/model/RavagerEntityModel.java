@@ -71,7 +71,7 @@ public class RavagerEntityModel extends CompositeEntityModel<RavagerEntity> {
 		return ImmutableList.<ModelPart>of(this.field_3384, this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg);
 	}
 
-	public void method_17091(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j) {
 		this.field_3386.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3386.yaw = i * (float) (Math.PI / 180.0);
 		this.torso.pitch = (float) (Math.PI / 2);
@@ -82,7 +82,7 @@ public class RavagerEntityModel extends CompositeEntityModel<RavagerEntity> {
 		this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662F) * k;
 	}
 
-	public void method_17089(RavagerEntity ravagerEntity, float f, float g, float h) {
+	public void animateModel(RavagerEntity ravagerEntity, float f, float g, float h) {
 		super.animateModel(ravagerEntity, f, g, h);
 		int i = ravagerEntity.getStunTick();
 		int j = ravagerEntity.getRoarTick();

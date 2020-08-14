@@ -19,7 +19,7 @@ public class GameModeCommand {
 			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
-			if (gameMode != GameMode.field_9218) {
+			if (gameMode != GameMode.NOT_SET) {
 				literalArgumentBuilder.then(
 					CommandManager.literal(gameMode.getName())
 						.executes(commandContext -> execute(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
@@ -39,7 +39,7 @@ public class GameModeCommand {
 		if (source.getEntity() == player) {
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
 		} else {
-			if (source.getWorld().getGameRules().getBoolean(GameRules.field_19400)) {
+			if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
 				player.sendSystemMessage(new TranslatableText("gameMode.changed", text), Util.NIL_UUID);
 			}
 

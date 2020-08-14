@@ -31,12 +31,12 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	public WitherSkullEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
-		super(EntityType.field_6130, owner, directionX, directionY, directionZ, world);
+		super(EntityType.WITHER_SKULL, owner, directionX, directionY, directionZ, world);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public WitherSkullEntity(World world, double x, double y, double z, double directionX, double directionY, double directionZ) {
-		super(EntityType.field_6130, x, y, z, directionX, directionY, directionZ, world);
+		super(EntityType.WITHER_SKULL, x, y, z, directionX, directionY, directionZ, world);
 	}
 
 	@Override
@@ -77,14 +77,14 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 
 			if (bl && entity instanceof LivingEntity) {
 				int i = 0;
-				if (this.world.getDifficulty() == Difficulty.field_5802) {
+				if (this.world.getDifficulty() == Difficulty.NORMAL) {
 					i = 10;
-				} else if (this.world.getDifficulty() == Difficulty.field_5807) {
+				} else if (this.world.getDifficulty() == Difficulty.HARD) {
 					i = 40;
 				}
 
 				if (i > 0) {
-					((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.field_5920, 20 * i, 1));
+					((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1));
 				}
 			}
 		}
@@ -95,8 +95,8 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 		super.onCollision(hitResult);
 		if (!this.world.isClient) {
 			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
-				? Explosion.DestructionType.field_18687
-				: Explosion.DestructionType.field_18685;
+				? Explosion.DestructionType.DESTROY
+				: Explosion.DestructionType.NONE;
 			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, destructionType);
 			this.remove();
 		}

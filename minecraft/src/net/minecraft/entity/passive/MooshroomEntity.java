@@ -52,69 +52,69 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return world.getBlockState(pos.method_10074()).isOf(Blocks.field_10402) ? 10.0F : world.getBrightness(pos) - 0.5F;
+		return world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM) ? 10.0F : world.getBrightness(pos) - 0.5F;
 	}
 
 	public static boolean canSpawn(EntityType<MooshroomEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getBlockState(pos.method_10074()).isOf(Blocks.field_10402) && world.getBaseLightLevel(pos, 0) > 8;
+		return world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM) && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	@Override
 	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
 		UUID uUID = lightningEntity.getUuid();
 		if (!uUID.equals(this.lightningId)) {
-			this.setType(this.getMooshroomType() == MooshroomEntity.Type.field_18109 ? MooshroomEntity.Type.field_18110 : MooshroomEntity.Type.field_18109);
+			this.setType(this.getMooshroomType() == MooshroomEntity.Type.RED ? MooshroomEntity.Type.BROWN : MooshroomEntity.Type.RED);
 			this.lightningId = uUID;
-			this.playSound(SoundEvents.field_18266, 2.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_MOOSHROOM_CONVERT, 2.0F, 1.0F);
 		}
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(TYPE, MooshroomEntity.Type.field_18109.name);
+		this.dataTracker.startTracking(TYPE, MooshroomEntity.Type.RED.name);
 	}
 
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8428 && !this.isBaby()) {
+		if (itemStack.getItem() == Items.BOWL && !this.isBaby()) {
 			boolean bl = false;
 			ItemStack itemStack2;
 			if (this.stewEffect != null) {
 				bl = true;
-				itemStack2 = new ItemStack(Items.field_8766);
+				itemStack2 = new ItemStack(Items.SUSPICIOUS_STEW);
 				SuspiciousStewItem.addEffectToStew(itemStack2, this.stewEffect, this.stewEffectDuration);
 				this.stewEffect = null;
 				this.stewEffectDuration = 0;
 			} else {
-				itemStack2 = new ItemStack(Items.field_8208);
+				itemStack2 = new ItemStack(Items.MUSHROOM_STEW);
 			}
 
 			ItemStack itemStack3 = ItemUsage.method_30270(itemStack, player, itemStack2, false);
 			player.setStackInHand(hand, itemStack3);
 			SoundEvent soundEvent;
 			if (bl) {
-				soundEvent = SoundEvents.field_18269;
+				soundEvent = SoundEvents.ENTITY_MOOSHROOM_SUSPICIOUS_MILK;
 			} else {
-				soundEvent = SoundEvents.field_18268;
+				soundEvent = SoundEvents.ENTITY_MOOSHROOM_MILK;
 			}
 
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return ActionResult.success(this.world.isClient);
-		} else if (itemStack.getItem() == Items.field_8868 && this.isShearable()) {
-			this.sheared(SoundCategory.field_15248);
+		} else if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
+			this.sheared(SoundCategory.PLAYERS);
 			if (!this.world.isClient) {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
 			return ActionResult.success(this.world.isClient);
-		} else if (this.getMooshroomType() == MooshroomEntity.Type.field_18110 && itemStack.getItem().isIn(ItemTags.field_15543)) {
+		} else if (this.getMooshroomType() == MooshroomEntity.Type.BROWN && itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
 			if (this.stewEffect != null) {
 				for (int i = 0; i < 2; i++) {
 					this.world
 						.addParticle(
-							ParticleTypes.field_11251,
+							ParticleTypes.SMOKE,
 							this.getX() + this.random.nextDouble() / 2.0,
 							this.getBodyY(0.5),
 							this.getZ() + this.random.nextDouble() / 2.0,
@@ -137,7 +137,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 				for (int j = 0; j < 4; j++) {
 					this.world
 						.addParticle(
-							ParticleTypes.field_11245,
+							ParticleTypes.EFFECT,
 							this.getX() + this.random.nextDouble() / 2.0,
 							this.getBodyY(0.5),
 							this.getZ() + this.random.nextDouble() / 2.0,
@@ -149,7 +149,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 
 				this.stewEffect = pair.getLeft();
 				this.stewEffectDuration = pair.getRight();
-				this.playSound(SoundEvents.field_18267, 2.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_MOOSHROOM_EAT, 2.0F, 1.0F);
 			}
 
 			return ActionResult.success(this.world.isClient);
@@ -160,11 +160,11 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 
 	@Override
 	public void sheared(SoundCategory shearedSoundCategory) {
-		this.world.playSoundFromEntity(null, this, SoundEvents.field_14705, shearedSoundCategory, 1.0F, 1.0F);
+		this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		if (!this.world.isClient()) {
-			((ServerWorld)this.world).spawnParticles(ParticleTypes.field_11236, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+			((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
 			this.remove();
-			CowEntity cowEntity = EntityType.field_6085.create(this.world);
+			CowEntity cowEntity = EntityType.COW.create(this.world);
 			cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 			cowEntity.setHealth(this.getHealth());
 			cowEntity.bodyYaw = this.bodyYaw;
@@ -236,8 +236,8 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		return MooshroomEntity.Type.fromName(this.dataTracker.get(TYPE));
 	}
 
-	public MooshroomEntity method_6495(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		MooshroomEntity mooshroomEntity = EntityType.field_6143.create(serverWorld);
+	public MooshroomEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(serverWorld);
 		mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
 		return mooshroomEntity;
 	}
@@ -247,7 +247,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		MooshroomEntity.Type type2 = mooshroom.getMooshroomType();
 		MooshroomEntity.Type type3;
 		if (type == type2 && this.random.nextInt(1024) == 0) {
-			type3 = type == MooshroomEntity.Type.field_18110 ? MooshroomEntity.Type.field_18109 : MooshroomEntity.Type.field_18110;
+			type3 = type == MooshroomEntity.Type.BROWN ? MooshroomEntity.Type.RED : MooshroomEntity.Type.BROWN;
 		} else {
 			type3 = this.random.nextBoolean() ? type : type2;
 		}
@@ -256,8 +256,8 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	}
 
 	public static enum Type {
-		field_18109("red", Blocks.field_10559.getDefaultState()),
-		field_18110("brown", Blocks.field_10251.getDefaultState());
+		RED("red", Blocks.RED_MUSHROOM.getDefaultState()),
+		BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState());
 
 		private final String name;
 		private final BlockState mushroom;
@@ -279,7 +279,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 				}
 			}
 
-			return field_18109;
+			return RED;
 		}
 	}
 }

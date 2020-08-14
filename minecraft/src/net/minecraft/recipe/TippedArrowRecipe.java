@@ -15,7 +15,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean method_17741(CraftingInventory craftingInventory, World world) {
+	public boolean matches(CraftingInventory craftingInventory, World world) {
 		if (craftingInventory.getWidth() == 3 && craftingInventory.getHeight() == 3) {
 			for (int i = 0; i < craftingInventory.getWidth(); i++) {
 				for (int j = 0; j < craftingInventory.getHeight(); j++) {
@@ -26,10 +26,10 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 
 					Item item = itemStack.getItem();
 					if (i == 1 && j == 1) {
-						if (item != Items.field_8150) {
+						if (item != Items.LINGERING_POTION) {
 							return false;
 						}
-					} else if (item != Items.field_8107) {
+					} else if (item != Items.ARROW) {
 						return false;
 					}
 				}
@@ -41,12 +41,12 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public ItemStack method_17740(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory) {
 		ItemStack itemStack = craftingInventory.getStack(1 + craftingInventory.getWidth());
-		if (itemStack.getItem() != Items.field_8150) {
+		if (itemStack.getItem() != Items.LINGERING_POTION) {
 			return ItemStack.EMPTY;
 		} else {
-			ItemStack itemStack2 = new ItemStack(Items.field_8087, 8);
+			ItemStack itemStack2 = new ItemStack(Items.TIPPED_ARROW, 8);
 			PotionUtil.setPotion(itemStack2, PotionUtil.getPotion(itemStack));
 			PotionUtil.setCustomPotionEffects(itemStack2, PotionUtil.getCustomPotionEffects(itemStack));
 			return itemStack2;

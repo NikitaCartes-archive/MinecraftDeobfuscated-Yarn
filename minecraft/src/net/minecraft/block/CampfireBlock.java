@@ -68,7 +68,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				.with(LIT, Boolean.valueOf(true))
 				.with(SIGNAL_FIRE, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
-				.with(FACING, Direction.field_11043)
+				.with(FACING, Direction.NORTH)
 		);
 	}
 
@@ -82,7 +82,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			if (optional.isPresent()) {
 				if (!world.isClient
 					&& campfireBlockEntity.addItem(player.abilities.creativeMode ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)optional.get()).getCookTime())) {
-					player.incrementStat(Stats.field_17486);
+					player.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
 					return ActionResult.SUCCESS;
 				}
 
@@ -122,7 +122,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		boolean bl = worldAccess.getFluidState(blockPos).getFluid() == Fluids.WATER;
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(bl))
-			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(worldAccess.getBlockState(blockPos.method_10074()))))
+			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(worldAccess.getBlockState(blockPos.down()))))
 			.with(LIT, Boolean.valueOf(!bl))
 			.with(FACING, ctx.getPlayerFacing());
 	}
@@ -133,13 +133,13 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return direction == Direction.field_11033
+		return direction == Direction.DOWN
 			? state.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(newState)))
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	private boolean doesBlockCauseSignalFire(BlockState state) {
-		return state.isOf(Blocks.field_10359);
+		return state.isOf(Blocks.HAY_BLOCK);
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -161,8 +161,8 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 					(double)pos.getX() + 0.5,
 					(double)pos.getY() + 0.5,
 					(double)pos.getZ() + 0.5,
-					SoundEvents.field_17483,
-					SoundCategory.field_15245,
+					SoundEvents.BLOCK_CAMPFIRE_CRACKLE,
+					SoundCategory.BLOCKS,
 					0.5F + random.nextFloat(),
 					random.nextFloat() * 0.7F + 0.6F,
 					false
@@ -172,7 +172,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			if (this.emitsParticles && random.nextInt(5) == 0) {
 				for (int i = 0; i < random.nextInt(1) + 1; i++) {
 					world.addParticle(
-						ParticleTypes.field_11239,
+						ParticleTypes.LAVA,
 						(double)pos.getX() + 0.5,
 						(double)pos.getY() + 0.5,
 						(double)pos.getZ() + 0.5,
@@ -204,7 +204,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			boolean bl = (Boolean)state.get(LIT);
 			if (bl) {
 				if (!world.isClient()) {
-					world.playSound(null, pos, SoundEvents.field_15222, SoundCategory.field_15245, 1.0F, 1.0F);
+					world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
 				extinguish(world, pos, state);
@@ -232,7 +232,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	public static void spawnSmokeParticle(World world, BlockPos pos, boolean isSignal, boolean lotsOfSmoke) {
 		Random random = world.getRandom();
-		DefaultParticleType defaultParticleType = isSignal ? ParticleTypes.field_17431 : ParticleTypes.field_17430;
+		DefaultParticleType defaultParticleType = isSignal ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
 		world.addImportantParticle(
 			defaultParticleType,
 			true,
@@ -245,7 +245,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		);
 		if (lotsOfSmoke) {
 			world.addParticle(
-				ParticleTypes.field_11251,
+				ParticleTypes.SMOKE,
 				(double)pos.getX() + 0.25 + random.nextDouble() / 2.0 * (double)(random.nextBoolean() ? 1 : -1),
 				(double)pos.getY() + 0.4,
 				(double)pos.getZ() + 0.25 + random.nextDouble() / 2.0 * (double)(random.nextBoolean() ? 1 : -1),
@@ -258,7 +258,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	public static boolean isLitCampfireInRange(World world, BlockPos pos) {
 		for (int i = 1; i <= 5; i++) {
-			BlockPos blockPos = pos.method_10087(i);
+			BlockPos blockPos = pos.down(i);
 			BlockState blockState = world.getBlockState(blockPos);
 			if (isLitCampfire(blockState)) {
 				return true;
@@ -266,7 +266,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 			boolean bl = VoxelShapes.matchesAnywhere(SMOKEY_SHAPE, blockState.getCollisionShape(world, pos, ShapeContext.absent()), BooleanBiFunction.AND);
 			if (bl) {
-				BlockState blockState2 = world.getBlockState(blockPos.method_10074());
+				BlockState blockState2 = world.getBlockState(blockPos.down());
 				return isLitCampfire(blockState2);
 			}
 		}
@@ -275,7 +275,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	public static boolean isLitCampfire(BlockState state) {
-		return state.contains(LIT) && state.isIn(BlockTags.field_23799) && (Boolean)state.get(LIT);
+		return state.contains(LIT) && state.isIn(BlockTags.CAMPFIRES) && (Boolean)state.get(LIT);
 	}
 
 	@Override
@@ -310,7 +310,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	public static boolean method_30035(BlockState blockState) {
 		return blockState.method_27851(
-				BlockTags.field_23799, abstractBlockState -> abstractBlockState.contains(Properties.WATERLOGGED) && abstractBlockState.contains(Properties.LIT)
+				BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(Properties.WATERLOGGED) && abstractBlockState.contains(Properties.LIT)
 			)
 			&& !(Boolean)blockState.get(Properties.WATERLOGGED)
 			&& !(Boolean)blockState.get(Properties.LIT);

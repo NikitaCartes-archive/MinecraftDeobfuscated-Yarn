@@ -88,7 +88,7 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3021(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(clientWorld, d, e, f, g, h, i);
 			enchantGlyphParticle.setSprite(this.spriteProvider);
 			return enchantGlyphParticle;
@@ -103,7 +103,7 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3020(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(clientWorld, d, e, f, g, h, i);
 			enchantGlyphParticle.setSprite(this.spriteProvider);
 			return enchantGlyphParticle;

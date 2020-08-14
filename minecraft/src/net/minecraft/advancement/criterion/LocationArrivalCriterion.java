@@ -22,7 +22,7 @@ public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalC
 		return this.id;
 	}
 
-	public LocationArrivalCriterion.Conditions method_9026(
+	public LocationArrivalCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "location", jsonObject);

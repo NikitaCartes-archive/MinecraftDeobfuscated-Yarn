@@ -23,7 +23,7 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		return ID;
 	}
 
-	public BeeNestDestroyedCriterion.Conditions method_23877(
+	public BeeNestDestroyedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Block block = getBlock(jsonObject);

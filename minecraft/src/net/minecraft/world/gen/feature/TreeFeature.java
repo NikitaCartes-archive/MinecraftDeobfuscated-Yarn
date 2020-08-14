@@ -36,25 +36,25 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 	}
 
 	public static boolean canTreeReplace(TestableWorld world, BlockPos pos) {
-		return canReplace(world, pos) || world.testBlockState(pos, state -> state.isIn(BlockTags.field_15475));
+		return canReplace(world, pos) || world.testBlockState(pos, state -> state.isIn(BlockTags.LOGS));
 	}
 
 	private static boolean isVine(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> state.isOf(Blocks.field_10597));
+		return world.testBlockState(pos, state -> state.isOf(Blocks.VINE));
 	}
 
 	private static boolean isWater(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> state.isOf(Blocks.field_10382));
+		return world.testBlockState(pos, state -> state.isOf(Blocks.WATER));
 	}
 
 	public static boolean isAirOrLeaves(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.field_15503));
+		return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
 	}
 
 	private static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
 		return world.testBlockState(pos, state -> {
 			Block block = state.getBlock();
-			return isSoil(block) || block == Blocks.field_10362;
+			return isSoil(block) || block == Blocks.FARMLAND;
 		});
 	}
 
@@ -82,16 +82,16 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		int l = config.foliagePlacer.getRadius(random, k);
 		BlockPos blockPos;
 		if (!config.skipFluidCheck) {
-			int m = world.getTopPosition(Heightmap.Type.field_13200, pos).getY();
-			int n = world.getTopPosition(Heightmap.Type.field_13202, pos).getY();
+			int m = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
+			int n = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
 			if (n - m > config.maxWaterDepth) {
 				return false;
 			}
 
 			int o;
-			if (config.heightmap == Heightmap.Type.field_13200) {
+			if (config.heightmap == Heightmap.Type.OCEAN_FLOOR) {
 				o = m;
-			} else if (config.heightmap == Heightmap.Type.field_13202) {
+			} else if (config.heightmap == Heightmap.Type.WORLD_SURFACE) {
 				o = n;
 			} else {
 				o = world.getTopPosition(config.heightmap, pos).getY();
@@ -104,7 +104,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 
 		if (blockPos.getY() < 1 || blockPos.getY() + i + 1 > 256) {
 			return false;
-		} else if (!isDirtOrGrass(world, blockPos.method_10074())) {
+		} else if (!isDirtOrGrass(world, blockPos.down())) {
 			return false;
 		} else {
 			OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
@@ -143,7 +143,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		setBlockStateWithoutUpdatingNeighbors(world, pos, state);
 	}
 
-	public final boolean method_22362(
+	public final boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
 	) {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();

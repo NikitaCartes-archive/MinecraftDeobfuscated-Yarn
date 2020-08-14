@@ -50,12 +50,12 @@ public class SpawnRestriction {
 
 	public static SpawnRestriction.Location getLocation(EntityType<?> type) {
 		SpawnRestriction.Entry entry = (SpawnRestriction.Entry)RESTRICTIONS.get(type);
-		return entry == null ? SpawnRestriction.Location.field_19350 : entry.location;
+		return entry == null ? SpawnRestriction.Location.NO_RESTRICTIONS : entry.location;
 	}
 
 	public static Heightmap.Type getHeightmapType(@Nullable EntityType<?> type) {
 		SpawnRestriction.Entry entry = (SpawnRestriction.Entry)RESTRICTIONS.get(type);
-		return entry == null ? Heightmap.Type.field_13203 : entry.heightmapType;
+		return entry == null ? Heightmap.Type.MOTION_BLOCKING_NO_LEAVES : entry.heightmapType;
 	}
 
 	public static <T extends Entity> boolean canSpawn(
@@ -66,73 +66,73 @@ public class SpawnRestriction {
 	}
 
 	static {
-		register(EntityType.field_6070, SpawnRestriction.Location.field_6318, Heightmap.Type.field_13203, FishEntity::canSpawn);
-		register(EntityType.field_6087, SpawnRestriction.Location.field_6318, Heightmap.Type.field_13203, DolphinEntity::canSpawn);
-		register(EntityType.field_6123, SpawnRestriction.Location.field_6318, Heightmap.Type.field_13203, DrownedEntity::canSpawn);
-		register(EntityType.field_6118, SpawnRestriction.Location.field_6318, Heightmap.Type.field_13203, GuardianEntity::canSpawn);
-		register(EntityType.field_6062, SpawnRestriction.Location.field_6318, Heightmap.Type.field_13203, FishEntity::canSpawn);
-		register(EntityType.field_6073, SpawnRestriction.Location.field_6318, Heightmap.Type.field_13203, FishEntity::canSpawn);
-		register(EntityType.field_6114, SpawnRestriction.Location.field_6318, Heightmap.Type.field_13203, SquidEntity::canSpawn);
-		register(EntityType.field_6111, SpawnRestriction.Location.field_6318, Heightmap.Type.field_13203, FishEntity::canSpawn);
-		register(EntityType.field_6108, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, BatEntity::canSpawn);
-		register(EntityType.field_6099, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnIgnoreLightLevel);
-		register(EntityType.field_6084, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6132, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6085, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6046, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6067, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6091, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6128, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, EndermiteEntity::canSpawn);
-		register(EntityType.field_6116, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, MobEntity::canMobSpawn);
-		register(EntityType.field_6107, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, GhastEntity::canSpawn);
-		register(EntityType.field_6095, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6139, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6071, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HuskEntity::canSpawn);
-		register(EntityType.field_6147, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, MobEntity::canMobSpawn);
-		register(EntityType.field_6074, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6102, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, MagmaCubeEntity::canMagmaCubeSpawn);
-		register(EntityType.field_6143, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, MooshroomEntity::canSpawn);
-		register(EntityType.field_6057, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6081, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13197, OcelotEntity::canSpawn);
-		register(EntityType.field_6104, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13197, ParrotEntity::canSpawn);
-		register(EntityType.field_6093, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_21973, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HoglinEntity::canSpawn);
-		register(EntityType.field_22281, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, PiglinEntity::canSpawn);
-		register(EntityType.field_6105, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, PatrolEntity::canSpawn);
-		register(EntityType.field_6042, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, PolarBearEntity::canSpawn);
-		register(EntityType.field_6140, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, RabbitEntity::canSpawn);
-		register(EntityType.field_6115, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6125, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, SilverfishEntity::canSpawn);
-		register(EntityType.field_6137, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6075, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6069, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, SlimeEntity::canSpawn);
-		register(EntityType.field_6047, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, MobEntity::canMobSpawn);
-		register(EntityType.field_6079, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6098, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, StrayEntity::canSpawn);
-		register(EntityType.field_23214, SpawnRestriction.Location.field_23221, Heightmap.Type.field_13203, StriderEntity::canSpawn);
-		register(EntityType.field_6113, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, TurtleEntity::canSpawn);
-		register(EntityType.field_6077, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, MobEntity::canMobSpawn);
-		register(EntityType.field_6145, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6119, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6076, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6055, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6051, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6048, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6050, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, ZombifiedPiglinEntity::canSpawn);
-		register(EntityType.field_6054, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_16281, SpawnRestriction.Location.field_6317, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6086, SpawnRestriction.Location.field_6318, Heightmap.Type.field_13203, GuardianEntity::canSpawn);
-		register(EntityType.field_6090, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_17943, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6065, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6146, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6078, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, MobEntity::canMobSpawn);
-		register(EntityType.field_6134, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6109, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, MobEntity::canMobSpawn);
-		register(EntityType.field_17714, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, AnimalEntity::isValidNaturalSpawn);
-		register(EntityType.field_6059, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_6117, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, HostileEntity::canSpawnInDark);
-		register(EntityType.field_17713, SpawnRestriction.Location.field_19350, Heightmap.Type.field_13203, MobEntity::canMobSpawn);
+		register(EntityType.COD, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, FishEntity::canSpawn);
+		register(EntityType.DOLPHIN, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, DolphinEntity::canSpawn);
+		register(EntityType.DROWNED, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, DrownedEntity::canSpawn);
+		register(EntityType.GUARDIAN, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, GuardianEntity::canSpawn);
+		register(EntityType.PUFFERFISH, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, FishEntity::canSpawn);
+		register(EntityType.SALMON, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, FishEntity::canSpawn);
+		register(EntityType.SQUID, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SquidEntity::canSpawn);
+		register(EntityType.TROPICAL_FISH, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, FishEntity::canSpawn);
+		register(EntityType.BAT, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, BatEntity::canSpawn);
+		register(EntityType.BLAZE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnIgnoreLightLevel);
+		register(EntityType.CAVE_SPIDER, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.CHICKEN, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.COW, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.CREEPER, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.DONKEY, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.ENDERMAN, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.ENDERMITE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndermiteEntity::canSpawn);
+		register(EntityType.ENDER_DRAGON, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
+		register(EntityType.GHAST, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, GhastEntity::canSpawn);
+		register(EntityType.GIANT, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.HORSE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.HUSK, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HuskEntity::canSpawn);
+		register(EntityType.IRON_GOLEM, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
+		register(EntityType.LLAMA, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.MAGMA_CUBE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MagmaCubeEntity::canMagmaCubeSpawn);
+		register(EntityType.MOOSHROOM, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MooshroomEntity::canSpawn);
+		register(EntityType.MULE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.OCELOT, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING, OcelotEntity::canSpawn);
+		register(EntityType.PARROT, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING, ParrotEntity::canSpawn);
+		register(EntityType.PIG, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.HOGLIN, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HoglinEntity::canSpawn);
+		register(EntityType.PIGLIN, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, PiglinEntity::canSpawn);
+		register(EntityType.PILLAGER, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, PatrolEntity::canSpawn);
+		register(EntityType.POLAR_BEAR, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, PolarBearEntity::canSpawn);
+		register(EntityType.RABBIT, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, RabbitEntity::canSpawn);
+		register(EntityType.SHEEP, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.SILVERFISH, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SilverfishEntity::canSpawn);
+		register(EntityType.SKELETON, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.SKELETON_HORSE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.SLIME, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SlimeEntity::canSpawn);
+		register(EntityType.SNOW_GOLEM, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
+		register(EntityType.SPIDER, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.STRAY, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, StrayEntity::canSpawn);
+		register(EntityType.STRIDER, SpawnRestriction.Location.IN_LAVA, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, StriderEntity::canSpawn);
+		register(EntityType.TURTLE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, TurtleEntity::canSpawn);
+		register(EntityType.VILLAGER, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
+		register(EntityType.WITCH, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.WITHER, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.WITHER_SKELETON, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.WOLF, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.ZOMBIE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.ZOMBIE_HORSE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.ZOMBIFIED_PIGLIN, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ZombifiedPiglinEntity::canSpawn);
+		register(EntityType.ZOMBIE_VILLAGER, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.CAT, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.ELDER_GUARDIAN, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, GuardianEntity::canSpawn);
+		register(EntityType.EVOKER, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.FOX, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.ILLUSIONER, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.PANDA, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.PHANTOM, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
+		register(EntityType.RAVAGER, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.SHULKER, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
+		register(EntityType.TRADER_LLAMA, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+		register(EntityType.VEX, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.VINDICATOR, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+		register(EntityType.WANDERING_TRADER, SpawnRestriction.Location.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
 	}
 
 	static class Entry {
@@ -148,10 +148,10 @@ public class SpawnRestriction {
 	}
 
 	public static enum Location {
-		field_6317,
-		field_6318,
-		field_19350,
-		field_23221;
+		ON_GROUND,
+		IN_WATER,
+		NO_RESTRICTIONS,
+		IN_LAVA;
 	}
 
 	@FunctionalInterface

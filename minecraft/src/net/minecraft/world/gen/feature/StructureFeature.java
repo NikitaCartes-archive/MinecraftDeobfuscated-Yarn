@@ -42,65 +42,67 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	public static final BiMap<String, StructureFeature<?>> STRUCTURES = HashBiMap.create();
 	private static final Map<StructureFeature<?>, GenerationStep.Feature> STRUCTURE_TO_GENERATION_STEP = Maps.<StructureFeature<?>, GenerationStep.Feature>newHashMap();
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final StructureFeature<StructurePoolFeatureConfig> field_24843 = register(
-		"Pillager_Outpost", new PillagerOutpostFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<StructurePoolFeatureConfig> PILLAGER_OUTPOST = register(
+		"Pillager_Outpost", new PillagerOutpostFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<MineshaftFeatureConfig> field_24844 = register(
-		"Mineshaft", new MineshaftFeature(MineshaftFeatureConfig.CODEC), GenerationStep.Feature.field_13172
+	public static final StructureFeature<MineshaftFeatureConfig> MINESHAFT = register(
+		"Mineshaft", new MineshaftFeature(MineshaftFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_STRUCTURES
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_24845 = register(
-		"Mansion", new WoodlandMansionFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<DefaultFeatureConfig> MANSION = register(
+		"Mansion", new WoodlandMansionFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_24846 = register(
-		"Jungle_Pyramid", new JungleTempleFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<DefaultFeatureConfig> JUNGLE_PYRAMID = register(
+		"Jungle_Pyramid", new JungleTempleFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_24847 = register(
-		"Desert_Pyramid", new DesertPyramidFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<DefaultFeatureConfig> DESERT_PYRAMID = register(
+		"Desert_Pyramid", new DesertPyramidFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_24848 = register(
-		"Igloo", new IglooFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<DefaultFeatureConfig> IGLOO = register(
+		"Igloo", new IglooFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<RuinedPortalFeatureConfig> field_24849 = register(
-		"Ruined_Portal", new RuinedPortalFeature(RuinedPortalFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<RuinedPortalFeatureConfig> RUINED_PORTAL = register(
+		"Ruined_Portal", new RuinedPortalFeature(RuinedPortalFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<ShipwreckFeatureConfig> field_24850 = register(
-		"Shipwreck", new ShipwreckFeature(ShipwreckFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<ShipwreckFeatureConfig> SHIPWRECK = register(
+		"Shipwreck", new ShipwreckFeature(ShipwreckFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final SwampHutFeature SWAMP_HUT = register("Swamp_Hut", new SwampHutFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_13173);
-	public static final StructureFeature<DefaultFeatureConfig> field_24852 = register(
-		"Stronghold", new StrongholdFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_25187
+	public static final SwampHutFeature SWAMP_HUT = register(
+		"Swamp_Hut", new SwampHutFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_24853 = register(
-		"Monument", new OceanMonumentFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<DefaultFeatureConfig> STRONGHOLD = register(
+		"Stronghold", new StrongholdFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.STRONGHOLDS
 	);
-	public static final StructureFeature<OceanRuinFeatureConfig> field_24854 = register(
-		"Ocean_Ruin", new OceanRuinFeature(OceanRuinFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<DefaultFeatureConfig> MONUMENT = register(
+		"Monument", new OceanMonumentFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_24855 = register(
-		"Fortress", new NetherFortressFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_13177
+	public static final StructureFeature<OceanRuinFeatureConfig> OCEAN_RUIN = register(
+		"Ocean_Ruin", new OceanRuinFeature(OceanRuinFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_24856 = register(
-		"EndCity", new EndCityFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<DefaultFeatureConfig> FORTRESS = register(
+		"Fortress", new NetherFortressFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION
 	);
-	public static final StructureFeature<ProbabilityConfig> field_24857 = register(
-		"Buried_Treasure", new BuriedTreasureFeature(ProbabilityConfig.CODEC), GenerationStep.Feature.field_13172
+	public static final StructureFeature<DefaultFeatureConfig> END_CITY = register(
+		"EndCity", new EndCityFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<StructurePoolFeatureConfig> field_24858 = register(
-		"Village", new VillageFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<ProbabilityConfig> BURIED_TREASURE = register(
+		"Buried_Treasure", new BuriedTreasureFeature(ProbabilityConfig.CODEC), GenerationStep.Feature.UNDERGROUND_STRUCTURES
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_24859 = register(
-		"Nether_Fossil", new NetherFossilFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.field_13177
+	public static final StructureFeature<StructurePoolFeatureConfig> VILLAGE = register(
+		"Village", new VillageFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final StructureFeature<StructurePoolFeatureConfig> field_24860 = register(
-		"Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.field_13173
+	public static final StructureFeature<DefaultFeatureConfig> NETHER_FOSSIL = register(
+		"Nether_Fossil", new NetherFossilFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION
 	);
-	public static final List<StructureFeature<?>> field_24861 = ImmutableList.of(field_24843, field_24858, field_24859);
-	private static final Identifier field_26362 = new Identifier("jigsaw");
+	public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = register(
+		"Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
+	);
+	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
+	private static final Identifier JIGSAW_ID = new Identifier("jigsaw");
 	private static final Map<Identifier, Identifier> field_25839 = ImmutableMap.<Identifier, Identifier>builder()
-		.put(new Identifier("nvi"), field_26362)
-		.put(new Identifier("pcp"), field_26362)
-		.put(new Identifier("bastionremnant"), field_26362)
-		.put(new Identifier("runtime"), field_26362)
+		.put(new Identifier("nvi"), JIGSAW_ID)
+		.put(new Identifier("pcp"), JIGSAW_ID)
+		.put(new Identifier("bastionremnant"), JIGSAW_ID)
+		.put(new Identifier("runtime"), JIGSAW_ID)
 		.build();
 	private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 
@@ -130,7 +132,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	}
 
 	@Nullable
-	public static StructureStart<?> readStructureStart(StructureManager structureManager, CompoundTag tag, long worldSeed) {
+	public static StructureStart<?> readStructureStart(StructureManager manager, CompoundTag tag, long worldSeed) {
 		String string = tag.getString("id");
 		if ("INVALID".equals(string)) {
 			return StructureStart.DEFAULT;
@@ -159,7 +161,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 							LOGGER.error("Unknown structure piece id: {}", identifier2);
 						} else {
 							try {
-								StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag);
+								StructurePiece structurePiece = structurePieceType.load(manager, compoundTag);
 								structureStart.getChildren().add(structurePiece);
 							} catch (Exception var19) {
 								LOGGER.error("Exception loading structure piece with id {}", identifier2, var19);
@@ -198,7 +200,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	 */
 	@Nullable
 	public BlockPos locateStructure(
-		WorldView worldView,
+		WorldView world,
 		StructureAccessor structureAccessor,
 		BlockPos searchStartPos,
 		int searchRadius,
@@ -221,7 +223,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 						int o = j + i * m;
 						int p = k + i * n;
 						ChunkPos chunkPos = this.getStartChunk(config, worldSeed, chunkRandom, o, p);
-						Chunk chunk = worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.field_16423);
+						Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
 						StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), this, chunk);
 						if (structureStart != null && structureStart.hasChildren()) {
 							if (skipExistingChunks && structureStart.isInExistingChunk()) {
@@ -250,7 +252,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	}
 
 	/**
-	 * If true, this structure's start position will be uniformy distributed within
+	 * If true, this structure's start position will be uniformly distributed within
 	 * a placement grid cell. If false, the structure's starting point will be biased
 	 * towards the center of the cell.
 	 */

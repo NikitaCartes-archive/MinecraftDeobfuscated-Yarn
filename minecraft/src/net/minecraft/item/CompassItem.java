@@ -54,7 +54,7 @@ public class CompassItem extends Item implements Vanishable {
 					&& compoundTag.contains("LodestonePos")
 					&& !((ServerWorld)world)
 						.getPointOfInterestStorage()
-						.method_26339(PointOfInterestType.field_23229, NbtHelper.toBlockPos(compoundTag.getCompound("LodestonePos")))) {
+						.method_26339(PointOfInterestType.LODESTONE, NbtHelper.toBlockPos(compoundTag.getCompound("LodestonePos")))) {
 					compoundTag.remove("LodestonePos");
 				}
 			}
@@ -65,18 +65,18 @@ public class CompassItem extends Item implements Vanishable {
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		BlockPos blockPos = context.getBlockPos();
 		World world = context.getWorld();
-		if (!world.getBlockState(blockPos).isOf(Blocks.field_23261)) {
+		if (!world.getBlockState(blockPos).isOf(Blocks.LODESTONE)) {
 			return super.useOnBlock(context);
 		} else {
-			world.playSound(null, blockPos, SoundEvents.field_23199, SoundCategory.field_15248, 1.0F, 1.0F);
+			world.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0F, 1.0F);
 			PlayerEntity playerEntity = context.getPlayer();
 			ItemStack itemStack = context.getStack();
 			boolean bl = !playerEntity.abilities.creativeMode && itemStack.getCount() == 1;
 			if (bl) {
 				this.method_27315(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
 			} else {
-				ItemStack itemStack2 = new ItemStack(Items.field_8251, 1);
-				CompoundTag compoundTag = itemStack.hasTag() ? itemStack.getTag().method_10553() : new CompoundTag();
+				ItemStack itemStack2 = new ItemStack(Items.COMPASS, 1);
+				CompoundTag compoundTag = itemStack.hasTag() ? itemStack.getTag().copy() : new CompoundTag();
 				itemStack2.setTag(compoundTag);
 				if (!playerEntity.abilities.creativeMode) {
 					itemStack.decrement(1);

@@ -11,7 +11,7 @@ public class RandomFeature extends Feature<RandomFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13798(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomFeatureConfig randomFeatureConfig
 	) {
 		for (RandomFeatureEntry randomFeatureEntry : randomFeatureConfig.features) {

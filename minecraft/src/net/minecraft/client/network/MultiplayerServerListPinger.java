@@ -105,7 +105,7 @@ public class MultiplayerServerListPinger {
 								entry.playerListSummary = list;
 							}
 						} else {
-							entry.playerCountLabel = new TranslatableText("multiplayer.status.unknown").formatted(Formatting.field_1063);
+							entry.playerCountLabel = new TranslatableText("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY);
 						}
 
 						String string = null;
@@ -141,7 +141,7 @@ public class MultiplayerServerListPinger {
 				public void onDisconnected(Text reason) {
 					if (!this.sentQuery) {
 						MultiplayerServerListPinger.LOGGER.error("Can't ping {}: {}", entry.address, reason.getString());
-						entry.label = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.field_1079);
+						entry.label = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
 						entry.playerCountLabel = LiteralText.EMPTY;
 						MultiplayerServerListPinger.this.ping(entry);
 					}
@@ -155,7 +155,7 @@ public class MultiplayerServerListPinger {
 		);
 
 		try {
-			clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.field_20592));
+			clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.STATUS));
 			clientConnection.send(new QueryRequestC2SPacket());
 		} catch (Throwable var6) {
 			LOGGER.error(var6);
@@ -205,7 +205,7 @@ public class MultiplayerServerListPinger {
 						}
 					}
 
-					protected void method_3005(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+					protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
 						short s = byteBuf.readUnsignedByte();
 						if (s == 255) {
 							String string = new String(byteBuf.readBytes(byteBuf.readShort() * 2).array(), StandardCharsets.UTF_16BE);
@@ -237,9 +237,9 @@ public class MultiplayerServerListPinger {
 
 	private static Text method_27647(int i, int j) {
 		return new LiteralText(Integer.toString(i))
-			.append(new LiteralText("/").formatted(Formatting.field_1063))
+			.append(new LiteralText("/").formatted(Formatting.DARK_GRAY))
 			.append(Integer.toString(j))
-			.formatted(Formatting.field_1080);
+			.formatted(Formatting.GRAY);
 	}
 
 	public void tick() {

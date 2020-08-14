@@ -35,7 +35,7 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 			return false;
 		} else {
 			configuredFeature.config.ignoreFluidCheck();
-			BlockState blockState2 = Blocks.field_10124.getDefaultState();
+			BlockState blockState2 = Blocks.AIR.getDefaultState();
 			serverWorld.setBlockState(blockPos.add(i, 0, j), blockState2, 4);
 			serverWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState2, 4);
 			serverWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState2, 4);

@@ -113,7 +113,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		modelPart.addChild(modelPart3);
 	}
 
-	public void method_17085(T horseBaseEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T horseBaseEntity, float f, float g, float h, float i, float j) {
 		boolean bl = horseBaseEntity.isSaddled();
 		boolean bl2 = horseBaseEntity.hasPassengers();
 
@@ -148,7 +148,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		);
 	}
 
-	public void method_17084(T horseBaseEntity, float f, float g, float h) {
+	public void animateModel(T horseBaseEntity, float f, float g, float h) {
 		super.animateModel(horseBaseEntity, f, g, h);
 		float i = MathHelper.lerpAngle(horseBaseEntity.prevBodyYaw, horseBaseEntity.bodyYaw, h);
 		float j = MathHelper.lerpAngle(horseBaseEntity.prevHeadYaw, horseBaseEntity.headYaw, h);

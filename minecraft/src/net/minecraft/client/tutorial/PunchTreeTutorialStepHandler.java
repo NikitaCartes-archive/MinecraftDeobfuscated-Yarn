@@ -30,26 +30,26 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.manager.getGameMode() != GameMode.field_9215) {
-			this.manager.setStep(TutorialStep.field_5653);
+		if (this.manager.getGameMode() != GameMode.SURVIVAL) {
+			this.manager.setStep(TutorialStep.NONE);
 		} else {
 			if (this.ticks == 1) {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
-					if (clientPlayerEntity.inventory.contains(ItemTags.field_15539)) {
-						this.manager.setStep(TutorialStep.field_5655);
+					if (clientPlayerEntity.inventory.contains(ItemTags.LOGS)) {
+						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 						return;
 					}
 
 					if (FindTreeTutorialStepHandler.hasBrokenTreeBlocks(clientPlayerEntity)) {
-						this.manager.setStep(TutorialStep.field_5655);
+						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 						return;
 					}
 				}
 			}
 
 			if ((this.ticks >= 600 || this.field_5635 > 3) && this.toast == null) {
-				this.toast = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, true);
+				this.toast = new TutorialToast(TutorialToast.Type.TREE, TITLE, DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.toast);
 			}
 		}
@@ -65,14 +65,14 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
-		boolean bl = state.isIn(BlockTags.field_15475);
+		boolean bl = state.isIn(BlockTags.LOGS);
 		if (bl && f > 0.0F) {
 			if (this.toast != null) {
 				this.toast.setProgress(f);
 			}
 
 			if (f >= 1.0F) {
-				this.manager.setStep(TutorialStep.field_5652);
+				this.manager.setStep(TutorialStep.OPEN_INVENTORY);
 			}
 		} else if (this.toast != null) {
 			this.toast.setProgress(0.0F);
@@ -83,8 +83,8 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onSlotUpdate(ItemStack stack) {
-		if (ItemTags.field_15539.contains(stack.getItem())) {
-			this.manager.setStep(TutorialStep.field_5655);
+		if (ItemTags.LOGS.contains(stack.getItem())) {
+			this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 		}
 	}
 }

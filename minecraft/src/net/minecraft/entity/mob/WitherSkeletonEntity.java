@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.field_14, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
 	}
 
 	@Override
@@ -39,22 +39,22 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15214;
+		return SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15027;
+		return SoundEvents.ENTITY_WITHER_SKELETON_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15122;
+		return SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
 	}
 
 	@Override
 	SoundEvent getStepSound() {
-		return SoundEvents.field_14955;
+		return SoundEvents.ENTITY_WITHER_SKELETON_STEP;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	protected void initEquipment(LocalDifficulty difficulty) {
-		this.equipStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8528));
+		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		EntityData entityData2 = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
-		this.getAttributeInstance(EntityAttributes.field_23721).setBaseValue(4.0);
+		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(4.0);
 		this.updateAttackType();
 		return entityData2;
 	}
@@ -101,7 +101,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 			return false;
 		} else {
 			if (target instanceof LivingEntity) {
-				((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.field_5920, 200));
+				((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200));
 			}
 
 			return true;
@@ -117,6 +117,6 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return effect.getEffectType() == StatusEffects.field_5920 ? false : super.canHaveStatusEffect(effect);
+		return effect.getEffectType() == StatusEffects.WITHER ? false : super.canHaveStatusEffect(effect);
 	}
 }

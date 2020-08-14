@@ -16,7 +16,7 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	private ButtonWidget modeButton;
 	private ButtonWidget conditionalModeButton;
 	private ButtonWidget redstoneTriggerButton;
-	private CommandBlockBlockEntity.Type mode = CommandBlockBlockEntity.Type.field_11924;
+	private CommandBlockBlockEntity.Type mode = CommandBlockBlockEntity.Type.REDSTONE;
 	private boolean conditional;
 	private boolean autoActivate;
 
@@ -112,27 +112,27 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 
 	private void updateMode() {
 		switch (this.mode) {
-			case field_11922:
+			case SEQUENCE:
 				this.modeButton.setMessage(new TranslatableText("advMode.mode.sequence"));
 				break;
-			case field_11923:
+			case AUTO:
 				this.modeButton.setMessage(new TranslatableText("advMode.mode.auto"));
 				break;
-			case field_11924:
+			case REDSTONE:
 				this.modeButton.setMessage(new TranslatableText("advMode.mode.redstone"));
 		}
 	}
 
 	private void cycleType() {
 		switch (this.mode) {
-			case field_11922:
-				this.mode = CommandBlockBlockEntity.Type.field_11923;
+			case SEQUENCE:
+				this.mode = CommandBlockBlockEntity.Type.AUTO;
 				break;
-			case field_11923:
-				this.mode = CommandBlockBlockEntity.Type.field_11924;
+			case AUTO:
+				this.mode = CommandBlockBlockEntity.Type.REDSTONE;
 				break;
-			case field_11924:
-				this.mode = CommandBlockBlockEntity.Type.field_11922;
+			case REDSTONE:
+				this.mode = CommandBlockBlockEntity.Type.SEQUENCE;
 		}
 	}
 

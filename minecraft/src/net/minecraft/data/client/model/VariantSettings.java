@@ -11,10 +11,10 @@ public class VariantSettings {
 	public static final VariantSetting<Integer> WEIGHT = new VariantSetting<>("weight", JsonPrimitive::new);
 
 	public static enum Rotation {
-		field_22890(0),
-		field_22891(90),
-		field_22892(180),
-		field_22893(270);
+		R0(0),
+		R90(90),
+		R180(180),
+		R270(270);
 
 		private final int degrees;
 

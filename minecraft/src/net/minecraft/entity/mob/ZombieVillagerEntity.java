@@ -64,7 +64,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(CONVERTING, false);
-		this.dataTracker.startTracking(VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, VillagerProfession.field_17051, 1));
+		this.dataTracker.startTracking(VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, VillagerProfession.NONE, 1));
 	}
 
 	@Override
@@ -128,8 +128,8 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8463) {
-			if (this.hasStatusEffect(StatusEffects.field_5911)) {
+		if (itemStack.getItem() == Items.GOLDEN_APPLE) {
+			if (this.hasStatusEffect(StatusEffects.WEAKNESS)) {
 				if (!player.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -165,8 +165,8 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		this.converter = uuid;
 		this.conversionTimer = delay;
 		this.getDataTracker().set(CONVERTING, true);
-		this.removeStatusEffect(StatusEffects.field_5911);
-		this.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5910, delay, Math.min(this.world.getDifficulty().getId() - 1, 0)));
+		this.removeStatusEffect(StatusEffects.WEAKNESS);
+		this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, delay, Math.min(this.world.getDifficulty().getId() - 1, 0)));
 		this.world.sendEntityStatus(this, (byte)16);
 	}
 
@@ -180,7 +180,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 						this.getX(),
 						this.getEyeY(),
 						this.getZ(),
-						SoundEvents.field_14905,
+						SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE,
 						this.getSoundCategory(),
 						1.0F + this.random.nextFloat(),
 						this.random.nextFloat() * 0.7F + 0.3F,
@@ -193,7 +193,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	private void finishConversion(ServerWorld world) {
-		VillagerEntity villagerEntity = this.method_29243(EntityType.field_6077, false);
+		VillagerEntity villagerEntity = this.method_29243(EntityType.VILLAGER, false);
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
@@ -219,16 +219,16 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		villagerEntity.setExperience(this.xp);
-		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.field_16468, null, null);
+		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
 		if (this.converter != null) {
 			PlayerEntity playerEntity = world.getPlayerByUuid(this.converter);
 			if (playerEntity instanceof ServerPlayerEntity) {
 				Criteria.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerEntity, this, villagerEntity);
-				world.handleInteraction(EntityInteraction.field_18474, playerEntity, villagerEntity);
+				world.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
 			}
 		}
 
-		villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5916, 200, 0));
+		villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
 		if (!this.isSilent()) {
 			world.syncWorldEvent(null, 1027, this.getBlockPos(), 0);
 		}
@@ -244,7 +244,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 				for (int l = (int)this.getY() - 4; l < (int)this.getY() + 4 && j < 14; l++) {
 					for (int m = (int)this.getZ() - 4; m < (int)this.getZ() + 4 && j < 14; m++) {
 						Block block = this.world.getBlockState(mutable.set(k, l, m)).getBlock();
-						if (block == Blocks.field_10576 || block instanceof BedBlock) {
+						if (block == Blocks.IRON_BARS || block instanceof BedBlock) {
 							if (this.random.nextFloat() < 0.3F) {
 								i++;
 							}
@@ -266,22 +266,22 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	@Override
 	public SoundEvent getAmbientSound() {
-		return SoundEvents.field_15056;
+		return SoundEvents.ENTITY_ZOMBIE_VILLAGER_AMBIENT;
 	}
 
 	@Override
 	public SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14728;
+		return SoundEvents.ENTITY_ZOMBIE_VILLAGER_HURT;
 	}
 
 	@Override
 	public SoundEvent getDeathSound() {
-		return SoundEvents.field_14996;
+		return SoundEvents.ENTITY_ZOMBIE_VILLAGER_DEATH;
 	}
 
 	@Override
 	public SoundEvent getStepSound() {
-		return SoundEvents.field_14841;
+		return SoundEvents.ENTITY_ZOMBIE_VILLAGER_STEP;
 	}
 
 	@Override

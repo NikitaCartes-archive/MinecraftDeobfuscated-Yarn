@@ -34,7 +34,7 @@ public class ScaffoldingItem extends BlockItem {
 			if (context.shouldCancelInteraction()) {
 				direction = context.hitsInsideBlock() ? context.getSide().getOpposite() : context.getSide();
 			} else {
-				direction = context.getSide() == Direction.field_11036 ? context.getPlayerFacing() : Direction.field_11036;
+				direction = context.getSide() == Direction.UP ? context.getPlayerFacing() : Direction.UP;
 			}
 
 			int i = 0;
@@ -46,7 +46,7 @@ public class ScaffoldingItem extends BlockItem {
 					int j = world.getHeight();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
 						GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(
-							new TranslatableText("build.tooHigh", j).formatted(Formatting.field_1061), MessageType.field_11733, Util.NIL_UUID
+							new TranslatableText("build.tooHigh", j).formatted(Formatting.RED), MessageType.GAME_INFO, Util.NIL_UUID
 						);
 						((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(gameMessageS2CPacket);
 					}

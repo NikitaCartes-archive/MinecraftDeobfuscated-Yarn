@@ -30,7 +30,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	public ComparatorBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(MODE, ComparatorMode.field_12576)
+			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(MODE, ComparatorMode.COMPARE)
 		);
 	}
 
@@ -46,7 +46,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	private int calculateOutputSignal(World world, BlockPos pos, BlockState state) {
-		return state.get(MODE) == ComparatorMode.field_12578
+		return state.get(MODE) == ComparatorMode.SUBTRACT
 			? Math.max(this.getPower(world, pos, state) - this.getMaxInputLevelSides(world, pos, state), 0)
 			: this.getPower(world, pos, state);
 	}
@@ -58,7 +58,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			return false;
 		} else {
 			int j = this.getMaxInputLevelSides(world, pos, state);
-			return i > j ? true : i == j && state.get(MODE) == ComparatorMode.field_12576;
+			return i > j ? true : i == j && state.get(MODE) == ComparatorMode.COMPARE;
 		}
 	}
 
@@ -102,8 +102,8 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			return ActionResult.PASS;
 		} else {
 			state = state.cycle(MODE);
-			float f = state.get(MODE) == ComparatorMode.field_12578 ? 0.55F : 0.5F;
-			world.playSound(player, pos, SoundEvents.field_14762, SoundCategory.field_15245, 0.3F, f);
+			float f = state.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
+			world.playSound(player, pos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
 			world.setBlockState(pos, state, 2);
 			this.update(world, pos, state);
 			return ActionResult.success(world.isClient);
@@ -117,7 +117,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			int j = blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
 			if (i != j || (Boolean)state.get(POWERED) != this.hasPower(world, pos, state)) {
-				TickPriority tickPriority = this.isTargetNotAligned(world, pos, state) ? TickPriority.field_9310 : TickPriority.field_9314;
+				TickPriority tickPriority = this.isTargetNotAligned(world, pos, state) ? TickPriority.HIGH : TickPriority.NORMAL;
 				world.getBlockTickScheduler().schedule(pos, this, 2, tickPriority);
 			}
 		}
@@ -133,7 +133,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			comparatorBlockEntity.setOutputSignal(i);
 		}
 
-		if (j != i || state.get(MODE) == ComparatorMode.field_12576) {
+		if (j != i || state.get(MODE) == ComparatorMode.COMPARE) {
 			boolean bl = this.hasPower(world, pos, state);
 			boolean bl2 = (Boolean)state.get(POWERED);
 			if (bl2 && !bl) {

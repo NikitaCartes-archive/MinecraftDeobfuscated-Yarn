@@ -12,7 +12,7 @@ public class RateLimitedConnection extends ClientConnection {
 	private final int rateLimit;
 
 	public RateLimitedConnection(int rateLimit) {
-		super(NetworkSide.field_11941);
+		super(NetworkSide.SERVERBOUND);
 		this.rateLimit = rateLimit;
 	}
 

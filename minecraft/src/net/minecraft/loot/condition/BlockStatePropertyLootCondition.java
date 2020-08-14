@@ -28,16 +28,16 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25242;
+		return LootConditionTypes.BLOCK_STATE_PROPERTY;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1224);
+		return ImmutableSet.of(LootContextParameters.BLOCK_STATE);
 	}
 
-	public boolean method_899(LootContext lootContext) {
-		BlockState blockState = lootContext.get(LootContextParameters.field_1224);
+	public boolean test(LootContext lootContext) {
+		BlockState blockState = lootContext.get(LootContextParameters.BLOCK_STATE);
 		return blockState != null && this.block == blockState.getBlock() && this.properties.test(blockState);
 	}
 
@@ -65,14 +65,12 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<BlockStatePropertyLootCondition> {
-		public void method_909(
-			JsonObject jsonObject, BlockStatePropertyLootCondition blockStatePropertyLootCondition, JsonSerializationContext jsonSerializationContext
-		) {
+		public void toJson(JsonObject jsonObject, BlockStatePropertyLootCondition blockStatePropertyLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("block", Registry.BLOCK.getId(blockStatePropertyLootCondition.block).toString());
 			jsonObject.add("properties", blockStatePropertyLootCondition.properties.toJson());
 		}
 
-		public BlockStatePropertyLootCondition method_910(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public BlockStatePropertyLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
 			Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("properties"));

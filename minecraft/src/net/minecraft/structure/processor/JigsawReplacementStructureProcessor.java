@@ -33,7 +33,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 		StructurePlacementData structurePlacementData
 	) {
 		BlockState blockState = structureBlockInfo2.state;
-		if (blockState.isOf(Blocks.field_16540)) {
+		if (blockState.isOf(Blocks.JIGSAW)) {
 			String string = structureBlockInfo2.tag.getString("final_state");
 			BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
 
@@ -43,7 +43,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 				throw new RuntimeException(var11);
 			}
 
-			return blockArgumentParser.getBlockState().isOf(Blocks.field_10369)
+			return blockArgumentParser.getBlockState().isOf(Blocks.STRUCTURE_VOID)
 				? null
 				: new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockArgumentParser.getBlockState(), null);
 		} else {
@@ -53,6 +53,6 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 
 	@Override
 	protected StructureProcessorType<?> getType() {
-		return StructureProcessorType.field_16991;
+		return StructureProcessorType.JIGSAW_REPLACEMENT;
 	}
 }

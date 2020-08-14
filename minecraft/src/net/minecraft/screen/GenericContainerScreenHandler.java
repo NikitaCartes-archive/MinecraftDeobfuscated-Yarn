@@ -18,35 +18,35 @@ public class GenericContainerScreenHandler extends ScreenHandler {
 	}
 
 	public static GenericContainerScreenHandler createGeneric9x1(int syncId, PlayerInventory playerInventory) {
-		return new GenericContainerScreenHandler(ScreenHandlerType.field_18664, syncId, playerInventory, 1);
+		return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X1, syncId, playerInventory, 1);
 	}
 
 	public static GenericContainerScreenHandler createGeneric9x2(int syncId, PlayerInventory playerInventory) {
-		return new GenericContainerScreenHandler(ScreenHandlerType.field_18665, syncId, playerInventory, 2);
+		return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X2, syncId, playerInventory, 2);
 	}
 
 	public static GenericContainerScreenHandler createGeneric9x3(int syncId, PlayerInventory playerInventory) {
-		return new GenericContainerScreenHandler(ScreenHandlerType.field_17326, syncId, playerInventory, 3);
+		return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X3, syncId, playerInventory, 3);
 	}
 
 	public static GenericContainerScreenHandler createGeneric9x4(int syncId, PlayerInventory playerInventory) {
-		return new GenericContainerScreenHandler(ScreenHandlerType.field_18666, syncId, playerInventory, 4);
+		return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X4, syncId, playerInventory, 4);
 	}
 
 	public static GenericContainerScreenHandler createGeneric9x5(int syncId, PlayerInventory playerInventory) {
-		return new GenericContainerScreenHandler(ScreenHandlerType.field_18667, syncId, playerInventory, 5);
+		return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X5, syncId, playerInventory, 5);
 	}
 
 	public static GenericContainerScreenHandler createGeneric9x6(int syncId, PlayerInventory playerInventory) {
-		return new GenericContainerScreenHandler(ScreenHandlerType.field_17327, syncId, playerInventory, 6);
+		return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X6, syncId, playerInventory, 6);
 	}
 
 	public static GenericContainerScreenHandler createGeneric9x3(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-		return new GenericContainerScreenHandler(ScreenHandlerType.field_17326, syncId, playerInventory, inventory, 3);
+		return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X3, syncId, playerInventory, inventory, 3);
 	}
 
 	public static GenericContainerScreenHandler createGeneric9x6(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-		return new GenericContainerScreenHandler(ScreenHandlerType.field_17327, syncId, playerInventory, inventory, 6);
+		return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X6, syncId, playerInventory, inventory, 6);
 	}
 
 	public GenericContainerScreenHandler(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory, int rows) {

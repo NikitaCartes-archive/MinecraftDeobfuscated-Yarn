@@ -11,11 +11,11 @@ public class EndGatewayDecorator extends Decorator<NopeDecoratorConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_15924(DecoratorContext decoratorContext, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
 		if (random.nextInt(700) == 0) {
 			int i = random.nextInt(16) + blockPos.getX();
 			int j = random.nextInt(16) + blockPos.getZ();
-			int k = decoratorContext.getTopY(Heightmap.Type.field_13197, i, j);
+			int k = decoratorContext.getTopY(Heightmap.Type.MOTION_BLOCKING, i, j);
 			if (k > 0) {
 				int l = k + 3 + random.nextInt(7);
 				return Stream.of(new BlockPos(i, l, j));

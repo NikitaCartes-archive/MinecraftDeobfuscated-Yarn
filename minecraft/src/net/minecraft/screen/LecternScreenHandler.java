@@ -17,7 +17,7 @@ public class LecternScreenHandler extends ScreenHandler {
 	}
 
 	public LecternScreenHandler(int syncId, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ScreenHandlerType.field_17338, syncId);
+		super(ScreenHandlerType.LECTERN, syncId);
 		checkSize(inventory, 1);
 		checkDataCount(propertyDelegate, 1);
 		this.inventory = inventory;

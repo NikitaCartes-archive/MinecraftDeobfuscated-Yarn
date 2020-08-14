@@ -30,7 +30,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 			for (File file : files) {
 				String string = "file/" + file.getName();
 				ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
-					string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.field_14280, this.field_25345
+					string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.field_25345
 				);
 				if (resourcePackProfile != null) {
 					consumer.accept(resourcePackProfile);

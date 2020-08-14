@@ -54,7 +54,7 @@ public class RealmsConnection {
 							return;
 						}
 
-						RealmsConnection.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.field_20593));
+						RealmsConnection.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
 						if (RealmsConnection.this.aborted) {
 							return;
 						}

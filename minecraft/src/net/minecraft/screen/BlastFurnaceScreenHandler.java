@@ -7,10 +7,10 @@ import net.minecraft.recipe.book.RecipeBookCategory;
 
 public class BlastFurnaceScreenHandler extends AbstractFurnaceScreenHandler {
 	public BlastFurnaceScreenHandler(int syncId, PlayerInventory playerInventory) {
-		super(ScreenHandlerType.field_17331, RecipeType.BLASTING, RecipeBookCategory.field_25765, syncId, playerInventory);
+		super(ScreenHandlerType.BLAST_FURNACE, RecipeType.BLASTING, RecipeBookCategory.BLAST_FURNACE, syncId, playerInventory);
 	}
 
 	public BlastFurnaceScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ScreenHandlerType.field_17331, RecipeType.BLASTING, RecipeBookCategory.field_25765, syncId, playerInventory, inventory, propertyDelegate);
+		super(ScreenHandlerType.BLAST_FURNACE, RecipeType.BLASTING, RecipeBookCategory.BLAST_FURNACE, syncId, playerInventory, inventory, propertyDelegate);
 	}
 }

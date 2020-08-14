@@ -16,12 +16,12 @@ import org.apache.logging.log4j.Logger;
 public class AffineTransformations {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final EnumMap<Direction, AffineTransformation> DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
-		enumMap.put(Direction.field_11035, AffineTransformation.identity());
-		enumMap.put(Direction.field_11034, new AffineTransformation(null, new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), 90.0F, true), null, null));
-		enumMap.put(Direction.field_11039, new AffineTransformation(null, new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), -90.0F, true), null, null));
-		enumMap.put(Direction.field_11043, new AffineTransformation(null, new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), 180.0F, true), null, null));
-		enumMap.put(Direction.field_11036, new AffineTransformation(null, new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), -90.0F, true), null, null));
-		enumMap.put(Direction.field_11033, new AffineTransformation(null, new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), 90.0F, true), null, null));
+		enumMap.put(Direction.SOUTH, AffineTransformation.identity());
+		enumMap.put(Direction.EAST, new AffineTransformation(null, new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), 90.0F, true), null, null));
+		enumMap.put(Direction.WEST, new AffineTransformation(null, new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), -90.0F, true), null, null));
+		enumMap.put(Direction.NORTH, new AffineTransformation(null, new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), 180.0F, true), null, null));
+		enumMap.put(Direction.UP, new AffineTransformation(null, new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), -90.0F, true), null, null));
+		enumMap.put(Direction.DOWN, new AffineTransformation(null, new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), 90.0F, true), null, null));
 	});
 	public static final EnumMap<Direction, AffineTransformation> INVERTED_DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
 		for (Direction direction : Direction.values()) {

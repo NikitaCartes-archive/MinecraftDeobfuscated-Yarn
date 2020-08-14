@@ -32,7 +32,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		return false;
 	}
 
-	protected boolean method_28671(
+	protected boolean shouldStartAt(
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		long l,
@@ -62,7 +62,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28672(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
@@ -74,21 +74,21 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 			BlockRotation blockRotation = BlockRotation.random(this.random);
 			int k = 5;
 			int l = 5;
-			if (blockRotation == BlockRotation.field_11463) {
+			if (blockRotation == BlockRotation.CLOCKWISE_90) {
 				k = -5;
-			} else if (blockRotation == BlockRotation.field_11464) {
+			} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
 				k = -5;
 				l = -5;
-			} else if (blockRotation == BlockRotation.field_11465) {
+			} else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
 				l = -5;
 			}
 
 			int m = (i << 4) + 7;
 			int n = (j << 4) + 7;
-			int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.field_13194);
-			int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.field_13194);
-			int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.field_13194);
-			int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.field_13194);
+			int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
+			int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+			int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
+			int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
 			int s = Math.min(Math.min(o, p), Math.min(q, r));
 			if (s >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, s + 1, j * 16 + 8);
@@ -131,7 +131,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 									break;
 								}
 
-								structureWorldAccess.setBlockState(blockPos2, Blocks.field_10445.getDefaultState(), 2);
+								structureWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
 							}
 						}
 					}

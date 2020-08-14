@@ -17,7 +17,7 @@ public class PoweredRailBlock extends AbstractRailBlock {
 
 	protected PoweredRailBlock(AbstractBlock.Settings settings) {
 		super(true, settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(SHAPE, RailShape.field_12665).with(POWERED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(SHAPE, RailShape.NORTH_SOUTH).with(POWERED, Boolean.valueOf(false)));
 	}
 
 	protected boolean isPoweredByOtherRails(World world, BlockPos pos, BlockState state, boolean boolean4, int distance) {
@@ -30,21 +30,21 @@ public class PoweredRailBlock extends AbstractRailBlock {
 			boolean bl = true;
 			RailShape railShape = state.get(SHAPE);
 			switch (railShape) {
-				case field_12665:
+				case NORTH_SOUTH:
 					if (boolean4) {
 						k++;
 					} else {
 						k--;
 					}
 					break;
-				case field_12674:
+				case EAST_WEST:
 					if (boolean4) {
 						i--;
 					} else {
 						i++;
 					}
 					break;
-				case field_12667:
+				case ASCENDING_EAST:
 					if (boolean4) {
 						i--;
 					} else {
@@ -53,9 +53,9 @@ public class PoweredRailBlock extends AbstractRailBlock {
 						bl = false;
 					}
 
-					railShape = RailShape.field_12674;
+					railShape = RailShape.EAST_WEST;
 					break;
-				case field_12666:
+				case ASCENDING_WEST:
 					if (boolean4) {
 						i--;
 						j++;
@@ -64,9 +64,9 @@ public class PoweredRailBlock extends AbstractRailBlock {
 						i++;
 					}
 
-					railShape = RailShape.field_12674;
+					railShape = RailShape.EAST_WEST;
 					break;
-				case field_12670:
+				case ASCENDING_NORTH:
 					if (boolean4) {
 						k++;
 					} else {
@@ -75,9 +75,9 @@ public class PoweredRailBlock extends AbstractRailBlock {
 						bl = false;
 					}
 
-					railShape = RailShape.field_12665;
+					railShape = RailShape.NORTH_SOUTH;
 					break;
-				case field_12668:
+				case ASCENDING_SOUTH:
 					if (boolean4) {
 						k++;
 						j++;
@@ -86,7 +86,7 @@ public class PoweredRailBlock extends AbstractRailBlock {
 						k--;
 					}
 
-					railShape = RailShape.field_12665;
+					railShape = RailShape.NORTH_SOUTH;
 			}
 
 			return this.isPoweredByOtherRails(world, new BlockPos(i, j, k), boolean4, distance, railShape)
@@ -101,8 +101,8 @@ public class PoweredRailBlock extends AbstractRailBlock {
 			return false;
 		} else {
 			RailShape railShape = blockState.get(SHAPE);
-			if (shape != RailShape.field_12674 || railShape != RailShape.field_12665 && railShape != RailShape.field_12670 && railShape != RailShape.field_12668) {
-				if (shape != RailShape.field_12665 || railShape != RailShape.field_12674 && railShape != RailShape.field_12667 && railShape != RailShape.field_12666) {
+			if (shape != RailShape.EAST_WEST || railShape != RailShape.NORTH_SOUTH && railShape != RailShape.ASCENDING_NORTH && railShape != RailShape.ASCENDING_SOUTH) {
+				if (shape != RailShape.NORTH_SOUTH || railShape != RailShape.EAST_WEST && railShape != RailShape.ASCENDING_EAST && railShape != RailShape.ASCENDING_WEST) {
 					if (!(Boolean)blockState.get(POWERED)) {
 						return false;
 					} else {
@@ -125,7 +125,7 @@ public class PoweredRailBlock extends AbstractRailBlock {
 			|| this.isPoweredByOtherRails(world, pos, state, false, 0);
 		if (bl2 != bl) {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl2)), 3);
-			world.updateNeighborsAlways(pos.method_10074(), this);
+			world.updateNeighborsAlways(pos.down(), this);
 			if (((RailShape)state.get(SHAPE)).isAscending()) {
 				world.updateNeighborsAlways(pos.up(), this);
 			}
@@ -140,70 +140,70 @@ public class PoweredRailBlock extends AbstractRailBlock {
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
-			case field_11464:
+			case CLOCKWISE_180:
 				switch ((RailShape)state.get(SHAPE)) {
-					case field_12667:
-						return state.with(SHAPE, RailShape.field_12666);
-					case field_12666:
-						return state.with(SHAPE, RailShape.field_12667);
-					case field_12670:
-						return state.with(SHAPE, RailShape.field_12668);
-					case field_12668:
-						return state.with(SHAPE, RailShape.field_12670);
-					case field_12664:
-						return state.with(SHAPE, RailShape.field_12672);
-					case field_12671:
-						return state.with(SHAPE, RailShape.field_12663);
-					case field_12672:
-						return state.with(SHAPE, RailShape.field_12664);
-					case field_12663:
-						return state.with(SHAPE, RailShape.field_12671);
+					case ASCENDING_EAST:
+						return state.with(SHAPE, RailShape.ASCENDING_WEST);
+					case ASCENDING_WEST:
+						return state.with(SHAPE, RailShape.ASCENDING_EAST);
+					case ASCENDING_NORTH:
+						return state.with(SHAPE, RailShape.ASCENDING_SOUTH);
+					case ASCENDING_SOUTH:
+						return state.with(SHAPE, RailShape.ASCENDING_NORTH);
+					case SOUTH_EAST:
+						return state.with(SHAPE, RailShape.NORTH_WEST);
+					case SOUTH_WEST:
+						return state.with(SHAPE, RailShape.NORTH_EAST);
+					case NORTH_WEST:
+						return state.with(SHAPE, RailShape.SOUTH_EAST);
+					case NORTH_EAST:
+						return state.with(SHAPE, RailShape.SOUTH_WEST);
 				}
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				switch ((RailShape)state.get(SHAPE)) {
-					case field_12665:
-						return state.with(SHAPE, RailShape.field_12674);
-					case field_12674:
-						return state.with(SHAPE, RailShape.field_12665);
-					case field_12667:
-						return state.with(SHAPE, RailShape.field_12670);
-					case field_12666:
-						return state.with(SHAPE, RailShape.field_12668);
-					case field_12670:
-						return state.with(SHAPE, RailShape.field_12666);
-					case field_12668:
-						return state.with(SHAPE, RailShape.field_12667);
-					case field_12664:
-						return state.with(SHAPE, RailShape.field_12663);
-					case field_12671:
-						return state.with(SHAPE, RailShape.field_12664);
-					case field_12672:
-						return state.with(SHAPE, RailShape.field_12671);
-					case field_12663:
-						return state.with(SHAPE, RailShape.field_12672);
+					case NORTH_SOUTH:
+						return state.with(SHAPE, RailShape.EAST_WEST);
+					case EAST_WEST:
+						return state.with(SHAPE, RailShape.NORTH_SOUTH);
+					case ASCENDING_EAST:
+						return state.with(SHAPE, RailShape.ASCENDING_NORTH);
+					case ASCENDING_WEST:
+						return state.with(SHAPE, RailShape.ASCENDING_SOUTH);
+					case ASCENDING_NORTH:
+						return state.with(SHAPE, RailShape.ASCENDING_WEST);
+					case ASCENDING_SOUTH:
+						return state.with(SHAPE, RailShape.ASCENDING_EAST);
+					case SOUTH_EAST:
+						return state.with(SHAPE, RailShape.NORTH_EAST);
+					case SOUTH_WEST:
+						return state.with(SHAPE, RailShape.SOUTH_EAST);
+					case NORTH_WEST:
+						return state.with(SHAPE, RailShape.SOUTH_WEST);
+					case NORTH_EAST:
+						return state.with(SHAPE, RailShape.NORTH_WEST);
 				}
-			case field_11463:
+			case CLOCKWISE_90:
 				switch ((RailShape)state.get(SHAPE)) {
-					case field_12665:
-						return state.with(SHAPE, RailShape.field_12674);
-					case field_12674:
-						return state.with(SHAPE, RailShape.field_12665);
-					case field_12667:
-						return state.with(SHAPE, RailShape.field_12668);
-					case field_12666:
-						return state.with(SHAPE, RailShape.field_12670);
-					case field_12670:
-						return state.with(SHAPE, RailShape.field_12667);
-					case field_12668:
-						return state.with(SHAPE, RailShape.field_12666);
-					case field_12664:
-						return state.with(SHAPE, RailShape.field_12671);
-					case field_12671:
-						return state.with(SHAPE, RailShape.field_12672);
-					case field_12672:
-						return state.with(SHAPE, RailShape.field_12663);
-					case field_12663:
-						return state.with(SHAPE, RailShape.field_12664);
+					case NORTH_SOUTH:
+						return state.with(SHAPE, RailShape.EAST_WEST);
+					case EAST_WEST:
+						return state.with(SHAPE, RailShape.NORTH_SOUTH);
+					case ASCENDING_EAST:
+						return state.with(SHAPE, RailShape.ASCENDING_SOUTH);
+					case ASCENDING_WEST:
+						return state.with(SHAPE, RailShape.ASCENDING_NORTH);
+					case ASCENDING_NORTH:
+						return state.with(SHAPE, RailShape.ASCENDING_EAST);
+					case ASCENDING_SOUTH:
+						return state.with(SHAPE, RailShape.ASCENDING_WEST);
+					case SOUTH_EAST:
+						return state.with(SHAPE, RailShape.SOUTH_WEST);
+					case SOUTH_WEST:
+						return state.with(SHAPE, RailShape.NORTH_WEST);
+					case NORTH_WEST:
+						return state.with(SHAPE, RailShape.NORTH_EAST);
+					case NORTH_EAST:
+						return state.with(SHAPE, RailShape.SOUTH_EAST);
 				}
 			default:
 				return state;
@@ -214,41 +214,41 @@ public class PoweredRailBlock extends AbstractRailBlock {
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
 		RailShape railShape = state.get(SHAPE);
 		switch (mirror) {
-			case field_11300:
+			case LEFT_RIGHT:
 				switch (railShape) {
-					case field_12670:
-						return state.with(SHAPE, RailShape.field_12668);
-					case field_12668:
-						return state.with(SHAPE, RailShape.field_12670);
-					case field_12664:
-						return state.with(SHAPE, RailShape.field_12663);
-					case field_12671:
-						return state.with(SHAPE, RailShape.field_12672);
-					case field_12672:
-						return state.with(SHAPE, RailShape.field_12671);
-					case field_12663:
-						return state.with(SHAPE, RailShape.field_12664);
+					case ASCENDING_NORTH:
+						return state.with(SHAPE, RailShape.ASCENDING_SOUTH);
+					case ASCENDING_SOUTH:
+						return state.with(SHAPE, RailShape.ASCENDING_NORTH);
+					case SOUTH_EAST:
+						return state.with(SHAPE, RailShape.NORTH_EAST);
+					case SOUTH_WEST:
+						return state.with(SHAPE, RailShape.NORTH_WEST);
+					case NORTH_WEST:
+						return state.with(SHAPE, RailShape.SOUTH_WEST);
+					case NORTH_EAST:
+						return state.with(SHAPE, RailShape.SOUTH_EAST);
 					default:
 						return super.mirror(state, mirror);
 				}
-			case field_11301:
+			case FRONT_BACK:
 				switch (railShape) {
-					case field_12667:
-						return state.with(SHAPE, RailShape.field_12666);
-					case field_12666:
-						return state.with(SHAPE, RailShape.field_12667);
-					case field_12670:
-					case field_12668:
+					case ASCENDING_EAST:
+						return state.with(SHAPE, RailShape.ASCENDING_WEST);
+					case ASCENDING_WEST:
+						return state.with(SHAPE, RailShape.ASCENDING_EAST);
+					case ASCENDING_NORTH:
+					case ASCENDING_SOUTH:
 					default:
 						break;
-					case field_12664:
-						return state.with(SHAPE, RailShape.field_12671);
-					case field_12671:
-						return state.with(SHAPE, RailShape.field_12664);
-					case field_12672:
-						return state.with(SHAPE, RailShape.field_12663);
-					case field_12663:
-						return state.with(SHAPE, RailShape.field_12672);
+					case SOUTH_EAST:
+						return state.with(SHAPE, RailShape.SOUTH_WEST);
+					case SOUTH_WEST:
+						return state.with(SHAPE, RailShape.SOUTH_EAST);
+					case NORTH_WEST:
+						return state.with(SHAPE, RailShape.NORTH_EAST);
+					case NORTH_EAST:
+						return state.with(SHAPE, RailShape.NORTH_WEST);
 				}
 		}
 

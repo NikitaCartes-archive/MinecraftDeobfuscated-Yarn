@@ -19,14 +19,14 @@ public class BreedTask extends Task<AnimalEntity> {
 	public BreedTask(EntityType<? extends AnimalEntity> targetType, float f) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18442,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_18448,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458
+				MemoryModuleType.VISIBLE_MOBS,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.BREED_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED
 			),
 			325
 		);
@@ -34,20 +34,20 @@ public class BreedTask extends Task<AnimalEntity> {
 		this.field_23129 = f;
 	}
 
-	protected boolean method_24543(ServerWorld serverWorld, AnimalEntity animalEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, AnimalEntity animalEntity) {
 		return animalEntity.isInLove() && this.findBreedTarget(animalEntity).isPresent();
 	}
 
-	protected void method_24544(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
+	protected void run(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
 		AnimalEntity animalEntity2 = (AnimalEntity)this.findBreedTarget(animalEntity).get();
-		animalEntity.getBrain().remember(MemoryModuleType.field_18448, animalEntity2);
-		animalEntity2.getBrain().remember(MemoryModuleType.field_18448, animalEntity);
+		animalEntity.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity2);
+		animalEntity2.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity);
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.field_23129);
 		int i = 275 + animalEntity.getRandom().nextInt(50);
 		this.breedTime = l + (long)i;
 	}
 
-	protected boolean method_24547(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
 		if (!this.hasBreedTarget(animalEntity)) {
 			return false;
 		} else {
@@ -59,37 +59,37 @@ public class BreedTask extends Task<AnimalEntity> {
 		}
 	}
 
-	protected void method_24549(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
 		AnimalEntity animalEntity2 = this.getBreedTarget(animalEntity);
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.field_23129);
 		if (animalEntity.isInRange(animalEntity2, 3.0)) {
 			if (l >= this.breedTime) {
 				animalEntity.breed(serverWorld, animalEntity2);
-				animalEntity.getBrain().forget(MemoryModuleType.field_18448);
-				animalEntity2.getBrain().forget(MemoryModuleType.field_18448);
+				animalEntity.getBrain().forget(MemoryModuleType.BREED_TARGET);
+				animalEntity2.getBrain().forget(MemoryModuleType.BREED_TARGET);
 			}
 		}
 	}
 
-	protected void method_24550(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
-		animalEntity.getBrain().forget(MemoryModuleType.field_18448);
-		animalEntity.getBrain().forget(MemoryModuleType.field_18445);
-		animalEntity.getBrain().forget(MemoryModuleType.field_18446);
+	protected void finishRunning(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
+		animalEntity.getBrain().forget(MemoryModuleType.BREED_TARGET);
+		animalEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
+		animalEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
 		this.breedTime = 0L;
 	}
 
 	private AnimalEntity getBreedTarget(AnimalEntity animal) {
-		return (AnimalEntity)animal.getBrain().getOptionalMemory(MemoryModuleType.field_18448).get();
+		return (AnimalEntity)animal.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
 	}
 
 	private boolean hasBreedTarget(AnimalEntity animal) {
 		Brain<?> brain = animal.getBrain();
-		return brain.hasMemoryModule(MemoryModuleType.field_18448)
-			&& ((PassiveEntity)brain.getOptionalMemory(MemoryModuleType.field_18448).get()).getType() == this.targetType;
+		return brain.hasMemoryModule(MemoryModuleType.BREED_TARGET)
+			&& ((PassiveEntity)brain.getOptionalMemory(MemoryModuleType.BREED_TARGET).get()).getType() == this.targetType;
 	}
 
 	private Optional<? extends AnimalEntity> findBreedTarget(AnimalEntity animal) {
-		return ((List)animal.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get())
+		return ((List)animal.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
 			.stream()
 			.filter(livingEntity -> livingEntity.getType() == this.targetType)
 			.map(livingEntity -> (AnimalEntity)livingEntity)

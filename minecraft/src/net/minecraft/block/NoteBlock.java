@@ -27,18 +27,18 @@ public class NoteBlock extends Block {
 	public NoteBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(INSTRUMENT, Instrument.field_12648).with(NOTE, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(INSTRUMENT, Instrument.HARP).with(NOTE, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(INSTRUMENT, Instrument.fromBlockState(ctx.getWorld().getBlockState(ctx.getBlockPos().method_10074())));
+		return this.getDefaultState().with(INSTRUMENT, Instrument.fromBlockState(ctx.getWorld().getBlockState(ctx.getBlockPos().down())));
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return direction == Direction.field_11033
+		return direction == Direction.DOWN
 			? state.with(INSTRUMENT, Instrument.fromBlockState(newState))
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
@@ -69,7 +69,7 @@ public class NoteBlock extends Block {
 			state = state.cycle(NOTE);
 			world.setBlockState(pos, state, 3);
 			this.playNote(world, pos);
-			player.incrementStat(Stats.field_15393);
+			player.incrementStat(Stats.TUNE_NOTEBLOCK);
 			return ActionResult.CONSUME;
 		}
 	}
@@ -78,7 +78,7 @@ public class NoteBlock extends Block {
 	public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
 		if (!world.isClient) {
 			this.playNote(world, pos);
-			player.incrementStat(Stats.field_15385);
+			player.incrementStat(Stats.PLAY_NOTEBLOCK);
 		}
 	}
 
@@ -86,8 +86,8 @@ public class NoteBlock extends Block {
 	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 		int i = (Integer)state.get(NOTE);
 		float f = (float)Math.pow(2.0, (double)(i - 12) / 12.0);
-		world.playSound(null, pos, ((Instrument)state.get(INSTRUMENT)).getSound(), SoundCategory.field_15247, 3.0F, f);
-		world.addParticle(ParticleTypes.field_11224, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, (double)i / 24.0, 0.0, 0.0);
+		world.playSound(null, pos, ((Instrument)state.get(INSTRUMENT)).getSound(), SoundCategory.RECORDS, 3.0F, f);
+		world.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, (double)i / 24.0, 0.0, 0.0);
 		return true;
 	}
 

@@ -39,7 +39,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 	public static ChunkTaskPrioritySystem.Task<Runnable> createMessage(Runnable task, long pos, IntSupplier lastLevelUpdatedToProvider) {
 		return new ChunkTaskPrioritySystem.Task<>(yield -> () -> {
 				task.run();
-				yield.send(Unit.field_17274);
+				yield.send(Unit.INSTANCE);
 			}, pos, lastLevelUpdatedToProvider);
 	}
 
@@ -132,7 +132,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 			} else {
 				Util.combine((List)stream.map(executeOrAddBlocking -> executeOrAddBlocking.map(actor::ask, addBlocking -> {
 						addBlocking.run();
-						return CompletableFuture.completedFuture(Unit.field_17274);
+						return CompletableFuture.completedFuture(Unit.INSTANCE);
 					})).collect(Collectors.toList())).thenAccept(list -> this.enqueueExecution(queue, actor));
 			}
 		}));

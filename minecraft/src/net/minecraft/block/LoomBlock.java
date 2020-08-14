@@ -29,7 +29,7 @@ public class LoomBlock extends HorizontalFacingBlock {
 			return ActionResult.SUCCESS;
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-			player.incrementStat(Stats.field_19253);
+			player.incrementStat(Stats.INTERACT_WITH_LOOM);
 			return ActionResult.CONSUME;
 		}
 	}

@@ -21,7 +21,7 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 		return ID;
 	}
 
-	public ChanneledLightningCriterion.Conditions method_8801(
+	public ChanneledLightningCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		EntityPredicate.Extended[] extendeds = EntityPredicate.Extended.requireInJson(jsonObject, "victims", advancementEntityPredicateDeserializer);

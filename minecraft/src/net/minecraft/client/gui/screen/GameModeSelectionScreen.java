@@ -26,7 +26,7 @@ public class GameModeSelectionScreen extends Screen {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
 	private static final int UI_WIDTH = GameModeSelectionScreen.GameMode.values().length * 30 - 5;
 	private static final Text field_25454 = new TranslatableText(
-		"debug.gamemodes.select_next", new TranslatableText("debug.gamemodes.press_f4").formatted(Formatting.field_1075)
+		"debug.gamemodes.select_next", new TranslatableText("debug.gamemodes.press_f4").formatted(Formatting.AQUA)
 	);
 	private final Optional<GameModeSelectionScreen.GameMode> currentGameMode;
 	private Optional<GameModeSelectionScreen.GameMode> gameMode = Optional.empty();
@@ -43,11 +43,11 @@ public class GameModeSelectionScreen extends Screen {
 	private net.minecraft.world.GameMode method_30106() {
 		net.minecraft.world.GameMode gameMode = MinecraftClient.getInstance().interactionManager.getCurrentGameMode();
 		net.minecraft.world.GameMode gameMode2 = MinecraftClient.getInstance().interactionManager.getPreviousGameMode();
-		if (gameMode2 == net.minecraft.world.GameMode.field_9218) {
-			if (gameMode == net.minecraft.world.GameMode.field_9220) {
-				gameMode2 = net.minecraft.world.GameMode.field_9215;
+		if (gameMode2 == net.minecraft.world.GameMode.NOT_SET) {
+			if (gameMode == net.minecraft.world.GameMode.CREATIVE) {
+				gameMode2 = net.minecraft.world.GameMode.SURVIVAL;
 			} else {
-				gameMode2 = net.minecraft.world.GameMode.field_9220;
+				gameMode2 = net.minecraft.world.GameMode.CREATIVE;
 			}
 		}
 
@@ -187,10 +187,10 @@ public class GameModeSelectionScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	static enum GameMode {
-		field_24576(new TranslatableText("gameMode.creative"), "/gamemode creative", new ItemStack(Blocks.field_10219)),
-		field_24577(new TranslatableText("gameMode.survival"), "/gamemode survival", new ItemStack(Items.field_8371)),
-		field_24578(new TranslatableText("gameMode.adventure"), "/gamemode adventure", new ItemStack(Items.field_8895)),
-		field_24579(new TranslatableText("gameMode.spectator"), "/gamemode spectator", new ItemStack(Items.field_8449));
+		CREATIVE(new TranslatableText("gameMode.creative"), "/gamemode creative", new ItemStack(Blocks.GRASS_BLOCK)),
+		SURVIVAL(new TranslatableText("gameMode.survival"), "/gamemode survival", new ItemStack(Items.IRON_SWORD)),
+		ADVENTURE(new TranslatableText("gameMode.adventure"), "/gamemode adventure", new ItemStack(Items.MAP)),
+		SPECTATOR(new TranslatableText("gameMode.spectator"), "/gamemode spectator", new ItemStack(Items.ENDER_EYE));
 
 		protected static final GameModeSelectionScreen.GameMode[] VALUES = values();
 		final Text text;
@@ -217,27 +217,27 @@ public class GameModeSelectionScreen extends Screen {
 
 		private Optional<GameModeSelectionScreen.GameMode> next() {
 			switch (this) {
-				case field_24576:
-					return Optional.of(field_24577);
-				case field_24577:
-					return Optional.of(field_24578);
-				case field_24578:
-					return Optional.of(field_24579);
+				case CREATIVE:
+					return Optional.of(SURVIVAL);
+				case SURVIVAL:
+					return Optional.of(ADVENTURE);
+				case ADVENTURE:
+					return Optional.of(SPECTATOR);
 				default:
-					return Optional.of(field_24576);
+					return Optional.of(CREATIVE);
 			}
 		}
 
 		private static Optional<GameModeSelectionScreen.GameMode> of(net.minecraft.world.GameMode gameMode) {
 			switch (gameMode) {
-				case field_9219:
-					return Optional.of(field_24579);
-				case field_9215:
-					return Optional.of(field_24577);
-				case field_9220:
-					return Optional.of(field_24576);
-				case field_9216:
-					return Optional.of(field_24578);
+				case SPECTATOR:
+					return Optional.of(SPECTATOR);
+				case SURVIVAL:
+					return Optional.of(SURVIVAL);
+				case CREATIVE:
+					return Optional.of(CREATIVE);
+				case ADVENTURE:
+					return Optional.of(ADVENTURE);
 				default:
 					return Optional.empty();
 			}

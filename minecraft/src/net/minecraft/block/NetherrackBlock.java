@@ -18,7 +18,7 @@ public class NetherrackBlock extends Block implements Fertilizable {
 			return false;
 		} else {
 			for (BlockPos blockPos : BlockPos.iterate(pos.add(-1, -1, -1), pos.add(1, 1, 1))) {
-				if (world.getBlockState(blockPos).isIn(BlockTags.field_21953)) {
+				if (world.getBlockState(blockPos).isIn(BlockTags.NYLIUM)) {
 					return true;
 				}
 			}
@@ -39,11 +39,11 @@ public class NetherrackBlock extends Block implements Fertilizable {
 
 		for (BlockPos blockPos : BlockPos.iterate(pos.add(-1, -1, -1), pos.add(1, 1, 1))) {
 			BlockState blockState = world.getBlockState(blockPos);
-			if (blockState.isOf(Blocks.field_22113)) {
+			if (blockState.isOf(Blocks.WARPED_NYLIUM)) {
 				bl2 = true;
 			}
 
-			if (blockState.isOf(Blocks.field_22120)) {
+			if (blockState.isOf(Blocks.CRIMSON_NYLIUM)) {
 				bl = true;
 			}
 
@@ -53,11 +53,11 @@ public class NetherrackBlock extends Block implements Fertilizable {
 		}
 
 		if (bl2 && bl) {
-			world.setBlockState(pos, random.nextBoolean() ? Blocks.field_22113.getDefaultState() : Blocks.field_22120.getDefaultState(), 3);
+			world.setBlockState(pos, random.nextBoolean() ? Blocks.WARPED_NYLIUM.getDefaultState() : Blocks.CRIMSON_NYLIUM.getDefaultState(), 3);
 		} else if (bl2) {
-			world.setBlockState(pos, Blocks.field_22113.getDefaultState(), 3);
+			world.setBlockState(pos, Blocks.WARPED_NYLIUM.getDefaultState(), 3);
 		} else if (bl) {
-			world.setBlockState(pos, Blocks.field_22120.getDefaultState(), 3);
+			world.setBlockState(pos, Blocks.CRIMSON_NYLIUM.getDefaultState(), 3);
 		}
 	}
 }

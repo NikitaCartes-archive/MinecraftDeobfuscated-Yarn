@@ -19,44 +19,43 @@ public class TakeJobSiteTask extends Task<VillagerEntity> {
 	public TakeJobSiteTask(float speed) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_25160,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_18439,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18441,
-				MemoryModuleState.field_18456
+				MemoryModuleType.POTENTIAL_JOB_SITE,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.JOB_SITE,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.MOBS,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.speed = speed;
 	}
 
-	protected boolean method_29264(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		return villagerEntity.isBaby() ? false : villagerEntity.getVillagerData().getProfession() == VillagerProfession.field_17051;
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+		return villagerEntity.isBaby() ? false : villagerEntity.getVillagerData().getProfession() == VillagerProfession.NONE;
 	}
 
-	protected void method_29265(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		BlockPos blockPos = ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_25160).get()).getPos();
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		BlockPos blockPos = ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos();
 		Optional<PointOfInterestType> optional = serverWorld.getPointOfInterestStorage().getType(blockPos);
 		if (optional.isPresent()) {
 			LookTargetUtil.streamSeenVillagers(villagerEntity, villagerEntityx -> this.canUseJobSite((PointOfInterestType)optional.get(), villagerEntityx, blockPos))
 				.findFirst()
 				.ifPresent(
 					villagerEntity2 -> this.claimSite(
-							serverWorld, villagerEntity, villagerEntity2, blockPos, villagerEntity2.getBrain().getOptionalMemory(MemoryModuleType.field_18439).isPresent()
+							serverWorld, villagerEntity, villagerEntity2, blockPos, villagerEntity2.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).isPresent()
 						)
 				);
 		}
 	}
 
 	private boolean canUseJobSite(PointOfInterestType poiType, VillagerEntity villager, BlockPos pos) {
-		boolean bl = villager.getBrain().getOptionalMemory(MemoryModuleType.field_25160).isPresent();
+		boolean bl = villager.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).isPresent();
 		if (bl) {
 			return false;
 		} else {
-			Optional<GlobalPos> optional = villager.getBrain().getOptionalMemory(MemoryModuleType.field_18439);
+			Optional<GlobalPos> optional = villager.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
 			VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
-			if (villager.getVillagerData().getProfession() == VillagerProfession.field_17051
-				|| !villagerProfession.getWorkStation().getCompletionCondition().test(poiType)) {
+			if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || !villagerProfession.getWorkStation().getCompletionCondition().test(poiType)) {
 				return false;
 			} else {
 				return !optional.isPresent() ? this.canReachJobSite(villager, pos, poiType) : ((GlobalPos)optional.get()).getPos().equals(pos);
@@ -68,7 +67,7 @@ public class TakeJobSiteTask extends Task<VillagerEntity> {
 		this.forgetJobSiteAndWalkTarget(previousOwner);
 		if (!jobSitePresent) {
 			LookTargetUtil.walkTowards(newOwner, pos, this.speed, 1);
-			newOwner.getBrain().remember(MemoryModuleType.field_25160, GlobalPos.create(world.getRegistryKey(), pos));
+			newOwner.getBrain().remember(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.create(world.getRegistryKey(), pos));
 			DebugInfoSender.sendPointOfInterest(world, pos);
 		}
 	}
@@ -79,8 +78,8 @@ public class TakeJobSiteTask extends Task<VillagerEntity> {
 	}
 
 	private void forgetJobSiteAndWalkTarget(VillagerEntity villager) {
-		villager.getBrain().forget(MemoryModuleType.field_18445);
-		villager.getBrain().forget(MemoryModuleType.field_18446);
-		villager.getBrain().forget(MemoryModuleType.field_25160);
+		villager.getBrain().forget(MemoryModuleType.WALK_TARGET);
+		villager.getBrain().forget(MemoryModuleType.LOOK_TARGET);
+		villager.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
 	}
 }

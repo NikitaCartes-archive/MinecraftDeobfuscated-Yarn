@@ -24,7 +24,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	}
 
 	public LlamaSpitEntity(World world, LlamaEntity owner) {
-		this(EntityType.field_6124, world);
+		this(EntityType.LLAMA_SPIT, world);
 		super.setOwner(owner);
 		this.updatePosition(
 			owner.getX() - (double)(owner.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(owner.bodyYaw * (float) (Math.PI / 180.0)),
@@ -35,12 +35,12 @@ public class LlamaSpitEntity extends ProjectileEntity {
 
 	@Environment(EnvType.CLIENT)
 	public LlamaSpitEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		this(EntityType.field_6124, world);
+		this(EntityType.LLAMA_SPIT, world);
 		this.updatePosition(x, y, z);
 
 		for (int i = 0; i < 7; i++) {
 			double d = 0.4 + 0.1 * (double)i;
-			world.addParticle(ParticleTypes.field_11228, x, y, z, velocityX * d, velocityY, velocityZ * d);
+			world.addParticle(ParticleTypes.SPIT, x, y, z, velocityX * d, velocityY, velocityZ * d);
 		}
 
 		this.setVelocity(velocityX, velocityY, velocityZ);

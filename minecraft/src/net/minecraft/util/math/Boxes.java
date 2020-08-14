@@ -6,18 +6,18 @@ public class Boxes {
 		double e = Math.min(d, 0.0);
 		double f = Math.max(d, 0.0);
 		switch (direction) {
-			case field_11039:
+			case WEST:
 				return new Box(box.minX + e, box.minY, box.minZ, box.minX + f, box.maxY, box.maxZ);
-			case field_11034:
+			case EAST:
 				return new Box(box.maxX + e, box.minY, box.minZ, box.maxX + f, box.maxY, box.maxZ);
-			case field_11033:
+			case DOWN:
 				return new Box(box.minX, box.minY + e, box.minZ, box.maxX, box.minY + f, box.maxZ);
-			case field_11036:
+			case UP:
 			default:
 				return new Box(box.minX, box.maxY + e, box.minZ, box.maxX, box.maxY + f, box.maxZ);
-			case field_11043:
+			case NORTH:
 				return new Box(box.minX, box.minY, box.minZ + e, box.maxX, box.maxY, box.minZ + f);
-			case field_11035:
+			case SOUTH:
 				return new Box(box.minX, box.minY, box.maxZ + e, box.maxX, box.maxY, box.maxZ + f);
 		}
 	}

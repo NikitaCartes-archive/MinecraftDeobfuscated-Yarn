@@ -69,13 +69,13 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.parameter(LootContextParameters.field_24424, Vec3d.ofCenter(this.pos))
+				.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.pos))
 				.random(this.lootTableSeed);
 			if (player != null) {
-				builder.luck(player.getLuck()).parameter(LootContextParameters.field_1226, player);
+				builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
 			}
 
-			lootTable.supplyInventory(this, builder.build(LootContextTypes.field_1179));
+			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
 		}
 	}
 

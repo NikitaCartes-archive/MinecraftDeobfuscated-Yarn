@@ -18,23 +18,23 @@ public class HoglinSpecificSensor extends Sensor<HoglinEntity> {
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.of(
-			MemoryModuleType.field_18442,
-			MemoryModuleType.field_22474,
-			MemoryModuleType.field_22345,
-			MemoryModuleType.field_22344,
-			MemoryModuleType.field_22347,
-			MemoryModuleType.field_22348
+			MemoryModuleType.VISIBLE_MOBS,
+			MemoryModuleType.NEAREST_REPELLENT,
+			MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN,
+			MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS,
+			MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT,
+			MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT
 		);
 	}
 
-	protected void method_24639(ServerWorld serverWorld, HoglinEntity hoglinEntity) {
+	protected void sense(ServerWorld serverWorld, HoglinEntity hoglinEntity) {
 		Brain<?> brain = hoglinEntity.getBrain();
-		brain.remember(MemoryModuleType.field_22474, this.findNearestWarpedFungus(serverWorld, hoglinEntity));
+		brain.remember(MemoryModuleType.NEAREST_REPELLENT, this.findNearestWarpedFungus(serverWorld, hoglinEntity));
 		Optional<PiglinEntity> optional = Optional.empty();
 		int i = 0;
 		List<HoglinEntity> list = Lists.<HoglinEntity>newArrayList();
 
-		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.field_18442).orElse(Lists.newArrayList())) {
+		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(Lists.newArrayList())) {
 			if (livingEntity instanceof PiglinEntity && !livingEntity.isBaby()) {
 				i++;
 				if (!optional.isPresent()) {
@@ -47,13 +47,13 @@ public class HoglinSpecificSensor extends Sensor<HoglinEntity> {
 			}
 		}
 
-		brain.remember(MemoryModuleType.field_22345, optional);
-		brain.remember(MemoryModuleType.field_22344, list);
-		brain.remember(MemoryModuleType.field_22347, i);
-		brain.remember(MemoryModuleType.field_22348, list.size());
+		brain.remember(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, optional);
+		brain.remember(MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, list);
+		brain.remember(MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, i);
+		brain.remember(MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, list.size());
 	}
 
 	private Optional<BlockPos> findNearestWarpedFungus(ServerWorld world, HoglinEntity hoglin) {
-		return BlockPos.findClosest(hoglin.getBlockPos(), 8, 4, blockPos -> world.getBlockState(blockPos).isIn(BlockTags.field_22466));
+		return BlockPos.findClosest(hoglin.getBlockPos(), 8, 4, blockPos -> world.getBlockState(blockPos).isIn(BlockTags.HOGLIN_REPELLENTS));
 	}
 }

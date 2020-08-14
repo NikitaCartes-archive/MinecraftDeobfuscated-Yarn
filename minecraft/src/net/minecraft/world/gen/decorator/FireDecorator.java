@@ -13,7 +13,7 @@ public class FireDecorator extends SimpleDecorator<CountConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_15947(Random random, CountConfig countConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, CountConfig countConfig, BlockPos blockPos) {
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
 
 		for (int i = 0; i < random.nextInt(random.nextInt(countConfig.getCount().getValue(random)) + 1) + 1; i++) {

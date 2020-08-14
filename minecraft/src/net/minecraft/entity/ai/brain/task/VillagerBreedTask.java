@@ -19,19 +19,21 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	private long breedEndTime;
 
 	public VillagerBreedTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18448, MemoryModuleState.field_18456, MemoryModuleType.field_18442, MemoryModuleState.field_18456), 350, 350);
+		super(
+			ImmutableMap.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT), 350, 350
+		);
 	}
 
-	protected boolean method_19571(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		return this.isReadyToBreed(villagerEntity);
 	}
 
-	protected boolean method_18973(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		return l <= this.breedEndTime && this.isReadyToBreed(villagerEntity);
 	}
 
-	protected void method_18974(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		PassiveEntity passiveEntity = (PassiveEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18448).get();
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		PassiveEntity passiveEntity = (PassiveEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity, 0.5F);
 		serverWorld.sendEntityStatus(passiveEntity, (byte)18);
 		serverWorld.sendEntityStatus(villagerEntity, (byte)18);
@@ -39,8 +41,8 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 		this.breedEndTime = l + (long)i;
 	}
 
-	protected void method_18975(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18448).get();
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F);
 			if (l >= this.breedEndTime) {
@@ -70,33 +72,33 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 		}
 	}
 
-	protected void method_18976(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18448);
+	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		villagerEntity.getBrain().forget(MemoryModuleType.BREED_TARGET);
 	}
 
 	private boolean isReadyToBreed(VillagerEntity villager) {
 		Brain<VillagerEntity> brain = villager.getBrain();
-		Optional<PassiveEntity> optional = brain.getOptionalMemory(MemoryModuleType.field_18448)
-			.filter(passiveEntity -> passiveEntity.getType() == EntityType.field_6077);
+		Optional<PassiveEntity> optional = brain.getOptionalMemory(MemoryModuleType.BREED_TARGET)
+			.filter(passiveEntity -> passiveEntity.getType() == EntityType.VILLAGER);
 		return !optional.isPresent()
 			? false
-			: LookTargetUtil.canSee(brain, MemoryModuleType.field_18448, EntityType.field_6077)
+			: LookTargetUtil.canSee(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER)
 				&& villager.isReadyToBreed()
 				&& ((PassiveEntity)optional.get()).isReadyToBreed();
 	}
 
 	private Optional<BlockPos> getReachableHome(ServerWorld world, VillagerEntity villager) {
 		return world.getPointOfInterestStorage()
-			.getPosition(PointOfInterestType.field_18517.getCompletionCondition(), blockPos -> this.canReachHome(villager, blockPos), villager.getBlockPos(), 48);
+			.getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.canReachHome(villager, blockPos), villager.getBlockPos(), 48);
 	}
 
 	private boolean canReachHome(VillagerEntity villager, BlockPos pos) {
-		Path path = villager.getNavigation().findPathTo(pos, PointOfInterestType.field_18517.getSearchDistance());
+		Path path = villager.getNavigation().findPathTo(pos, PointOfInterestType.HOME.getSearchDistance());
 		return path != null && path.reachesTarget();
 	}
 
 	private Optional<VillagerEntity> createChild(ServerWorld serverWorld, VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
-		VillagerEntity villagerEntity3 = villagerEntity.method_7225(serverWorld, villagerEntity2);
+		VillagerEntity villagerEntity3 = villagerEntity.createChild(serverWorld, villagerEntity2);
 		if (villagerEntity3 == null) {
 			return Optional.empty();
 		} else {
@@ -112,6 +114,6 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 
 	private void setChildHome(ServerWorld world, VillagerEntity child, BlockPos pos) {
 		GlobalPos globalPos = GlobalPos.create(world.getRegistryKey(), pos);
-		child.getBrain().remember(MemoryModuleType.field_18438, globalPos);
+		child.getBrain().remember(MemoryModuleType.HOME, globalPos);
 	}
 }

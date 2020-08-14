@@ -66,7 +66,7 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 		return ImmutableList.<ModelPart>of(this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.tail, this.neck);
 	}
 
-	public void method_17131(T wolfEntity, float f, float g, float h) {
+	public void animateModel(T wolfEntity, float f, float g, float h) {
 		if (wolfEntity.hasAngerTime()) {
 			this.tail.yaw = 0.0F;
 		} else {
@@ -110,7 +110,7 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 		this.field_20789.roll = wolfEntity.getShakeAnimationProgress(h, -0.2F);
 	}
 
-	public void method_17133(T wolfEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T wolfEntity, float f, float g, float h, float i, float j) {
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.tail.pitch = h;

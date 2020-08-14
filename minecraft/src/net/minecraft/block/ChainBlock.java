@@ -22,18 +22,18 @@ public class ChainBlock extends PillarBlock implements Waterloggable {
 
 	public ChainBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(AXIS, Direction.Axis.field_11052));
+		this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(AXIS, Direction.Axis.Y));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction.Axis)state.get(AXIS)) {
-			case field_11048:
+			case X:
 			default:
 				return X_SHAPE;
-			case field_11051:
+			case Z:
 				return Z_SHAPE;
-			case field_11052:
+			case Y:
 				return Y_SHAPE;
 		}
 	}

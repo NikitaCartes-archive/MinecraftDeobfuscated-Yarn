@@ -95,7 +95,7 @@ public class WeightedList<U> {
 						.map(entry -> Pair.of(entry, dynamicOps.empty()));
 				}
 
-				public <T> DataResult<T> method_28343(WeightedList.Entry<E> entry, DynamicOps<T> dynamicOps, T object) {
+				public <T> DataResult<T> encode(WeightedList.Entry<E> entry, DynamicOps<T> dynamicOps, T object) {
 					return dynamicOps.mapBuilder().add("weight", dynamicOps.createInt(entry.weight)).add("data", codec.encodeStart(dynamicOps, entry.item)).build(object);
 				}
 			};

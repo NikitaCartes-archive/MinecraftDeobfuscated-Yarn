@@ -29,9 +29,7 @@ public class ServerScoreboard extends Scoreboard {
 		if (this.objectives.contains(score.getObjective())) {
 			this.server
 				.getPlayerManager()
-				.sendToAll(
-					new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.field_13431, score.getObjective().getName(), score.getPlayerName(), score.getScore())
-				);
+				.sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.CHANGE, score.getObjective().getName(), score.getPlayerName(), score.getScore()));
 		}
 
 		this.runUpdateListeners();
@@ -40,7 +38,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void updatePlayerScore(String playerName) {
 		super.updatePlayerScore(playerName);
-		this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.field_13430, null, playerName, 0));
+		this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.REMOVE, null, playerName, 0));
 		this.runUpdateListeners();
 	}
 
@@ -48,7 +46,7 @@ public class ServerScoreboard extends Scoreboard {
 	public void updatePlayerScore(String playerName, ScoreboardObjective objective) {
 		super.updatePlayerScore(playerName, objective);
 		if (this.objectives.contains(objective)) {
-			this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.field_13430, objective.getName(), playerName, 0));
+			this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.REMOVE, objective.getName(), playerName, 0));
 		}
 
 		this.runUpdateListeners();
@@ -166,7 +164,7 @@ public class ServerScoreboard extends Scoreboard {
 		for (ScoreboardPlayerScore scoreboardPlayerScore : this.getAllPlayerScores(objective)) {
 			list.add(
 				new ScoreboardPlayerUpdateS2CPacket(
-					ServerScoreboard.UpdateMode.field_13431,
+					ServerScoreboard.UpdateMode.CHANGE,
 					scoreboardPlayerScore.getObjective().getName(),
 					scoreboardPlayerScore.getPlayerName(),
 					scoreboardPlayerScore.getScore()
@@ -227,7 +225,7 @@ public class ServerScoreboard extends Scoreboard {
 	}
 
 	public static enum UpdateMode {
-		field_13431,
-		field_13430;
+		CHANGE,
+		REMOVE;
 	}
 }

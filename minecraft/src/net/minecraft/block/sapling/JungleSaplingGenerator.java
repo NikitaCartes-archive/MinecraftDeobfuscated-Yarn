@@ -10,12 +10,12 @@ public class JungleSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
 	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
-		return ConfiguredFeatures.field_26045;
+		return ConfiguredFeatures.JUNGLE_TREE_NO_VINE;
 	}
 
 	@Nullable
 	@Override
 	protected ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random random) {
-		return ConfiguredFeatures.field_26046;
+		return ConfiguredFeatures.MEGA_JUNGLE_TREE;
 	}
 }

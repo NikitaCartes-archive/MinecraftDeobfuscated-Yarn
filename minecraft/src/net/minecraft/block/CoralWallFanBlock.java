@@ -31,7 +31,7 @@ public class CoralWallFanBlock extends DeadCoralWallFanBlock {
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			if ((Boolean)state.get(WATERLOGGED)) {
 				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));

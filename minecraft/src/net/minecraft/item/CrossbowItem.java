@@ -80,13 +80,15 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		float f = getPullProgress(i, stack);
 		if (f >= 1.0F && !isCharged(stack) && loadProjectiles(user, stack)) {
 			setCharged(stack, true);
-			SoundCategory soundCategory = user instanceof PlayerEntity ? SoundCategory.field_15248 : SoundCategory.field_15251;
-			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.field_14626, soundCategory, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.5F + 1.0F) + 0.2F);
+			SoundCategory soundCategory = user instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE;
+			world.playSound(
+				null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_CROSSBOW_LOADING_END, soundCategory, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.5F + 1.0F) + 0.2F
+			);
 		}
 	}
 
 	private static boolean loadProjectiles(LivingEntity shooter, ItemStack projectile) {
-		int i = EnchantmentHelper.getLevel(Enchantments.field_9108, projectile);
+		int i = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, projectile);
 		int j = i == 0 ? 1 : 3;
 		boolean bl = shooter instanceof PlayerEntity && ((PlayerEntity)shooter).abilities.creativeMode;
 		ItemStack itemStack = shooter.getArrowType(projectile);
@@ -98,7 +100,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 			}
 
 			if (itemStack.isEmpty() && bl) {
-				itemStack = new ItemStack(Items.field_8107);
+				itemStack = new ItemStack(Items.ARROW);
 				itemStack2 = itemStack.copy();
 			}
 
@@ -197,14 +199,14 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		float simulated
 	) {
 		if (!world.isClient) {
-			boolean bl = projectile.getItem() == Items.field_8639;
+			boolean bl = projectile.getItem() == Items.FIREWORK_ROCKET;
 			ProjectileEntity projectileEntity;
 			if (bl) {
 				projectileEntity = new FireworkRocketEntity(world, projectile, shooter, shooter.getX(), shooter.getEyeY() - 0.15F, shooter.getZ(), true);
 			} else {
 				projectileEntity = createArrow(world, shooter, crossbow, projectile);
 				if (creative || simulated != 0.0F) {
-					((PersistentProjectileEntity)projectileEntity).pickupType = PersistentProjectileEntity.PickupPermission.field_7594;
+					((PersistentProjectileEntity)projectileEntity).pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 				}
 			}
 
@@ -222,20 +224,20 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 
 			crossbow.damage(bl ? 3 : 1, shooter, e -> e.sendToolBreakStatus(hand));
 			world.spawnEntity(projectileEntity);
-			world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.field_15187, SoundCategory.field_15248, 1.0F, soundPitch);
+			world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
 		}
 	}
 
 	private static PersistentProjectileEntity createArrow(World world, LivingEntity entity, ItemStack crossbow, ItemStack arrow) {
-		ArrowItem arrowItem = (ArrowItem)(arrow.getItem() instanceof ArrowItem ? arrow.getItem() : Items.field_8107);
+		ArrowItem arrowItem = (ArrowItem)(arrow.getItem() instanceof ArrowItem ? arrow.getItem() : Items.ARROW);
 		PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(world, arrow, entity);
 		if (entity instanceof PlayerEntity) {
 			persistentProjectileEntity.setCritical(true);
 		}
 
-		persistentProjectileEntity.setSound(SoundEvents.field_14636);
+		persistentProjectileEntity.setSound(SoundEvents.ITEM_CROSSBOW_HIT);
 		persistentProjectileEntity.setShotFromCrossbow(true);
-		int i = EnchantmentHelper.getLevel(Enchantments.field_9132, crossbow);
+		int i = EnchantmentHelper.getLevel(Enchantments.PIERCING, crossbow);
 		if (i > 0) {
 			persistentProjectileEntity.setPierceLevel((byte)i);
 		}
@@ -281,7 +283,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 				Criteria.SHOT_CROSSBOW.trigger(serverPlayerEntity, stack);
 			}
 
-			serverPlayerEntity.incrementStat(Stats.field_15372.getOrCreateStat(stack.getItem()));
+			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 		}
 
 		clearProjectiles(stack);
@@ -290,9 +292,9 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	@Override
 	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 		if (!world.isClient) {
-			int i = EnchantmentHelper.getLevel(Enchantments.field_9098, stack);
+			int i = EnchantmentHelper.getLevel(Enchantments.QUICK_CHARGE, stack);
 			SoundEvent soundEvent = this.getQuickChargeSound(i);
-			SoundEvent soundEvent2 = i == 0 ? SoundEvents.field_14860 : null;
+			SoundEvent soundEvent2 = i == 0 ? SoundEvents.ITEM_CROSSBOW_LOADING_MIDDLE : null;
 			float f = (float)(stack.getMaxUseTime() - remainingUseTicks) / (float)getPullTime(stack);
 			if (f < 0.2F) {
 				this.charged = false;
@@ -301,12 +303,12 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 
 			if (f >= 0.2F && !this.charged) {
 				this.charged = true;
-				world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent, SoundCategory.field_15248, 0.5F, 1.0F);
+				world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent, SoundCategory.PLAYERS, 0.5F, 1.0F);
 			}
 
 			if (f >= 0.5F && soundEvent2 != null && !this.loaded) {
 				this.loaded = true;
-				world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent2, SoundCategory.field_15248, 0.5F, 1.0F);
+				world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent2, SoundCategory.PLAYERS, 0.5F, 1.0F);
 			}
 		}
 	}
@@ -317,25 +319,25 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	}
 
 	public static int getPullTime(ItemStack stack) {
-		int i = EnchantmentHelper.getLevel(Enchantments.field_9098, stack);
+		int i = EnchantmentHelper.getLevel(Enchantments.QUICK_CHARGE, stack);
 		return i == 0 ? 25 : 25 - 5 * i;
 	}
 
 	@Override
 	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.field_8947;
+		return UseAction.CROSSBOW;
 	}
 
 	private SoundEvent getQuickChargeSound(int stage) {
 		switch (stage) {
 			case 1:
-				return SoundEvents.field_15011;
+				return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_1;
 			case 2:
-				return SoundEvents.field_14916;
+				return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_2;
 			case 3:
-				return SoundEvents.field_15089;
+				return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_3;
 			default:
-				return SoundEvents.field_14765;
+				return SoundEvents.ITEM_CROSSBOW_LOADING_START;
 		}
 	}
 
@@ -355,12 +357,12 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		if (isCharged(stack) && !list.isEmpty()) {
 			ItemStack itemStack = (ItemStack)list.get(0);
 			tooltip.add(new TranslatableText("item.minecraft.crossbow.projectile").append(" ").append(itemStack.toHoverableText()));
-			if (context.isAdvanced() && itemStack.getItem() == Items.field_8639) {
+			if (context.isAdvanced() && itemStack.getItem() == Items.FIREWORK_ROCKET) {
 				List<Text> list2 = Lists.<Text>newArrayList();
-				Items.field_8639.appendTooltip(itemStack, world, list2, context);
+				Items.FIREWORK_ROCKET.appendTooltip(itemStack, world, list2, context);
 				if (!list2.isEmpty()) {
 					for (int i = 0; i < list2.size(); i++) {
-						list2.set(i, new LiteralText("  ").append((Text)list2.get(i)).formatted(Formatting.field_1080));
+						list2.set(i, new LiteralText("  ").append((Text)list2.get(i)).formatted(Formatting.GRAY));
 					}
 
 					tooltip.addAll(list2);
@@ -370,7 +372,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	}
 
 	private static float getSpeed(ItemStack stack) {
-		return stack.getItem() == Items.field_8399 && hasProjectile(stack, Items.field_8639) ? 1.6F : 3.15F;
+		return stack.getItem() == Items.CROSSBOW && hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
 	}
 
 	@Override

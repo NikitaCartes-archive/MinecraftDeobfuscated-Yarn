@@ -48,13 +48,13 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 
 	@Environment(EnvType.CLIENT)
 	public ShulkerBulletEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		this(EntityType.field_6100, world);
+		this(EntityType.SHULKER_BULLET, world);
 		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
 		this.setVelocity(velocityX, velocityY, velocityZ);
 	}
 
 	public ShulkerBulletEntity(World world, LivingEntity owner, Entity target, Direction.Axis axis) {
-		this(EntityType.field_6100, world);
+		this(EntityType.SHULKER_BULLET, world);
 		this.setOwner(owner);
 		BlockPos blockPos = owner.getBlockPos();
 		double d = (double)blockPos.getX() + 0.5;
@@ -62,13 +62,13 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		double f = (double)blockPos.getZ() + 0.5;
 		this.refreshPositionAndAngles(d, e, f, this.yaw, this.pitch);
 		this.target = target;
-		this.direction = Direction.field_11036;
+		this.direction = Direction.UP;
 		this.method_7486(axis);
 	}
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15251;
+		return SoundCategory.HOSTILE;
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		double d = 0.5;
 		BlockPos blockPos;
 		if (this.target == null) {
-			blockPos = this.getBlockPos().method_10074();
+			blockPos = this.getBlockPos().down();
 		} else {
 			d = (double)this.target.getHeight() * 0.5;
 			blockPos = new BlockPos(this.target.getX(), this.target.getY() + d, this.target.getZ());
@@ -129,27 +129,27 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		if (!blockPos.isWithinDistance(this.getPos(), 2.0)) {
 			BlockPos blockPos2 = this.getBlockPos();
 			List<Direction> list = Lists.<Direction>newArrayList();
-			if (axis != Direction.Axis.field_11048) {
+			if (axis != Direction.Axis.X) {
 				if (blockPos2.getX() < blockPos.getX() && this.world.isAir(blockPos2.east())) {
-					list.add(Direction.field_11034);
+					list.add(Direction.EAST);
 				} else if (blockPos2.getX() > blockPos.getX() && this.world.isAir(blockPos2.west())) {
-					list.add(Direction.field_11039);
+					list.add(Direction.WEST);
 				}
 			}
 
-			if (axis != Direction.Axis.field_11052) {
+			if (axis != Direction.Axis.Y) {
 				if (blockPos2.getY() < blockPos.getY() && this.world.isAir(blockPos2.up())) {
-					list.add(Direction.field_11036);
-				} else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.method_10074())) {
-					list.add(Direction.field_11033);
+					list.add(Direction.UP);
+				} else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.down())) {
+					list.add(Direction.DOWN);
 				}
 			}
 
-			if (axis != Direction.Axis.field_11051) {
+			if (axis != Direction.Axis.Z) {
 				if (blockPos2.getZ() < blockPos.getZ() && this.world.isAir(blockPos2.south())) {
-					list.add(Direction.field_11035);
+					list.add(Direction.SOUTH);
 				} else if (blockPos2.getZ() > blockPos.getZ() && this.world.isAir(blockPos2.north())) {
-					list.add(Direction.field_11043);
+					list.add(Direction.NORTH);
 				}
 			}
 
@@ -188,7 +188,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 
 	@Override
 	public void checkDespawn() {
-		if (this.world.getDifficulty() == Difficulty.field_5801) {
+		if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
 			this.remove();
 		}
 	}
@@ -217,7 +217,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 			}
 
 			HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
-			if (hitResult.getType() != HitResult.Type.field_1333) {
+			if (hitResult.getType() != HitResult.Type.MISS) {
 				this.onCollision(hitResult);
 			}
 		}
@@ -227,7 +227,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		this.updatePosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
 		ProjectileUtil.method_7484(this, 0.5F);
 		if (this.world.isClient) {
-			this.world.addParticle(ParticleTypes.field_11207, this.getX() - vec3d.x, this.getY() - vec3d.y + 0.15, this.getZ() - vec3d.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.END_ROD, this.getX() - vec3d.x, this.getY() - vec3d.y + 0.15, this.getZ() - vec3d.z, 0.0, 0.0, 0.0);
 		} else if (this.target != null && !this.target.removed) {
 			if (this.stepCount > 0) {
 				this.stepCount--;
@@ -243,9 +243,9 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 					this.method_7486(axis);
 				} else {
 					BlockPos blockPos2 = this.target.getBlockPos();
-					if (axis == Direction.Axis.field_11048 && blockPos.getX() == blockPos2.getX()
-						|| axis == Direction.Axis.field_11051 && blockPos.getZ() == blockPos2.getZ()
-						|| axis == Direction.Axis.field_11052 && blockPos.getY() == blockPos2.getY()) {
+					if (axis == Direction.Axis.X && blockPos.getX() == blockPos2.getX()
+						|| axis == Direction.Axis.Z && blockPos.getZ() == blockPos2.getZ()
+						|| axis == Direction.Axis.Y && blockPos.getY() == blockPos2.getY()) {
 						this.method_7486(axis);
 					}
 				}
@@ -284,7 +284,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		if (bl) {
 			this.dealDamage(livingEntity, entity);
 			if (entity instanceof LivingEntity) {
-				((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.field_5902, 200));
+				((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200));
 			}
 		}
 	}
@@ -292,8 +292,8 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	@Override
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		super.onBlockHit(blockHitResult);
-		((ServerWorld)this.world).spawnParticles(ParticleTypes.field_11236, this.getX(), this.getY(), this.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
-		this.playSound(SoundEvents.field_14895, 1.0F, 1.0F);
+		((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
+		this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HIT, 1.0F, 1.0F);
 	}
 
 	@Override
@@ -310,8 +310,8 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (!this.world.isClient) {
-			this.playSound(SoundEvents.field_14977, 1.0F, 1.0F);
-			((ServerWorld)this.world).spawnParticles(ParticleTypes.field_11205, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
+			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HURT, 1.0F, 1.0F);
+			((ServerWorld)this.world).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
 			this.remove();
 		}
 

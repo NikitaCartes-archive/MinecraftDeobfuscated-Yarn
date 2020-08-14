@@ -162,15 +162,15 @@ public class BakedQuadFactory {
 			Vector3f vector3f;
 			Vector3f vector3f2;
 			switch (rotation.axis) {
-				case field_11048:
+				case X:
 					vector3f = new Vector3f(1.0F, 0.0F, 0.0F);
 					vector3f2 = new Vector3f(0.0F, 1.0F, 1.0F);
 					break;
-				case field_11052:
+				case Y:
 					vector3f = new Vector3f(0.0F, 1.0F, 0.0F);
 					vector3f2 = new Vector3f(1.0F, 0.0F, 1.0F);
 					break;
-				case field_11051:
+				case Z:
 					vector3f = new Vector3f(0.0F, 0.0F, 1.0F);
 					vector3f2 = new Vector3f(1.0F, 1.0F, 0.0F);
 					break;
@@ -234,7 +234,7 @@ public class BakedQuadFactory {
 			}
 		}
 
-		return direction == null ? Direction.field_11036 : direction;
+		return direction == null ? Direction.UP : direction;
 	}
 
 	private void encodeDirection(int[] rotationMatrix, Direction direction) {

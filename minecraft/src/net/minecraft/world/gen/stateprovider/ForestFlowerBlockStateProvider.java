@@ -14,23 +14,23 @@ public class ForestFlowerBlockStateProvider extends BlockStateProvider {
 		(Supplier<ForestFlowerBlockStateProvider>)(() -> ForestFlowerBlockStateProvider.INSTANCE)
 	);
 	private static final BlockState[] FLOWERS = new BlockState[]{
-		Blocks.field_10182.getDefaultState(),
-		Blocks.field_10449.getDefaultState(),
-		Blocks.field_10226.getDefaultState(),
-		Blocks.field_10573.getDefaultState(),
-		Blocks.field_10270.getDefaultState(),
-		Blocks.field_10048.getDefaultState(),
-		Blocks.field_10156.getDefaultState(),
-		Blocks.field_10315.getDefaultState(),
-		Blocks.field_10554.getDefaultState(),
-		Blocks.field_9995.getDefaultState(),
-		Blocks.field_10548.getDefaultState()
+		Blocks.DANDELION.getDefaultState(),
+		Blocks.POPPY.getDefaultState(),
+		Blocks.ALLIUM.getDefaultState(),
+		Blocks.AZURE_BLUET.getDefaultState(),
+		Blocks.RED_TULIP.getDefaultState(),
+		Blocks.ORANGE_TULIP.getDefaultState(),
+		Blocks.WHITE_TULIP.getDefaultState(),
+		Blocks.PINK_TULIP.getDefaultState(),
+		Blocks.OXEYE_DAISY.getDefaultState(),
+		Blocks.CORNFLOWER.getDefaultState(),
+		Blocks.LILY_OF_THE_VALLEY.getDefaultState()
 	};
 	public static final ForestFlowerBlockStateProvider INSTANCE = new ForestFlowerBlockStateProvider();
 
 	@Override
 	protected BlockStateProviderType<?> getType() {
-		return BlockStateProviderType.field_21308;
+		return BlockStateProviderType.FOREST_FLOWER_PROVIDER;
 	}
 
 	@Override

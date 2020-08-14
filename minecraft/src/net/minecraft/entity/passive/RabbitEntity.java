@@ -79,7 +79,7 @@ public class RabbitEntity extends AnimalEntity {
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(1, new RabbitEntity.EscapeDangerGoal(this, 2.2));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 0.8));
-		this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.ofItems(Items.field_8179, Items.field_8071, Blocks.field_10182), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.ofItems(Items.CARROT, Items.GOLDEN_CARROT, Blocks.DANDELION), false));
 		this.goalSelector.add(4, new RabbitEntity.FleeGoal(this, PlayerEntity.class, 8.0F, 2.2, 2.2));
 		this.goalSelector.add(4, new RabbitEntity.FleeGoal(this, WolfEntity.class, 10.0F, 2.2, 2.2));
 		this.goalSelector.add(4, new RabbitEntity.FleeGoal(this, HostileEntity.class, 4.0F, 2.2, 2.2));
@@ -243,7 +243,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createRabbitAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 3.0).add(EntityAttributes.field_23719, 0.3F);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F);
 	}
 
 	@Override
@@ -261,28 +261,28 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	protected SoundEvent getJumpSound() {
-		return SoundEvents.field_15091;
+		return SoundEvents.ENTITY_RABBIT_JUMP;
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14693;
+		return SoundEvents.ENTITY_RABBIT_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15164;
+		return SoundEvents.ENTITY_RABBIT_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14872;
+		return SoundEvents.ENTITY_RABBIT_DEATH;
 	}
 
 	@Override
 	public boolean tryAttack(Entity target) {
 		if (this.getRabbitType() == 99) {
-			this.playSound(SoundEvents.field_15147, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+			this.playSound(SoundEvents.ENTITY_RABBIT_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			return target.damage(DamageSource.mob(this), 8.0F);
 		} else {
 			return target.damage(DamageSource.mob(this), 3.0F);
@@ -291,7 +291,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return this.getRabbitType() == 99 ? SoundCategory.field_15251 : SoundCategory.field_15254;
+		return this.getRabbitType() == 99 ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
 	}
 
 	@Override
@@ -300,11 +300,11 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	private boolean isBreedingItem(Item item) {
-		return item == Items.field_8179 || item == Items.field_8071 || item == Blocks.field_10182.asItem();
+		return item == Items.CARROT || item == Items.GOLDEN_CARROT || item == Blocks.DANDELION.asItem();
 	}
 
-	public RabbitEntity method_6620(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		RabbitEntity rabbitEntity = EntityType.field_6140.create(serverWorld);
+	public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		RabbitEntity rabbitEntity = EntityType.RABBIT.create(serverWorld);
 		int i = this.chooseType(serverWorld);
 		if (this.random.nextInt(20) != 0) {
 			if (passiveEntity instanceof RabbitEntity && this.random.nextBoolean()) {
@@ -329,7 +329,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	public void setRabbitType(int rabbitType) {
 		if (rabbitType == 99) {
-			this.getAttributeInstance(EntityAttributes.field_23724).setBaseValue(8.0);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(8.0);
 			this.goalSelector.add(4, new RabbitEntity.RabbitAttackGoal(this));
 			this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 			this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
@@ -361,9 +361,9 @@ public class RabbitEntity extends AnimalEntity {
 	private int chooseType(WorldAccess world) {
 		Biome biome = world.getBiome(this.getBlockPos());
 		int i = this.random.nextInt(100);
-		if (biome.getPrecipitation() == Biome.Precipitation.field_9383) {
+		if (biome.getPrecipitation() == Biome.Precipitation.SNOW) {
 			return i < 80 ? 1 : 3;
-		} else if (biome.getCategory() == Biome.Category.field_9368) {
+		} else if (biome.getCategory() == Biome.Category.DESERT) {
 			return 4;
 		} else {
 			return i < 50 ? 0 : (i < 90 ? 5 : 2);
@@ -371,9 +371,8 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	public static boolean canSpawn(EntityType<RabbitEntity> entity, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		BlockState blockState = world.getBlockState(pos.method_10074());
-		return (blockState.isOf(Blocks.field_10219) || blockState.isOf(Blocks.field_10477) || blockState.isOf(Blocks.field_10102))
-			&& world.getBaseLightLevel(pos, 0) > 8;
+		BlockState blockState = world.getBlockState(pos.down());
+		return (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SAND)) && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	private boolean wantsCarrots() {
@@ -448,7 +447,7 @@ public class RabbitEntity extends AnimalEntity {
 				if (this.hasTarget && block instanceof CarrotsBlock) {
 					Integer integer = blockState.get(CarrotsBlock.AGE);
 					if (integer == 0) {
-						world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
+						world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
 						world.breakBlock(blockPos, true, this.rabbit);
 					} else {
 						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(integer - 1)), 2);
@@ -466,7 +465,7 @@ public class RabbitEntity extends AnimalEntity {
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
 			Block block = world.getBlockState(pos).getBlock();
-			if (block == Blocks.field_10362 && this.wantsCarrots && !this.hasTarget) {
+			if (block == Blocks.FARMLAND && this.wantsCarrots && !this.hasTarget) {
 				pos = pos.up();
 				BlockState blockState = world.getBlockState(pos);
 				block = blockState.getBlock();

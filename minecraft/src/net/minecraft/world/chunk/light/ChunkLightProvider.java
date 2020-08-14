@@ -78,7 +78,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 				mutableInt.setValue(0);
 			}
 
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			int i = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(pos));
 			int j = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(pos));
@@ -88,7 +88,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 					mutableInt.setValue(16);
 				}
 
-				return Blocks.field_9987.getDefaultState();
+				return Blocks.BEDROCK.getDefaultState();
 			} else {
 				this.reusableBlockPos.set(pos);
 				BlockState blockState = blockView.getBlockState(this.reusableBlockPos);
@@ -97,7 +97,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 					mutableInt.setValue(blockState.getOpacity(this.chunkProvider.getWorld(), this.reusableBlockPos));
 				}
 
-				return bl ? blockState : Blocks.field_10124.getDefaultState();
+				return bl ? blockState : Blocks.AIR.getDefaultState();
 			}
 		}
 	}

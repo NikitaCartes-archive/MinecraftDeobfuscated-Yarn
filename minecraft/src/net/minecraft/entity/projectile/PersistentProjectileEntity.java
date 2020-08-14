@@ -52,7 +52,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	private BlockState inBlockState;
 	protected boolean inGround;
 	protected int inGroundTime;
-	public PersistentProjectileEntity.PickupPermission pickupType = PersistentProjectileEntity.PickupPermission.field_7592;
+	public PersistentProjectileEntity.PickupPermission pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
 	public int shake;
 	private int life;
 	private double damage = 2.0;
@@ -74,7 +74,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world);
 		this.setOwner(owner);
 		if (owner instanceof PlayerEntity) {
-			this.pickupType = PersistentProjectileEntity.PickupPermission.field_7593;
+			this.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 		}
 	}
 
@@ -169,9 +169,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.inGroundTime = 0;
 			Vec3d vec3d3 = this.getPos();
 			Vec3d vec3d2 = vec3d3.add(vec3d);
-			HitResult hitResult = this.world
-				.rayTrace(new RayTraceContext(vec3d3, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this));
-			if (hitResult.getType() != HitResult.Type.field_1333) {
+			HitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d3, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
+			if (hitResult.getType() != HitResult.Type.MISS) {
 				vec3d2 = hitResult.getPos();
 			}
 
@@ -181,7 +180,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 					hitResult = entityHitResult;
 				}
 
-				if (hitResult != null && hitResult.getType() == HitResult.Type.field_1331) {
+				if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
 					Entity entity = ((EntityHitResult)hitResult).getEntity();
 					Entity entity2 = this.getOwner();
 					if (entity instanceof PlayerEntity && entity2 instanceof PlayerEntity && !((PlayerEntity)entity2).shouldDamagePlayer((PlayerEntity)entity)) {
@@ -210,7 +209,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				for (int i = 0; i < 4; i++) {
 					this.world
 						.addParticle(
-							ParticleTypes.field_11205, this.getX() + d * (double)i / 4.0, this.getY() + e * (double)i / 4.0, this.getZ() + g * (double)i / 4.0, -d, -e + 0.2, -g
+							ParticleTypes.CRIT, this.getX() + d * (double)i / 4.0, this.getY() + e * (double)i / 4.0, this.getZ() + g * (double)i / 4.0, -d, -e + 0.2, -g
 						);
 				}
 			}
@@ -233,7 +232,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			if (this.isTouchingWater()) {
 				for (int o = 0; o < 4; o++) {
 					float p = 0.25F;
-					this.world.addParticle(ParticleTypes.field_11247, h - d * 0.25, j - e * 0.25, k - g * 0.25, d, e, g);
+					this.world.addParticle(ParticleTypes.BUBBLE, h - d * 0.25, j - e * 0.25, k - g * 0.25, d, e, g);
 				}
 
 				m = this.getDragInWater();
@@ -264,7 +263,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	@Override
 	public void move(MovementType type, Vec3d movement) {
 		super.move(type, movement);
-		if (type != MovementType.field_6308 && this.method_26351()) {
+		if (type != MovementType.SELF && this.method_26351()) {
 			this.method_26352();
 		}
 	}
@@ -325,7 +324,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 		}
 
-		boolean bl = entity.getType() == EntityType.field_6091;
+		boolean bl = entity.getType() == EntityType.ENDERMAN;
 		int j = entity.getFireTicks();
 		if (this.isOnFire() && !bl) {
 			entity.setOnFireFor(5);
@@ -383,7 +382,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.yaw += 180.0F;
 			this.prevYaw += 180.0F;
 			if (!this.world.isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
-				if (this.pickupType == PersistentProjectileEntity.PickupPermission.field_7593) {
+				if (this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
@@ -405,13 +404,13 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this.shake = 7;
 		this.setCritical(false);
 		this.setPierceLevel((byte)0);
-		this.setSound(SoundEvents.field_15151);
+		this.setSound(SoundEvents.ENTITY_ARROW_HIT);
 		this.setShotFromCrossbow(false);
 		this.clearPiercingStatus();
 	}
 
 	protected SoundEvent getHitSound() {
-		return SoundEvents.field_15151;
+		return SoundEvents.ENTITY_ARROW_HIT;
 	}
 
 	protected final SoundEvent getSound() {
@@ -468,7 +467,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		if (tag.contains("pickup", 99)) {
 			this.pickupType = PersistentProjectileEntity.PickupPermission.fromOrdinal(tag.getByte("pickup"));
 		} else if (tag.contains("player", 99)) {
-			this.pickupType = tag.getBoolean("player") ? PersistentProjectileEntity.PickupPermission.field_7593 : PersistentProjectileEntity.PickupPermission.field_7592;
+			this.pickupType = tag.getBoolean("player") ? PersistentProjectileEntity.PickupPermission.ALLOWED : PersistentProjectileEntity.PickupPermission.DISALLOWED;
 		}
 
 		this.setCritical(tag.getBoolean("crit"));
@@ -485,18 +484,18 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		super.setOwner(entity);
 		if (entity instanceof PlayerEntity) {
 			this.pickupType = ((PlayerEntity)entity).abilities.creativeMode
-				? PersistentProjectileEntity.PickupPermission.field_7594
-				: PersistentProjectileEntity.PickupPermission.field_7593;
+				? PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY
+				: PersistentProjectileEntity.PickupPermission.ALLOWED;
 		}
 	}
 
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
 		if (!this.world.isClient && (this.inGround || this.isNoClip()) && this.shake <= 0) {
-			boolean bl = this.pickupType == PersistentProjectileEntity.PickupPermission.field_7593
-				|| this.pickupType == PersistentProjectileEntity.PickupPermission.field_7594 && player.abilities.creativeMode
+			boolean bl = this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED
+				|| this.pickupType == PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY && player.abilities.creativeMode
 				|| this.isNoClip() && this.getOwner().getUuid() == player.getUuid();
-			if (this.pickupType == PersistentProjectileEntity.PickupPermission.field_7593 && !player.inventory.insertStack(this.asItemStack())) {
+			if (this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED && !player.inventory.insertStack(this.asItemStack())) {
 				bl = false;
 			}
 
@@ -568,8 +567,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	public void applyEnchantmentEffects(LivingEntity entity, float damageModifier) {
-		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.field_9103, entity);
-		int j = EnchantmentHelper.getEquipmentLevel(Enchantments.field_9116, entity);
+		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.POWER, entity);
+		int j = EnchantmentHelper.getEquipmentLevel(Enchantments.PUNCH, entity);
 		this.setDamage((double)(damageModifier * 2.0F) + this.random.nextGaussian() * 0.25 + (double)((float)this.world.getDifficulty().getId() * 0.11F));
 		if (i > 0) {
 			this.setDamage(this.getDamage() + (double)i * 0.5 + 0.5);
@@ -579,7 +578,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.setPunch(j);
 		}
 
-		if (EnchantmentHelper.getEquipmentLevel(Enchantments.field_9126, entity) > 0) {
+		if (EnchantmentHelper.getEquipmentLevel(Enchantments.FLAME, entity) > 0) {
 			this.setOnFireFor(100);
 		}
 	}
@@ -608,9 +607,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	public static enum PickupPermission {
-		field_7592,
-		field_7593,
-		field_7594;
+		DISALLOWED,
+		ALLOWED,
+		CREATIVE_ONLY;
 
 		public static PersistentProjectileEntity.PickupPermission fromOrdinal(int ordinal) {
 			if (ordinal < 0 || ordinal > values().length) {

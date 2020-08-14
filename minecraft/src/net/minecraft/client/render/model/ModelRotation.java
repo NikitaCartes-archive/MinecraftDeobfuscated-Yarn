@@ -13,22 +13,22 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public enum ModelRotation implements ModelBakeSettings {
-	field_5350(0, 0),
-	field_5366(0, 90),
-	field_5355(0, 180),
-	field_5347(0, 270),
-	field_5351(90, 0),
-	field_5360(90, 90),
-	field_5367(90, 180),
-	field_5354(90, 270),
-	field_5358(180, 0),
-	field_5348(180, 90),
-	field_5356(180, 180),
-	field_5359(180, 270),
-	field_5353(270, 0),
-	field_5349(270, 90),
-	field_5361(270, 180),
-	field_5352(270, 270);
+	X0_Y0(0, 0),
+	X0_Y90(0, 90),
+	X0_Y180(0, 180),
+	X0_Y270(0, 270),
+	X90_Y0(90, 0),
+	X90_Y90(90, 90),
+	X90_Y180(90, 180),
+	X90_Y270(90, 270),
+	X180_Y0(180, 0),
+	X180_Y90(180, 90),
+	X180_Y180(180, 180),
+	X180_Y270(180, 270),
+	X270_Y0(270, 0),
+	X270_Y90(270, 90),
+	X270_Y180(270, 180),
+	X270_Y270(270, 270);
 
 	private static final Map<Integer, ModelRotation> BY_INDEX = (Map<Integer, ModelRotation>)Arrays.stream(values())
 		.collect(Collectors.toMap(modelRotation -> modelRotation.index, modelRotation -> modelRotation));
@@ -44,14 +44,14 @@ public enum ModelRotation implements ModelBakeSettings {
 		this.index = getIndex(x, y);
 		Quaternion quaternion = new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), (float)(-y), true);
 		quaternion.hamiltonProduct(new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), (float)(-x), true));
-		DirectionTransformation directionTransformation = DirectionTransformation.field_23292;
+		DirectionTransformation directionTransformation = DirectionTransformation.IDENTITY;
 
 		for (int j = 0; j < y; j += 90) {
-			directionTransformation = directionTransformation.prepend(DirectionTransformation.field_23318);
+			directionTransformation = directionTransformation.prepend(DirectionTransformation.ROT_90_Y_NEG);
 		}
 
 		for (int j = 0; j < x; j += 90) {
-			directionTransformation = directionTransformation.prepend(DirectionTransformation.field_23316);
+			directionTransformation = directionTransformation.prepend(DirectionTransformation.ROT_90_X_NEG);
 		}
 
 		this.rotation = new AffineTransformation(null, quaternion, null, null);

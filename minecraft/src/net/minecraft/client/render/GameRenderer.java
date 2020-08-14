@@ -244,7 +244,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			if (this.client.world != null) {
 				this.client.getProfiler().push("pick");
 				this.client.targetedEntity = null;
-				float f = this.client.interactionManager.method_31227();
+				float f = this.client.interactionManager.method_31264();
 				Vec3d vec3d = entity.getRotationVec(1.0F);
 				Vec3d vec3d2 = entity.getCameraPosVec(tickDelta);
 				Vec3d vec3d3 = vec3d2.add(vec3d.x * (double)f, vec3d.y * (double)f, vec3d.z * (double)f);
@@ -255,20 +255,20 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				);
 				boolean bl = entityHitResult != null;
 				double d = (double)this.client.interactionManager.getReachDistance();
-				if (entityHitResult != null && (double)entityHitResult.method_31221() < d) {
-					d = (double)entityHitResult.method_31221();
+				if (entityHitResult != null && (double)entityHitResult.method_31252() < d) {
+					d = (double)entityHitResult.method_31252();
 				} else if (d > (double)f) {
 					d = (double)f;
 				}
 
 				HitResult hitResult = null;
 				if (bl) {
-					hitResult = entity.method_31201(d, tickDelta);
+					hitResult = entity.method_31232(d, tickDelta);
 				} else {
 					hitResult = entity.rayTrace(d, tickDelta, false);
 				}
 
-				if (hitResult != null && hitResult.getType() != HitResult.Type.field_1333) {
+				if (hitResult != null && hitResult.getType() != HitResult.Type.MISS) {
 					this.client.crosshairTarget = hitResult;
 				} else if (entityHitResult != null) {
 					this.client.crosshairTarget = entityHitResult;
@@ -374,7 +374,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			if (this.client.options.getPerspective().isFirstPerson()
 				&& !bl
 				&& !this.client.options.hudHidden
-				&& this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219) {
+				&& this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
 				this.lightmapTextureManager.enable();
 				this.firstPersonRenderer
 					.renderItem(
@@ -428,7 +428,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 	}
 
 	public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
-		int i = livingEntity.getStatusEffect(StatusEffects.field_5925).getDuration();
+		int i = livingEntity.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration();
 		return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)i - f) * (float) Math.PI * 0.2F) * 0.3F;
 	}
 
@@ -489,7 +489,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				this.client.getProfiler().swap("gui");
 				if (this.client.player != null) {
 					float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
-					if (f > 0.0F && this.client.player.hasStatusEffect(StatusEffects.field_5916) && this.client.options.distortionEffectScale < 1.0F) {
+					if (f > 0.0F && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && this.client.options.distortionEffectScale < 1.0F) {
 						this.method_31136(f * (1.0F - this.client.options.distortionEffectScale));
 					}
 				}
@@ -581,10 +581,10 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			if (bl && !((PlayerEntity)entity).abilities.allowModifyWorld) {
 				ItemStack itemStack = ((LivingEntity)entity).getMainHandStack();
 				HitResult hitResult = this.client.crosshairTarget;
-				if (hitResult != null && hitResult.getType() == HitResult.Type.field_1332) {
+				if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					BlockState blockState = this.client.world.getBlockState(blockPos);
-					if (this.client.interactionManager.getCurrentGameMode() == GameMode.field_9219) {
+					if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
 						bl = blockState.createScreenHandlerFactory(this.client.world, blockPos) != null;
 					} else {
 						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
@@ -624,7 +624,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			* this.client.options.distortionEffectScale
 			* this.client.options.distortionEffectScale;
 		if (f > 0.0F) {
-			int i = this.client.player.hasStatusEffect(StatusEffects.field_5916) ? 7 : 20;
+			int i = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
 			float g = 5.0F / (f * f + 5.0F) - f * 0.04F;
 			g *= g;
 			Vector3f vector3f = new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
@@ -700,9 +700,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
-			this.client
-				.getItemRenderer()
-				.renderItem(this.floatingItem, ModelTransformation.Mode.field_4319, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
+			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
 			matrixStack.pop();
 			immediate.draw();
 			RenderSystem.popAttributes();
@@ -726,9 +724,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.SrcFactor.field_22534, GlStateManager.DstFactor.field_22518, GlStateManager.SrcFactor.field_22534, GlStateManager.DstFactor.field_22518
-		);
+		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
 		RenderSystem.color4f(g, h, k, 1.0F);
 		this.client.getTextureManager().bindTexture(field_26730);
 		Tessellator tessellator = Tessellator.getInstance();

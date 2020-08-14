@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(Text.class, new JsonDeserializer<Text>() {
-		public MutableText method_15583(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public MutableText deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonPrimitive()) {
 				return new LiteralText(jsonElement.getAsString());
 			} else if (jsonElement.isJsonArray()) {
@@ -29,7 +29,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 				MutableText mutableText = null;
 
 				for (JsonElement jsonElement2 : jsonArray) {
-					MutableText mutableText2 = this.method_15583(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
+					MutableText mutableText2 = this.deserialize(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
 					if (mutableText == null) {
 						mutableText = mutableText2;
 					} else {

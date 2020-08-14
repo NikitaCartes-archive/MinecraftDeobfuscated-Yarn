@@ -34,7 +34,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	}
 
 	public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.field_17333, syncId);
+		super(ScreenHandlerType.CRAFTING, syncId);
 		this.context = context;
 		this.player = playerInventory.player;
 		this.addSlot(new CraftingResultSlot(playerInventory.player, this.input, this.result, 0, 124, 35));
@@ -102,7 +102,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.field_9980);
+		return canUse(this.context, player, Blocks.CRAFTING_TABLE);
 	}
 
 	@Override
@@ -181,6 +181,6 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	@Environment(EnvType.CLIENT)
 	@Override
 	public RecipeBookCategory getCategory() {
-		return RecipeBookCategory.field_25763;
+		return RecipeBookCategory.CRAFTING;
 	}
 }

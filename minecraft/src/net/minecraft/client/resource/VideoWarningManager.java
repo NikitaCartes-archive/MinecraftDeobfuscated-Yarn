@@ -92,7 +92,7 @@ public class VideoWarningManager extends SinglePreparationResourceReloadListener
 		return stringBuilder.length() == 0 ? null : stringBuilder.toString();
 	}
 
-	protected VideoWarningManager.WarningPatternLoader method_30056(ResourceManager resourceManager, Profiler profiler) {
+	protected VideoWarningManager.WarningPatternLoader prepare(ResourceManager resourceManager, Profiler profiler) {
 		List<Pattern> list = Lists.<Pattern>newArrayList();
 		List<Pattern> list2 = Lists.<Pattern>newArrayList();
 		List<Pattern> list3 = Lists.<Pattern>newArrayList();
@@ -110,7 +110,7 @@ public class VideoWarningManager extends SinglePreparationResourceReloadListener
 		return new VideoWarningManager.WarningPatternLoader(list, list2, list3);
 	}
 
-	protected void method_30058(VideoWarningManager.WarningPatternLoader warningPatternLoader, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(VideoWarningManager.WarningPatternLoader warningPatternLoader, ResourceManager resourceManager, Profiler profiler) {
 		this.warnings = warningPatternLoader.buildWarnings();
 	}
 

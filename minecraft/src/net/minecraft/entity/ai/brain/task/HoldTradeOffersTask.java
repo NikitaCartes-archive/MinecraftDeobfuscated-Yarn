@@ -25,16 +25,16 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private int ticksLeft;
 
 	public HoldTradeOffersTask(int minRunTime, int maxRunTime) {
-		super(ImmutableMap.of(MemoryModuleType.field_18447, MemoryModuleState.field_18456), minRunTime, maxRunTime);
+		super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT), minRunTime, maxRunTime);
 	}
 
-	public boolean method_19599(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	public boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		Brain<?> brain = villagerEntity.getBrain();
-		if (!brain.getOptionalMemory(MemoryModuleType.field_18447).isPresent()) {
+		if (!brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent()) {
 			return false;
 		} else {
-			LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.field_18447).get();
-			return livingEntity.getType() == EntityType.field_6097
+			LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+			return livingEntity.getType() == EntityType.PLAYER
 				&& villagerEntity.isAlive()
 				&& livingEntity.isAlive()
 				&& !villagerEntity.isBaby()
@@ -42,13 +42,13 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 		}
 	}
 
-	public boolean method_19600(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		return this.method_19599(serverWorld, villagerEntity)
+	public boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		return this.shouldRun(serverWorld, villagerEntity)
 			&& this.ticksLeft > 0
-			&& villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).isPresent();
+			&& villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
 	}
 
-	public void method_19602(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	public void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		super.run(serverWorld, villagerEntity, l);
 		this.findPotentialCustomer(villagerEntity);
 		this.offerShownTicks = 0;
@@ -56,23 +56,23 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 		this.ticksLeft = 40;
 	}
 
-	public void method_19604(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	public void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		LivingEntity livingEntity = this.findPotentialCustomer(villagerEntity);
 		this.setupOffers(livingEntity, villagerEntity);
 		if (!this.offers.isEmpty()) {
 			this.refreshShownOffer(villagerEntity);
 		} else {
-			villagerEntity.equipStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
+			villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			this.ticksLeft = Math.min(this.ticksLeft, 40);
 		}
 
 		this.ticksLeft--;
 	}
 
-	public void method_19605(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	public void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		super.finishRunning(serverWorld, villagerEntity, l);
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18447);
-		villagerEntity.equipStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
+		villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
+		villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		this.customerHeldStack = null;
 	}
 
@@ -95,7 +95,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	}
 
 	private void holdOffer(VillagerEntity villager) {
-		villager.equipStack(EquipmentSlot.field_6173, (ItemStack)this.offers.get(0));
+		villager.equipStack(EquipmentSlot.MAINHAND, (ItemStack)this.offers.get(0));
 	}
 
 	private void loadPossibleOffers(VillagerEntity villager) {
@@ -113,8 +113,8 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 
 	private LivingEntity findPotentialCustomer(VillagerEntity villager) {
 		Brain<?> brain = villager.getBrain();
-		LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.field_18447).get();
-		brain.remember(MemoryModuleType.field_18446, new EntityLookTarget(livingEntity, true));
+		LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
 		return livingEntity;
 	}
 
@@ -126,7 +126,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 				this.offerIndex = 0;
 			}
 
-			villager.equipStack(EquipmentSlot.field_6173, (ItemStack)this.offers.get(this.offerIndex));
+			villager.equipStack(EquipmentSlot.MAINHAND, (ItemStack)this.offers.get(this.offerIndex));
 		}
 	}
 }

@@ -18,7 +18,7 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 		super(entityRenderDispatcher, new IllagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
 		this.addFeature(
 			new HeldItemFeatureRenderer<VindicatorEntity, IllagerEntityModel<VindicatorEntity>>(this) {
-				public void method_17156(
+				public void render(
 					MatrixStack matrixStack,
 					VertexConsumerProvider vertexConsumerProvider,
 					int i,
@@ -31,14 +31,14 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 					float l
 				) {
 					if (vindicatorEntity.isAttacking()) {
-						super.method_17162(matrixStack, vertexConsumerProvider, i, vindicatorEntity, f, g, h, j, k, l);
+						super.render(matrixStack, vertexConsumerProvider, i, vindicatorEntity, f, g, h, j, k, l);
 					}
 				}
 			}
 		);
 	}
 
-	public Identifier method_4147(VindicatorEntity vindicatorEntity) {
+	public Identifier getTexture(VindicatorEntity vindicatorEntity) {
 		return TEXTURE;
 	}
 }

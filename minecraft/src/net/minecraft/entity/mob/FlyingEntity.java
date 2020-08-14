@@ -25,11 +25,11 @@ public abstract class FlyingEntity extends MobEntity {
 	public void travel(Vec3d movementInput) {
 		if (this.isTouchingWater()) {
 			this.updateVelocity(0.02F, movementInput);
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.8F));
 		} else if (this.isInLava()) {
 			this.updateVelocity(0.02F, movementInput);
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.5));
 		} else {
 			float f = 0.91F;
@@ -44,7 +44,7 @@ public abstract class FlyingEntity extends MobEntity {
 			}
 
 			this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, movementInput);
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply((double)f));
 		}
 

@@ -29,9 +29,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3974(
-		FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
-	) {
+	public void render(FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		PlayerEntity playerEntity = fishingBobberEntity.getOwner();
 		if (playerEntity != null) {
 			matrixStack.push();
@@ -48,9 +46,9 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 1, 1, 0);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 1, 0, 0);
 			matrixStack.pop();
-			int j = playerEntity.getMainArm() == Arm.field_6183 ? 1 : -1;
+			int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
 			ItemStack itemStack = playerEntity.getMainHandStack();
-			if (itemStack.getItem() != Items.field_8378) {
+			if (itemStack.getItem() != Items.FISHING_ROD) {
 				j = -j;
 			}
 
@@ -123,7 +121,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		vertexConsumer.vertex(matrix4f, f * i, g * (i * i + i) * 0.5F + 0.25F, h * i).color(0, 0, 0, 255).next();
 	}
 
-	public Identifier method_3975(FishingBobberEntity fishingBobberEntity) {
+	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
 		return TEXTURE;
 	}
 }

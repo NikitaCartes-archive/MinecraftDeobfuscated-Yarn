@@ -12,7 +12,7 @@ public class SimpleModelSupplier implements Supplier<JsonElement> {
 		this.parent = parent;
 	}
 
-	public JsonElement method_25839() {
+	public JsonElement get() {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("parent", this.parent.toString());
 		return jsonObject;

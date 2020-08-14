@@ -24,9 +24,9 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ChunkStatus {
-	private static final EnumSet<Heightmap.Type> PRE_CARVER_HEIGHTMAPS = EnumSet.of(Heightmap.Type.field_13195, Heightmap.Type.field_13194);
+	private static final EnumSet<Heightmap.Type> PRE_CARVER_HEIGHTMAPS = EnumSet.of(Heightmap.Type.OCEAN_FLOOR_WG, Heightmap.Type.WORLD_SURFACE_WG);
 	private static final EnumSet<Heightmap.Type> POST_CARVER_HEIGHTMAPS = EnumSet.of(
-		Heightmap.Type.field_13200, Heightmap.Type.field_13202, Heightmap.Type.field_13197, Heightmap.Type.field_13203
+		Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE, Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES
 	);
 	/**
 	 * A load task which only bumps the chunk status of the chunk.
@@ -38,13 +38,13 @@ public class ChunkStatus {
 
 		return CompletableFuture.completedFuture(Either.left(chunk));
 	};
-	public static final ChunkStatus field_12798 = register(
+	public static final ChunkStatus EMPTY = register(
 		"empty", null, -1, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {
 		}
 	);
-	public static final ChunkStatus field_16423 = register(
+	public static final ChunkStatus STRUCTURE_STARTS = register(
 		"structure_starts",
-		field_12798,
+		EMPTY,
 		0,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
@@ -62,53 +62,53 @@ public class ChunkStatus {
 			return CompletableFuture.completedFuture(Either.left(chunk));
 		}
 	);
-	public static final ChunkStatus field_16422 = register(
-		"structure_references", field_16423, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {
+	public static final ChunkStatus STRUCTURE_REFERENCES = register(
+		"structure_references", STRUCTURE_STARTS, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {
 			ChunkRegion chunkRegion = new ChunkRegion(world, surroundingChunks);
 			generator.addStructureReferences(chunkRegion, world.getStructureAccessor().forRegion(chunkRegion), chunk);
 		}
 	);
-	public static final ChunkStatus field_12794 = register(
+	public static final ChunkStatus BIOMES = register(
 		"biomes",
-		field_16422,
+		STRUCTURE_REFERENCES,
 		0,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
 		(world, generator, surroundingChunks, chunk) -> generator.populateBiomes(world.getRegistryManager().get(Registry.BIOME_KEY), chunk)
 	);
-	public static final ChunkStatus field_12804 = register(
-		"noise", field_12794, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {
+	public static final ChunkStatus NOISE = register(
+		"noise", BIOMES, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {
 			ChunkRegion chunkRegion = new ChunkRegion(world, surroundingChunks);
 			generator.populateNoise(chunkRegion, world.getStructureAccessor().forRegion(chunkRegion), chunk);
 		}
 	);
-	public static final ChunkStatus field_12796 = register(
+	public static final ChunkStatus SURFACE = register(
 		"surface",
-		field_12804,
+		NOISE,
 		0,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
 		(world, generator, surroundingChunks, chunk) -> generator.buildSurface(new ChunkRegion(world, surroundingChunks), chunk)
 	);
-	public static final ChunkStatus field_12801 = register(
+	public static final ChunkStatus CARVERS = register(
 		"carvers",
-		field_12796,
+		SURFACE,
 		0,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
-		(world, generator, surroundingChunks, chunk) -> generator.carve(world.getSeed(), world.getBiomeAccess(), chunk, GenerationStep.Carver.field_13169)
+		(world, generator, surroundingChunks, chunk) -> generator.carve(world.getSeed(), world.getBiomeAccess(), chunk, GenerationStep.Carver.AIR)
 	);
-	public static final ChunkStatus field_12790 = register(
+	public static final ChunkStatus LIQUID_CARVERS = register(
 		"liquid_carvers",
-		field_12801,
+		CARVERS,
 		0,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
-		(world, generator, surroundingChunks, chunk) -> generator.carve(world.getSeed(), world.getBiomeAccess(), chunk, GenerationStep.Carver.field_13166)
+		(world, generator, surroundingChunks, chunk) -> generator.carve(world.getSeed(), world.getBiomeAccess(), chunk, GenerationStep.Carver.LIQUID)
 	);
-	public static final ChunkStatus field_12795 = register(
+	public static final ChunkStatus FEATURES = register(
 		"features",
-		field_12790,
+		LIQUID_CARVERS,
 		8,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
@@ -117,7 +117,7 @@ public class ChunkStatus {
 			protoChunk.setLightingProvider(lightingProvider);
 			if (!chunk.getStatus().isAtLeast(status)) {
 				Heightmap.populateHeightmaps(
-					chunk, EnumSet.of(Heightmap.Type.field_13197, Heightmap.Type.field_13203, Heightmap.Type.field_13200, Heightmap.Type.field_13202)
+					chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE)
 				);
 				ChunkRegion chunkRegion = new ChunkRegion(world, surroundingChunks);
 				generator.generateFeatures(chunkRegion, world.getStructureAccessor().forRegion(chunkRegion));
@@ -127,9 +127,9 @@ public class ChunkStatus {
 			return CompletableFuture.completedFuture(Either.left(chunk));
 		}
 	);
-	public static final ChunkStatus field_12805 = register(
+	public static final ChunkStatus LIGHT = register(
 		"light",
-		field_12795,
+		FEATURES,
 		1,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
@@ -138,21 +138,21 @@ public class ChunkStatus {
 			),
 		(status, world, structureManager, lightingProvider, function, chunk) -> getLightingFuture(status, lightingProvider, chunk)
 	);
-	public static final ChunkStatus field_12786 = register(
+	public static final ChunkStatus SPAWN = register(
 		"spawn",
-		field_12805,
+		LIGHT,
 		0,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
 		(targetStatus, generator, surroundingChunks, chunk) -> generator.populateEntities(new ChunkRegion(targetStatus, surroundingChunks))
 	);
-	public static final ChunkStatus field_12800 = register(
-		"heightmaps", field_12786, 0, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {
+	public static final ChunkStatus HEIGHTMAPS = register(
+		"heightmaps", SPAWN, 0, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {
 		}
 	);
-	public static final ChunkStatus field_12803 = register(
+	public static final ChunkStatus FULL = register(
 		"full",
-		field_12800,
+		HEIGHTMAPS,
 		0,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12807,
@@ -162,7 +162,17 @@ public class ChunkStatus {
 		(status, world, structureManager, lightingProvider, function, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(chunk)
 	);
 	private static final List<ChunkStatus> DISTANCE_TO_STATUS = ImmutableList.of(
-		field_12803, field_12795, field_12790, field_16423, field_16423, field_16423, field_16423, field_16423, field_16423, field_16423, field_16423
+		FULL,
+		FEATURES,
+		LIQUID_CARVERS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS
 	);
 	private static final IntList STATUS_TO_DISTANCE = Util.make(new IntArrayList(createOrderedList().size()), intArrayList -> {
 		int i = 0;
@@ -233,7 +243,7 @@ public class ChunkStatus {
 		List<ChunkStatus> list = Lists.<ChunkStatus>newArrayList();
 
 		ChunkStatus chunkStatus;
-		for (chunkStatus = field_12803; chunkStatus.getPrevious() != chunkStatus; chunkStatus = chunkStatus.getPrevious()) {
+		for (chunkStatus = FULL; chunkStatus.getPrevious() != chunkStatus; chunkStatus = chunkStatus.getPrevious()) {
 			list.add(chunkStatus);
 		}
 
@@ -248,9 +258,9 @@ public class ChunkStatus {
 
 	public static ChunkStatus byDistanceFromFull(int level) {
 		if (level >= DISTANCE_TO_STATUS.size()) {
-			return field_12798;
+			return EMPTY;
 		} else {
-			return level < 0 ? field_12803 : (ChunkStatus)DISTANCE_TO_STATUS.get(level);
+			return level < 0 ? FULL : (ChunkStatus)DISTANCE_TO_STATUS.get(level);
 		}
 	}
 

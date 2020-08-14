@@ -20,7 +20,7 @@ public class SwimAroundGoal extends WanderAroundGoal {
 
 		while (
 			vec3d != null
-				&& !this.mob.world.getBlockState(new BlockPos(vec3d)).canPathfindThrough(this.mob.world, new BlockPos(vec3d), NavigationType.field_48)
+				&& !this.mob.world.getBlockState(new BlockPos(vec3d)).canPathfindThrough(this.mob.world, new BlockPos(vec3d), NavigationType.WATER)
 				&& i++ < 10
 		) {
 			vec3d = TargetFinder.findTarget(this.mob, 10, 7);

@@ -237,7 +237,7 @@ public final class Material {
 	}
 
 	public static class Builder {
-		private PistonBehavior pistonBehavior = PistonBehavior.field_15974;
+		private PistonBehavior pistonBehavior = PistonBehavior.NORMAL;
 		private boolean blocksMovement = true;
 		private boolean burnable;
 		private boolean liquid;
@@ -281,12 +281,12 @@ public final class Material {
 		}
 
 		protected Material.Builder destroyedByPiston() {
-			this.pistonBehavior = PistonBehavior.field_15971;
+			this.pistonBehavior = PistonBehavior.DESTROY;
 			return this;
 		}
 
 		protected Material.Builder blocksPistons() {
-			this.pistonBehavior = PistonBehavior.field_15972;
+			this.pistonBehavior = PistonBehavior.BLOCK;
 			return this;
 		}
 

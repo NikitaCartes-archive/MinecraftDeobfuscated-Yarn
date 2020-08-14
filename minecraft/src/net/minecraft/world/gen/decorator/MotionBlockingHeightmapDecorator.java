@@ -10,6 +10,6 @@ public class MotionBlockingHeightmapDecorator<DC extends DecoratorConfig> extend
 
 	@Override
 	protected Heightmap.Type getHeightmapType(DC config) {
-		return Heightmap.Type.field_13197;
+		return Heightmap.Type.MOTION_BLOCKING;
 	}
 }

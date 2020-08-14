@@ -32,12 +32,12 @@ public class LootTablesProvider implements DataProvider {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private final DataGenerator root;
 	private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootTable.Builder>>>, LootContextType>> lootTypeGenerators = ImmutableList.of(
-		Pair.of(FishingLootTableGenerator::new, LootContextTypes.field_1176),
-		Pair.of(ChestLootTableGenerator::new, LootContextTypes.field_1179),
-		Pair.of(EntityLootTableGenerator::new, LootContextTypes.field_1173),
-		Pair.of(BlockLootTableGenerator::new, LootContextTypes.field_1172),
-		Pair.of(BarterLootTableGenerator::new, LootContextTypes.field_22403),
-		Pair.of(GiftLootTableGenerator::new, LootContextTypes.field_16235)
+		Pair.of(FishingLootTableGenerator::new, LootContextTypes.FISHING),
+		Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST),
+		Pair.of(EntityLootTableGenerator::new, LootContextTypes.ENTITY),
+		Pair.of(BlockLootTableGenerator::new, LootContextTypes.BLOCK),
+		Pair.of(BarterLootTableGenerator::new, LootContextTypes.BARTER),
+		Pair.of(GiftLootTableGenerator::new, LootContextTypes.GIFT)
 	);
 
 	public LootTablesProvider(DataGenerator dataGenerator) {
@@ -53,7 +53,7 @@ public class LootTablesProvider implements DataProvider {
 					throw new IllegalStateException("Duplicate loot table " + identifierx);
 				}
 			}));
-		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.field_1177, identifierx -> null, map::get);
+		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, identifierx -> null, map::get);
 
 		for (Identifier identifier : Sets.difference(LootTables.getAll(), map.keySet())) {
 			lootTableReporter.report("Missing built-in table: " + identifier);

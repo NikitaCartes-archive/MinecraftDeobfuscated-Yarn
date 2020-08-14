@@ -39,10 +39,10 @@ public abstract class AbstractTeam {
 	public abstract AbstractTeam.CollisionRule getCollisionRule();
 
 	public static enum CollisionRule {
-		field_1437("always", 0),
-		field_1435("never", 1),
-		field_1434("pushOtherTeams", 2),
-		field_1440("pushOwnTeam", 3);
+		ALWAYS("always", 0),
+		NEVER("never", 1),
+		PUSH_OTHER_TEAMS("pushOtherTeams", 2),
+		PUSH_OWN_TEAM("pushOwnTeam", 3);
 
 		private static final Map<String, AbstractTeam.CollisionRule> COLLISION_RULES = (Map<String, AbstractTeam.CollisionRule>)Arrays.stream(values())
 			.collect(Collectors.toMap(collisionRule -> collisionRule.name, collisionRule -> collisionRule));
@@ -65,10 +65,10 @@ public abstract class AbstractTeam {
 	}
 
 	public static enum VisibilityRule {
-		field_1442("always", 0),
-		field_1443("never", 1),
-		field_1444("hideForOtherTeams", 2),
-		field_1446("hideForOwnTeam", 3);
+		ALWAYS("always", 0),
+		NEVER("never", 1),
+		HIDE_FOR_OTHER_TEAMS("hideForOtherTeams", 2),
+		HIDE_FOR_OWN_TEAM("hideForOwnTeam", 3);
 
 		private static final Map<String, AbstractTeam.VisibilityRule> VISIBILITY_RULES = (Map<String, AbstractTeam.VisibilityRule>)Arrays.stream(values())
 			.collect(Collectors.toMap(visibilityRule -> visibilityRule.name, visibilityRule -> visibilityRule));

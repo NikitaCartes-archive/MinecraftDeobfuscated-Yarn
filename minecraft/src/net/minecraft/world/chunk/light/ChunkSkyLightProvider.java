@@ -15,12 +15,10 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
 	private static final Direction[] DIRECTIONS = Direction.values();
-	private static final Direction[] HORIZONTAL_DIRECTIONS = new Direction[]{
-		Direction.field_11043, Direction.field_11035, Direction.field_11039, Direction.field_11034
-	};
+	private static final Direction[] HORIZONTAL_DIRECTIONS = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 
 	public ChunkSkyLightProvider(ChunkProvider chunkProvider) {
-		super(chunkProvider, LightType.field_9284, new SkyLightStorage(chunkProvider));
+		super(chunkProvider, LightType.SKY, new SkyLightStorage(chunkProvider));
 	}
 
 	@Override
@@ -56,7 +54,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 					int q = Integer.signum(n - k);
 					Direction direction;
 					if (sourceId == Long.MAX_VALUE) {
-						direction = Direction.field_11033;
+						direction = Direction.DOWN;
 					} else {
 						direction = Direction.fromVector(o, p, q);
 					}
@@ -69,7 +67,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 							return 15;
 						}
 					} else {
-						VoxelShape voxelShape = this.getOpaqueShape(blockState2, sourceId, Direction.field_11033);
+						VoxelShape voxelShape = this.getOpaqueShape(blockState2, sourceId, Direction.DOWN);
 						if (VoxelShapes.unionCoversFullCube(voxelShape, VoxelShapes.empty())) {
 							return 15;
 						}
@@ -118,7 +116,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 			this.propagateLevel(id, o, level, decrease);
 		}
 
-		long q = BlockPos.offset(id, Direction.field_11036);
+		long q = BlockPos.offset(id, Direction.UP);
 		long r = ChunkSectionPos.fromBlockPos(q);
 		if (l == r || this.lightStorage.hasSection(r)) {
 			this.propagateLevel(id, q, level, decrease);
@@ -180,12 +178,12 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 						return i;
 					}
 				}
-			} else if (direction != Direction.field_11033) {
+			} else if (direction != Direction.DOWN) {
 				for (m = BlockPos.removeChunkSectionLocalY(m);
 					!this.lightStorage.hasSection(n) && !this.lightStorage.isAtOrAboveTopmostSection(n);
 					m = BlockPos.add(m, 0, 16, 0)
 				) {
-					n = ChunkSectionPos.offset(n, Direction.field_11036);
+					n = ChunkSectionPos.offset(n, Direction.UP);
 				}
 
 				ChunkNibbleArray chunkNibbleArray3 = this.lightStorage.getLightSection(n, true);
@@ -222,7 +220,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 				!this.lightStorage.hasSection(l) && !this.lightStorage.isAtOrAboveTopmostSection(l);
 				id = BlockPos.add(id, 0, 16, 0)
 			) {
-				l = ChunkSectionPos.offset(l, Direction.field_11036);
+				l = ChunkSectionPos.offset(l, Direction.UP);
 			}
 
 			if (this.lightStorage.hasSection(l)) {

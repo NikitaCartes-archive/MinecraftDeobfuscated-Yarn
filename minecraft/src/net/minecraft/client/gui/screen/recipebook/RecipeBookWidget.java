@@ -40,7 +40,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class RecipeBookWidget extends DrawableHelper implements Drawable, Element, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
 	protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
-	private static final Text field_25711 = new TranslatableText("gui.recipebook.search_hint").formatted(Formatting.field_1056).formatted(Formatting.field_1080);
+	private static final Text field_25711 = new TranslatableText("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
 	private static final Text field_26593 = new TranslatableText("gui.recipebook.toggleRecipes.craftable");
 	private static final Text field_26594 = new TranslatableText("gui.recipebook.toggleRecipes.all");
 	private int leftOffset;
@@ -72,7 +72,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			this.reset(narrow);
 		}
 
-		client.keyboard.enableRepeatEvents(true);
+		client.keyboard.setRepeatEvents(true);
 	}
 
 	public void reset(boolean narrow) {
@@ -128,7 +128,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	public void close() {
 		this.searchField = null;
 		this.currentTab = null;
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	public int findLeftEdge(boolean narrow, int width, int parentWidth) {
@@ -201,7 +201,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 
 		for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
 			RecipeBookGroup recipeBookGroup = recipeGroupButtonWidget.getCategory();
-			if (recipeBookGroup == RecipeBookGroup.field_1809 || recipeBookGroup == RecipeBookGroup.field_1804) {
+			if (recipeBookGroup == RecipeBookGroup.CRAFTING_SEARCH || recipeBookGroup == RecipeBookGroup.FURNACE_SEARCH) {
 				recipeGroupButtonWidget.visible = true;
 				recipeGroupButtonWidget.setPos(i, j + 27 * l++);
 			} else if (recipeGroupButtonWidget.hasKnownRecipes(this.recipeBook)) {
@@ -288,7 +288,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 
 		if (itemStack != null && this.client.currentScreen != null) {
-			this.client.currentScreen.method_30901(matrixStack, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
+			this.client.currentScreen.renderTooltip(matrixStack, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
 		}
 	}
 
@@ -421,7 +421,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		if ("excitedze".equals(string)) {
 			LanguageManager languageManager = this.client.getLanguageManager();
 			LanguageDefinition languageDefinition = languageManager.getLanguage("en_pt");
-			if (languageManager.getLanguage().method_4673(languageDefinition) == 0) {
+			if (languageManager.getLanguage().compareTo(languageDefinition) == 0) {
 				return;
 			}
 

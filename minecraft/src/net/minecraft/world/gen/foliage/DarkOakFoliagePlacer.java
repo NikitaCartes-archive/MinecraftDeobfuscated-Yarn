@@ -21,7 +21,7 @@ public class DarkOakFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected FoliagePlacerType<?> getType() {
-		return FoliagePlacerType.field_24165;
+		return FoliagePlacerType.DARK_OAK_FOLIAGE_PLACER;
 	}
 
 	@Override

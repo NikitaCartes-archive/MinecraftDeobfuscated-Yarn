@@ -42,10 +42,10 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 		this.field_24476 = h;
 	}
 
-	public void method_17159(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
-		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.field_6169);
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			matrixStack.push();
@@ -85,7 +85,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				SkullBlockEntityRenderer.render(
 					null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, f, matrixStack, vertexConsumerProvider, i
 				);
-			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.field_6169) {
+			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
 				float mx = 0.625F;
 				matrixStack.translate(0.0, -0.25, 0.0);
 				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
@@ -96,7 +96,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 				MinecraftClient.getInstance()
 					.getHeldItemRenderer()
-					.renderItem(livingEntity, itemStack, ModelTransformation.Mode.field_4316, false, matrixStack, vertexConsumerProvider, i);
+					.renderItem(livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
 			}
 
 			matrixStack.pop();

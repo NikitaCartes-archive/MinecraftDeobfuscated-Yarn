@@ -173,7 +173,7 @@ public class ChunkHolder {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
 			worldChunk.setShouldSave(true);
-			if (type == LightType.field_9284) {
+			if (type == LightType.SKY) {
 				this.skyLightUpdateBits |= 1 << y - -1;
 			} else {
 				this.blockLightUpdateBits |= 1 << y - -1;
@@ -193,7 +193,7 @@ public class ChunkHolder {
 			this.field_26744 |= i >= 64;
 			if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
 				this.sendPacketToPlayersWatching(
-					new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, false), !this.field_26744
+					new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, true), !this.field_26744
 				);
 				this.skyLightUpdateBits = 0;
 				this.blockLightUpdateBits = 0;
@@ -320,8 +320,8 @@ public class ChunkHolder {
 			}
 		}
 
-		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.field_13876);
-		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.field_13876);
+		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.BORDER);
+		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.BORDER);
 		this.accessible |= bl4;
 		if (!bl3 && bl4) {
 			this.accessibleFuture = chunkStorage.makeChunkAccessible(this);
@@ -334,8 +334,8 @@ public class ChunkHolder {
 			this.combineSavingFuture(completableFuture.thenApply(either -> either.ifLeft(chunkStorage::enableTickSchedulers)));
 		}
 
-		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.field_13875);
-		boolean bl6 = levelType2.isAfter(ChunkHolder.LevelType.field_13875);
+		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
+		boolean bl6 = levelType2.isAfter(ChunkHolder.LevelType.TICKING);
 		if (!bl5 && bl6) {
 			this.tickingFuture = chunkStorage.makeChunkTickable(this);
 			this.combineSavingFuture(this.tickingFuture);
@@ -346,8 +346,8 @@ public class ChunkHolder {
 			this.tickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
 		}
 
-		boolean bl7 = levelType.isAfter(ChunkHolder.LevelType.field_13877);
-		boolean bl8 = levelType2.isAfter(ChunkHolder.LevelType.field_13877);
+		boolean bl7 = levelType.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
+		boolean bl8 = levelType2.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
 		if (!bl7 && bl8) {
 			if (this.entityTickingFuture != UNLOADED_WORLD_CHUNK_FUTURE) {
 				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException());
@@ -367,7 +367,7 @@ public class ChunkHolder {
 	}
 
 	public static ChunkStatus getTargetStatusForLevel(int level) {
-		return level < 33 ? ChunkStatus.field_12803 : ChunkStatus.byDistanceFromFull(level - 33);
+		return level < 33 ? ChunkStatus.FULL : ChunkStatus.byDistanceFromFull(level - 33);
 	}
 
 	public static ChunkHolder.LevelType getLevelType(int distance) {
@@ -379,7 +379,7 @@ public class ChunkHolder {
 	}
 
 	public void updateAccessibleStatus() {
-		this.accessible = getLevelType(this.level).isAfter(ChunkHolder.LevelType.field_13876);
+		this.accessible = getLevelType(this.level).isAfter(ChunkHolder.LevelType.BORDER);
 	}
 
 	public void setCompletedChunk(ReadOnlyChunk readOnlyChunk) {
@@ -398,10 +398,10 @@ public class ChunkHolder {
 	}
 
 	public static enum LevelType {
-		field_19334,
-		field_13876,
-		field_13875,
-		field_13877;
+		INACCESSIBLE,
+		BORDER,
+		TICKING,
+		ENTITY_TICKING;
 
 		public boolean isAfter(ChunkHolder.LevelType levelType) {
 			return this.ordinal() >= levelType.ordinal();

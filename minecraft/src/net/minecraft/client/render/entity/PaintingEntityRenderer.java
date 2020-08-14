@@ -27,13 +27,13 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4075(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
 		PaintingMotive paintingMotive = paintingEntity.motive;
 		float h = 0.0625F;
 		matrixStack.scale(0.0625F, 0.0625F, 0.0625F);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.method_4077(paintingEntity)));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.getTexture(paintingEntity)));
 		PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
 		this.method_4074(
 			matrixStack,
@@ -48,7 +48,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		super.render(paintingEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_4077(PaintingEntity paintingEntity) {
+	public Identifier getTexture(PaintingEntity paintingEntity) {
 		return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlas().getId();
 	}
 
@@ -86,19 +86,19 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 				int af = MathHelper.floor(paintingEntity.getY() + (double)((ac + ad) / 2.0F / 16.0F));
 				int ag = MathHelper.floor(paintingEntity.getZ());
 				Direction direction = paintingEntity.getHorizontalFacing();
-				if (direction == Direction.field_11043) {
+				if (direction == Direction.NORTH) {
 					ae = MathHelper.floor(paintingEntity.getX() + (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
-				if (direction == Direction.field_11039) {
+				if (direction == Direction.WEST) {
 					ag = MathHelper.floor(paintingEntity.getZ() - (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
-				if (direction == Direction.field_11035) {
+				if (direction == Direction.SOUTH) {
 					ae = MathHelper.floor(paintingEntity.getX() - (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
-				if (direction == Direction.field_11034) {
+				if (direction == Direction.EAST) {
 					ag = MathHelper.floor(paintingEntity.getZ() + (double)((aa + ab) / 2.0F / 16.0F));
 				}
 

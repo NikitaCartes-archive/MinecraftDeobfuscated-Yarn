@@ -39,11 +39,11 @@ public class SnowBlock extends Block {
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		switch (type) {
-			case field_50:
+			case LAND:
 				return (Integer)state.get(LAYERS) < 5;
-			case field_48:
+			case WATER:
 				return false;
-			case field_51:
+			case AIR:
 				return false;
 			default:
 				return false;
@@ -77,12 +77,12 @@ public class SnowBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockState blockState = world.getBlockState(pos.method_10074());
-		if (blockState.isOf(Blocks.field_10295) || blockState.isOf(Blocks.field_10225) || blockState.isOf(Blocks.field_10499)) {
+		BlockState blockState = world.getBlockState(pos.down());
+		if (blockState.isOf(Blocks.ICE) || blockState.isOf(Blocks.PACKED_ICE) || blockState.isOf(Blocks.BARRIER)) {
 			return false;
 		} else {
-			return !blockState.isOf(Blocks.field_21211) && !blockState.isOf(Blocks.field_10114)
-				? Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.method_10074()), Direction.field_11036)
+			return !blockState.isOf(Blocks.HONEY_BLOCK) && !blockState.isOf(Blocks.SOUL_SAND)
+				? Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP)
 					|| blockState.getBlock() == this && (Integer)blockState.get(LAYERS) == 8
 				: true;
 		}
@@ -90,14 +90,12 @@ public class SnowBlock extends Block {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+		return !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (world.getLightLevel(LightType.field_9282, pos) > 11) {
+		if (world.getLightLevel(LightType.BLOCK, pos) > 11) {
 			dropStacks(state, world, pos);
 			world.removeBlock(pos, false);
 		}
@@ -109,7 +107,7 @@ public class SnowBlock extends Block {
 		if (context.getStack().getItem() != this.asItem() || i >= 8) {
 			return i == 1;
 		} else {
-			return context.canReplaceExisting() ? context.getSide() == Direction.field_11036 : true;
+			return context.canReplaceExisting() ? context.getSide() == Direction.UP : true;
 		}
 	}
 

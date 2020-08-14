@@ -185,7 +185,7 @@ public class TeamCommand {
 											CommandManager.literal("never")
 												.executes(
 													commandContext -> executeModifyNametagVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1443
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.NEVER
 														)
 												)
 										)
@@ -193,7 +193,7 @@ public class TeamCommand {
 											CommandManager.literal("hideForOtherTeams")
 												.executes(
 													commandContext -> executeModifyNametagVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1444
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS
 														)
 												)
 										)
@@ -201,7 +201,7 @@ public class TeamCommand {
 											CommandManager.literal("hideForOwnTeam")
 												.executes(
 													commandContext -> executeModifyNametagVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1446
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM
 														)
 												)
 										)
@@ -209,7 +209,7 @@ public class TeamCommand {
 											CommandManager.literal("always")
 												.executes(
 													commandContext -> executeModifyNametagVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1442
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.ALWAYS
 														)
 												)
 										)
@@ -220,7 +220,7 @@ public class TeamCommand {
 											CommandManager.literal("never")
 												.executes(
 													commandContext -> executeModifyDeathMessageVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1443
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.NEVER
 														)
 												)
 										)
@@ -228,7 +228,7 @@ public class TeamCommand {
 											CommandManager.literal("hideForOtherTeams")
 												.executes(
 													commandContext -> executeModifyDeathMessageVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1444
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS
 														)
 												)
 										)
@@ -236,7 +236,7 @@ public class TeamCommand {
 											CommandManager.literal("hideForOwnTeam")
 												.executes(
 													commandContext -> executeModifyDeathMessageVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1446
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM
 														)
 												)
 										)
@@ -244,7 +244,7 @@ public class TeamCommand {
 											CommandManager.literal("always")
 												.executes(
 													commandContext -> executeModifyDeathMessageVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1442
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.ALWAYS
 														)
 												)
 										)
@@ -255,7 +255,7 @@ public class TeamCommand {
 											CommandManager.literal("never")
 												.executes(
 													commandContext -> executeModifyCollisionRule(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1435
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.NEVER
 														)
 												)
 										)
@@ -263,7 +263,7 @@ public class TeamCommand {
 											CommandManager.literal("pushOwnTeam")
 												.executes(
 													commandContext -> executeModifyCollisionRule(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1440
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.PUSH_OWN_TEAM
 														)
 												)
 										)
@@ -271,7 +271,7 @@ public class TeamCommand {
 											CommandManager.literal("pushOtherTeams")
 												.executes(
 													commandContext -> executeModifyCollisionRule(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1434
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS
 														)
 												)
 										)
@@ -279,7 +279,7 @@ public class TeamCommand {
 											CommandManager.literal("always")
 												.executes(
 													commandContext -> executeModifyCollisionRule(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1437
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.ALWAYS
 														)
 												)
 										)

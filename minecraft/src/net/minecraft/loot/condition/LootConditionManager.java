@@ -34,7 +34,7 @@ public class LootConditionManager extends JsonDataLoader {
 		return (LootCondition)this.conditions.get(id);
 	}
 
-	protected void method_22563(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		Builder<Identifier, LootCondition> builder = ImmutableMap.builder();
 		map.forEach((identifier, jsonElement) -> {
 			try {
@@ -50,7 +50,7 @@ public class LootConditionManager extends JsonDataLoader {
 			}
 		});
 		Map<Identifier, LootCondition> map2 = builder.build();
-		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.field_1177, map2::get, identifier -> null);
+		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, map2::get, identifier -> null);
 		map2.forEach((identifier, lootCondition) -> lootCondition.validate(lootTableReporter.withCondition("{" + identifier + "}", identifier)));
 		lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));
 		this.conditions = map2;
@@ -69,7 +69,7 @@ public class LootConditionManager extends JsonDataLoader {
 			this.predicate = LootConditionTypes.joinAnd(elements);
 		}
 
-		public final boolean method_29311(LootContext lootContext) {
+		public final boolean test(LootContext lootContext) {
 			return this.predicate.test(lootContext);
 		}
 

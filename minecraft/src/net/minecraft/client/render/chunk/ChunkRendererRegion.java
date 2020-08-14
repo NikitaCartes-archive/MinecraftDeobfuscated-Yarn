@@ -37,7 +37,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 
 		for (int m = i; m <= k; m++) {
 			for (int n = j; n <= l; n++) {
-				worldChunks[m - i][n - j] = world.method_8497(m, n);
+				worldChunks[m - i][n - j] = world.getChunk(m, n);
 			}
 		}
 
@@ -120,7 +120,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		return this.getBlockEntity(pos, WorldChunk.CreationType.field_12860);
+		return this.getBlockEntity(pos, WorldChunk.CreationType.IMMEDIATE);
 	}
 
 	@Nullable

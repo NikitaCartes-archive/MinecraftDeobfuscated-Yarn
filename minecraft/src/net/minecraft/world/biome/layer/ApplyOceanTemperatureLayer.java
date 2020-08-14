@@ -6,7 +6,7 @@ import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 import net.minecraft.world.biome.layer.util.LayerSampler;
 
 public enum ApplyOceanTemperatureLayer implements MergingLayer, IdentityCoordinateTransformer {
-	field_16121;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource context, LayerSampler sampler1, LayerSampler sampler2, int x, int z) {

@@ -16,7 +16,7 @@ public class ForgetBellRingTask extends Task<LivingEntity> {
 	private int hiddenTicks;
 
 	public ForgetBellRingTask(int maxHiddenSeconds, int distance) {
-		super(ImmutableMap.of(MemoryModuleType.field_19008, MemoryModuleState.field_18456, MemoryModuleType.field_19009, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.HIDING_PLACE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleState.VALUE_PRESENT));
 		this.maxHiddenTicks = maxHiddenSeconds * 20;
 		this.hiddenTicks = 0;
 		this.distance = distance;
@@ -25,16 +25,16 @@ public class ForgetBellRingTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.field_19009);
+		Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.HEARD_BELL_TIME);
 		boolean bl = (Long)optional.get() + 300L <= time;
 		if (this.hiddenTicks <= this.maxHiddenTicks && !bl) {
-			BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.field_19008).get()).getPos();
+			BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.HIDING_PLACE).get()).getPos();
 			if (blockPos.isWithinDistance(entity.getBlockPos(), (double)this.distance)) {
 				this.hiddenTicks++;
 			}
 		} else {
-			brain.forget(MemoryModuleType.field_19009);
-			brain.forget(MemoryModuleType.field_19008);
+			brain.forget(MemoryModuleType.HEARD_BELL_TIME);
+			brain.forget(MemoryModuleType.HIDING_PLACE);
 			brain.refreshActivities(world.getTimeOfDay(), world.getTime());
 			this.hiddenTicks = 0;
 		}

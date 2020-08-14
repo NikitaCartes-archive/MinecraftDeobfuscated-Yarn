@@ -17,7 +17,7 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 		return ID;
 	}
 
-	public SummonedEntityCriterion.Conditions method_9123(
+	public SummonedEntityCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "entity", advancementEntityPredicateDeserializer);

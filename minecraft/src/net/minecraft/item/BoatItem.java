@@ -27,8 +27,8 @@ public class BoatItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.field_1347);
-		if (hitResult.getType() == HitResult.Type.field_1333) {
+		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.ANY);
+		if (hitResult.getType() == HitResult.Type.MISS) {
 			return TypedActionResult.pass(itemStack);
 		} else {
 			Vec3d vec3d = user.getRotationVec(1.0F);
@@ -45,7 +45,7 @@ public class BoatItem extends Item {
 				}
 			}
 
-			if (hitResult.getType() == HitResult.Type.field_1332) {
+			if (hitResult.getType() == HitResult.Type.BLOCK) {
 				BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = user.yaw;
@@ -59,7 +59,7 @@ public class BoatItem extends Item {
 						}
 					}
 
-					user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+					user.incrementStat(Stats.USED.getOrCreateStat(this));
 					return TypedActionResult.method_29237(itemStack, world.isClient());
 				}
 			} else {

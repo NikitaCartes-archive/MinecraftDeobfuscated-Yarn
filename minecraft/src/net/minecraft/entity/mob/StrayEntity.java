@@ -21,34 +21,34 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	public static boolean canSpawn(EntityType<StrayEntity> type, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return canSpawnInDark(type, serverWorldAccess, spawnReason, pos, random) && (spawnReason == SpawnReason.field_16469 || serverWorldAccess.isSkyVisible(pos));
+		return canSpawnInDark(type, serverWorldAccess, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || serverWorldAccess.isSkyVisible(pos));
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15041;
+		return SoundEvents.ENTITY_STRAY_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14805;
+		return SoundEvents.ENTITY_STRAY_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14771;
+		return SoundEvents.ENTITY_STRAY_DEATH;
 	}
 
 	@Override
 	SoundEvent getStepSound() {
-		return SoundEvents.field_14540;
+		return SoundEvents.ENTITY_STRAY_STEP;
 	}
 
 	@Override
 	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
 		PersistentProjectileEntity persistentProjectileEntity = super.createArrowProjectile(arrow, damageModifier);
 		if (persistentProjectileEntity instanceof ArrowEntity) {
-			((ArrowEntity)persistentProjectileEntity).addEffect(new StatusEffectInstance(StatusEffects.field_5909, 600));
+			((ArrowEntity)persistentProjectileEntity).addEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 600));
 		}
 
 		return persistentProjectileEntity;

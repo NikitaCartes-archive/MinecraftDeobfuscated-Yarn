@@ -39,7 +39,7 @@ public class KeybindText extends BaseText {
 		return this.getTranslated().visit(visitor, style);
 	}
 
-	public KeybindText method_10902() {
+	public KeybindText copy() {
 		return new KeybindText(this.key);
 	}
 

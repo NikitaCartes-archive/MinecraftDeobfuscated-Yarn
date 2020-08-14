@@ -15,12 +15,12 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25230;
+		return LootFunctionTypes.EXPLOSION_DECAY;
 	}
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Float float_ = context.get(LootContextParameters.field_1225);
+		Float float_ = context.get(LootContextParameters.EXPLOSION_RADIUS);
 		if (float_ != null) {
 			Random random = context.getRandom();
 			float f = 1.0F / float_;
@@ -44,7 +44,7 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<ExplosionDecayLootFunction> {
-		public ExplosionDecayLootFunction method_479(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public ExplosionDecayLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			return new ExplosionDecayLootFunction(lootConditions);
 		}
 	}

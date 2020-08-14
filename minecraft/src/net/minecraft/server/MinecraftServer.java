@@ -150,7 +150,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final File USER_CACHE_FILE = new File("usercache.json");
 	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo(
-		"Demo World", GameMode.field_9215, false, Difficulty.field_5802, false, new GameRules(), DataPackSettings.SAFE_MODE
+		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackSettings.SAFE_MODE
 	);
 	protected final LevelStorage.Session session;
 	protected final WorldSaveHandler saveHandler;
@@ -326,14 +326,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		List<Spawner> list = ImmutableList.of(
 			new PhantomSpawner(), new PillagerSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties)
 		);
-		SimpleRegistry<DimensionOptions> simpleRegistry = generatorOptions.getDimensionMap();
+		SimpleRegistry<DimensionOptions> simpleRegistry = generatorOptions.getDimensions();
 		DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
 		ChunkGenerator chunkGenerator;
 		DimensionType dimensionType;
 		if (dimensionOptions == null) {
-			dimensionType = this.registryManager.getDimensionTypes().method_31140(DimensionType.OVERWORLD_REGISTRY_KEY);
+			dimensionType = this.registryManager.getDimensionTypes().getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY);
 			chunkGenerator = GeneratorOptions.createOverworldGenerator(
-				this.registryManager.get(Registry.BIOME_KEY), this.registryManager.get(Registry.field_26374), new Random().nextLong()
+				this.registryManager.get(Registry.BIOME_KEY), this.registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN), new Random().nextLong()
 			);
 		} else {
 			dimensionType = dimensionOptions.getDimensionType();
@@ -389,7 +389,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
-				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.field_25298, registryKey.getValue());
+				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.DIMENSION, registryKey.getValue());
 				DimensionType dimensionType2 = ((DimensionOptions)entry.getValue()).getDimensionType();
 				ChunkGenerator chunkGenerator2 = ((DimensionOptions)entry.getValue()).getChunkGenerator();
 				UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
@@ -414,7 +414,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private static void setupSpawn(ServerWorld serverWorld, ServerWorldProperties serverWorldProperties, boolean bl, boolean bl2, boolean bl3) {
-		ChunkGenerator chunkGenerator = serverWorld.method_14178().getChunkGenerator();
+		ChunkGenerator chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
 		if (!bl3) {
 			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(chunkGenerator.getSpawnHeight()), 0.0F);
 		} else if (bl2) {
@@ -422,7 +422,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		} else {
 			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 			Random random = new Random(serverWorld.getSeed());
-			BlockPos blockPos = biomeSource.locateBiome(0, serverWorld.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().method_31082(), random);
+			BlockPos blockPos = biomeSource.locateBiome(0, serverWorld.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random);
 			ChunkPos chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
 			if (blockPos == null) {
 				LOGGER.warn("Unable to find spawn biome");
@@ -430,7 +430,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			boolean bl4 = false;
 
-			for (Block block : BlockTags.field_15478.values()) {
+			for (Block block : BlockTags.VALID_SPAWN.values()) {
 				if (biomeSource.getTopMaterials().contains(block.getDefaultState())) {
 					bl4 = true;
 					break;
@@ -464,7 +464,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			if (bl) {
-				ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeatures.field_25970;
+				ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeatures.BONUS_CHEST;
 				configuredFeature.generate(
 					serverWorld,
 					chunkGenerator,
@@ -476,14 +476,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void setToDebugWorldProperties(SaveProperties properties) {
-		properties.setDifficulty(Difficulty.field_5801);
+		properties.setDifficulty(Difficulty.PEACEFUL);
 		properties.setDifficultyLocked(true);
 		ServerWorldProperties serverWorldProperties = properties.getMainWorldProperties();
 		serverWorldProperties.setRaining(false);
 		serverWorldProperties.setThundering(false);
 		serverWorldProperties.setClearWeatherTime(1000000000);
 		serverWorldProperties.setTimeOfDay(6000L);
-		serverWorldProperties.setGameMode(GameMode.field_9219);
+		serverWorldProperties.setGameMode(GameMode.SPECTATOR);
 	}
 
 	private void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
@@ -491,10 +491,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		LOGGER.info("Preparing start region for dimension {}", serverWorld.getRegistryKey().getValue());
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
-		ServerChunkManager serverChunkManager = serverWorld.method_14178();
-		serverChunkManager.method_17293().setTaskBatchSize(500);
+		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+		serverChunkManager.getLightingProvider().setTaskBatchSize(500);
 		this.timeReference = Util.getMeasuringTimeMs();
-		serverChunkManager.addTicket(ChunkTicketType.field_14030, new ChunkPos(blockPos), 11, Unit.field_17274);
+		serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
 
 		while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
 			this.timeReference = Util.getMeasuringTimeMs() + 10L;
@@ -512,7 +512,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
 					ChunkPos chunkPos = new ChunkPos(l);
-					serverWorld2.method_14178().setChunkForced(chunkPos, true);
+					serverWorld2.getChunkManager().setChunkForced(chunkPos, true);
 				}
 			}
 		}
@@ -520,12 +520,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.timeReference = Util.getMeasuringTimeMs() + 10L;
 		this.method_16208();
 		worldGenerationProgressListener.stop();
-		serverChunkManager.method_17293().setTaskBatchSize(5);
+		serverChunkManager.getLightingProvider().setTaskBatchSize(5);
 		this.updateMobSpawnOptions();
 	}
 
 	protected void loadWorldResourcePack() {
-		File file = this.session.getDirectory(WorldSavePath.field_24187).toFile();
+		File file = this.session.getDirectory(WorldSavePath.RESOURCES_ZIP).toFile();
 		if (file.isFile()) {
 			String string = this.session.getDirectoryName();
 
@@ -719,11 +719,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.runTasks(() -> !this.shouldKeepTicking());
 	}
 
-	protected ServerTask method_16209(Runnable runnable) {
+	protected ServerTask createTask(Runnable runnable) {
 		return new ServerTask(this.ticks, runnable);
 	}
 
-	protected boolean method_19464(ServerTask serverTask) {
+	protected boolean canExecute(ServerTask serverTask) {
 		return serverTask.getCreationTicks() + 3 < this.ticks || this.shouldKeepTicking();
 	}
 
@@ -740,7 +740,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		} else {
 			if (this.shouldKeepTicking()) {
 				for (ServerWorld serverWorld : this.getWorlds()) {
-					if (serverWorld.method_14178().executeQueuedTasks()) {
+					if (serverWorld.getChunkManager().executeQueuedTasks()) {
 						return true;
 					}
 				}
@@ -750,7 +750,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	protected void method_24306(ServerTask serverTask) {
+	protected void executeTask(ServerTask serverTask) {
 		this.getProfiler().visit("runTask");
 		super.executeTask(serverTask);
 	}
@@ -856,7 +856,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.profiler.push("timeSync");
 				this.playerManager
 					.sendToDimension(
-						new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.field_19396)),
+						new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)),
 						serverWorld.getRegistryKey()
 					);
 				this.profiler.pop();
@@ -1024,7 +1024,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public void setDifficulty(Difficulty difficulty, boolean bl) {
 		if (bl || !this.saveProperties.isDifficultyLocked()) {
-			this.saveProperties.setDifficulty(this.saveProperties.isHardcore() ? Difficulty.field_5807 : difficulty);
+			this.saveProperties.setDifficulty(this.saveProperties.isHardcore() ? Difficulty.HARD : difficulty);
 			this.updateMobSpawnOptions();
 			this.getPlayerManager().getPlayerList().forEach(this::sendDifficulty);
 		}
@@ -1051,7 +1051,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	protected boolean isMonsterSpawningEnabled() {
-		return this.saveProperties.getDifficulty() != Difficulty.field_5801;
+		return this.saveProperties.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
 	public boolean isDemo() {
@@ -1098,7 +1098,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				snooper.addInfo("world[" + i + "][difficulty]", serverWorld.getDifficulty());
 				snooper.addInfo("world[" + i + "][hardcore]", this.saveProperties.isHardcore());
 				snooper.addInfo("world[" + i + "][height]", this.worldHeight);
-				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.method_14178().getLoadedChunkCount());
+				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
 				i++;
 			}
 		}
@@ -1288,7 +1288,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public int getSpawnRadius(@Nullable ServerWorld world) {
-		return world != null ? world.getGameRules().getInt(GameRules.field_19403) : 10;
+		return world != null ? world.getGameRules().getInt(GameRules.SPAWN_RADIUS) : 10;
 	}
 
 	public ServerAdvancementLoader getAdvancementLoader() {
@@ -1311,7 +1311,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			.thenCompose(
 				immutableList -> ServerResourceManager.reload(
 						immutableList,
-						this.isDedicated() ? CommandManager.RegistrationEnvironment.field_25420 : CommandManager.RegistrationEnvironment.field_25421,
+						this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED,
 						this.getFunctionPermissionLevel(),
 						this.workerExecutor,
 						this
@@ -1321,7 +1321,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.serverResourceManager.close();
 				this.serverResourceManager = serverResourceManager;
 				this.dataPackManager.setEnabledProfiles(collection);
-				this.saveProperties.method_29590(method_29735(this.dataPackManager));
+				this.saveProperties.updateLevelInfo(method_29735(this.dataPackManager));
 				serverResourceManager.loadRegistryTags();
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();

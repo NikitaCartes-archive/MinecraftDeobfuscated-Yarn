@@ -21,14 +21,14 @@ public class GiantTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	protected TrunkPlacerType<?> getType() {
-		return TrunkPlacerType.field_24171;
+		return TrunkPlacerType.GIANT_TRUNK_PLACER;
 	}
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
 		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		method_27400(world, blockPos);
 		method_27400(world, blockPos.east());
 		method_27400(world, blockPos.south());

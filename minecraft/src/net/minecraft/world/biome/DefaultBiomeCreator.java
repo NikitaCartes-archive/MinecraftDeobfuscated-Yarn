@@ -28,9 +28,9 @@ public class DefaultBiomeCreator {
 	public static Biome createGiantTreeTaiga(float depth, float scale, float temperature, boolean spruce) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addFarmAnimals(builder);
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6055, 8, 4, 4));
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6140, 4, 2, 3));
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_17943, 8, 2, 4));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 4));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
 		if (spruce) {
 			DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		} else {
@@ -38,9 +38,9 @@ public class DefaultBiomeCreator {
 			DefaultBiomeFeatures.addMonsters(builder, 100, 25, 100);
 		}
 
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26326);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GIANT_TREE_TAIGA);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -49,7 +49,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addMineables(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
-		builder2.feature(GenerationStep.Feature.field_13178, spruce ? ConfiguredFeatures.field_26085 : ConfiguredFeatures.field_26086);
+		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, spruce ? ConfiguredFeatures.TREES_GIANT_SPRUCE : ConfiguredFeatures.TREES_GIANT);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
 		DefaultBiomeFeatures.addGiantTaigaGrass(builder2);
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
@@ -58,8 +58,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSweetBerryBushes(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9361)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.TAIGA)
 			.depth(depth)
 			.scale(scale)
 			.temperature(temperature)
@@ -82,9 +82,9 @@ public class DefaultBiomeCreator {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addFarmAnimals(builder);
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26327);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -105,8 +105,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9370)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.FOREST)
 			.depth(depth)
 			.scale(scale)
 			.temperature(0.6F)
@@ -138,8 +138,8 @@ public class DefaultBiomeCreator {
 	public static Biome createModifiedJungle() {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addJungleMobs(builder);
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6104, 10, 1, 1))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6081, 2, 1, 1));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, 10, 1, 1))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, 1));
 		return createJungleFeatures(0.2F, 0.4F, 0.9F, false, false, true, builder);
 	}
 
@@ -158,30 +158,30 @@ public class DefaultBiomeCreator {
 	private static Biome createJungle(float depth, float scale, int parrotWeight, int parrotMaxGroupSize, int ocelotMaxGroupSize) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addJungleMobs(builder);
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6104, parrotWeight, 1, parrotMaxGroupSize))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6081, 2, 1, ocelotMaxGroupSize))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6146, 1, 1, 2));
-		builder.method_31083();
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, parrotWeight, 1, parrotMaxGroupSize))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, ocelotMaxGroupSize))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 1, 1, 2));
+		builder.playerSpawnFriendly();
 		return createJungleFeatures(depth, scale, 0.9F, false, false, false, builder);
 	}
 
 	private static Biome createBambooJungle(float depth, float scale, int parrotWeight, int parrotMaxGroupSize) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addJungleMobs(builder);
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6104, parrotWeight, 1, parrotMaxGroupSize))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6146, 80, 1, 2))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6081, 2, 1, 1));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, parrotWeight, 1, parrotMaxGroupSize))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 80, 1, 2))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, 1));
 		return createJungleFeatures(depth, scale, 0.9F, true, false, false, builder);
 	}
 
 	private static Biome createJungleFeatures(float f, float g, float h, boolean bl, boolean bl2, boolean bl3, SpawnSettings.Builder builder) {
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26327);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		if (!bl2 && !bl3) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26296);
+			builder2.structureFeature(ConfiguredStructureFeatures.JUNGLE_PYRAMID);
 		}
 
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26287);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_JUNGLE);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -210,8 +210,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addJungleVegetation(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9358)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.JUNGLE)
 			.depth(f)
 			.scale(g)
 			.temperature(0.95F)
@@ -227,11 +227,11 @@ public class DefaultBiomeCreator {
 	public static Biome createMountains(float depth, float scale, ConfiguredSurfaceBuilder<TernarySurfaceConfig> surfaceBuilder, boolean extraTrees) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addFarmAnimals(builder);
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6074, 5, 4, 6));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.LLAMA, 5, 4, 6));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(surfaceBuilder);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26289);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -253,8 +253,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addInfestedStone(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9357)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.EXTREME_HILLS)
 			.depth(depth)
 			.scale(scale)
 			.temperature(0.2F)
@@ -270,14 +270,14 @@ public class DefaultBiomeCreator {
 	public static Biome createDesert(float f, float g, boolean bl, boolean bl2, boolean bl3) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addDesertMobs(builder);
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26321);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.DESERT);
 		if (bl) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26312);
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26292);
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_DESERT);
+			builder2.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		}
 
 		if (bl2) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26297);
+			builder2.structureFeature(ConfiguredStructureFeatures.DESERT_PYRAMID);
 		}
 
 		if (bl3) {
@@ -285,7 +285,7 @@ public class DefaultBiomeCreator {
 		}
 
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26317);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_DESERT);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDesertLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -301,8 +301,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDesertFeatures(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9368)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.DESERT)
 			.depth(f)
 			.scale(g)
 			.temperature(2.0F)
@@ -319,22 +319,22 @@ public class DefaultBiomeCreator {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addPlainsMobs(builder);
 		if (!bl) {
-			builder.method_31083();
+			builder.playerSpawnFriendly();
 		}
 
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26327);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		if (!bl) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26311).structureFeature(ConfiguredStructureFeatures.field_26292);
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_PLAINS).structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		}
 
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addPlainsTallGrass(builder2);
 		if (bl) {
-			builder2.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26019);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_SUNFLOWER);
 		}
 
 		DefaultBiomeFeatures.addMineables(builder2);
@@ -342,12 +342,12 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addPlainsFeatures(builder2);
 		if (bl) {
-			builder2.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_25995);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_SUGAR_CANE);
 		}
 
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
 		if (bl) {
-			builder2.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26020);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_PUMPKIN);
 		} else {
 			DefaultBiomeFeatures.addDefaultVegetation(builder2);
 		}
@@ -355,8 +355,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9355)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.PLAINS)
 			.depth(0.125F)
 			.scale(0.05F)
 			.temperature(0.8F)
@@ -373,8 +373,8 @@ public class DefaultBiomeCreator {
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addEndMobs(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9360)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.THEEND)
 			.depth(0.1F)
 			.scale(0.2F)
 			.temperature(0.5F)
@@ -386,46 +386,46 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createEndBarrens() {
-		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26322);
+		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.END);
 		return method_31065(builder);
 	}
 
 	public static Biome createTheEnd() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder()
-			.surfaceBuilder(ConfiguredSurfaceBuilders.field_26322)
-			.feature(GenerationStep.Feature.field_13173, ConfiguredFeatures.field_26040);
+			.surfaceBuilder(ConfiguredSurfaceBuilders.END)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.END_SPIKE);
 		return method_31065(builder);
 	}
 
 	public static Biome createEndMidlands() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder()
-			.surfaceBuilder(ConfiguredSurfaceBuilders.field_26322)
-			.structureFeature(ConfiguredStructureFeatures.field_26308);
+			.surfaceBuilder(ConfiguredSurfaceBuilders.END)
+			.structureFeature(ConfiguredStructureFeatures.END_CITY);
 		return method_31065(builder);
 	}
 
 	public static Biome createEndHighlands() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder()
-			.surfaceBuilder(ConfiguredSurfaceBuilders.field_26322)
-			.structureFeature(ConfiguredStructureFeatures.field_26308)
-			.feature(GenerationStep.Feature.field_13173, ConfiguredFeatures.field_26091)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26119);
+			.surfaceBuilder(ConfiguredSurfaceBuilders.END)
+			.structureFeature(ConfiguredStructureFeatures.END_CITY)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.END_GATEWAY)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CHORUS_PLANT);
 		return method_31065(builder);
 	}
 
 	public static Biome createSmallEndIslands() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder()
-			.surfaceBuilder(ConfiguredSurfaceBuilders.field_26322)
-			.feature(GenerationStep.Feature.field_13174, ConfiguredFeatures.field_26121);
+			.surfaceBuilder(ConfiguredSurfaceBuilders.END)
+			.feature(GenerationStep.Feature.RAW_GENERATION, ConfiguredFeatures.END_ISLAND_DECORATED);
 		return method_31065(builder);
 	}
 
 	public static Biome createMushroomFields(float depth, float scale) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addMushroomMobs(builder);
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26331);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.MYCELIUM);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -438,8 +438,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9365)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.MUSHROOM)
 			.depth(depth)
 			.scale(scale)
 			.temperature(0.9F)
@@ -454,13 +454,13 @@ public class DefaultBiomeCreator {
 
 	private static Biome method_31067(float f, float g, float h, boolean bl, boolean bl2, SpawnSettings.Builder builder) {
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder()
-			.surfaceBuilder(bl2 ? ConfiguredSurfaceBuilders.field_26335 : ConfiguredSurfaceBuilders.field_26327);
+			.surfaceBuilder(bl2 ? ConfiguredSurfaceBuilders.SHATTERED_SAVANNA : ConfiguredSurfaceBuilders.GRASS);
 		if (!bl && !bl2) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26313).structureFeature(ConfiguredStructureFeatures.field_26292);
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_SAVANNA).structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		}
 
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(bl ? ConfiguredStructureFeatures.field_26289 : ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(bl ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -486,8 +486,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9356)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.SAVANNA)
 			.depth(f)
 			.scale(g)
 			.temperature(h)
@@ -508,15 +508,15 @@ public class DefaultBiomeCreator {
 	private static SpawnSettings.Builder method_31068() {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addFarmAnimals(builder);
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6139, 1, 2, 6))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6067, 1, 1, 1));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.HORSE, 1, 2, 6))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.DONKEY, 1, 1, 1));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		return builder;
 	}
 
 	public static Biome createSavannaPlateau() {
 		SpawnSettings.Builder builder = method_31068();
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6074, 8, 4, 4));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.LLAMA, 8, 4, 4));
 		return method_31067(1.5F, 0.025F, 1.0F, true, false, builder);
 	}
 
@@ -525,7 +525,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(configuredSurfaceBuilder);
 		DefaultBiomeFeatures.addBadlandsUndergroundStructures(builder2);
-		builder2.structureFeature(bl ? ConfiguredStructureFeatures.field_26289 : ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(bl ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -543,8 +543,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9354)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.MESA)
 			.depth(f)
 			.scale(g)
 			.temperature(2.0F)
@@ -566,21 +566,21 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createNormalBadlands(float f, float g, boolean bl) {
-		return createBadlands(ConfiguredSurfaceBuilders.field_26318, f, g, bl, false);
+		return createBadlands(ConfiguredSurfaceBuilders.BADLANDS, f, g, bl, false);
 	}
 
 	public static Biome createWoodedBadlandsPlateau(float f, float g) {
-		return createBadlands(ConfiguredSurfaceBuilders.field_26340, f, g, true, true);
+		return createBadlands(ConfiguredSurfaceBuilders.WOODED_BADLANDS, f, g, true, true);
 	}
 
 	public static Biome createErodedBadlands() {
-		return createBadlands(ConfiguredSurfaceBuilders.field_26323, 0.1F, 0.2F, true, false);
+		return createBadlands(ConfiguredSurfaceBuilders.ERODED_BADLANDS, 0.1F, 0.2F, true, false);
 	}
 
 	private static Biome createOcean(SpawnSettings.Builder builder, int waterColor, int waterFogColor, boolean deep, GenerationSettings.Builder builder2) {
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9367)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.OCEAN)
 			.depth(deep ? -1.8F : -1.0F)
 			.scale(0.1F)
 			.temperature(0.5F)
@@ -603,10 +603,10 @@ public class DefaultBiomeCreator {
 		ConfiguredSurfaceBuilder<TernarySurfaceConfig> configuredSurfaceBuilder, boolean bl, boolean bl2, boolean bl3
 	) {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(configuredSurfaceBuilder);
-		ConfiguredStructureFeature<?, ?> configuredStructureFeature = bl2 ? ConfiguredStructureFeatures.field_26305 : ConfiguredStructureFeatures.field_26304;
+		ConfiguredStructureFeature<?, ?> configuredStructureFeature = bl2 ? ConfiguredStructureFeatures.OCEAN_RUIN_WARM : ConfiguredStructureFeatures.OCEAN_RUIN_COLD;
 		if (bl3) {
 			if (bl) {
-				builder.structureFeature(ConfiguredStructureFeatures.field_26303);
+				builder.structureFeature(ConfiguredStructureFeatures.MONUMENT);
 			}
 
 			DefaultBiomeFeatures.addOceanStructures(builder);
@@ -614,13 +614,13 @@ public class DefaultBiomeCreator {
 		} else {
 			builder.structureFeature(configuredStructureFeature);
 			if (bl) {
-				builder.structureFeature(ConfiguredStructureFeatures.field_26303);
+				builder.structureFeature(ConfiguredStructureFeatures.MONUMENT);
 			}
 
 			DefaultBiomeFeatures.addOceanStructures(builder);
 		}
 
-		builder.structureFeature(ConfiguredStructureFeatures.field_26290);
+		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_OCEAN);
 		DefaultBiomeFeatures.addOceanCarvers(builder);
 		DefaultBiomeFeatures.addDefaultLakes(builder);
 		DefaultBiomeFeatures.addDungeons(builder);
@@ -639,10 +639,10 @@ public class DefaultBiomeCreator {
 	public static Biome createColdOcean(boolean deep) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addOceanMobs(builder, 3, 4, 15);
-		builder.spawn(SpawnGroup.field_24460, new SpawnSettings.SpawnEntry(EntityType.field_6073, 15, 1, 5));
+		builder.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.SALMON, 15, 1, 5));
 		boolean bl = !deep;
-		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.field_26327, deep, false, bl);
-		builder2.feature(GenerationStep.Feature.field_13178, deep ? ConfiguredFeatures.field_26136 : ConfiguredFeatures.field_26135);
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.GRASS, deep, false, bl);
+		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP_COLD : ConfiguredFeatures.SEAGRASS_COLD);
 		DefaultBiomeFeatures.addSeagrassOnStone(builder2);
 		DefaultBiomeFeatures.addKelp(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
@@ -652,9 +652,9 @@ public class DefaultBiomeCreator {
 	public static Biome createNormalOcean(boolean deep) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addOceanMobs(builder, 1, 4, 10);
-		builder.spawn(SpawnGroup.field_6300, new SpawnSettings.SpawnEntry(EntityType.field_6087, 1, 1, 2));
-		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.field_26327, deep, false, true);
-		builder2.feature(GenerationStep.Feature.field_13178, deep ? ConfiguredFeatures.field_26139 : ConfiguredFeatures.field_26137);
+		builder.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.DOLPHIN, 1, 1, 2));
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.GRASS, deep, false, true);
+		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP : ConfiguredFeatures.SEAGRASS_NORMAL);
 		DefaultBiomeFeatures.addSeagrassOnStone(builder2);
 		DefaultBiomeFeatures.addKelp(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
@@ -669,11 +669,11 @@ public class DefaultBiomeCreator {
 			DefaultBiomeFeatures.addOceanMobs(builder, 10, 2, 15);
 		}
 
-		builder.spawn(SpawnGroup.field_24460, new SpawnSettings.SpawnEntry(EntityType.field_6062, 5, 1, 3))
-			.spawn(SpawnGroup.field_24460, new SpawnSettings.SpawnEntry(EntityType.field_6111, 25, 8, 8))
-			.spawn(SpawnGroup.field_6300, new SpawnSettings.SpawnEntry(EntityType.field_6087, 2, 1, 2));
-		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.field_26334, deep, true, false);
-		builder2.feature(GenerationStep.Feature.field_13178, deep ? ConfiguredFeatures.field_25950 : ConfiguredFeatures.field_25949);
+		builder.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.PUFFERFISH, 5, 1, 3))
+			.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.TROPICAL_FISH, 25, 8, 8))
+			.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.DOLPHIN, 2, 1, 2));
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.OCEAN_SAND, deep, true, false);
+		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP_WARM : ConfiguredFeatures.SEAGRASS_WARM);
 		if (deep) {
 			DefaultBiomeFeatures.addSeagrassOnStone(builder2);
 		}
@@ -684,12 +684,12 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createWarmOcean() {
-		SpawnSettings.Builder builder = new SpawnSettings.Builder().spawn(SpawnGroup.field_24460, new SpawnSettings.SpawnEntry(EntityType.field_6062, 15, 1, 3));
+		SpawnSettings.Builder builder = new SpawnSettings.Builder().spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.PUFFERFISH, 15, 1, 3));
 		DefaultBiomeFeatures.addWarmOceanMobs(builder, 10, 4);
-		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.field_26325, false, true, false)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26110)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_25949)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_25951);
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.FULL_SAND, false, true, false)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARM_OCEAN_VEGETATION)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_WARM)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEA_PICKLE);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return createOcean(builder, 4445678, 270131, false, builder2);
 	}
@@ -697,9 +697,9 @@ public class DefaultBiomeCreator {
 	public static Biome createDeepWarmOcean() {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addWarmOceanMobs(builder, 5, 1);
-		builder.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6123, 5, 1, 1));
-		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.field_26325, true, true, false)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_25950);
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.DROWNED, 5, 1, 1));
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.FULL_SAND, true, true, false)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_DEEP_WARM);
 		DefaultBiomeFeatures.addSeagrassOnStone(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return createOcean(builder, 4445678, 270131, true, builder2);
@@ -707,20 +707,20 @@ public class DefaultBiomeCreator {
 
 	public static Biome createFrozenOcean(boolean monument) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder()
-			.spawn(SpawnGroup.field_6300, new SpawnSettings.SpawnEntry(EntityType.field_6114, 1, 1, 4))
-			.spawn(SpawnGroup.field_24460, new SpawnSettings.SpawnEntry(EntityType.field_6073, 15, 1, 5))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6042, 1, 1, 2));
+			.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.SQUID, 1, 1, 4))
+			.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.SALMON, 15, 1, 5))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.POLAR_BEAR, 1, 1, 2));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
-		builder.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6123, 5, 1, 1));
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.DROWNED, 5, 1, 1));
 		float f = monument ? 0.5F : 0.0F;
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26324);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26304);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.FROZEN_OCEAN);
+		builder2.structureFeature(ConfiguredStructureFeatures.OCEAN_RUIN_COLD);
 		if (monument) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26303);
+			builder2.structureFeature(ConfiguredStructureFeatures.MONUMENT);
 		}
 
 		DefaultBiomeFeatures.addOceanStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26290);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_OCEAN);
 		DefaultBiomeFeatures.addOceanCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addIcebergs(builder2);
@@ -737,12 +737,12 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(monument ? Biome.Precipitation.field_9382 : Biome.Precipitation.field_9383)
-			.category(Biome.Category.field_9367)
+			.precipitation(monument ? Biome.Precipitation.RAIN : Biome.Precipitation.SNOW)
+			.category(Biome.Category.OCEAN)
 			.depth(monument ? -1.8F : -1.0F)
 			.scale(0.1F)
 			.temperature(f)
-			.temperatureModifier(Biome.TemperatureModifier.field_26408)
+			.temperatureModifier(Biome.TemperatureModifier.FROZEN)
 			.downfall(0.5F)
 			.effects(
 				new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(f)).moodSound(BiomeMoodSound.CAVE).build()
@@ -753,14 +753,14 @@ public class DefaultBiomeCreator {
 	}
 
 	private static Biome createForest(float f, float g, boolean bl, SpawnSettings.Builder builder) {
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26327);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		if (bl) {
-			builder2.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26106);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FOREST_FLOWER_VEGETATION_COMMON);
 		} else {
 			DefaultBiomeFeatures.addForestFlowers(builder2);
 		}
@@ -769,8 +769,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (bl) {
-			builder2.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26111);
-			builder2.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26102);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FOREST_FLOWER_TREES);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FLOWER_FOREST);
 			DefaultBiomeFeatures.addDefaultGrass(builder2);
 		} else {
 			DefaultBiomeFeatures.addForestTrees(builder2);
@@ -783,8 +783,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9370)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.FOREST)
 			.depth(f)
 			.scale(g)
 			.temperature(0.7F)
@@ -805,39 +805,39 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createNormalForest(float depth, float scale) {
-		SpawnSettings.Builder builder = method_31069().spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6055, 5, 4, 4)).method_31083();
+		SpawnSettings.Builder builder = method_31069().spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4)).playerSpawnFriendly();
 		return createForest(depth, scale, false, builder);
 	}
 
 	public static Biome createFlowerForest() {
-		SpawnSettings.Builder builder = method_31069().spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6140, 4, 2, 3));
+		SpawnSettings.Builder builder = method_31069().spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
 		return createForest(0.1F, 0.4F, true, builder);
 	}
 
 	public static Biome createTaiga(float f, float g, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addFarmAnimals(builder);
-		builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6055, 8, 4, 4))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6140, 4, 2, 3))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_17943, 8, 2, 4));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 4))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
 		if (!bl && !bl2) {
-			builder.method_31083();
+			builder.playerSpawnFriendly();
 		}
 
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		float h = bl ? -0.5F : 0.25F;
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26327);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		if (bl3) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26315);
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26292);
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_TAIGA);
+			builder2.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		}
 
 		if (bl4) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26298);
+			builder2.structureFeature(ConfiguredStructureFeatures.IGLOO);
 		}
 
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(bl2 ? ConfiguredStructureFeatures.field_26289 : ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(bl2 ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -859,8 +859,8 @@ public class DefaultBiomeCreator {
 
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(bl ? Biome.Precipitation.field_9383 : Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9361)
+			.precipitation(bl ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
+			.category(Biome.Category.TAIGA)
 			.depth(f)
 			.scale(g)
 			.temperature(h)
@@ -883,14 +883,16 @@ public class DefaultBiomeCreator {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addFarmAnimals(builder);
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26327);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26295);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+		builder2.structureFeature(ConfiguredStructureFeatures.MANSION);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
-		builder2.feature(GenerationStep.Feature.field_13178, bl ? ConfiguredFeatures.field_26109 : ConfiguredFeatures.field_26108);
+		builder2.feature(
+			GenerationStep.Feature.VEGETAL_DECORATION, bl ? ConfiguredFeatures.DARK_FOREST_VEGETATION_RED : ConfiguredFeatures.DARK_FOREST_VEGETATION_BROWN
+		);
 		DefaultBiomeFeatures.addForestFlowers(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
@@ -902,8 +904,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9370)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.FOREST)
 			.depth(f)
 			.scale(g)
 			.temperature(0.7F)
@@ -914,7 +916,7 @@ public class DefaultBiomeCreator {
 					.waterFogColor(329011)
 					.fogColor(12638463)
 					.skyColor(getSkyColor(0.7F))
-					.grassColorModifier(BiomeEffects.GrassColorModifier.field_26427)
+					.grassColorModifier(BiomeEffects.GrassColorModifier.DARK_FOREST)
 					.moodSound(BiomeMoodSound.CAVE)
 					.build()
 			)
@@ -927,14 +929,14 @@ public class DefaultBiomeCreator {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addFarmAnimals(builder);
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
-		builder.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6069, 1, 1, 1));
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26338);
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SLIME, 1, 1, 1));
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.SWAMP);
 		if (!bl) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26301);
+			builder2.structureFeature(ConfiguredStructureFeatures.SWAMP_HUT);
 		}
 
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26293);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26288);
+		builder2.structureFeature(ConfiguredStructureFeatures.MINESHAFT);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_SWAMP);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		if (!bl) {
 			DefaultBiomeFeatures.addFossils(builder2);
@@ -952,13 +954,13 @@ public class DefaultBiomeCreator {
 		if (bl) {
 			DefaultBiomeFeatures.addFossils(builder2);
 		} else {
-			builder2.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26140);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_SWAMP);
 		}
 
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9364)
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.SWAMP)
 			.depth(f)
 			.scale(g)
 			.temperature(0.8F)
@@ -970,7 +972,7 @@ public class DefaultBiomeCreator {
 					.fogColor(12638463)
 					.skyColor(getSkyColor(0.8F))
 					.foliageColor(6975545)
-					.grassColorModifier(BiomeEffects.GrassColorModifier.field_26428)
+					.grassColorModifier(BiomeEffects.GrassColorModifier.SWAMP)
 					.moodSound(BiomeMoodSound.CAVE)
 					.build()
 			)
@@ -983,23 +985,23 @@ public class DefaultBiomeCreator {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder().creatureSpawnProbability(0.07F);
 		DefaultBiomeFeatures.addSnowyMobs(builder);
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder()
-			.surfaceBuilder(bl ? ConfiguredSurfaceBuilders.field_26329 : ConfiguredSurfaceBuilders.field_26327);
+			.surfaceBuilder(bl ? ConfiguredSurfaceBuilders.ICE_SPIKES : ConfiguredSurfaceBuilders.GRASS);
 		if (!bl && !bl2) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26314).structureFeature(ConfiguredStructureFeatures.field_26298);
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_SNOWY).structureFeature(ConfiguredStructureFeatures.IGLOO);
 		}
 
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
 		if (!bl && !bl2) {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26292);
+			builder2.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		}
 
-		builder2.structureFeature(bl2 ? ConfiguredStructureFeatures.field_26289 : ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(bl2 ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		if (bl) {
-			builder2.feature(GenerationStep.Feature.field_13173, ConfiguredFeatures.field_25952);
-			builder2.feature(GenerationStep.Feature.field_13173, ConfiguredFeatures.field_25953);
+			builder2.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.ICE_SPIKE);
+			builder2.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.ICE_PATCH);
 		}
 
 		DefaultBiomeFeatures.addMineables(builder2);
@@ -1013,8 +1015,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9383)
-			.category(Biome.Category.field_9362)
+			.precipitation(Biome.Precipitation.SNOW)
+			.category(Biome.Category.ICY)
 			.depth(f)
 			.scale(g)
 			.temperature(0.0F)
@@ -1029,13 +1031,13 @@ public class DefaultBiomeCreator {
 
 	public static Biome createRiver(float depth, float scale, float temperature, int i, boolean bl) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder()
-			.spawn(SpawnGroup.field_6300, new SpawnSettings.SpawnEntry(EntityType.field_6114, 2, 1, 4))
-			.spawn(SpawnGroup.field_24460, new SpawnSettings.SpawnEntry(EntityType.field_6073, 5, 1, 5));
+			.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.SQUID, 2, 1, 4))
+			.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.SALMON, 5, 1, 5));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
-		builder.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6123, bl ? 1 : 100, 1, 1));
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26327);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26293);
-		builder2.structureFeature(ConfiguredStructureFeatures.field_26316);
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.DROWNED, bl ? 1 : 100, 1, 1));
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+		builder2.structureFeature(ConfiguredStructureFeatures.MINESHAFT);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -1049,13 +1051,13 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultVegetation(builder2);
 		DefaultBiomeFeatures.addSprings(builder2);
 		if (!bl) {
-			builder2.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26138);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_RIVER);
 		}
 
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(bl ? Biome.Precipitation.field_9383 : Biome.Precipitation.field_9382)
-			.category(Biome.Category.field_9369)
+			.precipitation(bl ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
+			.category(Biome.Category.RIVER)
 			.depth(depth)
 			.scale(scale)
 			.temperature(temperature)
@@ -1071,21 +1073,21 @@ public class DefaultBiomeCreator {
 	public static Biome createBeach(float depth, float scale, float temperature, float downfall, int waterColor, boolean snowy, boolean stony) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		if (!stony && !snowy) {
-			builder.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_6113, 5, 2, 5));
+			builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.TURTLE, 5, 2, 5));
 		}
 
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder()
-			.surfaceBuilder(stony ? ConfiguredSurfaceBuilders.field_26337 : ConfiguredSurfaceBuilders.field_26321);
+			.surfaceBuilder(stony ? ConfiguredSurfaceBuilders.STONE : ConfiguredSurfaceBuilders.DESERT);
 		if (stony) {
 			DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
 		} else {
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26293);
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26309);
-			builder2.structureFeature(ConfiguredStructureFeatures.field_26300);
+			builder2.structureFeature(ConfiguredStructureFeatures.MINESHAFT);
+			builder2.structureFeature(ConfiguredStructureFeatures.BURIED_TREASURE);
+			builder2.structureFeature(ConfiguredStructureFeatures.SHIPWRECK_BEACHED);
 		}
 
-		builder2.structureFeature(stony ? ConfiguredStructureFeatures.field_26289 : ConfiguredStructureFeatures.field_26316);
+		builder2.structureFeature(stony ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
@@ -1099,8 +1101,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
 		return new Biome.Builder()
-			.precipitation(snowy ? Biome.Precipitation.field_9383 : Biome.Precipitation.field_9382)
-			.category(stony ? Biome.Category.field_9371 : Biome.Category.field_9363)
+			.precipitation(snowy ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
+			.category(stony ? Biome.Category.NONE : Biome.Category.BEACH)
 			.depth(depth)
 			.scale(scale)
 			.temperature(temperature)
@@ -1120,11 +1122,11 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createTheVoid() {
-		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.field_26333);
-		builder.feature(GenerationStep.Feature.field_13179, ConfiguredFeatures.field_25971);
+		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.NOPE);
+		builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, ConfiguredFeatures.VOID_START_PLATFORM);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9371)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NONE)
 			.depth(0.1F)
 			.scale(0.2F)
 			.temperature(0.5F)
@@ -1139,34 +1141,34 @@ public class DefaultBiomeCreator {
 
 	public static Biome createNetherWastes() {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6107, 50, 4, 4))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6050, 100, 4, 4))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6102, 2, 4, 4))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6091, 1, 4, 4))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_22281, 15, 4, 4))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_23214, 60, 1, 2))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 50, 4, 4))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 100, 4, 4))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 2, 4, 4))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.PIGLIN, 15, 4, 4))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.build();
 		GenerationSettings.Builder builder = new GenerationSettings.Builder()
-			.surfaceBuilder(ConfiguredSurfaceBuilders.field_26332)
-			.structureFeature(ConfiguredStructureFeatures.field_26291)
-			.structureFeature(ConfiguredStructureFeatures.field_26306)
-			.structureFeature(ConfiguredStructureFeatures.field_26310)
-			.carver(GenerationStep.Carver.field_13169, ConfiguredCarvers.field_25947)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26003);
+			.surfaceBuilder(ConfiguredSurfaceBuilders.NETHER)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.structureFeature(ConfiguredStructureFeatures.BASTION_REMNANT)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
 		DefaultBiomeFeatures.addDefaultMushrooms(builder);
-		builder.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26007)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26014)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26015)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26127)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26128)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_25996)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_25997)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26059)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26005);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BROWN_MUSHROOM_NETHER)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.RED_MUSHROOM_NETHER)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED);
 		DefaultBiomeFeatures.addNetherMineables(builder);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9366)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
 			.depth(0.1F)
 			.scale(0.2F)
 			.temperature(2.0F)
@@ -1177,10 +1179,10 @@ public class DefaultBiomeCreator {
 					.waterFogColor(329011)
 					.fogColor(3344392)
 					.skyColor(getSkyColor(2.0F))
-					.loopSound(SoundEvents.field_22455)
-					.moodSound(new BiomeMoodSound(SoundEvents.field_22456, 6000, 8, 2.0))
-					.additionsSound(new BiomeAdditionsSound(SoundEvents.field_22454, 0.0111))
-					.music(MusicType.createIngameMusic(SoundEvents.field_23794))
+					.loopSound(SoundEvents.AMBIENT_NETHER_WASTES_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_NETHER_WASTES_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_NETHER_WASTES))
 					.build()
 			)
 			.spawnSettings(spawnSettings)
@@ -1192,37 +1194,37 @@ public class DefaultBiomeCreator {
 		double d = 0.7;
 		double e = 0.15;
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6137, 20, 5, 5))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6107, 50, 4, 4))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6091, 1, 4, 4))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_23214, 60, 1, 2))
-			.spawnCost(EntityType.field_6137, 0.7, 0.15)
-			.spawnCost(EntityType.field_6107, 0.7, 0.15)
-			.spawnCost(EntityType.field_6091, 0.7, 0.15)
-			.spawnCost(EntityType.field_23214, 0.7, 0.15)
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SKELETON, 20, 5, 5))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 50, 4, 4))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
+			.spawnCost(EntityType.SKELETON, 0.7, 0.15)
+			.spawnCost(EntityType.GHAST, 0.7, 0.15)
+			.spawnCost(EntityType.ENDERMAN, 0.7, 0.15)
+			.spawnCost(EntityType.STRIDER, 0.7, 0.15)
 			.build();
 		GenerationSettings.Builder builder = new GenerationSettings.Builder()
-			.surfaceBuilder(ConfiguredSurfaceBuilders.field_26336)
-			.structureFeature(ConfiguredStructureFeatures.field_26306)
-			.structureFeature(ConfiguredStructureFeatures.field_26307)
-			.structureFeature(ConfiguredStructureFeatures.field_26291)
-			.structureFeature(ConfiguredStructureFeatures.field_26310)
-			.carver(GenerationStep.Carver.field_13169, ConfiguredCarvers.field_25947)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26003)
-			.feature(GenerationStep.Feature.field_13171, ConfiguredFeatures.field_26134)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26007)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26127)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26128)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26018)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26014)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26015)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26059)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26005)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26060);
+			.surfaceBuilder(ConfiguredSurfaceBuilders.SOUL_SAND_VALLEY)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.structureFeature(ConfiguredStructureFeatures.NETHER_FOSSIL)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.structureFeature(ConfiguredStructureFeatures.BASTION_REMNANT)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA)
+			.feature(GenerationStep.Feature.LOCAL_MODIFICATIONS, ConfiguredFeatures.BASALT_PILLAR)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_CRIMSON_ROOTS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_SOUL_SAND);
 		DefaultBiomeFeatures.addNetherMineables(builder);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9366)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
 			.depth(0.1F)
 			.scale(0.2F)
 			.temperature(2.0F)
@@ -1233,11 +1235,11 @@ public class DefaultBiomeCreator {
 					.waterFogColor(329011)
 					.fogColor(1787717)
 					.skyColor(getSkyColor(2.0F))
-					.particleConfig(new BiomeParticleConfig(ParticleTypes.field_22247, 0.00625F))
-					.loopSound(SoundEvents.field_22458)
-					.moodSound(new BiomeMoodSound(SoundEvents.field_22459, 6000, 8, 2.0))
-					.additionsSound(new BiomeAdditionsSound(SoundEvents.field_22457, 0.0111))
-					.music(MusicType.createIngameMusic(SoundEvents.field_23795))
+					.particleConfig(new BiomeParticleConfig(ParticleTypes.ASH, 0.00625F))
+					.loopSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_SOUL_SAND_VALLEY))
 					.build()
 			)
 			.spawnSettings(spawnSettings)
@@ -1247,36 +1249,36 @@ public class DefaultBiomeCreator {
 
 	public static Biome createBasaltDeltas() {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6107, 40, 1, 1))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6102, 100, 2, 5))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_23214, 60, 1, 2))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 40, 1, 1))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 100, 2, 5))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.build();
 		GenerationSettings.Builder builder = new GenerationSettings.Builder()
-			.surfaceBuilder(ConfiguredSurfaceBuilders.field_26319)
-			.structureFeature(ConfiguredStructureFeatures.field_26291)
-			.carver(GenerationStep.Carver.field_13169, ConfiguredCarvers.field_25947)
-			.structureFeature(ConfiguredStructureFeatures.field_26306)
-			.feature(GenerationStep.Feature.field_13173, ConfiguredFeatures.field_26122)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26002)
-			.feature(GenerationStep.Feature.field_13173, ConfiguredFeatures.field_26123)
-			.feature(GenerationStep.Feature.field_13173, ConfiguredFeatures.field_26124)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26125)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26126)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26004)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26014)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26015)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26127)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26128)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_25996)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_25997)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26059)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26006)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26061)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26062);
+			.surfaceBuilder(ConfiguredSurfaceBuilders.BASALT_DELTAS)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.DELTA)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA_DOUBLE)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.SMALL_BASALT_COLUMNS)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.LARGE_BASALT_COLUMNS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BASALT_BLOBS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BLACKSTONE_BLOBS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_DELTA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BROWN_MUSHROOM_NETHER)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.RED_MUSHROOM_NETHER)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED_DOUBLE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_GOLD_DELTAS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_QUARTZ_DELTAS);
 		DefaultBiomeFeatures.addAncientDebris(builder);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9366)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
 			.depth(0.1F)
 			.scale(0.2F)
 			.temperature(2.0F)
@@ -1287,11 +1289,11 @@ public class DefaultBiomeCreator {
 					.waterFogColor(4341314)
 					.fogColor(6840176)
 					.skyColor(getSkyColor(2.0F))
-					.particleConfig(new BiomeParticleConfig(ParticleTypes.field_23956, 0.118093334F))
-					.loopSound(SoundEvents.field_23791)
-					.moodSound(new BiomeMoodSound(SoundEvents.field_23792, 6000, 8, 2.0))
-					.additionsSound(new BiomeAdditionsSound(SoundEvents.field_23790, 0.0111))
-					.music(MusicType.createIngameMusic(SoundEvents.field_23793))
+					.particleConfig(new BiomeParticleConfig(ParticleTypes.WHITE_ASH, 0.118093334F))
+					.loopSound(SoundEvents.AMBIENT_BASALT_DELTAS_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_BASALT_DELTAS_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_BASALT_DELTAS_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_BASALT_DELTAS))
 					.build()
 			)
 			.spawnSettings(spawnSettings)
@@ -1301,32 +1303,32 @@ public class DefaultBiomeCreator {
 
 	public static Biome createCrimsonForest() {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6050, 1, 2, 4))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_21973, 9, 3, 4))
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_22281, 5, 3, 4))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_23214, 60, 1, 2))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 1, 2, 4))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.HOGLIN, 9, 3, 4))
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.PIGLIN, 5, 3, 4))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.build();
 		GenerationSettings.Builder builder = new GenerationSettings.Builder()
-			.surfaceBuilder(ConfiguredSurfaceBuilders.field_26320)
-			.structureFeature(ConfiguredStructureFeatures.field_26291)
-			.carver(GenerationStep.Carver.field_13169, ConfiguredCarvers.field_25947)
-			.structureFeature(ConfiguredStructureFeatures.field_26306)
-			.structureFeature(ConfiguredStructureFeatures.field_26310)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26003);
+			.surfaceBuilder(ConfiguredSurfaceBuilders.CRIMSON_FOREST)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.structureFeature(ConfiguredStructureFeatures.BASTION_REMNANT)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
 		DefaultBiomeFeatures.addDefaultMushrooms(builder);
-		builder.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26007)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26014)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26127)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26128)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26059)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26005)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26133)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26030)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26129);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WEEPING_VINES)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CRIMSON_FUNGI)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CRIMSON_FOREST_VEGETATION);
 		DefaultBiomeFeatures.addNetherMineables(builder);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9366)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
 			.depth(0.1F)
 			.scale(0.2F)
 			.temperature(2.0F)
@@ -1337,11 +1339,11 @@ public class DefaultBiomeCreator {
 					.waterFogColor(329011)
 					.fogColor(3343107)
 					.skyColor(getSkyColor(2.0F))
-					.particleConfig(new BiomeParticleConfig(ParticleTypes.field_22248, 0.025F))
-					.loopSound(SoundEvents.field_22452)
-					.moodSound(new BiomeMoodSound(SoundEvents.field_22453, 6000, 8, 2.0))
-					.additionsSound(new BiomeAdditionsSound(SoundEvents.field_22451, 0.0111))
-					.music(MusicType.createIngameMusic(SoundEvents.field_23796))
+					.particleConfig(new BiomeParticleConfig(ParticleTypes.CRIMSON_SPORE, 0.025F))
+					.loopSound(SoundEvents.AMBIENT_CRIMSON_FOREST_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_CRIMSON_FOREST_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_CRIMSON_FOREST_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_CRIMSON_FOREST))
 					.build()
 			)
 			.spawnSettings(spawnSettings)
@@ -1351,33 +1353,33 @@ public class DefaultBiomeCreator {
 
 	public static Biome createWarpedForest() {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
-			.spawn(SpawnGroup.field_6302, new SpawnSettings.SpawnEntry(EntityType.field_6091, 1, 4, 4))
-			.spawn(SpawnGroup.field_6294, new SpawnSettings.SpawnEntry(EntityType.field_23214, 60, 1, 2))
-			.spawnCost(EntityType.field_6091, 1.0, 0.12)
+			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
+			.spawnCost(EntityType.ENDERMAN, 1.0, 0.12)
 			.build();
 		GenerationSettings.Builder builder = new GenerationSettings.Builder()
-			.surfaceBuilder(ConfiguredSurfaceBuilders.field_26339)
-			.structureFeature(ConfiguredStructureFeatures.field_26306)
-			.structureFeature(ConfiguredStructureFeatures.field_26310)
-			.structureFeature(ConfiguredStructureFeatures.field_26291)
-			.carver(GenerationStep.Carver.field_13169, ConfiguredCarvers.field_25947)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26003);
+			.surfaceBuilder(ConfiguredSurfaceBuilders.WARPED_FOREST)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.structureFeature(ConfiguredStructureFeatures.BASTION_REMNANT)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
 		DefaultBiomeFeatures.addDefaultMushrooms(builder);
-		builder.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26007)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26014)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26015)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26127)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26128)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26059)
-			.feature(GenerationStep.Feature.field_13177, ConfiguredFeatures.field_26005)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26032)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26130)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26131)
-			.feature(GenerationStep.Feature.field_13178, ConfiguredFeatures.field_26132);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARPED_FUNGI)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARPED_FOREST_VEGETATION)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.NETHER_SPROUTS)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TWISTING_VINES);
 		DefaultBiomeFeatures.addNetherMineables(builder);
 		return new Biome.Builder()
-			.precipitation(Biome.Precipitation.field_9384)
-			.category(Biome.Category.field_9366)
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
 			.depth(0.1F)
 			.scale(0.2F)
 			.temperature(2.0F)
@@ -1388,11 +1390,11 @@ public class DefaultBiomeCreator {
 					.waterFogColor(329011)
 					.fogColor(1705242)
 					.skyColor(getSkyColor(2.0F))
-					.particleConfig(new BiomeParticleConfig(ParticleTypes.field_22249, 0.01428F))
-					.loopSound(SoundEvents.field_22461)
-					.moodSound(new BiomeMoodSound(SoundEvents.field_22462, 6000, 8, 2.0))
-					.additionsSound(new BiomeAdditionsSound(SoundEvents.field_22460, 0.0111))
-					.music(MusicType.createIngameMusic(SoundEvents.field_23797))
+					.particleConfig(new BiomeParticleConfig(ParticleTypes.WARPED_SPORE, 0.01428F))
+					.loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_WARPED_FOREST))
 					.build()
 			)
 			.spawnSettings(spawnSettings)

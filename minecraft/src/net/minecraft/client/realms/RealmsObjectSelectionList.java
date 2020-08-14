@@ -62,7 +62,7 @@ public abstract class RealmsObjectSelectionList<E extends AlwaysSelectedEntryLis
 		return super.getRowLeft();
 	}
 
-	public int method_25491(E entry) {
+	public int addEntry(E entry) {
 		return super.addEntry(entry);
 	}
 

@@ -39,7 +39,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.titleLabel = new RealmsLabel(new TranslatableText("mco.reset.world.generate"), this.width / 2, 17, 16777215);
 		this.addChild(this.titleLabel);
 		this.seedEdit = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, new TranslatableText("mco.reset.world.seed"));
@@ -70,7 +70,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

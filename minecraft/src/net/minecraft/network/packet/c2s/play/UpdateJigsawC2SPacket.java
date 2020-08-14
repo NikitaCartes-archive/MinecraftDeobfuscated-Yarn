@@ -40,7 +40,7 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.targetPool = buf.readIdentifier();
 		this.pool = buf.readIdentifier();
 		this.finalState = buf.readString(32767);
-		this.jointType = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(buf.readString(32767)).orElse(JigsawBlockEntity.Joint.field_23330);
+		this.jointType = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(buf.readString(32767)).orElse(JigsawBlockEntity.Joint.ALIGNED);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeString(this.jointType.asString());
 	}
 
-	public void method_16392(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onJigsawUpdate(this);
 	}
 

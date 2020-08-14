@@ -17,7 +17,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean method_17703(CraftingInventory craftingInventory, World world) {
+	public boolean matches(CraftingInventory craftingInventory, World world) {
 		DyeColor dyeColor = null;
 		ItemStack itemStack = null;
 		ItemStack itemStack2 = null;
@@ -57,7 +57,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		return itemStack != null && itemStack2 != null;
 	}
 
-	public ItemStack method_17702(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory) {
 		for (int i = 0; i < craftingInventory.size(); i++) {
 			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
@@ -73,7 +73,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		return ItemStack.EMPTY;
 	}
 
-	public DefaultedList<ItemStack> method_17704(CraftingInventory craftingInventory) {
+	public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {

@@ -108,15 +108,15 @@ public abstract class ProjectileEntity extends Entity {
 		this.setVelocity((double)f, (double)g, (double)h, modifierZ, modifierXYZ);
 		Vec3d vec3d = this.getVelocity();
 		Vec3d vec3d2 = entity.isOnGround() ? entity.getVelocity() : entity.getVelocity().multiply(1.0, 0.0, 1.0);
-		Vec3d vec3d3 = vec3d2.method_31222(vec3d);
+		Vec3d vec3d3 = vec3d2.method_31253(vec3d);
 		this.setVelocity(vec3d.add(vec3d3));
 	}
 
 	protected void onCollision(HitResult hitResult) {
 		HitResult.Type type = hitResult.getType();
-		if (type == HitResult.Type.field_1331) {
+		if (type == HitResult.Type.ENTITY) {
 			this.onEntityHit((EntityHitResult)hitResult);
-		} else if (type == HitResult.Type.field_1332) {
+		} else if (type == HitResult.Type.BLOCK) {
 			this.onBlockHit((BlockHitResult)hitResult);
 		}
 	}

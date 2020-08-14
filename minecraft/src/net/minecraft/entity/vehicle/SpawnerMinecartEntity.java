@@ -33,17 +33,17 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public SpawnerMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6142, world, x, y, z);
+		super(EntityType.SPAWNER_MINECART, world, x, y, z);
 	}
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.field_7680;
+		return AbstractMinecartEntity.Type.SPAWNER;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10260.getDefaultState();
+		return Blocks.SPAWNER.getDefaultState();
 	}
 
 	@Override

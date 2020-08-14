@@ -7,9 +7,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 
 public enum ChatVisibility {
-	field_7538(0, "options.chat.visibility.full"),
-	field_7539(1, "options.chat.visibility.system"),
-	field_7536(2, "options.chat.visibility.hidden");
+	FULL(0, "options.chat.visibility.full"),
+	SYSTEM(1, "options.chat.visibility.system"),
+	HIDDEN(2, "options.chat.visibility.hidden");
 
 	private static final ChatVisibility[] VALUES = (ChatVisibility[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(ChatVisibility::getId))

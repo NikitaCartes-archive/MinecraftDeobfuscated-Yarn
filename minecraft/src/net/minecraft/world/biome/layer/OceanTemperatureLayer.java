@@ -5,7 +5,7 @@ import net.minecraft.world.biome.layer.type.InitLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum OceanTemperatureLayer implements InitLayer {
-	field_16105;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource context, int x, int y) {

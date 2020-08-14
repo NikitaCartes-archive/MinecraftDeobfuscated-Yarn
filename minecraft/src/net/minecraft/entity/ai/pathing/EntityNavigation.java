@@ -48,7 +48,7 @@ public abstract class EntityNavigation {
 	public EntityNavigation(MobEntity mob, World world) {
 		this.entity = mob;
 		this.world = world;
-		int i = MathHelper.floor(mob.getAttributeValue(EntityAttributes.field_23717) * 16.0);
+		int i = MathHelper.floor(mob.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 16.0);
 		this.pathNodeNavigator = this.createPathNodeNavigator(i);
 	}
 
@@ -124,7 +124,7 @@ public abstract class EntityNavigation {
 			return this.currentPath;
 		} else {
 			this.world.getProfiler().push("pathfind");
-			float f = (float)this.entity.getAttributeValue(EntityAttributes.field_23717);
+			float f = (float)this.entity.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
 			BlockPos blockPos = bl ? this.entity.getBlockPos().up() : this.entity.getBlockPos();
 			int i = (int)(f + (float)range);
 			ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-i, -i, -i), blockPos.add(i, i, i));
@@ -206,9 +206,7 @@ public abstract class EntityNavigation {
 				BlockPos blockPos = new BlockPos(vec3d);
 				this.entity
 					.getMoveControl()
-					.moveTo(
-						vec3d.x, this.world.getBlockState(blockPos.method_10074()).isAir() ? vec3d.y : LandPathNodeMaker.getFeetY(this.world, blockPos), vec3d.z, this.speed
-					);
+					.moveTo(vec3d.x, this.world.getBlockState(blockPos.down()).isAir() ? vec3d.y : LandPathNodeMaker.getFeetY(this.world, blockPos), vec3d.z, this.speed);
 			}
 		}
 	}
@@ -311,7 +309,7 @@ public abstract class EntityNavigation {
 				PathNode pathNode = this.currentPath.getNode(i);
 				PathNode pathNode2 = i + 1 < this.currentPath.getLength() ? this.currentPath.getNode(i + 1) : null;
 				BlockState blockState = this.world.getBlockState(new BlockPos(pathNode.x, pathNode.y, pathNode.z));
-				if (blockState.isOf(Blocks.field_10593)) {
+				if (blockState.isOf(Blocks.CAULDRON)) {
 					this.currentPath.setNode(i, pathNode.copyWithNewPosition(pathNode.x, pathNode.y + 1, pathNode.z));
 					if (pathNode2 != null && pathNode.y >= pathNode2.y) {
 						this.currentPath.setNode(i + 1, pathNode.copyWithNewPosition(pathNode2.x, pathNode.y + 1, pathNode2.z));
@@ -324,7 +322,7 @@ public abstract class EntityNavigation {
 	protected abstract boolean canPathDirectlyThrough(Vec3d origin, Vec3d target, int sizeX, int sizeY, int sizeZ);
 
 	public boolean isValidPosition(BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		return this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos);
 	}
 

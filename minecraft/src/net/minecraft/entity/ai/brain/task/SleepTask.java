@@ -18,7 +18,7 @@ public class SleepTask extends Task<LivingEntity> {
 	private long startTime;
 
 	public SleepTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18438, MemoryModuleState.field_18456, MemoryModuleType.field_20616, MemoryModuleState.field_18458));
+		super(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LAST_WOKEN, MemoryModuleState.REGISTERED));
 	}
 
 	@Override
@@ -27,11 +27,11 @@ public class SleepTask extends Task<LivingEntity> {
 			return false;
 		} else {
 			Brain<?> brain = entity.getBrain();
-			GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(MemoryModuleType.field_18438).get();
+			GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(MemoryModuleType.HOME).get();
 			if (world.getRegistryKey() != globalPos.getDimension()) {
 				return false;
 			} else {
-				Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.field_20616);
+				Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
 				if (optional.isPresent()) {
 					long l = world.getTime() - (Long)optional.get();
 					if (l > 0L && l < 100L) {
@@ -41,7 +41,7 @@ public class SleepTask extends Task<LivingEntity> {
 
 				BlockState blockState = world.getBlockState(globalPos.getPos());
 				return globalPos.getPos().isWithinDistance(entity.getPos(), 2.0)
-					&& blockState.getBlock().isIn(BlockTags.field_16443)
+					&& blockState.getBlock().isIn(BlockTags.BEDS)
 					&& !(Boolean)blockState.get(BedBlock.OCCUPIED);
 			}
 		}
@@ -49,14 +49,12 @@ public class SleepTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-		Optional<GlobalPos> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.field_18438);
+		Optional<GlobalPos> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.HOME);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
 			BlockPos blockPos = ((GlobalPos)optional.get()).getPos();
-			return entity.getBrain().hasActivity(Activity.field_18597)
-				&& entity.getY() > (double)blockPos.getY() + 0.4
-				&& blockPos.isWithinDistance(entity.getPos(), 1.14);
+			return entity.getBrain().hasActivity(Activity.REST) && entity.getY() > (double)blockPos.getY() + 0.4 && blockPos.isWithinDistance(entity.getPos(), 1.14);
 		}
 	}
 
@@ -64,7 +62,7 @@ public class SleepTask extends Task<LivingEntity> {
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		if (time > this.startTime) {
 			OpenDoorsTask.method_30760(world, entity, null, null);
-			entity.sleep(((GlobalPos)entity.getBrain().getOptionalMemory(MemoryModuleType.field_18438).get()).getPos());
+			entity.sleep(((GlobalPos)entity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get()).getPos());
 		}
 	}
 

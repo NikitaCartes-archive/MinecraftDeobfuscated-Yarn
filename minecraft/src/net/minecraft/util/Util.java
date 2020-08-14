@@ -213,17 +213,17 @@ public class Util {
 	public static Util.OperatingSystem getOperatingSystem() {
 		String string = System.getProperty("os.name").toLowerCase(Locale.ROOT);
 		if (string.contains("win")) {
-			return Util.OperatingSystem.field_1133;
+			return Util.OperatingSystem.WINDOWS;
 		} else if (string.contains("mac")) {
-			return Util.OperatingSystem.field_1137;
+			return Util.OperatingSystem.OSX;
 		} else if (string.contains("solaris")) {
-			return Util.OperatingSystem.field_1134;
+			return Util.OperatingSystem.SOLARIS;
 		} else if (string.contains("sunos")) {
-			return Util.OperatingSystem.field_1134;
+			return Util.OperatingSystem.SOLARIS;
 		} else if (string.contains("linux")) {
-			return Util.OperatingSystem.field_1135;
+			return Util.OperatingSystem.LINUX;
 		} else {
-			return string.contains("unix") ? Util.OperatingSystem.field_1135 : Util.OperatingSystem.field_1132;
+			return string.contains("unix") ? Util.OperatingSystem.LINUX : Util.OperatingSystem.UNKNOWN;
 		}
 	}
 
@@ -285,7 +285,7 @@ public class Util {
 	}
 
 	public static <K> Strategy<K> identityHashStrategy() {
-		return Util.IdentityHashStrategy.field_1130;
+		return Util.IdentityHashStrategy.INSTANCE;
 	}
 
 	public static <V> CompletableFuture<List<V>> combine(List<? extends CompletableFuture<? extends V>> futures) {
@@ -537,7 +537,7 @@ public class Util {
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {
-		field_1130;
+		INSTANCE;
 
 		@Override
 		public int hashCode(Object object) {
@@ -551,23 +551,23 @@ public class Util {
 	}
 
 	public static enum OperatingSystem {
-		field_1135,
-		field_1134,
-		field_1133 {
+		LINUX,
+		SOLARIS,
+		WINDOWS {
 			@Environment(EnvType.CLIENT)
 			@Override
 			protected String[] getURLOpenCommand(URL url) {
 				return new String[]{"rundll32", "url.dll,FileProtocolHandler", url.toString()};
 			}
 		},
-		field_1137 {
+		OSX {
 			@Environment(EnvType.CLIENT)
 			@Override
 			protected String[] getURLOpenCommand(URL url) {
 				return new String[]{"open", url.toString()};
 			}
 		},
-		field_1132;
+		UNKNOWN;
 
 		private OperatingSystem() {
 		}

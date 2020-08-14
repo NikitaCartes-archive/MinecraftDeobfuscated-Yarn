@@ -34,7 +34,7 @@ public class ShieldItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.field_8949;
+		return UseAction.BLOCK;
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class ShieldItem extends Item {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return ItemTags.field_15537.contains(ingredient.getItem()) || super.canRepair(stack, ingredient);
+		return ItemTags.PLANKS.contains(ingredient.getItem()) || super.canRepair(stack, ingredient);
 	}
 
 	public static DyeColor getColor(ItemStack stack) {

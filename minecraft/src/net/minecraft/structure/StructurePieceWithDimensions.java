@@ -19,8 +19,8 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
-		this.setOrientation(Direction.Type.field_11062.random(random));
-		if (this.getFacing().getAxis() == Direction.Axis.field_11051) {
+		this.setOrientation(Direction.Type.HORIZONTAL.random(random));
+		if (this.getFacing().getAxis() == Direction.Axis.Z) {
 			this.boundingBox = new BlockBox(x, y, z, x + width - 1, y + height - 1, z + depth - 1);
 		} else {
 			this.boundingBox = new BlockBox(x, y, z, x + depth - 1, y + height - 1, z + width - 1);
@@ -55,7 +55,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 				for (int m = this.boundingBox.minX; m <= this.boundingBox.maxX; m++) {
 					mutable.set(m, 64, l);
 					if (boundingBox.contains(mutable)) {
-						j += world.getTopPosition(Heightmap.Type.field_13203, mutable).getY();
+						j += world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
 						k++;
 					}
 				}

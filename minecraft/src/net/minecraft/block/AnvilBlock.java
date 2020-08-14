@@ -42,7 +42,7 @@ public class AnvilBlock extends FallingBlock {
 
 	public AnvilBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class AnvilBlock extends FallingBlock {
 			return ActionResult.SUCCESS;
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-			player.incrementStat(Stats.field_21778);
+			player.incrementStat(Stats.INTERACT_WITH_ANVIL);
 			return ActionResult.CONSUME;
 		}
 	}
@@ -72,7 +72,7 @@ public class AnvilBlock extends FallingBlock {
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = state.get(FACING);
-		return direction.getAxis() == Direction.Axis.field_11048 ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
+		return direction.getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
 	}
 
 	@Override
@@ -96,10 +96,10 @@ public class AnvilBlock extends FallingBlock {
 
 	@Nullable
 	public static BlockState getLandingState(BlockState fallingState) {
-		if (fallingState.isOf(Blocks.field_10535)) {
-			return Blocks.field_10105.getDefaultState().with(FACING, fallingState.get(FACING));
+		if (fallingState.isOf(Blocks.ANVIL)) {
+			return Blocks.CHIPPED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING));
 		} else {
-			return fallingState.isOf(Blocks.field_10105) ? Blocks.field_10414.getDefaultState().with(FACING, fallingState.get(FACING)) : null;
+			return fallingState.isOf(Blocks.CHIPPED_ANVIL) ? Blocks.DAMAGED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING)) : null;
 		}
 	}
 

@@ -51,7 +51,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class OcelotEntity extends AnimalEntity {
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.field_8429, Items.field_8209);
+	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
 	private static final TrackedData<Boolean> TRUSTING = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private OcelotEntity.FleeGoal<PlayerEntity> fleeGoal;
 	private OcelotEntity.OcelotTemptGoal temptGoal;
@@ -107,17 +107,17 @@ public class OcelotEntity extends AnimalEntity {
 		if (this.getMoveControl().isMoving()) {
 			double d = this.getMoveControl().getSpeed();
 			if (d == 0.6) {
-				this.setPose(EntityPose.field_18081);
+				this.setPose(EntityPose.CROUCHING);
 				this.setSprinting(false);
 			} else if (d == 1.33) {
-				this.setPose(EntityPose.field_18076);
+				this.setPose(EntityPose.STANDING);
 				this.setSprinting(true);
 			} else {
-				this.setPose(EntityPose.field_18076);
+				this.setPose(EntityPose.STANDING);
 				this.setSprinting(false);
 			}
 		} else {
-			this.setPose(EntityPose.field_18076);
+			this.setPose(EntityPose.STANDING);
 			this.setSprinting(false);
 		}
 	}
@@ -128,7 +128,10 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createOcelotAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 10.0).add(EntityAttributes.field_23719, 0.3F).add(EntityAttributes.field_23721, 3.0);
+		return MobEntity.createMobAttributes()
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
 	}
 
 	@Override
@@ -139,7 +142,7 @@ public class OcelotEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_16437;
+		return SoundEvents.ENTITY_OCELOT_AMBIENT;
 	}
 
 	@Override
@@ -149,16 +152,16 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_16441;
+		return SoundEvents.ENTITY_OCELOT_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_16442;
+		return SoundEvents.ENTITY_OCELOT_DEATH;
 	}
 
 	private float getAttackDamage() {
-		return (float)this.getAttributeValue(EntityAttributes.field_23721);
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 	}
 
 	@Override
@@ -206,9 +209,9 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	private void showEmoteParticle(boolean positive) {
-		ParticleEffect particleEffect = ParticleTypes.field_11201;
+		ParticleEffect particleEffect = ParticleTypes.HEART;
 		if (!positive) {
-			particleEffect = ParticleTypes.field_11251;
+			particleEffect = ParticleTypes.SMOKE;
 		}
 
 		for (int i = 0; i < 7; i++) {
@@ -230,13 +233,13 @@ public class OcelotEntity extends AnimalEntity {
 		}
 	}
 
-	public OcelotEntity method_16104(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.field_6081.create(serverWorld);
+	public OcelotEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.OCELOT.create(serverWorld);
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return TAMING_INGREDIENT.method_8093(stack);
+		return TAMING_INGREDIENT.test(stack);
 	}
 
 	public static boolean canSpawn(EntityType<OcelotEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -251,8 +254,8 @@ public class OcelotEntity extends AnimalEntity {
 				return false;
 			}
 
-			BlockState blockState = world.getBlockState(blockPos.method_10074());
-			if (blockState.isOf(Blocks.field_10219) || blockState.isIn(BlockTags.field_15503)) {
+			BlockState blockState = world.getBlockState(blockPos.down());
+			if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isIn(BlockTags.LEAVES)) {
 				return true;
 			}
 		}

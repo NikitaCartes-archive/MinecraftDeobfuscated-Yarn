@@ -83,39 +83,39 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
 	private static final LootCondition.Builder WITH_SILK_TOUCH = MatchToolLootCondition.builder(
-		ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.field_9099, NumberRange.IntRange.atLeast(1)))
+		ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1)))
 	);
 	private static final LootCondition.Builder WITHOUT_SILK_TOUCH = WITH_SILK_TOUCH.invert();
-	private static final LootCondition.Builder WITH_SHEARS = MatchToolLootCondition.builder(ItemPredicate.Builder.create().item(Items.field_8868));
+	private static final LootCondition.Builder WITH_SHEARS = MatchToolLootCondition.builder(ItemPredicate.Builder.create().item(Items.SHEARS));
 	private static final LootCondition.Builder WITH_SILK_TOUCH_OR_SHEARS = WITH_SHEARS.or(WITH_SILK_TOUCH);
 	private static final LootCondition.Builder WITHOUT_SILK_TOUCH_NOR_SHEARS = WITH_SILK_TOUCH_OR_SHEARS.invert();
 	private static final Set<Item> EXPLOSION_IMMUNE = (Set<Item>)Stream.of(
-			Blocks.field_10081,
-			Blocks.field_10327,
-			Blocks.field_10502,
-			Blocks.field_10481,
-			Blocks.field_10177,
-			Blocks.field_10432,
-			Blocks.field_10241,
-			Blocks.field_10042,
-			Blocks.field_10337,
-			Blocks.field_10603,
-			Blocks.field_10371,
-			Blocks.field_10605,
-			Blocks.field_10373,
-			Blocks.field_10532,
-			Blocks.field_10140,
-			Blocks.field_10055,
-			Blocks.field_10203,
-			Blocks.field_10320,
-			Blocks.field_10275,
-			Blocks.field_10063,
-			Blocks.field_10407,
-			Blocks.field_10051,
-			Blocks.field_10268,
-			Blocks.field_10068,
-			Blocks.field_10199,
-			Blocks.field_10600
+			Blocks.DRAGON_EGG,
+			Blocks.BEACON,
+			Blocks.CONDUIT,
+			Blocks.SKELETON_SKULL,
+			Blocks.WITHER_SKELETON_SKULL,
+			Blocks.PLAYER_HEAD,
+			Blocks.ZOMBIE_HEAD,
+			Blocks.CREEPER_HEAD,
+			Blocks.DRAGON_HEAD,
+			Blocks.SHULKER_BOX,
+			Blocks.BLACK_SHULKER_BOX,
+			Blocks.BLUE_SHULKER_BOX,
+			Blocks.BROWN_SHULKER_BOX,
+			Blocks.CYAN_SHULKER_BOX,
+			Blocks.GRAY_SHULKER_BOX,
+			Blocks.GREEN_SHULKER_BOX,
+			Blocks.LIGHT_BLUE_SHULKER_BOX,
+			Blocks.LIGHT_GRAY_SHULKER_BOX,
+			Blocks.LIME_SHULKER_BOX,
+			Blocks.MAGENTA_SHULKER_BOX,
+			Blocks.ORANGE_SHULKER_BOX,
+			Blocks.PINK_SHULKER_BOX,
+			Blocks.PURPLE_SHULKER_BOX,
+			Blocks.RED_SHULKER_BOX,
+			Blocks.WHITE_SHULKER_BOX,
+			Blocks.YELLOW_SHULKER_BOX
 		)
 		.map(ItemConvertible::asItem)
 		.collect(ImmutableSet.toImmutableSet());
@@ -138,7 +138,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 
 	private static LootTable.Builder drops(Block drop, LootCondition.Builder conditionBuilder, LootPoolEntry.Builder<?> child) {
 		return LootTable.builder()
-			.pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(drop).method_421(conditionBuilder).alternatively(child)));
+			.pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(drop).conditionally(conditionBuilder).alternatively(child)));
 	}
 
 	private static LootTable.Builder dropsWithSilkTouch(Block drop, LootPoolEntry.Builder<?> child) {
@@ -162,24 +162,24 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			.pool(
 				LootPool.builder()
 					.rolls(ConstantLootTableRange.create(1))
-					.with((LootPoolEntry.Builder<?>)applyExplosionDecay(drop, ItemEntry.builder(drop).method_438(SetCountLootFunction.builder(count))))
+					.with((LootPoolEntry.Builder<?>)applyExplosionDecay(drop, ItemEntry.builder(drop).apply(SetCountLootFunction.builder(count))))
 			);
 	}
 
 	private static LootTable.Builder drops(Block dropWithSilkTouch, ItemConvertible drop, LootTableRange count) {
 		return dropsWithSilkTouch(
-			dropWithSilkTouch, (LootPoolEntry.Builder<?>)applyExplosionDecay(dropWithSilkTouch, ItemEntry.builder(drop).method_438(SetCountLootFunction.builder(count)))
+			dropWithSilkTouch, (LootPoolEntry.Builder<?>)applyExplosionDecay(dropWithSilkTouch, ItemEntry.builder(drop).apply(SetCountLootFunction.builder(count)))
 		);
 	}
 
 	private static LootTable.Builder dropsWithSilkTouch(ItemConvertible drop) {
-		return LootTable.builder().pool(LootPool.builder().method_356(WITH_SILK_TOUCH).rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(drop)));
+		return LootTable.builder().pool(LootPool.builder().conditionally(WITH_SILK_TOUCH).rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(drop)));
 	}
 
 	private static LootTable.Builder pottedPlantDrops(ItemConvertible plant) {
 		return LootTable.builder()
 			.pool(
-				addSurvivesExplosionCondition(Blocks.field_10495, LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(Blocks.field_10495)))
+				addSurvivesExplosionCondition(Blocks.FLOWER_POT, LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(Blocks.FLOWER_POT)))
 			)
 			.pool(addSurvivesExplosionCondition(plant, LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(plant))));
 	}
@@ -193,11 +193,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						(LootPoolEntry.Builder<?>)applyExplosionDecay(
 							drop,
 							ItemEntry.builder(drop)
-								.method_438(
+								.apply(
 									SetCountLootFunction.builder(ConstantLootTableRange.create(2))
-										.method_524(
-											BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(SlabBlock.TYPE, SlabType.field_12682))
-										)
+										.conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(SlabBlock.TYPE, SlabType.DOUBLE)))
 								)
 						)
 					)
@@ -213,7 +211,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.rolls(ConstantLootTableRange.create(1))
 						.with(
 							ItemEntry.builder(drop)
-								.method_421(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(property, comparable)))
+								.conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(property, comparable)))
 						)
 				)
 			);
@@ -226,7 +224,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					drop,
 					LootPool.builder()
 						.rolls(ConstantLootTableRange.create(1))
-						.with(ItemEntry.builder(drop).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.field_1023)))
+						.with(ItemEntry.builder(drop).apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY)))
 				)
 			);
 	}
@@ -240,14 +238,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.rolls(ConstantLootTableRange.create(1))
 						.with(
 							ItemEntry.builder(drop)
-								.method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.field_1023))
-								.method_438(
-									CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027)
+								.apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
+								.apply(
+									CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY)
 										.withOperation("Lock", "BlockEntityTag.Lock")
 										.withOperation("LootTable", "BlockEntityTag.LootTable")
 										.withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed")
 								)
-								.method_438(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.CONTENTS)))
+								.apply(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.CONTENTS)))
 						)
 				)
 			);
@@ -262,8 +260,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.rolls(ConstantLootTableRange.create(1))
 						.with(
 							ItemEntry.builder(drop)
-								.method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.field_1023))
-								.method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027).withOperation("Patterns", "BlockEntityTag.Patterns"))
+								.apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
+								.apply(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Patterns", "BlockEntityTag.Patterns"))
 						)
 				)
 			);
@@ -273,12 +271,12 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
-					.method_356(WITH_SILK_TOUCH)
+					.conditionally(WITH_SILK_TOUCH)
 					.rolls(ConstantLootTableRange.create(1))
 					.with(
 						ItemEntry.builder(drop)
-							.method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027).withOperation("Bees", "BlockEntityTag.Bees"))
-							.method_438(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))
+							.apply(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
+							.apply(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))
 					)
 			);
 	}
@@ -290,9 +288,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					.rolls(ConstantLootTableRange.create(1))
 					.with(
 						ItemEntry.builder(drop)
-							.method_421(WITH_SILK_TOUCH)
-							.method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027).withOperation("Bees", "BlockEntityTag.Bees"))
-							.method_438(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))
+							.conditionally(WITH_SILK_TOUCH)
+							.apply(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
+							.apply(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))
 							.alternatively(ItemEntry.builder(drop))
 					)
 			);
@@ -301,9 +299,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	private static LootTable.Builder oreDrops(Block dropWithSilkTouch, Item drop) {
 		return dropsWithSilkTouch(
 			dropWithSilkTouch,
-			(LootPoolEntry.Builder<?>)applyExplosionDecay(
-				dropWithSilkTouch, ItemEntry.builder(drop).method_438(ApplyBonusLootFunction.oreDrops(Enchantments.field_9130))
-			)
+			(LootPoolEntry.Builder<?>)applyExplosionDecay(dropWithSilkTouch, ItemEntry.builder(drop).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE)))
 		);
 	}
 
@@ -313,8 +309,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			(LootPoolEntry.Builder<?>)applyExplosionDecay(
 				dropWithSilkTouch,
 				ItemEntry.builder(drop)
-					.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(-6.0F, 2.0F)))
-					.method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMin(0)))
+					.apply(SetCountLootFunction.builder(UniformLootTableRange.between(-6.0F, 2.0F)))
+					.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMin(0)))
 			)
 		);
 	}
@@ -324,9 +320,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			dropWithShears,
 			(LootPoolEntry.Builder<?>)applyExplosionDecay(
 				dropWithShears,
-				ItemEntry.builder(Items.field_8317)
-					.method_421(RandomChanceLootCondition.builder(0.125F))
-					.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130, 2))
+				ItemEntry.builder(Items.WHEAT_SEEDS)
+					.conditionally(RandomChanceLootCondition.builder(0.125F))
+					.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE, 2))
 			)
 		);
 	}
@@ -340,37 +336,37 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.rolls(ConstantLootTableRange.create(1))
 						.with(
 							ItemEntry.builder(drop)
-								.method_438(
+								.apply(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.06666667F))
-										.method_524(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 0)))
+										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 0)))
 								)
-								.method_438(
+								.apply(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.13333334F))
-										.method_524(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 1)))
+										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 1)))
 								)
-								.method_438(
+								.apply(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.2F))
-										.method_524(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 2)))
+										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 2)))
 								)
-								.method_438(
+								.apply(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.26666668F))
-										.method_524(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 3)))
+										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 3)))
 								)
-								.method_438(
+								.apply(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.33333334F))
-										.method_524(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 4)))
+										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 4)))
 								)
-								.method_438(
+								.apply(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.4F))
-										.method_524(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 5)))
+										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 5)))
 								)
-								.method_438(
+								.apply(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.46666667F))
-										.method_524(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 6)))
+										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 6)))
 								)
-								.method_438(
+								.apply(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336F))
-										.method_524(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 7)))
+										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 7)))
 								)
 						)
 				)
@@ -384,30 +380,30 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					stem,
 					LootPool.builder()
 						.rolls(ConstantLootTableRange.create(1))
-						.with(ItemEntry.builder(drop).method_438(SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336F))))
+						.with(ItemEntry.builder(drop).apply(SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336F))))
 				)
 			);
 	}
 
 	private static LootTable.Builder dropsWithShears(ItemConvertible drop) {
-		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).method_356(WITH_SHEARS).with(ItemEntry.builder(drop)));
+		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).conditionally(WITH_SHEARS).with(ItemEntry.builder(drop)));
 	}
 
 	private static LootTable.Builder leavesDrop(Block leaves, Block drop, float... chance) {
 		return dropsWithSilkTouchOrShears(
 				leaves,
 				((LeafEntry.Builder)addSurvivesExplosionCondition(leaves, ItemEntry.builder(drop)))
-					.method_421(TableBonusLootCondition.builder(Enchantments.field_9130, chance))
+					.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, chance))
 			)
 			.pool(
 				LootPool.builder()
 					.rolls(ConstantLootTableRange.create(1))
-					.method_356(WITHOUT_SILK_TOUCH_NOR_SHEARS)
+					.conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS)
 					.with(
 						((LeafEntry.Builder)applyExplosionDecay(
-								leaves, ItemEntry.builder(Items.field_8600).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
+								leaves, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
 							))
-							.method_421(TableBonusLootCondition.builder(Enchantments.field_9130, 0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F))
+							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F))
 					)
 			);
 	}
@@ -417,10 +413,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			.pool(
 				LootPool.builder()
 					.rolls(ConstantLootTableRange.create(1))
-					.method_356(WITHOUT_SILK_TOUCH_NOR_SHEARS)
+					.conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS)
 					.with(
-						((LeafEntry.Builder)addSurvivesExplosionCondition(leaves, ItemEntry.builder(Items.field_8279)))
-							.method_421(TableBonusLootCondition.builder(Enchantments.field_9130, 0.005F, 0.0055555557F, 0.00625F, 0.008333334F, 0.025F))
+						((LeafEntry.Builder)addSurvivesExplosionCondition(leaves, ItemEntry.builder(Items.APPLE)))
+							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.005F, 0.0055555557F, 0.00625F, 0.008333334F, 0.025F))
 					)
 			);
 	}
@@ -429,41 +425,41 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return applyExplosionDecay(
 			crop,
 			LootTable.builder()
-				.pool(LootPool.builder().with(ItemEntry.builder(product).method_421(condition).alternatively(ItemEntry.builder(seeds))))
+				.pool(LootPool.builder().with(ItemEntry.builder(product).conditionally(condition).alternatively(ItemEntry.builder(seeds))))
 				.pool(
 					LootPool.builder()
-						.method_356(condition)
-						.with(ItemEntry.builder(seeds).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.field_9130, 0.5714286F, 3)))
+						.conditionally(condition)
+						.with(ItemEntry.builder(seeds).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286F, 3)))
 				)
 		);
 	}
 
 	private static LootTable.Builder method_30159(Block block) {
 		return LootTable.builder()
-			.pool(LootPool.builder().method_356(WITH_SHEARS).with(ItemEntry.builder(block).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))));
+			.pool(LootPool.builder().conditionally(WITH_SHEARS).with(ItemEntry.builder(block).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))));
 	}
 
 	private static LootTable.Builder method_30158(Block block, Block block2) {
 		LootPoolEntry.Builder<?> builder = ItemEntry.builder(block2)
-			.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
-			.method_421(WITH_SHEARS)
+			.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
+			.conditionally(WITH_SHEARS)
 			.alternatively(
-				((LeafEntry.Builder)addSurvivesExplosionCondition(block, ItemEntry.builder(Items.field_8317))).method_421(RandomChanceLootCondition.builder(0.125F))
+				((LeafEntry.Builder)addSurvivesExplosionCondition(block, ItemEntry.builder(Items.WHEAT_SEEDS))).conditionally(RandomChanceLootCondition.builder(0.125F))
 			);
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
 					.with(builder)
-					.method_356(
-						BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.field_12607))
+					.conditionally(
+						BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))
 					)
-					.method_356(
+					.conditionally(
 						LocationCheckLootCondition.method_30151(
 							LocationPredicate.Builder.create()
 								.block(
 									BlockPredicate.Builder.create()
 										.block(block)
-										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.field_12609).build())
+										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER).build())
 										.build()
 								),
 							new BlockPos(0, 1, 0)
@@ -473,16 +469,16 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			.pool(
 				LootPool.builder()
 					.with(builder)
-					.method_356(
-						BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.field_12609))
+					.conditionally(
+						BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))
 					)
-					.method_356(
+					.conditionally(
 						LocationCheckLootCondition.method_30151(
 							LocationPredicate.Builder.create()
 								.block(
 									BlockPredicate.Builder.create()
 										.block(block)
-										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.field_12607).build())
+										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER).build())
 										.build()
 								),
 							new BlockPos(0, -1, 0)
@@ -495,547 +491,545 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return LootTable.builder();
 	}
 
-	public void method_10379(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
-		this.addDrop(Blocks.field_10474);
-		this.addDrop(Blocks.field_10289);
-		this.addDrop(Blocks.field_10508);
-		this.addDrop(Blocks.field_10346);
-		this.addDrop(Blocks.field_10115);
-		this.addDrop(Blocks.field_10093);
-		this.addDrop(Blocks.field_10566);
-		this.addDrop(Blocks.field_10253);
-		this.addDrop(Blocks.field_10445);
-		this.addDrop(Blocks.field_10161);
-		this.addDrop(Blocks.field_9975);
-		this.addDrop(Blocks.field_10148);
-		this.addDrop(Blocks.field_10334);
-		this.addDrop(Blocks.field_10218);
-		this.addDrop(Blocks.field_10075);
-		this.addDrop(Blocks.field_10394);
-		this.addDrop(Blocks.field_10217);
-		this.addDrop(Blocks.field_10575);
-		this.addDrop(Blocks.field_10276);
-		this.addDrop(Blocks.field_10385);
-		this.addDrop(Blocks.field_10160);
-		this.addDrop(Blocks.field_10102);
-		this.addDrop(Blocks.field_10534);
-		this.addDrop(Blocks.field_10571);
-		this.addDrop(Blocks.field_10212);
-		this.addDrop(Blocks.field_10431);
-		this.addDrop(Blocks.field_10037);
-		this.addDrop(Blocks.field_10511);
-		this.addDrop(Blocks.field_10306);
-		this.addDrop(Blocks.field_10533);
-		this.addDrop(Blocks.field_10010);
-		this.addDrop(Blocks.field_10436);
-		this.addDrop(Blocks.field_10366);
-		this.addDrop(Blocks.field_10254);
-		this.addDrop(Blocks.field_10622);
-		this.addDrop(Blocks.field_10244);
-		this.addDrop(Blocks.field_10519);
-		this.addDrop(Blocks.field_22112);
-		this.addDrop(Blocks.field_22119);
-		this.addDrop(Blocks.field_10126);
-		this.addDrop(Blocks.field_10155);
-		this.addDrop(Blocks.field_10307);
-		this.addDrop(Blocks.field_10303);
-		this.addDrop(Blocks.field_9999);
-		this.addDrop(Blocks.field_10178);
-		this.addDrop(Blocks.field_10250);
-		this.addDrop(Blocks.field_10558);
-		this.addDrop(Blocks.field_10204);
-		this.addDrop(Blocks.field_10084);
-		this.addDrop(Blocks.field_10103);
-		this.addDrop(Blocks.field_10374);
-		this.addDrop(Blocks.field_22506);
-		this.addDrop(Blocks.field_22504);
-		this.addDrop(Blocks.field_10258);
-		this.addDrop(Blocks.field_10562);
-		this.addDrop(Blocks.field_10441);
-		this.addDrop(Blocks.field_9979);
-		this.addDrop(Blocks.field_10292);
-		this.addDrop(Blocks.field_10361);
-		this.addDrop(Blocks.field_10179);
-		this.addDrop(Blocks.field_10425);
-		this.addDrop(Blocks.field_10025);
-		this.addDrop(Blocks.field_10615);
-		this.addDrop(Blocks.field_10560);
-		this.addDrop(Blocks.field_10446);
-		this.addDrop(Blocks.field_10095);
-		this.addDrop(Blocks.field_10215);
-		this.addDrop(Blocks.field_10294);
-		this.addDrop(Blocks.field_10490);
-		this.addDrop(Blocks.field_10028);
-		this.addDrop(Blocks.field_10459);
-		this.addDrop(Blocks.field_10423);
-		this.addDrop(Blocks.field_10222);
-		this.addDrop(Blocks.field_10619);
-		this.addDrop(Blocks.field_10259);
-		this.addDrop(Blocks.field_10514);
-		this.addDrop(Blocks.field_10113);
-		this.addDrop(Blocks.field_10170);
-		this.addDrop(Blocks.field_10314);
-		this.addDrop(Blocks.field_10146);
-		this.addDrop(Blocks.field_10182);
-		this.addDrop(Blocks.field_10449);
-		this.addDrop(Blocks.field_10086);
-		this.addDrop(Blocks.field_10226);
-		this.addDrop(Blocks.field_10573);
-		this.addDrop(Blocks.field_10270);
-		this.addDrop(Blocks.field_10048);
-		this.addDrop(Blocks.field_10156);
-		this.addDrop(Blocks.field_10315);
-		this.addDrop(Blocks.field_10554);
-		this.addDrop(Blocks.field_9995);
-		this.addDrop(Blocks.field_10606);
-		this.addDrop(Blocks.field_10548);
-		this.addDrop(Blocks.field_10251);
-		this.addDrop(Blocks.field_10559);
-		this.addDrop(Blocks.field_10205);
-		this.addDrop(Blocks.field_10085);
-		this.addDrop(Blocks.field_10104);
-		this.addDrop(Blocks.field_9989);
-		this.addDrop(Blocks.field_10540);
-		this.addDrop(Blocks.field_22423);
-		this.addDrop(Blocks.field_10336);
-		this.addDrop(Blocks.field_10563);
-		this.addDrop(Blocks.field_10091);
-		this.addDrop(Blocks.field_10201);
-		this.addDrop(Blocks.field_9980);
-		this.addDrop(Blocks.field_10121);
-		this.addDrop(Blocks.field_10411);
-		this.addDrop(Blocks.field_10231);
-		this.addDrop(Blocks.field_10284);
-		this.addDrop(Blocks.field_10544);
-		this.addDrop(Blocks.field_10330);
-		this.addDrop(Blocks.field_9983);
-		this.addDrop(Blocks.field_10167);
-		this.addDrop(Blocks.field_10596);
-		this.addDrop(Blocks.field_10363);
-		this.addDrop(Blocks.field_10158);
-		this.addDrop(Blocks.field_10484);
-		this.addDrop(Blocks.field_10332);
-		this.addDrop(Blocks.field_10592);
-		this.addDrop(Blocks.field_10026);
-		this.addDrop(Blocks.field_10397);
-		this.addDrop(Blocks.field_10470);
-		this.addDrop(Blocks.field_10523);
-		this.addDrop(Blocks.field_10494);
-		this.addDrop(Blocks.field_10029);
-		this.addDrop(Blocks.field_10424);
-		this.addDrop(Blocks.field_10223);
-		this.addDrop(Blocks.field_10620);
-		this.addDrop(Blocks.field_10261);
-		this.addDrop(Blocks.field_10515);
-		this.addDrop(Blocks.field_10114);
-		this.addDrop(Blocks.field_22090);
-		this.addDrop(Blocks.field_22091);
-		this.addDrop(Blocks.field_23151);
-		this.addDrop(Blocks.field_22092);
-		this.addDrop(Blocks.field_10147);
-		this.addDrop(Blocks.field_10009);
-		this.addDrop(Blocks.field_10450);
-		this.addDrop(Blocks.field_10137);
-		this.addDrop(Blocks.field_10323);
-		this.addDrop(Blocks.field_10486);
-		this.addDrop(Blocks.field_10017);
-		this.addDrop(Blocks.field_10608);
-		this.addDrop(Blocks.field_10246);
-		this.addDrop(Blocks.field_10056);
-		this.addDrop(Blocks.field_10065);
-		this.addDrop(Blocks.field_10416);
-		this.addDrop(Blocks.field_10552);
-		this.addDrop(Blocks.field_10576);
-		this.addDrop(Blocks.field_10188);
-		this.addDrop(Blocks.field_10089);
-		this.addDrop(Blocks.field_10392);
-		this.addDrop(Blocks.field_10588);
-		this.addDrop(Blocks.field_10266);
-		this.addDrop(Blocks.field_10364);
-		this.addDrop(Blocks.field_10159);
-		this.addDrop(Blocks.field_10593);
-		this.addDrop(Blocks.field_10471);
-		this.addDrop(Blocks.field_10524);
-		this.addDrop(Blocks.field_10142);
-		this.addDrop(Blocks.field_10348);
-		this.addDrop(Blocks.field_10234);
-		this.addDrop(Blocks.field_10569);
-		this.addDrop(Blocks.field_10408);
-		this.addDrop(Blocks.field_10122);
-		this.addDrop(Blocks.field_10625);
-		this.addDrop(Blocks.field_9990);
-		this.addDrop(Blocks.field_10495);
-		this.addDrop(Blocks.field_10057);
-		this.addDrop(Blocks.field_10066);
-		this.addDrop(Blocks.field_10417);
-		this.addDrop(Blocks.field_10553);
-		this.addDrop(Blocks.field_10278);
-		this.addDrop(Blocks.field_10493);
-		this.addDrop(Blocks.field_10481);
-		this.addDrop(Blocks.field_10177);
-		this.addDrop(Blocks.field_10241);
-		this.addDrop(Blocks.field_10042);
-		this.addDrop(Blocks.field_10337);
-		this.addDrop(Blocks.field_10535);
-		this.addDrop(Blocks.field_10105);
-		this.addDrop(Blocks.field_10414);
-		this.addDrop(Blocks.field_10224);
-		this.addDrop(Blocks.field_10582);
-		this.addDrop(Blocks.field_10377);
-		this.addDrop(Blocks.field_10429);
-		this.addDrop(Blocks.field_10002);
-		this.addDrop(Blocks.field_10153);
-		this.addDrop(Blocks.field_10044);
-		this.addDrop(Blocks.field_10437);
-		this.addDrop(Blocks.field_10451);
-		this.addDrop(Blocks.field_10546);
-		this.addDrop(Blocks.field_10611);
-		this.addDrop(Blocks.field_10184);
-		this.addDrop(Blocks.field_10015);
-		this.addDrop(Blocks.field_10325);
-		this.addDrop(Blocks.field_10143);
-		this.addDrop(Blocks.field_10014);
-		this.addDrop(Blocks.field_10444);
-		this.addDrop(Blocks.field_10349);
-		this.addDrop(Blocks.field_10590);
-		this.addDrop(Blocks.field_10235);
-		this.addDrop(Blocks.field_10570);
-		this.addDrop(Blocks.field_10409);
-		this.addDrop(Blocks.field_10123);
-		this.addDrop(Blocks.field_10526);
-		this.addDrop(Blocks.field_10328);
-		this.addDrop(Blocks.field_10626);
-		this.addDrop(Blocks.field_10256);
-		this.addDrop(Blocks.field_10616);
-		this.addDrop(Blocks.field_10030);
-		this.addDrop(Blocks.field_10453);
-		this.addDrop(Blocks.field_10135);
-		this.addDrop(Blocks.field_10006);
-		this.addDrop(Blocks.field_10297);
-		this.addDrop(Blocks.field_10350);
-		this.addDrop(Blocks.field_10190);
-		this.addDrop(Blocks.field_10130);
-		this.addDrop(Blocks.field_10359);
-		this.addDrop(Blocks.field_10466);
-		this.addDrop(Blocks.field_9977);
-		this.addDrop(Blocks.field_10482);
-		this.addDrop(Blocks.field_10290);
-		this.addDrop(Blocks.field_10512);
-		this.addDrop(Blocks.field_10040);
-		this.addDrop(Blocks.field_10393);
-		this.addDrop(Blocks.field_10591);
-		this.addDrop(Blocks.field_10209);
-		this.addDrop(Blocks.field_10433);
-		this.addDrop(Blocks.field_10510);
-		this.addDrop(Blocks.field_10043);
-		this.addDrop(Blocks.field_10473);
-		this.addDrop(Blocks.field_10338);
-		this.addDrop(Blocks.field_10536);
-		this.addDrop(Blocks.field_10106);
-		this.addDrop(Blocks.field_10415);
-		this.addDrop(Blocks.field_10381);
-		this.addDrop(Blocks.field_10344);
-		this.addDrop(Blocks.field_10117);
-		this.addDrop(Blocks.field_10518);
-		this.addDrop(Blocks.field_10420);
-		this.addDrop(Blocks.field_10360);
-		this.addDrop(Blocks.field_10467);
-		this.addDrop(Blocks.field_9978);
-		this.addDrop(Blocks.field_10483);
-		this.addDrop(Blocks.field_10291);
-		this.addDrop(Blocks.field_10513);
-		this.addDrop(Blocks.field_10041);
-		this.addDrop(Blocks.field_10457);
-		this.addDrop(Blocks.field_10196);
-		this.addDrop(Blocks.field_10020);
-		this.addDrop(Blocks.field_10299);
-		this.addDrop(Blocks.field_10319);
-		this.addDrop(Blocks.field_10144);
-		this.addDrop(Blocks.field_10132);
-		this.addDrop(Blocks.field_10455);
-		this.addDrop(Blocks.field_10286);
-		this.addDrop(Blocks.field_10505);
-		this.addDrop(Blocks.field_9992);
-		this.addDrop(Blocks.field_10462);
-		this.addDrop(Blocks.field_10092);
-		this.addDrop(Blocks.field_10541);
-		this.addDrop(Blocks.field_9986);
-		this.addDrop(Blocks.field_10166);
-		this.addDrop(Blocks.field_10282);
-		this.addDrop(Blocks.field_22422);
-		this.addDrop(Blocks.field_10595);
-		this.addDrop(Blocks.field_10280);
-		this.addDrop(Blocks.field_10538);
-		this.addDrop(Blocks.field_10345);
-		this.addDrop(Blocks.field_10096);
-		this.addDrop(Blocks.field_10046);
-		this.addDrop(Blocks.field_10567);
-		this.addDrop(Blocks.field_10220);
-		this.addDrop(Blocks.field_10052);
-		this.addDrop(Blocks.field_10078);
-		this.addDrop(Blocks.field_10426);
-		this.addDrop(Blocks.field_10550);
-		this.addDrop(Blocks.field_10004);
-		this.addDrop(Blocks.field_10475);
-		this.addDrop(Blocks.field_10383);
-		this.addDrop(Blocks.field_10501);
-		this.addDrop(Blocks.field_10107);
-		this.addDrop(Blocks.field_10210);
-		this.addDrop(Blocks.field_10585);
-		this.addDrop(Blocks.field_10242);
-		this.addDrop(Blocks.field_10542);
-		this.addDrop(Blocks.field_10421);
-		this.addDrop(Blocks.field_10434);
-		this.addDrop(Blocks.field_10038);
-		this.addDrop(Blocks.field_10172);
-		this.addDrop(Blocks.field_10308);
-		this.addDrop(Blocks.field_10206);
-		this.addDrop(Blocks.field_10011);
-		this.addDrop(Blocks.field_10439);
-		this.addDrop(Blocks.field_10367);
-		this.addDrop(Blocks.field_10058);
-		this.addDrop(Blocks.field_10458);
-		this.addDrop(Blocks.field_10197);
-		this.addDrop(Blocks.field_10022);
-		this.addDrop(Blocks.field_10300);
-		this.addDrop(Blocks.field_10321);
-		this.addDrop(Blocks.field_10145);
-		this.addDrop(Blocks.field_10133);
-		this.addDrop(Blocks.field_10522);
-		this.addDrop(Blocks.field_10353);
-		this.addDrop(Blocks.field_10628);
-		this.addDrop(Blocks.field_10233);
-		this.addDrop(Blocks.field_10404);
-		this.addDrop(Blocks.field_10456);
-		this.addDrop(Blocks.field_10023);
-		this.addDrop(Blocks.field_10529);
-		this.addDrop(Blocks.field_10287);
-		this.addDrop(Blocks.field_10506);
-		this.addDrop(Blocks.field_9993);
-		this.addDrop(Blocks.field_10342);
-		this.addDrop(Blocks.field_10614);
-		this.addDrop(Blocks.field_10264);
-		this.addDrop(Blocks.field_10396);
-		this.addDrop(Blocks.field_10111);
-		this.addDrop(Blocks.field_10488);
-		this.addDrop(Blocks.field_10502);
-		this.addDrop(Blocks.field_10081);
-		this.addDrop(Blocks.field_10211);
-		this.addDrop(Blocks.field_10435);
-		this.addDrop(Blocks.field_10039);
-		this.addDrop(Blocks.field_10173);
-		this.addDrop(Blocks.field_10310);
-		this.addDrop(Blocks.field_10207);
-		this.addDrop(Blocks.field_10012);
-		this.addDrop(Blocks.field_10440);
-		this.addDrop(Blocks.field_10549);
-		this.addDrop(Blocks.field_10245);
-		this.addDrop(Blocks.field_10607);
-		this.addDrop(Blocks.field_10386);
-		this.addDrop(Blocks.field_10497);
-		this.addDrop(Blocks.field_9994);
-		this.addDrop(Blocks.field_10216);
-		this.addDrop(Blocks.field_10269);
-		this.addDrop(Blocks.field_10530);
-		this.addDrop(Blocks.field_10413);
-		this.addDrop(Blocks.field_10059);
-		this.addDrop(Blocks.field_10072);
-		this.addDrop(Blocks.field_10252);
-		this.addDrop(Blocks.field_10127);
-		this.addDrop(Blocks.field_10489);
-		this.addDrop(Blocks.field_10311);
-		this.addDrop(Blocks.field_10630);
-		this.addDrop(Blocks.field_10001);
-		this.addDrop(Blocks.field_10517);
-		this.addDrop(Blocks.field_10083);
-		this.addDrop(Blocks.field_16492);
-		this.addDrop(Blocks.field_21211);
-		this.addDrop(Blocks.field_21212);
-		this.addDrop(Blocks.field_23152);
-		this.addDrop(Blocks.field_23261);
-		this.addDrop(Blocks.field_22111);
-		this.addDrop(Blocks.field_22503);
-		this.addDrop(Blocks.field_22114);
-		this.addDrop(Blocks.field_22115);
-		this.addDrop(Blocks.field_22118);
-		this.addDrop(Blocks.field_22505);
-		this.addDrop(Blocks.field_22121);
-		this.addDrop(Blocks.field_22122);
-		this.addDrop(Blocks.field_22126);
-		this.addDrop(Blocks.field_22127);
-		this.addDrop(Blocks.field_22131);
-		this.addDrop(Blocks.field_22133);
-		this.addDrop(Blocks.field_22095);
-		this.addDrop(Blocks.field_22097);
-		this.addDrop(Blocks.field_22099);
-		this.addDrop(Blocks.field_22101);
-		this.addDrop(Blocks.field_22105);
-		this.addDrop(Blocks.field_22130);
-		this.addDrop(Blocks.field_22132);
-		this.addDrop(Blocks.field_22094);
-		this.addDrop(Blocks.field_22096);
-		this.addDrop(Blocks.field_22098);
-		this.addDrop(Blocks.field_22100);
-		this.addDrop(Blocks.field_22104);
-		this.addDrop(Blocks.field_22108);
-		this.addDrop(Blocks.field_22109);
-		this.addDrop(Blocks.field_23869);
-		this.addDrop(Blocks.field_23874);
-		this.addDrop(Blocks.field_23878);
-		this.addDrop(Blocks.field_23870);
-		this.addDrop(Blocks.field_23871);
-		this.addDrop(Blocks.field_23879);
-		this.addDrop(Blocks.field_23876);
-		this.addDrop(Blocks.field_23875);
-		this.addDrop(Blocks.field_23873);
-		this.addDrop(Blocks.field_23861);
-		this.addDrop(Blocks.field_23863);
-		this.addDrop(Blocks.field_23864);
-		this.addDrop(Blocks.field_23865);
-		this.addDrop(Blocks.field_23866);
-		this.addDrop(Blocks.field_23867);
-		this.addDrop(Blocks.field_23868);
-		this.addDrop(Blocks.field_23985);
-		this.addDrop(Blocks.field_22116);
-		this.addDrop(Blocks.field_22125);
-		this.addDrop(Blocks.field_10362, Blocks.field_10566);
-		this.addDrop(Blocks.field_10589, Items.field_8276);
-		this.addDrop(Blocks.field_10194, Blocks.field_10566);
-		this.addDrop(Blocks.field_10463, Blocks.field_9993);
-		this.addDrop(Blocks.field_10108, Blocks.field_10211);
-		this.addDrop(Blocks.field_10340, blockx -> drops(blockx, Blocks.field_10445));
-		this.addDrop(Blocks.field_10219, blockx -> drops(blockx, Blocks.field_10566));
-		this.addDrop(Blocks.field_10520, blockx -> drops(blockx, Blocks.field_10566));
-		this.addDrop(Blocks.field_10402, blockx -> drops(blockx, Blocks.field_10566));
-		this.addDrop(Blocks.field_10309, blockx -> drops(blockx, Blocks.field_10614));
-		this.addDrop(Blocks.field_10629, blockx -> drops(blockx, Blocks.field_10264));
-		this.addDrop(Blocks.field_10000, blockx -> drops(blockx, Blocks.field_10396));
-		this.addDrop(Blocks.field_10516, blockx -> drops(blockx, Blocks.field_10111));
-		this.addDrop(Blocks.field_10464, blockx -> drops(blockx, Blocks.field_10488));
-		this.addDrop(Blocks.field_22120, blockx -> drops(blockx, Blocks.field_10515));
-		this.addDrop(Blocks.field_22113, blockx -> drops(blockx, Blocks.field_10515));
-		this.addDrop(Blocks.field_10504, blockx -> drops(blockx, Items.field_8529, ConstantLootTableRange.create(3)));
-		this.addDrop(Blocks.field_10460, blockx -> drops(blockx, Items.field_8696, ConstantLootTableRange.create(4)));
-		this.addDrop(Blocks.field_10443, blockx -> drops(blockx, Blocks.field_10540, ConstantLootTableRange.create(8)));
-		this.addDrop(Blocks.field_10491, blockx -> drops(blockx, Items.field_8543, ConstantLootTableRange.create(4)));
-		this.addDrop(Blocks.field_10021, drops(Items.field_8233, UniformLootTableRange.between(0.0F, 1.0F)));
-		this.addPottedPlantDrop(Blocks.field_10468);
-		this.addPottedPlantDrop(Blocks.field_10192);
-		this.addPottedPlantDrop(Blocks.field_10577);
-		this.addPottedPlantDrop(Blocks.field_10304);
-		this.addPottedPlantDrop(Blocks.field_10564);
-		this.addPottedPlantDrop(Blocks.field_10076);
-		this.addPottedPlantDrop(Blocks.field_10128);
-		this.addPottedPlantDrop(Blocks.field_10354);
-		this.addPottedPlantDrop(Blocks.field_10151);
-		this.addPottedPlantDrop(Blocks.field_9981);
-		this.addPottedPlantDrop(Blocks.field_10162);
-		this.addPottedPlantDrop(Blocks.field_10365);
-		this.addPottedPlantDrop(Blocks.field_10598);
-		this.addPottedPlantDrop(Blocks.field_10249);
-		this.addPottedPlantDrop(Blocks.field_10400);
-		this.addPottedPlantDrop(Blocks.field_10061);
-		this.addPottedPlantDrop(Blocks.field_10074);
-		this.addPottedPlantDrop(Blocks.field_10358);
-		this.addPottedPlantDrop(Blocks.field_10273);
-		this.addPottedPlantDrop(Blocks.field_9998);
-		this.addPottedPlantDrop(Blocks.field_10138);
-		this.addPottedPlantDrop(Blocks.field_10324);
-		this.addPottedPlantDrop(Blocks.field_10487);
-		this.addPottedPlantDrop(Blocks.field_10018);
-		this.addPottedPlantDrop(Blocks.field_10586);
-		this.addPottedPlantDrop(Blocks.field_22424);
-		this.addPottedPlantDrop(Blocks.field_22425);
-		this.addPottedPlantDrop(Blocks.field_22426);
-		this.addPottedPlantDrop(Blocks.field_22427);
-		this.addDrop(Blocks.field_10031, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10257, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10191, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10351, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10500, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10623, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10617, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10390, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10119, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10298, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10236, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10389, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10175, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10237, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10624, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10007, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_18891, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_18890, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10071, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10131, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10454, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10136, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10329, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10283, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10024, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10412, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10405, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10064, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10262, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10601, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10189, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10016, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10478, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10322, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10507, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_22128, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_22129, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_23872, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_23877, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_23862, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.field_10232, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.field_10352, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.field_10403, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.field_9973, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.field_10627, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.field_10149, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.field_10521, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.field_22103, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.field_22102, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.field_10461, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10527, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10288, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10109, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10141, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10561, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10621, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10326, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10180, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10230, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10019, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10410, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10610, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10069, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10120, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10356, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.field_12560));
-		this.addDrop(Blocks.field_10378, blockx -> dropsWithProperty(blockx, TallPlantBlock.HALF, DoubleBlockHalf.field_12607));
-		this.addDrop(Blocks.field_10583, blockx -> dropsWithProperty(blockx, TallPlantBlock.HALF, DoubleBlockHalf.field_12607));
-		this.addDrop(Blocks.field_10003, blockx -> dropsWithProperty(blockx, TallPlantBlock.HALF, DoubleBlockHalf.field_12607));
-		this.addDrop(Blocks.field_10430, blockx -> dropsWithProperty(blockx, TallPlantBlock.HALF, DoubleBlockHalf.field_12607));
+	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
+		this.addDrop(Blocks.GRANITE);
+		this.addDrop(Blocks.POLISHED_GRANITE);
+		this.addDrop(Blocks.DIORITE);
+		this.addDrop(Blocks.POLISHED_DIORITE);
+		this.addDrop(Blocks.ANDESITE);
+		this.addDrop(Blocks.POLISHED_ANDESITE);
+		this.addDrop(Blocks.DIRT);
+		this.addDrop(Blocks.COARSE_DIRT);
+		this.addDrop(Blocks.COBBLESTONE);
+		this.addDrop(Blocks.OAK_PLANKS);
+		this.addDrop(Blocks.SPRUCE_PLANKS);
+		this.addDrop(Blocks.BIRCH_PLANKS);
+		this.addDrop(Blocks.JUNGLE_PLANKS);
+		this.addDrop(Blocks.ACACIA_PLANKS);
+		this.addDrop(Blocks.DARK_OAK_PLANKS);
+		this.addDrop(Blocks.OAK_SAPLING);
+		this.addDrop(Blocks.SPRUCE_SAPLING);
+		this.addDrop(Blocks.BIRCH_SAPLING);
+		this.addDrop(Blocks.JUNGLE_SAPLING);
+		this.addDrop(Blocks.ACACIA_SAPLING);
+		this.addDrop(Blocks.DARK_OAK_SAPLING);
+		this.addDrop(Blocks.SAND);
+		this.addDrop(Blocks.RED_SAND);
+		this.addDrop(Blocks.GOLD_ORE);
+		this.addDrop(Blocks.IRON_ORE);
+		this.addDrop(Blocks.OAK_LOG);
+		this.addDrop(Blocks.SPRUCE_LOG);
+		this.addDrop(Blocks.BIRCH_LOG);
+		this.addDrop(Blocks.JUNGLE_LOG);
+		this.addDrop(Blocks.ACACIA_LOG);
+		this.addDrop(Blocks.DARK_OAK_LOG);
+		this.addDrop(Blocks.STRIPPED_SPRUCE_LOG);
+		this.addDrop(Blocks.STRIPPED_BIRCH_LOG);
+		this.addDrop(Blocks.STRIPPED_JUNGLE_LOG);
+		this.addDrop(Blocks.STRIPPED_ACACIA_LOG);
+		this.addDrop(Blocks.STRIPPED_DARK_OAK_LOG);
+		this.addDrop(Blocks.STRIPPED_OAK_LOG);
+		this.addDrop(Blocks.STRIPPED_WARPED_STEM);
+		this.addDrop(Blocks.STRIPPED_CRIMSON_STEM);
+		this.addDrop(Blocks.OAK_WOOD);
+		this.addDrop(Blocks.SPRUCE_WOOD);
+		this.addDrop(Blocks.BIRCH_WOOD);
+		this.addDrop(Blocks.JUNGLE_WOOD);
+		this.addDrop(Blocks.ACACIA_WOOD);
+		this.addDrop(Blocks.DARK_OAK_WOOD);
+		this.addDrop(Blocks.STRIPPED_OAK_WOOD);
+		this.addDrop(Blocks.STRIPPED_SPRUCE_WOOD);
+		this.addDrop(Blocks.STRIPPED_BIRCH_WOOD);
+		this.addDrop(Blocks.STRIPPED_JUNGLE_WOOD);
+		this.addDrop(Blocks.STRIPPED_ACACIA_WOOD);
+		this.addDrop(Blocks.STRIPPED_DARK_OAK_WOOD);
+		this.addDrop(Blocks.STRIPPED_CRIMSON_HYPHAE);
+		this.addDrop(Blocks.STRIPPED_WARPED_HYPHAE);
+		this.addDrop(Blocks.SPONGE);
+		this.addDrop(Blocks.WET_SPONGE);
+		this.addDrop(Blocks.LAPIS_BLOCK);
+		this.addDrop(Blocks.SANDSTONE);
+		this.addDrop(Blocks.CHISELED_SANDSTONE);
+		this.addDrop(Blocks.CUT_SANDSTONE);
+		this.addDrop(Blocks.NOTE_BLOCK);
+		this.addDrop(Blocks.POWERED_RAIL);
+		this.addDrop(Blocks.DETECTOR_RAIL);
+		this.addDrop(Blocks.STICKY_PISTON);
+		this.addDrop(Blocks.PISTON);
+		this.addDrop(Blocks.WHITE_WOOL);
+		this.addDrop(Blocks.ORANGE_WOOL);
+		this.addDrop(Blocks.MAGENTA_WOOL);
+		this.addDrop(Blocks.LIGHT_BLUE_WOOL);
+		this.addDrop(Blocks.YELLOW_WOOL);
+		this.addDrop(Blocks.LIME_WOOL);
+		this.addDrop(Blocks.PINK_WOOL);
+		this.addDrop(Blocks.GRAY_WOOL);
+		this.addDrop(Blocks.LIGHT_GRAY_WOOL);
+		this.addDrop(Blocks.CYAN_WOOL);
+		this.addDrop(Blocks.PURPLE_WOOL);
+		this.addDrop(Blocks.BLUE_WOOL);
+		this.addDrop(Blocks.BROWN_WOOL);
+		this.addDrop(Blocks.GREEN_WOOL);
+		this.addDrop(Blocks.RED_WOOL);
+		this.addDrop(Blocks.BLACK_WOOL);
+		this.addDrop(Blocks.DANDELION);
+		this.addDrop(Blocks.POPPY);
+		this.addDrop(Blocks.BLUE_ORCHID);
+		this.addDrop(Blocks.ALLIUM);
+		this.addDrop(Blocks.AZURE_BLUET);
+		this.addDrop(Blocks.RED_TULIP);
+		this.addDrop(Blocks.ORANGE_TULIP);
+		this.addDrop(Blocks.WHITE_TULIP);
+		this.addDrop(Blocks.PINK_TULIP);
+		this.addDrop(Blocks.OXEYE_DAISY);
+		this.addDrop(Blocks.CORNFLOWER);
+		this.addDrop(Blocks.WITHER_ROSE);
+		this.addDrop(Blocks.LILY_OF_THE_VALLEY);
+		this.addDrop(Blocks.BROWN_MUSHROOM);
+		this.addDrop(Blocks.RED_MUSHROOM);
+		this.addDrop(Blocks.GOLD_BLOCK);
+		this.addDrop(Blocks.IRON_BLOCK);
+		this.addDrop(Blocks.BRICKS);
+		this.addDrop(Blocks.MOSSY_COBBLESTONE);
+		this.addDrop(Blocks.OBSIDIAN);
+		this.addDrop(Blocks.CRYING_OBSIDIAN);
+		this.addDrop(Blocks.TORCH);
+		this.addDrop(Blocks.OAK_STAIRS);
+		this.addDrop(Blocks.REDSTONE_WIRE);
+		this.addDrop(Blocks.DIAMOND_BLOCK);
+		this.addDrop(Blocks.CRAFTING_TABLE);
+		this.addDrop(Blocks.OAK_SIGN);
+		this.addDrop(Blocks.SPRUCE_SIGN);
+		this.addDrop(Blocks.BIRCH_SIGN);
+		this.addDrop(Blocks.ACACIA_SIGN);
+		this.addDrop(Blocks.JUNGLE_SIGN);
+		this.addDrop(Blocks.DARK_OAK_SIGN);
+		this.addDrop(Blocks.LADDER);
+		this.addDrop(Blocks.RAIL);
+		this.addDrop(Blocks.COBBLESTONE_STAIRS);
+		this.addDrop(Blocks.LEVER);
+		this.addDrop(Blocks.STONE_PRESSURE_PLATE);
+		this.addDrop(Blocks.OAK_PRESSURE_PLATE);
+		this.addDrop(Blocks.SPRUCE_PRESSURE_PLATE);
+		this.addDrop(Blocks.BIRCH_PRESSURE_PLATE);
+		this.addDrop(Blocks.JUNGLE_PRESSURE_PLATE);
+		this.addDrop(Blocks.ACACIA_PRESSURE_PLATE);
+		this.addDrop(Blocks.DARK_OAK_PRESSURE_PLATE);
+		this.addDrop(Blocks.REDSTONE_TORCH);
+		this.addDrop(Blocks.STONE_BUTTON);
+		this.addDrop(Blocks.CACTUS);
+		this.addDrop(Blocks.SUGAR_CANE);
+		this.addDrop(Blocks.JUKEBOX);
+		this.addDrop(Blocks.OAK_FENCE);
+		this.addDrop(Blocks.PUMPKIN);
+		this.addDrop(Blocks.NETHERRACK);
+		this.addDrop(Blocks.SOUL_SAND);
+		this.addDrop(Blocks.SOUL_SOIL);
+		this.addDrop(Blocks.BASALT);
+		this.addDrop(Blocks.POLISHED_BASALT);
+		this.addDrop(Blocks.SOUL_TORCH);
+		this.addDrop(Blocks.CARVED_PUMPKIN);
+		this.addDrop(Blocks.JACK_O_LANTERN);
+		this.addDrop(Blocks.REPEATER);
+		this.addDrop(Blocks.OAK_TRAPDOOR);
+		this.addDrop(Blocks.SPRUCE_TRAPDOOR);
+		this.addDrop(Blocks.BIRCH_TRAPDOOR);
+		this.addDrop(Blocks.JUNGLE_TRAPDOOR);
+		this.addDrop(Blocks.ACACIA_TRAPDOOR);
+		this.addDrop(Blocks.DARK_OAK_TRAPDOOR);
+		this.addDrop(Blocks.STONE_BRICKS);
+		this.addDrop(Blocks.MOSSY_STONE_BRICKS);
+		this.addDrop(Blocks.CRACKED_STONE_BRICKS);
+		this.addDrop(Blocks.CHISELED_STONE_BRICKS);
+		this.addDrop(Blocks.IRON_BARS);
+		this.addDrop(Blocks.OAK_FENCE_GATE);
+		this.addDrop(Blocks.BRICK_STAIRS);
+		this.addDrop(Blocks.STONE_BRICK_STAIRS);
+		this.addDrop(Blocks.LILY_PAD);
+		this.addDrop(Blocks.NETHER_BRICKS);
+		this.addDrop(Blocks.NETHER_BRICK_FENCE);
+		this.addDrop(Blocks.NETHER_BRICK_STAIRS);
+		this.addDrop(Blocks.CAULDRON);
+		this.addDrop(Blocks.END_STONE);
+		this.addDrop(Blocks.REDSTONE_LAMP);
+		this.addDrop(Blocks.SANDSTONE_STAIRS);
+		this.addDrop(Blocks.TRIPWIRE_HOOK);
+		this.addDrop(Blocks.EMERALD_BLOCK);
+		this.addDrop(Blocks.SPRUCE_STAIRS);
+		this.addDrop(Blocks.BIRCH_STAIRS);
+		this.addDrop(Blocks.JUNGLE_STAIRS);
+		this.addDrop(Blocks.COBBLESTONE_WALL);
+		this.addDrop(Blocks.MOSSY_COBBLESTONE_WALL);
+		this.addDrop(Blocks.FLOWER_POT);
+		this.addDrop(Blocks.OAK_BUTTON);
+		this.addDrop(Blocks.SPRUCE_BUTTON);
+		this.addDrop(Blocks.BIRCH_BUTTON);
+		this.addDrop(Blocks.JUNGLE_BUTTON);
+		this.addDrop(Blocks.ACACIA_BUTTON);
+		this.addDrop(Blocks.DARK_OAK_BUTTON);
+		this.addDrop(Blocks.SKELETON_SKULL);
+		this.addDrop(Blocks.WITHER_SKELETON_SKULL);
+		this.addDrop(Blocks.ZOMBIE_HEAD);
+		this.addDrop(Blocks.CREEPER_HEAD);
+		this.addDrop(Blocks.DRAGON_HEAD);
+		this.addDrop(Blocks.ANVIL);
+		this.addDrop(Blocks.CHIPPED_ANVIL);
+		this.addDrop(Blocks.DAMAGED_ANVIL);
+		this.addDrop(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE);
+		this.addDrop(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE);
+		this.addDrop(Blocks.COMPARATOR);
+		this.addDrop(Blocks.DAYLIGHT_DETECTOR);
+		this.addDrop(Blocks.REDSTONE_BLOCK);
+		this.addDrop(Blocks.QUARTZ_BLOCK);
+		this.addDrop(Blocks.CHISELED_QUARTZ_BLOCK);
+		this.addDrop(Blocks.QUARTZ_PILLAR);
+		this.addDrop(Blocks.QUARTZ_STAIRS);
+		this.addDrop(Blocks.ACTIVATOR_RAIL);
+		this.addDrop(Blocks.WHITE_TERRACOTTA);
+		this.addDrop(Blocks.ORANGE_TERRACOTTA);
+		this.addDrop(Blocks.MAGENTA_TERRACOTTA);
+		this.addDrop(Blocks.LIGHT_BLUE_TERRACOTTA);
+		this.addDrop(Blocks.YELLOW_TERRACOTTA);
+		this.addDrop(Blocks.LIME_TERRACOTTA);
+		this.addDrop(Blocks.PINK_TERRACOTTA);
+		this.addDrop(Blocks.GRAY_TERRACOTTA);
+		this.addDrop(Blocks.LIGHT_GRAY_TERRACOTTA);
+		this.addDrop(Blocks.CYAN_TERRACOTTA);
+		this.addDrop(Blocks.PURPLE_TERRACOTTA);
+		this.addDrop(Blocks.BLUE_TERRACOTTA);
+		this.addDrop(Blocks.BROWN_TERRACOTTA);
+		this.addDrop(Blocks.GREEN_TERRACOTTA);
+		this.addDrop(Blocks.RED_TERRACOTTA);
+		this.addDrop(Blocks.BLACK_TERRACOTTA);
+		this.addDrop(Blocks.ACACIA_STAIRS);
+		this.addDrop(Blocks.DARK_OAK_STAIRS);
+		this.addDrop(Blocks.SLIME_BLOCK);
+		this.addDrop(Blocks.IRON_TRAPDOOR);
+		this.addDrop(Blocks.PRISMARINE);
+		this.addDrop(Blocks.PRISMARINE_BRICKS);
+		this.addDrop(Blocks.DARK_PRISMARINE);
+		this.addDrop(Blocks.PRISMARINE_STAIRS);
+		this.addDrop(Blocks.PRISMARINE_BRICK_STAIRS);
+		this.addDrop(Blocks.DARK_PRISMARINE_STAIRS);
+		this.addDrop(Blocks.HAY_BLOCK);
+		this.addDrop(Blocks.WHITE_CARPET);
+		this.addDrop(Blocks.ORANGE_CARPET);
+		this.addDrop(Blocks.MAGENTA_CARPET);
+		this.addDrop(Blocks.LIGHT_BLUE_CARPET);
+		this.addDrop(Blocks.YELLOW_CARPET);
+		this.addDrop(Blocks.LIME_CARPET);
+		this.addDrop(Blocks.PINK_CARPET);
+		this.addDrop(Blocks.GRAY_CARPET);
+		this.addDrop(Blocks.LIGHT_GRAY_CARPET);
+		this.addDrop(Blocks.CYAN_CARPET);
+		this.addDrop(Blocks.PURPLE_CARPET);
+		this.addDrop(Blocks.BLUE_CARPET);
+		this.addDrop(Blocks.BROWN_CARPET);
+		this.addDrop(Blocks.GREEN_CARPET);
+		this.addDrop(Blocks.RED_CARPET);
+		this.addDrop(Blocks.BLACK_CARPET);
+		this.addDrop(Blocks.TERRACOTTA);
+		this.addDrop(Blocks.COAL_BLOCK);
+		this.addDrop(Blocks.RED_SANDSTONE);
+		this.addDrop(Blocks.CHISELED_RED_SANDSTONE);
+		this.addDrop(Blocks.CUT_RED_SANDSTONE);
+		this.addDrop(Blocks.RED_SANDSTONE_STAIRS);
+		this.addDrop(Blocks.SMOOTH_STONE);
+		this.addDrop(Blocks.SMOOTH_SANDSTONE);
+		this.addDrop(Blocks.SMOOTH_QUARTZ);
+		this.addDrop(Blocks.SMOOTH_RED_SANDSTONE);
+		this.addDrop(Blocks.SPRUCE_FENCE_GATE);
+		this.addDrop(Blocks.BIRCH_FENCE_GATE);
+		this.addDrop(Blocks.JUNGLE_FENCE_GATE);
+		this.addDrop(Blocks.ACACIA_FENCE_GATE);
+		this.addDrop(Blocks.DARK_OAK_FENCE_GATE);
+		this.addDrop(Blocks.SPRUCE_FENCE);
+		this.addDrop(Blocks.BIRCH_FENCE);
+		this.addDrop(Blocks.JUNGLE_FENCE);
+		this.addDrop(Blocks.ACACIA_FENCE);
+		this.addDrop(Blocks.DARK_OAK_FENCE);
+		this.addDrop(Blocks.END_ROD);
+		this.addDrop(Blocks.PURPUR_BLOCK);
+		this.addDrop(Blocks.PURPUR_PILLAR);
+		this.addDrop(Blocks.PURPUR_STAIRS);
+		this.addDrop(Blocks.END_STONE_BRICKS);
+		this.addDrop(Blocks.MAGMA_BLOCK);
+		this.addDrop(Blocks.NETHER_WART_BLOCK);
+		this.addDrop(Blocks.RED_NETHER_BRICKS);
+		this.addDrop(Blocks.BONE_BLOCK);
+		this.addDrop(Blocks.OBSERVER);
+		this.addDrop(Blocks.TARGET);
+		this.addDrop(Blocks.WHITE_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.ORANGE_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.MAGENTA_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.YELLOW_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.LIME_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.PINK_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.GRAY_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.LIGHT_GRAY_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.CYAN_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.PURPLE_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.BLUE_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.BROWN_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.GREEN_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.RED_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.BLACK_GLAZED_TERRACOTTA);
+		this.addDrop(Blocks.WHITE_CONCRETE);
+		this.addDrop(Blocks.ORANGE_CONCRETE);
+		this.addDrop(Blocks.MAGENTA_CONCRETE);
+		this.addDrop(Blocks.LIGHT_BLUE_CONCRETE);
+		this.addDrop(Blocks.YELLOW_CONCRETE);
+		this.addDrop(Blocks.LIME_CONCRETE);
+		this.addDrop(Blocks.PINK_CONCRETE);
+		this.addDrop(Blocks.GRAY_CONCRETE);
+		this.addDrop(Blocks.LIGHT_GRAY_CONCRETE);
+		this.addDrop(Blocks.CYAN_CONCRETE);
+		this.addDrop(Blocks.PURPLE_CONCRETE);
+		this.addDrop(Blocks.BLUE_CONCRETE);
+		this.addDrop(Blocks.BROWN_CONCRETE);
+		this.addDrop(Blocks.GREEN_CONCRETE);
+		this.addDrop(Blocks.RED_CONCRETE);
+		this.addDrop(Blocks.BLACK_CONCRETE);
+		this.addDrop(Blocks.WHITE_CONCRETE_POWDER);
+		this.addDrop(Blocks.ORANGE_CONCRETE_POWDER);
+		this.addDrop(Blocks.MAGENTA_CONCRETE_POWDER);
+		this.addDrop(Blocks.LIGHT_BLUE_CONCRETE_POWDER);
+		this.addDrop(Blocks.YELLOW_CONCRETE_POWDER);
+		this.addDrop(Blocks.LIME_CONCRETE_POWDER);
+		this.addDrop(Blocks.PINK_CONCRETE_POWDER);
+		this.addDrop(Blocks.GRAY_CONCRETE_POWDER);
+		this.addDrop(Blocks.LIGHT_GRAY_CONCRETE_POWDER);
+		this.addDrop(Blocks.CYAN_CONCRETE_POWDER);
+		this.addDrop(Blocks.PURPLE_CONCRETE_POWDER);
+		this.addDrop(Blocks.BLUE_CONCRETE_POWDER);
+		this.addDrop(Blocks.BROWN_CONCRETE_POWDER);
+		this.addDrop(Blocks.GREEN_CONCRETE_POWDER);
+		this.addDrop(Blocks.RED_CONCRETE_POWDER);
+		this.addDrop(Blocks.BLACK_CONCRETE_POWDER);
+		this.addDrop(Blocks.KELP);
+		this.addDrop(Blocks.DRIED_KELP_BLOCK);
+		this.addDrop(Blocks.DEAD_TUBE_CORAL_BLOCK);
+		this.addDrop(Blocks.DEAD_BRAIN_CORAL_BLOCK);
+		this.addDrop(Blocks.DEAD_BUBBLE_CORAL_BLOCK);
+		this.addDrop(Blocks.DEAD_FIRE_CORAL_BLOCK);
+		this.addDrop(Blocks.DEAD_HORN_CORAL_BLOCK);
+		this.addDrop(Blocks.CONDUIT);
+		this.addDrop(Blocks.DRAGON_EGG);
+		this.addDrop(Blocks.BAMBOO);
+		this.addDrop(Blocks.POLISHED_GRANITE_STAIRS);
+		this.addDrop(Blocks.SMOOTH_RED_SANDSTONE_STAIRS);
+		this.addDrop(Blocks.MOSSY_STONE_BRICK_STAIRS);
+		this.addDrop(Blocks.POLISHED_DIORITE_STAIRS);
+		this.addDrop(Blocks.MOSSY_COBBLESTONE_STAIRS);
+		this.addDrop(Blocks.END_STONE_BRICK_STAIRS);
+		this.addDrop(Blocks.STONE_STAIRS);
+		this.addDrop(Blocks.SMOOTH_SANDSTONE_STAIRS);
+		this.addDrop(Blocks.SMOOTH_QUARTZ_STAIRS);
+		this.addDrop(Blocks.GRANITE_STAIRS);
+		this.addDrop(Blocks.ANDESITE_STAIRS);
+		this.addDrop(Blocks.RED_NETHER_BRICK_STAIRS);
+		this.addDrop(Blocks.POLISHED_ANDESITE_STAIRS);
+		this.addDrop(Blocks.DIORITE_STAIRS);
+		this.addDrop(Blocks.BRICK_WALL);
+		this.addDrop(Blocks.PRISMARINE_WALL);
+		this.addDrop(Blocks.RED_SANDSTONE_WALL);
+		this.addDrop(Blocks.MOSSY_STONE_BRICK_WALL);
+		this.addDrop(Blocks.GRANITE_WALL);
+		this.addDrop(Blocks.STONE_BRICK_WALL);
+		this.addDrop(Blocks.NETHER_BRICK_WALL);
+		this.addDrop(Blocks.ANDESITE_WALL);
+		this.addDrop(Blocks.RED_NETHER_BRICK_WALL);
+		this.addDrop(Blocks.SANDSTONE_WALL);
+		this.addDrop(Blocks.END_STONE_BRICK_WALL);
+		this.addDrop(Blocks.DIORITE_WALL);
+		this.addDrop(Blocks.LOOM);
+		this.addDrop(Blocks.SCAFFOLDING);
+		this.addDrop(Blocks.HONEY_BLOCK);
+		this.addDrop(Blocks.HONEYCOMB_BLOCK);
+		this.addDrop(Blocks.RESPAWN_ANCHOR);
+		this.addDrop(Blocks.LODESTONE);
+		this.addDrop(Blocks.WARPED_STEM);
+		this.addDrop(Blocks.WARPED_HYPHAE);
+		this.addDrop(Blocks.WARPED_FUNGUS);
+		this.addDrop(Blocks.WARPED_WART_BLOCK);
+		this.addDrop(Blocks.CRIMSON_STEM);
+		this.addDrop(Blocks.CRIMSON_HYPHAE);
+		this.addDrop(Blocks.CRIMSON_FUNGUS);
+		this.addDrop(Blocks.SHROOMLIGHT);
+		this.addDrop(Blocks.CRIMSON_PLANKS);
+		this.addDrop(Blocks.WARPED_PLANKS);
+		this.addDrop(Blocks.WARPED_PRESSURE_PLATE);
+		this.addDrop(Blocks.WARPED_FENCE);
+		this.addDrop(Blocks.WARPED_TRAPDOOR);
+		this.addDrop(Blocks.WARPED_FENCE_GATE);
+		this.addDrop(Blocks.WARPED_STAIRS);
+		this.addDrop(Blocks.WARPED_BUTTON);
+		this.addDrop(Blocks.WARPED_SIGN);
+		this.addDrop(Blocks.CRIMSON_PRESSURE_PLATE);
+		this.addDrop(Blocks.CRIMSON_FENCE);
+		this.addDrop(Blocks.CRIMSON_TRAPDOOR);
+		this.addDrop(Blocks.CRIMSON_FENCE_GATE);
+		this.addDrop(Blocks.CRIMSON_STAIRS);
+		this.addDrop(Blocks.CRIMSON_BUTTON);
+		this.addDrop(Blocks.CRIMSON_SIGN);
+		this.addDrop(Blocks.NETHERITE_BLOCK);
+		this.addDrop(Blocks.ANCIENT_DEBRIS);
+		this.addDrop(Blocks.BLACKSTONE);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE_BRICKS);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS);
+		this.addDrop(Blocks.BLACKSTONE_STAIRS);
+		this.addDrop(Blocks.BLACKSTONE_WALL);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+		this.addDrop(Blocks.CHISELED_POLISHED_BLACKSTONE);
+		this.addDrop(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE_STAIRS);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE_BUTTON);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE_WALL);
+		this.addDrop(Blocks.CHISELED_NETHER_BRICKS);
+		this.addDrop(Blocks.CRACKED_NETHER_BRICKS);
+		this.addDrop(Blocks.QUARTZ_BRICKS);
+		this.addDrop(Blocks.CHAIN);
+		this.addDrop(Blocks.WARPED_ROOTS);
+		this.addDrop(Blocks.CRIMSON_ROOTS);
+		this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
+		this.addDrop(Blocks.TRIPWIRE, Items.STRING);
+		this.addDrop(Blocks.GRASS_PATH, Blocks.DIRT);
+		this.addDrop(Blocks.KELP_PLANT, Blocks.KELP);
+		this.addDrop(Blocks.BAMBOO_SAPLING, Blocks.BAMBOO);
+		this.addDrop(Blocks.STONE, blockx -> drops(blockx, Blocks.COBBLESTONE));
+		this.addDrop(Blocks.GRASS_BLOCK, blockx -> drops(blockx, Blocks.DIRT));
+		this.addDrop(Blocks.PODZOL, blockx -> drops(blockx, Blocks.DIRT));
+		this.addDrop(Blocks.MYCELIUM, blockx -> drops(blockx, Blocks.DIRT));
+		this.addDrop(Blocks.TUBE_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_TUBE_CORAL_BLOCK));
+		this.addDrop(Blocks.BRAIN_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_BRAIN_CORAL_BLOCK));
+		this.addDrop(Blocks.BUBBLE_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_BUBBLE_CORAL_BLOCK));
+		this.addDrop(Blocks.FIRE_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_FIRE_CORAL_BLOCK));
+		this.addDrop(Blocks.HORN_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_HORN_CORAL_BLOCK));
+		this.addDrop(Blocks.CRIMSON_NYLIUM, blockx -> drops(blockx, Blocks.NETHERRACK));
+		this.addDrop(Blocks.WARPED_NYLIUM, blockx -> drops(blockx, Blocks.NETHERRACK));
+		this.addDrop(Blocks.BOOKSHELF, blockx -> drops(blockx, Items.BOOK, ConstantLootTableRange.create(3)));
+		this.addDrop(Blocks.CLAY, blockx -> drops(blockx, Items.CLAY_BALL, ConstantLootTableRange.create(4)));
+		this.addDrop(Blocks.ENDER_CHEST, blockx -> drops(blockx, Blocks.OBSIDIAN, ConstantLootTableRange.create(8)));
+		this.addDrop(Blocks.SNOW_BLOCK, blockx -> drops(blockx, Items.SNOWBALL, ConstantLootTableRange.create(4)));
+		this.addDrop(Blocks.CHORUS_PLANT, drops(Items.CHORUS_FRUIT, UniformLootTableRange.between(0.0F, 1.0F)));
+		this.addPottedPlantDrop(Blocks.POTTED_OAK_SAPLING);
+		this.addPottedPlantDrop(Blocks.POTTED_SPRUCE_SAPLING);
+		this.addPottedPlantDrop(Blocks.POTTED_BIRCH_SAPLING);
+		this.addPottedPlantDrop(Blocks.POTTED_JUNGLE_SAPLING);
+		this.addPottedPlantDrop(Blocks.POTTED_ACACIA_SAPLING);
+		this.addPottedPlantDrop(Blocks.POTTED_DARK_OAK_SAPLING);
+		this.addPottedPlantDrop(Blocks.POTTED_FERN);
+		this.addPottedPlantDrop(Blocks.POTTED_DANDELION);
+		this.addPottedPlantDrop(Blocks.POTTED_POPPY);
+		this.addPottedPlantDrop(Blocks.POTTED_BLUE_ORCHID);
+		this.addPottedPlantDrop(Blocks.POTTED_ALLIUM);
+		this.addPottedPlantDrop(Blocks.POTTED_AZURE_BLUET);
+		this.addPottedPlantDrop(Blocks.POTTED_RED_TULIP);
+		this.addPottedPlantDrop(Blocks.POTTED_ORANGE_TULIP);
+		this.addPottedPlantDrop(Blocks.POTTED_WHITE_TULIP);
+		this.addPottedPlantDrop(Blocks.POTTED_PINK_TULIP);
+		this.addPottedPlantDrop(Blocks.POTTED_OXEYE_DAISY);
+		this.addPottedPlantDrop(Blocks.POTTED_CORNFLOWER);
+		this.addPottedPlantDrop(Blocks.POTTED_LILY_OF_THE_VALLEY);
+		this.addPottedPlantDrop(Blocks.POTTED_WITHER_ROSE);
+		this.addPottedPlantDrop(Blocks.POTTED_RED_MUSHROOM);
+		this.addPottedPlantDrop(Blocks.POTTED_BROWN_MUSHROOM);
+		this.addPottedPlantDrop(Blocks.POTTED_DEAD_BUSH);
+		this.addPottedPlantDrop(Blocks.POTTED_CACTUS);
+		this.addPottedPlantDrop(Blocks.POTTED_BAMBOO);
+		this.addPottedPlantDrop(Blocks.POTTED_CRIMSON_FUNGUS);
+		this.addPottedPlantDrop(Blocks.POTTED_WARPED_FUNGUS);
+		this.addPottedPlantDrop(Blocks.POTTED_CRIMSON_ROOTS);
+		this.addPottedPlantDrop(Blocks.POTTED_WARPED_ROOTS);
+		this.addDrop(Blocks.ACACIA_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.BIRCH_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.COBBLESTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.DARK_OAK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.DARK_PRISMARINE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.JUNGLE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.NETHER_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.OAK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.PETRIFIED_OAK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.PRISMARINE_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.PRISMARINE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.PURPUR_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.QUARTZ_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.RED_SANDSTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.SANDSTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.CUT_RED_SANDSTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.CUT_SANDSTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.SPRUCE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.STONE_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.STONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.SMOOTH_STONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.POLISHED_GRANITE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.SMOOTH_RED_SANDSTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.MOSSY_STONE_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.POLISHED_DIORITE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.MOSSY_COBBLESTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.END_STONE_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.SMOOTH_SANDSTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.SMOOTH_QUARTZ_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.GRANITE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.ANDESITE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.RED_NETHER_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.POLISHED_ANDESITE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.DIORITE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.CRIMSON_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.WARPED_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.BLACKSTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.POLISHED_BLACKSTONE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.ACACIA_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.BIRCH_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.DARK_OAK_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.IRON_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.JUNGLE_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.OAK_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.SPRUCE_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.WARPED_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.CRIMSON_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.BLACK_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.BLUE_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.BROWN_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.CYAN_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.GRAY_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.GREEN_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.LIGHT_BLUE_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.LIGHT_GRAY_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.LIME_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.MAGENTA_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.PURPLE_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.ORANGE_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.PINK_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.RED_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.WHITE_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.YELLOW_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
+		this.addDrop(Blocks.LILAC, blockx -> dropsWithProperty(blockx, TallPlantBlock.HALF, DoubleBlockHalf.LOWER));
+		this.addDrop(Blocks.SUNFLOWER, blockx -> dropsWithProperty(blockx, TallPlantBlock.HALF, DoubleBlockHalf.LOWER));
+		this.addDrop(Blocks.PEONY, blockx -> dropsWithProperty(blockx, TallPlantBlock.HALF, DoubleBlockHalf.LOWER));
+		this.addDrop(Blocks.ROSE_BUSH, blockx -> dropsWithProperty(blockx, TallPlantBlock.HALF, DoubleBlockHalf.LOWER));
 		this.addDrop(
-			Blocks.field_10375,
+			Blocks.TNT,
 			LootTable.builder()
 				.pool(
 					addSurvivesExplosionCondition(
-						Blocks.field_10375,
+						Blocks.TNT,
 						LootPool.builder()
 							.rolls(ConstantLootTableRange.create(1))
 							.with(
-								ItemEntry.builder(Blocks.field_10375)
-									.method_421(
-										BlockStatePropertyLootCondition.builder(Blocks.field_10375).properties(StatePredicate.Builder.create().exactMatch(TntBlock.UNSTABLE, false))
-									)
+								ItemEntry.builder(Blocks.TNT)
+									.conditionally(BlockStatePropertyLootCondition.builder(Blocks.TNT).properties(StatePredicate.Builder.create().exactMatch(TntBlock.UNSTABLE, false)))
 							)
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_10302,
+			Blocks.COCOA,
 			blockx -> LootTable.builder()
 					.pool(
 						LootPool.builder()
@@ -1043,309 +1037,307 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							.with(
 								(LootPoolEntry.Builder<?>)applyExplosionDecay(
 									blockx,
-									ItemEntry.builder(Items.field_8116)
-										.method_438(
+									ItemEntry.builder(Items.COCOA_BEANS)
+										.apply(
 											SetCountLootFunction.builder(ConstantLootTableRange.create(3))
-												.method_524(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(CocoaBlock.AGE, 2)))
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(CocoaBlock.AGE, 2)))
 										)
 								)
 							)
 					)
 		);
 		this.addDrop(
-			Blocks.field_10476,
+			Blocks.SEA_PICKLE,
 			blockx -> LootTable.builder()
 					.pool(
 						LootPool.builder()
 							.rolls(ConstantLootTableRange.create(1))
 							.with(
 								(LootPoolEntry.Builder<?>)applyExplosionDecay(
-									Blocks.field_10476,
+									Blocks.SEA_PICKLE,
 									ItemEntry.builder(blockx)
-										.method_438(
+										.apply(
 											SetCountLootFunction.builder(ConstantLootTableRange.create(2))
-												.method_524(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 2)))
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 2)))
 										)
-										.method_438(
+										.apply(
 											SetCountLootFunction.builder(ConstantLootTableRange.create(3))
-												.method_524(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 3)))
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 3)))
 										)
-										.method_438(
+										.apply(
 											SetCountLootFunction.builder(ConstantLootTableRange.create(4))
-												.method_524(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 4)))
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 4)))
 										)
 								)
 							)
 					)
 		);
 		this.addDrop(
-			Blocks.field_17563,
+			Blocks.COMPOSTER,
 			blockx -> LootTable.builder()
 					.pool(LootPool.builder().with((LootPoolEntry.Builder<?>)applyExplosionDecay(blockx, ItemEntry.builder(Items.COMPOSTER))))
 					.pool(
 						LootPool.builder()
-							.with(ItemEntry.builder(Items.field_8324))
-							.method_356(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(ComposterBlock.LEVEL, 8)))
+							.with(ItemEntry.builder(Items.BONE_MEAL))
+							.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(ComposterBlock.LEVEL, 8)))
 					)
 		);
-		this.addDrop(Blocks.field_10327, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_10333, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_10034, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_10200, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_10228, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_10485, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_10181, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_10312, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_10380, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16334, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16333, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16328, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16336, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16331, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16337, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16330, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16329, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16335, BlockLootTableGenerator::nameableContainerDrops);
-		this.addDrop(Blocks.field_16332, BlockLootTableGenerator::drops);
-		this.addDrop(Blocks.field_16541, BlockLootTableGenerator::drops);
-		this.addDrop(Blocks.field_22110, BlockLootTableGenerator::drops);
-		this.addDrop(Blocks.field_10603, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10371, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10605, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10373, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10532, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10140, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10055, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10203, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10320, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10275, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10063, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10407, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10051, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10268, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10068, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10199, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10600, BlockLootTableGenerator::shulkerBoxDrops);
-		this.addDrop(Blocks.field_10062, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10281, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10602, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10165, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10185, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10198, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10452, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_9985, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10229, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10438, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10045, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10612, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10368, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10406, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10154, BlockLootTableGenerator::bannerDrops);
-		this.addDrop(Blocks.field_10547, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.BEACON, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.BREWING_STAND, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.CHEST, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.DISPENSER, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.DROPPER, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.ENCHANTING_TABLE, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.FURNACE, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.HOPPER, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.TRAPPED_CHEST, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.SMOKER, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.BLAST_FURNACE, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.BARREL, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.CARTOGRAPHY_TABLE, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.FLETCHING_TABLE, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.GRINDSTONE, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.LECTERN, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.SMITHING_TABLE, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.STONECUTTER, BlockLootTableGenerator::nameableContainerDrops);
+		this.addDrop(Blocks.BELL, BlockLootTableGenerator::drops);
+		this.addDrop(Blocks.LANTERN, BlockLootTableGenerator::drops);
+		this.addDrop(Blocks.SOUL_LANTERN, BlockLootTableGenerator::drops);
+		this.addDrop(Blocks.SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.BLACK_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.BLUE_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.BROWN_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.CYAN_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.GRAY_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.GREEN_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.LIGHT_BLUE_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.LIGHT_GRAY_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.LIME_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.MAGENTA_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.ORANGE_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.PINK_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.PURPLE_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.RED_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.WHITE_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.YELLOW_SHULKER_BOX, BlockLootTableGenerator::shulkerBoxDrops);
+		this.addDrop(Blocks.BLACK_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.BLUE_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.BROWN_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.CYAN_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.GRAY_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.GREEN_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.LIGHT_BLUE_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.LIGHT_GRAY_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.LIME_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.MAGENTA_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.ORANGE_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.PINK_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.PURPLE_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.RED_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.WHITE_BANNER, BlockLootTableGenerator::bannerDrops);
+		this.addDrop(Blocks.YELLOW_BANNER, BlockLootTableGenerator::bannerDrops);
 		this.addDrop(
-			Blocks.field_10432,
+			Blocks.PLAYER_HEAD,
 			blockx -> LootTable.builder()
 					.pool(
 						addSurvivesExplosionCondition(
 							blockx,
 							LootPool.builder()
 								.rolls(ConstantLootTableRange.create(1))
-								.with(
-									ItemEntry.builder(blockx).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027).withOperation("SkullOwner", "SkullOwner"))
-								)
+								.with(ItemEntry.builder(blockx).apply(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("SkullOwner", "SkullOwner")))
 						)
 					)
 		);
-		this.addDrop(Blocks.field_20421, BlockLootTableGenerator::beeNestDrops);
-		this.addDrop(Blocks.field_20422, BlockLootTableGenerator::beehiveDrops);
-		this.addDrop(Blocks.field_10539, blockx -> leavesDrop(blockx, Blocks.field_10575, SAPLING_DROP_CHANCE));
-		this.addDrop(Blocks.field_10098, blockx -> leavesDrop(blockx, Blocks.field_10385, SAPLING_DROP_CHANCE));
-		this.addDrop(Blocks.field_10335, blockx -> leavesDrop(blockx, Blocks.field_10276, JUNGLE_SAPLING_DROP_CHANCE));
-		this.addDrop(Blocks.field_9988, blockx -> leavesDrop(blockx, Blocks.field_10217, SAPLING_DROP_CHANCE));
-		this.addDrop(Blocks.field_10503, blockx -> oakLeavesDrop(blockx, Blocks.field_10394, SAPLING_DROP_CHANCE));
-		this.addDrop(Blocks.field_10035, blockx -> oakLeavesDrop(blockx, Blocks.field_10160, SAPLING_DROP_CHANCE));
-		LootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.field_10341)
+		this.addDrop(Blocks.BEE_NEST, BlockLootTableGenerator::beeNestDrops);
+		this.addDrop(Blocks.BEEHIVE, BlockLootTableGenerator::beehiveDrops);
+		this.addDrop(Blocks.BIRCH_LEAVES, blockx -> leavesDrop(blockx, Blocks.BIRCH_SAPLING, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.ACACIA_LEAVES, blockx -> leavesDrop(blockx, Blocks.ACACIA_SAPLING, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.JUNGLE_LEAVES, blockx -> leavesDrop(blockx, Blocks.JUNGLE_SAPLING, JUNGLE_SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.SPRUCE_LEAVES, blockx -> leavesDrop(blockx, Blocks.SPRUCE_SAPLING, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.OAK_LEAVES, blockx -> oakLeavesDrop(blockx, Blocks.OAK_SAPLING, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.DARK_OAK_LEAVES, blockx -> oakLeavesDrop(blockx, Blocks.DARK_OAK_SAPLING, SAPLING_DROP_CHANCE));
+		LootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.BEETROOTS)
 			.properties(StatePredicate.Builder.create().exactMatch(BeetrootsBlock.AGE, 3));
-		this.addDrop(Blocks.field_10341, cropDrops(Blocks.field_10341, Items.field_8186, Items.field_8309, builder));
-		LootCondition.Builder builder2 = BlockStatePropertyLootCondition.builder(Blocks.field_10293)
+		this.addDrop(Blocks.BEETROOTS, cropDrops(Blocks.BEETROOTS, Items.BEETROOT, Items.BEETROOT_SEEDS, builder));
+		LootCondition.Builder builder2 = BlockStatePropertyLootCondition.builder(Blocks.WHEAT)
 			.properties(StatePredicate.Builder.create().exactMatch(CropBlock.AGE, 7));
-		this.addDrop(Blocks.field_10293, cropDrops(Blocks.field_10293, Items.field_8861, Items.field_8317, builder2));
-		LootCondition.Builder builder3 = BlockStatePropertyLootCondition.builder(Blocks.field_10609)
+		this.addDrop(Blocks.WHEAT, cropDrops(Blocks.WHEAT, Items.WHEAT, Items.WHEAT_SEEDS, builder2));
+		LootCondition.Builder builder3 = BlockStatePropertyLootCondition.builder(Blocks.CARROTS)
 			.properties(StatePredicate.Builder.create().exactMatch(CarrotsBlock.AGE, 7));
 		this.addDrop(
-			Blocks.field_10609,
+			Blocks.CARROTS,
 			applyExplosionDecay(
-				Blocks.field_10609,
+				Blocks.CARROTS,
 				LootTable.builder()
-					.pool(LootPool.builder().with(ItemEntry.builder(Items.field_8179)))
+					.pool(LootPool.builder().with(ItemEntry.builder(Items.CARROT)))
 					.pool(
 						LootPool.builder()
-							.method_356(builder3)
-							.with(ItemEntry.builder(Items.field_8179).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.field_9130, 0.5714286F, 3)))
+							.conditionally(builder3)
+							.with(ItemEntry.builder(Items.CARROT).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286F, 3)))
 					)
 			)
 		);
-		LootCondition.Builder builder4 = BlockStatePropertyLootCondition.builder(Blocks.field_10247)
+		LootCondition.Builder builder4 = BlockStatePropertyLootCondition.builder(Blocks.POTATOES)
 			.properties(StatePredicate.Builder.create().exactMatch(PotatoesBlock.AGE, 7));
 		this.addDrop(
-			Blocks.field_10247,
+			Blocks.POTATOES,
 			applyExplosionDecay(
-				Blocks.field_10247,
+				Blocks.POTATOES,
 				LootTable.builder()
-					.pool(LootPool.builder().with(ItemEntry.builder(Items.field_8567)))
+					.pool(LootPool.builder().with(ItemEntry.builder(Items.POTATO)))
 					.pool(
 						LootPool.builder()
-							.method_356(builder4)
-							.with(ItemEntry.builder(Items.field_8567).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.field_9130, 0.5714286F, 3)))
+							.conditionally(builder4)
+							.with(ItemEntry.builder(Items.POTATO).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286F, 3)))
 					)
-					.pool(LootPool.builder().method_356(builder4).with(ItemEntry.builder(Items.field_8635).method_421(RandomChanceLootCondition.builder(0.02F))))
+					.pool(LootPool.builder().conditionally(builder4).with(ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.02F))))
 			)
 		);
 		this.addDrop(
-			Blocks.field_16999,
+			Blocks.SWEET_BERRY_BUSH,
 			blockx -> applyExplosionDecay(
 					blockx,
 					LootTable.builder()
 						.pool(
 							LootPool.builder()
-								.method_356(
-									BlockStatePropertyLootCondition.builder(Blocks.field_16999).properties(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 3))
+								.conditionally(
+									BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).properties(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 3))
 								)
-								.with(ItemEntry.builder(Items.field_16998))
-								.method_353(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 3.0F)))
-								.method_353(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
+								.with(ItemEntry.builder(Items.SWEET_BERRIES))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 3.0F)))
+								.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
 						)
 						.pool(
 							LootPool.builder()
-								.method_356(
-									BlockStatePropertyLootCondition.builder(Blocks.field_16999).properties(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 2))
+								.conditionally(
+									BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).properties(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 2))
 								)
-								.with(ItemEntry.builder(Items.field_16998))
-								.method_353(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
-								.method_353(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
+								.with(ItemEntry.builder(Items.SWEET_BERRIES))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
+								.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
 						)
 				)
 		);
-		this.addDrop(Blocks.field_10580, blockx -> mushroomBlockDrops(blockx, Blocks.field_10251));
-		this.addDrop(Blocks.field_10240, blockx -> mushroomBlockDrops(blockx, Blocks.field_10559));
-		this.addDrop(Blocks.field_10418, blockx -> oreDrops(blockx, Items.field_8713));
-		this.addDrop(Blocks.field_10013, blockx -> oreDrops(blockx, Items.field_8687));
-		this.addDrop(Blocks.field_10213, blockx -> oreDrops(blockx, Items.field_8155));
-		this.addDrop(Blocks.field_10442, blockx -> oreDrops(blockx, Items.field_8477));
+		this.addDrop(Blocks.BROWN_MUSHROOM_BLOCK, blockx -> mushroomBlockDrops(blockx, Blocks.BROWN_MUSHROOM));
+		this.addDrop(Blocks.RED_MUSHROOM_BLOCK, blockx -> mushroomBlockDrops(blockx, Blocks.RED_MUSHROOM));
+		this.addDrop(Blocks.COAL_ORE, blockx -> oreDrops(blockx, Items.COAL));
+		this.addDrop(Blocks.EMERALD_ORE, blockx -> oreDrops(blockx, Items.EMERALD));
+		this.addDrop(Blocks.NETHER_QUARTZ_ORE, blockx -> oreDrops(blockx, Items.QUARTZ));
+		this.addDrop(Blocks.DIAMOND_ORE, blockx -> oreDrops(blockx, Items.DIAMOND));
 		this.addDrop(
-			Blocks.field_23077,
+			Blocks.NETHER_GOLD_ORE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
-						ItemEntry.builder(Items.field_8397)
-							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 6.0F)))
-							.method_438(ApplyBonusLootFunction.oreDrops(Enchantments.field_9130))
+						ItemEntry.builder(Items.GOLD_NUGGET)
+							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 6.0F)))
+							.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_10090,
+			Blocks.LAPIS_ORE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
-						ItemEntry.builder(Items.field_8759)
-							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 9.0F)))
-							.method_438(ApplyBonusLootFunction.oreDrops(Enchantments.field_9130))
+						ItemEntry.builder(Items.LAPIS_LAZULI)
+							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 9.0F)))
+							.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_10343,
-			blockx -> dropsWithSilkTouchOrShears(blockx, (LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.field_8276)))
+			Blocks.COBWEB,
+			blockx -> dropsWithSilkTouchOrShears(blockx, (LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.STRING)))
 		);
 		this.addDrop(
-			Blocks.field_10428,
+			Blocks.DEAD_BUSH,
 			blockx -> dropsWithShears(
 					blockx,
 					(LootPoolEntry.Builder<?>)applyExplosionDecay(
-						blockx, ItemEntry.builder(Items.field_8600).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+						blockx, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
 					)
 				)
 		);
-		this.addDrop(Blocks.field_22117, BlockLootTableGenerator::dropsWithShears);
-		this.addDrop(Blocks.field_10376, BlockLootTableGenerator::dropsWithShears);
-		this.addDrop(Blocks.field_10597, BlockLootTableGenerator::dropsWithShears);
-		this.addDrop(Blocks.field_10238, method_30159(Blocks.field_10376));
-		this.addDrop(Blocks.field_10313, blockx -> method_30158(blockx, Blocks.field_10112));
-		this.addDrop(Blocks.field_10214, blockx -> method_30158(blockx, Blocks.field_10479));
-		this.addDrop(Blocks.field_10168, blockx -> cropStemDrops(blockx, Items.field_8188));
-		this.addDrop(Blocks.field_10150, blockx -> attachedCropStemDrops(blockx, Items.field_8188));
-		this.addDrop(Blocks.field_9984, blockx -> cropStemDrops(blockx, Items.field_8706));
-		this.addDrop(Blocks.field_10331, blockx -> attachedCropStemDrops(blockx, Items.field_8706));
+		this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
+		this.addDrop(Blocks.SEAGRASS, BlockLootTableGenerator::dropsWithShears);
+		this.addDrop(Blocks.VINE, BlockLootTableGenerator::dropsWithShears);
+		this.addDrop(Blocks.TALL_SEAGRASS, method_30159(Blocks.SEAGRASS));
+		this.addDrop(Blocks.LARGE_FERN, blockx -> method_30158(blockx, Blocks.FERN));
+		this.addDrop(Blocks.TALL_GRASS, blockx -> method_30158(blockx, Blocks.GRASS));
+		this.addDrop(Blocks.MELON_STEM, blockx -> cropStemDrops(blockx, Items.MELON_SEEDS));
+		this.addDrop(Blocks.ATTACHED_MELON_STEM, blockx -> attachedCropStemDrops(blockx, Items.MELON_SEEDS));
+		this.addDrop(Blocks.PUMPKIN_STEM, blockx -> cropStemDrops(blockx, Items.PUMPKIN_SEEDS));
+		this.addDrop(Blocks.ATTACHED_PUMPKIN_STEM, blockx -> attachedCropStemDrops(blockx, Items.PUMPKIN_SEEDS));
 		this.addDrop(
-			Blocks.field_10528,
+			Blocks.CHORUS_FLOWER,
 			blockx -> LootTable.builder()
 					.pool(
 						LootPool.builder()
 							.rolls(ConstantLootTableRange.create(1))
 							.with(
 								((LeafEntry.Builder)addSurvivesExplosionCondition(blockx, ItemEntry.builder(blockx)))
-									.method_421(EntityPropertiesLootCondition.create(LootContext.EntityTarget.field_935))
+									.conditionally(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
 							)
 					)
 		);
-		this.addDrop(Blocks.field_10112, BlockLootTableGenerator::grassDrops);
-		this.addDrop(Blocks.field_10479, BlockLootTableGenerator::grassDrops);
+		this.addDrop(Blocks.FERN, BlockLootTableGenerator::grassDrops);
+		this.addDrop(Blocks.GRASS, BlockLootTableGenerator::grassDrops);
 		this.addDrop(
-			Blocks.field_10171,
+			Blocks.GLOWSTONE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
-						ItemEntry.builder(Items.field_8601)
-							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F)))
-							.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
-							.method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 4)))
+						ItemEntry.builder(Items.GLOWSTONE_DUST)
+							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F)))
+							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
+							.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 4)))
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_10545,
+			Blocks.MELON,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
-						ItemEntry.builder(Items.field_8497)
-							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 7.0F)))
-							.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
-							.method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMax(9)))
+						ItemEntry.builder(Items.MELON_SLICE)
+							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 7.0F)))
+							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
+							.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMax(9)))
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_10080,
+			Blocks.REDSTONE_ORE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
-						ItemEntry.builder(Items.field_8725)
-							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 5.0F)))
-							.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
+						ItemEntry.builder(Items.REDSTONE)
+							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 5.0F)))
+							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_10174,
+			Blocks.SEA_LANTERN,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
-						ItemEntry.builder(Items.field_8434)
-							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 3.0F)))
-							.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
-							.method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 5)))
+						ItemEntry.builder(Items.PRISMARINE_CRYSTALS)
+							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 3.0F)))
+							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
+							.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 5)))
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_9974,
+			Blocks.NETHER_WART,
 			blockx -> LootTable.builder()
 					.pool(
 						applyExplosionDecay(
@@ -1353,194 +1345,194 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							LootPool.builder()
 								.rolls(ConstantLootTableRange.create(1))
 								.with(
-									ItemEntry.builder(Items.field_8790)
-										.method_438(
+									ItemEntry.builder(Items.NETHER_WART)
+										.apply(
 											SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F))
-												.method_524(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(NetherWartBlock.AGE, 3)))
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(NetherWartBlock.AGE, 3)))
 										)
-										.method_438(
-											ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130)
-												.method_524(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(NetherWartBlock.AGE, 3)))
+										.apply(
+											ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE)
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(NetherWartBlock.AGE, 3)))
 										)
 								)
 						)
 					)
 		);
 		this.addDrop(
-			Blocks.field_10477,
+			Blocks.SNOW,
 			blockx -> LootTable.builder()
 					.pool(
 						LootPool.builder()
-							.method_356(EntityPropertiesLootCondition.create(LootContext.EntityTarget.field_935))
+							.conditionally(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
 							.with(
 								AlternativeEntry.builder(
 									AlternativeEntry.builder(
-											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 1))),
-											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2)))
-												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2))),
-											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3)))
-												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(3))),
-											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4)))
-												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(4))),
-											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5)))
-												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(5))),
-											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6)))
-												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(6))),
-											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7)))
-												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(7))),
-											ItemEntry.builder(Items.field_8543).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(8)))
+											ItemEntry.builder(Items.SNOWBALL)
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 1))),
+											ItemEntry.builder(Items.SNOWBALL)
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2)))
+												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2))),
+											ItemEntry.builder(Items.SNOWBALL)
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3)))
+												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(3))),
+											ItemEntry.builder(Items.SNOWBALL)
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4)))
+												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(4))),
+											ItemEntry.builder(Items.SNOWBALL)
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5)))
+												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(5))),
+											ItemEntry.builder(Items.SNOWBALL)
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6)))
+												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(6))),
+											ItemEntry.builder(Items.SNOWBALL)
+												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7)))
+												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(7))),
+											ItemEntry.builder(Items.SNOWBALL).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(8)))
 										)
-										.method_421(WITHOUT_SILK_TOUCH),
+										.conditionally(WITHOUT_SILK_TOUCH),
 									AlternativeEntry.builder(
-										ItemEntry.builder(Blocks.field_10477)
-											.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 1))),
-										ItemEntry.builder(Blocks.field_10477)
-											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
-											.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2))),
-										ItemEntry.builder(Blocks.field_10477)
-											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(3)))
-											.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3))),
-										ItemEntry.builder(Blocks.field_10477)
-											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(4)))
-											.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4))),
-										ItemEntry.builder(Blocks.field_10477)
-											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(5)))
-											.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5))),
-										ItemEntry.builder(Blocks.field_10477)
-											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(6)))
-											.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6))),
-										ItemEntry.builder(Blocks.field_10477)
-											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(7)))
-											.method_421(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7))),
-										ItemEntry.builder(Blocks.field_10491)
+										ItemEntry.builder(Blocks.SNOW)
+											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 1))),
+										ItemEntry.builder(Blocks.SNOW)
+											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
+											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2))),
+										ItemEntry.builder(Blocks.SNOW)
+											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(3)))
+											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3))),
+										ItemEntry.builder(Blocks.SNOW)
+											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(4)))
+											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4))),
+										ItemEntry.builder(Blocks.SNOW)
+											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(5)))
+											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5))),
+										ItemEntry.builder(Blocks.SNOW)
+											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(6)))
+											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6))),
+										ItemEntry.builder(Blocks.SNOW)
+											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(7)))
+											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7))),
+										ItemEntry.builder(Blocks.SNOW_BLOCK)
 									)
 								)
 							)
 					)
 		);
 		this.addDrop(
-			Blocks.field_10255,
+			Blocks.GRAVEL,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					addSurvivesExplosionCondition(
 						blockx,
-						ItemEntry.builder(Items.field_8145)
-							.method_421(TableBonusLootCondition.builder(Enchantments.field_9130, 0.1F, 0.14285715F, 0.25F, 1.0F))
+						ItemEntry.builder(Items.FLINT)
+							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1F, 0.14285715F, 0.25F, 1.0F))
 							.alternatively(ItemEntry.builder(blockx))
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_17350,
+			Blocks.CAMPFIRE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					(LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(
-						blockx, ItemEntry.builder(Items.field_8665).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
+						blockx, ItemEntry.builder(Items.CHARCOAL).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_23880,
+			Blocks.GILDED_BLACKSTONE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					addSurvivesExplosionCondition(
 						blockx,
-						ItemEntry.builder(Items.field_8397)
-							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 5.0F)))
-							.method_421(TableBonusLootCondition.builder(Enchantments.field_9130, 0.1F, 0.14285715F, 0.25F, 1.0F))
+						ItemEntry.builder(Items.GOLD_NUGGET)
+							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 5.0F)))
+							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1F, 0.14285715F, 0.25F, 1.0F))
 							.alternatively(ItemEntry.builder(blockx))
 					)
 				)
 		);
 		this.addDrop(
-			Blocks.field_23860,
+			Blocks.SOUL_CAMPFIRE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
 					(LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(
-						blockx, ItemEntry.builder(Items.SOUL_SOIL).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(1)))
+						blockx, ItemEntry.builder(Items.SOUL_SOIL).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(1)))
 					)
 				)
 		);
-		this.addDropWithSilkTouch(Blocks.field_10033);
-		this.addDropWithSilkTouch(Blocks.field_10087);
-		this.addDropWithSilkTouch(Blocks.field_10227);
-		this.addDropWithSilkTouch(Blocks.field_10574);
-		this.addDropWithSilkTouch(Blocks.field_10271);
-		this.addDropWithSilkTouch(Blocks.field_10049);
-		this.addDropWithSilkTouch(Blocks.field_10157);
-		this.addDropWithSilkTouch(Blocks.field_10317);
-		this.addDropWithSilkTouch(Blocks.field_10555);
-		this.addDropWithSilkTouch(Blocks.field_9996);
-		this.addDropWithSilkTouch(Blocks.field_10248);
-		this.addDropWithSilkTouch(Blocks.field_10399);
-		this.addDropWithSilkTouch(Blocks.field_10060);
-		this.addDropWithSilkTouch(Blocks.field_10073);
-		this.addDropWithSilkTouch(Blocks.field_10357);
-		this.addDropWithSilkTouch(Blocks.field_10272);
-		this.addDropWithSilkTouch(Blocks.field_9997);
-		this.addDropWithSilkTouch(Blocks.field_10285);
-		this.addDropWithSilkTouch(Blocks.field_9991);
-		this.addDropWithSilkTouch(Blocks.field_10496);
-		this.addDropWithSilkTouch(Blocks.field_10469);
-		this.addDropWithSilkTouch(Blocks.field_10193);
-		this.addDropWithSilkTouch(Blocks.field_10578);
-		this.addDropWithSilkTouch(Blocks.field_10305);
-		this.addDropWithSilkTouch(Blocks.field_10565);
-		this.addDropWithSilkTouch(Blocks.field_10077);
-		this.addDropWithSilkTouch(Blocks.field_10129);
-		this.addDropWithSilkTouch(Blocks.field_10355);
-		this.addDropWithSilkTouch(Blocks.field_10152);
-		this.addDropWithSilkTouch(Blocks.field_9982);
-		this.addDropWithSilkTouch(Blocks.field_10163);
-		this.addDropWithSilkTouch(Blocks.field_10419);
-		this.addDropWithSilkTouch(Blocks.field_10118);
-		this.addDropWithSilkTouch(Blocks.field_10070);
-		this.addDropWithSilkTouch(Blocks.field_10295);
-		this.addDropWithSilkTouch(Blocks.field_10225);
-		this.addDropWithSilkTouch(Blocks.field_10384);
-		this.addDropWithSilkTouch(Blocks.field_10195);
-		this.addDropWithSilkTouch(Blocks.field_10556);
-		this.addDropWithSilkTouch(Blocks.field_10082);
-		this.addDropWithSilkTouch(Blocks.field_10572);
-		this.addDropWithSilkTouch(Blocks.field_10296);
-		this.addDropWithSilkTouch(Blocks.field_10579);
-		this.addDropWithSilkTouch(Blocks.field_10032);
-		this.addDropWithSilkTouch(Blocks.field_10125);
-		this.addDropWithSilkTouch(Blocks.field_10339);
-		this.addDropWithSilkTouch(Blocks.field_10134);
-		this.addDropWithSilkTouch(Blocks.field_10618);
-		this.addDropWithSilkTouch(Blocks.field_10169);
-		this.addDropWithSilkTouch(Blocks.field_10448);
-		this.addDropWithSilkTouch(Blocks.field_10097);
-		this.addDropWithSilkTouch(Blocks.field_10047);
-		this.addDropWithSilkTouch(Blocks.field_10568);
-		this.addDropWithSilkTouch(Blocks.field_10221);
-		this.addDropWithSilkTouch(Blocks.field_10053);
-		this.addDropWithSilkTouch(Blocks.field_10079);
-		this.addDropWithSilkTouch(Blocks.field_10427);
-		this.addDropWithSilkTouch(Blocks.field_10551);
-		this.addDropWithSilkTouch(Blocks.field_10005);
-		this.addDropWithSilkTouch(Blocks.field_10277, Blocks.field_10340);
-		this.addDropWithSilkTouch(Blocks.field_10492, Blocks.field_10445);
-		this.addDropWithSilkTouch(Blocks.field_10387, Blocks.field_10056);
-		this.addDropWithSilkTouch(Blocks.field_10480, Blocks.field_10065);
-		this.addDropWithSilkTouch(Blocks.field_10100, Blocks.field_10416);
-		this.addDropWithSilkTouch(Blocks.field_10176, Blocks.field_10552);
-		this.addVinePlantDrop(Blocks.field_22123, Blocks.field_22124);
-		this.addVinePlantDrop(Blocks.field_23078, Blocks.field_23079);
-		this.addDrop(Blocks.field_10183, dropsNothing());
-		this.addDrop(Blocks.field_10110, dropsNothing());
-		this.addDrop(Blocks.field_10260, dropsNothing());
-		this.addDrop(Blocks.field_10036, dropsNothing());
-		this.addDrop(Blocks.field_22089, dropsNothing());
-		this.addDrop(Blocks.field_10316, dropsNothing());
+		this.addDropWithSilkTouch(Blocks.GLASS);
+		this.addDropWithSilkTouch(Blocks.WHITE_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.ORANGE_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.MAGENTA_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.LIGHT_BLUE_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.YELLOW_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.LIME_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.PINK_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.GRAY_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.LIGHT_GRAY_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.CYAN_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.PURPLE_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.BLUE_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.BROWN_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.GREEN_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.RED_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.BLACK_STAINED_GLASS);
+		this.addDropWithSilkTouch(Blocks.GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.WHITE_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.ORANGE_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.MAGENTA_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.LIGHT_BLUE_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.YELLOW_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.LIME_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.PINK_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.GRAY_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.LIGHT_GRAY_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.CYAN_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.PURPLE_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.BLUE_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.BROWN_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.GREEN_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.RED_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.BLACK_STAINED_GLASS_PANE);
+		this.addDropWithSilkTouch(Blocks.ICE);
+		this.addDropWithSilkTouch(Blocks.PACKED_ICE);
+		this.addDropWithSilkTouch(Blocks.BLUE_ICE);
+		this.addDropWithSilkTouch(Blocks.TURTLE_EGG);
+		this.addDropWithSilkTouch(Blocks.MUSHROOM_STEM);
+		this.addDropWithSilkTouch(Blocks.DEAD_TUBE_CORAL);
+		this.addDropWithSilkTouch(Blocks.DEAD_BRAIN_CORAL);
+		this.addDropWithSilkTouch(Blocks.DEAD_BUBBLE_CORAL);
+		this.addDropWithSilkTouch(Blocks.DEAD_FIRE_CORAL);
+		this.addDropWithSilkTouch(Blocks.DEAD_HORN_CORAL);
+		this.addDropWithSilkTouch(Blocks.TUBE_CORAL);
+		this.addDropWithSilkTouch(Blocks.BRAIN_CORAL);
+		this.addDropWithSilkTouch(Blocks.BUBBLE_CORAL);
+		this.addDropWithSilkTouch(Blocks.FIRE_CORAL);
+		this.addDropWithSilkTouch(Blocks.HORN_CORAL);
+		this.addDropWithSilkTouch(Blocks.DEAD_TUBE_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.DEAD_BRAIN_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.DEAD_BUBBLE_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.DEAD_FIRE_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.DEAD_HORN_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.TUBE_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.BRAIN_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.BUBBLE_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.FIRE_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.HORN_CORAL_FAN);
+		this.addDropWithSilkTouch(Blocks.INFESTED_STONE, Blocks.STONE);
+		this.addDropWithSilkTouch(Blocks.INFESTED_COBBLESTONE, Blocks.COBBLESTONE);
+		this.addDropWithSilkTouch(Blocks.INFESTED_STONE_BRICKS, Blocks.STONE_BRICKS);
+		this.addDropWithSilkTouch(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS);
+		this.addDropWithSilkTouch(Blocks.INFESTED_CRACKED_STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS);
+		this.addDropWithSilkTouch(Blocks.INFESTED_CHISELED_STONE_BRICKS, Blocks.CHISELED_STONE_BRICKS);
+		this.addVinePlantDrop(Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT);
+		this.addVinePlantDrop(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT);
+		this.addDrop(Blocks.CAKE, dropsNothing());
+		this.addDrop(Blocks.FROSTED_ICE, dropsNothing());
+		this.addDrop(Blocks.SPAWNER, dropsNothing());
+		this.addDrop(Blocks.FIRE, dropsNothing());
+		this.addDrop(Blocks.SOUL_FIRE, dropsNothing());
+		this.addDrop(Blocks.NETHER_PORTAL, dropsNothing());
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for (Block block : Registry.BLOCK) {
@@ -1562,14 +1554,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 
 	private void addVinePlantDrop(Block block, Block drop) {
 		LootTable.Builder builder = dropsWithSilkTouchOrShears(
-			block, ItemEntry.builder(block).method_421(TableBonusLootCondition.builder(Enchantments.field_9130, 0.33F, 0.55F, 0.77F, 1.0F))
+			block, ItemEntry.builder(block).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.33F, 0.55F, 0.77F, 1.0F))
 		);
 		this.addDrop(block, builder);
 		this.addDrop(drop, builder);
 	}
 
 	public static LootTable.Builder addDoorDrop(Block block) {
-		return dropsWithProperty(block, DoorBlock.HALF, DoubleBlockHalf.field_12607);
+		return dropsWithProperty(block, DoorBlock.HALF, DoubleBlockHalf.LOWER);
 	}
 
 	public void addPottedPlantDrop(Block block) {

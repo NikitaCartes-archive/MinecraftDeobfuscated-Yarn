@@ -27,7 +27,7 @@ public class RealmsUtil {
 	public static LoadingCache<String, GameProfile> gameProfileCache = CacheBuilder.newBuilder()
 		.expireAfterWrite(60L, TimeUnit.MINUTES)
 		.build(new CacheLoader<String, GameProfile>() {
-			public GameProfile method_21571(String string) throws Exception {
+			public GameProfile load(String string) throws Exception {
 				GameProfile gameProfile = RealmsUtil.sessionService.fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(string), null), false);
 				if (gameProfile == null) {
 					throw new Exception("Couldn't get profile");

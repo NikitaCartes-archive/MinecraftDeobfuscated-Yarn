@@ -62,7 +62,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	protected void initGoals() {
 		super.initGoals();
 		this.raidGoal = new RaidGoal<>(
-			this, RaiderEntity.class, true, livingEntity -> livingEntity != null && this.hasActiveRaid() && livingEntity.getType() != EntityType.field_6145
+			this, RaiderEntity.class, true, livingEntity -> livingEntity != null && this.hasActiveRaid() && livingEntity.getType() != EntityType.WITCH
 		);
 		this.attackPlayerGoal = new DisableableFollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, null);
 		this.goalSelector.add(1, new SwimGoal(this));
@@ -83,17 +83,17 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14736;
+		return SoundEvents.ENTITY_WITCH_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14645;
+		return SoundEvents.ENTITY_WITCH_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14820;
+		return SoundEvents.ENTITY_WITCH_DEATH;
 	}
 
 	public void setDrinking(boolean drinking) {
@@ -105,7 +105,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	}
 
 	public static DefaultAttributeContainer.Builder createWitchAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.field_23716, 26.0).add(EntityAttributes.field_23719, 0.25);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 26.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
 	}
 
 	@Override
@@ -122,8 +122,8 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				if (this.drinkTimeLeft-- <= 0) {
 					this.setDrinking(false);
 					ItemStack itemStack = this.getMainHandStack();
-					this.equipStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
-					if (itemStack.getItem() == Items.field_8574) {
+					this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+					if (itemStack.getItem() == Items.POTION) {
 						List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
 						if (list != null) {
 							for (StatusEffectInstance statusEffectInstance : list) {
@@ -132,35 +132,37 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 						}
 					}
 
-					this.getAttributeInstance(EntityAttributes.field_23719).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
+					this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 				}
 			} else {
 				Potion potion = null;
-				if (this.random.nextFloat() < 0.15F && this.isSubmergedIn(FluidTags.field_15517) && !this.hasStatusEffect(StatusEffects.field_5923)) {
-					potion = Potions.field_8994;
+				if (this.random.nextFloat() < 0.15F && this.isSubmergedIn(FluidTags.WATER) && !this.hasStatusEffect(StatusEffects.WATER_BREATHING)) {
+					potion = Potions.WATER_BREATHING;
 				} else if (this.random.nextFloat() < 0.15F
 					&& (this.isOnFire() || this.getRecentDamageSource() != null && this.getRecentDamageSource().isFire())
-					&& !this.hasStatusEffect(StatusEffects.field_5918)) {
-					potion = Potions.field_8987;
+					&& !this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+					potion = Potions.FIRE_RESISTANCE;
 				} else if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getMaxHealth()) {
-					potion = Potions.field_8963;
+					potion = Potions.HEALING;
 				} else if (this.random.nextFloat() < 0.5F
 					&& this.getTarget() != null
-					&& !this.hasStatusEffect(StatusEffects.field_5904)
+					&& !this.hasStatusEffect(StatusEffects.SPEED)
 					&& this.getTarget().squaredDistanceTo(this) > 121.0) {
-					potion = Potions.field_9005;
+					potion = Potions.SWIFTNESS;
 				}
 
 				if (potion != null) {
-					this.equipStack(EquipmentSlot.field_6173, PotionUtil.setPotion(new ItemStack(Items.field_8574), potion));
+					this.equipStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.POTION), potion));
 					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
 					this.setDrinking(true);
 					if (!this.isSilent()) {
 						this.world
-							.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.field_14565, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+							.playSound(
+								null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
+							);
 					}
 
-					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.field_23719);
+					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 					entityAttributeInstance.addTemporaryModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 				}
@@ -176,7 +178,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 
 	@Override
 	public SoundEvent getCelebratingSound() {
-		return SoundEvents.field_19153;
+		return SoundEvents.ENTITY_WITCH_CELEBRATE;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -186,7 +188,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			for (int i = 0; i < this.random.nextInt(35) + 10; i++) {
 				this.world
 					.addParticle(
-						ParticleTypes.field_11249,
+						ParticleTypes.WITCH,
 						this.getX() + this.random.nextGaussian() * 0.13F,
 						this.getBoundingBox().maxY + 0.5 + this.random.nextGaussian() * 0.13F,
 						this.getZ() + this.random.nextGaussian() * 0.13F,
@@ -222,30 +224,32 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			double e = target.getEyeY() - 1.1F - this.getY();
 			double f = target.getZ() + vec3d.z - this.getZ();
 			float g = MathHelper.sqrt(d * d + f * f);
-			Potion potion = Potions.field_9004;
+			Potion potion = Potions.HARMING;
 			if (target instanceof RaiderEntity) {
 				if (target.getHealth() <= 4.0F) {
-					potion = Potions.field_8963;
+					potion = Potions.HEALING;
 				} else {
-					potion = Potions.field_8986;
+					potion = Potions.REGENERATION;
 				}
 
 				this.setTarget(null);
-			} else if (g >= 8.0F && !target.hasStatusEffect(StatusEffects.field_5909)) {
-				potion = Potions.field_8996;
-			} else if (target.getHealth() >= 8.0F && !target.hasStatusEffect(StatusEffects.field_5899)) {
-				potion = Potions.field_8982;
-			} else if (g <= 3.0F && !target.hasStatusEffect(StatusEffects.field_5911) && this.random.nextFloat() < 0.25F) {
-				potion = Potions.field_8975;
+			} else if (g >= 8.0F && !target.hasStatusEffect(StatusEffects.SLOWNESS)) {
+				potion = Potions.SLOWNESS;
+			} else if (target.getHealth() >= 8.0F && !target.hasStatusEffect(StatusEffects.POISON)) {
+				potion = Potions.POISON;
+			} else if (g <= 3.0F && !target.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
+				potion = Potions.WEAKNESS;
 			}
 
 			PotionEntity potionEntity = new PotionEntity(this.world, this);
-			potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.field_8436), potion));
+			potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
 			potionEntity.pitch -= -20.0F;
 			potionEntity.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
 			if (!this.isSilent()) {
 				this.world
-					.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.field_15067, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+					.playSound(
+						null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
+					);
 			}
 
 			this.world.spawnEntity(potionEntity);

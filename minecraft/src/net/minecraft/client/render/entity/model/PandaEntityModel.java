@@ -42,14 +42,14 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		this.frontLeftLeg.setPivot(5.5F, 15.0F, -9.0F);
 	}
 
-	public void method_17102(T pandaEntity, float f, float g, float h) {
+	public void animateModel(T pandaEntity, float f, float g, float h) {
 		super.animateModel(pandaEntity, f, g, h);
 		this.scaredAnimationProgress = pandaEntity.getScaredAnimationProgress(h);
 		this.lieOnBackAnimationProgress = pandaEntity.getLieOnBackAnimationProgress(h);
 		this.playAnimationProgress = pandaEntity.isBaby() ? 0.0F : pandaEntity.getRollOverAnimationProgress(h);
 	}
 
-	public void method_17103(T pandaEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T pandaEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(pandaEntity, f, g, h, i, j);
 		boolean bl = pandaEntity.getAskForBambooTicks() > 0;
 		boolean bl2 = pandaEntity.isSneezing();

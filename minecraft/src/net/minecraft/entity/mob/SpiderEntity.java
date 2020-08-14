@@ -86,27 +86,27 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createSpiderAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.field_23716, 16.0).add(EntityAttributes.field_23719, 0.3F);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F);
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15170;
+		return SoundEvents.ENTITY_SPIDER_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14657;
+		return SoundEvents.ENTITY_SPIDER_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14579;
+		return SoundEvents.ENTITY_SPIDER_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_14760, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_SPIDER_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	public void slowMovement(BlockState state, Vec3d multiplier) {
-		if (!state.isOf(Blocks.field_10343)) {
+		if (!state.isOf(Blocks.COBWEB)) {
 			super.slowMovement(state, multiplier);
 		}
 	}
@@ -128,7 +128,7 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return effect.getEffectType() == StatusEffects.field_5899 ? false : super.canHaveStatusEffect(effect);
+		return effect.getEffectType() == StatusEffects.POISON ? false : super.canHaveStatusEffect(effect);
 	}
 
 	public boolean isClimbingWall() {
@@ -153,7 +153,7 @@ public class SpiderEntity extends HostileEntity {
 	) {
 		entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 		if (serverWorldAccess.getRandom().nextInt(100) == 0) {
-			SkeletonEntity skeletonEntity = EntityType.field_6137.create(this.world);
+			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
 			skeletonEntity.initialize(serverWorldAccess, difficulty, spawnReason, null, null);
 			skeletonEntity.startRiding(this);
@@ -161,7 +161,7 @@ public class SpiderEntity extends HostileEntity {
 
 		if (entityData == null) {
 			entityData = new SpiderEntity.SpiderData();
-			if (serverWorldAccess.getDifficulty() == Difficulty.field_5807 && serverWorldAccess.getRandom().nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
+			if (serverWorldAccess.getDifficulty() == Difficulty.HARD && serverWorldAccess.getRandom().nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
 				((SpiderEntity.SpiderData)entityData).setEffect(serverWorldAccess.getRandom());
 			}
 		}
@@ -226,13 +226,13 @@ public class SpiderEntity extends HostileEntity {
 		public void setEffect(Random random) {
 			int i = random.nextInt(5);
 			if (i <= 1) {
-				this.effect = StatusEffects.field_5904;
+				this.effect = StatusEffects.SPEED;
 			} else if (i <= 2) {
-				this.effect = StatusEffects.field_5910;
+				this.effect = StatusEffects.STRENGTH;
 			} else if (i <= 3) {
-				this.effect = StatusEffects.field_5924;
+				this.effect = StatusEffects.REGENERATION;
 			} else if (i <= 4) {
-				this.effect = StatusEffects.field_5905;
+				this.effect = StatusEffects.INVISIBILITY;
 			}
 		}
 	}

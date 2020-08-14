@@ -25,7 +25,7 @@ public class WalkHomeTask extends Task<LivingEntity> {
 	private long expiryTimeLimit;
 
 	public WalkHomeTask(float speed) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457, MemoryModuleType.field_18438, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT));
 		this.speed = speed;
 	}
 
@@ -37,7 +37,7 @@ public class WalkHomeTask extends Task<LivingEntity> {
 			PathAwareEntity pathAwareEntity = (PathAwareEntity)entity;
 			PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(
-				PointOfInterestType.field_18517.getCompletionCondition(), entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.field_18489
+				PointOfInterestType.HOME.getCompletionCondition(), entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
 			return optional.isPresent() && !(((BlockPos)optional.get()).getSquaredDistance(pathAwareEntity.getBlockPos()) <= 4.0);
 		}
@@ -61,14 +61,14 @@ public class WalkHomeTask extends Task<LivingEntity> {
 			}
 		};
 		Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
-			PointOfInterestType.field_18517.getCompletionCondition(), predicate, entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.field_18489
+			PointOfInterestType.HOME.getCompletionCondition(), predicate, entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
 		);
-		Path path = pathAwareEntity.getNavigation().findPathToAny(stream, PointOfInterestType.field_18517.getSearchDistance());
+		Path path = pathAwareEntity.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
 		if (path != null && path.reachesTarget()) {
 			BlockPos blockPos = path.getTarget();
 			Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
 			if (optional.isPresent()) {
-				entity.getBrain().remember(MemoryModuleType.field_18445, new WalkTarget(blockPos, this.speed, 1));
+				entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.speed, 1));
 				DebugInfoSender.sendPointOfInterest(world, blockPos);
 			}
 		} else if (this.tries < 5) {

@@ -22,7 +22,7 @@ public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, Rabbit
 		super(entityRenderDispatcher, new RabbitEntityModel<>(), 0.3F);
 	}
 
-	public Identifier method_4102(RabbitEntity rabbitEntity) {
+	public Identifier getTexture(RabbitEntity rabbitEntity) {
 		String string = Formatting.strip(rabbitEntity.getName().getString());
 		if (string != null && "Toast".equals(string)) {
 			return TOAST_TEXTURE;

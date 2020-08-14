@@ -12,7 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -40,7 +40,7 @@ public class WanderingTraderManager implements Spawner {
 
 	@Override
 	public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
-		if (!world.getGameRules().getBoolean(GameRules.field_21832)) {
+		if (!world.getGameRules().getBoolean(GameRules.DO_TRADER_SPAWNING)) {
 			return 0;
 		} else if (--this.spawnTimer > 0) {
 			return 0;
@@ -82,16 +82,16 @@ public class WanderingTraderManager implements Spawner {
 			int i = 48;
 			PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getPosition(
-				PointOfInterestType.field_18518.getCompletionCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.field_18489
+				PointOfInterestType.MEETING.getCompletionCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.getNearbySpawnPos(serverWorld, blockPos2, 48);
 			if (blockPos3 != null && this.doesNotSuffocateAt(serverWorld, blockPos3)) {
-				if (serverWorld.method_31081(blockPos3).equals(Optional.of(Biomes.field_9473))) {
+				if (serverWorld.method_31081(blockPos3).equals(Optional.of(BiomeKeys.THE_VOID))) {
 					return false;
 				}
 
-				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713.spawn(serverWorld, null, null, null, blockPos3, SpawnReason.field_16467, false, false);
+				WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(serverWorld, null, null, null, blockPos3, SpawnReason.EVENT, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int j = 0; j < 2; j++) {
 						this.spawnLlama(serverWorld, wanderingTraderEntity, 4);
@@ -112,7 +112,7 @@ public class WanderingTraderManager implements Spawner {
 	private void spawnLlama(ServerWorld serverWorld, WanderingTraderEntity wanderingTraderEntity, int i) {
 		BlockPos blockPos = this.getNearbySpawnPos(serverWorld, wanderingTraderEntity.getBlockPos(), i);
 		if (blockPos != null) {
-			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.spawn(serverWorld, null, null, null, blockPos, SpawnReason.field_16467, false, false);
+			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(serverWorld, null, null, null, blockPos, SpawnReason.EVENT, false, false);
 			if (traderLlamaEntity != null) {
 				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
 			}
@@ -126,9 +126,9 @@ public class WanderingTraderManager implements Spawner {
 		for (int j = 0; j < 10; j++) {
 			int k = blockPos.getX() + this.random.nextInt(i * 2) - i;
 			int l = blockPos.getZ() + this.random.nextInt(i * 2) - i;
-			int m = worldView.getTopY(Heightmap.Type.field_13202, k, l);
+			int m = worldView.getTopY(Heightmap.Type.WORLD_SURFACE, k, l);
 			BlockPos blockPos3 = new BlockPos(k, m, l);
-			if (SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, worldView, blockPos3, EntityType.field_17713)) {
+			if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, worldView, blockPos3, EntityType.WANDERING_TRADER)) {
 				blockPos2 = blockPos3;
 				break;
 			}

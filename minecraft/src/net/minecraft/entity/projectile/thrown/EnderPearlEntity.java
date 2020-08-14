@@ -25,17 +25,17 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	}
 
 	public EnderPearlEntity(World world, LivingEntity owner) {
-		super(EntityType.field_6082, owner, world);
+		super(EntityType.ENDER_PEARL, owner, world);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public EnderPearlEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6082, x, y, z, world);
+		super(EntityType.ENDER_PEARL, x, y, z, world);
 	}
 
 	@Override
 	protected Item getDefaultItem() {
-		return Items.field_8634;
+		return Items.ENDER_PEARL;
 	}
 
 	@Override
@@ -52,13 +52,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		for (int i = 0; i < 32; i++) {
 			this.world
 				.addParticle(
-					ParticleTypes.field_11214,
-					this.getX(),
-					this.getY() + this.random.nextDouble() * 2.0,
-					this.getZ(),
-					this.random.nextGaussian(),
-					0.0,
-					this.random.nextGaussian()
+					ParticleTypes.PORTAL, this.getX(), this.getY() + this.random.nextDouble() * 2.0, this.getZ(), this.random.nextGaussian(), 0.0, this.random.nextGaussian()
 				);
 		}
 
@@ -67,7 +61,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
 					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-						EndermiteEntity endermiteEntity = EntityType.field_6128.create(this.world);
+						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
 						endermiteEntity.setPlayerSpawned(true);
 						endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
 						this.world.spawnEntity(endermiteEntity);

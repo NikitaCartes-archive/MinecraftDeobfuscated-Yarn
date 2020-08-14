@@ -11,10 +11,10 @@ public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13929(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SimpleBlockFeatureConfig simpleBlockFeatureConfig
 	) {
-		if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState(blockPos.method_10074()))
+		if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState(blockPos.down()))
 			&& simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos))
 			&& simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up()))) {
 			structureWorldAccess.setBlockState(blockPos, simpleBlockFeatureConfig.toPlace, 2);

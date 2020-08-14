@@ -89,7 +89,7 @@ public class CommandManager {
 		SayCommand.register(this.dispatcher);
 		ScheduleCommand.register(this.dispatcher);
 		ScoreboardCommand.register(this.dispatcher);
-		SeedCommand.register(this.dispatcher, environment != CommandManager.RegistrationEnvironment.field_25421);
+		SeedCommand.register(this.dispatcher, environment != CommandManager.RegistrationEnvironment.INTEGRATED);
 		SetBlockCommand.register(this.dispatcher);
 		SpawnPointCommand.register(this.dispatcher);
 		SetWorldSpawnCommand.register(this.dispatcher);
@@ -159,19 +159,19 @@ public class CommandManager {
 			if (var14.getInput() != null && var14.getCursor() >= 0) {
 				int i = Math.min(var14.getInput().length(), var14.getCursor());
 				MutableText mutableText = new LiteralText("")
-					.formatted(Formatting.field_1080)
-					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.field_11745, command)));
+					.formatted(Formatting.GRAY)
+					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
 				if (i > 10) {
 					mutableText.append("...");
 				}
 
 				mutableText.append(var14.getInput().substring(Math.max(0, i - 10), i));
 				if (i < var14.getInput().length()) {
-					Text text = new LiteralText(var14.getInput().substring(i)).formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1073});
+					Text text = new LiteralText(var14.getInput().substring(i)).formatted(new Formatting[]{Formatting.RED, Formatting.UNDERLINE});
 					mutableText.append(text);
 				}
 
-				mutableText.append(new TranslatableText("command.context.here").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1056}));
+				mutableText.append(new TranslatableText("command.context.here").formatted(new Formatting[]{Formatting.RED, Formatting.ITALIC}));
 				commandSource.sendError(mutableText);
 			}
 
@@ -193,7 +193,7 @@ public class CommandManager {
 			}
 
 			commandSource.sendError(
-				new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, mutableText2)))
+				new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2)))
 			);
 			if (SharedConstants.isDevelopment) {
 				commandSource.sendError(new LiteralText(Util.getInnermostMessage(var15)));
@@ -288,7 +288,7 @@ public class CommandManager {
 	}
 
 	public static void method_30852() {
-		RootCommandNode<ServerCommandSource> rootCommandNode = new CommandManager(CommandManager.RegistrationEnvironment.field_25419).getDispatcher().getRoot();
+		RootCommandNode<ServerCommandSource> rootCommandNode = new CommandManager(CommandManager.RegistrationEnvironment.ALL).getDispatcher().getRoot();
 		Set<ArgumentType<?>> set = ArgumentTypes.method_30924(rootCommandNode);
 		Set<ArgumentType<?>> set2 = (Set<ArgumentType<?>>)set.stream().filter(argumentType -> !ArgumentTypes.method_30923(argumentType)).collect(Collectors.toSet());
 		if (!set2.isEmpty()) {
@@ -308,9 +308,9 @@ public class CommandManager {
 	 * Describes the environment in which commands are registered.
 	 */
 	public static enum RegistrationEnvironment {
-		field_25419(true, true),
-		field_25420(false, true),
-		field_25421(true, false);
+		ALL(true, true),
+		DEDICATED(false, true),
+		INTEGRATED(true, false);
 
 		private final boolean integrated;
 		private final boolean dedicated;

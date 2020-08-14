@@ -25,14 +25,14 @@ public class ResourcePackStatusC2SPacket implements Packet<ServerPlayPacketListe
 		buf.writeEnumConstant(this.status);
 	}
 
-	public void method_12409(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onResourcePackStatus(this);
 	}
 
 	public static enum Status {
-		field_13017,
-		field_13018,
-		field_13015,
-		field_13016;
+		SUCCESSFULLY_LOADED,
+		DECLINED,
+		FAILED_DOWNLOAD,
+		ACCEPTED;
 	}
 }

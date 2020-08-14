@@ -38,7 +38,7 @@ public class PlayerSkinProvider {
 		this.skinCacheDir = skinCacheDir;
 		this.sessionService = sessionService;
 		this.skinCache = CacheBuilder.newBuilder().expireAfterAccess(15L, TimeUnit.SECONDS).build(new CacheLoader<String, Map<Type, MinecraftProfileTexture>>() {
-			public Map<Type, MinecraftProfileTexture> method_30300(String string) {
+			public Map<Type, MinecraftProfileTexture> load(String string) {
 				GameProfile gameProfile = new GameProfile(null, "dummy_mcdummyface");
 				gameProfile.getProperties().put("textures", new Property("textures", string, ""));
 

@@ -109,7 +109,7 @@ public class WorldChunk implements Chunk {
 		this.upgradeData = upgradeData;
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
-			if (ChunkStatus.field_12803.getHeightmapTypes().contains(type)) {
+			if (ChunkStatus.FULL.getHeightmapTypes().contains(type)) {
 				this.heightmaps.put(type, new Heightmap(this, type));
 			}
 		}
@@ -138,8 +138,8 @@ public class WorldChunk implements Chunk {
 			protoChunk.getPos(),
 			protoChunk.getBiomeArray(),
 			protoChunk.getUpgradeData(),
-			protoChunk.method_12303(),
-			protoChunk.method_12313(),
+			protoChunk.getBlockTickScheduler(),
+			protoChunk.getFluidTickScheduler(),
 			protoChunk.getInhabitedTime(),
 			protoChunk.getSectionArray(),
 			null
@@ -166,7 +166,7 @@ public class WorldChunk implements Chunk {
 		this.setStructureReferences(protoChunk.getStructureReferences());
 
 		for (Entry<Heightmap.Type, Heightmap> entry : protoChunk.getHeightmaps()) {
-			if (ChunkStatus.field_12803.getHeightmapTypes().contains(entry.getKey())) {
+			if (ChunkStatus.FULL.getHeightmapTypes().contains(entry.getKey())) {
 				this.getHeightmap((Heightmap.Type)entry.getKey()).setTo(((Heightmap)entry.getValue()).asLongArray());
 			}
 		}
@@ -200,14 +200,14 @@ public class WorldChunk implements Chunk {
 		if (this.world.isDebugWorld()) {
 			BlockState blockState = null;
 			if (j == 60) {
-				blockState = Blocks.field_10499.getDefaultState();
+				blockState = Blocks.BARRIER.getDefaultState();
 			}
 
 			if (j == 70) {
 				blockState = DebugChunkGenerator.getBlockState(i, k);
 			}
 
-			return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
+			return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
 		} else {
 			try {
 				if (j >= 0 && j >> 4 < this.sections.length) {
@@ -217,7 +217,7 @@ public class WorldChunk implements Chunk {
 					}
 				}
 
-				return Blocks.field_10124.getDefaultState();
+				return Blocks.AIR.getDefaultState();
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Getting block state");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being got");
@@ -241,7 +241,7 @@ public class WorldChunk implements Chunk {
 				}
 			}
 
-			return Fluids.field_15906.getDefaultState();
+			return Fluids.EMPTY.getDefaultState();
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Getting fluid state");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being got");
@@ -273,10 +273,10 @@ public class WorldChunk implements Chunk {
 		} else {
 			Block block = state.getBlock();
 			Block block2 = blockState.getBlock();
-			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13197)).trackUpdate(i, j, k, state);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13203)).trackUpdate(i, j, k, state);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13200)).trackUpdate(i, j, k, state);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13202)).trackUpdate(i, j, k, state);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING)).trackUpdate(i, j, k, state);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(i, j, k, state);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(i, j, k, state);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(i, j, k, state);
 			boolean bl2 = chunkSection.isEmpty();
 			if (bl != bl2) {
 				this.world.getChunkManager().getLightingProvider().setSectionStatus(pos, bl2);
@@ -292,7 +292,7 @@ public class WorldChunk implements Chunk {
 				return null;
 			} else {
 				if (block2 instanceof BlockEntityProvider) {
-					BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.field_12859);
+					BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 					if (blockEntity != null) {
 						blockEntity.resetBlock();
 					}
@@ -303,7 +303,7 @@ public class WorldChunk implements Chunk {
 				}
 
 				if (block instanceof BlockEntityProvider) {
-					BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.field_12859);
+					BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 					if (blockEntity == null) {
 						blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
 						this.world.setBlockEntity(pos, blockEntity);
@@ -385,7 +385,7 @@ public class WorldChunk implements Chunk {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		return this.getBlockEntity(pos, WorldChunk.CreationType.field_12859);
+		return this.getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 	}
 
 	@Nullable
@@ -402,7 +402,7 @@ public class WorldChunk implements Chunk {
 		}
 
 		if (blockEntity == null) {
-			if (creationType == WorldChunk.CreationType.field_12860) {
+			if (creationType == WorldChunk.CreationType.IMMEDIATE) {
 				blockEntity = this.createBlockEntity(pos);
 				this.world.setBlockEntity(pos, blockEntity);
 			}
@@ -449,7 +449,7 @@ public class WorldChunk implements Chunk {
 		} else {
 			CompoundTag compoundTag = (CompoundTag)this.pendingBlockEntityTags.get(pos);
 			if (compoundTag != null) {
-				compoundTag = compoundTag.method_10553();
+				compoundTag = compoundTag.copy();
 				compoundTag.putBoolean("keepPacked", true);
 			}
 
@@ -808,14 +808,14 @@ public class WorldChunk implements Chunk {
 	public void enableTickSchedulers(ServerWorld world) {
 		if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
 			this.blockTickScheduler = new SimpleTickScheduler<>(
-				Registry.BLOCK::getId, world.method_14196().getScheduledTicksInChunk(this.pos, true, false), world.getTime()
+				Registry.BLOCK::getId, world.getBlockTickScheduler().getScheduledTicksInChunk(this.pos, true, false), world.getTime()
 			);
 			this.setShouldSave(true);
 		}
 
 		if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
 			this.fluidTickScheduler = new SimpleTickScheduler<>(
-				Registry.FLUID::getId, world.method_14179().getScheduledTicksInChunk(this.pos, true, false), world.getTime()
+				Registry.FLUID::getId, world.getFluidTickScheduler().getScheduledTicksInChunk(this.pos, true, false), world.getTime()
 			);
 			this.setShouldSave(true);
 		}
@@ -823,11 +823,11 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public ChunkStatus getStatus() {
-		return ChunkStatus.field_12803;
+		return ChunkStatus.FULL;
 	}
 
 	public ChunkHolder.LevelType getLevelType() {
-		return this.levelTypeProvider == null ? ChunkHolder.LevelType.field_13876 : (ChunkHolder.LevelType)this.levelTypeProvider.get();
+		return this.levelTypeProvider == null ? ChunkHolder.LevelType.BORDER : (ChunkHolder.LevelType)this.levelTypeProvider.get();
 	}
 
 	public void setLevelTypeProvider(Supplier<ChunkHolder.LevelType> levelTypeProvider) {
@@ -846,8 +846,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	public static enum CreationType {
-		field_12860,
-		field_12861,
-		field_12859;
+		IMMEDIATE,
+		QUEUED,
+		CHECK;
 	}
 }

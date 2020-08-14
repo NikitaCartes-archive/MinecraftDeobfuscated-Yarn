@@ -58,10 +58,10 @@ public class EndCityGenerator {
 		}
 	};
 	private static final List<Pair<BlockRotation, BlockPos>> SMALL_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
-		new Pair<>(BlockRotation.field_11467, new BlockPos(1, -1, 0)),
-		new Pair<>(BlockRotation.field_11463, new BlockPos(6, -1, 1)),
-		new Pair<>(BlockRotation.field_11465, new BlockPos(0, -1, 5)),
-		new Pair<>(BlockRotation.field_11464, new BlockPos(5, -1, 6))
+		new Pair<>(BlockRotation.NONE, new BlockPos(1, -1, 0)),
+		new Pair<>(BlockRotation.CLOCKWISE_90, new BlockPos(6, -1, 1)),
+		new Pair<>(BlockRotation.COUNTERCLOCKWISE_90, new BlockPos(0, -1, 5)),
+		new Pair<>(BlockRotation.CLOCKWISE_180, new BlockPos(5, -1, 6))
 	);
 	private static final EndCityGenerator.Part SMALL_TOWER = new EndCityGenerator.Part() {
 		@Override
@@ -154,17 +154,17 @@ public class EndCityGenerator {
 			}
 
 			piece = EndCityGenerator.addPiece(
-				pieces, EndCityGenerator.createPiece(manager, piece, new BlockPos(4, j, 0), "bridge_end", blockRotation.rotate(BlockRotation.field_11464), true)
+				pieces, EndCityGenerator.createPiece(manager, piece, new BlockPos(4, j, 0), "bridge_end", blockRotation.rotate(BlockRotation.CLOCKWISE_180), true)
 			);
 			piece.length = -1;
 			return true;
 		}
 	};
 	private static final List<Pair<BlockRotation, BlockPos>> FAT_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
-		new Pair<>(BlockRotation.field_11467, new BlockPos(4, -1, 0)),
-		new Pair<>(BlockRotation.field_11463, new BlockPos(12, -1, 4)),
-		new Pair<>(BlockRotation.field_11465, new BlockPos(0, -1, 8)),
-		new Pair<>(BlockRotation.field_11464, new BlockPos(8, -1, 12))
+		new Pair<>(BlockRotation.NONE, new BlockPos(4, -1, 0)),
+		new Pair<>(BlockRotation.CLOCKWISE_90, new BlockPos(12, -1, 4)),
+		new Pair<>(BlockRotation.COUNTERCLOCKWISE_90, new BlockPos(0, -1, 8)),
+		new Pair<>(BlockRotation.CLOCKWISE_180, new BlockPos(8, -1, 12))
 	);
 	private static final EndCityGenerator.Part FAT_TOWER = new EndCityGenerator.Part() {
 		@Override
@@ -300,18 +300,18 @@ public class EndCityGenerator {
 		@Override
 		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
 			if (metadata.startsWith("Chest")) {
-				BlockPos blockPos = pos.method_10074();
+				BlockPos blockPos = pos.down();
 				if (boundingBox.contains(blockPos)) {
-					LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, blockPos, LootTables.field_274);
+					LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, blockPos, LootTables.END_CITY_TREASURE_CHEST);
 				}
 			} else if (metadata.startsWith("Sentry")) {
-				ShulkerEntity shulkerEntity = EntityType.field_6109.create(serverWorldAccess.toServerWorld());
+				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(serverWorldAccess.toServerWorld());
 				shulkerEntity.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
 				shulkerEntity.setAttachedBlock(pos);
 				serverWorldAccess.spawnEntity(shulkerEntity);
 			} else if (metadata.startsWith("Elytra")) {
-				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(serverWorldAccess.toServerWorld(), pos, this.rotation.rotate(Direction.field_11035));
-				itemFrameEntity.setHeldItemStack(new ItemStack(Items.field_8833), false);
+				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(serverWorldAccess.toServerWorld(), pos, this.rotation.rotate(Direction.SOUTH));
+				itemFrameEntity.setHeldItemStack(new ItemStack(Items.ELYTRA), false);
 				serverWorldAccess.spawnEntity(itemFrameEntity);
 			}
 		}

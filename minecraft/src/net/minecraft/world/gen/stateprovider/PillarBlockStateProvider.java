@@ -23,7 +23,7 @@ public class PillarBlockStateProvider extends BlockStateProvider {
 
 	@Override
 	protected BlockStateProviderType<?> getType() {
-		return BlockStateProviderType.field_24938;
+		return BlockStateProviderType.ROTATED_BLOCK_PROVIDER;
 	}
 
 	@Override

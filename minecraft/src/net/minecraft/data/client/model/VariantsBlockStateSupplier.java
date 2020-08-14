@@ -53,7 +53,7 @@ public class VariantsBlockStateSupplier implements BlockStateSupplier {
 		return this;
 	}
 
-	public JsonElement method_25780() {
+	public JsonElement get() {
 		Stream<Pair<PropertiesMap, List<BlockStateVariant>>> stream = Stream.of(Pair.of(PropertiesMap.empty(), this.variants));
 
 		for (BlockStateVariantMap blockStateVariantMap : this.variantMaps) {

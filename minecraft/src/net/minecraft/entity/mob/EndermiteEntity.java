@@ -53,9 +53,9 @@ public class EndermiteEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createEndermiteAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23716, 8.0)
-			.add(EntityAttributes.field_23719, 0.25)
-			.add(EntityAttributes.field_23721, 2.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
 	}
 
 	@Override
@@ -65,22 +65,22 @@ public class EndermiteEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15137;
+		return SoundEvents.ENTITY_ENDERMITE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14582;
+		return SoundEvents.ENTITY_ENDERMITE_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15230;
+		return SoundEvents.ENTITY_ENDERMITE_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_14678, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class EndermiteEntity extends HostileEntity {
 			for (int i = 0; i < 2; i++) {
 				this.world
 					.addParticle(
-						ParticleTypes.field_11214,
+						ParticleTypes.PORTAL,
 						this.getParticleX(0.5),
 						this.getRandomBodyY(),
 						this.getParticleZ(0.5),

@@ -44,7 +44,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.doneButton = this.addButton(
 			new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.DONE, buttonWidget -> this.commitAndClose())
 		);
@@ -111,7 +111,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	protected abstract void syncSettingsToServer(CommandBlockExecutor commandExecutor);

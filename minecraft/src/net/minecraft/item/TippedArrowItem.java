@@ -20,7 +20,7 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Override
 	public ItemStack getStackForRender() {
-		return PotionUtil.setPotion(super.getStackForRender(), Potions.field_8982);
+		return PotionUtil.setPotion(super.getStackForRender(), Potions.POISON);
 	}
 
 	@Override

@@ -74,58 +74,58 @@ public interface DispenserBehavior {
 	ItemStack dispense(BlockPointer pointer, ItemStack stack);
 
 	static void registerDefaults() {
-		DispenserBlock.registerBehavior(Items.field_8107, new ProjectileDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.ARROW, new ProjectileDispenserBehavior() {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
 				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ());
-				arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.field_7593;
+				arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 				return arrowEntity;
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8087, new ProjectileDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.TIPPED_ARROW, new ProjectileDispenserBehavior() {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
 				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ());
 				arrowEntity.initFromStack(stack);
-				arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.field_7593;
+				arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 				return arrowEntity;
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8236, new ProjectileDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.SPECTRAL_ARROW, new ProjectileDispenserBehavior() {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
 				PersistentProjectileEntity persistentProjectileEntity = new SpectralArrowEntity(world, position.getX(), position.getY(), position.getZ());
-				persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.field_7593;
+				persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 				return persistentProjectileEntity;
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8547, new ProjectileDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.TRIDENT, new ProjectileDispenserBehavior() {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
 				TridentEntity tridentEntity = new TridentEntity(world, position.getX(), position.getY(), position.getZ());
-				tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.field_7593;
+				tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 				if (stack.damage(1, world.getRandom(), null)) {
 					stack.decrement(1);
 				}
 
-				tridentEntity.method_31208(stack);
+				tridentEntity.method_31240(stack);
 				return tridentEntity;
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8803, new ProjectileDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.EGG, new ProjectileDispenserBehavior() {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
 				return Util.make(new EggEntity(world, position.getX(), position.getY(), position.getZ()), eggEntity -> eggEntity.setItem(stack));
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8543, new ProjectileDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.SNOWBALL, new ProjectileDispenserBehavior() {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
 				return Util.make(new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), snowballEntity -> snowballEntity.setItem(stack));
 			}
 		});
 		DispenserBlock.registerBehavior(
-			Items.field_8287,
+			Items.EXPERIENCE_BOTTLE,
 			new ProjectileDispenserBehavior() {
 				@Override
 				protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
@@ -145,7 +145,7 @@ public interface DispenserBehavior {
 				}
 			}
 		);
-		DispenserBlock.registerBehavior(Items.field_8436, new DispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.SPLASH_POTION, new DispenserBehavior() {
 			@Override
 			public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
 				return (new ProjectileDispenserBehavior() {
@@ -166,7 +166,7 @@ public interface DispenserBehavior {
 				}).dispense(blockPointer, itemStack);
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8150, new DispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.LINGERING_POTION, new DispenserBehavior() {
 			@Override
 			public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
 				return (new ProjectileDispenserBehavior() {
@@ -193,7 +193,7 @@ public interface DispenserBehavior {
 				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 				EntityType<?> entityType = ((SpawnEggItem)stack.getItem()).getEntityType(stack.getTag());
 				entityType.spawnFromItemStack(
-					pointer.getWorld(), stack, null, pointer.getBlockPos().offset(direction), SpawnReason.field_16470, direction != Direction.field_11036, false
+					pointer.getWorld(), stack, null, pointer.getBlockPos().offset(direction), SpawnReason.DISPENSER, direction != Direction.UP, false
 				);
 				stack.decrement(1);
 				return stack;
@@ -204,7 +204,7 @@ public interface DispenserBehavior {
 			DispenserBlock.registerBehavior(spawnEggItem, itemDispenserBehavior);
 		}
 
-		DispenserBlock.registerBehavior(Items.field_8694, new ItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.ARMOR_STAND, new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
@@ -218,7 +218,7 @@ public interface DispenserBehavior {
 				return stack;
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8175, new FallibleItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.SADDLE, new FallibleItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
@@ -231,7 +231,7 @@ public interface DispenserBehavior {
 					}
 				});
 				if (!list.isEmpty()) {
-					((Saddleable)list.get(0)).saddle(SoundCategory.field_15245);
+					((Saddleable)list.get(0)).saddle(SoundCategory.BLOCKS);
 					stack.decrement(1);
 					this.setSuccess(true);
 					return stack;
@@ -257,10 +257,10 @@ public interface DispenserBehavior {
 				return super.dispenseSilently(pointer, stack);
 			}
 		};
-		DispenserBlock.registerBehavior(Items.field_18138, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.field_8578, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.field_8560, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.field_8807, itemDispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.LEATHER_HORSE_ARMOR, itemDispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.IRON_HORSE_ARMOR, itemDispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.GOLDEN_HORSE_ARMOR, itemDispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.DIAMOND_HORSE_ARMOR, itemDispenserBehavior2);
 		DispenserBlock.registerBehavior(Items.WHITE_CARPET, itemDispenserBehavior2);
 		DispenserBlock.registerBehavior(Items.ORANGE_CARPET, itemDispenserBehavior2);
 		DispenserBlock.registerBehavior(Items.CYAN_CARPET, itemDispenserBehavior2);
@@ -299,7 +299,7 @@ public interface DispenserBehavior {
 				}
 			}
 		);
-		DispenserBlock.registerBehavior(Items.field_8639, new ItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.FIREWORK_ROCKET, new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
@@ -316,7 +316,7 @@ public interface DispenserBehavior {
 				pointer.getWorld().syncWorldEvent(1004, pointer.getBlockPos(), 0);
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8814, new ItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.FIRE_CHARGE, new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
@@ -339,12 +339,12 @@ public interface DispenserBehavior {
 				pointer.getWorld().syncWorldEvent(1018, pointer.getBlockPos(), 0);
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8533, new BoatDispenserBehavior(BoatEntity.Type.field_7727));
-		DispenserBlock.registerBehavior(Items.field_8486, new BoatDispenserBehavior(BoatEntity.Type.field_7728));
-		DispenserBlock.registerBehavior(Items.field_8442, new BoatDispenserBehavior(BoatEntity.Type.field_7729));
-		DispenserBlock.registerBehavior(Items.field_8730, new BoatDispenserBehavior(BoatEntity.Type.field_7730));
-		DispenserBlock.registerBehavior(Items.field_8138, new BoatDispenserBehavior(BoatEntity.Type.field_7723));
-		DispenserBlock.registerBehavior(Items.field_8094, new BoatDispenserBehavior(BoatEntity.Type.field_7725));
+		DispenserBlock.registerBehavior(Items.OAK_BOAT, new BoatDispenserBehavior(BoatEntity.Type.OAK));
+		DispenserBlock.registerBehavior(Items.SPRUCE_BOAT, new BoatDispenserBehavior(BoatEntity.Type.SPRUCE));
+		DispenserBlock.registerBehavior(Items.BIRCH_BOAT, new BoatDispenserBehavior(BoatEntity.Type.BIRCH));
+		DispenserBlock.registerBehavior(Items.JUNGLE_BOAT, new BoatDispenserBehavior(BoatEntity.Type.JUNGLE));
+		DispenserBlock.registerBehavior(Items.DARK_OAK_BOAT, new BoatDispenserBehavior(BoatEntity.Type.DARK_OAK));
+		DispenserBlock.registerBehavior(Items.ACACIA_BOAT, new BoatDispenserBehavior(BoatEntity.Type.ACACIA));
 		DispenserBehavior dispenserBehavior = new ItemDispenserBehavior() {
 			private final ItemDispenserBehavior field_13367 = new ItemDispenserBehavior();
 
@@ -355,19 +355,19 @@ public interface DispenserBehavior {
 				World world = pointer.getWorld();
 				if (bucketItem.placeFluid(null, world, blockPos, null)) {
 					bucketItem.onEmptied(world, stack, blockPos);
-					return new ItemStack(Items.field_8550);
+					return new ItemStack(Items.BUCKET);
 				} else {
 					return this.field_13367.dispense(pointer, stack);
 				}
 			}
 		};
-		DispenserBlock.registerBehavior(Items.field_8187, dispenserBehavior);
-		DispenserBlock.registerBehavior(Items.field_8705, dispenserBehavior);
-		DispenserBlock.registerBehavior(Items.field_8714, dispenserBehavior);
-		DispenserBlock.registerBehavior(Items.field_8666, dispenserBehavior);
-		DispenserBlock.registerBehavior(Items.field_8108, dispenserBehavior);
-		DispenserBlock.registerBehavior(Items.field_8478, dispenserBehavior);
-		DispenserBlock.registerBehavior(Items.field_8550, new ItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.LAVA_BUCKET, dispenserBehavior);
+		DispenserBlock.registerBehavior(Items.WATER_BUCKET, dispenserBehavior);
+		DispenserBlock.registerBehavior(Items.SALMON_BUCKET, dispenserBehavior);
+		DispenserBlock.registerBehavior(Items.COD_BUCKET, dispenserBehavior);
+		DispenserBlock.registerBehavior(Items.PUFFERFISH_BUCKET, dispenserBehavior);
+		DispenserBlock.registerBehavior(Items.TROPICAL_FISH_BUCKET, dispenserBehavior);
+		DispenserBlock.registerBehavior(Items.BUCKET, new ItemDispenserBehavior() {
 			private final ItemDispenserBehavior field_13368 = new ItemDispenserBehavior();
 
 			@Override
@@ -398,7 +398,7 @@ public interface DispenserBehavior {
 				}
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8884, new FallibleItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.FLINT_AND_STEEL, new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				World world = pointer.getWorld();
@@ -424,7 +424,7 @@ public interface DispenserBehavior {
 				return stack;
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8324, new FallibleItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.BONE_MEAL, new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				this.setSuccess(true);
@@ -439,14 +439,14 @@ public interface DispenserBehavior {
 				return stack;
 			}
 		});
-		DispenserBlock.registerBehavior(Blocks.field_10375, new ItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Blocks.TNT, new ItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				World world = pointer.getWorld();
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 				TntEntity tntEntity = new TntEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
 				world.spawnEntity(tntEntity);
-				world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
+				world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				stack.decrement(1);
 				return stack;
 			}
@@ -474,9 +474,9 @@ public interface DispenserBehavior {
 					if (world.isAir(blockPos) && WitherSkullBlock.canDispense(world, blockPos, stack)) {
 						world.setBlockState(
 							blockPos,
-							Blocks.field_10177
+							Blocks.WITHER_SKELETON_SKULL
 								.getDefaultState()
-								.with(SkullBlock.ROTATION, Integer.valueOf(direction.getAxis() == Direction.Axis.field_11052 ? 0 : direction.getOpposite().getHorizontal() * 4)),
+								.with(SkullBlock.ROTATION, Integer.valueOf(direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontal() * 4)),
 							3
 						);
 						BlockEntity blockEntity = world.getBlockEntity(blockPos);
@@ -494,12 +494,12 @@ public interface DispenserBehavior {
 				}
 			}
 		);
-		DispenserBlock.registerBehavior(Blocks.field_10147, new FallibleItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Blocks.CARVED_PUMPKIN, new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				World world = pointer.getWorld();
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-				CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.field_10147;
+				CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.CARVED_PUMPKIN;
 				if (world.isAir(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
 					if (!world.isClient) {
 						world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), 3);
@@ -514,14 +514,14 @@ public interface DispenserBehavior {
 				return stack;
 			}
 		});
-		DispenserBlock.registerBehavior(Blocks.field_10603.asItem(), new BlockPlacementDispenserBehavior());
+		DispenserBlock.registerBehavior(Blocks.SHULKER_BOX.asItem(), new BlockPlacementDispenserBehavior());
 
 		for (DyeColor dyeColor : DyeColor.values()) {
 			DispenserBlock.registerBehavior(ShulkerBoxBlock.get(dyeColor).asItem(), new BlockPlacementDispenserBehavior());
 		}
 
 		DispenserBlock.registerBehavior(
-			Items.field_8469.asItem(),
+			Items.GLASS_BOTTLE.asItem(),
 			new FallibleItemDispenserBehavior() {
 				private final ItemDispenserBehavior field_20533 = new ItemDispenserBehavior();
 
@@ -544,14 +544,14 @@ public interface DispenserBehavior {
 					ServerWorld serverWorld = pointer.getWorld();
 					BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 					BlockState blockState = serverWorld.getBlockState(blockPos);
-					if (blockState.method_27851(BlockTags.field_20340, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL))
+					if (blockState.method_27851(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL))
 						&& (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
-						((BeehiveBlock)blockState.getBlock()).takeHoney(serverWorld, blockState, blockPos, null, BeehiveBlockEntity.BeeState.field_20429);
+						((BeehiveBlock)blockState.getBlock()).takeHoney(serverWorld, blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
 						this.setSuccess(true);
-						return this.method_22141(pointer, stack, new ItemStack(Items.field_20417));
-					} else if (serverWorld.getFluidState(blockPos).isIn(FluidTags.field_15517)) {
+						return this.method_22141(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
+					} else if (serverWorld.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 						this.setSuccess(true);
-						return this.method_22141(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991));
+						return this.method_22141(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
 					} else {
 						return super.dispenseSilently(pointer, stack);
 					}
@@ -566,7 +566,7 @@ public interface DispenserBehavior {
 				World world = pointer.getWorld();
 				BlockState blockState = world.getBlockState(blockPos);
 				this.setSuccess(true);
-				if (blockState.isOf(Blocks.field_23152)) {
+				if (blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
 					if ((Integer)blockState.get(RespawnAnchorBlock.CHARGES) != 4) {
 						RespawnAnchorBlock.charge(world, blockPos, blockState);
 						stack.decrement(1);
@@ -580,7 +580,7 @@ public interface DispenserBehavior {
 				}
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8868.asItem(), new ShearsDispenserBehavior());
+		DispenserBlock.registerBehavior(Items.SHEARS.asItem(), new ShearsDispenserBehavior());
 	}
 
 	static void method_27042(BlockPointer blockPointer, Entity entity, Direction direction) {

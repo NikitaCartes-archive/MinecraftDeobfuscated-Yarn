@@ -21,7 +21,7 @@ public class DynamicEntry extends LeafEntry {
 
 	@Override
 	public LootPoolEntryType getType() {
-		return LootPoolEntryTypes.field_25209;
+		return LootPoolEntryTypes.DYNAMIC;
 	}
 
 	@Override
@@ -34,12 +34,12 @@ public class DynamicEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<DynamicEntry> {
-		public void method_393(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
-			super.method_442(jsonObject, dynamicEntry, jsonSerializationContext);
+		public void addEntryFields(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
+			super.addEntryFields(jsonObject, dynamicEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", dynamicEntry.name.toString());
 		}
 
-		protected DynamicEntry method_392(
+		protected DynamicEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));

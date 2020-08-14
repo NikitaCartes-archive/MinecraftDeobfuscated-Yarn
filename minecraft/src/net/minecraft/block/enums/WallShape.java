@@ -3,9 +3,9 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum WallShape implements StringIdentifiable {
-	field_22178("none"),
-	field_22179("low"),
-	field_22180("tall");
+	NONE("none"),
+	LOW("low"),
+	TALL("tall");
 
 	private final String name;
 

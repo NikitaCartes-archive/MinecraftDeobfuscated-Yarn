@@ -24,7 +24,7 @@ public class WitherRoseBlock extends FlowerBlock {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return super.canPlantOnTop(floor, world, pos) || floor.isOf(Blocks.field_10515) || floor.isOf(Blocks.field_10114) || floor.isOf(Blocks.field_22090);
+		return super.canPlantOnTop(floor, world, pos) || floor.isOf(Blocks.NETHERRACK) || floor.isOf(Blocks.SOUL_SAND) || floor.isOf(Blocks.SOUL_SOIL);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -38,7 +38,7 @@ public class WitherRoseBlock extends FlowerBlock {
 		for (int i = 0; i < 3; i++) {
 			if (random.nextBoolean()) {
 				world.addParticle(
-					ParticleTypes.field_11251, d + random.nextDouble() / 5.0, (double)pos.getY() + (0.5 - random.nextDouble()), e + random.nextDouble() / 5.0, 0.0, 0.0, 0.0
+					ParticleTypes.SMOKE, d + random.nextDouble() / 5.0, (double)pos.getY() + (0.5 - random.nextDouble()), e + random.nextDouble() / 5.0, 0.0, 0.0, 0.0
 				);
 			}
 		}
@@ -46,11 +46,11 @@ public class WitherRoseBlock extends FlowerBlock {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!world.isClient && world.getDifficulty() != Difficulty.field_5801) {
+		if (!world.isClient && world.getDifficulty() != Difficulty.PEACEFUL) {
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				if (!livingEntity.isInvulnerableTo(DamageSource.WITHER)) {
-					livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5920, 40));
+					livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
 				}
 			}
 		}

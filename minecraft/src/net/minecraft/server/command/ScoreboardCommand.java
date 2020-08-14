@@ -315,7 +315,7 @@ public class ScoreboardCommand {
 		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
 
 		for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
-			if (scoreboardObjective.getCriterion() == ScoreboardCriterion.field_1462) {
+			if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER) {
 				boolean bl = false;
 
 				for (String string : targets) {
@@ -381,7 +381,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeEnable(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective) throws CommandSyntaxException {
-		if (objective.getCriterion() != ScoreboardCriterion.field_1462) {
+		if (objective.getCriterion() != ScoreboardCriterion.TRIGGER) {
 			throw PLAYERS_ENABLE_INVALID_EXCEPTION.create();
 		} else {
 			Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();

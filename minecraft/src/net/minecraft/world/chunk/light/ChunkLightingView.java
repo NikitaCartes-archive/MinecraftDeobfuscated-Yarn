@@ -12,7 +12,7 @@ public interface ChunkLightingView extends LightingView {
 	int getLightLevel(BlockPos blockPos);
 
 	public static enum Empty implements ChunkLightingView {
-		field_15812;
+		INSTANCE;
 
 		@Nullable
 		@Override

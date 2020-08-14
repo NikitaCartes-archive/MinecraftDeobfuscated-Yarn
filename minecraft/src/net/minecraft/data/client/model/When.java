@@ -21,7 +21,7 @@ public interface When extends Supplier<JsonElement> {
 	}
 
 	static When anyOf(When... conditions) {
-		return new When.LogicalCondition(When.LogicalOperator.field_22851, Arrays.asList(conditions));
+		return new When.LogicalCondition(When.LogicalOperator.OR, Arrays.asList(conditions));
 	}
 
 	public static class LogicalCondition implements When {
@@ -38,7 +38,7 @@ public interface When extends Supplier<JsonElement> {
 			this.components.forEach(when -> when.validate(stateManager));
 		}
 
-		public JsonElement method_25748() {
+		public JsonElement get() {
 			JsonArray jsonArray = new JsonArray();
 			this.components.stream().map(Supplier::get).forEach(jsonArray::add);
 			JsonObject jsonObject = new JsonObject();
@@ -48,8 +48,8 @@ public interface When extends Supplier<JsonElement> {
 	}
 
 	public static enum LogicalOperator {
-		field_22850("AND"),
-		field_22851("OR");
+		AND("AND"),
+		OR("OR");
 
 		private final String name;
 
@@ -87,7 +87,7 @@ public interface When extends Supplier<JsonElement> {
 			return this;
 		}
 
-		public JsonElement method_25756() {
+		public JsonElement get() {
 			JsonObject jsonObject = new JsonObject();
 			this.properties.forEach((property, string) -> jsonObject.addProperty(property.getName(), string));
 			return jsonObject;

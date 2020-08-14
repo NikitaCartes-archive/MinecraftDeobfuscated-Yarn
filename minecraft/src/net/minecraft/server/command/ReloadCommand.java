@@ -24,7 +24,7 @@ public class ReloadCommand {
 	private static Collection<String> method_29478(ResourcePackManager resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {
 		resourcePackManager.scanPacks();
 		Collection<String> collection2 = Lists.<String>newArrayList(collection);
-		Collection<String> collection3 = saveProperties.method_29589().getDisabled();
+		Collection<String> collection3 = saveProperties.getDataPackSettings().getDisabled();
 
 		for (String string : resourcePackManager.getNames()) {
 			if (!collection3.contains(string) && !collection2.contains(string)) {

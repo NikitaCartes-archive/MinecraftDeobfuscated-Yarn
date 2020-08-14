@@ -28,7 +28,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	protected static final Predicate<Entity> PREDICATE = entity -> entity instanceof AbstractDecorationEntity;
 	private int obstructionCheckCounter;
 	protected BlockPos attachmentPos;
-	protected Direction facing = Direction.field_11035;
+	protected Direction facing = Direction.SOUTH;
 
 	protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world) {
 		super(entityType, world);
@@ -70,7 +70,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 			double j = (double)this.getWidthPixels();
 			double k = (double)this.getHeightPixels();
 			double l = (double)this.getWidthPixels();
-			if (this.facing.getAxis() == Direction.Axis.field_11051) {
+			if (this.facing.getAxis() == Direction.Axis.Z) {
 				l = 1.0;
 			} else {
 				j = 1.0;
@@ -118,7 +118,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 				for (int l = 0; l < j; l++) {
 					int m = (i - 1) / -2;
 					int n = (j - 1) / -2;
-					mutable.set(blockPos).move(direction, k + m).move(Direction.field_11036, l + n);
+					mutable.set(blockPos).move(direction, k + m).move(Direction.UP, l + n);
 					BlockState blockState = this.world.getBlockState(mutable);
 					if (!blockState.getMaterial().isSolid() && !AbstractRedstoneGateBlock.isRedstoneGate(blockState)) {
 						return false;
@@ -234,26 +234,26 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public float applyRotation(BlockRotation rotation) {
-		if (this.facing.getAxis() != Direction.Axis.field_11052) {
+		if (this.facing.getAxis() != Direction.Axis.Y) {
 			switch (rotation) {
-				case field_11464:
+				case CLOCKWISE_180:
 					this.facing = this.facing.getOpposite();
 					break;
-				case field_11465:
+				case COUNTERCLOCKWISE_90:
 					this.facing = this.facing.rotateYCounterclockwise();
 					break;
-				case field_11463:
+				case CLOCKWISE_90:
 					this.facing = this.facing.rotateYClockwise();
 			}
 		}
 
 		float f = MathHelper.wrapDegrees(this.yaw);
 		switch (rotation) {
-			case field_11464:
+			case CLOCKWISE_180:
 				return f + 180.0F;
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return f + 90.0F;
-			case field_11463:
+			case CLOCKWISE_90:
 				return f + 270.0F;
 			default:
 				return f;

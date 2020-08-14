@@ -63,7 +63,7 @@ public class StriderEntityModel<T extends StriderEntity> extends CompositeEntity
 		this.field_23355.addChild(this.field_23361);
 	}
 
-	public void method_26414(StriderEntity striderEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(StriderEntity striderEntity, float f, float g, float h, float i, float j) {
 		g = Math.min(0.25F, g);
 		if (striderEntity.getPassengerList().size() <= 0) {
 			this.field_23355.pitch = j * (float) (Math.PI / 180.0);

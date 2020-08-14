@@ -29,7 +29,7 @@ public class FlowerBlock extends PlantBlock {
 
 	@Override
 	public AbstractBlock.OffsetType getOffsetType() {
-		return AbstractBlock.OffsetType.field_10657;
+		return AbstractBlock.OffsetType.XZ;
 	}
 
 	public StatusEffect getEffectInStew() {

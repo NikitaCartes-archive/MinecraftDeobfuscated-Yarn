@@ -1,13 +1,13 @@
 package net.minecraft.world;
 
 public enum TickPriority {
-	field_9315(-3),
-	field_9313(-2),
-	field_9310(-1),
-	field_9314(0),
-	field_9316(1),
-	field_9309(2),
-	field_9311(3);
+	EXTREMELY_HIGH(-3),
+	VERY_HIGH(-2),
+	HIGH(-1),
+	NORMAL(0),
+	LOW(1),
+	VERY_LOW(2),
+	EXTREMELY_LOW(3);
 
 	private final int index;
 
@@ -22,7 +22,7 @@ public enum TickPriority {
 			}
 		}
 
-		return index < field_9315.index ? field_9315 : field_9311;
+		return index < EXTREMELY_HIGH.index ? EXTREMELY_HIGH : EXTREMELY_LOW;
 	}
 
 	public int getIndex() {

@@ -37,7 +37,7 @@ public abstract class WaterFluid extends FlowableFluid {
 
 	@Override
 	public Item getBucketItem() {
-		return Items.field_8705;
+		return Items.WATER_BUCKET;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -49,8 +49,8 @@ public abstract class WaterFluid extends FlowableFluid {
 					(double)pos.getX() + 0.5,
 					(double)pos.getY() + 0.5,
 					(double)pos.getZ() + 0.5,
-					SoundEvents.field_15237,
-					SoundCategory.field_15245,
+					SoundEvents.BLOCK_WATER_AMBIENT,
+					SoundCategory.BLOCKS,
 					random.nextFloat() * 0.25F + 0.75F,
 					random.nextFloat() + 0.5F,
 					false
@@ -58,7 +58,7 @@ public abstract class WaterFluid extends FlowableFluid {
 			}
 		} else if (random.nextInt(10) == 0) {
 			world.addParticle(
-				ParticleTypes.field_11210,
+				ParticleTypes.UNDERWATER,
 				(double)pos.getX() + random.nextDouble(),
 				(double)pos.getY() + random.nextDouble(),
 				(double)pos.getZ() + random.nextDouble(),
@@ -73,7 +73,7 @@ public abstract class WaterFluid extends FlowableFluid {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ParticleEffect getParticle() {
-		return ParticleTypes.field_11232;
+		return ParticleTypes.DRIPPING_WATER;
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public abstract class WaterFluid extends FlowableFluid {
 
 	@Override
 	public BlockState toBlockState(FluidState state) {
-		return Blocks.field_10382.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(state)));
+		return Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(state)));
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public abstract class WaterFluid extends FlowableFluid {
 
 	@Override
 	public boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
-		return direction == Direction.field_11033 && !fluid.isIn(FluidTags.field_15517);
+		return direction == Direction.DOWN && !fluid.isIn(FluidTags.WATER);
 	}
 
 	@Override

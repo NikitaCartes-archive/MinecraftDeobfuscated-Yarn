@@ -77,7 +77,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
-		this.setPathfindingPenalty(PathNodeType.field_18, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
 	}
 
 	@Override
@@ -98,16 +98,16 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	public static DefaultAttributeContainer.Builder createEndermanAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23716, 40.0)
-			.add(EntityAttributes.field_23719, 0.3F)
-			.add(EntityAttributes.field_23721, 7.0)
-			.add(EntityAttributes.field_23717, 64.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 7.0)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0);
 	}
 
 	@Override
 	public void setTarget(@Nullable LivingEntity target) {
 		super.setTarget(target);
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.field_23719);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		if (target == null) {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);
@@ -159,7 +159,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		if (this.age >= this.lastAngrySoundAge + 400) {
 			this.lastAngrySoundAge = this.age;
 			if (!this.isSilent()) {
-				this.world.playSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.field_14967, this.getSoundCategory(), 2.5F, 1.0F, false);
+				this.world.playSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ENTITY_ENDERMAN_STARE, this.getSoundCategory(), 2.5F, 1.0F, false);
 			}
 		}
 	}
@@ -201,7 +201,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	private boolean isPlayerStaring(PlayerEntity player) {
 		ItemStack itemStack = player.inventory.armor.get(3);
-		if (itemStack.getItem() == Blocks.field_10147.asItem()) {
+		if (itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
 			return false;
 		} else {
 			Vec3d vec3d = player.getRotationVec(1.0F).normalize();
@@ -224,7 +224,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			for (int i = 0; i < 2; i++) {
 				this.world
 					.addParticle(
-						ParticleTypes.field_11214,
+						ParticleTypes.PORTAL,
 						this.getParticleX(0.5),
 						this.getRandomBodyY() - 0.25,
 						this.getParticleZ(0.5),
@@ -286,17 +286,17 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
 
 		while (mutable.getY() > 0 && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
-			mutable.move(Direction.field_11033);
+			mutable.move(Direction.DOWN);
 		}
 
 		BlockState blockState = this.world.getBlockState(mutable);
 		boolean bl = blockState.getMaterial().blocksMovement();
-		boolean bl2 = blockState.getFluidState().isIn(FluidTags.field_15517);
+		boolean bl2 = blockState.getFluidState().isIn(FluidTags.WATER);
 		if (bl && !bl2) {
 			boolean bl3 = this.teleport(x, y, z, true);
 			if (bl3 && !this.isSilent()) {
-				this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.field_14879, this.getSoundCategory(), 1.0F, 1.0F);
-				this.playSound(SoundEvents.field_14879, 1.0F, 1.0F);
+				this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
 			}
 
 			return bl3;
@@ -307,17 +307,17 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isAngry() ? SoundEvents.field_14713 : SoundEvents.field_14696;
+		return this.isAngry() ? SoundEvents.ENTITY_ENDERMAN_SCREAM : SoundEvents.ENTITY_ENDERMAN_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14797;
+		return SoundEvents.ENTITY_ENDERMAN_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14608;
+		return SoundEvents.ENTITY_ENDERMAN_DEATH;
 	}
 
 	@Override
@@ -383,7 +383,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 		public ChasePlayerGoal(EndermanEntity enderman) {
 			this.enderman = enderman;
-			this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
 		}
 
 		@Override
@@ -437,10 +437,10 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			Vec3d vec3d = new Vec3d((double)MathHelper.floor(this.enderman.getX()) + 0.5, (double)j + 0.5, (double)MathHelper.floor(this.enderman.getZ()) + 0.5);
 			Vec3d vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5);
 			BlockHitResult blockHitResult = world.rayTrace(
-				new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.field_1348, this.enderman)
+				new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, this.enderman)
 			);
 			boolean bl = blockHitResult.getBlockPos().equals(blockPos);
-			if (block.isIn(BlockTags.field_15460) && bl) {
+			if (block.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
 				world.removeBlock(blockPos, false);
 				this.enderman.setCarriedBlock(blockState.getBlock().getDefaultState());
 			}
@@ -472,7 +472,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			int k = MathHelper.floor(this.enderman.getZ() - 1.0 + random.nextDouble() * 2.0);
 			BlockPos blockPos = new BlockPos(i, j, k);
 			BlockState blockState = world.getBlockState(blockPos);
-			BlockPos blockPos2 = blockPos.method_10074();
+			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			BlockState blockState3 = this.enderman.getCarriedBlock();
 			if (blockState3 != null) {
@@ -487,7 +487,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		private boolean canPlaceOn(World world, BlockPos posAbove, BlockState carriedState, BlockState stateAbove, BlockState state, BlockPos pos) {
 			return stateAbove.isAir()
 				&& !state.isAir()
-				&& !state.isOf(Blocks.field_9987)
+				&& !state.isOf(Blocks.BEDROCK)
 				&& state.isFullCube(world, pos)
 				&& carriedState.canPlaceAt(world, posAbove)
 				&& world.getOtherEntities(this.enderman, Box.method_29968(Vec3d.of(posAbove))).isEmpty();

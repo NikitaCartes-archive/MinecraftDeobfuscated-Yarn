@@ -20,7 +20,7 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.screen.pack.AbstractPackScreen;
+import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -66,11 +66,11 @@ public class CreateWorldScreen extends Screen {
 	private final Screen parent;
 	private TextFieldWidget levelNameField;
 	private String saveDirectoryName;
-	private CreateWorldScreen.Mode currentMode = CreateWorldScreen.Mode.field_20624;
+	private CreateWorldScreen.Mode currentMode = CreateWorldScreen.Mode.SURVIVAL;
 	@Nullable
 	private CreateWorldScreen.Mode lastMode;
-	private Difficulty field_24289 = Difficulty.field_5802;
-	private Difficulty field_24290 = Difficulty.field_5802;
+	private Difficulty field_24289 = Difficulty.NORMAL;
+	private Difficulty field_24290 = Difficulty.NORMAL;
 	private boolean cheatsEnabled;
 	private boolean tweakedCheats;
 	public boolean hardcore;
@@ -113,11 +113,11 @@ public class CreateWorldScreen extends Screen {
 		this.field_24290 = this.field_24289;
 		this.gameRules.setAllValues(levelInfo.getGameRules(), null);
 		if (levelInfo.isHardcore()) {
-			this.currentMode = CreateWorldScreen.Mode.field_20625;
+			this.currentMode = CreateWorldScreen.Mode.HARDCORE;
 		} else if (levelInfo.getGameMode().isSurvivalLike()) {
-			this.currentMode = CreateWorldScreen.Mode.field_20624;
+			this.currentMode = CreateWorldScreen.Mode.SURVIVAL;
 		} else if (levelInfo.getGameMode().isCreative()) {
-			this.currentMode = CreateWorldScreen.Mode.field_20626;
+			this.currentMode = CreateWorldScreen.Mode.CREATIVE;
 		}
 
 		this.field_25477 = path;
@@ -130,7 +130,7 @@ public class CreateWorldScreen extends Screen {
 			DataPackSettings.SAFE_MODE,
 			new MoreOptionsDialog(
 				impl,
-				GeneratorOptions.getDefaultOptions(impl.get(Registry.DIMENSION_TYPE_KEY), impl.get(Registry.BIOME_KEY), impl.get(Registry.field_26374)),
+				GeneratorOptions.getDefaultOptions(impl.get(Registry.DIMENSION_TYPE_KEY), impl.get(Registry.BIOME_KEY), impl.get(Registry.NOISE_SETTINGS_WORLDGEN)),
 				Optional.of(GeneratorType.DEFAULT),
 				OptionalLong.empty()
 			)
@@ -153,7 +153,7 @@ public class CreateWorldScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.levelNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterName")) {
 			@Override
 			protected MutableText getNarrationMessage() {
@@ -176,14 +176,14 @@ public class CreateWorldScreen extends Screen {
 		this.gameModeSwitchButton = this.addButton(
 			new ButtonWidget(i, 100, 150, 20, LiteralText.EMPTY, buttonWidget -> {
 				switch (this.currentMode) {
-					case field_20624:
-						this.tweakDefaultsTo(CreateWorldScreen.Mode.field_20625);
+					case SURVIVAL:
+						this.tweakDefaultsTo(CreateWorldScreen.Mode.HARDCORE);
 						break;
-					case field_20625:
-						this.tweakDefaultsTo(CreateWorldScreen.Mode.field_20626);
+					case HARDCORE:
+						this.tweakDefaultsTo(CreateWorldScreen.Mode.CREATIVE);
 						break;
-					case field_20626:
-						this.tweakDefaultsTo(CreateWorldScreen.Mode.field_20624);
+					case CREATIVE:
+						this.tweakDefaultsTo(CreateWorldScreen.Mode.SURVIVAL);
 				}
 
 				buttonWidget.queueNarration(250);
@@ -287,7 +287,7 @@ public class CreateWorldScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void createLevel() {
@@ -298,10 +298,8 @@ public class CreateWorldScreen extends Screen {
 			LevelInfo levelInfo;
 			if (generatorOptions.isDebugWorld()) {
 				GameRules gameRules = new GameRules();
-				gameRules.get(GameRules.field_19396).set(false, null);
-				levelInfo = new LevelInfo(
-					this.levelNameField.getText().trim(), GameMode.field_9219, false, Difficulty.field_5801, true, gameRules, DataPackSettings.SAFE_MODE
-				);
+				gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
+				levelInfo = new LevelInfo(this.levelNameField.getText().trim(), GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, DataPackSettings.SAFE_MODE);
 			} else {
 				levelInfo = new LevelInfo(
 					this.levelNameField.getText().trim(),
@@ -324,14 +322,14 @@ public class CreateWorldScreen extends Screen {
 
 	private void tweakDefaultsTo(CreateWorldScreen.Mode mode) {
 		if (!this.tweakedCheats) {
-			this.cheatsEnabled = mode == CreateWorldScreen.Mode.field_20626;
+			this.cheatsEnabled = mode == CreateWorldScreen.Mode.CREATIVE;
 		}
 
-		if (mode == CreateWorldScreen.Mode.field_20625) {
+		if (mode == CreateWorldScreen.Mode.HARDCORE) {
 			this.hardcore = true;
 			this.enableCheatsButton.active = false;
 			this.moreOptionsDialog.bonusItemsButton.active = false;
-			this.field_24290 = Difficulty.field_5807;
+			this.field_24290 = Difficulty.HARD;
 			this.difficultyButton.active = false;
 		} else {
 			this.hardcore = false;
@@ -360,7 +358,7 @@ public class CreateWorldScreen extends Screen {
 				this.lastMode = this.currentMode;
 			}
 
-			this.tweakDefaultsTo(CreateWorldScreen.Mode.field_20627);
+			this.tweakDefaultsTo(CreateWorldScreen.Mode.DEBUG);
 			this.enableCheatsButton.visible = false;
 		} else {
 			this.gameModeSwitchButton.active = true;
@@ -469,7 +467,7 @@ public class CreateWorldScreen extends Screen {
 	private void method_29694() {
 		Pair<File, ResourcePackManager> pair = this.method_30296();
 		if (pair != null) {
-			this.client.openScreen(new AbstractPackScreen(this, pair.getSecond(), this::method_29682, pair.getFirst(), new TranslatableText("dataPack.title")));
+			this.client.openScreen(new PackScreen(this, pair.getSecond(), this::method_29682, pair.getFirst(), new TranslatableText("dataPack.title")));
 		}
 	}
 
@@ -480,16 +478,16 @@ public class CreateWorldScreen extends Screen {
 		if (list.equals(this.field_25479.getEnabled())) {
 			this.field_25479 = dataPackSettings;
 		} else {
-			this.client.method_18858(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
+			this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
 			ServerResourceManager.reload(
-					resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.field_25421, 2, Util.getMainWorkerExecutor(), this.client
+					resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), this.client
 				)
 				.handle(
 					(serverResourceManager, throwable) -> {
 						if (throwable != null) {
 							field_25480.warn("Failed to validate datapack", throwable);
 							this.client
-								.method_18858(
+								.send(
 									() -> this.client
 											.openScreen(
 												new ConfirmScreen(
@@ -509,7 +507,7 @@ public class CreateWorldScreen extends Screen {
 											)
 								);
 						} else {
-							this.client.method_18858(() -> {
+							this.client.send(() -> {
 								this.field_25479 = dataPackSettings;
 								this.moreOptionsDialog.method_31132(serverResourceManager);
 								serverResourceManager.close();
@@ -577,7 +575,7 @@ public class CreateWorldScreen extends Screen {
 				Throwable var4 = null;
 
 				try {
-					Path path = session.getDirectory(WorldSavePath.field_24186);
+					Path path = session.getDirectory(WorldSavePath.DATAPACKS);
 					Files.createDirectories(path);
 					stream.filter(pathx -> !pathx.equals(this.field_25477)).forEach(path2 -> method_29687(this.field_25477, path, path2));
 				} catch (Throwable var29) {
@@ -675,10 +673,10 @@ public class CreateWorldScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	static enum Mode {
-		field_20624("survival", GameMode.field_9215),
-		field_20625("hardcore", GameMode.field_9215),
-		field_20626("creative", GameMode.field_9220),
-		field_20627("spectator", GameMode.field_9219);
+		SURVIVAL("survival", GameMode.SURVIVAL),
+		HARDCORE("hardcore", GameMode.SURVIVAL),
+		CREATIVE("creative", GameMode.CREATIVE),
+		DEBUG("spectator", GameMode.SPECTATOR);
 
 		private final String translationSuffix;
 		private final GameMode defaultGameMode;

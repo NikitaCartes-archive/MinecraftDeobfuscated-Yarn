@@ -23,11 +23,11 @@ public class StartRaidTask extends Task<LivingEntity> {
 		Raid raid = world.getRaidAt(entity.getBlockPos());
 		if (raid != null) {
 			if (raid.hasSpawned() && !raid.isPreRaid()) {
-				brain.setDefaultActivity(Activity.field_19041);
-				brain.doExclusively(Activity.field_19041);
+				brain.setDefaultActivity(Activity.RAID);
+				brain.doExclusively(Activity.RAID);
 			} else {
-				brain.setDefaultActivity(Activity.field_19042);
-				brain.doExclusively(Activity.field_19042);
+				brain.setDefaultActivity(Activity.PRE_RAID);
+				brain.doExclusively(Activity.PRE_RAID);
 			}
 		}
 	}

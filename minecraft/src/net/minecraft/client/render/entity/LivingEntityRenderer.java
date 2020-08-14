@@ -48,7 +48,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return this.model;
 	}
 
-	public void method_4054(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, g);
 		this.model.riding = livingEntity.hasVehicle();
@@ -78,10 +78,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 
 		float m = MathHelper.lerp(g, livingEntity.prevPitch, livingEntity.pitch);
-		if (livingEntity.getPose() == EntityPose.field_18078) {
+		if (livingEntity.getPose() == EntityPose.SLEEPING) {
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
-				float n = livingEntity.getEyeHeight(EntityPose.field_18076) - 0.1F;
+				float n = livingEntity.getEyeHeight(EntityPose.STANDING) - 0.1F;
 				matrixStack.translate((double)((float)(-direction.getOffsetX()) * n), 0.0, (double)((float)(-direction.getOffsetZ()) * n));
 			}
 		}
@@ -156,13 +156,13 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	private static float getYaw(Direction direction) {
 		switch (direction) {
-			case field_11035:
+			case SOUTH:
 				return 90.0F;
-			case field_11039:
+			case WEST:
 				return 0.0F;
-			case field_11043:
+			case NORTH:
 				return 270.0F;
-			case field_11034:
+			case EAST:
 				return 180.0F;
 			default:
 				return 0.0F;
@@ -184,7 +184,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 
 		EntityPose entityPose = entity.getPose();
-		if (entityPose != EntityPose.field_18078) {
+		if (entityPose != EntityPose.SLEEPING) {
 			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - bodyYaw));
 		}
 
@@ -199,7 +199,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		} else if (entity.isUsingRiptide()) {
 			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.pitch));
 			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + tickDelta) * -75.0F));
-		} else if (entityPose == EntityPose.field_18078) {
+		} else if (entityPose == EntityPose.SLEEPING) {
 			Direction direction = entity.getSleepingDirection();
 			float g = direction != null ? getYaw(direction) : bodyYaw;
 			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(g));
@@ -208,7 +208,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
 			String string = Formatting.strip(entity.getName().getString());
 			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.field_7559))) {
+				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
 				matrices.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
 				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			}
@@ -238,7 +238,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	protected void scale(T entity, MatrixStack matrices, float amount) {
 	}
 
-	protected boolean method_4055(T livingEntity) {
+	protected boolean hasLabel(T livingEntity) {
 		double d = this.dispatcher.getSquaredDistanceToCamera(livingEntity);
 		float f = livingEntity.isSneaky() ? 32.0F : 64.0F;
 		if (d >= (double)(f * f)) {
@@ -253,13 +253,13 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 				if (abstractTeam != null) {
 					AbstractTeam.VisibilityRule visibilityRule = abstractTeam.getNameTagVisibilityRule();
 					switch (visibilityRule) {
-						case field_1442:
+						case ALWAYS:
 							return bl;
-						case field_1443:
+						case NEVER:
 							return false;
-						case field_1444:
+						case HIDE_FOR_OTHER_TEAMS:
 							return abstractTeam2 == null ? bl : abstractTeam.isEqual(abstractTeam2) && (abstractTeam.shouldShowFriendlyInvisibles() || bl);
-						case field_1446:
+						case HIDE_FOR_OWN_TEAM:
 							return abstractTeam2 == null ? bl : !abstractTeam.isEqual(abstractTeam2) && bl;
 						default:
 							return true;

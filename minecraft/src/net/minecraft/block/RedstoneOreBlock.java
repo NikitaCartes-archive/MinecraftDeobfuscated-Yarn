@@ -75,11 +75,11 @@ public class RedstoneOreBlock extends Block {
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, serverWorld, pos, stack);
-		if (EnchantmentHelper.getLevel(Enchantments.field_9099, stack) == 0) {
-			int i = 1 + serverWorld.random.nextInt(5);
-			this.dropExperience(serverWorld, pos, i);
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
+		super.onStacksDropped(state, world, pos, stack);
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
+			int i = 1 + world.random.nextInt(5);
+			this.dropExperience(world, pos, i);
 		}
 	}
 
@@ -99,9 +99,9 @@ public class RedstoneOreBlock extends Block {
 			BlockPos blockPos = pos.offset(direction);
 			if (!world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) {
 				Direction.Axis axis = direction.getAxis();
-				double e = axis == Direction.Axis.field_11048 ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
-				double f = axis == Direction.Axis.field_11052 ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();
-				double g = axis == Direction.Axis.field_11051 ? 0.5 + 0.5625 * (double)direction.getOffsetZ() : (double)random.nextFloat();
+				double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
+				double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();
+				double g = axis == Direction.Axis.Z ? 0.5 + 0.5625 * (double)direction.getOffsetZ() : (double)random.nextFloat();
 				world.addParticle(DustParticleEffect.RED, (double)pos.getX() + e, (double)pos.getY() + f, (double)pos.getZ() + g, 0.0, 0.0, 0.0);
 			}
 		}

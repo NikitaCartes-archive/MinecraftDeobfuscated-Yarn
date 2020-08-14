@@ -12,12 +12,12 @@ public class WalkTowardClosestAdultTask<E extends PassiveEntity> extends Task<E>
 	private final float speed;
 
 	public WalkTowardClosestAdultTask(IntRange executionRange, float speed) {
-		super(ImmutableMap.of(MemoryModuleType.field_25359, MemoryModuleState.field_18456, MemoryModuleType.field_18445, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 		this.executionRange = executionRange;
 		this.speed = speed;
 	}
 
-	protected boolean method_29521(ServerWorld serverWorld, E passiveEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, E passiveEntity) {
 		if (!passiveEntity.isBaby()) {
 			return false;
 		} else {
@@ -27,11 +27,11 @@ public class WalkTowardClosestAdultTask<E extends PassiveEntity> extends Task<E>
 		}
 	}
 
-	protected void method_29522(ServerWorld serverWorld, E passiveEntity, long l) {
+	protected void run(ServerWorld serverWorld, E passiveEntity, long l) {
 		LookTargetUtil.walkTowards(passiveEntity, this.getNearestVisibleAdult(passiveEntity), this.speed, this.executionRange.getMin() - 1);
 	}
 
 	private PassiveEntity getNearestVisibleAdult(E entity) {
-		return (PassiveEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.field_25359).get();
+		return (PassiveEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT).get();
 	}
 }

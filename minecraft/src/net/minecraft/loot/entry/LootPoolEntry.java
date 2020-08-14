@@ -41,12 +41,12 @@ public abstract class LootPoolEntry implements EntryCombiner {
 
 		protected abstract T getThisBuilder();
 
-		public T method_421(LootCondition.Builder builder) {
+		public T conditionally(LootCondition.Builder builder) {
 			this.conditions.add(builder.build());
 			return this.getThisBuilder();
 		}
 
-		public final T method_416() {
+		public final T getThis() {
 			return this.getThisBuilder();
 		}
 
@@ -62,7 +62,7 @@ public abstract class LootPoolEntry implements EntryCombiner {
 	}
 
 	public abstract static class Serializer<T extends LootPoolEntry> implements JsonSerializer<T> {
-		public final void method_29320(JsonObject jsonObject, T lootPoolEntry, JsonSerializationContext jsonSerializationContext) {
+		public final void toJson(JsonObject jsonObject, T lootPoolEntry, JsonSerializationContext jsonSerializationContext) {
 			if (!ArrayUtils.isEmpty((Object[])lootPoolEntry.conditions)) {
 				jsonObject.add("conditions", jsonSerializationContext.serialize(lootPoolEntry.conditions));
 			}
@@ -70,7 +70,7 @@ public abstract class LootPoolEntry implements EntryCombiner {
 			this.addEntryFields(jsonObject, lootPoolEntry, jsonSerializationContext);
 		}
 
-		public final T method_29319(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
 			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
 		}

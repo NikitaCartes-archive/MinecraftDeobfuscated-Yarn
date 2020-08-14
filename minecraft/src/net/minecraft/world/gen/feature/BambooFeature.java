@@ -14,27 +14,27 @@ import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class BambooFeature extends Feature<ProbabilityConfig> {
-	private static final BlockState BAMBOO = Blocks.field_10211
+	private static final BlockState BAMBOO = Blocks.BAMBOO
 		.getDefaultState()
 		.with(BambooBlock.AGE, Integer.valueOf(1))
-		.with(BambooBlock.LEAVES, BambooLeaves.field_12469)
+		.with(BambooBlock.LEAVES, BambooLeaves.NONE)
 		.with(BambooBlock.STAGE, Integer.valueOf(0));
-	private static final BlockState BAMBOO_TOP_1 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12468).with(BambooBlock.STAGE, Integer.valueOf(1));
-	private static final BlockState BAMBOO_TOP_2 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12468);
-	private static final BlockState BAMBOO_TOP_3 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12466);
+	private static final BlockState BAMBOO_TOP_1 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.LARGE).with(BambooBlock.STAGE, Integer.valueOf(1));
+	private static final BlockState BAMBOO_TOP_2 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.LARGE);
+	private static final BlockState BAMBOO_TOP_3 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.SMALL);
 
 	public BambooFeature(Codec<ProbabilityConfig> codec) {
 		super(codec);
 	}
 
-	public boolean method_12718(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
 	) {
 		int i = 0;
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 		BlockPos.Mutable mutable2 = blockPos.mutableCopy();
 		if (structureWorldAccess.isAir(mutable)) {
-			if (Blocks.field_10211.getDefaultState().canPlaceAt(structureWorldAccess, mutable)) {
+			if (Blocks.BAMBOO.getDefaultState().canPlaceAt(structureWorldAccess, mutable)) {
 				int j = random.nextInt(12) + 5;
 				if (random.nextFloat() < probabilityConfig.probability) {
 					int k = random.nextInt(4) + 1;
@@ -44,9 +44,9 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 							int n = l - blockPos.getX();
 							int o = m - blockPos.getZ();
 							if (n * n + o * o <= k * k) {
-								mutable2.set(l, structureWorldAccess.getTopY(Heightmap.Type.field_13202, l, m) - 1, m);
+								mutable2.set(l, structureWorldAccess.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
 								if (isSoil(structureWorldAccess.getBlockState(mutable2).getBlock())) {
-									structureWorldAccess.setBlockState(mutable2, Blocks.field_10520.getDefaultState(), 2);
+									structureWorldAccess.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
 								}
 							}
 						}
@@ -55,13 +55,13 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 
 				for (int k = 0; k < j && structureWorldAccess.isAir(mutable); k++) {
 					structureWorldAccess.setBlockState(mutable, BAMBOO, 2);
-					mutable.move(Direction.field_11036, 1);
+					mutable.move(Direction.UP, 1);
 				}
 
 				if (mutable.getY() - blockPos.getY() >= 3) {
 					structureWorldAccess.setBlockState(mutable, BAMBOO_TOP_1, 2);
-					structureWorldAccess.setBlockState(mutable.move(Direction.field_11033, 1), BAMBOO_TOP_2, 2);
-					structureWorldAccess.setBlockState(mutable.move(Direction.field_11033, 1), BAMBOO_TOP_3, 2);
+					structureWorldAccess.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_2, 2);
+					structureWorldAccess.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_3, 2);
 				}
 			}
 

@@ -60,7 +60,7 @@ public class CakeBlock extends Block {
 		if (!player.canConsume(false)) {
 			return ActionResult.PASS;
 		} else {
-			player.incrementStat(Stats.field_15369);
+			player.incrementStat(Stats.EAT_CAKE_SLICE);
 			player.getHungerManager().add(2, 0.1F);
 			int i = (Integer)state.get(BITES);
 			if (i < 6) {
@@ -75,14 +75,14 @@ public class CakeBlock extends Block {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return direction == Direction.field_11033 && !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !state.canPlaceAt(world, pos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos.method_10074()).getMaterial().isSolid();
+		return world.getBlockState(pos.down()).getMaterial().isSolid();
 	}
 
 	@Override

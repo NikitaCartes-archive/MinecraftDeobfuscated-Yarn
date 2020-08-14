@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
 
 public enum SpawnGroup implements StringIdentifiable {
-	field_6302("monster", 70, false, false, 128),
-	field_6294("creature", 10, true, true, 128),
-	field_6303("ambient", 15, true, false, 128),
-	field_6300("water_creature", 5, true, false, 128),
-	field_24460("water_ambient", 20, true, false, 64),
-	field_17715("misc", -1, true, true, 128);
+	MONSTER("monster", 70, false, false, 128),
+	CREATURE("creature", 10, true, true, 128),
+	AMBIENT("ambient", 15, true, false, 128),
+	WATER_CREATURE("water_creature", 5, true, false, 128),
+	WATER_AMBIENT("water_ambient", 20, true, false, 64),
+	MISC("misc", -1, true, true, 128);
 
 	public static final Codec<SpawnGroup> field_24655 = StringIdentifiable.createCodec(SpawnGroup::values, SpawnGroup::method_28307);
 	private static final Map<String, SpawnGroup> BY_NAME = (Map<String, SpawnGroup>)Arrays.stream(values())

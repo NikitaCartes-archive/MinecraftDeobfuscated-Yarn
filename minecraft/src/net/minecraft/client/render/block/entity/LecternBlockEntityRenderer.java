@@ -21,7 +21,7 @@ public class LecternBlockEntityRenderer extends BlockEntityRenderer<LecternBlock
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_17582(LecternBlockEntity lecternBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(LecternBlockEntity lecternBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = lecternBlockEntity.getCachedState();
 		if ((Boolean)blockState.get(LecternBlock.HAS_BOOK)) {
 			matrixStack.push();

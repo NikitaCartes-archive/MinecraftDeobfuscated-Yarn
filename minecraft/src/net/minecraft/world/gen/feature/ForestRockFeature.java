@@ -12,18 +12,18 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_12813(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
 	) {
 		while (blockPos.getY() > 3) {
-			if (!structureWorldAccess.isAir(blockPos.method_10074())) {
-				Block block = structureWorldAccess.getBlockState(blockPos.method_10074()).getBlock();
+			if (!structureWorldAccess.isAir(blockPos.down())) {
+				Block block = structureWorldAccess.getBlockState(blockPos.down()).getBlock();
 				if (isSoil(block) || isStone(block)) {
 					break;
 				}
 			}
 
-			blockPos = blockPos.method_10074();
+			blockPos = blockPos.down();
 		}
 
 		if (blockPos.getY() <= 3) {

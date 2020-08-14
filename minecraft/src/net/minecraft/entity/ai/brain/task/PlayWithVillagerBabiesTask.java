@@ -24,23 +24,23 @@ public class PlayWithVillagerBabiesTask extends Task<PathAwareEntity> {
 	public PlayWithVillagerBabiesTask() {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_19006,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18447,
-				MemoryModuleState.field_18458
+				MemoryModuleType.VISIBLE_VILLAGER_BABIES,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.INTERACTION_TARGET,
+				MemoryModuleState.REGISTERED
 			)
 		);
 	}
 
-	protected boolean method_19583(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
 		return serverWorld.getRandom().nextInt(10) == 0 && this.hasVisibleVillagerBabies(pathAwareEntity);
 	}
 
-	protected void method_19584(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		LivingEntity livingEntity = this.findVisibleVillagerBaby(pathAwareEntity);
 		if (livingEntity != null) {
 			this.setGroundTarget(serverWorld, pathAwareEntity, livingEntity);
@@ -58,7 +58,7 @@ public class PlayWithVillagerBabiesTask extends Task<PathAwareEntity> {
 		for (int i = 0; i < 10; i++) {
 			Vec3d vec3d = TargetFinder.findGroundTarget(entity, 20, 8);
 			if (vec3d != null && world.isNearOccupiedPointOfInterest(new BlockPos(vec3d))) {
-				entity.getBrain().remember(MemoryModuleType.field_18445, new WalkTarget(vec3d, 0.6F, 0));
+				entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, 0.6F, 0));
 				return;
 			}
 		}
@@ -66,9 +66,9 @@ public class PlayWithVillagerBabiesTask extends Task<PathAwareEntity> {
 
 	private static void setPlayTarget(PathAwareEntity entity, LivingEntity target) {
 		Brain<?> brain = entity.getBrain();
-		brain.remember(MemoryModuleType.field_18447, target);
-		brain.remember(MemoryModuleType.field_18446, new EntityLookTarget(target, true));
-		brain.remember(MemoryModuleType.field_18445, new WalkTarget(new EntityLookTarget(target, false), 0.6F, 1));
+		brain.remember(MemoryModuleType.INTERACTION_TARGET, target);
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
+		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(target, false), 0.6F, 1));
 	}
 
 	private Optional<LivingEntity> getVisibleMob(PathAwareEntity entity) {
@@ -94,16 +94,16 @@ public class PlayWithVillagerBabiesTask extends Task<PathAwareEntity> {
 	}
 
 	private List<LivingEntity> getVisibleVillagerBabies(PathAwareEntity entity) {
-		return (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.field_19006).get();
+		return (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES).get();
 	}
 
 	private LivingEntity getInteractionTarget(LivingEntity entity) {
-		return (LivingEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).get();
+		return (LivingEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
 	}
 
 	@Nullable
 	private LivingEntity findVisibleVillagerBaby(LivingEntity entity) {
-		return (LivingEntity)((List)entity.getBrain().getOptionalMemory(MemoryModuleType.field_19006).get())
+		return (LivingEntity)((List)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES).get())
 			.stream()
 			.filter(livingEntity2 -> this.isInteractionTargetOf(entity, livingEntity2))
 			.findAny()
@@ -111,14 +111,14 @@ public class PlayWithVillagerBabiesTask extends Task<PathAwareEntity> {
 	}
 
 	private boolean hasInteractionTarget(LivingEntity entity) {
-		return entity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).isPresent();
+		return entity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
 	}
 
 	private boolean isInteractionTargetOf(LivingEntity entity, LivingEntity other) {
-		return other.getBrain().getOptionalMemory(MemoryModuleType.field_18447).filter(livingEntity2 -> livingEntity2 == entity).isPresent();
+		return other.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).filter(livingEntity2 -> livingEntity2 == entity).isPresent();
 	}
 
 	private boolean hasVisibleVillagerBabies(PathAwareEntity entity) {
-		return entity.getBrain().hasMemoryModule(MemoryModuleType.field_19006);
+		return entity.getBrain().hasMemoryModule(MemoryModuleType.VISIBLE_VILLAGER_BABIES);
 	}
 }

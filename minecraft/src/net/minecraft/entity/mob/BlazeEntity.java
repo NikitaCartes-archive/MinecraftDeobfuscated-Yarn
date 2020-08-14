@@ -33,10 +33,10 @@ public class BlazeEntity extends HostileEntity {
 
 	public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.field_18, -1.0F);
-		this.setPathfindingPenalty(PathNodeType.field_14, 8.0F);
-		this.setPathfindingPenalty(PathNodeType.field_9, 0.0F);
-		this.setPathfindingPenalty(PathNodeType.field_3, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
 		this.experiencePoints = 10;
 	}
 
@@ -53,9 +53,9 @@ public class BlazeEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createBlazeAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23721, 6.0)
-			.add(EntityAttributes.field_23719, 0.23F)
-			.add(EntityAttributes.field_23717, 48.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
 	}
 
 	@Override
@@ -66,17 +66,17 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14991;
+		return SoundEvents.ENTITY_BLAZE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14842;
+		return SoundEvents.ENTITY_BLAZE_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14580;
+		return SoundEvents.ENTITY_BLAZE_DEATH;
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class BlazeEntity extends HostileEntity {
 						this.getX() + 0.5,
 						this.getY() + 0.5,
 						this.getZ() + 0.5,
-						SoundEvents.field_14734,
+						SoundEvents.ENTITY_BLAZE_BURN,
 						this.getSoundCategory(),
 						1.0F + this.random.nextFloat(),
 						this.random.nextFloat() * 0.7F + 0.3F,
@@ -106,7 +106,7 @@ public class BlazeEntity extends HostileEntity {
 			}
 
 			for (int i = 0; i < 2; i++) {
-				this.world.addParticle(ParticleTypes.field_11237, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), 0.0, 0.0, 0.0);
+				this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), 0.0, 0.0, 0.0);
 			}
 		}
 
@@ -169,7 +169,7 @@ public class BlazeEntity extends HostileEntity {
 
 		public ShootFireballGoal(BlazeEntity blaze) {
 			this.blaze = blaze;
-			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
 		@Override
@@ -256,7 +256,7 @@ public class BlazeEntity extends HostileEntity {
 		}
 
 		private double getFollowRange() {
-			return this.blaze.getAttributeValue(EntityAttributes.field_23717);
+			return this.blaze.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
 		}
 	}
 }

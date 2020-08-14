@@ -181,7 +181,7 @@ public class TitleScreen extends Screen {
 			? ButtonWidget.EMPTY
 			: (buttonWidget, matrixStack, i, j) -> {
 				if (!buttonWidget.active) {
-					this.renderTooltip(
+					this.renderOrderedTooltip(
 						matrixStack, this.client.textRenderer.wrapLines(new TranslatableText("title.multiplayer.disabled"), Math.max(this.width / 2 - 43, 170)), i, j
 					);
 				}
@@ -271,7 +271,7 @@ public class TitleScreen extends Screen {
 		int k = 30;
 		this.client.getTextureManager().bindTexture(PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
 		drawTexture(matrices, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;

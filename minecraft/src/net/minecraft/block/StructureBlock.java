@@ -55,12 +55,12 @@ public class StructureBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(MODE, StructureBlockMode.field_12696);
+		return this.getDefaultState().with(MODE, StructureBlockMode.DATA);
 	}
 
 	@Override
@@ -88,15 +88,15 @@ public class StructureBlock extends BlockWithEntity {
 
 	private void doAction(ServerWorld serverWorld, StructureBlockBlockEntity structureBlockBlockEntity) {
 		switch (structureBlockBlockEntity.getMode()) {
-			case field_12695:
+			case SAVE:
 				structureBlockBlockEntity.saveStructure(false);
 				break;
-			case field_12697:
+			case LOAD:
 				structureBlockBlockEntity.loadStructure(serverWorld, false);
 				break;
-			case field_12699:
+			case CORNER:
 				structureBlockBlockEntity.unloadStructure();
-			case field_12696:
+			case DATA:
 		}
 	}
 }

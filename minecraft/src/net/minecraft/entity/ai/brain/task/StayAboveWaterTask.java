@@ -13,15 +13,15 @@ public class StayAboveWaterTask extends Task<MobEntity> {
 		this.chance = minWaterHeight;
 	}
 
-	protected boolean method_19010(ServerWorld serverWorld, MobEntity mobEntity) {
-		return mobEntity.isTouchingWater() && mobEntity.getFluidHeight(FluidTags.field_15517) > mobEntity.method_29241() || mobEntity.isInLava();
+	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
+		return mobEntity.isTouchingWater() && mobEntity.getFluidHeight(FluidTags.WATER) > mobEntity.method_29241() || mobEntity.isInLava();
 	}
 
-	protected boolean method_19011(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		return this.method_19010(serverWorld, mobEntity);
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+		return this.shouldRun(serverWorld, mobEntity);
 	}
 
-	protected void method_19012(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		if (mobEntity.getRandom().nextFloat() < this.chance) {
 			mobEntity.getJumpControl().setActive();
 		}

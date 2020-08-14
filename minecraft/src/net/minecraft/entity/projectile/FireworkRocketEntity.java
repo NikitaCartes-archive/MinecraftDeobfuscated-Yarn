@@ -51,7 +51,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	}
 
 	public FireworkRocketEntity(World world, double x, double y, double z, ItemStack stack) {
-		super(EntityType.field_6133, world);
+		super(EntityType.FIREWORK_ROCKET, world);
 		this.life = 0;
 		this.updatePosition(x, y, z);
 		int i = 1;
@@ -140,7 +140,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 			}
 
 			Vec3d vec3d = this.getVelocity();
-			this.move(MovementType.field_6308, vec3d);
+			this.move(MovementType.SELF, vec3d);
 			this.setVelocity(vec3d);
 		}
 
@@ -152,14 +152,14 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 		this.method_26962();
 		if (this.life == 0 && !this.isSilent()) {
-			this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.field_14702, SoundCategory.field_15256, 3.0F, 1.0F);
+			this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.AMBIENT, 3.0F, 1.0F);
 		}
 
 		this.life++;
 		if (this.world.isClient && this.life % 2 < 2) {
 			this.world
 				.addParticle(
-					ParticleTypes.field_11248,
+					ParticleTypes.FIREWORK,
 					this.getX(),
 					this.getY() - 0.3,
 					this.getZ(),
@@ -230,8 +230,8 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 					for (int i = 0; i < 2; i++) {
 						Vec3d vec3d2 = new Vec3d(livingEntity.getX(), livingEntity.getBodyY(0.5 * (double)i), livingEntity.getZ());
 						HitResult hitResult = this.world
-							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this));
-						if (hitResult.getType() == HitResult.Type.field_1333) {
+							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
+						if (hitResult.getType() == HitResult.Type.MISS) {
 							bl = true;
 							break;
 						}
@@ -261,9 +261,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 			if (!this.hasExplosionEffects()) {
 				for (int i = 0; i < this.random.nextInt(3) + 2; i++) {
 					this.world
-						.addParticle(
-							ParticleTypes.field_11203, this.getX(), this.getY(), this.getZ(), this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05
-						);
+						.addParticle(ParticleTypes.POOF, this.getX(), this.getY(), this.getZ(), this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
 				}
 			} else {
 				ItemStack itemStack = this.dataTracker.get(ITEM);
@@ -308,7 +306,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	@Override
 	public ItemStack getStack() {
 		ItemStack itemStack = this.dataTracker.get(ITEM);
-		return itemStack.isEmpty() ? new ItemStack(Items.field_8639) : itemStack;
+		return itemStack.isEmpty() ? new ItemStack(Items.FIREWORK_ROCKET) : itemStack;
 	}
 
 	@Override

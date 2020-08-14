@@ -30,6 +30,6 @@ public class RandomBlockMatchRuleTest extends RuleTest {
 
 	@Override
 	protected RuleTestType<?> getType() {
-		return RuleTestType.field_16980;
+		return RuleTestType.RANDOM_BLOCK_MATCH;
 	}
 }

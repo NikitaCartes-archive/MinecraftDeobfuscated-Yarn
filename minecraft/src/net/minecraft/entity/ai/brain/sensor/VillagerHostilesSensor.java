@@ -13,27 +13,27 @@ import net.minecraft.util.math.MathHelper;
 
 public class VillagerHostilesSensor extends Sensor<LivingEntity> {
 	private static final ImmutableMap<EntityType<?>, Float> SQUARED_DISTANCES_FOR_DANGER = ImmutableMap.<EntityType<?>, Float>builder()
-		.put(EntityType.field_6123, 8.0F)
-		.put(EntityType.field_6090, 12.0F)
-		.put(EntityType.field_6071, 8.0F)
-		.put(EntityType.field_6065, 12.0F)
-		.put(EntityType.field_6105, 15.0F)
-		.put(EntityType.field_6134, 12.0F)
-		.put(EntityType.field_6059, 8.0F)
-		.put(EntityType.field_6117, 10.0F)
-		.put(EntityType.field_23696, 10.0F)
-		.put(EntityType.field_6051, 8.0F)
-		.put(EntityType.field_6054, 8.0F)
+		.put(EntityType.DROWNED, 8.0F)
+		.put(EntityType.EVOKER, 12.0F)
+		.put(EntityType.HUSK, 8.0F)
+		.put(EntityType.ILLUSIONER, 12.0F)
+		.put(EntityType.PILLAGER, 15.0F)
+		.put(EntityType.RAVAGER, 12.0F)
+		.put(EntityType.VEX, 8.0F)
+		.put(EntityType.VINDICATOR, 10.0F)
+		.put(EntityType.ZOGLIN, 10.0F)
+		.put(EntityType.ZOMBIE, 8.0F)
+		.put(EntityType.ZOMBIE_VILLAGER, 8.0F)
 		.build();
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_18453);
+		return ImmutableSet.of(MemoryModuleType.NEAREST_HOSTILE);
 	}
 
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
-		entity.getBrain().remember(MemoryModuleType.field_18453, this.getNearestHostile(entity));
+		entity.getBrain().remember(MemoryModuleType.NEAREST_HOSTILE, this.getNearestHostile(entity));
 	}
 
 	private Optional<LivingEntity> getNearestHostile(LivingEntity entity) {
@@ -47,7 +47,7 @@ public class VillagerHostilesSensor extends Sensor<LivingEntity> {
 	}
 
 	private Optional<List<LivingEntity>> getVisibleMobs(LivingEntity entity) {
-		return entity.getBrain().getOptionalMemory(MemoryModuleType.field_18442);
+		return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
 	}
 
 	private int compareDistances(LivingEntity entity, LivingEntity hostile1, LivingEntity hostile2) {

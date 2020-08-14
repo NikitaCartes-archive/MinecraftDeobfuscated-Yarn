@@ -28,17 +28,17 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public TntMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6053, world, x, y, z);
+		super(EntityType.TNT_MINECART, world, x, y, z);
 	}
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.field_7675;
+		return AbstractMinecartEntity.Type.TNT;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10375.getDefaultState();
+		return Blocks.TNT.getDefaultState();
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		super.tick();
 		if (this.fuseTicks > 0) {
 			this.fuseTicks--;
-			this.world.addParticle(ParticleTypes.field_11251, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
 		} else if (this.fuseTicks == 0) {
 			this.explode(squaredHorizontalLength(this.getVelocity()));
 		}
@@ -77,8 +77,8 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		double d = squaredHorizontalLength(this.getVelocity());
 		if (!damageSource.isFire() && !damageSource.isExplosive() && !(d >= 0.01F)) {
 			super.dropItems(damageSource);
-			if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-				this.dropItem(Blocks.field_10375);
+			if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+				this.dropItem(Blocks.TNT);
 			}
 		} else {
 			if (this.fuseTicks < 0) {
@@ -95,8 +95,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 				e = 5.0;
 			}
 
-			this.world
-				.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * e), Explosion.DestructionType.field_18686);
+			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * e), Explosion.DestructionType.BREAK);
 			this.remove();
 		}
 	}
@@ -133,7 +132,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		if (!this.world.isClient) {
 			this.world.sendEntityStatus(this, (byte)10);
 			if (!this.isSilent()) {
-				this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
+				this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			}
 		}
 	}
@@ -149,14 +148,14 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public float getEffectiveExplosionResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState, float max) {
-		return !this.isPrimed() || !blockState.isIn(BlockTags.field_15463) && !world.getBlockState(pos.up()).isIn(BlockTags.field_15463)
+		return !this.isPrimed() || !blockState.isIn(BlockTags.RAILS) && !world.getBlockState(pos.up()).isIn(BlockTags.RAILS)
 			? super.getEffectiveExplosionResistance(explosion, world, pos, blockState, fluidState, max)
 			: 0.0F;
 	}
 
 	@Override
 	public boolean canExplosionDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float explosionPower) {
-		return !this.isPrimed() || !state.isIn(BlockTags.field_15463) && !world.getBlockState(pos.up()).isIn(BlockTags.field_15463)
+		return !this.isPrimed() || !state.isIn(BlockTags.RAILS) && !world.getBlockState(pos.up()).isIn(BlockTags.RAILS)
 			? super.canExplosionDestroyBlock(explosion, world, pos, state, explosionPower)
 			: false;
 	}

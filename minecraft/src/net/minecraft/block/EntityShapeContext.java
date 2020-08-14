@@ -58,6 +58,6 @@ public class EntityShapeContext implements ShapeContext {
 
 	@Override
 	public boolean isAbove(VoxelShape shape, BlockPos pos, boolean defaultValue) {
-		return this.minY > (double)pos.getY() + shape.getMax(Direction.Axis.field_11052) - 1.0E-5F;
+		return this.minY > (double)pos.getY() + shape.getMax(Direction.Axis.Y) - 1.0E-5F;
 	}
 }

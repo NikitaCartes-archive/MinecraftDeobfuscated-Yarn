@@ -43,7 +43,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		compoundTag.putString("final_state", "minecraft:air");
 		compoundTag.putString("pool", "minecraft:empty");
 		compoundTag.putString("target", "minecraft:empty");
-		compoundTag.putString("joint", JigsawBlockEntity.Joint.field_23329.asString());
+		compoundTag.putString("joint", JigsawBlockEntity.Joint.ROLLABLE.asString());
 		return compoundTag;
 	}
 
@@ -56,9 +56,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 		list.add(
 			new Structure.StructureBlockInfo(
-				pos,
-				Blocks.field_16540.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.field_11033, Direction.field_11035)),
-				this.tag
+				pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.tag
 			)
 		);
 		return list;
@@ -88,7 +86,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType<?> getType() {
-		return StructurePoolElementType.field_16971;
+		return StructurePoolElementType.FEATURE_POOL_ELEMENT;
 	}
 
 	public String toString() {

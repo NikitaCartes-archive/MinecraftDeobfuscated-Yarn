@@ -31,33 +31,33 @@ public class WanderAroundTask extends Task<MobEntity> {
 	public WanderAroundTask(int i, int j) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_19293,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18449,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18456
+				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.PATH,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_PRESENT
 			),
 			i,
 			j
 		);
 	}
 
-	protected boolean method_18978(ServerWorld serverWorld, MobEntity mobEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
 		if (this.pathUpdateCountdownTicks > 0) {
 			this.pathUpdateCountdownTicks--;
 			return false;
 		} else {
 			Brain<?> brain = mobEntity.getBrain();
-			WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.field_18445).get();
+			WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
 			boolean bl = this.hasReached(mobEntity, walkTarget);
 			if (!bl && this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
 				this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
 				return true;
 			} else {
-				brain.forget(MemoryModuleType.field_18445);
+				brain.forget(MemoryModuleType.WALK_TARGET);
 				if (bl) {
-					brain.forget(MemoryModuleType.field_19293);
+					brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 				}
 
 				return false;
@@ -65,9 +65,9 @@ public class WanderAroundTask extends Task<MobEntity> {
 		}
 	}
 
-	protected boolean method_18979(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		if (this.path != null && this.lookTargetPos != null) {
-			Optional<WalkTarget> optional = mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18445);
+			Optional<WalkTarget> optional = mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET);
 			EntityNavigation entityNavigation = mobEntity.getNavigation();
 			return !entityNavigation.isIdle() && optional.isPresent() && !this.hasReached(mobEntity, (WalkTarget)optional.get());
 		} else {
@@ -75,37 +75,37 @@ public class WanderAroundTask extends Task<MobEntity> {
 		}
 	}
 
-	protected void method_18981(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.field_18445)
-			&& !this.hasReached(mobEntity, (WalkTarget)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18445).get())) {
+	protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+		if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)
+			&& !this.hasReached(mobEntity, (WalkTarget)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get())) {
 			this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(40);
 		}
 
 		mobEntity.getNavigation().stop();
-		mobEntity.getBrain().forget(MemoryModuleType.field_18445);
-		mobEntity.getBrain().forget(MemoryModuleType.field_18449);
+		mobEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
+		mobEntity.getBrain().forget(MemoryModuleType.PATH);
 		this.path = null;
 	}
 
-	protected void method_18982(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		mobEntity.getBrain().remember(MemoryModuleType.field_18449, this.path);
+	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+		mobEntity.getBrain().remember(MemoryModuleType.PATH, this.path);
 		mobEntity.getNavigation().startMovingAlong(this.path, (double)this.speed);
 	}
 
-	protected void method_18983(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		Path path = mobEntity.getNavigation().getCurrentPath();
 		Brain<?> brain = mobEntity.getBrain();
 		if (this.path != path) {
 			this.path = path;
-			brain.remember(MemoryModuleType.field_18449, path);
+			brain.remember(MemoryModuleType.PATH, path);
 		}
 
 		if (path != null && this.lookTargetPos != null) {
-			WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.field_18445).get();
+			WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
 			if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.lookTargetPos) > 4.0
 				&& this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
 				this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
-				this.method_18982(serverWorld, mobEntity, l);
+				this.run(serverWorld, mobEntity, l);
 			}
 		}
 	}
@@ -116,13 +116,13 @@ public class WanderAroundTask extends Task<MobEntity> {
 		this.speed = walkTarget.getSpeed();
 		Brain<?> brain = mobEntity.getBrain();
 		if (this.hasReached(mobEntity, walkTarget)) {
-			brain.forget(MemoryModuleType.field_19293);
+			brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 		} else {
 			boolean bl = this.path != null && this.path.reachesTarget();
 			if (bl) {
-				brain.forget(MemoryModuleType.field_19293);
-			} else if (!brain.hasMemoryModule(MemoryModuleType.field_19293)) {
-				brain.remember(MemoryModuleType.field_19293, time);
+				brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+			} else if (!brain.hasMemoryModule(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
+				brain.remember(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
 			}
 
 			if (this.path != null) {

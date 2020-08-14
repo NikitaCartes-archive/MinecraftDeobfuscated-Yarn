@@ -42,24 +42,24 @@ public class StatusEffect {
 	}
 
 	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-		if (this == StatusEffects.field_5924) {
+		if (this == StatusEffects.REGENERATION) {
 			if (entity.getHealth() < entity.getMaxHealth()) {
 				entity.heal(1.0F);
 			}
-		} else if (this == StatusEffects.field_5899) {
+		} else if (this == StatusEffects.POISON) {
 			if (entity.getHealth() > 1.0F) {
 				entity.damage(DamageSource.MAGIC, 1.0F);
 			}
-		} else if (this == StatusEffects.field_5920) {
+		} else if (this == StatusEffects.WITHER) {
 			entity.damage(DamageSource.WITHER, 1.0F);
-		} else if (this == StatusEffects.field_5903 && entity instanceof PlayerEntity) {
+		} else if (this == StatusEffects.HUNGER && entity instanceof PlayerEntity) {
 			((PlayerEntity)entity).addExhaustion(0.005F * (float)(amplifier * amplifier * 5 + 1));
-		} else if (this == StatusEffects.field_5922 && entity instanceof PlayerEntity) {
+		} else if (this == StatusEffects.SATURATION && entity instanceof PlayerEntity) {
 			if (!entity.world.isClient) {
 				((PlayerEntity)entity).getHungerManager().add(amplifier + 1, 1.0F);
 			}
-		} else if ((this != StatusEffects.field_5915 || entity.isUndead()) && (this != StatusEffects.field_5921 || !entity.isUndead())) {
-			if (this == StatusEffects.field_5921 && !entity.isUndead() || this == StatusEffects.field_5915 && entity.isUndead()) {
+		} else if ((this != StatusEffects.INSTANT_HEALTH || entity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !entity.isUndead())) {
+			if (this == StatusEffects.INSTANT_DAMAGE && !entity.isUndead() || this == StatusEffects.INSTANT_HEALTH && entity.isUndead()) {
 				entity.damage(DamageSource.MAGIC, (float)(6 << amplifier));
 			}
 		} else {
@@ -68,8 +68,8 @@ public class StatusEffect {
 	}
 
 	public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
-		if ((this != StatusEffects.field_5915 || target.isUndead()) && (this != StatusEffects.field_5921 || !target.isUndead())) {
-			if (this == StatusEffects.field_5921 && !target.isUndead() || this == StatusEffects.field_5915 && target.isUndead()) {
+		if ((this != StatusEffects.INSTANT_HEALTH || target.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !target.isUndead())) {
+			if (this == StatusEffects.INSTANT_DAMAGE && !target.isUndead() || this == StatusEffects.INSTANT_HEALTH && target.isUndead()) {
 				int i = (int)(proximity * (double)(6 << amplifier) + 0.5);
 				if (source == null) {
 					target.damage(DamageSource.MAGIC, (float)i);
@@ -86,17 +86,17 @@ public class StatusEffect {
 	}
 
 	public boolean canApplyUpdateEffect(int duration, int amplifier) {
-		if (this == StatusEffects.field_5924) {
+		if (this == StatusEffects.REGENERATION) {
 			int i = 50 >> amplifier;
 			return i > 0 ? duration % i == 0 : true;
-		} else if (this == StatusEffects.field_5899) {
+		} else if (this == StatusEffects.POISON) {
 			int i = 25 >> amplifier;
 			return i > 0 ? duration % i == 0 : true;
-		} else if (this == StatusEffects.field_5920) {
+		} else if (this == StatusEffects.WITHER) {
 			int i = 40 >> amplifier;
 			return i > 0 ? duration % i == 0 : true;
 		} else {
-			return this == StatusEffects.field_5903;
+			return this == StatusEffects.HUNGER;
 		}
 	}
 
@@ -173,6 +173,6 @@ public class StatusEffect {
 
 	@Environment(EnvType.CLIENT)
 	public boolean isBeneficial() {
-		return this.type == StatusEffectType.field_18271;
+		return this.type == StatusEffectType.BENEFICIAL;
 	}
 }

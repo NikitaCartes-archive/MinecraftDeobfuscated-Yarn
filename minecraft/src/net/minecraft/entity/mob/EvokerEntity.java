@@ -63,9 +63,9 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 	public static DefaultAttributeContainer.Builder createEvokerAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23719, 0.5)
-			.add(EntityAttributes.field_23717, 12.0)
-			.add(EntityAttributes.field_23716, 24.0);
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 24.0);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 	@Override
 	public SoundEvent getCelebratingSound() {
-		return SoundEvents.field_19147;
+		return SoundEvents.ENTITY_EVOKER_CELEBRATE;
 	}
 
 	@Override
@@ -112,17 +112,17 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14782;
+		return SoundEvents.ENTITY_EVOKER_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14599;
+		return SoundEvents.ENTITY_EVOKER_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15111;
+		return SoundEvents.ENTITY_EVOKER_HURT;
 	}
 
 	private void setWololoTarget(@Nullable SheepEntity sheep) {
@@ -136,7 +136,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 	@Override
 	protected SoundEvent getCastSpellSound() {
-		return SoundEvents.field_14858;
+		return SoundEvents.ENTITY_EVOKER_CAST_SPELL;
 	}
 
 	@Override
@@ -188,14 +188,14 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			double d = 0.0;
 
 			do {
-				BlockPos blockPos2 = blockPos.method_10074();
+				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
-				if (blockState.isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.field_11036)) {
+				if (blockState.isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.UP)) {
 					if (!EvokerEntity.this.world.isAir(blockPos)) {
 						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
 						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);
 						if (!voxelShape.isEmpty()) {
-							d = voxelShape.getMax(Direction.Axis.field_11052);
+							d = voxelShape.getMax(Direction.Axis.Y);
 						}
 					}
 
@@ -203,7 +203,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 					break;
 				}
 
-				blockPos = blockPos.method_10074();
+				blockPos = blockPos.down();
 			} while (blockPos.getY() >= MathHelper.floor(maxY) - 1);
 
 			if (bl) {
@@ -213,12 +213,12 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 		@Override
 		protected SoundEvent getSoundPrepare() {
-			return SoundEvents.field_14908;
+			return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
 		}
 
 		@Override
 		protected SpellcastingIllagerEntity.Spell getSpell() {
-			return SpellcastingIllagerEntity.Spell.field_7380;
+			return SpellcastingIllagerEntity.Spell.FANGS;
 		}
 	}
 
@@ -277,9 +277,9 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos = EvokerEntity.this.getBlockPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
-				VexEntity vexEntity = EntityType.field_6059.create(EvokerEntity.this.world);
+				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
 				vexEntity.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
-				vexEntity.initialize(serverWorld, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.field_16471, null, null);
+				vexEntity.initialize(serverWorld, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
 				vexEntity.setOwner(EvokerEntity.this);
 				vexEntity.setBounds(blockPos);
 				vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
@@ -289,12 +289,12 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 		@Override
 		protected SoundEvent getSoundPrepare() {
-			return SoundEvents.field_15193;
+			return SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON;
 		}
 
 		@Override
 		protected SpellcastingIllagerEntity.Spell getSpell() {
-			return SpellcastingIllagerEntity.Spell.field_7379;
+			return SpellcastingIllagerEntity.Spell.SUMMON_VEX;
 		}
 	}
 
@@ -302,7 +302,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		private final TargetPredicate convertibleSheepPredicate = new TargetPredicate()
 			.setBaseMaxDistance(16.0)
 			.includeInvulnerable()
-			.setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.field_7966);
+			.setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.BLUE);
 
 		@Override
 		public boolean canStart() {
@@ -341,7 +341,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		protected void castSpell() {
 			SheepEntity sheepEntity = EvokerEntity.this.getWololoTarget();
 			if (sheepEntity != null && sheepEntity.isAlive()) {
-				sheepEntity.setColor(DyeColor.field_7964);
+				sheepEntity.setColor(DyeColor.RED);
 			}
 		}
 
@@ -362,12 +362,12 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 		@Override
 		protected SoundEvent getSoundPrepare() {
-			return SoundEvents.field_15058;
+			return SoundEvents.ENTITY_EVOKER_PREPARE_WOLOLO;
 		}
 
 		@Override
 		protected SpellcastingIllagerEntity.Spell getSpell() {
-			return SpellcastingIllagerEntity.Spell.field_7381;
+			return SpellcastingIllagerEntity.Spell.WOLOLO;
 		}
 	}
 }

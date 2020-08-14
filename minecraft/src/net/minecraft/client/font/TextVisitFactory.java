@@ -15,7 +15,7 @@ import net.minecraft.util.Unit;
  */
 @Environment(EnvType.CLIENT)
 public class TextVisitFactory {
-	private static final Optional<Object> VISIT_TERMINATED = Optional.of(Unit.field_17274);
+	private static final Optional<Object> VISIT_TERMINATED = Optional.of(Unit.INSTANCE);
 
 	private static boolean visitRegularCharacter(Style style, CharacterVisitor visitor, int index, char c) {
 		return Character.isSurrogate(c) ? visitor.accept(index, style, 65533) : visitor.accept(index, style, c);
@@ -161,7 +161,7 @@ public class TextVisitFactory {
 				char d = text.charAt(j + 1);
 				Formatting formatting = Formatting.byCode(d);
 				if (formatting != null) {
-					style = formatting == Formatting.field_1070 ? resetStyle : style.withExclusiveFormatting(formatting);
+					style = formatting == Formatting.RESET ? resetStyle : style.withExclusiveFormatting(formatting);
 				}
 
 				j++;

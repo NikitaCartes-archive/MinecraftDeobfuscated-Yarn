@@ -15,11 +15,11 @@ public class CaveSpiderEntityRenderer extends SpiderEntityRenderer<CaveSpiderEnt
 		this.shadowRadius *= 0.7F;
 	}
 
-	protected void method_3886(CaveSpiderEntity caveSpiderEntity, MatrixStack matrixStack, float f) {
+	protected void scale(CaveSpiderEntity caveSpiderEntity, MatrixStack matrixStack, float f) {
 		matrixStack.scale(0.7F, 0.7F, 0.7F);
 	}
 
-	public Identifier method_3885(CaveSpiderEntity caveSpiderEntity) {
+	public Identifier getTexture(CaveSpiderEntity caveSpiderEntity) {
 		return TEXTURE;
 	}
 }

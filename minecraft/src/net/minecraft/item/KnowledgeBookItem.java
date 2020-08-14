@@ -49,7 +49,7 @@ public class KnowledgeBookItem extends Item {
 				}
 
 				user.unlockRecipes(list);
-				user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+				user.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
 			return TypedActionResult.method_29237(itemStack, world.isClient());

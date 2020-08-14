@@ -122,58 +122,58 @@ public class BlockPos extends Vec3i {
 	}
 
 	public BlockPos up() {
-		return this.offset(Direction.field_11036);
+		return this.offset(Direction.UP);
 	}
 
 	public BlockPos up(int distance) {
-		return this.method_10079(Direction.field_11036, distance);
+		return this.offset(Direction.UP, distance);
 	}
 
-	public BlockPos method_10074() {
-		return this.offset(Direction.field_11033);
+	public BlockPos down() {
+		return this.offset(Direction.DOWN);
 	}
 
-	public BlockPos method_10087(int i) {
-		return this.method_10079(Direction.field_11033, i);
+	public BlockPos down(int i) {
+		return this.offset(Direction.DOWN, i);
 	}
 
 	public BlockPos north() {
-		return this.offset(Direction.field_11043);
+		return this.offset(Direction.NORTH);
 	}
 
 	public BlockPos north(int distance) {
-		return this.method_10079(Direction.field_11043, distance);
+		return this.offset(Direction.NORTH, distance);
 	}
 
 	public BlockPos south() {
-		return this.offset(Direction.field_11035);
+		return this.offset(Direction.SOUTH);
 	}
 
 	public BlockPos south(int distance) {
-		return this.method_10079(Direction.field_11035, distance);
+		return this.offset(Direction.SOUTH, distance);
 	}
 
 	public BlockPos west() {
-		return this.offset(Direction.field_11039);
+		return this.offset(Direction.WEST);
 	}
 
 	public BlockPos west(int distance) {
-		return this.method_10079(Direction.field_11039, distance);
+		return this.offset(Direction.WEST, distance);
 	}
 
 	public BlockPos east() {
-		return this.offset(Direction.field_11034);
+		return this.offset(Direction.EAST);
 	}
 
 	public BlockPos east(int distance) {
-		return this.method_10079(Direction.field_11034, distance);
+		return this.offset(Direction.EAST, distance);
 	}
 
 	public BlockPos offset(Direction direction) {
 		return new BlockPos(this.getX() + direction.getOffsetX(), this.getY() + direction.getOffsetY(), this.getZ() + direction.getOffsetZ());
 	}
 
-	public BlockPos method_10079(Direction direction, int i) {
+	public BlockPos offset(Direction direction, int i) {
 		return i == 0
 			? this
 			: new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
@@ -183,23 +183,23 @@ public class BlockPos extends Vec3i {
 		if (i == 0) {
 			return this;
 		} else {
-			int j = axis == Direction.Axis.field_11048 ? i : 0;
-			int k = axis == Direction.Axis.field_11052 ? i : 0;
-			int l = axis == Direction.Axis.field_11051 ? i : 0;
+			int j = axis == Direction.Axis.X ? i : 0;
+			int k = axis == Direction.Axis.Y ? i : 0;
+			int l = axis == Direction.Axis.Z ? i : 0;
 			return new BlockPos(this.getX() + j, this.getY() + k, this.getZ() + l);
 		}
 	}
 
 	public BlockPos rotate(BlockRotation rotation) {
 		switch (rotation) {
-			case field_11467:
+			case NONE:
 			default:
 				return this;
-			case field_11463:
+			case CLOCKWISE_90:
 				return new BlockPos(-this.getZ(), this.getY(), this.getX());
-			case field_11464:
+			case CLOCKWISE_180:
 				return new BlockPos(-this.getX(), this.getY(), -this.getZ());
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return new BlockPos(this.getZ(), this.getY(), -this.getX());
 		}
 	}
@@ -241,7 +241,7 @@ public class BlockPos extends Vec3i {
 				final BlockPos.Mutable field_23945 = new BlockPos.Mutable();
 				int field_23946 = i;
 
-				protected BlockPos method_27157() {
+				protected BlockPos computeNext() {
 					if (this.field_23946 <= 0) {
 						return this.endOfData();
 					} else {
@@ -284,7 +284,7 @@ public class BlockPos extends Vec3i {
 				private int dy;
 				private boolean field_23379;
 
-				protected BlockPos method_25999() {
+				protected BlockPos computeNext() {
 					if (this.field_23379) {
 						this.field_23379 = false;
 						this.field_23378.setZ(l - (this.field_23378.getZ() - l));
@@ -381,7 +381,7 @@ public class BlockPos extends Vec3i {
 				private final BlockPos.Mutable field_23380 = new BlockPos.Mutable();
 				private int index;
 
-				protected BlockPos method_10106() {
+				protected BlockPos computeNext() {
 					if (this.index == l) {
 						return this.endOfData();
 					} else {
@@ -409,7 +409,7 @@ public class BlockPos extends Vec3i {
 				private int field_25910 = this.field_25904.getY();
 				private int field_25911 = this.field_25904.getZ();
 
-				protected BlockPos.Mutable method_30515() {
+				protected BlockPos.Mutable computeNext() {
 					this.field_25904.set(this.field_25909, this.field_25910, this.field_25911).move(this.field_25903[(this.field_25906 + 4) % 4]);
 					this.field_25909 = this.field_25904.getX();
 					this.field_25910 = this.field_25904.getY();
@@ -454,8 +454,8 @@ public class BlockPos extends Vec3i {
 		}
 
 		@Override
-		public BlockPos method_10079(Direction direction, int i) {
-			return super.method_10079(direction, i).toImmutable();
+		public BlockPos offset(Direction direction, int i) {
+			return super.offset(direction, i).toImmutable();
 		}
 
 		@Override
@@ -491,9 +491,7 @@ public class BlockPos extends Vec3i {
 		}
 
 		public BlockPos.Mutable set(AxisCycleDirection axis, int x, int y, int z) {
-			return this.set(
-				axis.choose(x, y, z, Direction.Axis.field_11048), axis.choose(x, y, z, Direction.Axis.field_11052), axis.choose(x, y, z, Direction.Axis.field_11051)
-			);
+			return this.set(axis.choose(x, y, z, Direction.Axis.X), axis.choose(x, y, z, Direction.Axis.Y), axis.choose(x, y, z, Direction.Axis.Z));
 		}
 
 		/**
@@ -542,11 +540,11 @@ public class BlockPos extends Vec3i {
 
 		public BlockPos.Mutable method_27158(Direction.Axis axis, int i, int j) {
 			switch (axis) {
-				case field_11048:
+				case X:
 					return this.set(MathHelper.clamp(this.getX(), i, j), this.getY(), this.getZ());
-				case field_11052:
+				case Y:
 					return this.set(this.getX(), MathHelper.clamp(this.getY(), i, j), this.getZ());
-				case field_11051:
+				case Z:
 					return this.set(this.getX(), this.getY(), MathHelper.clamp(this.getZ(), i, j));
 				default:
 					throw new IllegalStateException("Unable to clamp axis " + axis);

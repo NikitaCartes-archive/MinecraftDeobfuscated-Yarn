@@ -67,7 +67,7 @@ public class ItemUsageContext {
 	}
 
 	public Direction getPlayerFacing() {
-		return this.player == null ? Direction.field_11043 : this.player.getHorizontalFacing();
+		return this.player == null ? Direction.NORTH : this.player.getHorizontalFacing();
 	}
 
 	public boolean shouldCancelInteraction() {

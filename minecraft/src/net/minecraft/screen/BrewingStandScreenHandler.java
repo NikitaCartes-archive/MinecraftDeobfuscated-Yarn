@@ -26,7 +26,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 	}
 
 	public BrewingStandScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ScreenHandlerType.field_17332, syncId);
+		super(ScreenHandlerType.BREWING_STAND, syncId);
 		checkSize(inventory, 5);
 		checkDataCount(propertyDelegate, 2);
 		this.inventory = inventory;
@@ -130,11 +130,11 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		public static boolean matches(ItemStack stack) {
-			return stack.getItem() == Items.field_8183;
+			return stack.getItem() == Items.BLAZE_POWDER;
 		}
 
 		@Override
-		public int getMaxStackAmount() {
+		public int getMaxItemCount() {
 			return 64;
 		}
 	}
@@ -150,7 +150,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		@Override
-		public int getMaxStackAmount() {
+		public int getMaxItemCount() {
 			return 64;
 		}
 	}
@@ -166,7 +166,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		@Override
-		public int getMaxStackAmount() {
+		public int getMaxItemCount() {
 			return 1;
 		}
 
@@ -183,7 +183,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 
 		public static boolean matches(ItemStack stack) {
 			Item item = stack.getItem();
-			return item == Items.field_8574 || item == Items.field_8436 || item == Items.field_8150 || item == Items.field_8469;
+			return item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE;
 		}
 	}
 }

@@ -75,7 +75,7 @@ public class TriggerCommand {
 			String string = entity.getEntityName();
 
 			for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
-				if (scoreboardObjective.getCriterion() == ScoreboardCriterion.field_1462 && scoreboard.playerHasObjective(string, scoreboardObjective)) {
+				if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER && scoreboard.playerHasObjective(string, scoreboardObjective)) {
 					ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
 					if (!scoreboardPlayerScore.isLocked()) {
 						list.add(scoreboardObjective.getName());
@@ -106,7 +106,7 @@ public class TriggerCommand {
 	}
 
 	private static ScoreboardPlayerScore getScore(ServerPlayerEntity player, ScoreboardObjective objective) throws CommandSyntaxException {
-		if (objective.getCriterion() != ScoreboardCriterion.field_1462) {
+		if (objective.getCriterion() != ScoreboardCriterion.TRIGGER) {
 			throw FAILED_INVALID_EXCEPTION.create();
 		} else {
 			Scoreboard scoreboard = player.getScoreboard();

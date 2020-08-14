@@ -29,7 +29,7 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 		double d = pos.getX();
 		double e = pos.getY();
 		double f = pos.getZ();
-		if (side.getAxis() == Direction.Axis.field_11052) {
+		if (side.getAxis() == Direction.Axis.Y) {
 			e -= 0.125;
 		} else {
 			e -= 0.15625;

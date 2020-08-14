@@ -20,7 +20,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3962(EvokerFangsEntity evokerFangsEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(EvokerFangsEntity evokerFangsEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		float h = evokerFangsEntity.getAnimationProgress(g);
 		if (h != 0.0F) {
 			float j = 2.0F;
@@ -42,7 +42,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 		}
 	}
 
-	public Identifier method_3963(EvokerFangsEntity evokerFangsEntity) {
+	public Identifier getTexture(EvokerFangsEntity evokerFangsEntity) {
 		return TEXTURE;
 	}
 }

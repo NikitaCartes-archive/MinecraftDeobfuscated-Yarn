@@ -16,7 +16,7 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 		return ID;
 	}
 
-	protected PlayerGeneratesContainerLootCriterion.Conditions method_27991(
+	protected PlayerGeneratesContainerLootCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "loot_table"));

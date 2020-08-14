@@ -96,10 +96,10 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 
 	public static DefaultAttributeContainer.Builder createIronGolemAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.field_23716, 100.0)
-			.add(EntityAttributes.field_23719, 0.25)
-			.add(EntityAttributes.field_23718, 1.0)
-			.add(EntityAttributes.field_23721, 15.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 100.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 15.0);
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			if (!blockState.isAir()) {
 				this.world
 					.addParticle(
-						new BlockStateParticleEffect(ParticleTypes.field_11217, blockState),
+						new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState),
 						this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
 						this.getY() + 0.1,
 						this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
@@ -153,10 +153,10 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 
 	@Override
 	public boolean canTarget(EntityType<?> type) {
-		if (this.isPlayerCreated() && type == EntityType.field_6097) {
+		if (this.isPlayerCreated() && type == EntityType.PLAYER) {
 			return false;
 		} else {
-			return type == EntityType.field_6046 ? false : super.canTarget(type);
+			return type == EntityType.CREEPER ? false : super.canTarget(type);
 		}
 	}
 
@@ -200,7 +200,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	private float getAttackDamage() {
-		return (float)this.getAttributeValue(EntityAttributes.field_23721);
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			this.dealDamage(this, target);
 		}
 
-		this.playSound(SoundEvents.field_14649, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
 		return bl;
 	}
 
@@ -224,7 +224,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		IronGolemEntity.Crack crack = this.getCrack();
 		boolean bl = super.damage(source, amount);
 		if (bl && this.getCrack() != crack) {
-			this.playSound(SoundEvents.field_21076, 1.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_DAMAGE, 1.0F, 1.0F);
 		}
 
 		return bl;
@@ -239,7 +239,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	public void handleStatus(byte status) {
 		if (status == 4) {
 			this.attackTicksLeft = 10;
-			this.playSound(SoundEvents.field_14649, 1.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
 		} else if (status == 11) {
 			this.lookingAtVillagerTicksLeft = 400;
 		} else if (status == 34) {
@@ -266,19 +266,19 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14959;
+		return SoundEvents.ENTITY_IRON_GOLEM_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15055;
+		return SoundEvents.ENTITY_IRON_GOLEM_DEATH;
 	}
 
 	@Override
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if (item != Items.field_8620) {
+		if (item != Items.IRON_INGOT) {
 			return ActionResult.PASS;
 		} else {
 			float f = this.getHealth();
@@ -287,7 +287,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 				return ActionResult.PASS;
 			} else {
 				float g = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
-				this.playSound(SoundEvents.field_21077, 1.0F, g);
+				this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, g);
 				if (!player.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -299,7 +299,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_15233, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -328,7 +328,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	@Override
 	public boolean canSpawn(WorldView world) {
 		BlockPos blockPos = this.getBlockPos();
-		BlockPos blockPos2 = blockPos.method_10074();
+		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = world.getBlockState(blockPos2);
 		if (!blockState.hasSolidTopSurface(world, blockPos2, this)) {
 			return false;
@@ -336,12 +336,12 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			for (int i = 1; i < 3; i++) {
 				BlockPos blockPos3 = blockPos.up(i);
 				BlockState blockState2 = world.getBlockState(blockPos3);
-				if (!SpawnHelper.isClearForSpawn(world, blockPos3, blockState2, blockState2.getFluidState(), EntityType.field_6147)) {
+				if (!SpawnHelper.isClearForSpawn(world, blockPos3, blockState2, blockState2.getFluidState(), EntityType.IRON_GOLEM)) {
 					return false;
 				}
 			}
 
-			return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.field_15906.getDefaultState(), EntityType.field_6147)
+			return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.EMPTY.getDefaultState(), EntityType.IRON_GOLEM)
 				&& world.intersectsEntities(this);
 		}
 	}
@@ -353,10 +353,10 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	public static enum Crack {
-		field_21081(1.0F),
-		field_21082(0.75F),
-		field_21083(0.5F),
-		field_21084(0.25F);
+		NONE(1.0F),
+		LOW(0.75F),
+		MEDIUM(0.5F),
+		HIGH(0.25F);
 
 		private static final List<IronGolemEntity.Crack> VALUES = (List<IronGolemEntity.Crack>)Stream.of(values())
 			.sorted(Comparator.comparingDouble(crack -> (double)crack.maxHealthFraction))
@@ -374,7 +374,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 				}
 			}
 
-			return field_21081;
+			return NONE;
 		}
 	}
 }

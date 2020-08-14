@@ -13,38 +13,40 @@ import net.minecraft.recipe.book.RecipeBookCategory;
 
 @Environment(EnvType.CLIENT)
 public enum RecipeBookGroup {
-	field_1809(new ItemStack(Items.field_8251)),
-	field_1806(new ItemStack(Blocks.field_10104)),
-	field_1803(new ItemStack(Items.field_8725)),
-	field_1813(new ItemStack(Items.field_8475), new ItemStack(Items.field_8845)),
-	field_1810(new ItemStack(Items.field_8187), new ItemStack(Items.field_8279)),
-	field_1804(new ItemStack(Items.field_8251)),
-	field_1808(new ItemStack(Items.field_8389)),
-	field_1811(new ItemStack(Blocks.field_10340)),
-	field_1812(new ItemStack(Items.field_8187), new ItemStack(Items.field_8687)),
-	field_17110(new ItemStack(Items.field_8251)),
-	field_17111(new ItemStack(Blocks.field_10080)),
-	field_17112(new ItemStack(Items.field_8699), new ItemStack(Items.field_8416)),
-	field_17113(new ItemStack(Items.field_8251)),
-	field_17114(new ItemStack(Items.field_8389)),
-	field_17764(new ItemStack(Items.CHISELED_STONE_BRICKS)),
-	field_25624(new ItemStack(Items.field_22028)),
-	field_17765(new ItemStack(Items.field_8389)),
-	field_25625(new ItemStack(Items.BARRIER));
+	CRAFTING_SEARCH(new ItemStack(Items.COMPASS)),
+	CRAFTING_BUILDING_BLOCKS(new ItemStack(Blocks.BRICKS)),
+	CRAFTING_REDSTONE(new ItemStack(Items.REDSTONE)),
+	CRAFTING_EQUIPMENT(new ItemStack(Items.IRON_AXE), new ItemStack(Items.GOLDEN_SWORD)),
+	CRAFTING_MISC(new ItemStack(Items.LAVA_BUCKET), new ItemStack(Items.APPLE)),
+	FURNACE_SEARCH(new ItemStack(Items.COMPASS)),
+	FURNACE_FOOD(new ItemStack(Items.PORKCHOP)),
+	FURNACE_BLOCKS(new ItemStack(Blocks.STONE)),
+	FURNACE_MISC(new ItemStack(Items.LAVA_BUCKET), new ItemStack(Items.EMERALD)),
+	BLAST_FURNACE_SEARCH(new ItemStack(Items.COMPASS)),
+	BLAST_FURNACE_BLOCKS(new ItemStack(Blocks.REDSTONE_ORE)),
+	BLAST_FURNACE_MISC(new ItemStack(Items.IRON_SHOVEL), new ItemStack(Items.GOLDEN_LEGGINGS)),
+	SMOKER_SEARCH(new ItemStack(Items.COMPASS)),
+	SMOKER_FOOD(new ItemStack(Items.PORKCHOP)),
+	STONECUTTER(new ItemStack(Items.CHISELED_STONE_BRICKS)),
+	SMITHING(new ItemStack(Items.NETHERITE_CHESTPLATE)),
+	CAMPFIRE(new ItemStack(Items.PORKCHOP)),
+	UNKNOWN(new ItemStack(Items.BARRIER));
 
-	public static final List<RecipeBookGroup> SMOKER = ImmutableList.of(field_17113, field_17114);
-	public static final List<RecipeBookGroup> BLAST_FURNACE = ImmutableList.of(field_17110, field_17111, field_17112);
-	public static final List<RecipeBookGroup> FURNACE = ImmutableList.of(field_1804, field_1808, field_1811, field_1812);
-	public static final List<RecipeBookGroup> CRAFTING = ImmutableList.of(field_1809, field_1813, field_1806, field_1810, field_1803);
+	public static final List<RecipeBookGroup> SMOKER = ImmutableList.of(SMOKER_SEARCH, SMOKER_FOOD);
+	public static final List<RecipeBookGroup> BLAST_FURNACE = ImmutableList.of(BLAST_FURNACE_SEARCH, BLAST_FURNACE_BLOCKS, BLAST_FURNACE_MISC);
+	public static final List<RecipeBookGroup> FURNACE = ImmutableList.of(FURNACE_SEARCH, FURNACE_FOOD, FURNACE_BLOCKS, FURNACE_MISC);
+	public static final List<RecipeBookGroup> CRAFTING = ImmutableList.of(
+		CRAFTING_SEARCH, CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE
+	);
 	public static final Map<RecipeBookGroup, List<RecipeBookGroup>> field_25783 = ImmutableMap.of(
-		field_1809,
-		ImmutableList.of(field_1813, field_1806, field_1810, field_1803),
-		field_1804,
-		ImmutableList.of(field_1808, field_1811, field_1812),
-		field_17110,
-		ImmutableList.of(field_17111, field_17112),
-		field_17113,
-		ImmutableList.of(field_17114)
+		CRAFTING_SEARCH,
+		ImmutableList.of(CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE),
+		FURNACE_SEARCH,
+		ImmutableList.of(FURNACE_FOOD, FURNACE_BLOCKS, FURNACE_MISC),
+		BLAST_FURNACE_SEARCH,
+		ImmutableList.of(BLAST_FURNACE_BLOCKS, BLAST_FURNACE_MISC),
+		SMOKER_SEARCH,
+		ImmutableList.of(SMOKER_FOOD)
 	);
 	private final List<ItemStack> icons;
 
@@ -54,13 +56,13 @@ public enum RecipeBookGroup {
 
 	public static List<RecipeBookGroup> method_30285(RecipeBookCategory recipeBookCategory) {
 		switch (recipeBookCategory) {
-			case field_25763:
+			case CRAFTING:
 				return CRAFTING;
-			case field_25764:
+			case FURNACE:
 				return FURNACE;
-			case field_25765:
+			case BLAST_FURNACE:
 				return BLAST_FURNACE;
-			case field_25766:
+			case SMOKER:
 				return SMOKER;
 			default:
 				return ImmutableList.of();

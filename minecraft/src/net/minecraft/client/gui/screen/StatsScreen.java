@@ -56,7 +56,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	@Override
 	protected void init() {
 		this.downloadingStats = true;
-		this.client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12775));
+		this.client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
 	}
 
 	public void createLists() {
@@ -166,8 +166,8 @@ public class StatsScreen extends Screen implements StatsListener {
 			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 9 * 4);
 
 			for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-				if (StatsScreen.this.statHandler.getStat(Stats.field_15403.getOrCreateStat(entityType)) > 0
-					|| StatsScreen.this.statHandler.getStat(Stats.field_15411.getOrCreateStat(entityType)) > 0) {
+				if (StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType)) > 0
+					|| StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType)) > 0) {
 					this.addEntry(new StatsScreen.EntityStatsListWidget.Entry(entityType));
 				}
 			}
@@ -190,7 +190,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			public Entry(EntityType<?> entityType) {
 				this.entityType = entityType;
 				this.field_26548 = entityType.getName();
-				int i = StatsScreen.this.statHandler.getStat(Stats.field_15403.getOrCreateStat(entityType));
+				int i = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType));
 				if (i == 0) {
 					this.field_26549 = new TranslatableText("stat_type.minecraft.killed.none", this.field_26548);
 					this.field_26550 = false;
@@ -199,7 +199,7 @@ public class StatsScreen extends Screen implements StatsListener {
 					this.field_26550 = true;
 				}
 
-				int j = StatsScreen.this.statHandler.getStat(Stats.field_15411.getOrCreateStat(entityType));
+				int j = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType));
 				if (j == 0) {
 					this.field_26551 = new TranslatableText("stat_type.minecraft.killed_by.none", this.field_26548);
 					this.field_26552 = false;
@@ -224,7 +224,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	class GeneralStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.GeneralStatsListWidget.Entry> {
 		public GeneralStatsListWidget(MinecraftClient minecraftClient) {
 			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
-			ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<>(Stats.field_15419.iterator());
+			ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<>(Stats.CUSTOM.iterator());
 			objectArrayList.sort(Comparator.comparing(statx -> I18n.translate(StatsScreen.method_27027(statx))));
 
 			for (Stat<Identifier> stat : objectArrayList) {
@@ -273,8 +273,8 @@ public class StatsScreen extends Screen implements StatsListener {
 		public ItemStatsListWidget(MinecraftClient client) {
 			super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
 			this.blockStatTypes = Lists.<StatType<Block>>newArrayList();
-			this.blockStatTypes.add(Stats.field_15427);
-			this.itemStatTypes = Lists.<StatType<Item>>newArrayList(Stats.field_15383, Stats.field_15370, Stats.field_15372, Stats.field_15392, Stats.field_15405);
+			this.blockStatTypes.add(Stats.MINED);
+			this.itemStatTypes = Lists.<StatType<Item>>newArrayList(Stats.BROKEN, Stats.CRAFTED, Stats.USED, Stats.PICKED_UP, Stats.DROPPED);
 			this.setRenderHeader(true, 20);
 			Set<Item> set = Sets.newIdentityHashSet();
 
@@ -365,7 +365,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			if (this.selectedHeaderColumn >= 0) {
 				this.selectStatType(this.getStatType(this.selectedHeaderColumn));
-				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			}
 		}
 
@@ -490,7 +490,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			private ItemComparator() {
 			}
 
-			public int method_2297(Item item, Item item2) {
+			public int compare(Item item, Item item2) {
 				int i;
 				int j;
 				if (ItemStatsListWidget.this.selectedStatType == null) {

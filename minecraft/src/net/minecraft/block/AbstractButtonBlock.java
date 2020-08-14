@@ -46,7 +46,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	protected AbstractButtonBlock(boolean wooden, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
+			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.WALL)
 		);
 		this.wooden = wooden;
 	}
@@ -60,27 +60,27 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		Direction direction = state.get(FACING);
 		boolean bl = (Boolean)state.get(POWERED);
 		switch ((WallMountLocation)state.get(FACE)) {
-			case field_12475:
-				if (direction.getAxis() == Direction.Axis.field_11048) {
+			case FLOOR:
+				if (direction.getAxis() == Direction.Axis.X) {
 					return bl ? FLOOR_X_PRESSED_SHAPE : FLOOR_X_SHAPE;
 				}
 
 				return bl ? FLOOR_Z_PRESSED_SHAPE : FLOOR_Z_SHAPE;
-			case field_12471:
+			case WALL:
 				switch (direction) {
-					case field_11034:
+					case EAST:
 						return bl ? EAST_PRESSED_SHAPE : EAST_SHAPE;
-					case field_11039:
+					case WEST:
 						return bl ? WEST_PRESSED_SHAPE : WEST_SHAPE;
-					case field_11035:
+					case SOUTH:
 						return bl ? SOUTH_PRESSED_SHAPE : SOUTH_SHAPE;
-					case field_11043:
+					case NORTH:
 					default:
 						return bl ? NORTH_PRESSED_SHAPE : NORTH_SHAPE;
 				}
-			case field_12473:
+			case CEILING:
 			default:
-				if (direction.getAxis() == Direction.Axis.field_11048) {
+				if (direction.getAxis() == Direction.Axis.X) {
 					return bl ? CEILING_X_PRESSED_SHAPE : CEILING_X_SHAPE;
 				} else {
 					return bl ? CEILING_Z_PRESSED_SHAPE : CEILING_Z_SHAPE;
@@ -106,7 +106,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	protected void playClickSound(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos, boolean powered) {
-		world.playSound(powered ? player : null, pos, this.getClickSound(powered), SoundCategory.field_15245, 0.3F, powered ? 0.6F : 0.5F);
+		world.playSound(powered ? player : null, pos, this.getClickSound(powered), SoundCategory.BLOCKS, 0.3F, powered ? 0.6F : 0.5F);
 	}
 
 	protected abstract SoundEvent getClickSound(boolean powered);

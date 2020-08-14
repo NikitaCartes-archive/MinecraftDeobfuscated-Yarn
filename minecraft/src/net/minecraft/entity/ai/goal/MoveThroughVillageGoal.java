@@ -35,7 +35,7 @@ public class MoveThroughVillageGoal extends Goal {
 		this.requiresNighttime = requiresNighttime;
 		this.distance = distance;
 		this.doorPassingThroughGetter = doorPassingThroughGetter;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 		if (!class_5493.method_30955(pathAwareEntity)) {
 			throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
 		}
@@ -64,7 +64,7 @@ public class MoveThroughVillageGoal extends Goal {
 								return Double.NEGATIVE_INFINITY;
 							} else {
 								Optional<BlockPos> optionalx = serverWorld.getPointOfInterestStorage()
-									.getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, blockPos2x, 10, PointOfInterestStorage.OccupationStatus.field_18488);
+									.getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, blockPos2x, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
 								return !optionalx.isPresent() ? Double.NEGATIVE_INFINITY : -((BlockPos)optionalx.get()).getSquaredDistance(blockPos);
 							}
 						}
@@ -73,7 +73,7 @@ public class MoveThroughVillageGoal extends Goal {
 						return false;
 					} else {
 						Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
-							.getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.field_18488);
+							.getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
 						if (!optional.isPresent()) {
 							return false;
 						} else {

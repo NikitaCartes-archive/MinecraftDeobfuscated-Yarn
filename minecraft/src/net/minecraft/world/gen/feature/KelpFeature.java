@@ -15,20 +15,20 @@ public class KelpFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13460(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		int i = 0;
-		int j = structureWorldAccess.getTopY(Heightmap.Type.field_13200, blockPos.getX(), blockPos.getZ());
+		int j = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
-		if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.field_10382)) {
-			BlockState blockState = Blocks.field_9993.getDefaultState();
-			BlockState blockState2 = Blocks.field_10463.getDefaultState();
+		if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)) {
+			BlockState blockState = Blocks.KELP.getDefaultState();
+			BlockState blockState2 = Blocks.KELP_PLANT.getDefaultState();
 			int k = 1 + random.nextInt(10);
 
 			for (int l = 0; l <= k; l++) {
-				if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.field_10382)
-					&& structureWorldAccess.getBlockState(blockPos2.up()).isOf(Blocks.field_10382)
+				if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)
+					&& structureWorldAccess.getBlockState(blockPos2.up()).isOf(Blocks.WATER)
 					&& blockState2.canPlaceAt(structureWorldAccess, blockPos2)) {
 					if (l == k) {
 						structureWorldAccess.setBlockState(blockPos2, blockState.with(KelpBlock.AGE, Integer.valueOf(random.nextInt(4) + 20)), 2);
@@ -37,8 +37,8 @@ public class KelpFeature extends Feature<DefaultFeatureConfig> {
 						structureWorldAccess.setBlockState(blockPos2, blockState2, 2);
 					}
 				} else if (l > 0) {
-					BlockPos blockPos3 = blockPos2.method_10074();
-					if (blockState.canPlaceAt(structureWorldAccess, blockPos3) && !structureWorldAccess.getBlockState(blockPos3.method_10074()).isOf(Blocks.field_9993)) {
+					BlockPos blockPos3 = blockPos2.down();
+					if (blockState.canPlaceAt(structureWorldAccess, blockPos3) && !structureWorldAccess.getBlockState(blockPos3.down()).isOf(Blocks.KELP)) {
 						structureWorldAccess.setBlockState(blockPos3, blockState.with(KelpBlock.AGE, Integer.valueOf(random.nextInt(4) + 20)), 2);
 						i++;
 					}

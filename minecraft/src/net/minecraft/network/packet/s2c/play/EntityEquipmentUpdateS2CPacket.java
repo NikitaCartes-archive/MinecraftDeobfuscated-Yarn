@@ -14,15 +14,15 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int id;
-	private final List<Pair<EquipmentSlot, ItemStack>> field_25721;
+	private final List<Pair<EquipmentSlot, ItemStack>> equipmentList;
 
 	public EntityEquipmentUpdateS2CPacket() {
-		this.field_25721 = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
+		this.equipmentList = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
 	}
 
-	public EntityEquipmentUpdateS2CPacket(int i, List<Pair<EquipmentSlot, ItemStack>> list) {
-		this.id = i;
-		this.field_25721 = list;
+	public EntityEquipmentUpdateS2CPacket(int id, List<Pair<EquipmentSlot, ItemStack>> equipmentList) {
+		this.id = id;
+		this.equipmentList = equipmentList;
 	}
 
 	@Override
@@ -35,17 +35,17 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 			i = buf.readByte();
 			EquipmentSlot equipmentSlot = equipmentSlots[i & 127];
 			ItemStack itemStack = buf.readItemStack();
-			this.field_25721.add(Pair.of(equipmentSlot, itemStack));
+			this.equipmentList.add(Pair.of(equipmentSlot, itemStack));
 		} while ((i & -128) != 0);
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeVarInt(this.id);
-		int i = this.field_25721.size();
+		int i = this.equipmentList.size();
 
 		for (int j = 0; j < i; j++) {
-			Pair<EquipmentSlot, ItemStack> pair = (Pair<EquipmentSlot, ItemStack>)this.field_25721.get(j);
+			Pair<EquipmentSlot, ItemStack> pair = (Pair<EquipmentSlot, ItemStack>)this.equipmentList.get(j);
 			EquipmentSlot equipmentSlot = pair.getFirst();
 			boolean bl = j != i - 1;
 			int k = equipmentSlot.ordinal();
@@ -54,7 +54,7 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 		}
 	}
 
-	public void method_11823(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEquipmentUpdate(this);
 	}
 
@@ -64,7 +64,7 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 	}
 
 	@Environment(EnvType.CLIENT)
-	public List<Pair<EquipmentSlot, ItemStack>> method_30145() {
-		return this.field_25721;
+	public List<Pair<EquipmentSlot, ItemStack>> getEquipmentList() {
+		return this.equipmentList;
 	}
 }

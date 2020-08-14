@@ -40,12 +40,12 @@ public class HungerManager {
 			this.exhaustion -= 4.0F;
 			if (this.foodSaturationLevel > 0.0F) {
 				this.foodSaturationLevel = Math.max(this.foodSaturationLevel - 1.0F, 0.0F);
-			} else if (difficulty != Difficulty.field_5801) {
+			} else if (difficulty != Difficulty.PEACEFUL) {
 				this.foodLevel = Math.max(this.foodLevel - 1, 0);
 			}
 		}
 
-		boolean bl = player.world.getGameRules().getBoolean(GameRules.field_19395);
+		boolean bl = player.world.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
 		if (bl && this.foodLevel > 6 && player.canFoodHeal()) {
 			this.foodStarvationTimer++;
 			if (this.foodStarvationTimer >= 40) {
@@ -59,7 +59,7 @@ public class HungerManager {
 		} else if (this.foodLevel <= 0) {
 			this.foodStarvationTimer++;
 			if (this.foodStarvationTimer >= 40) {
-				if (player.getHealth() > 10.0F || difficulty == Difficulty.field_5807 || player.getHealth() > 1.0F && difficulty == Difficulty.field_5802) {
+				if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
 					player.damage(DamageSource.STARVE, 1.0F);
 				}
 
@@ -112,7 +112,7 @@ public class HungerManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_31209() {
+	public boolean method_31241() {
 		return this.foodLevel > 6;
 	}
 }

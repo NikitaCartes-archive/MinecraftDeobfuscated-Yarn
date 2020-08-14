@@ -28,7 +28,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	private int field_19158;
 
 	public BellBlockEntity() {
-		super(BlockEntityType.field_16413);
+		super(BlockEntityType.BELL);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	private void playResonateSound() {
-		this.world.playSound(null, this.getPos(), SoundEvents.field_19167, SoundCategory.field_15245, 1.0F, 1.0F);
+		this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 
 	public void activate(Direction direction) {
@@ -99,7 +99,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		if (!this.world.isClient) {
 			for (LivingEntity livingEntity : this.hearingEntities) {
 				if (livingEntity.isAlive() && !livingEntity.removed && blockPos.isWithinDistance(livingEntity.getPos(), 32.0)) {
-					livingEntity.getBrain().remember(MemoryModuleType.field_19009, this.world.getTime());
+					livingEntity.getBrain().remember(MemoryModuleType.HEARD_BELL_TIME, this.world.getTime());
 				}
 			}
 		}
@@ -112,7 +112,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 			if (livingEntity.isAlive()
 				&& !livingEntity.removed
 				&& blockPos.isWithinDistance(livingEntity.getPos(), 32.0)
-				&& livingEntity.getType().isIn(EntityTypeTags.field_19168)) {
+				&& livingEntity.getType().isIn(EntityTypeTags.RAIDERS)) {
 				return true;
 			}
 		}
@@ -150,7 +150,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 							double h = (double)BackgroundHelper.ColorMixer.getRed(l) / 255.0;
 							double m = (double)BackgroundHelper.ColorMixer.getGreen(l) / 255.0;
 							double n = (double)BackgroundHelper.ColorMixer.getBlue(l) / 255.0;
-							world.addParticle(ParticleTypes.field_11226, d, (double)((float)blockPos.getY() + 0.5F), e, h, m, n);
+							world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (double)((float)blockPos.getY() + 0.5F), e, h, m, n);
 						}
 					}
 				);
@@ -158,10 +158,10 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	private boolean isRaiderEntity(LivingEntity entity) {
-		return entity.isAlive() && !entity.removed && this.getPos().isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.field_19168);
+		return entity.isAlive() && !entity.removed && this.getPos().isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
 	}
 
 	private void glowEntity(LivingEntity entity) {
-		entity.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5912, 60));
+		entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
 	}
 }

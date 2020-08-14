@@ -82,7 +82,7 @@ public class VexEntity extends HostileEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createVexAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.field_23716, 14.0).add(EntityAttributes.field_23721, 4.0);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 14.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0);
 	}
 
 	@Override
@@ -165,17 +165,17 @@ public class VexEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14812;
+		return SoundEvents.ENTITY_VEX_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14964;
+		return SoundEvents.ENTITY_VEX_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15072;
+		return SoundEvents.ENTITY_VEX_HURT;
 	}
 
 	@Override
@@ -195,13 +195,13 @@ public class VexEntity extends HostileEntity {
 
 	@Override
 	protected void initEquipment(LocalDifficulty difficulty) {
-		this.equipStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8371));
-		this.setEquipmentDropChance(EquipmentSlot.field_6173, 0.0F);
+		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+		this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
 	}
 
 	class ChargeTargetGoal extends Goal {
 		public ChargeTargetGoal() {
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -225,7 +225,7 @@ public class VexEntity extends HostileEntity {
 			Vec3d vec3d = livingEntity.getCameraPosVec(1.0F);
 			VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 			VexEntity.this.setCharging(true);
-			VexEntity.this.playSound(SoundEvents.field_14898, 1.0F, 1.0F);
+			VexEntity.this.playSound(SoundEvents.ENTITY_VEX_CHARGE, 1.0F, 1.0F);
 		}
 
 		@Override
@@ -251,7 +251,7 @@ public class VexEntity extends HostileEntity {
 
 	class LookAtTargetGoal extends Goal {
 		public LookAtTargetGoal() {
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -312,11 +312,11 @@ public class VexEntity extends HostileEntity {
 
 		@Override
 		public void tick() {
-			if (this.state == MoveControl.State.field_6378) {
+			if (this.state == MoveControl.State.MOVE_TO) {
 				Vec3d vec3d = new Vec3d(this.targetX - VexEntity.this.getX(), this.targetY - VexEntity.this.getY(), this.targetZ - VexEntity.this.getZ());
 				double d = vec3d.length();
 				if (d < VexEntity.this.getBoundingBox().getAverageSideLength()) {
-					this.state = MoveControl.State.field_6377;
+					this.state = MoveControl.State.WAIT;
 					VexEntity.this.setVelocity(VexEntity.this.getVelocity().multiply(0.5));
 				} else {
 					VexEntity.this.setVelocity(VexEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));

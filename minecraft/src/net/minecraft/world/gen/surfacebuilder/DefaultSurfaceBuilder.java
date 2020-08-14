@@ -13,7 +13,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		super(codec);
 	}
 
-	public void method_15219(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -75,7 +75,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 			} else if (blockState3.isOf(defaultBlock.getBlock())) {
 				if (i == -1) {
 					if (j <= 0) {
-						blockState = Blocks.field_10124.getDefaultState();
+						blockState = Blocks.AIR.getDefaultState();
 						blockState2 = defaultBlock;
 					} else if (m >= seaLevel - 4 && m <= seaLevel + 1) {
 						blockState = topBlock;
@@ -84,7 +84,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 
 					if (m < seaLevel && (blockState == null || blockState.isAir())) {
 						if (biome.getTemperature(mutable.set(x, m, z)) < 0.15F) {
-							blockState = Blocks.field_10295.getDefaultState();
+							blockState = Blocks.ICE.getDefaultState();
 						} else {
 							blockState = fluidBlock;
 						}
@@ -96,7 +96,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 					if (m >= seaLevel - 1) {
 						chunk.setBlockState(mutable, blockState, false);
 					} else if (m < seaLevel - 7 - j) {
-						blockState = Blocks.field_10124.getDefaultState();
+						blockState = Blocks.AIR.getDefaultState();
 						blockState2 = defaultBlock;
 						chunk.setBlockState(mutable, underwaterBlock, false);
 					} else {
@@ -105,9 +105,9 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 				} else if (i > 0) {
 					i--;
 					chunk.setBlockState(mutable, blockState2, false);
-					if (i == 0 && blockState2.isOf(Blocks.field_10102) && j > 1) {
+					if (i == 0 && blockState2.isOf(Blocks.SAND) && j > 1) {
 						i = random.nextInt(4) + Math.max(0, m - 63);
-						blockState2 = blockState2.isOf(Blocks.field_10534) ? Blocks.field_10344.getDefaultState() : Blocks.field_9979.getDefaultState();
+						blockState2 = blockState2.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
 					}
 				}
 			}

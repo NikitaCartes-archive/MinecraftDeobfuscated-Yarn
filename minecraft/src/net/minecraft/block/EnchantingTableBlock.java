@@ -56,13 +56,13 @@ public class EnchantingTableBlock extends BlockWithEntity {
 				if (random.nextInt(16) == 0) {
 					for (int k = 0; k <= 1; k++) {
 						BlockPos blockPos = pos.add(i, k, j);
-						if (world.getBlockState(blockPos).isOf(Blocks.field_10504)) {
+						if (world.getBlockState(blockPos).isOf(Blocks.BOOKSHELF)) {
 							if (!world.isAir(pos.add(i / 2, 0, j / 2))) {
 								break;
 							}
 
 							world.addParticle(
-								ParticleTypes.field_11215,
+								ParticleTypes.ENCHANT,
 								(double)pos.getX() + 0.5,
 								(double)pos.getY() + 2.0,
 								(double)pos.getZ() + 0.5,
@@ -79,7 +79,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 		this.open = open;
 	}
 
-	public boolean method_13163(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		for (BlockPos blockPos2 : BlockPos.iterate(
@@ -27,30 +27,30 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 			if (bl || blockPos2.isWithinDistance(blockPos, 3.5)) {
 				if (blockPos2.getY() < blockPos.getY()) {
 					if (bl) {
-						this.setBlockState(structureWorldAccess, blockPos2, Blocks.field_9987.getDefaultState());
+						this.setBlockState(structureWorldAccess, blockPos2, Blocks.BEDROCK.getDefaultState());
 					} else if (blockPos2.getY() < blockPos.getY()) {
-						this.setBlockState(structureWorldAccess, blockPos2, Blocks.field_10471.getDefaultState());
+						this.setBlockState(structureWorldAccess, blockPos2, Blocks.END_STONE.getDefaultState());
 					}
 				} else if (blockPos2.getY() > blockPos.getY()) {
-					this.setBlockState(structureWorldAccess, blockPos2, Blocks.field_10124.getDefaultState());
+					this.setBlockState(structureWorldAccess, blockPos2, Blocks.AIR.getDefaultState());
 				} else if (!bl) {
-					this.setBlockState(structureWorldAccess, blockPos2, Blocks.field_9987.getDefaultState());
+					this.setBlockState(structureWorldAccess, blockPos2, Blocks.BEDROCK.getDefaultState());
 				} else if (this.open) {
-					this.setBlockState(structureWorldAccess, new BlockPos(blockPos2), Blocks.field_10027.getDefaultState());
+					this.setBlockState(structureWorldAccess, new BlockPos(blockPos2), Blocks.END_PORTAL.getDefaultState());
 				} else {
-					this.setBlockState(structureWorldAccess, new BlockPos(blockPos2), Blocks.field_10124.getDefaultState());
+					this.setBlockState(structureWorldAccess, new BlockPos(blockPos2), Blocks.AIR.getDefaultState());
 				}
 			}
 		}
 
 		for (int i = 0; i < 4; i++) {
-			this.setBlockState(structureWorldAccess, blockPos.up(i), Blocks.field_9987.getDefaultState());
+			this.setBlockState(structureWorldAccess, blockPos.up(i), Blocks.BEDROCK.getDefaultState());
 		}
 
 		BlockPos blockPos3 = blockPos.up(2);
 
-		for (Direction direction : Direction.Type.field_11062) {
-			this.setBlockState(structureWorldAccess, blockPos3.offset(direction), Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, direction));
+		for (Direction direction : Direction.Type.HORIZONTAL) {
+			this.setBlockState(structureWorldAccess, blockPos3.offset(direction), Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, direction));
 		}
 
 		return true;

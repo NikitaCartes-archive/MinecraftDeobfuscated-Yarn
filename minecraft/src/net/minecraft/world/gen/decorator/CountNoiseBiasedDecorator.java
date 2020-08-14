@@ -12,7 +12,7 @@ public class CountNoiseBiasedDecorator extends SimpleDecorator<CountNoiseBiasedD
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_30467(Random random, CountNoiseBiasedDecoratorConfig countNoiseBiasedDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, CountNoiseBiasedDecoratorConfig countNoiseBiasedDecoratorConfig, BlockPos blockPos) {
 		double d = Biome.FOLIAGE_NOISE
 			.sample((double)blockPos.getX() / countNoiseBiasedDecoratorConfig.noiseFactor, (double)blockPos.getZ() / countNoiseBiasedDecoratorConfig.noiseFactor, false);
 		int i = (int)Math.ceil((d + countNoiseBiasedDecoratorConfig.noiseOffset) * (double)countNoiseBiasedDecoratorConfig.noiseToCountRatio);

@@ -43,12 +43,12 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25233;
+		return LootFunctionTypes.COPY_NBT;
 	}
 
 	private static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
 		try {
-			return new NbtPathArgumentType().method_9362(new StringReader(nbtPath));
+			return new NbtPathArgumentType().parse(new StringReader(nbtPath));
 		} catch (CommandSyntaxException var2) {
 			throw new IllegalArgumentException("Failed to parse path " + nbtPath, var2);
 		}
@@ -87,10 +87,10 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		}
 
 		public CopyNbtLootFunction.Builder withOperation(String source, String target) {
-			return this.withOperation(source, target, CopyNbtLootFunction.Operator.field_17032);
+			return this.withOperation(source, target, CopyNbtLootFunction.Operator.REPLACE);
 		}
 
-		protected CopyNbtLootFunction.Builder method_16855() {
+		protected CopyNbtLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
@@ -142,13 +142,13 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	public static enum Operator {
-		field_17032("replace") {
+		REPLACE("replace") {
 			@Override
 			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
 				targetPath.put(itemTag, Iterables.getLast(sourceTags)::copy);
 			}
 		},
-		field_17033("append") {
+		APPEND("append") {
 			@Override
 			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
 				List<Tag> list = targetPath.getOrInit(itemTag, ListTag::new);
@@ -159,7 +159,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 				});
 			}
 		},
-		field_17034("merge") {
+		MERGE("merge") {
 			@Override
 			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
 				List<Tag> list = targetPath.getOrInit(itemTag, CompoundTag::new);
@@ -195,15 +195,15 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<CopyNbtLootFunction> {
-		public void method_16870(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, copyNbtLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, copyNbtLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("source", copyNbtLootFunction.source.name);
 			JsonArray jsonArray = new JsonArray();
 			copyNbtLootFunction.operations.stream().map(CopyNbtLootFunction.Operation::toJson).forEach(jsonArray::add);
 			jsonObject.add("ops", jsonArray);
 		}
 
-		public CopyNbtLootFunction method_16871(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public CopyNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			CopyNbtLootFunction.Source source = CopyNbtLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
 			List<CopyNbtLootFunction.Operation> list = Lists.<CopyNbtLootFunction.Operation>newArrayList();
 
@@ -217,10 +217,10 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	public static enum Source {
-		field_17024("this", LootContextParameters.field_1226, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		field_17025("killer", LootContextParameters.field_1230, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		field_17026("killer_player", LootContextParameters.field_1233, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		field_17027("block_entity", LootContextParameters.field_1228, CopyNbtLootFunction.BLOCK_ENTITY_TAG_GETTER);
+		THIS("this", LootContextParameters.THIS_ENTITY, CopyNbtLootFunction.ENTITY_TAG_GETTER),
+		KILLER("killer", LootContextParameters.KILLER_ENTITY, CopyNbtLootFunction.ENTITY_TAG_GETTER),
+		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER, CopyNbtLootFunction.ENTITY_TAG_GETTER),
+		BLOCK_ENTITY("block_entity", LootContextParameters.BLOCK_ENTITY, CopyNbtLootFunction.BLOCK_ENTITY_TAG_GETTER);
 
 		public final String name;
 		public final LootContextParameter<?> parameter;

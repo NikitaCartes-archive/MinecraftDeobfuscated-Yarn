@@ -6,7 +6,7 @@ import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
-	field_16184;
+	INSTANCE;
 
 	private static final IntSet field_26728 = new IntOpenHashSet(new int[]{26, 11, 12, 13, 140, 30, 31, 158, 10});
 	private static final IntSet field_26729 = new IntOpenHashSet(new int[]{168, 169, 21, 22, 23, 149, 151});

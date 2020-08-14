@@ -19,14 +19,14 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_24449(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (!structureWorldAccess.isAir(blockPos)) {
 			return false;
 		} else {
 			BlockState blockState = structureWorldAccess.getBlockState(blockPos.up());
-			if (!blockState.isOf(Blocks.field_10515) && !blockState.isOf(Blocks.field_10541)) {
+			if (!blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
 				return false;
 			} else {
 				this.generateNetherWartBlocksInArea(structureWorldAccess, random, blockPos);
@@ -37,7 +37,7 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	private void generateNetherWartBlocksInArea(WorldAccess world, Random random, BlockPos pos) {
-		world.setBlockState(pos, Blocks.field_10541.getDefaultState(), 2);
+		world.setBlockState(pos, Blocks.NETHER_WART_BLOCK.getDefaultState(), 2);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
@@ -48,7 +48,7 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 
 				for (Direction direction : DIRECTIONS) {
 					BlockState blockState = world.getBlockState(mutable2.set(mutable, direction));
-					if (blockState.isOf(Blocks.field_10515) || blockState.isOf(Blocks.field_10541)) {
+					if (blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
 						j++;
 					}
 
@@ -58,7 +58,7 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 				}
 
 				if (j == 1) {
-					world.setBlockState(mutable, Blocks.field_10541.getDefaultState(), 2);
+					world.setBlockState(mutable, Blocks.NETHER_WART_BLOCK.getDefaultState(), 2);
 				}
 			}
 		}
@@ -71,7 +71,7 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 			mutable.set(pos, random.nextInt(8) - random.nextInt(8), random.nextInt(2) - random.nextInt(7), random.nextInt(8) - random.nextInt(8));
 			if (world.isAir(mutable)) {
 				BlockState blockState = world.getBlockState(mutable.up());
-				if (blockState.isOf(Blocks.field_10515) || blockState.isOf(Blocks.field_10541)) {
+				if (blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
 					int j = MathHelper.nextInt(random, 1, 8);
 					if (random.nextInt(6) == 0) {
 						j *= 2;
@@ -92,17 +92,17 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 	public static void generateVineColumn(WorldAccess world, Random random, BlockPos.Mutable pos, int length, int minAge, int maxAge) {
 		for (int i = 0; i <= length; i++) {
 			if (world.isAir(pos)) {
-				if (i == length || !world.isAir(pos.method_10074())) {
+				if (i == length || !world.isAir(pos.down())) {
 					world.setBlockState(
-						pos, Blocks.field_22123.getDefaultState().with(AbstractPlantStemBlock.AGE, Integer.valueOf(MathHelper.nextInt(random, minAge, maxAge))), 2
+						pos, Blocks.WEEPING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, Integer.valueOf(MathHelper.nextInt(random, minAge, maxAge))), 2
 					);
 					break;
 				}
 
-				world.setBlockState(pos, Blocks.field_22124.getDefaultState(), 2);
+				world.setBlockState(pos, Blocks.WEEPING_VINES_PLANT.getDefaultState(), 2);
 			}
 
-			pos.move(Direction.field_11033);
+			pos.move(Direction.DOWN);
 		}
 	}
 }

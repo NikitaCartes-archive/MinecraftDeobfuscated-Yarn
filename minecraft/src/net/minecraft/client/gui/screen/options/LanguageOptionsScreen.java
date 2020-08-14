@@ -81,7 +81,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 				);
 				this.addEntry(languageEntry);
 				if (LanguageOptionsScreen.this.languageManager.getLanguage().getCode().equals(languageDefinition.getCode())) {
-					this.method_20100(languageEntry);
+					this.setSelected(languageEntry);
 				}
 			}
 
@@ -100,7 +100,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			return super.getRowWidth() + 50;
 		}
 
-		public void method_20100(@Nullable LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry) {
+		public void setSelected(@Nullable LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry) {
 			super.setSelected(languageEntry);
 			if (languageEntry != null) {
 				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", languageEntry.languageDefinition).getString());
@@ -150,7 +150,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			}
 
 			private void onPressed() {
-				LanguageSelectionListWidget.this.method_20100(this);
+				LanguageSelectionListWidget.this.setSelected(this);
 			}
 		}
 	}

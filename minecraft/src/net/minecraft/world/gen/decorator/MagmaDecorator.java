@@ -10,7 +10,7 @@ public class MagmaDecorator extends Decorator<NopeDecoratorConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_15951(DecoratorContext decoratorContext, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
 		int i = decoratorContext.getSeaLevel();
 		int j = i - 5 + random.nextInt(10);
 		return Stream.of(new BlockPos(blockPos.getX(), j, blockPos.getZ()));

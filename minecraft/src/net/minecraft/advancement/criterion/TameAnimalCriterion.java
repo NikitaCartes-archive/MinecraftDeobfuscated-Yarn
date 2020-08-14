@@ -17,7 +17,7 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 		return ID;
 	}
 
-	public TameAnimalCriterion.Conditions method_9133(
+	public TameAnimalCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "entity", advancementEntityPredicateDeserializer);

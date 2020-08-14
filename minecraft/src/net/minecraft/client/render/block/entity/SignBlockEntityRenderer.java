@@ -32,7 +32,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_23083(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = signBlockEntity.getCachedState();
 		matrixStack.push();
 		float g = 0.6666667F;

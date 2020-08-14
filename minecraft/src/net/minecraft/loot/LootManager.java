@@ -30,7 +30,7 @@ public class LootManager extends JsonDataLoader {
 		return (LootTable)this.tables.getOrDefault(id, LootTable.EMPTY);
 	}
 
-	protected void method_20712(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		Builder<Identifier, LootTable> builder = ImmutableMap.builder();
 		JsonElement jsonElement = (JsonElement)map.remove(LootTables.EMPTY);
 		if (jsonElement != null) {
@@ -47,7 +47,7 @@ public class LootManager extends JsonDataLoader {
 		});
 		builder.put(LootTables.EMPTY, LootTable.EMPTY);
 		ImmutableMap<Identifier, LootTable> immutableMap = builder.build();
-		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.field_1177, this.conditionManager::get, immutableMap::get);
+		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.conditionManager::get, immutableMap::get);
 		immutableMap.forEach((identifier, lootTable) -> validate(lootTableReporter, identifier, lootTable));
 		lootTableReporter.getMessages().forEach((key, value) -> LOGGER.warn("Found validation problem in " + key + ": " + value));
 		this.tables = immutableMap;

@@ -16,7 +16,7 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_30474(DecoratorContext decoratorContext, Random random, CountConfig countConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, CountConfig countConfig, BlockPos blockPos) {
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
 		int i = 0;
 
@@ -27,7 +27,7 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 			for (int j = 0; j < countConfig.getCount().getValue(random); j++) {
 				int k = random.nextInt(16) + blockPos.getX();
 				int l = random.nextInt(16) + blockPos.getZ();
-				int m = decoratorContext.getTopY(Heightmap.Type.field_13197, k, l);
+				int m = decoratorContext.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l);
 				int n = findPos(decoratorContext, k, m, l, i);
 				if (n != Integer.MAX_VALUE) {
 					list.add(new BlockPos(k, n, l));
@@ -49,7 +49,7 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 		for (int j = y; j >= 1; j--) {
 			mutable.setY(j - 1);
 			BlockState blockState2 = context.getBlockState(mutable);
-			if (!blocksSpawn(blockState2) && blocksSpawn(blockState) && !blockState2.isOf(Blocks.field_9987)) {
+			if (!blocksSpawn(blockState2) && blocksSpawn(blockState) && !blockState2.isOf(Blocks.BEDROCK)) {
 				if (i == targetY) {
 					return mutable.getY() + 1;
 				}
@@ -64,6 +64,6 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 	}
 
 	private static boolean blocksSpawn(BlockState state) {
-		return state.isAir() || state.isOf(Blocks.field_10382) || state.isOf(Blocks.field_10164);
+		return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.LAVA);
 	}
 }

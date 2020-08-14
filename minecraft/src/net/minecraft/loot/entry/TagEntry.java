@@ -28,7 +28,7 @@ public class TagEntry extends LeafEntry {
 
 	@Override
 	public LootPoolEntryType getType() {
-		return LootPoolEntryTypes.field_25210;
+		return LootPoolEntryTypes.TAG;
 	}
 
 	@Override
@@ -63,13 +63,13 @@ public class TagEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<TagEntry> {
-		public void method_451(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
-			super.method_442(jsonObject, tagEntry, jsonSerializationContext);
+		public void addEntryFields(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
+			super.addEntryFields(jsonObject, tagEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", ServerTagManagerHolder.getTagManager().getItems().getTagId(tagEntry.name).toString());
 			jsonObject.addProperty("expand", tagEntry.expand);
 		}
 
-		protected TagEntry method_450(
+		protected TagEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));

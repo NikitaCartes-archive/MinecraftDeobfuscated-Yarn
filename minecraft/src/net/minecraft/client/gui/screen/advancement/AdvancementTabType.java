@@ -9,10 +9,10 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 enum AdvancementTabType {
-	field_2678(0, 0, 28, 32, 8),
-	field_2673(84, 0, 28, 32, 8),
-	field_2675(0, 64, 32, 28, 5),
-	field_2677(96, 64, 32, 28, 5);
+	ABOVE(0, 0, 28, 32, 8),
+	BELOW(84, 0, 28, 32, 8),
+	LEFT(0, 64, 32, 28, 5),
+	RIGHT(96, 64, 32, 28, 5);
 
 	private final int u;
 	private final int v;
@@ -50,19 +50,19 @@ enum AdvancementTabType {
 		int i = x + this.getTabX(index);
 		int j = y + this.getTabY(index);
 		switch (this) {
-			case field_2678:
+			case ABOVE:
 				i += 6;
 				j += 9;
 				break;
-			case field_2673:
+			case BELOW:
 				i += 6;
 				j += 6;
 				break;
-			case field_2675:
+			case LEFT:
 				i += 10;
 				j += 5;
 				break;
-			case field_2677:
+			case RIGHT:
 				i += 6;
 				j += 5;
 		}
@@ -72,13 +72,13 @@ enum AdvancementTabType {
 
 	public int getTabX(int index) {
 		switch (this) {
-			case field_2678:
+			case ABOVE:
 				return (this.width + 4) * index;
-			case field_2673:
+			case BELOW:
 				return (this.width + 4) * index;
-			case field_2675:
+			case LEFT:
 				return -this.width + 4;
-			case field_2677:
+			case RIGHT:
 				return 248;
 			default:
 				throw new UnsupportedOperationException("Don't know what this tab type is!" + this);
@@ -87,13 +87,13 @@ enum AdvancementTabType {
 
 	public int getTabY(int index) {
 		switch (this) {
-			case field_2678:
+			case ABOVE:
 				return -this.height + 4;
-			case field_2673:
+			case BELOW:
 				return 136;
-			case field_2675:
+			case LEFT:
 				return this.height * index;
-			case field_2677:
+			case RIGHT:
 				return this.height * index;
 			default:
 				throw new UnsupportedOperationException("Don't know what this tab type is!" + this);

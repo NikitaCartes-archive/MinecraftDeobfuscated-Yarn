@@ -30,7 +30,7 @@ public class PortalForcer {
 		int i = bl ? 16 : 128;
 		pointOfInterestStorage.preloadChunks(this.world, blockPos, i);
 		Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(
-				pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_20632, blockPos, i, PointOfInterestStorage.OccupationStatus.field_18489
+				pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, i, PointOfInterestStorage.OccupationStatus.ANY
 			)
 			.sorted(
 				Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos))
@@ -41,22 +41,17 @@ public class PortalForcer {
 		return optional.map(
 			pointOfInterest -> {
 				BlockPos blockPosx = pointOfInterest.getPos();
-				this.world.method_14178().addTicket(ChunkTicketType.field_19280, new ChunkPos(blockPosx), 3, blockPosx);
+				this.world.getChunkManager().addTicket(ChunkTicketType.field_19280, new ChunkPos(blockPosx), 3, blockPosx);
 				BlockState blockState = this.world.getBlockState(blockPosx);
 				return class_5459.method_30574(
-					blockPosx,
-					blockState.get(Properties.HORIZONTAL_AXIS),
-					21,
-					Direction.Axis.field_11052,
-					21,
-					blockPosxx -> this.world.getBlockState(blockPosxx) == blockState
+					blockPosx, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, blockPosxx -> this.world.getBlockState(blockPosxx) == blockState
 				);
 			}
 		);
 	}
 
 	public Optional<class_5459.class_5460> method_30482(BlockPos blockPos, Direction.Axis axis) {
-		Direction direction = Direction.get(Direction.AxisDirection.field_11056, axis);
+		Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, axis);
 		double d = -1.0;
 		BlockPos blockPos2 = null;
 		double e = -1.0;
@@ -65,8 +60,8 @@ public class PortalForcer {
 		int i = this.world.getDimensionHeight() - 1;
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 
-		for (BlockPos.Mutable mutable2 : BlockPos.method_30512(blockPos, 16, Direction.field_11034, Direction.field_11035)) {
-			int j = Math.min(i, this.world.getTopY(Heightmap.Type.field_13197, mutable2.getX(), mutable2.getZ()));
+		for (BlockPos.Mutable mutable2 : BlockPos.method_30512(blockPos, 16, Direction.EAST, Direction.SOUTH)) {
+			int j = Math.min(i, this.world.getTopY(Heightmap.Type.MOTION_BLOCKING, mutable2.getX(), mutable2.getZ()));
 			int k = 1;
 			if (worldBorder.contains(mutable2) && worldBorder.contains(mutable2.move(direction, 1))) {
 				mutable2.move(direction.getOpposite(), 1);
@@ -76,7 +71,7 @@ public class PortalForcer {
 					if (this.world.isAir(mutable2)) {
 						int m = l;
 
-						while (l > 0 && this.world.isAir(mutable2.move(Direction.field_11033))) {
+						while (l > 0 && this.world.isAir(mutable2.move(Direction.DOWN))) {
 							l--;
 						}
 
@@ -118,7 +113,7 @@ public class PortalForcer {
 			for (int o = -1; o < 2; o++) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = -1; k < 3; k++) {
-						BlockState blockState = k < 0 ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState();
+						BlockState blockState = k < 0 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
 						mutable.set(blockPos2, j * direction.getOffsetX() + o * direction2.getOffsetX(), k, j * direction.getOffsetZ() + o * direction2.getOffsetZ());
 						this.world.setBlockState(mutable, blockState);
 					}
@@ -130,12 +125,12 @@ public class PortalForcer {
 			for (int o = -1; o < 4; o++) {
 				if (p == -1 || p == 2 || o == -1 || o == 3) {
 					mutable.set(blockPos2, p * direction.getOffsetX(), o, p * direction.getOffsetZ());
-					this.world.setBlockState(mutable, Blocks.field_10540.getDefaultState(), 3);
+					this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), 3);
 				}
 			}
 		}
 
-		BlockState blockState2 = Blocks.field_10316.getDefaultState().with(NetherPortalBlock.AXIS, axis);
+		BlockState blockState2 = Blocks.NETHER_PORTAL.getDefaultState().with(NetherPortalBlock.AXIS, axis);
 
 		for (int ox = 0; ox < 2; ox++) {
 			for (int j = 0; j < 3; j++) {

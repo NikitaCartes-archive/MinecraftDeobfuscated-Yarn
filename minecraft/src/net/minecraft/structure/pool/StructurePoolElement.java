@@ -86,7 +86,7 @@ public abstract class StructurePoolElement {
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> method_30425(String string) {
-		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), () -> StructureProcessorLists.field_26688, projection);
+		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), () -> StructureProcessorLists.EMPTY, projection);
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> method_30426(String string, StructureProcessorList structureProcessorList) {
@@ -94,7 +94,7 @@ public abstract class StructurePoolElement {
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> method_30434(String string) {
-		return projection -> new SinglePoolElement(Either.left(new Identifier(string)), () -> StructureProcessorLists.field_26688, projection);
+		return projection -> new SinglePoolElement(Either.left(new Identifier(string)), () -> StructureProcessorLists.EMPTY, projection);
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> method_30435(String string, StructureProcessorList structureProcessorList) {

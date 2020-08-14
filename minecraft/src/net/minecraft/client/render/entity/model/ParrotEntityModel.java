@@ -70,11 +70,11 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 		return ImmutableList.<ModelPart>of(this.torso, this.leftWing, this.rightWing, this.tail, this.head, this.leftLeg, this.rightLeg);
 	}
 
-	public void method_17112(ParrotEntity parrotEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(ParrotEntity parrotEntity, float f, float g, float h, float i, float j) {
 		this.setAngles(getPose(parrotEntity), parrotEntity.age, f, g, h, i, j);
 	}
 
-	public void method_17108(ParrotEntity parrotEntity, float f, float g, float h) {
+	public void animateModel(ParrotEntity parrotEntity, float f, float g, float h) {
 		this.animateModel(getPose(parrotEntity));
 	}
 
@@ -89,8 +89,8 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 		float headPitch,
 		int danceAngle
 	) {
-		this.animateModel(ParrotEntityModel.Pose.field_3464);
-		this.setAngles(ParrotEntityModel.Pose.field_3464, danceAngle, limbAngle, limbDistance, 0.0F, headYaw, headPitch);
+		this.animateModel(ParrotEntityModel.Pose.ON_SHOULDER);
+		this.setAngles(ParrotEntityModel.Pose.ON_SHOULDER, danceAngle, limbAngle, limbDistance, 0.0F, headYaw, headPitch);
 		this.getParts().forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay));
 	}
 
@@ -104,9 +104,9 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 		this.rightWing.pivotX = -1.5F;
 		this.leftWing.pivotX = 1.5F;
 		switch (pose) {
-			case field_3466:
+			case SITTING:
 				break;
-			case field_3463:
+			case PARTY:
 				float f = MathHelper.cos((float)danceAngle);
 				float g = MathHelper.sin((float)danceAngle);
 				this.head.pivotX = f;
@@ -125,11 +125,11 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 				this.tail.pivotX = f;
 				this.tail.pivotY = 21.07F + g;
 				break;
-			case field_3465:
+			case STANDING:
 				this.leftLeg.pitch = this.leftLeg.pitch + MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
 				this.rightLeg.pitch = this.rightLeg.pitch + MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-			case field_3462:
-			case field_3464:
+			case FLYING:
+			case ON_SHOULDER:
 			default:
 				float h = age * 0.3F;
 				this.head.pivotY = 15.69F + h;
@@ -159,7 +159,7 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 		this.leftLeg.roll = 0.0F;
 		this.rightLeg.roll = 0.0F;
 		switch (pose) {
-			case field_3466:
+			case SITTING:
 				float f = 1.9F;
 				this.head.pivotY = 17.59F;
 				this.tail.pitch = 1.5388988F;
@@ -174,14 +174,14 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 				this.leftLeg.pitch++;
 				this.rightLeg.pitch++;
 				break;
-			case field_3463:
+			case PARTY:
 				this.leftLeg.roll = (float) (-Math.PI / 9);
 				this.rightLeg.roll = (float) (Math.PI / 9);
-			case field_3465:
-			case field_3464:
+			case STANDING:
+			case ON_SHOULDER:
 			default:
 				break;
-			case field_3462:
+			case FLYING:
 				this.leftLeg.pitch += (float) (Math.PI * 2.0 / 9.0);
 				this.rightLeg.pitch += (float) (Math.PI * 2.0 / 9.0);
 		}
@@ -189,20 +189,20 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 
 	private static ParrotEntityModel.Pose getPose(ParrotEntity parrot) {
 		if (parrot.getSongPlaying()) {
-			return ParrotEntityModel.Pose.field_3463;
+			return ParrotEntityModel.Pose.PARTY;
 		} else if (parrot.isInSittingPose()) {
-			return ParrotEntityModel.Pose.field_3466;
+			return ParrotEntityModel.Pose.SITTING;
 		} else {
-			return parrot.isInAir() ? ParrotEntityModel.Pose.field_3462 : ParrotEntityModel.Pose.field_3465;
+			return parrot.isInAir() ? ParrotEntityModel.Pose.FLYING : ParrotEntityModel.Pose.STANDING;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Pose {
-		field_3462,
-		field_3465,
-		field_3466,
-		field_3463,
-		field_3464;
+		FLYING,
+		STANDING,
+		SITTING,
+		PARTY,
+		ON_SHOULDER;
 	}
 }

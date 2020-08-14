@@ -15,11 +15,11 @@ public class PolarBearEntityRenderer extends MobEntityRenderer<PolarBearEntity, 
 		super(entityRenderDispatcher, new PolarBearEntityModel<>(), 0.9F);
 	}
 
-	public Identifier method_4097(PolarBearEntity polarBearEntity) {
+	public Identifier getTexture(PolarBearEntity polarBearEntity) {
 		return TEXTURE;
 	}
 
-	protected void method_4099(PolarBearEntity polarBearEntity, MatrixStack matrixStack, float f) {
+	protected void scale(PolarBearEntity polarBearEntity, MatrixStack matrixStack, float f) {
 		matrixStack.scale(1.2F, 1.2F, 1.2F);
 		super.scale(polarBearEntity, matrixStack, f);
 	}

@@ -16,10 +16,10 @@ public class RandomChanceLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25237;
+		return LootConditionTypes.RANDOM_CHANCE;
 	}
 
-	public boolean method_934(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		return lootContext.getRandom().nextFloat() < this.chance;
 	}
 
@@ -28,11 +28,11 @@ public class RandomChanceLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<RandomChanceLootCondition> {
-		public void method_936(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("chance", randomChanceLootCondition.chance);
 		}
 
-		public RandomChanceLootCondition method_937(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public RandomChanceLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return new RandomChanceLootCondition(JsonHelper.getFloat(jsonObject, "chance"));
 		}
 	}

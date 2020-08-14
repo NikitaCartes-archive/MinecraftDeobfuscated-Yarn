@@ -18,7 +18,7 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 		super(featureRendererContext);
 	}
 
-	public void method_18335(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, FoxEntity foxEntity, float f, float g, float h, float j, float k, float l
 	) {
 		boolean bl = foxEntity.isSleeping();
@@ -56,10 +56,10 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 		}
 
-		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.field_6173);
+		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		MinecraftClient.getInstance()
 			.getHeldItemRenderer()
-			.renderItem(foxEntity, itemStack, ModelTransformation.Mode.field_4318, false, matrixStack, vertexConsumerProvider, i);
+			.renderItem(foxEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}
 }

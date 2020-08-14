@@ -74,14 +74,15 @@ public class ArmorItem extends Item implements Wearable {
 		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
 		UUID uUID = MODIFIERS[slot.getEntitySlotId()];
 		builder.put(
-			EntityAttributes.field_23724, new EntityAttributeModifier(uUID, "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION)
+			EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(uUID, "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION)
 		);
 		builder.put(
-			EntityAttributes.field_23725, new EntityAttributeModifier(uUID, "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION)
+			EntityAttributes.GENERIC_ARMOR_TOUGHNESS,
+			new EntityAttributeModifier(uUID, "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION)
 		);
-		if (material == ArmorMaterials.field_21977) {
+		if (material == ArmorMaterials.NETHERITE) {
 			builder.put(
-				EntityAttributes.field_23718,
+				EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,
 				new EntityAttributeModifier(uUID, "Armor knockback resistance", (double)this.knockbackResistance, EntityAttributeModifier.Operation.ADDITION)
 			);
 		}
@@ -104,7 +105,7 @@ public class ArmorItem extends Item implements Wearable {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return this.type.getRepairIngredient().method_8093(ingredient) || super.canRepair(stack, ingredient);
+		return this.type.getRepairIngredient().test(ingredient) || super.canRepair(stack, ingredient);
 	}
 
 	@Override

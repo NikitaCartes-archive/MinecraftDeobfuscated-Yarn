@@ -12,24 +12,24 @@ public class HuntHoglinTask<E extends PiglinEntity> extends Task<E> {
 	public HuntHoglinTask() {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_22339,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_22333,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_22336,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_22343,
-				MemoryModuleState.field_18458
+				MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.ANGRY_AT,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.HUNTED_RECENTLY,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS,
+				MemoryModuleState.REGISTERED
 			)
 		);
 	}
 
-	protected boolean method_24617(ServerWorld serverWorld, PiglinEntity piglinEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, PiglinEntity piglinEntity) {
 		return !piglinEntity.isBaby() && !PiglinBrain.haveHuntedHoglinsRecently(piglinEntity);
 	}
 
-	protected void method_24618(ServerWorld serverWorld, E piglinEntity, long l) {
-		HoglinEntity hoglinEntity = (HoglinEntity)piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.field_22339).get();
+	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
+		HoglinEntity hoglinEntity = (HoglinEntity)piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN).get();
 		PiglinBrain.becomeAngryWith(piglinEntity, hoglinEntity);
 		PiglinBrain.rememberHunting(piglinEntity);
 		PiglinBrain.angerAtCloserTargets(piglinEntity, hoglinEntity);

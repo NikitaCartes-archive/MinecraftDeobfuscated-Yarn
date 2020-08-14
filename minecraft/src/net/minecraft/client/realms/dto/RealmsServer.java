@@ -246,7 +246,7 @@ public class RealmsServer extends ValueObject {
 		}
 	}
 
-	public RealmsServer method_25067() {
+	public RealmsServer clone() {
 		RealmsServer realmsServer = new RealmsServer();
 		realmsServer.id = this.id;
 		realmsServer.remoteSubscriptionId = this.remoteSubscriptionId;
@@ -275,7 +275,7 @@ public class RealmsServer extends ValueObject {
 		Map<Integer, RealmsWorldOptions> map = Maps.<Integer, RealmsWorldOptions>newHashMap();
 
 		for (Entry<Integer, RealmsWorldOptions> entry : slots.entrySet()) {
-			map.put(entry.getKey(), ((RealmsWorldOptions)entry.getValue()).method_25083());
+			map.put(entry.getKey(), ((RealmsWorldOptions)entry.getValue()).clone());
 		}
 
 		return map;
@@ -293,7 +293,7 @@ public class RealmsServer extends ValueObject {
 			this.refOwner = owner;
 		}
 
-		public int method_20830(RealmsServer realmsServer, RealmsServer realmsServer2) {
+		public int compare(RealmsServer realmsServer, RealmsServer realmsServer2) {
 			return ComparisonChain.start()
 				.compareTrueFirst(realmsServer.state == RealmsServer.State.UNINITIALIZED, realmsServer2.state == RealmsServer.State.UNINITIALIZED)
 				.compareTrueFirst(realmsServer.expiredTrial, realmsServer2.expiredTrial)

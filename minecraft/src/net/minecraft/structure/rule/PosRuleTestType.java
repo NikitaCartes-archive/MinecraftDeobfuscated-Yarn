@@ -4,9 +4,9 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.registry.Registry;
 
 public interface PosRuleTestType<P extends PosRuleTest> {
-	PosRuleTestType<AlwaysTruePosRuleTest> field_23344 = register("always_true", AlwaysTruePosRuleTest.CODEC);
-	PosRuleTestType<LinearPosRuleTest> field_23345 = register("linear_pos", LinearPosRuleTest.CODEC);
-	PosRuleTestType<AxisAlignedLinearPosRuleTest> field_23346 = register("axis_aligned_linear_pos", AxisAlignedLinearPosRuleTest.CODEC);
+	PosRuleTestType<AlwaysTruePosRuleTest> ALWAYS_TRUE = register("always_true", AlwaysTruePosRuleTest.CODEC);
+	PosRuleTestType<LinearPosRuleTest> LINEAR_POS = register("linear_pos", LinearPosRuleTest.CODEC);
+	PosRuleTestType<AxisAlignedLinearPosRuleTest> AXIS_ALIGNED_LINEAR_POS = register("axis_aligned_linear_pos", AxisAlignedLinearPosRuleTest.CODEC);
 
 	Codec<P> codec();
 

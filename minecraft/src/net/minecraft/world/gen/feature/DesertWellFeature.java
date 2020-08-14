@@ -11,25 +11,25 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
-	private static final BlockStatePredicate CAN_GENERATE = BlockStatePredicate.forBlock(Blocks.field_10102);
-	private final BlockState slab = Blocks.field_10007.getDefaultState();
-	private final BlockState wall = Blocks.field_9979.getDefaultState();
-	private final BlockState fluidInside = Blocks.field_10382.getDefaultState();
+	private static final BlockStatePredicate CAN_GENERATE = BlockStatePredicate.forBlock(Blocks.SAND);
+	private final BlockState slab = Blocks.SANDSTONE_SLAB.getDefaultState();
+	private final BlockState wall = Blocks.SANDSTONE.getDefaultState();
+	private final BlockState fluidInside = Blocks.WATER.getDefaultState();
 
 	public DesertWellFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean method_12977(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		blockPos = blockPos.up();
 
 		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
-			blockPos = blockPos.method_10074();
+			blockPos = blockPos.down();
 		}
 
-		if (!CAN_GENERATE.method_11760(structureWorldAccess.getBlockState(blockPos))) {
+		if (!CAN_GENERATE.test(structureWorldAccess.getBlockState(blockPos))) {
 			return false;
 		} else {
 			for (int i = -2; i <= 2; i++) {
@@ -50,7 +50,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 
 			structureWorldAccess.setBlockState(blockPos, this.fluidInside, 2);
 
-			for (Direction direction : Direction.Type.field_11062) {
+			for (Direction direction : Direction.Type.HORIZONTAL) {
 				structureWorldAccess.setBlockState(blockPos.offset(direction), this.fluidInside, 2);
 			}
 

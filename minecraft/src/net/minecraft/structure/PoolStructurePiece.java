@@ -31,7 +31,7 @@ public class PoolStructurePiece extends StructurePiece {
 	public PoolStructurePiece(
 		StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox
 	) {
-		super(StructurePieceType.field_25840, 0);
+		super(StructurePieceType.JIGSAW, 0);
 		this.structureManager = structureManager;
 		this.poolElement = structurePoolElement;
 		this.pos = blockPos;
@@ -41,7 +41,7 @@ public class PoolStructurePiece extends StructurePiece {
 	}
 
 	public PoolStructurePiece(StructureManager manager, CompoundTag tag) {
-		super(StructurePieceType.field_25840, tag);
+		super(StructurePieceType.JIGSAW, tag);
 		this.structureManager = manager;
 		this.pos = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
 		this.groundLevelDelta = tag.getInt("ground_level_delta");

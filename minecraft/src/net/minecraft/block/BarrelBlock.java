@@ -34,7 +34,7 @@ public class BarrelBlock extends BlockWithEntity {
 
 	public BarrelBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(OPEN, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(OPEN, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class BarrelBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BarrelBlockEntity) {
 				player.openHandledScreen((BarrelBlockEntity)blockEntity);
-				player.incrementStat(Stats.field_17271);
+				player.incrementStat(Stats.OPEN_BARREL);
 				PiglinBrain.onGuardedBlockBroken(player, true);
 			}
 
@@ -82,7 +82,7 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override

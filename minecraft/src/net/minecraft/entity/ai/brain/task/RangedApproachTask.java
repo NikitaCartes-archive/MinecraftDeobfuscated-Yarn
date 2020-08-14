@@ -16,21 +16,21 @@ public class RangedApproachTask extends Task<MobEntity> {
 	public RangedApproachTask(float speed) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_22355,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_18442,
-				MemoryModuleState.field_18458
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.ATTACK_TARGET,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.VISIBLE_MOBS,
+				MemoryModuleState.REGISTERED
 			)
 		);
 		this.speed = speed;
 	}
 
-	protected void method_25945(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		LivingEntity livingEntity = (LivingEntity)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_22355).get();
+	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+		LivingEntity livingEntity = (LivingEntity)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
 		if (LookTargetUtil.isVisibleInMemory(mobEntity, livingEntity) && LookTargetUtil.method_25940(mobEntity, livingEntity, 1)) {
 			this.forgetWalkTarget(mobEntity);
 		} else {
@@ -40,12 +40,12 @@ public class RangedApproachTask extends Task<MobEntity> {
 
 	private void rememberWalkTarget(LivingEntity entity, LivingEntity target) {
 		Brain brain = entity.getBrain();
-		brain.remember(MemoryModuleType.field_18446, new EntityLookTarget(target, true));
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 		WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), this.speed, 0);
-		brain.remember(MemoryModuleType.field_18445, walkTarget);
+		brain.remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 
 	private void forgetWalkTarget(LivingEntity entity) {
-		entity.getBrain().forget(MemoryModuleType.field_18445);
+		entity.getBrain().forget(MemoryModuleType.WALK_TARGET);
 	}
 }

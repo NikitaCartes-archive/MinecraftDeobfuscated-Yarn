@@ -17,7 +17,7 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 
 	@Override
 	protected TreeDecoratorType<?> getType() {
-		return TreeDecoratorType.field_21320;
+		return TreeDecoratorType.TRUNK_VINE;
 	}
 
 	@Override

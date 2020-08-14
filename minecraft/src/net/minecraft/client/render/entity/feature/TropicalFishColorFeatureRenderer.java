@@ -18,7 +18,7 @@ public class TropicalFishColorFeatureRenderer extends FeatureRenderer<TropicalFi
 		super(featureRendererContext);
 	}
 
-	public void method_4205(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,

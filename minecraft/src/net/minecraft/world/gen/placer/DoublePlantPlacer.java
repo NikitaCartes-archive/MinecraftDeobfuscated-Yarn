@@ -14,7 +14,7 @@ public class DoublePlantPlacer extends BlockPlacer {
 
 	@Override
 	protected BlockPlacerType<?> method_28673() {
-		return BlockPlacerType.field_21224;
+		return BlockPlacerType.DOUBLE_PLANT_PLACER;
 	}
 
 	@Override

@@ -79,10 +79,10 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 
 	public static DefaultAttributeContainer.Builder createPillagerAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23719, 0.35F)
-			.add(EntityAttributes.field_23716, 24.0)
-			.add(EntityAttributes.field_23721, 5.0)
-			.add(EntityAttributes.field_23717, 32.0);
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35F)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 24.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0);
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 
 	@Override
 	public boolean canUseRangedWeapon(RangedWeaponItem weapon) {
-		return weapon == Items.field_8399;
+		return weapon == Items.CROSSBOW;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -130,11 +130,11 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	@Override
 	public IllagerEntity.State getState() {
 		if (this.isCharging()) {
-			return IllagerEntity.State.field_7210;
-		} else if (this.isHolding(Items.field_8399)) {
-			return IllagerEntity.State.field_7213;
+			return IllagerEntity.State.CROSSBOW_CHARGE;
+		} else if (this.isHolding(Items.CROSSBOW)) {
+			return IllagerEntity.State.CROSSBOW_HOLD;
 		} else {
-			return this.isAttacking() ? IllagerEntity.State.field_7211 : IllagerEntity.State.field_21512;
+			return this.isAttacking() ? IllagerEntity.State.ATTACKING : IllagerEntity.State.NEUTRAL;
 		}
 	}
 
@@ -155,8 +155,8 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		BlockState blockState = world.getBlockState(pos.method_10074());
-		return !blockState.isOf(Blocks.field_10219) && !blockState.isOf(Blocks.field_10102) ? 0.5F - world.getBrightness(pos) : 10.0F;
+		BlockState blockState = world.getBlockState(pos.down());
+		return !blockState.isOf(Blocks.GRASS_BLOCK) && !blockState.isOf(Blocks.SAND) ? 0.5F - world.getBrightness(pos) : 10.0F;
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 
 	@Override
 	protected void initEquipment(LocalDifficulty difficulty) {
-		this.equipStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8399));
+		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
 	}
 
 	@Override
@@ -184,11 +184,11 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		super.method_30759(f);
 		if (this.random.nextInt(300) == 0) {
 			ItemStack itemStack = this.getMainHandStack();
-			if (itemStack.getItem() == Items.field_8399) {
+			if (itemStack.getItem() == Items.CROSSBOW) {
 				Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack);
-				map.putIfAbsent(Enchantments.field_9132, 1);
+				map.putIfAbsent(Enchantments.PIERCING, 1);
 				EnchantmentHelper.set(map, itemStack);
-				this.equipStack(EquipmentSlot.field_6173, itemStack);
+				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 			}
 		}
 	}
@@ -206,17 +206,17 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14976;
+		return SoundEvents.ENTITY_PILLAGER_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15049;
+		return SoundEvents.ENTITY_PILLAGER_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15159;
+		return SoundEvents.ENTITY_PILLAGER_HURT;
 	}
 
 	@Override
@@ -249,7 +249,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	private boolean method_7111(Item item) {
-		return this.hasActiveRaid() && item == Items.field_8539;
+		return this.hasActiveRaid() && item == Items.WHITE_BANNER;
 	}
 
 	@Override
@@ -272,22 +272,22 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		Raid raid = this.getRaid();
 		boolean bl = this.random.nextFloat() <= raid.getEnchantmentChance();
 		if (bl) {
-			ItemStack itemStack = new ItemStack(Items.field_8399);
+			ItemStack itemStack = new ItemStack(Items.CROSSBOW);
 			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
-			if (wave > raid.getMaxWaves(Difficulty.field_5802)) {
-				map.put(Enchantments.field_9098, 2);
-			} else if (wave > raid.getMaxWaves(Difficulty.field_5805)) {
-				map.put(Enchantments.field_9098, 1);
+			if (wave > raid.getMaxWaves(Difficulty.NORMAL)) {
+				map.put(Enchantments.QUICK_CHARGE, 2);
+			} else if (wave > raid.getMaxWaves(Difficulty.EASY)) {
+				map.put(Enchantments.QUICK_CHARGE, 1);
 			}
 
-			map.put(Enchantments.field_9108, 1);
+			map.put(Enchantments.MULTISHOT, 1);
 			EnchantmentHelper.set(map, itemStack);
-			this.equipStack(EquipmentSlot.field_6173, itemStack);
+			this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 		}
 	}
 
 	@Override
 	public SoundEvent getCelebratingSound() {
-		return SoundEvents.field_19150;
+		return SoundEvents.ENTITY_PILLAGER_CELEBRATE;
 	}
 }

@@ -77,16 +77,16 @@ public interface BlockView {
 
 	default double getDismountHeight(VoxelShape blockCollisionShape, Supplier<VoxelShape> belowBlockCollisionShapeGetter) {
 		if (!blockCollisionShape.isEmpty()) {
-			return blockCollisionShape.getMax(Direction.Axis.field_11052);
+			return blockCollisionShape.getMax(Direction.Axis.Y);
 		} else {
-			double d = ((VoxelShape)belowBlockCollisionShapeGetter.get()).getMax(Direction.Axis.field_11052);
+			double d = ((VoxelShape)belowBlockCollisionShapeGetter.get()).getMax(Direction.Axis.Y);
 			return d >= 1.0 ? d - 1.0 : Double.NEGATIVE_INFINITY;
 		}
 	}
 
 	default double getDismountHeight(BlockPos pos) {
 		return this.getDismountHeight(this.getBlockState(pos).getCollisionShape(this, pos), () -> {
-			BlockPos blockPos2 = pos.method_10074();
+			BlockPos blockPos2 = pos.down();
 			return this.getBlockState(blockPos2).getCollisionShape(this, blockPos2);
 		});
 	}

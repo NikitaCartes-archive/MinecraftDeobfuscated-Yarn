@@ -38,7 +38,7 @@ public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeUuid(this.senderUuid);
 	}
 
-	public void method_11386(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGameMessage(this);
 	}
 
@@ -48,7 +48,7 @@ public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public boolean isNonChat() {
-		return this.location == MessageType.field_11735 || this.location == MessageType.field_11733;
+		return this.location == MessageType.SYSTEM || this.location == MessageType.GAME_INFO;
 	}
 
 	public MessageType getLocation() {

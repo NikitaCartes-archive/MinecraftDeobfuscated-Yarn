@@ -77,7 +77,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		return new ScoreHolderArgumentType(true);
 	}
 
-	public ScoreHolderArgumentType.ScoreHolder method_9453(StringReader stringReader) throws CommandSyntaxException {
+	public ScoreHolderArgumentType.ScoreHolder parse(StringReader stringReader) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '@') {
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 			EntitySelector entitySelector = entitySelectorReader.read();
@@ -145,7 +145,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	}
 
 	public static class Serializer implements ArgumentSerializer<ScoreHolderArgumentType> {
-		public void method_9461(ScoreHolderArgumentType scoreHolderArgumentType, PacketByteBuf packetByteBuf) {
+		public void toPacket(ScoreHolderArgumentType scoreHolderArgumentType, PacketByteBuf packetByteBuf) {
 			byte b = 0;
 			if (scoreHolderArgumentType.multiple) {
 				b = (byte)(b | 1);
@@ -154,13 +154,13 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 			packetByteBuf.writeByte(b);
 		}
 
-		public ScoreHolderArgumentType method_9460(PacketByteBuf packetByteBuf) {
+		public ScoreHolderArgumentType fromPacket(PacketByteBuf packetByteBuf) {
 			byte b = packetByteBuf.readByte();
 			boolean bl = (b & 1) != 0;
 			return new ScoreHolderArgumentType(bl);
 		}
 
-		public void method_9459(ScoreHolderArgumentType scoreHolderArgumentType, JsonObject jsonObject) {
+		public void toJson(ScoreHolderArgumentType scoreHolderArgumentType, JsonObject jsonObject) {
 			jsonObject.addProperty("amount", scoreHolderArgumentType.multiple ? "multiple" : "single");
 		}
 	}

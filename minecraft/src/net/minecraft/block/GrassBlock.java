@@ -27,7 +27,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.up();
-		BlockState blockState = Blocks.field_10479.getDefaultState();
+		BlockState blockState = Blocks.GRASS.getDefaultState();
 
 		label48:
 		for (int i = 0; i < 128; i++) {
@@ -35,7 +35,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 
 			for (int j = 0; j < i / 16; j++) {
 				blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
-				if (!world.getBlockState(blockPos2.method_10074()).isOf(this) || world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
+				if (!world.getBlockState(blockPos2.down()).isOf(this) || world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
 					continue label48;
 				}
 			}

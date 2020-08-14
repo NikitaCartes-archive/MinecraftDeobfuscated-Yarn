@@ -44,7 +44,7 @@ public class BlockHitResult extends HitResult {
 
 	@Override
 	public HitResult.Type getType() {
-		return this.missed ? HitResult.Type.field_1333 : HitResult.Type.field_1332;
+		return this.missed ? HitResult.Type.MISS : HitResult.Type.BLOCK;
 	}
 
 	public boolean isInsideBlock() {

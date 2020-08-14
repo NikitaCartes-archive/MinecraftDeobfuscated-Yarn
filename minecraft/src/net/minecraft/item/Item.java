@@ -196,7 +196,7 @@ public class Item implements ItemConvertible {
 	}
 
 	public UseAction getUseAction(ItemStack stack) {
-		return stack.getItem().isFood() ? UseAction.field_8950 : UseAction.field_8952;
+		return stack.getItem().isFood() ? UseAction.EAT : UseAction.NONE;
 	}
 
 	public int getMaxUseTime(ItemStack stack) {
@@ -227,12 +227,12 @@ public class Item implements ItemConvertible {
 			return this.rarity;
 		} else {
 			switch (this.rarity) {
-				case field_8906:
-				case field_8907:
-					return Rarity.field_8903;
-				case field_8903:
-					return Rarity.field_8904;
-				case field_8904:
+				case COMMON:
+				case UNCOMMON:
+					return Rarity.RARE;
+				case RARE:
+					return Rarity.EPIC;
+				case EPIC:
 				default:
 					return this.rarity;
 			}
@@ -255,7 +255,7 @@ public class Item implements ItemConvertible {
 		float n = h * j;
 		double d = 5.0;
 		Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double)k * 5.0, (double)n * 5.0);
-		return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, fluidHandling, player));
+		return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, fluidHandling, player));
 	}
 
 	public int getEnchantability() {
@@ -287,7 +287,7 @@ public class Item implements ItemConvertible {
 	}
 
 	public boolean isUsedOnRelease(ItemStack stack) {
-		return stack.getItem() == Items.field_8399;
+		return stack.getItem() == Items.CROSSBOW;
 	}
 
 	public ItemStack getStackForRender() {
@@ -308,11 +308,11 @@ public class Item implements ItemConvertible {
 	}
 
 	public SoundEvent getDrinkSound() {
-		return SoundEvents.field_20613;
+		return SoundEvents.ENTITY_GENERIC_DRINK;
 	}
 
 	public SoundEvent getEatSound() {
-		return SoundEvents.field_20614;
+		return SoundEvents.ENTITY_GENERIC_EAT;
 	}
 
 	public boolean isFireproof() {
@@ -328,7 +328,7 @@ public class Item implements ItemConvertible {
 		private int maxDamage;
 		private Item recipeRemainder;
 		private ItemGroup group;
-		private Rarity rarity = Rarity.field_8906;
+		private Rarity rarity = Rarity.COMMON;
 		private FoodComponent foodComponent;
 		private boolean fireproof;
 

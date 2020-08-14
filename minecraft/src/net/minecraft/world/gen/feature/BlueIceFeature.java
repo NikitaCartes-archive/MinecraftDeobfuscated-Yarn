@@ -15,19 +15,18 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_12818(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (blockPos.getY() > structureWorldAccess.getSeaLevel() - 1) {
 			return false;
-		} else if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.field_10382)
-			&& !structureWorldAccess.getBlockState(blockPos.method_10074()).isOf(Blocks.field_10382)) {
+		} else if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.WATER) && !structureWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.WATER)) {
 			return false;
 		} else {
 			boolean bl = false;
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.field_11033 && structureWorldAccess.getBlockState(blockPos.offset(direction)).isOf(Blocks.field_10225)) {
+				if (direction != Direction.DOWN && structureWorldAccess.getBlockState(blockPos.offset(direction)).isOf(Blocks.PACKED_ICE)) {
 					bl = true;
 					break;
 				}
@@ -36,7 +35,7 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 			if (!bl) {
 				return false;
 			} else {
-				structureWorldAccess.setBlockState(blockPos, Blocks.field_10384.getDefaultState(), 2);
+				structureWorldAccess.setBlockState(blockPos, Blocks.BLUE_ICE.getDefaultState(), 2);
 
 				for (int i = 0; i < 200; i++) {
 					int j = random.nextInt(5) - random.nextInt(6);
@@ -48,14 +47,11 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 					if (k >= 1) {
 						BlockPos blockPos2 = blockPos.add(random.nextInt(k) - random.nextInt(k), j, random.nextInt(k) - random.nextInt(k));
 						BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
-						if (blockState.getMaterial() == Material.AIR
-							|| blockState.isOf(Blocks.field_10382)
-							|| blockState.isOf(Blocks.field_10225)
-							|| blockState.isOf(Blocks.field_10295)) {
+						if (blockState.getMaterial() == Material.AIR || blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.PACKED_ICE) || blockState.isOf(Blocks.ICE)) {
 							for (Direction direction2 : Direction.values()) {
 								BlockState blockState2 = structureWorldAccess.getBlockState(blockPos2.offset(direction2));
-								if (blockState2.isOf(Blocks.field_10384)) {
-									structureWorldAccess.setBlockState(blockPos2, Blocks.field_10384.getDefaultState(), 2);
+								if (blockState2.isOf(Blocks.BLUE_ICE)) {
+									structureWorldAccess.setBlockState(blockPos2, Blocks.BLUE_ICE.getDefaultState(), 2);
 									break;
 								}
 							}

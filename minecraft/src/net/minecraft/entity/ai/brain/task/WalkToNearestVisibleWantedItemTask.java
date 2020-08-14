@@ -20,12 +20,12 @@ public class WalkToNearestVisibleWantedItemTask<E extends LivingEntity> extends 
 	public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, float f, boolean requiresWalkTarget, int i) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18445,
-				requiresWalkTarget ? MemoryModuleState.field_18458 : MemoryModuleState.field_18457,
-				MemoryModuleType.field_22332,
-				MemoryModuleState.field_18456
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.WALK_TARGET,
+				requiresWalkTarget ? MemoryModuleState.REGISTERED : MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.startCondition = startCondition;
@@ -44,6 +44,6 @@ public class WalkToNearestVisibleWantedItemTask<E extends LivingEntity> extends 
 	}
 
 	private ItemEntity getNearestVisibleWantedItem(E entity) {
-		return (ItemEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.field_22332).get();
+		return (ItemEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM).get();
 	}
 }

@@ -44,13 +44,13 @@ public class StructureTestUtil {
 	public static BlockRotation method_29408(int i) {
 		switch (i) {
 			case 0:
-				return BlockRotation.field_11467;
+				return BlockRotation.NONE;
 			case 1:
-				return BlockRotation.field_11463;
+				return BlockRotation.CLOCKWISE_90;
 			case 2:
-				return BlockRotation.field_11464;
+				return BlockRotation.CLOCKWISE_180;
 			case 3:
-				return BlockRotation.field_11465;
+				return BlockRotation.COUNTERCLOCKWISE_90;
 			default:
 				throw new IllegalArgumentException("rotationSteps must be a value from 0-3. Got value " + i);
 		}
@@ -59,35 +59,35 @@ public class StructureTestUtil {
 	public static Box getStructureBoundingBox(StructureBlockBlockEntity structureBlockEntity) {
 		BlockPos blockPos = structureBlockEntity.getPos();
 		BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
-		BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.field_11302, structureBlockEntity.getRotation(), blockPos);
+		BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
 		return new Box(blockPos, blockPos3);
 	}
 
 	public static BlockBox method_29410(StructureBlockBlockEntity structureBlockBlockEntity) {
 		BlockPos blockPos = structureBlockBlockEntity.getPos();
 		BlockPos blockPos2 = blockPos.add(structureBlockBlockEntity.getSize().add(-1, -1, -1));
-		BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.field_11302, structureBlockBlockEntity.getRotation(), blockPos);
+		BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.NONE, structureBlockBlockEntity.getRotation(), blockPos);
 		return new BlockBox(blockPos, blockPos3);
 	}
 
 	public static void placeStartButton(BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, ServerWorld serverWorld) {
-		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.field_11302, blockRotation, blockPos);
-		serverWorld.setBlockState(blockPos3, Blocks.field_10525.getDefaultState());
+		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, blockRotation, blockPos);
+		serverWorld.setBlockState(blockPos3, Blocks.COMMAND_BLOCK.getDefaultState());
 		CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)serverWorld.getBlockEntity(blockPos3);
 		commandBlockBlockEntity.getCommandExecutor().setCommand("test runthis");
-		BlockPos blockPos4 = Structure.transformAround(blockPos3.add(0, 0, -1), BlockMirror.field_11302, blockRotation, blockPos3);
-		serverWorld.setBlockState(blockPos4, Blocks.field_10494.getDefaultState().rotate(blockRotation));
+		BlockPos blockPos4 = Structure.transformAround(blockPos3.add(0, 0, -1), BlockMirror.NONE, blockRotation, blockPos3);
+		serverWorld.setBlockState(blockPos4, Blocks.STONE_BUTTON.getDefaultState().rotate(blockRotation));
 	}
 
 	public static void createTestArea(String structure, BlockPos pos, BlockPos size, BlockRotation blockRotation, ServerWorld world) {
 		BlockBox blockBox = method_29409(pos, size, blockRotation);
 		clearArea(blockBox, pos.getY(), world);
-		world.setBlockState(pos, Blocks.field_10465.getDefaultState());
+		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setIgnoreEntities(false);
 		structureBlockBlockEntity.setStructureName(new Identifier(structure));
 		structureBlockBlockEntity.setSize(size);
-		structureBlockBlockEntity.setMode(StructureBlockMode.field_12695);
+		structureBlockBlockEntity.setMode(StructureBlockMode.SAVE);
 		structureBlockBlockEntity.setShowBoundingBox(true);
 	}
 
@@ -95,14 +95,14 @@ public class StructureTestUtil {
 		BlockPos blockPos2 = createStructure(string, serverWorld).getSize();
 		BlockBox blockBox = method_29409(blockPos, blockPos2, blockRotation);
 		BlockPos blockPos3;
-		if (blockRotation == BlockRotation.field_11467) {
+		if (blockRotation == BlockRotation.NONE) {
 			blockPos3 = blockPos;
-		} else if (blockRotation == BlockRotation.field_11463) {
+		} else if (blockRotation == BlockRotation.CLOCKWISE_90) {
 			blockPos3 = blockPos.add(blockPos2.getZ() - 1, 0, 0);
-		} else if (blockRotation == BlockRotation.field_11464) {
+		} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
 			blockPos3 = blockPos.add(blockPos2.getX() - 1, 0, blockPos2.getZ() - 1);
 		} else {
-			if (blockRotation != BlockRotation.field_11465) {
+			if (blockRotation != BlockRotation.COUNTERCLOCKWISE_90) {
 				throw new IllegalArgumentException("Invalid rotation: " + blockRotation);
 			}
 
@@ -112,7 +112,7 @@ public class StructureTestUtil {
 		forceLoadNearbyChunks(blockPos, serverWorld);
 		clearArea(blockBox, blockPos.getY(), serverWorld);
 		StructureBlockBlockEntity structureBlockBlockEntity = placeStructure(string, blockPos3, blockRotation, serverWorld, bl);
-		serverWorld.method_14196().getScheduledTicks(blockBox, true, false);
+		serverWorld.getBlockTickScheduler().getScheduledTicks(blockBox, true, false);
 		serverWorld.clearUpdatesInArea(blockBox);
 		return structureBlockBlockEntity;
 	}
@@ -132,7 +132,7 @@ public class StructureTestUtil {
 	public static void clearArea(BlockBox area, int i, ServerWorld world) {
 		BlockBox blockBox = new BlockBox(area.minX - 2, area.minY - 3, area.minZ - 3, area.maxX + 3, area.maxY + 20, area.maxZ + 3);
 		BlockPos.stream(blockBox).forEach(blockPos -> method_22368(i, blockPos, world));
-		world.method_14196().getScheduledTicks(blockBox, true, false);
+		world.getBlockTickScheduler().getScheduledTicks(blockBox, true, false);
 		world.clearUpdatesInArea(blockBox);
 		Box box = new Box((double)blockBox.minX, (double)blockBox.minY, (double)blockBox.minZ, (double)blockBox.maxX, (double)blockBox.maxY, (double)blockBox.maxZ);
 		List<Entity> list = world.getEntitiesByClass(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
@@ -141,7 +141,7 @@ public class StructureTestUtil {
 
 	public static BlockBox method_29409(BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation) {
 		BlockPos blockPos3 = blockPos.add(blockPos2).add(-1, -1, -1);
-		BlockPos blockPos4 = Structure.transformAround(blockPos3, BlockMirror.field_11302, blockRotation, blockPos);
+		BlockPos blockPos4 = Structure.transformAround(blockPos3, BlockMirror.NONE, blockRotation, blockPos);
 		BlockBox blockBox = BlockBox.create(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos4.getX(), blockPos4.getY(), blockPos4.getZ());
 		int i = Math.min(blockBox.minX, blockBox.maxX);
 		int j = Math.min(blockBox.minZ, blockBox.maxZ);
@@ -172,7 +172,7 @@ public class StructureTestUtil {
 				for (int k = (int)box.minZ; k <= (int)box.maxZ; k++) {
 					BlockPos blockPos = new BlockPos(i, j, k);
 					BlockState blockState = world.getBlockState(blockPos);
-					if (blockState.isOf(Blocks.field_10465)) {
+					if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
 						collection.add(blockPos);
 					}
 				}
@@ -200,9 +200,9 @@ public class StructureTestUtil {
 	}
 
 	private static StructureBlockBlockEntity placeStructure(String name, BlockPos pos, BlockRotation blockRotation, ServerWorld serverWorld, boolean bl) {
-		serverWorld.setBlockState(pos, Blocks.field_10465.getDefaultState());
+		serverWorld.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(pos);
-		structureBlockBlockEntity.setMode(StructureBlockMode.field_12697);
+		structureBlockBlockEntity.setMode(StructureBlockMode.LOAD);
 		structureBlockBlockEntity.setRotation(blockRotation);
 		structureBlockBlockEntity.setIgnoreEntities(false);
 		structureBlockBlockEntity.setStructureName(new Identifier(name));
@@ -248,7 +248,7 @@ public class StructureTestUtil {
 		}
 
 		if (blockState == null) {
-			blockState = Blocks.field_10124.getDefaultState();
+			blockState = Blocks.AIR.getDefaultState();
 		}
 
 		BlockStateArgument blockStateArgument = new BlockStateArgument(blockState, Collections.emptySet(), null);

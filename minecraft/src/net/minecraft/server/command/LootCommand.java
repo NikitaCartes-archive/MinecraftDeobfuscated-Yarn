@@ -90,7 +90,7 @@ public class LootCommand {
 																	commandContext,
 																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																	getHeldItem(commandContext.getSource(), EquipmentSlot.field_6173),
+																	getHeldItem(commandContext.getSource(), EquipmentSlot.MAINHAND),
 																	target
 																)
 														)
@@ -102,7 +102,7 @@ public class LootCommand {
 																	commandContext,
 																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																	getHeldItem(commandContext.getSource(), EquipmentSlot.field_6171),
+																	getHeldItem(commandContext.getSource(), EquipmentSlot.OFFHAND),
 																	target
 																)
 														)
@@ -147,7 +147,7 @@ public class LootCommand {
 													commandContext -> executeMine(
 															commandContext,
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-															getHeldItem(commandContext.getSource(), EquipmentSlot.field_6173),
+															getHeldItem(commandContext.getSource(), EquipmentSlot.MAINHAND),
 															target
 														)
 												)
@@ -158,7 +158,7 @@ public class LootCommand {
 													commandContext -> executeMine(
 															commandContext,
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-															getHeldItem(commandContext.getSource(), EquipmentSlot.field_6171),
+															getHeldItem(commandContext.getSource(), EquipmentSlot.OFFHAND),
 															target
 														)
 												)
@@ -436,11 +436,11 @@ public class LootCommand {
 		BlockState blockState = serverWorld.getBlockState(pos);
 		BlockEntity blockEntity = serverWorld.getBlockEntity(pos);
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
-			.parameter(LootContextParameters.field_24424, Vec3d.ofCenter(pos))
-			.parameter(LootContextParameters.field_1224, blockState)
-			.optionalParameter(LootContextParameters.field_1228, blockEntity)
-			.optionalParameter(LootContextParameters.field_1226, serverCommandSource.getEntity())
-			.parameter(LootContextParameters.field_1229, stack);
+			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+			.parameter(LootContextParameters.BLOCK_STATE, blockState)
+			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity)
+			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
+			.parameter(LootContextParameters.TOOL, stack);
 		List<ItemStack> list = blockState.getDroppedStacks(builder);
 		return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx, blockState.getBlock().getLootTableId()));
 	}
@@ -454,16 +454,16 @@ public class LootCommand {
 			LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld());
 			Entity entity2 = serverCommandSource.getEntity();
 			if (entity2 instanceof PlayerEntity) {
-				builder.parameter(LootContextParameters.field_1233, (PlayerEntity)entity2);
+				builder.parameter(LootContextParameters.LAST_DAMAGE_PLAYER, (PlayerEntity)entity2);
 			}
 
-			builder.parameter(LootContextParameters.field_1231, DamageSource.MAGIC);
-			builder.optionalParameter(LootContextParameters.field_1227, entity2);
-			builder.optionalParameter(LootContextParameters.field_1230, entity2);
-			builder.parameter(LootContextParameters.field_1226, entity);
-			builder.parameter(LootContextParameters.field_24424, serverCommandSource.getPosition());
+			builder.parameter(LootContextParameters.DAMAGE_SOURCE, DamageSource.MAGIC);
+			builder.optionalParameter(LootContextParameters.DIRECT_KILLER_ENTITY, entity2);
+			builder.optionalParameter(LootContextParameters.KILLER_ENTITY, entity2);
+			builder.parameter(LootContextParameters.THIS_ENTITY, entity);
+			builder.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition());
 			LootTable lootTable = serverCommandSource.getMinecraftServer().getLootManager().getTable(identifier);
-			List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.field_1173));
+			List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.ENTITY));
 			return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx, identifier));
 		}
 	}
@@ -471,9 +471,9 @@ public class LootCommand {
 	private static int executeLoot(CommandContext<ServerCommandSource> context, Identifier lootTable, LootCommand.Target constructor) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = context.getSource();
 		LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld())
-			.optionalParameter(LootContextParameters.field_1226, serverCommandSource.getEntity())
-			.parameter(LootContextParameters.field_24424, serverCommandSource.getPosition());
-		return getFeedbackMessageSingle(context, lootTable, builder.build(LootContextTypes.field_1179), constructor);
+			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
+			.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition());
+		return getFeedbackMessageSingle(context, lootTable, builder.build(LootContextTypes.CHEST), constructor);
 	}
 
 	private static int executeFish(
@@ -481,10 +481,10 @@ public class LootCommand {
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = context.getSource();
 		LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld())
-			.parameter(LootContextParameters.field_24424, Vec3d.ofCenter(pos))
-			.parameter(LootContextParameters.field_1229, stack)
-			.optionalParameter(LootContextParameters.field_1226, serverCommandSource.getEntity())
-			.build(LootContextTypes.field_1176);
+			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+			.parameter(LootContextParameters.TOOL, stack)
+			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
+			.build(LootContextTypes.FISHING);
 		return getFeedbackMessageSingle(context, lootTable, lootContext, constructor);
 	}
 

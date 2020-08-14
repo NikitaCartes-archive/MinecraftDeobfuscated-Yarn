@@ -78,7 +78,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	 * 
 	 * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, MapCodec)
 	 */
-	protected <E> DataResult<Pair<Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec) {
+	protected <E> DataResult<Pair<Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean bl) {
 		Optional<MutableRegistry<E>> optional = this.registryManager.getOptional(registryKey);
 		if (!optional.isPresent()) {
 			return DataResult.error("Unknown registry: " + registryKey);
@@ -86,7 +86,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 			MutableRegistry<E> mutableRegistry = (MutableRegistry<E>)optional.get();
 			DataResult<Pair<Identifier, T>> dataResult = Identifier.CODEC.decode(this.delegate, object);
 			if (!dataResult.result().isPresent()) {
-				return codec.decode(this, object).map(pairx -> pairx.mapFirst(objectx -> () -> objectx));
+				return !bl ? DataResult.error("Inline definitions not allowed here") : codec.decode(this, object).map(pairx -> pairx.mapFirst(objectx -> () -> objectx));
 			} else {
 				Pair<Identifier, T> pair = (Pair<Identifier, T>)dataResult.result().get();
 				Identifier identifier = pair.getFirst();
@@ -143,23 +143,21 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 			});
 			valueHolder.values.put(registryKey2, DataResult.success(supplier));
 			DataResult<Pair<E, OptionalInt>> dataResult2 = this.field_26738.method_31155(this.field_26739, registryKey, registryKey2, codec);
-			DataResult<E> dataResult3;
-			if (dataResult2.result().isPresent()) {
-				Pair<E, OptionalInt> pair = (Pair<E, OptionalInt>)dataResult2.result().get();
-				mutableRegistry.method_31062(pair.getSecond(), registryKey2, pair.getFirst(), dataResult2.lifecycle());
-				dataResult3 = dataResult2.map(Pair::getFirst);
-			} else {
-				E object = mutableRegistry.get(registryKey2);
-				if (object != null) {
-					dataResult3 = DataResult.success(object, Lifecycle.stable());
-				} else {
-					dataResult3 = dataResult2.map(Pair::getFirst);
-				}
+			Optional<Pair<E, OptionalInt>> optional = dataResult2.result();
+			if (optional.isPresent()) {
+				Pair<E, OptionalInt> pair = (Pair<E, OptionalInt>)optional.get();
+				mutableRegistry.replace(pair.getSecond(), registryKey2, pair.getFirst(), dataResult2.lifecycle());
 			}
 
-			DataResult<Supplier<E>> dataResult4 = dataResult3.map(objectx -> () -> object);
-			valueHolder.values.put(registryKey2, dataResult4);
-			return dataResult4;
+			DataResult<Supplier<E>> dataResult3;
+			if (!optional.isPresent() && mutableRegistry.get(registryKey2) != null) {
+				dataResult3 = DataResult.success(() -> mutableRegistry.get(registryKey2), Lifecycle.stable());
+			} else {
+				dataResult3 = dataResult2.map(pair -> () -> mutableRegistry.get(registryKey2));
+			}
+
+			valueHolder.values.put(registryKey2, dataResult3);
+			return dataResult3;
 		}
 	}
 
@@ -170,7 +168,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	public <E> DataResult<Registry<E>> method_31152(RegistryKey<? extends Registry<E>> registryKey) {
 		return (DataResult<Registry<E>>)this.registryManager
 			.getOptional(registryKey)
-			.map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.method_31138()))
+			.map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle()))
 			.orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
 	}
 
@@ -282,7 +280,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 				return (Collection<Identifier>)this.field_26741
 					.keySet()
 					.stream()
-					.filter(registryKey2 -> registryKey2.method_31163(registryKey))
+					.filter(registryKey2 -> registryKey2.isOf(registryKey))
 					.map(
 						registryKey2 -> new Identifier(
 								registryKey2.getValue().getNamespace(), registryKey.getValue().getPath() + "/" + registryKey2.getValue().getPath() + ".json"

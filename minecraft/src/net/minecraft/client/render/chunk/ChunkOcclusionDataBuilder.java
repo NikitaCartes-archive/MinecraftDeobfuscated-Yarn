@@ -90,59 +90,59 @@ public class ChunkOcclusionDataBuilder {
 	private void addEdgeFaces(int pos, Set<Direction> openFaces) {
 		int i = pos >> 0 & 15;
 		if (i == 0) {
-			openFaces.add(Direction.field_11039);
+			openFaces.add(Direction.WEST);
 		} else if (i == 15) {
-			openFaces.add(Direction.field_11034);
+			openFaces.add(Direction.EAST);
 		}
 
 		int j = pos >> 8 & 15;
 		if (j == 0) {
-			openFaces.add(Direction.field_11033);
+			openFaces.add(Direction.DOWN);
 		} else if (j == 15) {
-			openFaces.add(Direction.field_11036);
+			openFaces.add(Direction.UP);
 		}
 
 		int k = pos >> 4 & 15;
 		if (k == 0) {
-			openFaces.add(Direction.field_11043);
+			openFaces.add(Direction.NORTH);
 		} else if (k == 15) {
-			openFaces.add(Direction.field_11035);
+			openFaces.add(Direction.SOUTH);
 		}
 	}
 
 	private int offset(int pos, Direction direction) {
 		switch (direction) {
-			case field_11033:
+			case DOWN:
 				if ((pos >> 8 & 15) == 0) {
 					return -1;
 				}
 
 				return pos - STEP_Y;
-			case field_11036:
+			case UP:
 				if ((pos >> 8 & 15) == 15) {
 					return -1;
 				}
 
 				return pos + STEP_Y;
-			case field_11043:
+			case NORTH:
 				if ((pos >> 4 & 15) == 0) {
 					return -1;
 				}
 
 				return pos - STEP_Z;
-			case field_11035:
+			case SOUTH:
 				if ((pos >> 4 & 15) == 15) {
 					return -1;
 				}
 
 				return pos + STEP_Z;
-			case field_11039:
+			case WEST:
 				if ((pos >> 0 & 15) == 0) {
 					return -1;
 				}
 
 				return pos - STEP_X;
-			case field_11034:
+			case EAST:
 				if ((pos >> 0 & 15) == 15) {
 					return -1;
 				}

@@ -31,13 +31,13 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		this.bodyModel = bodyModel;
 	}
 
-	public void method_17157(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
-		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.field_6174, i, this.getArmor(EquipmentSlot.field_6174));
-		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.field_6172, i, this.getArmor(EquipmentSlot.field_6172));
-		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.field_6166, i, this.getArmor(EquipmentSlot.field_6166));
-		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.field_6169, i, this.getArmor(EquipmentSlot.field_6169));
+		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.CHEST, i, this.getArmor(EquipmentSlot.CHEST));
+		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.LEGS, i, this.getArmor(EquipmentSlot.LEGS));
+		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.FEET, i, this.getArmor(EquipmentSlot.FEET));
+		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.HEAD, i, this.getArmor(EquipmentSlot.HEAD));
 	}
 
 	private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T livingEntity, EquipmentSlot equipmentSlot, int i, A bipedEntityModel) {
@@ -66,21 +66,21 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 	protected void setVisible(A bipedModel, EquipmentSlot slot) {
 		bipedModel.setVisible(false);
 		switch (slot) {
-			case field_6169:
+			case HEAD:
 				bipedModel.head.visible = true;
 				bipedModel.helmet.visible = true;
 				break;
-			case field_6174:
+			case CHEST:
 				bipedModel.torso.visible = true;
 				bipedModel.rightArm.visible = true;
 				bipedModel.leftArm.visible = true;
 				break;
-			case field_6172:
+			case LEGS:
 				bipedModel.torso.visible = true;
 				bipedModel.rightLeg.visible = true;
 				bipedModel.leftLeg.visible = true;
 				break;
-			case field_6166:
+			case FEET:
 				bipedModel.rightLeg.visible = true;
 				bipedModel.leftLeg.visible = true;
 		}
@@ -110,7 +110,7 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 	}
 
 	private boolean usesSecondLayer(EquipmentSlot slot) {
-		return slot == EquipmentSlot.field_6172;
+		return slot == EquipmentSlot.LEGS;
 	}
 
 	private Identifier getArmorTexture(ArmorItem armorItem, boolean bl, @Nullable String string) {

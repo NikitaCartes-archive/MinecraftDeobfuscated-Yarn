@@ -27,7 +27,7 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected FoliagePlacerType<?> getType() {
-		return FoliagePlacerType.field_21300;
+		return FoliagePlacerType.SPRUCE_FOLIAGE_PLACER;
 	}
 
 	@Override

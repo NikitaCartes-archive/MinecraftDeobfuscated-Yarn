@@ -21,7 +21,10 @@ public class GoToRememberedPositionTask<T> extends Task<PathAwareEntity> {
 	public GoToRememberedPositionTask(MemoryModuleType<T> memoryType, float speed, int range, boolean requiresWalkTarget, Function<T, Vec3d> posRetriever) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18445, requiresWalkTarget ? MemoryModuleState.field_18458 : MemoryModuleState.field_18457, memoryType, MemoryModuleState.field_18456
+				MemoryModuleType.WALK_TARGET,
+				requiresWalkTarget ? MemoryModuleState.REGISTERED : MemoryModuleState.VALUE_ABSENT,
+				memoryType,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.entityMemory = memoryType;
@@ -40,7 +43,7 @@ public class GoToRememberedPositionTask<T> extends Task<PathAwareEntity> {
 		return new GoToRememberedPositionTask<>(memoryType, speed, range, requiresWalkTarget, Entity::getPos);
 	}
 
-	protected boolean method_19002(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
 		return this.isWalkTargetPresentAndFar(pathAwareEntity) ? false : pathAwareEntity.getPos().isInRange(this.getPos(pathAwareEntity), (double)this.range);
 	}
 
@@ -49,10 +52,10 @@ public class GoToRememberedPositionTask<T> extends Task<PathAwareEntity> {
 	}
 
 	private boolean isWalkTargetPresentAndFar(PathAwareEntity pathAwareEntity) {
-		if (!pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.field_18445)) {
+		if (!pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
 			return false;
 		} else {
-			WalkTarget walkTarget = (WalkTarget)pathAwareEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18445).get();
+			WalkTarget walkTarget = (WalkTarget)pathAwareEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
 			if (walkTarget.getSpeed() != this.speed) {
 				return false;
 			} else {
@@ -63,7 +66,7 @@ public class GoToRememberedPositionTask<T> extends Task<PathAwareEntity> {
 		}
 	}
 
-	protected void method_19003(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		setWalkTarget(pathAwareEntity, this.getPos(pathAwareEntity), this.speed);
 	}
 
@@ -71,7 +74,7 @@ public class GoToRememberedPositionTask<T> extends Task<PathAwareEntity> {
 		for (int i = 0; i < 10; i++) {
 			Vec3d vec3d = TargetFinder.findGroundTargetAwayFrom(entity, 16, 7, pos);
 			if (vec3d != null) {
-				entity.getBrain().remember(MemoryModuleType.field_18445, new WalkTarget(vec3d, speed, 0));
+				entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, speed, 0));
 				return;
 			}
 		}

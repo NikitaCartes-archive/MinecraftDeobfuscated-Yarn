@@ -103,7 +103,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.templateList = new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList(this.templateList.getValues());
 		this.trailerButton = this.addButton(
 			new ButtonWidget(this.width / 2 - 206, this.height - 32, 100, 20, new TranslatableText("mco.template.button.trailer"), buttonWidgetx -> this.onTrailer())
@@ -290,7 +290,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 				if (this.warningURL != null) {
 					if (this.hoverWarning) {
 						k = 7107012;
-						text = text.shallowCopy().formatted(Formatting.field_1055);
+						text = text.shallowCopy().formatted(Formatting.STRIKETHROUGH);
 					} else {
 						k = 3368635;
 					}
@@ -352,7 +352,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		}
 
 		public void addEntry(WorldTemplate template) {
-			this.method_25491(RealmsSelectWorldTemplateScreen.this.new WorldTemplateObjectSelectionListEntry(template));
+			this.addEntry(RealmsSelectWorldTemplateScreen.this.new WorldTemplateObjectSelectionListEntry(template));
 		}
 
 		@Override
@@ -397,7 +397,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			}
 		}
 
-		public void method_25249(@Nullable RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionListEntry worldTemplateObjectSelectionListEntry) {
+		public void setSelected(@Nullable RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionListEntry worldTemplateObjectSelectionListEntry) {
 			super.setSelected(worldTemplateObjectSelectionListEntry);
 			RealmsSelectWorldTemplateScreen.this.selectedTemplate = this.children().indexOf(worldTemplateObjectSelectionListEntry);
 			RealmsSelectWorldTemplateScreen.this.updateButtonStates();

@@ -38,14 +38,14 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.keepPlayerAttributes = bl3;
 	}
 
-	public void method_11782(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerRespawn(this);
 	}
 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		this.field_25322 = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
-		this.dimension = RegistryKey.of(Registry.field_25298, buf.readIdentifier());
+		this.dimension = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.gameMode = GameMode.byId(buf.readUnsignedByte());
 		this.field_25714 = GameMode.byId(buf.readUnsignedByte());

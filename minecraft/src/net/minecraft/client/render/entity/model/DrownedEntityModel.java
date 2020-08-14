@@ -26,29 +26,29 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 		super(f, 0.0F, 64, bl ? 32 : 64);
 	}
 
-	public void method_17077(T zombieEntity, float f, float g, float h) {
-		this.rightArmPose = BipedEntityModel.ArmPose.field_3409;
-		this.leftArmPose = BipedEntityModel.ArmPose.field_3409;
-		ItemStack itemStack = zombieEntity.getStackInHand(Hand.field_5808);
-		if (itemStack.getItem() == Items.field_8547 && zombieEntity.isAttacking()) {
-			if (zombieEntity.getMainArm() == Arm.field_6183) {
-				this.rightArmPose = BipedEntityModel.ArmPose.field_3407;
+	public void animateModel(T zombieEntity, float f, float g, float h) {
+		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
+		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
+		ItemStack itemStack = zombieEntity.getStackInHand(Hand.MAIN_HAND);
+		if (itemStack.getItem() == Items.TRIDENT && zombieEntity.isAttacking()) {
+			if (zombieEntity.getMainArm() == Arm.RIGHT) {
+				this.rightArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
 			} else {
-				this.leftArmPose = BipedEntityModel.ArmPose.field_3407;
+				this.leftArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
 			}
 		}
 
-		super.method_17086(zombieEntity, f, g, h);
+		super.animateModel(zombieEntity, f, g, h);
 	}
 
-	public void method_17134(T zombieEntity, float f, float g, float h, float i, float j) {
-		super.method_17791(zombieEntity, f, g, h, i, j);
-		if (this.leftArmPose == BipedEntityModel.ArmPose.field_3407) {
+	public void setAngles(T zombieEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(zombieEntity, f, g, h, i, j);
+		if (this.leftArmPose == BipedEntityModel.ArmPose.THROW_SPEAR) {
 			this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
 			this.leftArm.yaw = 0.0F;
 		}
 
-		if (this.rightArmPose == BipedEntityModel.ArmPose.field_3407) {
+		if (this.rightArmPose == BipedEntityModel.ArmPose.THROW_SPEAR) {
 			this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) Math.PI;
 			this.rightArm.yaw = 0.0F;
 		}

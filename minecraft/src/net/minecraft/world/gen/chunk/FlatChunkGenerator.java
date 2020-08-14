@@ -16,20 +16,20 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
 
 public class FlatChunkGenerator extends ChunkGenerator {
-	public static final Codec<FlatChunkGenerator> field_24769 = FlatChunkGeneratorConfig.CODEC
+	public static final Codec<FlatChunkGenerator> CODEC = FlatChunkGeneratorConfig.CODEC
 		.fieldOf("settings")
-		.<FlatChunkGenerator>xmap(FlatChunkGenerator::new, FlatChunkGenerator::method_28545)
+		.<FlatChunkGenerator>xmap(FlatChunkGenerator::new, FlatChunkGenerator::getConfig)
 		.codec();
-	private final FlatChunkGeneratorConfig generatorConfig;
+	private final FlatChunkGeneratorConfig config;
 
 	public FlatChunkGenerator(FlatChunkGeneratorConfig config) {
-		super(new FixedBiomeSource(config.method_28917()), new FixedBiomeSource(config.getBiome()), config.getConfig(), 0L);
-		this.generatorConfig = config;
+		super(new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()), config.getStructuresConfig(), 0L);
+		this.config = config;
 	}
 
 	@Override
 	protected Codec<? extends ChunkGenerator> getCodec() {
-		return field_24769;
+		return CODEC;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -38,8 +38,8 @@ public class FlatChunkGenerator extends ChunkGenerator {
 		return this;
 	}
 
-	public FlatChunkGeneratorConfig method_28545() {
-		return this.generatorConfig;
+	public FlatChunkGeneratorConfig getConfig() {
+		return this.config;
 	}
 
 	@Override
@@ -48,11 +48,11 @@ public class FlatChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public int getSpawnHeight() {
-		BlockState[] blockStates = this.generatorConfig.getLayerBlocks();
+		BlockState[] blockStates = this.config.getLayerBlocks();
 
 		for (int i = 0; i < blockStates.length; i++) {
-			BlockState blockState = blockStates[i] == null ? Blocks.field_10124.getDefaultState() : blockStates[i];
-			if (!Heightmap.Type.field_13197.getBlockPredicate().test(blockState)) {
+			BlockState blockState = blockStates[i] == null ? Blocks.AIR.getDefaultState() : blockStates[i];
+			if (!Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
 				return i - 1;
 			}
 		}
@@ -62,10 +62,10 @@ public class FlatChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public void populateNoise(WorldAccess world, StructureAccessor accessor, Chunk chunk) {
-		BlockState[] blockStates = this.generatorConfig.getLayerBlocks();
+		BlockState[] blockStates = this.config.getLayerBlocks();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.field_13195);
-		Heightmap heightmap2 = chunk.getHeightmap(Heightmap.Type.field_13194);
+		Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
+		Heightmap heightmap2 = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
 
 		for (int i = 0; i < blockStates.length; i++) {
 			BlockState blockState = blockStates[i];
@@ -83,7 +83,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public int getHeight(int x, int z, Heightmap.Type heightmapType) {
-		BlockState[] blockStates = this.generatorConfig.getLayerBlocks();
+		BlockState[] blockStates = this.config.getLayerBlocks();
 
 		for (int i = blockStates.length - 1; i >= 0; i--) {
 			BlockState blockState = blockStates[i];
@@ -98,9 +98,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	@Override
 	public BlockView getColumnSample(int x, int z) {
 		return new VerticalBlockSample(
-			(BlockState[])Arrays.stream(this.generatorConfig.getLayerBlocks())
-				.map(state -> state == null ? Blocks.field_10124.getDefaultState() : state)
-				.toArray(BlockState[]::new)
+			(BlockState[])Arrays.stream(this.config.getLayerBlocks()).map(state -> state == null ? Blocks.AIR.getDefaultState() : state).toArray(BlockState[]::new)
 		);
 	}
 }

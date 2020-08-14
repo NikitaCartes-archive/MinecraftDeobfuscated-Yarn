@@ -77,7 +77,7 @@ public class DeathScreen extends Screen {
 
 		this.field_26537 = new TranslatableText("deathScreen.score")
 			.append(": ")
-			.append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.field_1054));
+			.append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class DeathScreen extends Screen {
 			int i = this.client.textRenderer.getWidth(this.message);
 			int j = this.width / 2 - i / 2;
 			int k = this.width / 2 + i / 2;
-			return mouseX >= j && mouseX <= k ? this.client.textRenderer.getTextHandler().trimToWidth(this.message, mouseX - j) : null;
+			return mouseX >= j && mouseX <= k ? this.client.textRenderer.getTextHandler().getStyleAt(this.message, mouseX - j) : null;
 		}
 	}
 
@@ -139,7 +139,7 @@ public class DeathScreen extends Screen {
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.message != null && mouseY > 85.0 && mouseY < (double)(85 + 9)) {
 			Style style = this.getTextComponentUnderMouse((int)mouseX);
-			if (style != null && style.getClickEvent() != null && style.getClickEvent().getAction() == ClickEvent.Action.field_11749) {
+			if (style != null && style.getClickEvent() != null && style.getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
 				this.handleTextClick(style);
 				return false;
 			}

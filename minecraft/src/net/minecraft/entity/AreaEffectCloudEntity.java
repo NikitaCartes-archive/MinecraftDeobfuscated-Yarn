@@ -38,7 +38,7 @@ public class AreaEffectCloudEntity extends Entity {
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> WAITING = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<ParticleEffect> PARTICLE_ID = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.PARTICLE);
-	private Potion potion = Potions.field_8984;
+	private Potion potion = Potions.EMPTY;
 	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
 	private final Map<Entity, Integer> affectedEntities = Maps.<Entity, Integer>newHashMap();
 	private int duration = 600;
@@ -58,7 +58,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	public AreaEffectCloudEntity(World world, double x, double y, double z) {
-		this(EntityType.field_6083, world);
+		this(EntityType.AREA_EFFECT_CLOUD, world);
 		this.updatePosition(x, y, z);
 	}
 
@@ -67,7 +67,7 @@ public class AreaEffectCloudEntity extends Entity {
 		this.getDataTracker().startTracking(COLOR, 0);
 		this.getDataTracker().startTracking(RADIUS, 0.5F);
 		this.getDataTracker().startTracking(WAITING, false);
-		this.getDataTracker().startTracking(PARTICLE_ID, ParticleTypes.field_11226);
+		this.getDataTracker().startTracking(PARTICLE_ID, ParticleTypes.ENTITY_EFFECT);
 	}
 
 	public void setRadius(float radius) {
@@ -97,7 +97,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	private void updateColor() {
-		if (this.potion == Potions.field_8984 && this.effects.isEmpty()) {
+		if (this.potion == Potions.EMPTY && this.effects.isEmpty()) {
 			this.getDataTracker().set(COLOR, 0);
 		} else {
 			this.getDataTracker().set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
@@ -158,7 +158,7 @@ public class AreaEffectCloudEntity extends Entity {
 						float h = MathHelper.sqrt(this.random.nextFloat()) * 0.2F;
 						float j = MathHelper.cos(g) * h;
 						float k = MathHelper.sin(g) * h;
-						if (particleEffect.getType() == ParticleTypes.field_11226) {
+						if (particleEffect.getType() == ParticleTypes.ENTITY_EFFECT) {
 							int l = this.random.nextBoolean() ? 16777215 : this.getColor();
 							int m = l >> 16 & 0xFF;
 							int n = l >> 8 & 0xFF;
@@ -186,7 +186,7 @@ public class AreaEffectCloudEntity extends Entity {
 					float j = MathHelper.sqrt(this.random.nextFloat()) * f;
 					float k = MathHelper.cos(h) * j;
 					float r = MathHelper.sin(h) * j;
-					if (particleEffect.getType() == ParticleTypes.field_11226) {
+					if (particleEffect.getType() == ParticleTypes.ENTITY_EFFECT) {
 						int m = this.getColor();
 						int n = m >> 16 & 0xFF;
 						int o = m >> 8 & 0xFF;
@@ -403,7 +403,7 @@ public class AreaEffectCloudEntity extends Entity {
 			tag.putInt("Color", this.getColor());
 		}
 
-		if (this.potion != Potions.field_8984 && this.potion != null) {
+		if (this.potion != Potions.EMPTY && this.potion != null) {
 			tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
 		}
 
@@ -429,7 +429,7 @@ public class AreaEffectCloudEntity extends Entity {
 
 	@Override
 	public PistonBehavior getPistonBehavior() {
-		return PistonBehavior.field_15975;
+		return PistonBehavior.IGNORE;
 	}
 
 	@Override

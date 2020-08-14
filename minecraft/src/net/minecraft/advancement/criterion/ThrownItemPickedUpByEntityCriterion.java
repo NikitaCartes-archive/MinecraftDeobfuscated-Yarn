@@ -19,7 +19,7 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 		return ID;
 	}
 
-	protected ThrownItemPickedUpByEntityCriterion.Conditions method_27974(
+	protected ThrownItemPickedUpByEntityCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));

@@ -30,7 +30,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 		EMPTY_BOOTS_SLOT_TEXTURE, EMPTY_LEGGINGS_SLOT_TEXTURE, EMPTY_CHESTPLATE_SLOT_TEXTURE, EMPTY_HELMET_SLOT_TEXTURE
 	};
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
-		EquipmentSlot.field_6169, EquipmentSlot.field_6174, EquipmentSlot.field_6172, EquipmentSlot.field_6166
+		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
 	};
 	private final CraftingInventory craftingInput = new CraftingInventory(this, 2, 2);
 	private final CraftingResultInventory craftingResult = new CraftingResultInventory();
@@ -53,7 +53,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 			final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
 			this.addSlot(new Slot(inventory, 39 - i, 8, 8 + i * 18) {
 				@Override
-				public int getMaxStackAmount() {
+				public int getMaxItemCount() {
 					return 1;
 				}
 
@@ -152,12 +152,12 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (equipmentSlot.getType() == EquipmentSlot.Type.field_6178 && !((Slot)this.slots.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
+			} else if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !((Slot)this.slots.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
 				int i = 8 - equipmentSlot.getEntitySlotId();
 				if (!this.insertItem(itemStack2, i, i + 1, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (equipmentSlot == EquipmentSlot.field_6171 && !((Slot)this.slots.get(45)).hasStack()) {
+			} else if (equipmentSlot == EquipmentSlot.OFFHAND && !((Slot)this.slots.get(45)).hasStack()) {
 				if (!this.insertItem(itemStack2, 45, 46, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -225,6 +225,6 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 	@Environment(EnvType.CLIENT)
 	@Override
 	public RecipeBookCategory getCategory() {
-		return RecipeBookCategory.field_25763;
+		return RecipeBookCategory.CRAFTING;
 	}
 }

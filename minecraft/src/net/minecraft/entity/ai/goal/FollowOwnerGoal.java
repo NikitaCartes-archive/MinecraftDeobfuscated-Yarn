@@ -33,7 +33,7 @@ public class FollowOwnerGoal extends Goal {
 		this.minDistance = minDistance;
 		this.maxDistance = maxDistance;
 		this.leavesAllowed = leavesAllowed;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		if (!(tameable.getNavigation() instanceof MobNavigation) && !(tameable.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
 		}
@@ -68,15 +68,15 @@ public class FollowOwnerGoal extends Goal {
 	@Override
 	public void start() {
 		this.updateCountdownTicks = 0;
-		this.oldWaterPathfindingPenalty = this.tameable.getPathfindingPenalty(PathNodeType.field_18);
-		this.tameable.setPathfindingPenalty(PathNodeType.field_18, 0.0F);
+		this.oldWaterPathfindingPenalty = this.tameable.getPathfindingPenalty(PathNodeType.WATER);
+		this.tameable.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 	}
 
 	@Override
 	public void stop() {
 		this.owner = null;
 		this.navigation.stop();
-		this.tameable.setPathfindingPenalty(PathNodeType.field_18, this.oldWaterPathfindingPenalty);
+		this.tameable.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterPathfindingPenalty);
 	}
 
 	@Override
@@ -122,10 +122,10 @@ public class FollowOwnerGoal extends Goal {
 
 	private boolean canTeleportTo(BlockPos pos) {
 		PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(this.world, pos.mutableCopy());
-		if (pathNodeType != PathNodeType.field_12) {
+		if (pathNodeType != PathNodeType.WALKABLE) {
 			return false;
 		} else {
-			BlockState blockState = this.world.getBlockState(pos.method_10074());
+			BlockState blockState = this.world.getBlockState(pos.down());
 			if (!this.leavesAllowed && blockState.getBlock() instanceof LeavesBlock) {
 				return false;
 			} else {

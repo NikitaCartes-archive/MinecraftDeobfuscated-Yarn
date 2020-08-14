@@ -45,7 +45,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isOf(Blocks.field_10362);
+		return floor.isOf(Blocks.FARMLAND);
 	}
 
 	public IntProperty getAgeProperty() {
@@ -102,13 +102,13 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	protected static float getAvailableMoisture(Block block, BlockView world, BlockPos pos) {
 		float f = 1.0F;
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				float g = 0.0F;
 				BlockState blockState = world.getBlockState(blockPos.add(i, 0, j));
-				if (blockState.isOf(Blocks.field_10362)) {
+				if (blockState.isOf(Blocks.FARMLAND)) {
 					g = 1.0F;
 					if ((Integer)blockState.get(FarmlandBlock.MOISTURE) > 0) {
 						g = 3.0F;
@@ -160,7 +160,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Environment(EnvType.CLIENT)
 	protected ItemConvertible getSeedsItem() {
-		return Items.field_8317;
+		return Items.WHEAT_SEEDS;
 	}
 
 	@Environment(EnvType.CLIENT)

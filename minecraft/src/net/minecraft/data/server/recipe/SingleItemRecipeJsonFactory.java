@@ -31,11 +31,11 @@ public class SingleItemRecipeJsonFactory {
 	}
 
 	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output) {
-		return new SingleItemRecipeJsonFactory(RecipeSerializer.field_17640, input, output, 1);
+		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, 1);
 	}
 
 	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output, int outputCount) {
-		return new SingleItemRecipeJsonFactory(RecipeSerializer.field_17640, input, output, outputCount);
+		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, outputCount);
 	}
 
 	public SingleItemRecipeJsonFactory create(String criterionName, CriterionConditions conditions) {

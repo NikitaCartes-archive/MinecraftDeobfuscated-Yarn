@@ -21,29 +21,29 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 	);
 	public static final BlackstoneReplacementStructureProcessor INSTANCE = new BlackstoneReplacementStructureProcessor();
 	private final Map<Block, Block> replacementMap = Util.make(Maps.<Block, Block>newHashMap(), hashMap -> {
-		hashMap.put(Blocks.field_10445, Blocks.field_23869);
-		hashMap.put(Blocks.field_9989, Blocks.field_23869);
-		hashMap.put(Blocks.field_10340, Blocks.field_23873);
-		hashMap.put(Blocks.field_10056, Blocks.field_23874);
-		hashMap.put(Blocks.field_10065, Blocks.field_23874);
-		hashMap.put(Blocks.field_10596, Blocks.field_23870);
-		hashMap.put(Blocks.field_10207, Blocks.field_23870);
-		hashMap.put(Blocks.field_10440, Blocks.field_23861);
-		hashMap.put(Blocks.field_10392, Blocks.field_23878);
-		hashMap.put(Blocks.field_10173, Blocks.field_23878);
-		hashMap.put(Blocks.field_10351, Blocks.field_23872);
-		hashMap.put(Blocks.field_10405, Blocks.field_23872);
-		hashMap.put(Blocks.field_10136, Blocks.field_23862);
-		hashMap.put(Blocks.field_10454, Blocks.field_23862);
-		hashMap.put(Blocks.field_10131, Blocks.field_23877);
-		hashMap.put(Blocks.field_10024, Blocks.field_23877);
-		hashMap.put(Blocks.field_10252, Blocks.field_23879);
-		hashMap.put(Blocks.field_10059, Blocks.field_23879);
-		hashMap.put(Blocks.field_10625, Blocks.field_23871);
-		hashMap.put(Blocks.field_9990, Blocks.field_23871);
-		hashMap.put(Blocks.field_10552, Blocks.field_23876);
-		hashMap.put(Blocks.field_10416, Blocks.field_23875);
-		hashMap.put(Blocks.field_10576, Blocks.field_23985);
+		hashMap.put(Blocks.COBBLESTONE, Blocks.BLACKSTONE);
+		hashMap.put(Blocks.MOSSY_COBBLESTONE, Blocks.BLACKSTONE);
+		hashMap.put(Blocks.STONE, Blocks.POLISHED_BLACKSTONE);
+		hashMap.put(Blocks.STONE_BRICKS, Blocks.POLISHED_BLACKSTONE_BRICKS);
+		hashMap.put(Blocks.MOSSY_STONE_BRICKS, Blocks.POLISHED_BLACKSTONE_BRICKS);
+		hashMap.put(Blocks.COBBLESTONE_STAIRS, Blocks.BLACKSTONE_STAIRS);
+		hashMap.put(Blocks.MOSSY_COBBLESTONE_STAIRS, Blocks.BLACKSTONE_STAIRS);
+		hashMap.put(Blocks.STONE_STAIRS, Blocks.POLISHED_BLACKSTONE_STAIRS);
+		hashMap.put(Blocks.STONE_BRICK_STAIRS, Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS);
+		hashMap.put(Blocks.MOSSY_STONE_BRICK_STAIRS, Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS);
+		hashMap.put(Blocks.COBBLESTONE_SLAB, Blocks.BLACKSTONE_SLAB);
+		hashMap.put(Blocks.MOSSY_COBBLESTONE_SLAB, Blocks.BLACKSTONE_SLAB);
+		hashMap.put(Blocks.SMOOTH_STONE_SLAB, Blocks.POLISHED_BLACKSTONE_SLAB);
+		hashMap.put(Blocks.STONE_SLAB, Blocks.POLISHED_BLACKSTONE_SLAB);
+		hashMap.put(Blocks.STONE_BRICK_SLAB, Blocks.POLISHED_BLACKSTONE_BRICK_SLAB);
+		hashMap.put(Blocks.MOSSY_STONE_BRICK_SLAB, Blocks.POLISHED_BLACKSTONE_BRICK_SLAB);
+		hashMap.put(Blocks.STONE_BRICK_WALL, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+		hashMap.put(Blocks.MOSSY_STONE_BRICK_WALL, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+		hashMap.put(Blocks.COBBLESTONE_WALL, Blocks.BLACKSTONE_WALL);
+		hashMap.put(Blocks.MOSSY_COBBLESTONE_WALL, Blocks.BLACKSTONE_WALL);
+		hashMap.put(Blocks.CHISELED_STONE_BRICKS, Blocks.CHISELED_POLISHED_BLACKSTONE);
+		hashMap.put(Blocks.CRACKED_STONE_BRICKS, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS);
+		hashMap.put(Blocks.IRON_BARS, Blocks.CHAIN);
 	});
 
 	private BlackstoneReplacementStructureProcessor() {
@@ -82,6 +82,6 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 
 	@Override
 	protected StructureProcessorType<?> getType() {
-		return StructureProcessorType.field_24045;
+		return StructureProcessorType.BLACKSTONE_REPLACE;
 	}
 }

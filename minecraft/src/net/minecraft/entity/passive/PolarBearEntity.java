@@ -50,7 +50,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class PolarBearEntity extends AnimalEntity implements Angerable {
 	private static final TrackedData<Boolean> WARNING = DataTracker.registerData(PolarBearEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -67,7 +67,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 	@Override
 	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.field_6042.create(serverWorld);
+		return EntityType.POLAR_BEAR.create(serverWorld);
 	}
 
 	@Override
@@ -94,17 +94,17 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 	public static DefaultAttributeContainer.Builder createPolarBearAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.field_23716, 30.0)
-			.add(EntityAttributes.field_23717, 20.0)
-			.add(EntityAttributes.field_23719, 0.25)
-			.add(EntityAttributes.field_23721, 6.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
 	}
 
 	public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
-		return !Objects.equals(optional, Optional.of(Biomes.field_9435)) && !Objects.equals(optional, Optional.of(Biomes.field_9418))
+		return !Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_OCEAN)) && !Objects.equals(optional, Optional.of(BiomeKeys.DEEP_FROZEN_OCEAN))
 			? isValidNaturalSpawn(type, world, spawnReason, pos, random)
-			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.method_10074()).isOf(Blocks.field_10295);
+			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.down()).isOf(Blocks.ICE);
 	}
 
 	@Override
@@ -146,27 +146,27 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isBaby() ? SoundEvents.field_14605 : SoundEvents.field_15078;
+		return this.isBaby() ? SoundEvents.ENTITY_POLAR_BEAR_AMBIENT_BABY : SoundEvents.ENTITY_POLAR_BEAR_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15107;
+		return SoundEvents.ENTITY_POLAR_BEAR_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15209;
+		return SoundEvents.ENTITY_POLAR_BEAR_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_15036, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_POLAR_BEAR_STEP, 0.15F, 1.0F);
 	}
 
 	protected void playWarningSound() {
 		if (this.warningSoundCooldown <= 0) {
-			this.playSound(SoundEvents.field_14937, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_POLAR_BEAR_WARNING, 1.0F, this.getSoundPitch());
 			this.warningSoundCooldown = 40;
 		}
 	}
@@ -215,7 +215,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.field_23721)));
+		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.dealDamage(this, target);
 		}

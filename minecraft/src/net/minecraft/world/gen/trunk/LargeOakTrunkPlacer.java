@@ -26,7 +26,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	protected TrunkPlacerType<?> getType() {
-		return TrunkPlacerType.field_24174;
+		return TrunkPlacerType.FANCY_TRUNK_PLACER;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 		int j = trunkHeight + 2;
 		int k = MathHelper.floor((double)j * 0.618);
 		if (!treeFeatureConfig.skipFluidCheck) {
-			method_27400(world, pos.method_10074());
+			method_27400(world, pos.down());
 		}
 
 		double d = 1.0;
@@ -119,15 +119,15 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	}
 
 	private Direction.Axis getLogAxis(BlockPos branchStart, BlockPos branchEnd) {
-		Direction.Axis axis = Direction.Axis.field_11052;
+		Direction.Axis axis = Direction.Axis.Y;
 		int i = Math.abs(branchEnd.getX() - branchStart.getX());
 		int j = Math.abs(branchEnd.getZ() - branchStart.getZ());
 		int k = Math.max(i, j);
 		if (k > 0) {
 			if (i == k) {
-				axis = Direction.Axis.field_11048;
+				axis = Direction.Axis.X;
 			} else {
-				axis = Direction.Axis.field_11051;
+				axis = Direction.Axis.Z;
 			}
 		}
 

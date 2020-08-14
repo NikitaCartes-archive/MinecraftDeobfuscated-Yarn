@@ -43,7 +43,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	private int field_26705;
 
 	public PistonBlockEntity() {
-		super(BlockEntityType.field_11897);
+		super(BlockEntityType.PISTON);
 	}
 
 	public PistonBlockEntity(BlockState pushedBlock, Direction facing, boolean extending, boolean source) {
@@ -100,10 +100,10 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 	private BlockState getHeadBlockState() {
 		return !this.isExtending() && this.isSource() && this.pushedBlock.getBlock() instanceof PistonBlock
-			? Blocks.field_10379
+			? Blocks.PISTON_HEAD
 				.getDefaultState()
 				.with(PistonHeadBlock.SHORT, Boolean.valueOf(this.progress > 0.25F))
-				.with(PistonHeadBlock.TYPE, this.pushedBlock.isOf(Blocks.field_10615) ? PistonType.field_12634 : PistonType.field_12637)
+				.with(PistonHeadBlock.TYPE, this.pushedBlock.isOf(Blocks.STICKY_PISTON) ? PistonType.STICKY : PistonType.DEFAULT)
 				.with(PistonHeadBlock.FACING, this.pushedBlock.get(PistonBlock.FACING))
 			: this.pushedBlock;
 	}
@@ -117,7 +117,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			List<Entity> list = this.world.getOtherEntities(null, Boxes.stretch(box, direction, d).union(box));
 			if (!list.isEmpty()) {
 				List<Box> list2 = voxelShape.getBoundingBoxes();
-				boolean bl = this.pushedBlock.isOf(Blocks.field_10030);
+				boolean bl = this.pushedBlock.isOf(Blocks.SLIME_BLOCK);
 				Iterator var10 = list.iterator();
 
 				while (true) {
@@ -128,7 +128,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 						}
 
 						entity = (Entity)var10.next();
-						if (entity.getPistonBehavior() != PistonBehavior.field_15975) {
+						if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
 							if (!bl) {
 								break;
 							}
@@ -139,13 +139,13 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 								double f = vec3d.y;
 								double g = vec3d.z;
 								switch (direction.getAxis()) {
-									case field_11048:
+									case X:
 										e = (double)direction.getOffsetX();
 										break;
-									case field_11052:
+									case Y:
 										f = (double)direction.getOffsetY();
 										break;
-									case field_11051:
+									case Z:
 										g = (double)direction.getOffsetZ();
 								}
 
@@ -182,7 +182,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 	private static void method_23672(Direction direction, Entity entity, double d, Direction direction2) {
 		field_12205.set(direction);
-		entity.move(MovementType.field_6310, new Vec3d(d * (double)direction2.getOffsetX(), d * (double)direction2.getOffsetY(), d * (double)direction2.getOffsetZ()));
+		entity.move(MovementType.PISTON, new Vec3d(d * (double)direction2.getOffsetX(), d * (double)direction2.getOffsetY(), d * (double)direction2.getOffsetZ()));
 		field_12205.set(null);
 	}
 
@@ -190,7 +190,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		if (this.isPushingHoneyBlock()) {
 			Direction direction = this.getMovementDirection();
 			if (direction.getAxis().isHorizontal()) {
-				double d = this.pushedBlock.getCollisionShape(this.world, this.pos).getMax(Direction.Axis.field_11052);
+				double d = this.pushedBlock.getCollisionShape(this.world, this.pos).getMax(Direction.Axis.Y);
 				Box box = this.offsetHeadBox(new Box(0.0, d, 0.0, 1.0, 1.5000000999999998, 1.0));
 				double e = (double)(f - this.progress);
 
@@ -202,7 +202,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	private static boolean method_23671(Box box, Entity entity) {
-		return entity.getPistonBehavior() == PistonBehavior.field_15974
+		return entity.getPistonBehavior() == PistonBehavior.NORMAL
 			&& entity.isOnGround()
 			&& entity.getX() >= box.minX
 			&& entity.getX() <= box.maxX
@@ -211,7 +211,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	private boolean isPushingHoneyBlock() {
-		return this.pushedBlock.isOf(Blocks.field_21211);
+		return this.pushedBlock.isOf(Blocks.HONEY_BLOCK);
 	}
 
 	public Direction getMovementDirection() {
@@ -220,18 +220,18 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 	private static double getIntersectionSize(Box box, Direction direction, Box box2) {
 		switch (direction) {
-			case field_11034:
+			case EAST:
 				return box.maxX - box2.minX;
-			case field_11039:
+			case WEST:
 				return box2.maxX - box.minX;
-			case field_11036:
+			case UP:
 			default:
 				return box.maxY - box2.minY;
-			case field_11033:
+			case DOWN:
 				return box2.maxY - box.minY;
-			case field_11035:
+			case SOUTH:
 				return box.maxZ - box2.minZ;
-			case field_11043:
+			case NORTH:
 				return box2.maxZ - box.minZ;
 		}
 	}
@@ -264,15 +264,15 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	public void finish() {
-		if (this.lastProgress < 1.0F && this.world != null) {
+		if (this.world != null && (this.lastProgress < 1.0F || this.world.isClient)) {
 			this.progress = 1.0F;
 			this.lastProgress = this.progress;
 			this.world.removeBlockEntity(this.pos);
 			this.markRemoved();
-			if (this.world.getBlockState(this.pos).isOf(Blocks.field_10008)) {
+			if (this.world.getBlockState(this.pos).isOf(Blocks.MOVING_PISTON)) {
 				BlockState blockState;
 				if (this.source) {
-					blockState = Blocks.field_10124.getDefaultState();
+					blockState = Blocks.AIR.getDefaultState();
 				} else {
 					blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
 				}
@@ -293,7 +293,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			} else {
 				this.world.removeBlockEntity(this.pos);
 				this.markRemoved();
-				if (this.pushedBlock != null && this.world.getBlockState(this.pos).isOf(Blocks.field_10008)) {
+				if (this.pushedBlock != null && this.world.getBlockState(this.pos).isOf(Blocks.MOVING_PISTON)) {
 					BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
 					if (blockState.isAir()) {
 						this.world.setBlockState(this.pos, this.pushedBlock, 84);
@@ -355,7 +355,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		} else {
 			BlockState blockState;
 			if (this.isSource()) {
-				blockState = Blocks.field_10379
+				blockState = Blocks.PISTON_HEAD
 					.getDefaultState()
 					.with(PistonHeadBlock.FACING, this.facing)
 					.with(PistonHeadBlock.SHORT, Boolean.valueOf(this.extending != 1.0F - this.progress < 0.25F));

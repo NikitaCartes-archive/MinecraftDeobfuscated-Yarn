@@ -54,7 +54,7 @@ public class ChunkSerializer {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static ProtoChunk deserialize(ServerWorld world, StructureManager structureManager, PointOfInterestStorage poiStorage, ChunkPos pos, CompoundTag tag) {
-		ChunkGenerator chunkGenerator = world.method_14178().getChunkGenerator();
+		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 		BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 		CompoundTag compoundTag = tag.getCompound("Level");
 		ChunkPos chunkPos = new ChunkPos(compoundTag.getInt("xPos"), compoundTag.getInt("zPos"));
@@ -70,14 +70,14 @@ public class ChunkSerializer {
 			block -> block == null || block.getDefaultState().isAir(), pos, compoundTag.getList("ToBeTicked", 9)
 		);
 		ChunkTickScheduler<Fluid> chunkTickScheduler2 = new ChunkTickScheduler<>(
-			fluid -> fluid == null || fluid == Fluids.field_15906, pos, compoundTag.getList("LiquidsToBeTicked", 9)
+			fluid -> fluid == null || fluid == Fluids.EMPTY, pos, compoundTag.getList("LiquidsToBeTicked", 9)
 		);
 		boolean bl = compoundTag.getBoolean("isLightOn");
 		ListTag listTag = compoundTag.getList("Sections", 10);
 		int i = 16;
 		ChunkSection[] chunkSections = new ChunkSection[16];
 		boolean bl2 = world.getDimension().hasSkyLight();
-		ChunkManager chunkManager = world.method_14178();
+		ChunkManager chunkManager = world.getChunkManager();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
 		if (bl) {
 			lightingProvider.setRetainData(pos, true);
@@ -99,13 +99,11 @@ public class ChunkSerializer {
 
 			if (bl) {
 				if (compoundTag2.contains("BlockLight", 7)) {
-					lightingProvider.enqueueSectionData(
-						LightType.field_9282, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("BlockLight")), true
-					);
+					lightingProvider.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("BlockLight")), true);
 				}
 
 				if (bl2 && compoundTag2.contains("SkyLight", 7)) {
-					lightingProvider.enqueueSectionData(LightType.field_9284, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("SkyLight")), true);
+					lightingProvider.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("SkyLight")), true);
 				}
 			}
 		}
@@ -137,11 +135,11 @@ public class ChunkSerializer {
 			chunk = protoChunk;
 			protoChunk.setInhabitedTime(l);
 			protoChunk.setStatus(ChunkStatus.byId(compoundTag.getString("Status")));
-			if (protoChunk.getStatus().isAtLeast(ChunkStatus.field_12795)) {
+			if (protoChunk.getStatus().isAtLeast(ChunkStatus.FEATURES)) {
 				protoChunk.setLightingProvider(lightingProvider);
 			}
 
-			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.field_12805)) {
+			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
 				for (BlockPos blockPos : BlockPos.iterate(pos.getStartX(), 0, pos.getStartZ(), pos.getEndX(), 255, pos.getEndZ())) {
 					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
 						protoChunk.addLightSource(blockPos);
@@ -237,7 +235,7 @@ public class ChunkSerializer {
 
 		ChunkSection[] chunkSections = chunk.getSectionArray();
 		ListTag listTag = new ListTag();
-		LightingProvider lightingProvider = world.method_14178().method_17293();
+		LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
 		boolean bl = chunk.isLightOn();
 
 		for (int i = -1; i < 17; i++) {
@@ -246,8 +244,8 @@ public class ChunkSerializer {
 				.filter(chunkSectionx -> chunkSectionx != null && chunkSectionx.getYOffset() >> 4 == j)
 				.findFirst()
 				.orElse(WorldChunk.EMPTY_SECTION);
-			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.field_9282).getLightSection(ChunkSectionPos.from(chunkPos, j));
-			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.field_9284).getLightSection(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getLightSection(ChunkSectionPos.from(chunkPos, j));
 			if (chunkSection != WorldChunk.EMPTY_SECTION || chunkNibbleArray != null || chunkNibbleArray2 != null) {
 				CompoundTag compoundTag3 = new CompoundTag();
 				compoundTag3.putByte("Y", (byte)(j & 0xFF));
@@ -324,7 +322,7 @@ public class ChunkSerializer {
 		} else if (tickScheduler instanceof SimpleTickScheduler) {
 			compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toNbt());
 		} else {
-			compoundTag2.put("TileTicks", world.method_14196().toTag(chunkPos));
+			compoundTag2.put("TileTicks", world.getBlockTickScheduler().toTag(chunkPos));
 		}
 
 		TickScheduler<Fluid> tickScheduler2 = chunk.getFluidTickScheduler();
@@ -333,7 +331,7 @@ public class ChunkSerializer {
 		} else if (tickScheduler2 instanceof SimpleTickScheduler) {
 			compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toNbt());
 		} else {
-			compoundTag2.put("LiquidTicks", world.method_14179().toTag(chunkPos));
+			compoundTag2.put("LiquidTicks", world.getFluidTickScheduler().toTag(chunkPos));
 		}
 
 		compoundTag2.put("PostProcessing", toNbt(chunk.getPostProcessingLists()));

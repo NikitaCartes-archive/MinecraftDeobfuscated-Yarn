@@ -129,14 +129,14 @@ public final class VoxelShapes {
 			} else if (two.isEmpty()) {
 				return bl ? one : empty();
 			} else {
-				PairList pairList = createListPair(1, one.getPointPositions(Direction.Axis.field_11048), two.getPointPositions(Direction.Axis.field_11048), bl, bl2);
+				PairList pairList = createListPair(1, one.getPointPositions(Direction.Axis.X), two.getPointPositions(Direction.Axis.X), bl, bl2);
 				PairList pairList2 = createListPair(
-					pairList.getPairs().size() - 1, one.getPointPositions(Direction.Axis.field_11052), two.getPointPositions(Direction.Axis.field_11052), bl, bl2
+					pairList.getPairs().size() - 1, one.getPointPositions(Direction.Axis.Y), two.getPointPositions(Direction.Axis.Y), bl, bl2
 				);
 				PairList pairList3 = createListPair(
 					(pairList.getPairs().size() - 1) * (pairList2.getPairs().size() - 1),
-					one.getPointPositions(Direction.Axis.field_11051),
-					two.getPointPositions(Direction.Axis.field_11051),
+					one.getPointPositions(Direction.Axis.Z),
+					two.getPointPositions(Direction.Axis.Z),
 					bl,
 					bl2
 				);
@@ -171,14 +171,14 @@ public final class VoxelShapes {
 				}
 			}
 
-			PairList pairList = createListPair(1, shape1.getPointPositions(Direction.Axis.field_11048), shape2.getPointPositions(Direction.Axis.field_11048), bl, bl2);
+			PairList pairList = createListPair(1, shape1.getPointPositions(Direction.Axis.X), shape2.getPointPositions(Direction.Axis.X), bl, bl2);
 			PairList pairList2 = createListPair(
-				pairList.getPairs().size() - 1, shape1.getPointPositions(Direction.Axis.field_11052), shape2.getPointPositions(Direction.Axis.field_11052), bl, bl2
+				pairList.getPairs().size() - 1, shape1.getPointPositions(Direction.Axis.Y), shape2.getPointPositions(Direction.Axis.Y), bl, bl2
 			);
 			PairList pairList3 = createListPair(
 				(pairList.getPairs().size() - 1) * (pairList2.getPairs().size() - 1),
-				shape1.getPointPositions(Direction.Axis.field_11051),
-				shape2.getPointPositions(Direction.Axis.field_11051),
+				shape1.getPointPositions(Direction.Axis.Z),
+				shape2.getPointPositions(Direction.Axis.Z),
 				bl,
 				bl2
 			);
@@ -211,7 +211,7 @@ public final class VoxelShapes {
 	}
 
 	public static double calculatePushVelocity(Direction.Axis axis, Box box, WorldView world, double initial, ShapeContext context, Stream<VoxelShape> shapes) {
-		return calculatePushVelocity(box, world, initial, context, AxisCycleDirection.between(axis, Direction.Axis.field_11051), shapes);
+		return calculatePushVelocity(box, world, initial, context, AxisCycleDirection.between(axis, Direction.Axis.Z), shapes);
 	}
 
 	private static double calculatePushVelocity(
@@ -223,9 +223,9 @@ public final class VoxelShapes {
 			return 0.0;
 		} else {
 			AxisCycleDirection axisCycleDirection = direction.opposite();
-			Direction.Axis axis = axisCycleDirection.cycle(Direction.Axis.field_11048);
-			Direction.Axis axis2 = axisCycleDirection.cycle(Direction.Axis.field_11052);
-			Direction.Axis axis3 = axisCycleDirection.cycle(Direction.Axis.field_11051);
+			Direction.Axis axis = axisCycleDirection.cycle(Direction.Axis.X);
+			Direction.Axis axis2 = axisCycleDirection.cycle(Direction.Axis.Y);
+			Direction.Axis axis3 = axisCycleDirection.cycle(Direction.Axis.Z);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			int i = MathHelper.floor(box.getMin(axis) - 1.0E-7) - 1;
 			int j = MathHelper.floor(box.getMax(axis) + 1.0E-7) + 1;
@@ -257,7 +257,7 @@ public final class VoxelShapes {
 						if (s < 3) {
 							mutable.set(axisCycleDirection, q, r, p);
 							BlockState blockState = world.getBlockState(mutable);
-							if ((s != 1 || blockState.exceedsCube()) && (s != 2 || blockState.isOf(Blocks.field_10008))) {
+							if ((s != 1 || blockState.exceedsCube()) && (s != 2 || blockState.isOf(Blocks.MOVING_PISTON))) {
 								initial = blockState.getCollisionShape(world, mutable, context)
 									.calculateMaxDistance(axis3, box.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), initial);
 								if (Math.abs(initial) < 1.0E-7) {
@@ -290,9 +290,9 @@ public final class VoxelShapes {
 		} else {
 			Direction.Axis axis = direction.getAxis();
 			Direction.AxisDirection axisDirection = direction.getDirection();
-			VoxelShape voxelShape = axisDirection == Direction.AxisDirection.field_11056 ? shape : neighbor;
-			VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.field_11056 ? neighbor : shape;
-			BooleanBiFunction booleanBiFunction = axisDirection == Direction.AxisDirection.field_11056 ? BooleanBiFunction.ONLY_FIRST : BooleanBiFunction.ONLY_SECOND;
+			VoxelShape voxelShape = axisDirection == Direction.AxisDirection.POSITIVE ? shape : neighbor;
+			VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.POSITIVE ? neighbor : shape;
+			BooleanBiFunction booleanBiFunction = axisDirection == Direction.AxisDirection.POSITIVE ? BooleanBiFunction.ONLY_FIRST : BooleanBiFunction.ONLY_SECOND;
 			return DoubleMath.fuzzyEquals(voxelShape.getMax(axis), 1.0, 1.0E-7)
 				&& DoubleMath.fuzzyEquals(voxelShape2.getMin(axis), 0.0, 1.0E-7)
 				&& !matchesAnywhere(
@@ -308,7 +308,7 @@ public final class VoxelShapes {
 			Direction.Axis axis = direction.getAxis();
 			boolean bl;
 			int i;
-			if (direction.getDirection() == Direction.AxisDirection.field_11056) {
+			if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
 				bl = DoubleMath.fuzzyEquals(shape.getMax(axis), 1.0, 1.0E-7);
 				i = shape.voxels.getSize(axis) - 1;
 			} else {
@@ -324,8 +324,8 @@ public final class VoxelShapes {
 		if (one != fullCube() && two != fullCube()) {
 			Direction.Axis axis = direction.getAxis();
 			Direction.AxisDirection axisDirection = direction.getDirection();
-			VoxelShape voxelShape = axisDirection == Direction.AxisDirection.field_11056 ? one : two;
-			VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.field_11056 ? two : one;
+			VoxelShape voxelShape = axisDirection == Direction.AxisDirection.POSITIVE ? one : two;
+			VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.POSITIVE ? two : one;
 			if (!DoubleMath.fuzzyEquals(voxelShape.getMax(axis), 1.0, 1.0E-7)) {
 				voxelShape = empty();
 			}

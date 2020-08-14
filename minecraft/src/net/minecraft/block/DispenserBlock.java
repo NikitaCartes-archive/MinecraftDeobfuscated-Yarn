@@ -50,7 +50,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	protected DispenserBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(TRIGGERED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(TRIGGERED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -62,9 +62,9 @@ public class DispenserBlock extends BlockWithEntity {
 			if (blockEntity instanceof DispenserBlockEntity) {
 				player.openHandledScreen((DispenserBlockEntity)blockEntity);
 				if (blockEntity instanceof DropperBlockEntity) {
-					player.incrementStat(Stats.field_15367);
+					player.incrementStat(Stats.INSPECT_DROPPER);
 				} else {
-					player.incrementStat(Stats.field_15371);
+					player.incrementStat(Stats.INSPECT_DISPENSER);
 				}
 			}
 
@@ -161,7 +161,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override

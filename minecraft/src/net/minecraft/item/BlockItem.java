@@ -75,7 +75,7 @@ public class BlockItem extends Item {
 						playerEntity,
 						blockPos,
 						this.getPlaceSound(blockState2),
-						SoundCategory.field_15245,
+						SoundCategory.BLOCKS,
 						(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
 						blockSoundGroup.getPitch() * 0.8F
 					);
@@ -164,7 +164,7 @@ public class BlockItem extends Item {
 					}
 
 					CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
-					CompoundTag compoundTag3 = compoundTag2.method_10553();
+					CompoundTag compoundTag3 = compoundTag2.copy();
 					compoundTag2.copyFrom(compoundTag);
 					compoundTag2.putInt("x", pos.getX());
 					compoundTag2.putInt("y", pos.getY());

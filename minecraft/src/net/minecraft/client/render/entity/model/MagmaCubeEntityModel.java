@@ -39,10 +39,10 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends CompositeEntity
 		this.parts = builder.build();
 	}
 
-	public void method_22958(T slimeEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T slimeEntity, float f, float g, float h, float i, float j) {
 	}
 
-	public void method_17098(T slimeEntity, float f, float g, float h) {
+	public void animateModel(T slimeEntity, float f, float g, float h) {
 		float i = MathHelper.lerp(h, slimeEntity.lastStretch, slimeEntity.stretch);
 		if (i < 0.0F) {
 			i = 0.0F;
@@ -53,7 +53,7 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends CompositeEntity
 		}
 	}
 
-	public ImmutableList<ModelPart> method_22959() {
+	public ImmutableList<ModelPart> getParts() {
 		return this.parts;
 	}
 }

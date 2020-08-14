@@ -41,11 +41,11 @@ public abstract class CombinedEntry extends LootPoolEntry {
 
 	public static <T extends CombinedEntry> LootPoolEntry.Serializer<T> createSerializer(CombinedEntry.Factory<T> factory) {
 		return new LootPoolEntry.Serializer<T>() {
-			public void method_29314(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
+			public void addEntryFields(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
 				jsonObject.add("children", jsonSerializationContext.serialize(combinedEntry.children));
 			}
 
-			public final T method_29313(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+			public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 				LootPoolEntry[] lootPoolEntrys = JsonHelper.deserialize(jsonObject, "children", jsonDeserializationContext, LootPoolEntry[].class);
 				return factory.create(lootPoolEntrys, lootConditions);
 			}

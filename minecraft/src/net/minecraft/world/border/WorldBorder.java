@@ -312,7 +312,7 @@ public class WorldBorder {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public WorldBorderStage getStage() {
-			return this.newSize < this.oldSize ? WorldBorderStage.field_12756 : WorldBorderStage.field_12754;
+			return this.newSize < this.oldSize ? WorldBorderStage.SHRINKING : WorldBorderStage.GROWING;
 		}
 
 		@Override
@@ -493,7 +493,7 @@ public class WorldBorder {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public WorldBorderStage getStage() {
-			return WorldBorderStage.field_12753;
+			return WorldBorderStage.STATIONARY;
 		}
 
 		@Environment(EnvType.CLIENT)

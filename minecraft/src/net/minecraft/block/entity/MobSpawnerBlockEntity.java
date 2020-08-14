@@ -15,7 +15,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
 		public void sendStatus(int status) {
-			MobSpawnerBlockEntity.this.world.addSyncedBlockEvent(MobSpawnerBlockEntity.this.pos, Blocks.field_10260, status, 0);
+			MobSpawnerBlockEntity.this.world.addSyncedBlockEvent(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, status, 0);
 		}
 
 		@Override
@@ -39,7 +39,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	};
 
 	public MobSpawnerBlockEntity() {
-		super(BlockEntityType.field_11889);
+		super(BlockEntityType.MOB_SPAWNER);
 	}
 
 	@Override

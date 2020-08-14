@@ -52,16 +52,16 @@ public class TexturedRenderLayers {
 		.sorted(Comparator.comparingInt(DyeColor::getId))
 		.map(dyeColor -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, new Identifier("entity/bed/" + dyeColor.getName())))
 		.toArray(SpriteIdentifier[]::new);
-	public static final SpriteIdentifier field_21714 = getChestTextureId("trapped");
-	public static final SpriteIdentifier field_21715 = getChestTextureId("trapped_left");
-	public static final SpriteIdentifier field_21716 = getChestTextureId("trapped_right");
-	public static final SpriteIdentifier field_21717 = getChestTextureId("christmas");
-	public static final SpriteIdentifier field_21718 = getChestTextureId("christmas_left");
-	public static final SpriteIdentifier field_21719 = getChestTextureId("christmas_right");
-	public static final SpriteIdentifier field_21720 = getChestTextureId("normal");
-	public static final SpriteIdentifier field_21721 = getChestTextureId("normal_left");
-	public static final SpriteIdentifier field_21722 = getChestTextureId("normal_right");
-	public static final SpriteIdentifier field_21723 = getChestTextureId("ender");
+	public static final SpriteIdentifier TRAPPED = getChestTextureId("trapped");
+	public static final SpriteIdentifier TRAPPED_LEFT = getChestTextureId("trapped_left");
+	public static final SpriteIdentifier TRAPPED_RIGHT = getChestTextureId("trapped_right");
+	public static final SpriteIdentifier CHRISTMAS = getChestTextureId("christmas");
+	public static final SpriteIdentifier CHRISTMAS_LEFT = getChestTextureId("christmas_left");
+	public static final SpriteIdentifier CHRISTMAS_RIGHT = getChestTextureId("christmas_right");
+	public static final SpriteIdentifier NORMAL = getChestTextureId("normal");
+	public static final SpriteIdentifier NORMAL_LEFT = getChestTextureId("normal_left");
+	public static final SpriteIdentifier NORMAL_RIGHT = getChestTextureId("normal_right");
+	public static final SpriteIdentifier ENDER = getChestTextureId("ender");
 
 	public static RenderLayer getBannerPatterns() {
 		return BANNER_PATTERNS_RENDER_LAYER;
@@ -118,16 +118,16 @@ public class TexturedRenderLayers {
 			adder.accept(spriteIdentifier);
 		}
 
-		adder.accept(field_21714);
-		adder.accept(field_21715);
-		adder.accept(field_21716);
-		adder.accept(field_21717);
-		adder.accept(field_21718);
-		adder.accept(field_21719);
-		adder.accept(field_21720);
-		adder.accept(field_21721);
-		adder.accept(field_21722);
-		adder.accept(field_21723);
+		adder.accept(TRAPPED);
+		adder.accept(TRAPPED_LEFT);
+		adder.accept(TRAPPED_RIGHT);
+		adder.accept(CHRISTMAS);
+		adder.accept(CHRISTMAS_LEFT);
+		adder.accept(CHRISTMAS_RIGHT);
+		adder.accept(NORMAL);
+		adder.accept(NORMAL_LEFT);
+		adder.accept(NORMAL_RIGHT);
+		adder.accept(ENDER);
 	}
 
 	public static SpriteIdentifier getSignTextureId(SignType type) {
@@ -140,21 +140,21 @@ public class TexturedRenderLayers {
 
 	public static SpriteIdentifier getChestTexture(BlockEntity blockEntity, ChestType type, boolean christmas) {
 		if (christmas) {
-			return getChestTexture(type, field_21717, field_21718, field_21719);
+			return getChestTexture(type, CHRISTMAS, CHRISTMAS_LEFT, CHRISTMAS_RIGHT);
 		} else if (blockEntity instanceof TrappedChestBlockEntity) {
-			return getChestTexture(type, field_21714, field_21715, field_21716);
+			return getChestTexture(type, TRAPPED, TRAPPED_LEFT, TRAPPED_RIGHT);
 		} else {
-			return blockEntity instanceof EnderChestBlockEntity ? field_21723 : getChestTexture(type, field_21720, field_21721, field_21722);
+			return blockEntity instanceof EnderChestBlockEntity ? ENDER : getChestTexture(type, NORMAL, NORMAL_LEFT, NORMAL_RIGHT);
 		}
 	}
 
 	private static SpriteIdentifier getChestTexture(ChestType type, SpriteIdentifier single, SpriteIdentifier left, SpriteIdentifier right) {
 		switch (type) {
-			case field_12574:
+			case LEFT:
 				return left;
-			case field_12571:
+			case RIGHT:
 				return right;
-			case field_12569:
+			case SINGLE:
 			default:
 				return single;
 		}

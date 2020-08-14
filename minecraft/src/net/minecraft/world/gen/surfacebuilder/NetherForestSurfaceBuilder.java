@@ -12,7 +12,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	private static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
+	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 	protected long seed;
 	private OctavePerlinNoiseSampler field_22203;
 
@@ -20,7 +20,7 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 		super(codec);
 	}
 
-	public void method_24455(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,

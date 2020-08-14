@@ -15,7 +15,7 @@ public class Generic3x3ContainerScreenHandler extends ScreenHandler {
 	}
 
 	public Generic3x3ContainerScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-		super(ScreenHandlerType.field_17328, syncId);
+		super(ScreenHandlerType.GENERIC_3X3, syncId);
 		checkSize(inventory, 9);
 		this.inventory = inventory;
 		inventory.onOpen(playerInventory.player);

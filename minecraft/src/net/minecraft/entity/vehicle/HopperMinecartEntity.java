@@ -27,17 +27,17 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	public HopperMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6058, x, y, z, world);
+		super(EntityType.HOPPER_MINECART, x, y, z, world);
 	}
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.field_7677;
+		return AbstractMinecartEntity.Type.HOPPER;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10312.getDefaultState();
+		return Blocks.HOPPER.getDefaultState();
 	}
 
 	@Override
@@ -123,8 +123,8 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-			this.dropItem(Blocks.field_10312);
+		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+			this.dropItem(Blocks.HOPPER);
 		}
 	}
 

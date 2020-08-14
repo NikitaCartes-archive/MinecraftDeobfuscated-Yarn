@@ -13,7 +13,7 @@ public class CarvingMaskDecorator extends Decorator<CarvingMaskDecoratorConfig> 
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_14341(
+	public Stream<BlockPos> getPositions(
 		DecoratorContext decoratorContext, Random random, CarvingMaskDecoratorConfig carvingMaskDecoratorConfig, BlockPos blockPos
 	) {
 		ChunkPos chunkPos = new ChunkPos(blockPos);

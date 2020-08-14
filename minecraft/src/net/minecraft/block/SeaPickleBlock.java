@@ -52,19 +52,19 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return !floor.getCollisionShape(world, pos).getFace(Direction.field_11036).isEmpty() || floor.isSideSolidFullSquare(world, pos, Direction.field_11036);
+		return !floor.getCollisionShape(world, pos).getFace(Direction.UP).isEmpty() || floor.isSideSolidFullSquare(world, pos, Direction.UP);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		return this.canPlantOnTop(world.getBlockState(blockPos), world, blockPos);
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (!state.canPlaceAt(world, pos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			if ((Boolean)state.get(WATERLOGGED)) {
 				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
@@ -116,7 +116,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		if (!isDry(state) && world.getBlockState(pos.method_10074()).isIn(BlockTags.field_15461)) {
+		if (!isDry(state) && world.getBlockState(pos.down()).isIn(BlockTags.CORAL_BLOCKS)) {
 			int i = 5;
 			int j = 1;
 			int k = 2;
@@ -130,10 +130,10 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 					for (int r = q - 2; r < q; r++) {
 						BlockPos blockPos = new BlockPos(m + o, r, pos.getZ() - n + p);
-						if (blockPos != pos && random.nextInt(6) == 0 && world.getBlockState(blockPos).isOf(Blocks.field_10382)) {
-							BlockState blockState = world.getBlockState(blockPos.method_10074());
-							if (blockState.isIn(BlockTags.field_15461)) {
-								world.setBlockState(blockPos, Blocks.field_10476.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
+						if (blockPos != pos && random.nextInt(6) == 0 && world.getBlockState(blockPos).isOf(Blocks.WATER)) {
+							BlockState blockState = world.getBlockState(blockPos.down());
+							if (blockState.isIn(BlockTags.CORAL_BLOCKS)) {
+								world.setBlockState(blockPos, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
 							}
 						}
 					}

@@ -73,9 +73,7 @@ public class ModelPredicateProviderRegistry {
 	}
 
 	static {
-		register(
-			new Identifier("lefthanded"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.getMainArm() != Arm.field_6183 ? 1.0F : 0.0F
-		);
+		register(new Identifier("lefthanded"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.getMainArm() != Arm.RIGHT ? 1.0F : 0.0F);
 		register(
 			new Identifier("cooldown"),
 			(itemStack, clientWorld, livingEntity) -> livingEntity instanceof PlayerEntity
@@ -86,7 +84,7 @@ public class ModelPredicateProviderRegistry {
 			new Identifier("custom_model_data"),
 			(itemStack, clientWorld, livingEntity) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt("CustomModelData") : 0.0F
 		);
-		register(Items.field_8102, new Identifier("pull"), (itemStack, clientWorld, livingEntity) -> {
+		register(Items.BOW, new Identifier("pull"), (itemStack, clientWorld, livingEntity) -> {
 			if (livingEntity == null) {
 				return 0.0F;
 			} else {
@@ -94,11 +92,11 @@ public class ModelPredicateProviderRegistry {
 			}
 		});
 		register(
-			Items.field_8102,
+			Items.BOW,
 			new Identifier("pulling"),
 			(itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
-		register(Items.field_8557, new Identifier("time"), new ModelPredicateProvider() {
+		register(Items.CLOCK, new Identifier("time"), new ModelPredicateProvider() {
 			private double time;
 			private double step;
 			private long lastTick;
@@ -143,7 +141,7 @@ public class ModelPredicateProviderRegistry {
 			}
 		});
 		register(
-			Items.field_8251,
+			Items.COMPASS,
 			new Identifier("angle"),
 			new ModelPredicateProvider() {
 				private final ModelPredicateProviderRegistry.AngleRandomizer value = new ModelPredicateProviderRegistry.AngleRandomizer();
@@ -231,7 +229,7 @@ public class ModelPredicateProviderRegistry {
 			}
 		);
 		register(
-			Items.field_8399,
+			Items.CROSSBOW,
 			new Identifier("pull"),
 			(itemStack, clientWorld, livingEntity) -> {
 				if (livingEntity == null) {
@@ -244,7 +242,7 @@ public class ModelPredicateProviderRegistry {
 			}
 		);
 		register(
-			Items.field_8399,
+			Items.CROSSBOW,
 			new Identifier("pulling"),
 			(itemStack, clientWorld, livingEntity) -> livingEntity != null
 						&& livingEntity.isUsingItem()
@@ -254,21 +252,19 @@ public class ModelPredicateProviderRegistry {
 					: 0.0F
 		);
 		register(
-			Items.field_8399,
-			new Identifier("charged"),
-			(itemStack, clientWorld, livingEntity) -> livingEntity != null && CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F
+			Items.CROSSBOW, new Identifier("charged"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F
 		);
 		register(
-			Items.field_8399,
+			Items.CROSSBOW,
 			new Identifier("firework"),
 			(itemStack, clientWorld, livingEntity) -> livingEntity != null
 						&& CrossbowItem.isCharged(itemStack)
-						&& CrossbowItem.hasProjectile(itemStack, Items.field_8639)
+						&& CrossbowItem.hasProjectile(itemStack, Items.FIREWORK_ROCKET)
 					? 1.0F
 					: 0.0F
 		);
-		register(Items.field_8833, new Identifier("broken"), (itemStack, clientWorld, livingEntity) -> ElytraItem.isUsable(itemStack) ? 0.0F : 1.0F);
-		register(Items.field_8378, new Identifier("cast"), (itemStack, clientWorld, livingEntity) -> {
+		register(Items.ELYTRA, new Identifier("broken"), (itemStack, clientWorld, livingEntity) -> ElytraItem.isUsable(itemStack) ? 0.0F : 1.0F);
+		register(Items.FISHING_ROD, new Identifier("cast"), (itemStack, clientWorld, livingEntity) -> {
 			if (livingEntity == null) {
 				return 0.0F;
 			} else {
@@ -281,19 +277,19 @@ public class ModelPredicateProviderRegistry {
 				return (bl || bl2) && livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).fishHook != null ? 1.0F : 0.0F;
 			}
 		});
-		register(Items.field_8255, new Identifier("blocking"), (itemStack, clientWorld, livingEntity) -> {
+		register(Items.SHIELD, new Identifier("blocking"), (itemStack, clientWorld, livingEntity) -> {
 			if (livingEntity != null && livingEntity.isBlocking()) {
 				if (livingEntity.getActiveItem() == itemStack) {
 					return 1.0F;
 				} else {
-					return !livingEntity.isUsingItem() && livingEntity.getStackInHand(Hand.field_5810) == itemStack ? 1.0F : 0.0F;
+					return !livingEntity.isUsingItem() && livingEntity.getStackInHand(Hand.OFF_HAND) == itemStack ? 1.0F : 0.0F;
 				}
 			} else {
 				return 0.0F;
 			}
 		});
 		register(
-			Items.field_8547,
+			Items.TRIDENT,
 			new Identifier("throwing"),
 			(itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);

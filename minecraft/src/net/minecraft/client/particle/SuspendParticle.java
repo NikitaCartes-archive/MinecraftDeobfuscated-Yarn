@@ -55,7 +55,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3110(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setColor(0.3F, 0.5F, 1.0F);
 			suspendParticle.setSprite(this.spriteProvider);
@@ -73,7 +73,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_18044(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setSprite(this.spriteProvider);
 			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
@@ -90,7 +90,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3111(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setSprite(this.spriteProvider);
 			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
@@ -106,7 +106,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3112(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setSprite(this.spriteProvider);
 			return suspendParticle;

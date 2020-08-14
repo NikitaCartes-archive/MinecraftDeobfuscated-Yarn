@@ -39,12 +39,10 @@ public class BucketItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = rayTrace(
-			world, user, this.fluid == Fluids.field_15906 ? RayTraceContext.FluidHandling.field_1345 : RayTraceContext.FluidHandling.field_1348
-		);
-		if (hitResult.getType() == HitResult.Type.field_1333) {
+		HitResult hitResult = rayTrace(world, user, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE);
+		if (hitResult.getType() == HitResult.Type.MISS) {
 			return TypedActionResult.pass(itemStack);
-		} else if (hitResult.getType() != HitResult.Type.field_1332) {
+		} else if (hitResult.getType() != HitResult.Type.BLOCK) {
 			return TypedActionResult.pass(itemStack);
 		} else {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
@@ -53,13 +51,13 @@ public class BucketItem extends Item {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(blockPos2, direction, itemStack)) {
 				return TypedActionResult.fail(itemStack);
-			} else if (this.fluid == Fluids.field_15906) {
+			} else if (this.fluid == Fluids.EMPTY) {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() instanceof FluidDrainable) {
 					Fluid fluid = ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos, blockState);
-					if (fluid != Fluids.field_15906) {
-						user.incrementStat(Stats.field_15372.getOrCreateStat(this));
-						user.playSound(fluid.isIn(FluidTags.field_15518) ? SoundEvents.field_15202 : SoundEvents.field_15126, 1.0F, 1.0F);
+					if (fluid != Fluids.EMPTY) {
+						user.incrementStat(Stats.USED.getOrCreateStat(this));
+						user.playSound(fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
 						ItemStack itemStack2 = ItemUsage.method_30012(itemStack, user, new ItemStack(fluid.getBucketItem()));
 						if (!world.isClient) {
 							Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
@@ -79,7 +77,7 @@ public class BucketItem extends Item {
 						Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, itemStack);
 					}
 
-					user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+					user.incrementStat(Stats.USED.getOrCreateStat(this));
 					return TypedActionResult.method_29237(this.getEmptiedStack(itemStack, user), world.isClient());
 				} else {
 					return TypedActionResult.fail(itemStack);
@@ -89,7 +87,7 @@ public class BucketItem extends Item {
 	}
 
 	protected ItemStack getEmptiedStack(ItemStack stack, PlayerEntity player) {
-		return !player.abilities.creativeMode ? new ItemStack(Items.field_8550) : stack;
+		return !player.abilities.creativeMode ? new ItemStack(Items.BUCKET) : stack;
 	}
 
 	public void onEmptied(World world, ItemStack stack, BlockPos pos) {
@@ -106,14 +104,16 @@ public class BucketItem extends Item {
 			boolean bl2 = blockState.isAir() || bl || block instanceof FluidFillable && ((FluidFillable)block).canFillWithFluid(world, pos, blockState, this.fluid);
 			if (!bl2) {
 				return blockHitResult != null && this.placeFluid(player, world, blockHitResult.getBlockPos().offset(blockHitResult.getSide()), null);
-			} else if (world.getDimension().isUltrawarm() && this.fluid.isIn(FluidTags.field_15517)) {
+			} else if (world.getDimension().isUltrawarm() && this.fluid.isIn(FluidTags.WATER)) {
 				int i = pos.getX();
 				int j = pos.getY();
 				int k = pos.getZ();
-				world.playSound(player, pos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
+				world.playSound(
+					player, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
+				);
 
 				for (int l = 0; l < 8; l++) {
-					world.addParticle(ParticleTypes.field_11237, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0, 0.0, 0.0);
+					world.addParticle(ParticleTypes.LARGE_SMOKE, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0, 0.0, 0.0);
 				}
 
 				return true;
@@ -137,7 +137,7 @@ public class BucketItem extends Item {
 	}
 
 	protected void playEmptyingSound(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos) {
-		SoundEvent soundEvent = this.fluid.isIn(FluidTags.field_15518) ? SoundEvents.field_15010 : SoundEvents.field_14834;
-		world.playSound(player, pos, soundEvent, SoundCategory.field_15245, 1.0F, 1.0F);
+		SoundEvent soundEvent = this.fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
+		world.playSound(player, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 }

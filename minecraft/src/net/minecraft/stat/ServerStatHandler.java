@@ -88,7 +88,7 @@ public class ServerStatHandler extends StatHandler {
 						compoundTag.putInt("DataVersion", 1343);
 					}
 
-					compoundTag = NbtHelper.update(dataFixer, DataFixTypes.field_19218, compoundTag, compoundTag.getInt("DataVersion"));
+					compoundTag = NbtHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"));
 					if (compoundTag.contains("stats", 10)) {
 						CompoundTag compoundTag2 = compoundTag.getCompound("stats");
 

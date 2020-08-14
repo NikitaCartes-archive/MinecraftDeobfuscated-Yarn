@@ -25,83 +25,83 @@ import net.minecraft.predicate.entity.FishingHookPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
-	public static final LootCondition.Builder NEEDS_JUNGLE_BIOME = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.field_9417));
+	public static final LootCondition.Builder NEEDS_JUNGLE_BIOME = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE));
 	public static final LootCondition.Builder NEEDS_JUNGLE_HILLS_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(Biomes.field_9432)
+		LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE_HILLS)
 	);
 	public static final LootCondition.Builder NEEDS_JUNGLE_EDGE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(Biomes.field_9474)
+		LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE_EDGE)
 	);
 	public static final LootCondition.Builder NEEDS_BAMBOO_JUNGLE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(Biomes.field_9440)
+		LocationPredicate.Builder.create().biome(BiomeKeys.BAMBOO_JUNGLE)
 	);
 	public static final LootCondition.Builder NEEDS_MODIFIED_JUNGLE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(Biomes.field_9426)
+		LocationPredicate.Builder.create().biome(BiomeKeys.MODIFIED_JUNGLE)
 	);
 	public static final LootCondition.Builder NEEDS_MODIFIED_JUNGLE_EDGE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(Biomes.field_9405)
+		LocationPredicate.Builder.create().biome(BiomeKeys.MODIFIED_JUNGLE_EDGE)
 	);
 	public static final LootCondition.Builder NEEDS_BAMBOO_JUNGLE_HILLS_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(Biomes.field_9468)
+		LocationPredicate.Builder.create().biome(BiomeKeys.BAMBOO_JUNGLE_HILLS)
 	);
 
-	public void method_10405(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
+	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
 		biConsumer.accept(
-			LootTables.field_353,
+			LootTables.FISHING_GAMEPLAY,
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootTableRange.create(1))
-						.with(LootTableEntry.builder(LootTables.field_266).weight(10).quality(-2))
+						.with(LootTableEntry.builder(LootTables.FISHING_JUNK_GAMEPLAY).weight(10).quality(-2))
 						.with(
-							LootTableEntry.builder(LootTables.field_854)
+							LootTableEntry.builder(LootTables.FISHING_TREASURE_GAMEPLAY)
 								.weight(5)
 								.quality(2)
-								.method_421(
-									EntityPropertiesLootCondition.builder(LootContext.EntityTarget.field_935, EntityPredicate.Builder.create().fishHook(FishingHookPredicate.of(true)))
+								.conditionally(
+									EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().fishHook(FishingHookPredicate.of(true)))
 								)
 						)
-						.with(LootTableEntry.builder(LootTables.field_795).weight(85).quality(-1))
+						.with(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY).weight(85).quality(-1))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_795,
+			LootTables.FISHING_FISH_GAMEPLAY,
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
-						.with(ItemEntry.builder(Items.field_8429).weight(60))
-						.with(ItemEntry.builder(Items.field_8209).weight(25))
-						.with(ItemEntry.builder(Items.field_8846).weight(2))
-						.with(ItemEntry.builder(Items.field_8323).weight(13))
+						.with(ItemEntry.builder(Items.COD).weight(60))
+						.with(ItemEntry.builder(Items.SALMON).weight(25))
+						.with(ItemEntry.builder(Items.TROPICAL_FISH).weight(2))
+						.with(ItemEntry.builder(Items.PUFFERFISH).weight(13))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_266,
+			LootTables.FISHING_JUNK_GAMEPLAY,
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
-						.with(ItemEntry.builder(Blocks.field_10588).weight(17))
-						.with(ItemEntry.builder(Items.field_8370).weight(10).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
-						.with(ItemEntry.builder(Items.field_8745).weight(10))
-						.with(ItemEntry.builder(Items.field_8606).weight(10))
+						.with(ItemEntry.builder(Blocks.LILY_PAD).weight(17))
+						.with(ItemEntry.builder(Items.LEATHER_BOOTS).weight(10).apply(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
+						.with(ItemEntry.builder(Items.LEATHER).weight(10))
+						.with(ItemEntry.builder(Items.BONE).weight(10))
 						.with(
-							ItemEntry.builder(Items.field_8574)
+							ItemEntry.builder(Items.POTION)
 								.weight(10)
-								.method_438(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
+								.apply(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
 						)
-						.with(ItemEntry.builder(Items.field_8276).weight(5))
-						.with(ItemEntry.builder(Items.field_8378).weight(2).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
-						.with(ItemEntry.builder(Items.field_8428).weight(10))
-						.with(ItemEntry.builder(Items.field_8600).weight(5))
-						.with(ItemEntry.builder(Items.field_8794).weight(1).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(10))))
-						.with(ItemEntry.builder(Blocks.field_10348).weight(10))
-						.with(ItemEntry.builder(Items.field_8511).weight(10))
+						.with(ItemEntry.builder(Items.STRING).weight(5))
+						.with(ItemEntry.builder(Items.FISHING_ROD).weight(2).apply(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
+						.with(ItemEntry.builder(Items.BOWL).weight(10))
+						.with(ItemEntry.builder(Items.STICK).weight(5))
+						.with(ItemEntry.builder(Items.INK_SAC).weight(1).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(10))))
+						.with(ItemEntry.builder(Blocks.TRIPWIRE_HOOK).weight(10))
+						.with(ItemEntry.builder(Items.ROTTEN_FLESH).weight(10))
 						.with(
-							ItemEntry.builder(Blocks.field_10211)
-								.method_421(
+							ItemEntry.builder(Blocks.BAMBOO)
+								.conditionally(
 									NEEDS_JUNGLE_BIOME.or(NEEDS_JUNGLE_HILLS_BIOME)
 										.or(NEEDS_JUNGLE_EDGE_BIOME)
 										.or(NEEDS_BAMBOO_JUNGLE_BIOME)
@@ -114,26 +114,24 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_854,
+			LootTables.FISHING_TREASURE_GAMEPLAY,
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
-						.with(ItemEntry.builder(Items.field_8448))
-						.with(ItemEntry.builder(Items.field_8175))
+						.with(ItemEntry.builder(Items.NAME_TAG))
+						.with(ItemEntry.builder(Items.SADDLE))
 						.with(
-							ItemEntry.builder(Items.field_8102)
-								.method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
-								.method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
+							ItemEntry.builder(Items.BOW)
+								.apply(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
+								.apply(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
 						)
 						.with(
-							ItemEntry.builder(Items.field_8378)
-								.method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
-								.method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
+							ItemEntry.builder(Items.FISHING_ROD)
+								.apply(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
+								.apply(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
 						)
-						.with(
-							ItemEntry.builder(Items.field_8529).method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
-						)
-						.with(ItemEntry.builder(Items.field_8864))
+						.with(ItemEntry.builder(Items.BOOK).apply(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments()))
+						.with(ItemEntry.builder(Items.NAUTILUS_SHELL))
 				)
 		);
 	}

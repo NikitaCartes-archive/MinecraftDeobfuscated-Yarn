@@ -46,7 +46,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 	}
 
 	public EnchantmentScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.field_17334, syncId);
+		super(ScreenHandlerType.ENCHANTMENT, syncId);
 		this.context = context;
 		this.addSlot(new Slot(this.inventory, 0, 15, 47) {
 			@Override
@@ -55,14 +55,14 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			}
 
 			@Override
-			public int getMaxStackAmount() {
+			public int getMaxItemCount() {
 				return 1;
 			}
 		});
 		this.addSlot(new Slot(this.inventory, 1, 35, 47) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.getItem() == Items.field_8759;
+				return stack.getItem() == Items.LAPIS_LAZULI;
 			}
 		});
 
@@ -99,28 +99,28 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					for (int j = -1; j <= 1; j++) {
 						for (int k = -1; k <= 1; k++) {
 							if ((j != 0 || k != 0) && world.isAir(blockPos.add(k, 0, j)) && world.isAir(blockPos.add(k, 1, j))) {
-								if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).isOf(Blocks.field_10504)) {
+								if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
 									ix++;
 								}
 
-								if (world.getBlockState(blockPos.add(k * 2, 1, j * 2)).isOf(Blocks.field_10504)) {
+								if (world.getBlockState(blockPos.add(k * 2, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
 									ix++;
 								}
 
 								if (k != 0 && j != 0) {
-									if (world.getBlockState(blockPos.add(k * 2, 0, j)).isOf(Blocks.field_10504)) {
+									if (world.getBlockState(blockPos.add(k * 2, 0, j)).isOf(Blocks.BOOKSHELF)) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k * 2, 1, j)).isOf(Blocks.field_10504)) {
+									if (world.getBlockState(blockPos.add(k * 2, 1, j)).isOf(Blocks.BOOKSHELF)) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k, 0, j * 2)).isOf(Blocks.field_10504)) {
+									if (world.getBlockState(blockPos.add(k, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k, 1, j * 2)).isOf(Blocks.field_10504)) {
+									if (world.getBlockState(blockPos.add(k, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
 										ix++;
 									}
 								}
@@ -179,12 +179,12 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 				List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack, id, this.enchantmentPower[id]);
 				if (!list.isEmpty()) {
 					player.applyEnchantmentCosts(itemStack, i);
-					boolean bl = itemStack.getItem() == Items.field_8529;
+					boolean bl = itemStack.getItem() == Items.BOOK;
 					if (bl) {
-						itemStack3 = new ItemStack(Items.field_8598);
+						itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
 						CompoundTag compoundTag = itemStack.getTag();
 						if (compoundTag != null) {
-							itemStack3.setTag(compoundTag.method_10553());
+							itemStack3.setTag(compoundTag.copy());
 						}
 
 						this.inventory.setStack(0, itemStack3);
@@ -206,7 +206,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 						}
 					}
 
-					player.incrementStat(Stats.field_15420);
+					player.incrementStat(Stats.ENCHANT_ITEM);
 					if (player instanceof ServerPlayerEntity) {
 						Criteria.ENCHANTED_ITEM.trigger((ServerPlayerEntity)player, itemStack3, i);
 					}
@@ -214,7 +214,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					this.inventory.markDirty();
 					this.seed.set(player.getEnchantmentTableSeed());
 					this.onContentChanged(this.inventory);
-					world.playSound(null, blockPos, SoundEvents.field_15119, SoundCategory.field_15245, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
+					world.playSound(null, blockPos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 				}
 			}));
 			return true;
@@ -224,7 +224,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 	private List<EnchantmentLevelEntry> generateEnchantments(ItemStack stack, int slot, int level) {
 		this.random.setSeed((long)(this.seed.get() + slot));
 		List<EnchantmentLevelEntry> list = EnchantmentHelper.generateEnchantments(this.random, stack, level, false);
-		if (stack.getItem() == Items.field_8529 && list.size() > 1) {
+		if (stack.getItem() == Items.BOOK && list.size() > 1) {
 			list.remove(this.random.nextInt(list.size()));
 		}
 
@@ -250,7 +250,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.field_10485);
+		return canUse(this.context, player, Blocks.ENCHANTING_TABLE);
 	}
 
 	@Override
@@ -268,7 +268,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 				if (!this.insertItem(itemStack2, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (itemStack2.getItem() == Items.field_8759) {
+			} else if (itemStack2.getItem() == Items.LAPIS_LAZULI) {
 				if (!this.insertItem(itemStack2, 1, 2, true)) {
 					return ItemStack.EMPTY;
 				}

@@ -78,7 +78,7 @@ public class SoundSystem {
 			try {
 				this.soundEngine.init();
 				this.listener.init();
-				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
+				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.MASTER));
 				this.soundLoader.loadStatic(this.preloadedSounds).thenRun(this.preloadedSounds::clear);
 				this.started = true;
 				LOGGER.info(MARKER, "Sound engine started");
@@ -89,12 +89,12 @@ public class SoundSystem {
 	}
 
 	private float getSoundVolume(@Nullable SoundCategory soundCategory) {
-		return soundCategory != null && soundCategory != SoundCategory.field_15250 ? this.settings.getSoundVolume(soundCategory) : 1.0F;
+		return soundCategory != null && soundCategory != SoundCategory.MASTER ? this.settings.getSoundVolume(soundCategory) : 1.0F;
 	}
 
 	public void updateSoundVolume(SoundCategory soundCategory, float volume) {
 		if (this.started) {
-			if (soundCategory == SoundCategory.field_15250) {
+			if (soundCategory == SoundCategory.MASTER) {
 				this.listener.setVolume(volume);
 			} else {
 				this.sources.forEach((soundInstance, sourceManager) -> {
@@ -284,9 +284,7 @@ public class SoundSystem {
 						} else {
 							Vec3d vec3d = new Vec3d(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ());
 							if (!this.listeners.isEmpty()) {
-								boolean bl2 = bl
-									|| attenuationType == SoundInstance.AttenuationType.field_5478
-									|| this.listener.method_27268().squaredDistanceTo(vec3d) < (double)(g * g);
+								boolean bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.method_27268().squaredDistanceTo(vec3d) < (double)(g * g);
 								if (bl2) {
 									for (SoundInstanceListener soundInstanceListener : this.listeners) {
 										soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);
@@ -302,7 +300,7 @@ public class SoundSystem {
 								boolean bl2 = shouldRepeatInstantly(soundInstance);
 								boolean bl3 = sound.isStreamed();
 								CompletableFuture<Channel.SourceManager> completableFuture = this.channel
-									.createSource(sound.isStreamed() ? SoundEngine.RunMode.field_18353 : SoundEngine.RunMode.field_18352);
+									.createSource(sound.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
 								Channel.SourceManager sourceManager = (Channel.SourceManager)completableFuture.join();
 								if (sourceManager == null) {
 									LOGGER.warn("Failed to create new sound handle");
@@ -314,7 +312,7 @@ public class SoundSystem {
 									sourceManager.run(source -> {
 										source.setPitch(i);
 										source.setVolume(h);
-										if (attenuationType == SoundInstance.AttenuationType.field_5476) {
+										if (attenuationType == SoundInstance.AttenuationType.LINEAR) {
 											source.setAttenuation(g);
 										} else {
 											source.disableAttenuation();

@@ -40,7 +40,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	public static ItemStack createMap(World world, int x, int z, byte scale, boolean showIcons, boolean unlimitedTracking) {
-		ItemStack itemStack = new ItemStack(Items.field_8204);
+		ItemStack itemStack = new ItemStack(Items.FILLED_MAP);
 		createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.getRegistryKey());
 		return itemStack;
 	}
@@ -122,9 +122,9 @@ public class FilledMapItem extends NetworkSyncedItem {
 									int x = s + t * 231871;
 									x = x * x * 31287121 + x * 11;
 									if ((x >> 20 & 1) == 0) {
-										multiset.add(Blocks.field_10566.getDefaultState().getTopMaterialColor(world, BlockPos.ORIGIN), 10);
+										multiset.add(Blocks.DIRT.getDefaultState().getTopMaterialColor(world, BlockPos.ORIGIN), 10);
 									} else {
-										multiset.add(Blocks.field_10340.getDefaultState().getTopMaterialColor(world, BlockPos.ORIGIN), 100);
+										multiset.add(Blocks.STONE.getDefaultState().getTopMaterialColor(world, BlockPos.ORIGIN), 100);
 									}
 
 									e = 100.0;
@@ -134,10 +134,10 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 									for (int y = 0; y < i; y++) {
 										for (int z = 0; z < i; z++) {
-											int aa = worldChunk.sampleHeightmap(Heightmap.Type.field_13202, y + u, z + v) + 1;
+											int aa = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
 											BlockState blockState;
 											if (aa <= 1) {
-												blockState = Blocks.field_9987.getDefaultState();
+												blockState = Blocks.BEDROCK.getDefaultState();
 											} else {
 												do {
 													mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
@@ -210,7 +210,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 	private BlockState getFluidStateIfVisible(World world, BlockState state, BlockPos pos) {
 		FluidState fluidState = state.getFluidState();
-		return !fluidState.isEmpty() && !state.isSideSolidFullSquare(world, pos, Direction.field_11036) ? fluidState.getBlockState() : state;
+		return !fluidState.isEmpty() && !state.isSideSolidFullSquare(world, pos, Direction.UP) ? fluidState.getBlockState() : state;
 	}
 
 	private static boolean hasPositiveDepth(Biome[] biomes, int scale, int x, int z) {
@@ -373,16 +373,16 @@ public class FilledMapItem extends NetworkSyncedItem {
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		MapState mapState = world == null ? null : getOrCreateMapState(stack, world);
 		if (mapState != null && mapState.locked) {
-			tooltip.add(new TranslatableText("filled_map.locked", getMapId(stack)).formatted(Formatting.field_1080));
+			tooltip.add(new TranslatableText("filled_map.locked", getMapId(stack)).formatted(Formatting.GRAY));
 		}
 
 		if (context.isAdvanced()) {
 			if (mapState != null) {
-				tooltip.add(new TranslatableText("filled_map.id", getMapId(stack)).formatted(Formatting.field_1080));
-				tooltip.add(new TranslatableText("filled_map.scale", 1 << mapState.scale).formatted(Formatting.field_1080));
-				tooltip.add(new TranslatableText("filled_map.level", mapState.scale, 4).formatted(Formatting.field_1080));
+				tooltip.add(new TranslatableText("filled_map.id", getMapId(stack)).formatted(Formatting.GRAY));
+				tooltip.add(new TranslatableText("filled_map.scale", 1 << mapState.scale).formatted(Formatting.GRAY));
+				tooltip.add(new TranslatableText("filled_map.level", mapState.scale, 4).formatted(Formatting.GRAY));
 			} else {
-				tooltip.add(new TranslatableText("filled_map.unknown").formatted(Formatting.field_1080));
+				tooltip.add(new TranslatableText("filled_map.unknown").formatted(Formatting.GRAY));
 			}
 		}
 	}
@@ -401,7 +401,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
-		if (blockState.isIn(BlockTags.field_15501)) {
+		if (blockState.isIn(BlockTags.BANNERS)) {
 			if (!context.getWorld().isClient) {
 				MapState mapState = getOrCreateMapState(context.getStack(), context.getWorld());
 				mapState.addBanner(context.getWorld(), context.getBlockPos());

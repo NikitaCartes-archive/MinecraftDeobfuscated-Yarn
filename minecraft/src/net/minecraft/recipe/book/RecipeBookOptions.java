@@ -12,13 +12,13 @@ import net.minecraft.util.Util;
 
 public final class RecipeBookOptions {
 	private static final Map<RecipeBookCategory, Pair<String, String>> CATEGORY_OPTION_NAMES = ImmutableMap.of(
-		RecipeBookCategory.field_25763,
+		RecipeBookCategory.CRAFTING,
 		Pair.of("isGuiOpen", "isFilteringCraftable"),
-		RecipeBookCategory.field_25764,
+		RecipeBookCategory.FURNACE,
 		Pair.of("isFurnaceGuiOpen", "isFurnaceFilteringCraftable"),
-		RecipeBookCategory.field_25765,
+		RecipeBookCategory.BLAST_FURNACE,
 		Pair.of("isBlastingFurnaceGuiOpen", "isBlastingFurnaceFilteringCraftable"),
-		RecipeBookCategory.field_25766,
+		RecipeBookCategory.SMOKER,
 		Pair.of("isSmokerGuiOpen", "isSmokerFilteringCraftable")
 	);
 	private final Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> categoryOptions;

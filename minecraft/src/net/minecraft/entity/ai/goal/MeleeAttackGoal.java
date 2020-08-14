@@ -25,7 +25,7 @@ public class MeleeAttackGoal extends Goal {
 		this.mob = mob;
 		this.speed = speed;
 		this.pauseWhenMobIdle = pauseWhenMobIdle;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class MeleeAttackGoal extends Goal {
 		double d = this.getSquaredMaxAttackDistance(target);
 		if (squaredDistance <= d && this.field_24667 <= 0) {
 			this.method_28346();
-			this.mob.swingHand(Hand.field_5808);
+			this.mob.swingHand(Hand.MAIN_HAND);
 			this.mob.tryAttack(target);
 		}
 	}

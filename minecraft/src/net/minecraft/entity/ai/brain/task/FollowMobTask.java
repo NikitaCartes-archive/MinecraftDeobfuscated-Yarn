@@ -29,26 +29,26 @@ public class FollowMobTask extends Task<LivingEntity> {
 	}
 
 	public FollowMobTask(Predicate<LivingEntity> predicate, float maxDistance) {
-		super(ImmutableMap.of(MemoryModuleType.field_18446, MemoryModuleState.field_18457, MemoryModuleType.field_18442, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
 		this.predicate = predicate;
 		this.maxDistanceSquared = maxDistance * maxDistance;
 	}
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return ((List)entity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get()).stream().anyMatch(this.predicate);
+		return ((List)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).stream().anyMatch(this.predicate);
 	}
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.field_18442)
+		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
 			.ifPresent(
 				list -> list.stream()
 						.filter(this.predicate)
 						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared)
 						.findFirst()
-						.ifPresent(livingEntityx -> brain.remember(MemoryModuleType.field_18446, new EntityLookTarget(livingEntityx, true)))
+						.ifPresent(livingEntityx -> brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntityx, true)))
 			);
 	}
 }

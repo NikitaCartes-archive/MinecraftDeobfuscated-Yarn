@@ -19,30 +19,30 @@ public class MapExtendingRecipe extends ShapedRecipe {
 			3,
 			DefaultedList.copyOf(
 				Ingredient.EMPTY,
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8204),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407)
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.FILLED_MAP),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER)
 			),
-			new ItemStack(Items.field_8895)
+			new ItemStack(Items.MAP)
 		);
 	}
 
 	@Override
-	public boolean method_17728(CraftingInventory craftingInventory, World world) {
-		if (!super.method_17728(craftingInventory, world)) {
+	public boolean matches(CraftingInventory craftingInventory, World world) {
+		if (!super.matches(craftingInventory, world)) {
 			return false;
 		} else {
 			ItemStack itemStack = ItemStack.EMPTY;
 
 			for (int i = 0; i < craftingInventory.size() && itemStack.isEmpty(); i++) {
 				ItemStack itemStack2 = craftingInventory.getStack(i);
-				if (itemStack2.getItem() == Items.field_8204) {
+				if (itemStack2.getItem() == Items.FILLED_MAP) {
 					itemStack = itemStack2;
 				}
 			}
@@ -63,7 +63,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	private boolean matches(MapState state) {
 		if (state.icons != null) {
 			for (MapIcon mapIcon : state.icons.values()) {
-				if (mapIcon.getType() == MapIcon.Type.field_88 || mapIcon.getType() == MapIcon.Type.field_98) {
+				if (mapIcon.getType() == MapIcon.Type.MANSION || mapIcon.getType() == MapIcon.Type.MONUMENT) {
 					return true;
 				}
 			}
@@ -73,12 +73,12 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public ItemStack method_17727(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory) {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.size() && itemStack.isEmpty(); i++) {
 			ItemStack itemStack2 = craftingInventory.getStack(i);
-			if (itemStack2.getItem() == Items.field_8204) {
+			if (itemStack2.getItem() == Items.FILLED_MAP) {
 				itemStack = itemStack2;
 			}
 		}

@@ -14,7 +14,7 @@ public class AxisAlignedLinearPosRuleTest extends PosRuleTest {
 					Codec.FLOAT.fieldOf("max_chance").orElse(0.0F).forGetter(axisAlignedLinearPosRuleTest -> axisAlignedLinearPosRuleTest.maxChance),
 					Codec.INT.fieldOf("min_dist").orElse(0).forGetter(axisAlignedLinearPosRuleTest -> axisAlignedLinearPosRuleTest.minDistance),
 					Codec.INT.fieldOf("max_dist").orElse(0).forGetter(axisAlignedLinearPosRuleTest -> axisAlignedLinearPosRuleTest.maxDistance),
-					Direction.Axis.field_25065.fieldOf("axis").orElse(Direction.Axis.field_11052).forGetter(axisAlignedLinearPosRuleTest -> axisAlignedLinearPosRuleTest.axis)
+					Direction.Axis.field_25065.fieldOf("axis").orElse(Direction.Axis.Y).forGetter(axisAlignedLinearPosRuleTest -> axisAlignedLinearPosRuleTest.axis)
 				)
 				.apply(instance, AxisAlignedLinearPosRuleTest::new)
 	);
@@ -38,7 +38,7 @@ public class AxisAlignedLinearPosRuleTest extends PosRuleTest {
 
 	@Override
 	public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, Random random) {
-		Direction direction = Direction.get(Direction.AxisDirection.field_11056, this.axis);
+		Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, this.axis);
 		float f = (float)Math.abs((blockPos2.getX() - blockPos3.getX()) * direction.getOffsetX());
 		float g = (float)Math.abs((blockPos2.getY() - blockPos3.getY()) * direction.getOffsetY());
 		float h = (float)Math.abs((blockPos2.getZ() - blockPos3.getZ()) * direction.getOffsetZ());
@@ -52,6 +52,6 @@ public class AxisAlignedLinearPosRuleTest extends PosRuleTest {
 
 	@Override
 	protected PosRuleTestType<?> getType() {
-		return PosRuleTestType.field_23346;
+		return PosRuleTestType.AXIS_ALIGNED_LINEAR_POS;
 	}
 }

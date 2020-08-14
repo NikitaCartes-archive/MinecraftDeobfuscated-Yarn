@@ -7,7 +7,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public enum BlankGlyph implements RenderableGlyph {
-	field_2283;
+	INSTANCE;
 
 	private static final NativeImage IMAGE = Util.make(new NativeImage(NativeImage.Format.ABGR, 5, 8, false), nativeImage -> {
 		for (int i = 0; i < 8; i++) {

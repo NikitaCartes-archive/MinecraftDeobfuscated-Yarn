@@ -42,7 +42,7 @@ public class StructurePool {
 				)
 				.apply(instance, StructurePool::new)
 	);
-	public static final Codec<Supplier<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.field_25917, CODEC);
+	public static final Codec<Supplier<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.TEMPLATE_POOL_WORLDGEN, CODEC);
 	private final Identifier id;
 	private final List<Pair<StructurePoolElement, Integer>> elementCounts;
 	private final List<StructurePoolElement> elements;
@@ -91,7 +91,7 @@ public class StructurePool {
 		if (this.highestY == Integer.MIN_VALUE) {
 			this.highestY = this.elements
 				.stream()
-				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.field_11467).getBlockCountY())
+				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY())
 				.max()
 				.orElse(0);
 		}
@@ -120,8 +120,8 @@ public class StructurePool {
 	}
 
 	public static enum Projection implements StringIdentifiable {
-		field_16686("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.field_13194, -1))),
-		field_16687("rigid", ImmutableList.of());
+		TERRAIN_MATCHING("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.WORLD_SURFACE_WG, -1))),
+		RIGID("rigid", ImmutableList.of());
 
 		public static final Codec<StructurePool.Projection> field_24956 = StringIdentifiable.createCodec(
 			StructurePool.Projection::values, StructurePool.Projection::getById

@@ -48,7 +48,7 @@ public class StructurePoolBasedGenerator {
 		boolean bl2
 	) {
 		StructureFeature.method_28664();
-		MutableRegistry<StructurePool> mutableRegistry = dynamicRegistryManager.get(Registry.field_25917);
+		MutableRegistry<StructurePool> mutableRegistry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
 		BlockRotation blockRotation = BlockRotation.random(random);
 		StructurePool structurePool = (StructurePool)structurePoolFeatureConfig.getStartPool().get();
 		StructurePoolElement structurePoolElement = structurePool.getRandomElement(random);
@@ -65,7 +65,7 @@ public class StructurePoolBasedGenerator {
 		int j = (blockBox.maxZ + blockBox.minZ) / 2;
 		int k;
 		if (bl2) {
-			k = blockPos.getY() + chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.field_13194);
+			k = blockPos.getY() + chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.WORLD_SURFACE_WG);
 		} else {
 			k = blockPos.getY();
 		}
@@ -109,7 +109,7 @@ public class StructurePoolBasedGenerator {
 		List<? super PoolStructurePiece> list,
 		Random random
 	) {
-		MutableRegistry<StructurePool> mutableRegistry = dynamicRegistryManager.get(Registry.field_25917);
+		MutableRegistry<StructurePool> mutableRegistry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
 		StructurePoolBasedGenerator.StructurePoolGenerator structurePoolGenerator = new StructurePoolBasedGenerator.StructurePoolGenerator(
 			mutableRegistry, i, pieceFactory, chunkGenerator, structureManager, list, random
 		);
@@ -178,7 +178,7 @@ public class StructurePoolBasedGenerator {
 			BlockPos blockPos = piece.getPos();
 			BlockRotation blockRotation = piece.getRotation();
 			StructurePool.Projection projection = structurePoolElement.getProjection();
-			boolean bl2 = projection == StructurePool.Projection.field_16687;
+			boolean bl2 = projection == StructurePool.Projection.RIGID;
 			MutableObject<VoxelShape> mutableObject2 = new MutableObject<>();
 			BlockBox blockBox = piece.getBoundingBox();
 			int i = blockBox.minY;
@@ -254,7 +254,7 @@ public class StructurePoolBasedGenerator {
 										BlockBox blockBox3 = structurePoolElement2.getBoundingBox(this.structureManager, blockPos5, blockRotation2);
 										int n = blockBox3.minY;
 										StructurePool.Projection projection2 = structurePoolElement2.getProjection();
-										boolean bl4 = projection2 == StructurePool.Projection.field_16687;
+										boolean bl4 = projection2 == StructurePool.Projection.RIGID;
 										int o = blockPos4.getY();
 										int p = j - o + JigsawBlock.getFacing(structureBlockInfo.state).getOffsetY();
 										int q;
@@ -262,7 +262,7 @@ public class StructurePoolBasedGenerator {
 											q = i + p;
 										} else {
 											if (k == -1) {
-												k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.field_13194);
+												k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
 											}
 
 											q = k - o;
@@ -295,7 +295,7 @@ public class StructurePoolBasedGenerator {
 												u = q + o;
 											} else {
 												if (k == -1) {
-													k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.field_13194);
+													k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
 												}
 
 												u = k + p / 2;

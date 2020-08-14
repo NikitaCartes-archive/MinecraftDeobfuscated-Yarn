@@ -27,8 +27,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
  * with the chunk that the structure originates from.
  */
 public abstract class StructureStart<C extends FeatureConfig> {
-	public static final StructureStart<?> DEFAULT = new StructureStart<MineshaftFeatureConfig>(StructureFeature.field_24844, 0, 0, BlockBox.empty(), 0, 0L) {
-		public void method_28958(
+	public static final StructureStart<?> DEFAULT = new StructureStart<MineshaftFeatureConfig>(StructureFeature.MINESHAFT, 0, 0, BlockBox.empty(), 0, 0L) {
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
@@ -67,13 +67,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 	}
 
 	public abstract void init(
-		DynamicRegistryManager dynamicRegistryManager,
-		ChunkGenerator chunkGenerator,
-		StructureManager structureManager,
-		int chunkX,
-		int chunkZ,
-		Biome biome,
-		C featureConfig
+		DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, StructureManager manager, int chunkX, int chunkZ, Biome biome, C config
 	);
 
 	public BlockBox getBoundingBox() {

@@ -10,7 +10,7 @@ import net.minecraft.client.render.WorldRenderer;
 
 @Environment(EnvType.CLIENT)
 public class LightmapCoordinatesRetriever<S extends BlockEntity> implements DoubleBlockProperties.PropertyRetriever<S, Int2IntFunction> {
-	public Int2IntFunction method_24192(S blockEntity, S blockEntity2) {
+	public Int2IntFunction getFromBoth(S blockEntity, S blockEntity2) {
 		return i -> {
 			int j = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(), blockEntity.getPos());
 			int k = WorldRenderer.getLightmapCoordinates(blockEntity2.getWorld(), blockEntity2.getPos());
@@ -22,11 +22,11 @@ public class LightmapCoordinatesRetriever<S extends BlockEntity> implements Doub
 		};
 	}
 
-	public Int2IntFunction method_24191(S blockEntity) {
+	public Int2IntFunction getFrom(S blockEntity) {
 		return i -> i;
 	}
 
-	public Int2IntFunction method_24189() {
+	public Int2IntFunction getFallback() {
 		return i -> i;
 	}
 }

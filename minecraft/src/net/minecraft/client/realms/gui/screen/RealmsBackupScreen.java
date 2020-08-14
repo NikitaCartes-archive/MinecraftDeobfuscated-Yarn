@@ -63,7 +63,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.backupObjectSelectionList = new RealmsBackupScreen.BackupObjectSelectionList();
 		if (lastScrollPosition != -1) {
 			this.backupObjectSelectionList.setScrollAmount((double)lastScrollPosition);
@@ -251,7 +251,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 
 		public void addEntry(Backup backup) {
-			this.method_25491(RealmsBackupScreen.this.new BackupObjectSelectionListEntry(backup));
+			this.addEntry(RealmsBackupScreen.this.new BackupObjectSelectionListEntry(backup));
 		}
 
 		@Override
@@ -332,7 +332,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 			RealmsBackupScreen.this.updateButtonStates();
 		}
 
-		public void method_25119(@Nullable RealmsBackupScreen.BackupObjectSelectionListEntry backupObjectSelectionListEntry) {
+		public void setSelected(@Nullable RealmsBackupScreen.BackupObjectSelectionListEntry backupObjectSelectionListEntry) {
 			super.setSelected(backupObjectSelectionListEntry);
 			RealmsBackupScreen.this.selectedBackup = this.children().indexOf(backupObjectSelectionListEntry);
 			RealmsBackupScreen.this.updateButtonStates();

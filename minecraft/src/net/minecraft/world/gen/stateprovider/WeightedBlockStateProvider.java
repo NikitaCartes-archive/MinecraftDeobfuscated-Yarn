@@ -26,7 +26,7 @@ public class WeightedBlockStateProvider extends BlockStateProvider {
 
 	@Override
 	protected BlockStateProviderType<?> getType() {
-		return BlockStateProviderType.field_21306;
+		return BlockStateProviderType.WEIGHTED_STATE_PROVIDER;
 	}
 
 	public WeightedBlockStateProvider() {

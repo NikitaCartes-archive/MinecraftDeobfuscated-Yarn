@@ -51,28 +51,28 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	private int timeInOverworld = 0;
 	private boolean cannotBeHunted = false;
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super HoglinEntity>>> SENSOR_TYPES = ImmutableList.of(
-		SensorType.field_18466, SensorType.field_18467, SensorType.field_25362, SensorType.field_22360
+		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ADULT, SensorType.HOGLIN_SPECIFIC_SENSOR
 	);
 	protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(
-		MemoryModuleType.field_18448,
-		MemoryModuleType.field_18441,
-		MemoryModuleType.field_18442,
-		MemoryModuleType.field_18444,
-		MemoryModuleType.field_22354,
-		MemoryModuleType.field_18446,
-		MemoryModuleType.field_18445,
-		MemoryModuleType.field_19293,
-		MemoryModuleType.field_18449,
-		MemoryModuleType.field_22355,
-		MemoryModuleType.field_22475,
-		MemoryModuleType.field_22345,
-		MemoryModuleType.field_22357,
-		MemoryModuleType.field_22347,
-		MemoryModuleType.field_22348,
-		MemoryModuleType.field_22344,
-		MemoryModuleType.field_25359,
-		MemoryModuleType.field_22474,
-		MemoryModuleType.field_22353
+		MemoryModuleType.BREED_TARGET,
+		MemoryModuleType.MOBS,
+		MemoryModuleType.VISIBLE_MOBS,
+		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
+		MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER,
+		MemoryModuleType.LOOK_TARGET,
+		MemoryModuleType.WALK_TARGET,
+		MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+		MemoryModuleType.PATH,
+		MemoryModuleType.ATTACK_TARGET,
+		MemoryModuleType.ATTACK_COOLING_DOWN,
+		MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN,
+		MemoryModuleType.AVOID_TARGET,
+		MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT,
+		MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT,
+		MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS,
+		MemoryModuleType.NEAREST_VISIBLE_ADULT,
+		MemoryModuleType.NEAREST_REPELLENT,
+		MemoryModuleType.PACIFIED
 	);
 
 	public HoglinEntity(EntityType<? extends HoglinEntity> entityType, World world) {
@@ -87,11 +87,11 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	public static DefaultAttributeContainer.Builder createHoglinAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23716, 40.0)
-			.add(EntityAttributes.field_23719, 0.3F)
-			.add(EntityAttributes.field_23718, 0.6F)
-			.add(EntityAttributes.field_23722, 1.0)
-			.add(EntityAttributes.field_23721, 6.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.6F)
+			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		} else {
 			this.movementCooldownTicks = 10;
 			this.world.sendEntityStatus(this, (byte)4);
-			this.playSound(SoundEvents.field_22258, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 			HoglinBrain.onAttacking(this, (LivingEntity)target);
 			return Hoglin.tryAttack(this, (LivingEntity)target);
 		}
@@ -152,7 +152,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		if (this.canConvert()) {
 			this.timeInOverworld++;
 			if (this.timeInOverworld > 300) {
-				this.method_30081(SoundEvents.field_23671);
+				this.method_30081(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED);
 				this.zombify((ServerWorld)this.world);
 			}
 		} else {
@@ -173,15 +173,15 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	protected void onGrowUp() {
 		if (this.isBaby()) {
 			this.experiencePoints = 3;
-			this.getAttributeInstance(EntityAttributes.field_23721).setBaseValue(0.5);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
 		} else {
 			this.experiencePoints = 5;
-			this.getAttributeInstance(EntityAttributes.field_23721).setBaseValue(6.0);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(6.0);
 		}
 	}
 
 	public static boolean canSpawn(EntityType<HoglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return !world.getBlockState(pos.method_10074()).isOf(Blocks.field_10541);
+		return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
 	}
 
 	@Nullable
@@ -206,7 +206,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		if (HoglinBrain.isWarpedFungusAround(this, pos)) {
 			return -1.0F;
 		} else {
-			return world.getBlockState(pos.method_10074()).isOf(Blocks.field_22120) ? 10.0F : 0.0F;
+			return world.getBlockState(pos.down()).isOf(Blocks.CRIMSON_NYLIUM) ? 10.0F : 0.0F;
 		}
 	}
 
@@ -230,7 +230,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	public void handleStatus(byte status) {
 		if (status == 4) {
 			this.movementCooldownTicks = 10;
-			this.playSound(SoundEvents.field_22258, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 		} else {
 			super.handleStatus(status);
 		}
@@ -253,9 +253,9 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	private void zombify(ServerWorld word) {
-		ZoglinEntity zoglinEntity = this.method_29243(EntityType.field_23696, true);
+		ZoglinEntity zoglinEntity = this.method_29243(EntityType.ZOGLIN, true);
 		if (zoglinEntity != null) {
-			zoglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5916, 200, 0));
+			zoglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
 		}
 	}
 
@@ -318,7 +318,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		HoglinEntity hoglinEntity = EntityType.field_21973.create(serverWorld);
+		HoglinEntity hoglinEntity = EntityType.HOGLIN.create(serverWorld);
 		if (hoglinEntity != null) {
 			hoglinEntity.setPersistent();
 		}
@@ -333,7 +333,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15251;
+		return SoundCategory.HOSTILE;
 	}
 
 	@Override
@@ -343,27 +343,27 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_22260;
+		return SoundEvents.ENTITY_HOGLIN_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_22259;
+		return SoundEvents.ENTITY_HOGLIN_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getSwimSound() {
-		return SoundEvents.field_14630;
+		return SoundEvents.ENTITY_HOSTILE_SWIM;
 	}
 
 	@Override
 	protected SoundEvent getSplashSound() {
-		return SoundEvents.field_14836;
+		return SoundEvents.ENTITY_HOSTILE_SPLASH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_22262, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_HOGLIN_STEP, 0.15F, 1.0F);
 	}
 
 	protected void method_30081(SoundEvent soundEvent) {
