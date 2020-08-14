@@ -18,7 +18,7 @@ public class SimpleBlockStateProvider extends BlockStateProvider {
 
 	@Override
 	protected BlockStateProviderType<?> getType() {
-		return BlockStateProviderType.field_21305;
+		return BlockStateProviderType.SIMPLE_STATE_PROVIDER;
 	}
 
 	@Override

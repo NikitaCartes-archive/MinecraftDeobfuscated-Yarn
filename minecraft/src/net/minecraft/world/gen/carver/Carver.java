@@ -23,46 +23,46 @@ import net.minecraft.world.gen.ProbabilityConfig;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
-	public static final Carver<ProbabilityConfig> field_13304 = register("cave", new CaveCarver(ProbabilityConfig.CODEC, 256));
-	public static final Carver<ProbabilityConfig> field_13297 = register("nether_cave", new NetherCaveCarver(ProbabilityConfig.CODEC));
-	public static final Carver<ProbabilityConfig> field_13295 = register("canyon", new RavineCarver(ProbabilityConfig.CODEC));
-	public static final Carver<ProbabilityConfig> field_13303 = register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig.CODEC));
-	public static final Carver<ProbabilityConfig> field_13300 = register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig.CODEC));
-	protected static final BlockState AIR = Blocks.field_10124.getDefaultState();
-	protected static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
+	public static final Carver<ProbabilityConfig> CAVE = register("cave", new CaveCarver(ProbabilityConfig.CODEC, 256));
+	public static final Carver<ProbabilityConfig> NETHER_CAVE = register("nether_cave", new NetherCaveCarver(ProbabilityConfig.CODEC));
+	public static final Carver<ProbabilityConfig> CANYON = register("canyon", new RavineCarver(ProbabilityConfig.CODEC));
+	public static final Carver<ProbabilityConfig> UNDERWATER_CANYON = register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig.CODEC));
+	public static final Carver<ProbabilityConfig> UNDERWATER_CAVE = register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig.CODEC));
+	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
+	protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
 	protected static final FluidState LAVA = Fluids.LAVA.getDefaultState();
 	protected Set<Block> alwaysCarvableBlocks = ImmutableSet.of(
-		Blocks.field_10340,
-		Blocks.field_10474,
-		Blocks.field_10508,
-		Blocks.field_10115,
-		Blocks.field_10566,
-		Blocks.field_10253,
-		Blocks.field_10520,
-		Blocks.field_10219,
-		Blocks.field_10415,
-		Blocks.field_10611,
-		Blocks.field_10184,
-		Blocks.field_10015,
-		Blocks.field_10325,
-		Blocks.field_10143,
-		Blocks.field_10014,
-		Blocks.field_10444,
-		Blocks.field_10349,
-		Blocks.field_10590,
-		Blocks.field_10235,
-		Blocks.field_10570,
-		Blocks.field_10409,
-		Blocks.field_10123,
-		Blocks.field_10526,
-		Blocks.field_10328,
-		Blocks.field_10626,
-		Blocks.field_9979,
-		Blocks.field_10344,
-		Blocks.field_10402,
-		Blocks.field_10477,
-		Blocks.field_10225
+		Blocks.STONE,
+		Blocks.GRANITE,
+		Blocks.DIORITE,
+		Blocks.ANDESITE,
+		Blocks.DIRT,
+		Blocks.COARSE_DIRT,
+		Blocks.PODZOL,
+		Blocks.GRASS_BLOCK,
+		Blocks.TERRACOTTA,
+		Blocks.WHITE_TERRACOTTA,
+		Blocks.ORANGE_TERRACOTTA,
+		Blocks.MAGENTA_TERRACOTTA,
+		Blocks.LIGHT_BLUE_TERRACOTTA,
+		Blocks.YELLOW_TERRACOTTA,
+		Blocks.LIME_TERRACOTTA,
+		Blocks.PINK_TERRACOTTA,
+		Blocks.GRAY_TERRACOTTA,
+		Blocks.LIGHT_GRAY_TERRACOTTA,
+		Blocks.CYAN_TERRACOTTA,
+		Blocks.PURPLE_TERRACOTTA,
+		Blocks.BLUE_TERRACOTTA,
+		Blocks.BROWN_TERRACOTTA,
+		Blocks.GREEN_TERRACOTTA,
+		Blocks.RED_TERRACOTTA,
+		Blocks.BLACK_TERRACOTTA,
+		Blocks.SANDSTONE,
+		Blocks.RED_SANDSTONE,
+		Blocks.MYCELIUM,
+		Blocks.SNOW,
+		Blocks.PACKED_ICE
 	);
 	protected Set<Fluid> carvableFluids = ImmutableSet.of(Fluids.WATER);
 	private final Codec<ConfiguredCarver<C>> codec;
@@ -173,8 +173,8 @@ public abstract class Carver<C extends CarverConfig> {
 			carvingMask.set(i);
 			mutable.set(x, y, z);
 			BlockState blockState = chunk.getBlockState(mutable);
-			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable, Direction.field_11036));
-			if (blockState.isOf(Blocks.field_10219) || blockState.isOf(Blocks.field_10402)) {
+			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable, Direction.UP));
+			if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
 				mutableBoolean.setTrue();
 			}
 
@@ -186,8 +186,8 @@ public abstract class Carver<C extends CarverConfig> {
 				} else {
 					chunk.setBlockState(mutable, CAVE_AIR, false);
 					if (mutableBoolean.isTrue()) {
-						mutable3.set(mutable, Direction.field_11033);
-						if (chunk.getBlockState(mutable3).isOf(Blocks.field_10566)) {
+						mutable3.set(mutable, Direction.DOWN);
+						if (chunk.getBlockState(mutable3).isOf(Blocks.DIRT)) {
 							chunk.setBlockState(mutable3, ((Biome)posToBiome.apply(mutable)).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
 						}
 					}
@@ -218,8 +218,7 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	protected boolean canCarveBlock(BlockState state, BlockState stateAbove) {
-		return this.canAlwaysCarveBlock(state)
-			|| (state.isOf(Blocks.field_10102) || state.isOf(Blocks.field_10255)) && !stateAbove.getFluidState().isIn(FluidTags.field_15517);
+		return this.canAlwaysCarveBlock(state) || (state.isOf(Blocks.SAND) || state.isOf(Blocks.GRAVEL)) && !stateAbove.getFluidState().isIn(FluidTags.WATER);
 	}
 
 	protected boolean isRegionUncarvable(Chunk chunk, int mainChunkX, int mainChunkZ, int relMinX, int relMaxX, int minY, int maxY, int relMinZ, int relMaxZ) {

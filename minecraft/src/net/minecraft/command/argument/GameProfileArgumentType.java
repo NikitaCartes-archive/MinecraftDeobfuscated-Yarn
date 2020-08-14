@@ -34,7 +34,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 		return new GameProfileArgumentType();
 	}
 
-	public GameProfileArgumentType.GameProfileArgument method_9331(StringReader stringReader) throws CommandSyntaxException {
+	public GameProfileArgumentType.GameProfileArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '@') {
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 			EntitySelector entitySelector = entitySelectorReader.read();

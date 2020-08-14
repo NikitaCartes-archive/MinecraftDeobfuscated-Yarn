@@ -36,18 +36,18 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 	}
 
 	public GrindstoneScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.field_17336, syncId);
+		super(ScreenHandlerType.GRINDSTONE, syncId);
 		this.context = context;
 		this.addSlot(new Slot(this.input, 0, 49, 19) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.isDamageable() || stack.getItem() == Items.field_8598 || stack.hasEnchantments();
+				return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.hasEnchantments();
 			}
 		});
 		this.addSlot(new Slot(this.input, 1, 49, 40) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.isDamageable() || stack.getItem() == Items.field_8598 || stack.hasEnchantments();
+				return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.hasEnchantments();
 			}
 		});
 		this.addSlot(new Slot(this.result, 2, 129, 34) {
@@ -129,8 +129,8 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 		if (!bl) {
 			this.result.setStack(0, ItemStack.EMPTY);
 		} else {
-			boolean bl3 = !itemStack.isEmpty() && itemStack.getItem() != Items.field_8598 && !itemStack.hasEnchantments()
-				|| !itemStack2.isEmpty() && itemStack2.getItem() != Items.field_8598 && !itemStack2.hasEnchantments();
+			boolean bl3 = !itemStack.isEmpty() && itemStack.getItem() != Items.ENCHANTED_BOOK && !itemStack.hasEnchantments()
+				|| !itemStack2.isEmpty() && itemStack2.getItem() != Items.ENCHANTED_BOOK && !itemStack2.hasEnchantments();
 			if (itemStack.getCount() > 1 || itemStack2.getCount() > 1 || !bl2 && bl3) {
 				this.result.setStack(0, ItemStack.EMPTY);
 				this.sendContentUpdates();
@@ -206,8 +206,8 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		EnchantmentHelper.set(map, itemStack);
 		itemStack.setRepairCost(0);
-		if (itemStack.getItem() == Items.field_8598 && map.size() == 0) {
-			itemStack = new ItemStack(Items.field_8529);
+		if (itemStack.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
+			itemStack = new ItemStack(Items.BOOK);
 			if (item.hasCustomName()) {
 				itemStack.setCustomName(item.getName());
 			}
@@ -228,7 +228,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.field_16337);
+		return canUse(this.context, player, Blocks.GRINDSTONE);
 	}
 
 	@Override

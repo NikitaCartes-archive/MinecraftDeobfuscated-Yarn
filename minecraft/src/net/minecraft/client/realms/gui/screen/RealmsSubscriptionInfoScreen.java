@@ -55,7 +55,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		Realms.narrateNow(
 			subscriptionTitle.getString(), subscriptionStartLabelText.getString(), this.startDate, timeLeftLabelText.getString(), this.daysLeft.getString()
 		);
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 100,
@@ -125,7 +125,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override
@@ -145,9 +145,9 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		drawCenteredText(matrices, this.textRenderer, subscriptionTitle, this.width / 2, 17, 16777215);
 		this.textRenderer.draw(matrices, subscriptionStartLabelText, (float)i, (float)row(0), 10526880);
 		this.textRenderer.draw(matrices, this.startDate, (float)i, (float)row(1), 16777215);
-		if (this.type == Subscription.SubscriptionType.field_19443) {
+		if (this.type == Subscription.SubscriptionType.NORMAL) {
 			this.textRenderer.draw(matrices, timeLeftLabelText, (float)i, (float)row(3), 10526880);
-		} else if (this.type == Subscription.SubscriptionType.field_19444) {
+		} else if (this.type == Subscription.SubscriptionType.RECURRING) {
 			this.textRenderer.draw(matrices, daysLeftLabelText, (float)i, (float)row(3), 10526880);
 		}
 

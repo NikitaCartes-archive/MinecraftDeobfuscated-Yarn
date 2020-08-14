@@ -34,13 +34,13 @@ public class CommandBlock extends BlockWithEntity {
 
 	public CommandBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(CONDITIONAL, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(CONDITIONAL, Boolean.valueOf(false)));
 	}
 
 	@Override
 	public BlockEntity createBlockEntity(BlockView world) {
 		CommandBlockBlockEntity commandBlockBlockEntity = new CommandBlockBlockEntity();
-		commandBlockBlockEntity.setAuto(this == Blocks.field_10395);
+		commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
 		return commandBlockBlockEntity;
 	}
 
@@ -53,7 +53,7 @@ public class CommandBlock extends BlockWithEntity {
 				boolean bl = world.isReceivingRedstonePower(pos);
 				boolean bl2 = commandBlockBlockEntity.isPowered();
 				commandBlockBlockEntity.setPowered(bl);
-				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.field_11922) {
+				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 					if (bl) {
 						commandBlockBlockEntity.updateConditionMet();
 						world.getBlockTickScheduler().schedule(pos, this, 1);
@@ -72,7 +72,7 @@ public class CommandBlock extends BlockWithEntity {
 			boolean bl = !ChatUtil.isEmpty(commandBlockExecutor.getCommand());
 			CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
 			boolean bl2 = commandBlockBlockEntity.isConditionMet();
-			if (type == CommandBlockBlockEntity.Type.field_11923) {
+			if (type == CommandBlockBlockEntity.Type.AUTO) {
 				commandBlockBlockEntity.updateConditionMet();
 				if (bl2) {
 					this.execute(state, world, pos, commandBlockExecutor, bl);
@@ -81,9 +81,9 @@ public class CommandBlock extends BlockWithEntity {
 				}
 
 				if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
-					world.method_14196().schedule(pos, this, 1);
+					world.getBlockTickScheduler().schedule(pos, this, 1);
 				}
-			} else if (type == CommandBlockBlockEntity.Type.field_11924) {
+			} else if (type == CommandBlockBlockEntity.Type.REDSTONE) {
 				if (bl2) {
 					this.execute(state, world, pos, commandBlockExecutor, bl);
 				} else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
@@ -139,11 +139,11 @@ public class CommandBlock extends BlockWithEntity {
 
 			if (!world.isClient) {
 				if (itemStack.getSubTag("BlockEntityTag") == null) {
-					commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean(GameRules.field_19400));
-					commandBlockBlockEntity.setAuto(this == Blocks.field_10395);
+					commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
+					commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
 				}
 
-				if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.field_11922) {
+				if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
 					boolean bl = world.isReceivingRedstonePower(pos);
 					commandBlockBlockEntity.setPowered(bl);
 				}
@@ -153,7 +153,7 @@ public class CommandBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
@@ -182,11 +182,11 @@ public class CommandBlock extends BlockWithEntity {
 
 		int i;
 		BlockState blockState;
-		for(i = gameRules.getInt(GameRules.field_19408); i-- > 0; facing = blockState.get(FACING)) {
+		for(i = gameRules.getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH); i-- > 0; facing = blockState.get(FACING)) {
 			mutable.move(facing);
 			blockState = world.getBlockState(mutable);
 			Block block = blockState.getBlock();
-			if (!blockState.isOf(Blocks.field_10395)) {
+			if (!blockState.isOf(Blocks.CHAIN_COMMAND_BLOCK)) {
 				break;
 			}
 
@@ -196,7 +196,7 @@ public class CommandBlock extends BlockWithEntity {
 			}
 
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
-			if (commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.field_11922) {
+			if (commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 				break;
 			}
 
@@ -215,7 +215,7 @@ public class CommandBlock extends BlockWithEntity {
 		}
 
 		if (i <= 0) {
-			int j = Math.max(gameRules.getInt(GameRules.field_19408), 0);
+			int j = Math.max(gameRules.getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH), 0);
 			LOGGER.warn("Command Block chain tried to execute more than {} steps!", j);
 		}
 	}

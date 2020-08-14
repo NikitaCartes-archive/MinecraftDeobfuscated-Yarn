@@ -30,7 +30,7 @@ public interface ResourceManager {
 	Stream<ResourcePack> streamResourcePacks();
 
 	public static enum Empty implements ResourceManager {
-		field_25351;
+		INSTANCE;
 
 		@Environment(EnvType.CLIENT)
 		@Override

@@ -37,7 +37,7 @@ public class InGameOverlayRenderer {
 		}
 
 		if (!minecraftClient.player.isSpectator()) {
-			if (minecraftClient.player.isSubmergedIn(FluidTags.field_15517)) {
+			if (minecraftClient.player.isSubmergedIn(FluidTags.WATER)) {
 				renderUnderwaterOverlay(minecraftClient, matrixStack);
 			}
 
@@ -59,7 +59,7 @@ public class InGameOverlayRenderer {
 			double f = playerEntity.getZ() + (double)(((float)((i >> 2) % 2) - 0.5F) * playerEntity.getWidth() * 0.8F);
 			mutable.set(d, e, f);
 			BlockState blockState = playerEntity.world.getBlockState(mutable);
-			if (blockState.getRenderType() != BlockRenderType.field_11455 && blockState.shouldBlockVision(playerEntity.world, mutable)) {
+			if (blockState.getRenderType() != BlockRenderType.INVISIBLE && blockState.shouldBlockVision(playerEntity.world, mutable)) {
 				return blockState;
 			}
 		}

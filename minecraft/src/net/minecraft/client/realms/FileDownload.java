@@ -333,7 +333,7 @@ public class FileDownload {
 
 			try (LevelStorage.Session session2 = storage.createSession(string)) {
 				session2.save(string.trim());
-				Path path2 = session2.getDirectory(WorldSavePath.field_24184);
+				Path path2 = session2.getDirectory(WorldSavePath.LEVEL_DAT);
 				readNbtFile(path2.toFile());
 			} catch (IOException var124) {
 				LOGGER.error("Failed to rename unpacked realms level {}", string, var124);
@@ -346,10 +346,10 @@ public class FileDownload {
 	private static void readNbtFile(File file) {
 		if (file.exists()) {
 			try {
-				CompoundTag compoundTag = NbtIo.method_30613(file);
+				CompoundTag compoundTag = NbtIo.readCompressed(file);
 				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
 				compoundTag2.remove("Player");
-				NbtIo.method_30614(compoundTag, file);
+				NbtIo.writeCompressed(compoundTag, file);
 			} catch (Exception var3) {
 				var3.printStackTrace();
 			}

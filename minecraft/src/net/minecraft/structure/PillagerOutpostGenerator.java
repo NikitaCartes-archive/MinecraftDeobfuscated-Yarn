@@ -14,7 +14,7 @@ public class PillagerOutpostGenerator {
 			new Identifier("pillager_outpost/base_plates"),
 			new Identifier("empty"),
 			ImmutableList.of(Pair.of(StructurePoolElement.method_30425("pillager_outpost/base_plate"), 1)),
-			StructurePool.Projection.field_16687
+			StructurePool.Projection.RIGID
 		)
 	);
 
@@ -31,13 +31,13 @@ public class PillagerOutpostGenerator {
 						StructurePoolElement.method_30429(
 							ImmutableList.of(
 								StructurePoolElement.method_30425("pillager_outpost/watchtower"),
-								StructurePoolElement.method_30426("pillager_outpost/watchtower_overgrown", StructureProcessorLists.field_26689)
+								StructurePoolElement.method_30426("pillager_outpost/watchtower_overgrown", StructureProcessorLists.OUTPOST_ROT)
 							)
 						),
 						1
 					)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -45,7 +45,7 @@ public class PillagerOutpostGenerator {
 				new Identifier("pillager_outpost/feature_plates"),
 				new Identifier("empty"),
 				ImmutableList.of(Pair.of(StructurePoolElement.method_30425("pillager_outpost/feature_plate"), 1)),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -61,7 +61,7 @@ public class PillagerOutpostGenerator {
 					Pair.of(StructurePoolElement.method_30425("pillager_outpost/feature_targets"), 1),
 					Pair.of(StructurePoolElement.method_30438(), 6)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 	}

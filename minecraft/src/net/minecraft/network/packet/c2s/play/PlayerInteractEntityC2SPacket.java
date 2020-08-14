@@ -21,20 +21,26 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 	public PlayerInteractEntityC2SPacket() {
 		this.entityId = 0;
-		this.type = PlayerInteractEntityC2SPacket.InteractionType.field_26783;
+		this.type = PlayerInteractEntityC2SPacket.InteractionType.AIR_SWING;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public PlayerInteractEntityC2SPacket(boolean bl) {
+		this();
+		this.playerSneaking = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public PlayerInteractEntityC2SPacket(Entity target, boolean playerSneaking) {
 		this.entityId = target.getEntityId();
-		this.type = PlayerInteractEntityC2SPacket.InteractionType.field_12875;
+		this.type = PlayerInteractEntityC2SPacket.InteractionType.ATTACK;
 		this.playerSneaking = playerSneaking;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, boolean playerSneaking) {
 		this.entityId = entity.getEntityId();
-		this.type = PlayerInteractEntityC2SPacket.InteractionType.field_12876;
+		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT;
 		this.hand = hand;
 		this.playerSneaking = playerSneaking;
 	}
@@ -42,7 +48,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	@Environment(EnvType.CLIENT)
 	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d hitPos, boolean playerSneaking) {
 		this.entityId = entity.getEntityId();
-		this.type = PlayerInteractEntityC2SPacket.InteractionType.field_12873;
+		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT;
 		this.hand = hand;
 		this.hitPos = hitPos;
 		this.playerSneaking = playerSneaking;
@@ -52,11 +58,11 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	public void read(PacketByteBuf buf) throws IOException {
 		this.entityId = buf.readVarInt();
 		this.type = buf.readEnumConstant(PlayerInteractEntityC2SPacket.InteractionType.class);
-		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12873) {
+		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			this.hitPos = new Vec3d((double)buf.readFloat(), (double)buf.readFloat(), (double)buf.readFloat());
 		}
 
-		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12876 || this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12873) {
+		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			this.hand = buf.readEnumConstant(Hand.class);
 		}
 
@@ -67,20 +73,20 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeVarInt(this.entityId);
 		buf.writeEnumConstant(this.type);
-		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12873) {
+		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			buf.writeFloat((float)this.hitPos.x);
 			buf.writeFloat((float)this.hitPos.y);
 			buf.writeFloat((float)this.hitPos.z);
 		}
 
-		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12876 || this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12873) {
+		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			buf.writeEnumConstant(this.hand);
 		}
 
 		buf.writeBoolean(this.playerSneaking);
 	}
 
-	public void method_12251(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerInteractEntity(this);
 	}
 
@@ -107,9 +113,9 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	public static enum InteractionType {
-		field_12876,
-		field_12875,
-		field_12873,
-		field_26783;
+		INTERACT,
+		ATTACK,
+		INTERACT_AT,
+		AIR_SWING;
 	}
 }

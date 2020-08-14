@@ -26,7 +26,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		return ID;
 	}
 
-	public InventoryChangedCriterion.Conditions method_8952(
+	public InventoryChangedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "slots", new JsonObject());

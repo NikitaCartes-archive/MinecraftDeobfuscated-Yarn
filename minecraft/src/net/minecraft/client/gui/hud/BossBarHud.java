@@ -49,23 +49,23 @@ public class BossBarHud extends DrawableHelper {
 
 	private void renderBossBar(MatrixStack matrices, int x, int y, BossBar bossBar) {
 		this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
-		if (bossBar.getOverlay() != BossBar.Style.field_5795) {
+		if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
 			this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
 		}
 
 		int i = (int)(bossBar.getPercent() * 183.0F);
 		if (i > 0) {
 			this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, i, 5);
-			if (bossBar.getOverlay() != BossBar.Style.field_5795) {
+			if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
 				this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, i, 5);
 			}
 		}
 	}
 
 	public void handlePacket(BossBarS2CPacket packet) {
-		if (packet.getType() == BossBarS2CPacket.Type.field_12078) {
+		if (packet.getType() == BossBarS2CPacket.Type.ADD) {
 			this.bossBars.put(packet.getUuid(), new ClientBossBar(packet));
-		} else if (packet.getType() == BossBarS2CPacket.Type.field_12082) {
+		} else if (packet.getType() == BossBarS2CPacket.Type.REMOVE) {
 			this.bossBars.remove(packet.getUuid());
 		} else {
 			((ClientBossBar)this.bossBars.get(packet.getUuid())).handlePacket(packet);

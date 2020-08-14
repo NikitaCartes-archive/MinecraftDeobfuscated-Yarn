@@ -22,13 +22,13 @@ public class FindWalkTargetTask extends Task<PathAwareEntity> {
 	}
 
 	public FindWalkTargetTask(float walkSpeed, int maxHorizontalDistance, int maxVerticalDistance) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 		this.walkSpeed = walkSpeed;
 		this.maxHorizontalDistance = maxHorizontalDistance;
 		this.maxVerticalDistance = maxVerticalDistance;
 	}
 
-	protected void method_18996(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		BlockPos blockPos = pathAwareEntity.getBlockPos();
 		if (serverWorld.isNearOccupiedPointOfInterest(blockPos)) {
 			this.updateWalkTarget(pathAwareEntity);
@@ -47,11 +47,11 @@ public class FindWalkTargetTask extends Task<PathAwareEntity> {
 		Optional<Vec3d> optional = Optional.ofNullable(
 			TargetFinder.findTargetTowards(entity, this.maxHorizontalDistance, this.maxVerticalDistance, Vec3d.ofBottomCenter(pos.getCenterPos()))
 		);
-		entity.getBrain().remember(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
+		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 
 	private void updateWalkTarget(PathAwareEntity entity) {
 		Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(entity, this.maxHorizontalDistance, this.maxVerticalDistance));
-		entity.getBrain().remember(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
+		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 }

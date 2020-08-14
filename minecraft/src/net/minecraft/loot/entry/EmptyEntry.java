@@ -15,7 +15,7 @@ public class EmptyEntry extends LeafEntry {
 
 	@Override
 	public LootPoolEntryType getType() {
-		return LootPoolEntryTypes.field_25206;
+		return LootPoolEntryTypes.EMPTY;
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class EmptyEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<EmptyEntry> {
-		public EmptyEntry method_402(
+		public EmptyEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			return new EmptyEntry(i, j, lootConditions, lootFunctions);

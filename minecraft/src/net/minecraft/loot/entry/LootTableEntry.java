@@ -23,7 +23,7 @@ public class LootTableEntry extends LeafEntry {
 
 	@Override
 	public LootPoolEntryType getType() {
-		return LootPoolEntryTypes.field_25208;
+		return LootPoolEntryTypes.LOOT_TABLE;
 	}
 
 	@Override
@@ -52,12 +52,12 @@ public class LootTableEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<LootTableEntry> {
-		public void method_431(JsonObject jsonObject, LootTableEntry lootTableEntry, JsonSerializationContext jsonSerializationContext) {
-			super.method_442(jsonObject, lootTableEntry, jsonSerializationContext);
+		public void addEntryFields(JsonObject jsonObject, LootTableEntry lootTableEntry, JsonSerializationContext jsonSerializationContext) {
+			super.addEntryFields(jsonObject, lootTableEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", lootTableEntry.id.toString());
 		}
 
-		protected LootTableEntry method_432(
+		protected LootTableEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));

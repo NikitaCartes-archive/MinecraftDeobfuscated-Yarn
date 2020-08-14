@@ -26,20 +26,20 @@ public class WallTorchBlock extends TorchBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.field_11043,
+			Direction.NORTH,
 			Block.createCuboidShape(5.5, 3.0, 11.0, 10.5, 13.0, 16.0),
-			Direction.field_11035,
+			Direction.SOUTH,
 			Block.createCuboidShape(5.5, 3.0, 0.0, 10.5, 13.0, 5.0),
-			Direction.field_11039,
+			Direction.WEST,
 			Block.createCuboidShape(11.0, 3.0, 5.5, 16.0, 13.0, 10.5),
-			Direction.field_11034,
+			Direction.EAST,
 			Block.createCuboidShape(0.0, 3.0, 5.5, 5.0, 13.0, 10.5)
 		)
 	);
 
 	protected WallTorchBlock(AbstractBlock.Settings settings, ParticleEffect particleEffect) {
 		super(settings, particleEffect);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class WallTorchBlock extends TorchBlock {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos) ? Blocks.field_10124.getDefaultState() : state;
+		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : state;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -100,7 +100,7 @@ public class WallTorchBlock extends TorchBlock {
 		double g = 0.22;
 		double h = 0.27;
 		Direction direction2 = direction.getOpposite();
-		world.addParticle(ParticleTypes.field_11251, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
+		world.addParticle(ParticleTypes.SMOKE, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
 		world.addParticle(this.particle, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
 	}
 

@@ -76,7 +76,7 @@ public class ScoreText extends BaseText implements ParsableText {
 		return "";
 	}
 
-	public ScoreText method_10929() {
+	public ScoreText copy() {
 		return new ScoreText(this.name, this.selector, this.objective);
 	}
 

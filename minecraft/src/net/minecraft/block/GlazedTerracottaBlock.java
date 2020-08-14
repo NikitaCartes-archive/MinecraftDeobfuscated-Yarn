@@ -21,6 +21,6 @@ public class GlazedTerracottaBlock extends HorizontalFacingBlock {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.field_15970;
+		return PistonBehavior.PUSH_ONLY;
 	}
 }

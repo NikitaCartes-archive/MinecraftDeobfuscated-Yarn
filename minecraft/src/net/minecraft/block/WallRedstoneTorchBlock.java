@@ -24,7 +24,7 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	protected WallRedstoneTorchBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(LIT, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT, Boolean.valueOf(true)));
 	}
 
 	@Override
@@ -39,18 +39,18 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return Blocks.field_10099.canPlaceAt(state, world, pos);
+		return Blocks.WALL_TORCH.canPlaceAt(state, world, pos);
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return Blocks.field_10099.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+		return Blocks.WALL_TORCH.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		BlockState blockState = Blocks.field_10099.getPlacementState(ctx);
+		BlockState blockState = Blocks.WALL_TORCH.getPlacementState(ctx);
 		return blockState == null ? null : this.getDefaultState().with(FACING, blockState.get(FACING));
 	}
 
@@ -80,12 +80,12 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		return Blocks.field_10099.rotate(state, rotation);
+		return Blocks.WALL_TORCH.rotate(state, rotation);
 	}
 
 	@Override
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
-		return Blocks.field_10099.mirror(state, mirror);
+		return Blocks.WALL_TORCH.mirror(state, mirror);
 	}
 
 	@Override

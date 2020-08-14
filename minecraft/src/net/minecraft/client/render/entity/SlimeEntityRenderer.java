@@ -19,12 +19,12 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 		this.addFeature(new SlimeOverlayFeatureRenderer<>(this));
 	}
 
-	public void method_4117(SlimeEntity slimeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(SlimeEntity slimeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		this.shadowRadius = 0.25F * (float)slimeEntity.getSize();
-		super.method_4072(slimeEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(slimeEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	protected void method_4118(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {
+	protected void scale(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {
 		float g = 0.999F;
 		matrixStack.scale(0.999F, 0.999F, 0.999F);
 		matrixStack.translate(0.0, 0.001F, 0.0);
@@ -34,7 +34,7 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 		matrixStack.scale(j * h, 1.0F / j * h, j * h);
 	}
 
-	public Identifier method_4116(SlimeEntity slimeEntity) {
+	public Identifier getTexture(SlimeEntity slimeEntity) {
 		return TEXTURE;
 	}
 }

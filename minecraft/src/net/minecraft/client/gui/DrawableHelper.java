@@ -145,13 +145,16 @@ public abstract class DrawableHelper {
 
 	public void method_29343(int i, int j, BiConsumer<Integer, Integer> biConsumer) {
 		RenderSystem.blendFuncSeparate(
-			GlStateManager.SrcFactor.field_22544, GlStateManager.DstFactor.field_22523, GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523
+			GlStateManager.SrcFactor.ZERO,
+			GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA,
+			GlStateManager.SrcFactor.SRC_ALPHA,
+			GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
 		);
 		biConsumer.accept(i + 1, j);
 		biConsumer.accept(i - 1, j);
 		biConsumer.accept(i, j + 1);
 		biConsumer.accept(i, j - 1);
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 		biConsumer.accept(i, j);
 	}
 

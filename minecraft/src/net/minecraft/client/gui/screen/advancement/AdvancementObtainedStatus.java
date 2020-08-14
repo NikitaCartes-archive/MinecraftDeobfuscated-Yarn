@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public enum AdvancementObtainedStatus {
-	field_2701(0),
-	field_2699(1);
+	OBTAINED(0),
+	UNOBTAINED(1);
 
 	private final int spriteIndex;
 

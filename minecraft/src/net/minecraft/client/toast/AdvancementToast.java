@@ -30,7 +30,7 @@ public class AdvancementToast implements Toast {
 		manager.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
 		if (advancementDisplay != null) {
 			List<OrderedText> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
-			int i = advancementDisplay.getFrame() == AdvancementFrame.field_1250 ? 16746751 : 16776960;
+			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;
 			if (list.size() == 1) {
 				manager.getGame().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0F, 7.0F, i | 0xFF000000);
 				manager.getGame().textRenderer.draw(matrices, (OrderedText)list.get(0), 30.0F, 18.0F, -1);
@@ -53,15 +53,15 @@ public class AdvancementToast implements Toast {
 
 			if (!this.soundPlayed && startTime > 0L) {
 				this.soundPlayed = true;
-				if (advancementDisplay.getFrame() == AdvancementFrame.field_1250) {
-					manager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15195, 1.0F, 1.0F));
+				if (advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE) {
+					manager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0F, 1.0F));
 				}
 			}
 
 			manager.getGame().getItemRenderer().renderInGui(advancementDisplay.getIcon(), 8, 8);
-			return startTime >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
+			return startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		} else {
-			return Toast.Visibility.field_2209;
+			return Toast.Visibility.HIDE;
 		}
 	}
 }

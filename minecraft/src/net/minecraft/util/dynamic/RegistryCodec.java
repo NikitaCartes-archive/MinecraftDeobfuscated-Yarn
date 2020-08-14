@@ -30,12 +30,12 @@ public final class RegistryCodec<E> implements Codec<SimpleRegistry<E>> {
 	}
 
 	private RegistryCodec(RegistryKey<? extends Registry<E>> registryRef, Lifecycle lifecycle, Codec<E> codec) {
-		this.delegate = SimpleRegistry.method_31059(registryRef, lifecycle, codec);
+		this.delegate = SimpleRegistry.createCodec(registryRef, lifecycle, codec);
 		this.registryRef = registryRef;
 		this.elementCodec = codec;
 	}
 
-	public <T> DataResult<T> method_29744(SimpleRegistry<E> simpleRegistry, DynamicOps<T> dynamicOps, T object) {
+	public <T> DataResult<T> encode(SimpleRegistry<E> simpleRegistry, DynamicOps<T> dynamicOps, T object) {
 		return this.delegate.encode(simpleRegistry, dynamicOps, object);
 	}
 

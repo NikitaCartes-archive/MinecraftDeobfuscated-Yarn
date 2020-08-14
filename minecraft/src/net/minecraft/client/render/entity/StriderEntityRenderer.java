@@ -18,11 +18,11 @@ public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, Stri
 		this.addFeature(new SaddleFeatureRenderer<>(this, new StriderEntityModel<>(), new Identifier("textures/entity/strider/strider_saddle.png")));
 	}
 
-	public Identifier method_26421(StriderEntity striderEntity) {
+	public Identifier getTexture(StriderEntity striderEntity) {
 		return striderEntity.isCold() ? COLD_TEXTURE : TEXTURE;
 	}
 
-	protected void method_26422(StriderEntity striderEntity, MatrixStack matrixStack, float f) {
+	protected void scale(StriderEntity striderEntity, MatrixStack matrixStack, float f) {
 		if (striderEntity.isBaby()) {
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			this.shadowRadius = 0.25F;
@@ -31,7 +31,7 @@ public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, Stri
 		}
 	}
 
-	protected boolean method_26423(StriderEntity striderEntity) {
+	protected boolean isShaking(StriderEntity striderEntity) {
 		return striderEntity.isCold();
 	}
 }

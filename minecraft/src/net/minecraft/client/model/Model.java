@@ -19,7 +19,7 @@ public abstract class Model implements Consumer<ModelPart> {
 		this.layerFactory = layerFactory;
 	}
 
-	public void method_22696(ModelPart modelPart) {
+	public void accept(ModelPart modelPart) {
 	}
 
 	public final RenderLayer getLayer(Identifier texture) {

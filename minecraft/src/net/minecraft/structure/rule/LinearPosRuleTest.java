@@ -45,6 +45,6 @@ public class LinearPosRuleTest extends PosRuleTest {
 
 	@Override
 	protected PosRuleTestType<?> getType() {
-		return PosRuleTestType.field_23345;
+		return PosRuleTestType.LINEAR_POS;
 	}
 }

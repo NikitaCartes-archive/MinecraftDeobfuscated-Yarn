@@ -34,7 +34,7 @@ public class TargetBlock extends Block {
 		Entity entity = projectile.getOwner();
 		if (entity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-			serverPlayerEntity.incrementStat(Stats.field_22413);
+			serverPlayerEntity.incrementStat(Stats.TARGET_HIT);
 			Criteria.TARGET_HIT.trigger(serverPlayerEntity, projectile, hit.getPos(), i);
 		}
 	}
@@ -56,9 +56,9 @@ public class TargetBlock extends Block {
 		double f = Math.abs(MathHelper.fractionalPart(pos.z) - 0.5);
 		Direction.Axis axis = direction.getAxis();
 		double g;
-		if (axis == Direction.Axis.field_11052) {
+		if (axis == Direction.Axis.Y) {
 			g = Math.max(d, f);
-		} else if (axis == Direction.Axis.field_11051) {
+		} else if (axis == Direction.Axis.Z) {
 			g = Math.max(d, e);
 		} else {
 			g = Math.max(e, f);

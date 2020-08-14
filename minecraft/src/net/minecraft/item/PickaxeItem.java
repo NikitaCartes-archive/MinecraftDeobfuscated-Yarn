@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
-import net.minecraft.class_5508;
+import net.minecraft.class_5510;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,90 +10,90 @@ import net.minecraft.block.Material;
 
 public class PickaxeItem extends MiningToolItem {
 	private static final Set<Block> EFFECTIVE_BLOCKS = ImmutableSet.of(
-		Blocks.field_10546,
-		Blocks.field_10418,
-		Blocks.field_10445,
-		Blocks.field_10025,
-		Blocks.field_10201,
-		Blocks.field_10442,
-		Blocks.field_10425,
-		Blocks.field_10205,
-		Blocks.field_10571,
-		Blocks.field_23077,
-		Blocks.field_10295,
-		Blocks.field_10085,
-		Blocks.field_10212,
-		Blocks.field_10441,
-		Blocks.field_10090,
-		Blocks.field_9989,
-		Blocks.field_10515,
-		Blocks.field_10225,
-		Blocks.field_10384,
-		Blocks.field_10167,
-		Blocks.field_10080,
-		Blocks.field_9979,
-		Blocks.field_10292,
-		Blocks.field_10361,
-		Blocks.field_10117,
-		Blocks.field_10518,
-		Blocks.field_10344,
-		Blocks.field_10340,
-		Blocks.field_10474,
-		Blocks.field_10289,
-		Blocks.field_10508,
-		Blocks.field_10346,
-		Blocks.field_10115,
-		Blocks.field_10093,
-		Blocks.field_10454,
-		Blocks.field_10136,
-		Blocks.field_10007,
-		Blocks.field_10298,
-		Blocks.field_10351,
-		Blocks.field_10191,
-		Blocks.field_10131,
-		Blocks.field_10390,
-		Blocks.field_10237,
-		Blocks.field_10624,
-		Blocks.field_10175,
-		Blocks.field_9978,
-		Blocks.field_10483,
-		Blocks.field_10467,
-		Blocks.field_10360,
-		Blocks.field_10494,
-		Blocks.field_10158,
-		Blocks.field_10329,
-		Blocks.field_10283,
-		Blocks.field_10024,
-		Blocks.field_10412,
-		Blocks.field_10405,
-		Blocks.field_10064,
-		Blocks.field_10262,
-		Blocks.field_10601,
-		Blocks.field_10189,
-		Blocks.field_10016,
-		Blocks.field_10478,
-		Blocks.field_10322,
-		Blocks.field_10507,
-		Blocks.field_10603,
-		Blocks.field_10371,
-		Blocks.field_10605,
-		Blocks.field_10373,
-		Blocks.field_10532,
-		Blocks.field_10140,
-		Blocks.field_10055,
-		Blocks.field_10203,
-		Blocks.field_10320,
-		Blocks.field_10275,
-		Blocks.field_10063,
-		Blocks.field_10407,
-		Blocks.field_10051,
-		Blocks.field_10268,
-		Blocks.field_10068,
-		Blocks.field_10199,
-		Blocks.field_10600,
-		Blocks.field_10560,
-		Blocks.field_10615,
-		Blocks.field_10379
+		Blocks.ACTIVATOR_RAIL,
+		Blocks.COAL_ORE,
+		Blocks.COBBLESTONE,
+		Blocks.DETECTOR_RAIL,
+		Blocks.DIAMOND_BLOCK,
+		Blocks.DIAMOND_ORE,
+		Blocks.POWERED_RAIL,
+		Blocks.GOLD_BLOCK,
+		Blocks.GOLD_ORE,
+		Blocks.NETHER_GOLD_ORE,
+		Blocks.ICE,
+		Blocks.IRON_BLOCK,
+		Blocks.IRON_ORE,
+		Blocks.LAPIS_BLOCK,
+		Blocks.LAPIS_ORE,
+		Blocks.MOSSY_COBBLESTONE,
+		Blocks.NETHERRACK,
+		Blocks.PACKED_ICE,
+		Blocks.BLUE_ICE,
+		Blocks.RAIL,
+		Blocks.REDSTONE_ORE,
+		Blocks.SANDSTONE,
+		Blocks.CHISELED_SANDSTONE,
+		Blocks.CUT_SANDSTONE,
+		Blocks.CHISELED_RED_SANDSTONE,
+		Blocks.CUT_RED_SANDSTONE,
+		Blocks.RED_SANDSTONE,
+		Blocks.STONE,
+		Blocks.GRANITE,
+		Blocks.POLISHED_GRANITE,
+		Blocks.DIORITE,
+		Blocks.POLISHED_DIORITE,
+		Blocks.ANDESITE,
+		Blocks.POLISHED_ANDESITE,
+		Blocks.STONE_SLAB,
+		Blocks.SMOOTH_STONE_SLAB,
+		Blocks.SANDSTONE_SLAB,
+		Blocks.PETRIFIED_OAK_SLAB,
+		Blocks.COBBLESTONE_SLAB,
+		Blocks.BRICK_SLAB,
+		Blocks.STONE_BRICK_SLAB,
+		Blocks.NETHER_BRICK_SLAB,
+		Blocks.QUARTZ_SLAB,
+		Blocks.RED_SANDSTONE_SLAB,
+		Blocks.PURPUR_SLAB,
+		Blocks.SMOOTH_QUARTZ,
+		Blocks.SMOOTH_RED_SANDSTONE,
+		Blocks.SMOOTH_SANDSTONE,
+		Blocks.SMOOTH_STONE,
+		Blocks.STONE_BUTTON,
+		Blocks.STONE_PRESSURE_PLATE,
+		Blocks.POLISHED_GRANITE_SLAB,
+		Blocks.SMOOTH_RED_SANDSTONE_SLAB,
+		Blocks.MOSSY_STONE_BRICK_SLAB,
+		Blocks.POLISHED_DIORITE_SLAB,
+		Blocks.MOSSY_COBBLESTONE_SLAB,
+		Blocks.END_STONE_BRICK_SLAB,
+		Blocks.SMOOTH_SANDSTONE_SLAB,
+		Blocks.SMOOTH_QUARTZ_SLAB,
+		Blocks.GRANITE_SLAB,
+		Blocks.ANDESITE_SLAB,
+		Blocks.RED_NETHER_BRICK_SLAB,
+		Blocks.POLISHED_ANDESITE_SLAB,
+		Blocks.DIORITE_SLAB,
+		Blocks.SHULKER_BOX,
+		Blocks.BLACK_SHULKER_BOX,
+		Blocks.BLUE_SHULKER_BOX,
+		Blocks.BROWN_SHULKER_BOX,
+		Blocks.CYAN_SHULKER_BOX,
+		Blocks.GRAY_SHULKER_BOX,
+		Blocks.GREEN_SHULKER_BOX,
+		Blocks.LIGHT_BLUE_SHULKER_BOX,
+		Blocks.LIGHT_GRAY_SHULKER_BOX,
+		Blocks.LIME_SHULKER_BOX,
+		Blocks.MAGENTA_SHULKER_BOX,
+		Blocks.ORANGE_SHULKER_BOX,
+		Blocks.PINK_SHULKER_BOX,
+		Blocks.PURPLE_SHULKER_BOX,
+		Blocks.RED_SHULKER_BOX,
+		Blocks.WHITE_SHULKER_BOX,
+		Blocks.YELLOW_SHULKER_BOX,
+		Blocks.PISTON,
+		Blocks.STICKY_PISTON,
+		Blocks.PISTON_HEAD
 	);
 
 	protected PickaxeItem(ToolMaterial toolMaterial, Item.Settings settings) {
@@ -103,23 +103,23 @@ public class PickaxeItem extends MiningToolItem {
 	@Override
 	public boolean isEffectiveOn(BlockState state) {
 		int i = this.getMaterial().getMiningLevel();
-		if (state.isOf(Blocks.field_10540)
-			|| state.isOf(Blocks.field_22423)
-			|| state.isOf(Blocks.field_22108)
-			|| state.isOf(Blocks.field_23152)
-			|| state.isOf(Blocks.field_22109)) {
+		if (state.isOf(Blocks.OBSIDIAN)
+			|| state.isOf(Blocks.CRYING_OBSIDIAN)
+			|| state.isOf(Blocks.NETHERITE_BLOCK)
+			|| state.isOf(Blocks.RESPAWN_ANCHOR)
+			|| state.isOf(Blocks.ANCIENT_DEBRIS)) {
 			return i >= 3;
-		} else if (state.isOf(Blocks.field_10201)
-			|| state.isOf(Blocks.field_10442)
-			|| state.isOf(Blocks.field_10013)
-			|| state.isOf(Blocks.field_10234)
-			|| state.isOf(Blocks.field_10205)
-			|| state.isOf(Blocks.field_10571)
-			|| state.isOf(Blocks.field_10080)) {
+		} else if (state.isOf(Blocks.DIAMOND_BLOCK)
+			|| state.isOf(Blocks.DIAMOND_ORE)
+			|| state.isOf(Blocks.EMERALD_ORE)
+			|| state.isOf(Blocks.EMERALD_BLOCK)
+			|| state.isOf(Blocks.GOLD_BLOCK)
+			|| state.isOf(Blocks.GOLD_ORE)
+			|| state.isOf(Blocks.REDSTONE_ORE)) {
 			return i >= 2;
-		} else if (!state.isOf(Blocks.field_10085) && !state.isOf(Blocks.field_10212) && !state.isOf(Blocks.field_10441) && !state.isOf(Blocks.field_10090)) {
+		} else if (!state.isOf(Blocks.IRON_BLOCK) && !state.isOf(Blocks.IRON_ORE) && !state.isOf(Blocks.LAPIS_BLOCK) && !state.isOf(Blocks.LAPIS_ORE)) {
 			Material material = state.getMaterial();
-			return material == Material.STONE || material == Material.METAL || material == Material.REPAIR_STATION || state.isOf(Blocks.field_23077);
+			return material == Material.STONE || material == Material.METAL || material == Material.REPAIR_STATION || state.isOf(Blocks.NETHER_GOLD_ORE);
 		} else {
 			return i >= 1;
 		}
@@ -134,7 +134,7 @@ public class PickaxeItem extends MiningToolItem {
 	}
 
 	@Override
-	protected class_5508 method_31212() {
-		return class_5508.field_26765;
+	protected class_5510 method_31243() {
+		return class_5510.field_26793;
 	}
 }

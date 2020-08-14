@@ -38,17 +38,17 @@ public class InfestedBlock extends Block {
 	}
 
 	private void spawnSilverfish(ServerWorld serverWorld, BlockPos pos) {
-		SilverfishEntity silverfishEntity = EntityType.field_6125.create(serverWorld);
+		SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(serverWorld);
 		silverfishEntity.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, 0.0F, 0.0F);
 		serverWorld.spawnEntity(silverfishEntity);
 		silverfishEntity.playSpawnEffects();
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, serverWorld, pos, stack);
-		if (serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && EnchantmentHelper.getLevel(Enchantments.field_9099, stack) == 0) {
-			this.spawnSilverfish(serverWorld, pos);
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
+		super.onStacksDropped(state, world, pos, stack);
+		if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
+			this.spawnSilverfish(world, pos);
 		}
 	}
 

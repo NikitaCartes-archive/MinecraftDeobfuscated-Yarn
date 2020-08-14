@@ -34,20 +34,20 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	public FarmerVillagerTask() {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18873,
-				MemoryModuleState.field_18456
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.SECONDARY_JOB_SITE,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 	}
 
-	protected boolean method_19564(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		if (!serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 			return false;
-		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.field_17056) {
+		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.FARMER) {
 			return false;
 		} else {
 			BlockPos.Mutable mutable = villagerEntity.getBlockPos().mutableCopy();
@@ -77,30 +77,30 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	private boolean isSuitableTarget(BlockPos pos, ServerWorld world) {
 		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
-		Block block2 = world.getBlockState(pos.method_10074()).getBlock();
+		Block block2 = world.getBlockState(pos.down()).getBlock();
 		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) || blockState.isAir() && block2 instanceof FarmlandBlock;
 	}
 
-	protected void method_20392(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (l > this.nextResponseTime && this.currentTarget != null) {
-			villagerEntity.getBrain().remember(MemoryModuleType.field_18446, new BlockPosLookTarget(this.currentTarget));
-			villagerEntity.getBrain().remember(MemoryModuleType.field_18445, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5F, 1));
+			villagerEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
+			villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5F, 1));
 		}
 	}
 
-	protected void method_19566(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18446);
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18445);
+	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
+		villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
 		this.ticksRan = 0;
 		this.nextResponseTime = l + 40L;
 	}
 
-	protected void method_19565(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (this.currentTarget == null || this.currentTarget.isWithinDistance(villagerEntity.getPos(), 1.0)) {
 			if (this.currentTarget != null && l > this.nextResponseTime) {
 				BlockState blockState = serverWorld.getBlockState(this.currentTarget);
 				Block block = blockState.getBlock();
-				Block block2 = serverWorld.getBlockState(this.currentTarget.method_10074()).getBlock();
+				Block block2 = serverWorld.getBlockState(this.currentTarget.down()).getBlock();
 				if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState)) {
 					serverWorld.breakBlock(this.currentTarget, true, villagerEntity);
 				}
@@ -112,17 +112,17 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 						ItemStack itemStack = simpleInventory.getStack(i);
 						boolean bl = false;
 						if (!itemStack.isEmpty()) {
-							if (itemStack.getItem() == Items.field_8317) {
-								serverWorld.setBlockState(this.currentTarget, Blocks.field_10293.getDefaultState(), 3);
+							if (itemStack.getItem() == Items.WHEAT_SEEDS) {
+								serverWorld.setBlockState(this.currentTarget, Blocks.WHEAT.getDefaultState(), 3);
 								bl = true;
-							} else if (itemStack.getItem() == Items.field_8567) {
-								serverWorld.setBlockState(this.currentTarget, Blocks.field_10247.getDefaultState(), 3);
+							} else if (itemStack.getItem() == Items.POTATO) {
+								serverWorld.setBlockState(this.currentTarget, Blocks.POTATOES.getDefaultState(), 3);
 								bl = true;
-							} else if (itemStack.getItem() == Items.field_8179) {
-								serverWorld.setBlockState(this.currentTarget, Blocks.field_10609.getDefaultState(), 3);
+							} else if (itemStack.getItem() == Items.CARROT) {
+								serverWorld.setBlockState(this.currentTarget, Blocks.CARROTS.getDefaultState(), 3);
 								bl = true;
-							} else if (itemStack.getItem() == Items.field_8309) {
-								serverWorld.setBlockState(this.currentTarget, Blocks.field_10341.getDefaultState(), 3);
+							} else if (itemStack.getItem() == Items.BEETROOT_SEEDS) {
+								serverWorld.setBlockState(this.currentTarget, Blocks.BEETROOTS.getDefaultState(), 3);
 								bl = true;
 							}
 						}
@@ -133,8 +133,8 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 								(double)this.currentTarget.getX(),
 								(double)this.currentTarget.getY(),
 								(double)this.currentTarget.getZ(),
-								SoundEvents.field_17611,
-								SoundCategory.field_15245,
+								SoundEvents.ITEM_CROP_PLANT,
+								SoundCategory.BLOCKS,
 								1.0F,
 								1.0F
 							);
@@ -152,8 +152,8 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					this.currentTarget = this.chooseRandomTarget(serverWorld);
 					if (this.currentTarget != null) {
 						this.nextResponseTime = l + 20L;
-						villagerEntity.getBrain().remember(MemoryModuleType.field_18445, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5F, 1));
-						villagerEntity.getBrain().remember(MemoryModuleType.field_18446, new BlockPosLookTarget(this.currentTarget));
+						villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5F, 1));
+						villagerEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
 					}
 				}
 			}
@@ -162,7 +162,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		}
 	}
 
-	protected boolean method_20394(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		return this.ticksRan < 200;
 	}
 }

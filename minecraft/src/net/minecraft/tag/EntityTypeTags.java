@@ -8,11 +8,11 @@ public final class EntityTypeTags {
 	protected static final RequiredTagList<EntityType<?>> REQUIRED_TAGS = RequiredTagListRegistry.register(
 		new Identifier("entity_type"), TagManager::getEntityTypes
 	);
-	public static final Tag.Identified<EntityType<?>> field_15507 = register("skeletons");
-	public static final Tag.Identified<EntityType<?>> field_19168 = register("raiders");
-	public static final Tag.Identified<EntityType<?>> field_20631 = register("beehive_inhabitors");
-	public static final Tag.Identified<EntityType<?>> field_21508 = register("arrows");
-	public static final Tag.Identified<EntityType<?>> field_22415 = register("impact_projectiles");
+	public static final Tag.Identified<EntityType<?>> SKELETONS = register("skeletons");
+	public static final Tag.Identified<EntityType<?>> RAIDERS = register("raiders");
+	public static final Tag.Identified<EntityType<?>> BEEHIVE_INHABITORS = register("beehive_inhabitors");
+	public static final Tag.Identified<EntityType<?>> ARROWS = register("arrows");
+	public static final Tag.Identified<EntityType<?>> IMPACT_PROJECTILES = register("impact_projectiles");
 
 	private static Tag.Identified<EntityType<?>> register(String id) {
 		return REQUIRED_TAGS.add(id);
@@ -22,7 +22,7 @@ public final class EntityTypeTags {
 		return REQUIRED_TAGS.getGroup();
 	}
 
-	public static List<? extends Tag.Identified<EntityType<?>>> method_31073() {
+	public static List<? extends Tag.Identified<EntityType<?>>> getRequiredTags() {
 		return REQUIRED_TAGS.getTags();
 	}
 }

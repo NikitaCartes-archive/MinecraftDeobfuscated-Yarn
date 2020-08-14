@@ -4,12 +4,12 @@ import java.util.Arrays;
 import net.minecraft.util.Util;
 
 public enum AxisTransformation {
-	field_23362(0, 1, 2),
-	field_23363(1, 0, 2),
-	field_23364(0, 2, 1),
-	field_23365(1, 2, 0),
-	field_23366(2, 0, 1),
-	field_23367(2, 1, 0);
+	P123(0, 1, 2),
+	P213(1, 0, 2),
+	P132(0, 2, 1),
+	P231(1, 2, 0),
+	P312(2, 0, 1),
+	P321(2, 1, 0);
 
 	private final int[] mappings;
 	private final Matrix3f matrix;

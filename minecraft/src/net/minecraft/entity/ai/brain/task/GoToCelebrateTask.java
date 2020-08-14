@@ -15,21 +15,21 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 	public GoToCelebrateTask(int completionRange, float f) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_22337,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_22355,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458
+				MemoryModuleType.CELEBRATE_LOCATION,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.ATTACK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED
 			)
 		);
 		this.completionRange = completionRange;
 		this.field_23130 = f;
 	}
 
-	protected void method_24579(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		BlockPos blockPos = getCelebrateLocation(mobEntity);
 		boolean bl = blockPos.isWithinDistance(mobEntity.getBlockPos(), (double)this.completionRange);
 		if (!bl) {
@@ -47,6 +47,6 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 	}
 
 	private static BlockPos getCelebrateLocation(MobEntity entity) {
-		return (BlockPos)entity.getBrain().getOptionalMemory(MemoryModuleType.field_22337).get();
+		return (BlockPos)entity.getBrain().getOptionalMemory(MemoryModuleType.CELEBRATE_LOCATION).get();
 	}
 }

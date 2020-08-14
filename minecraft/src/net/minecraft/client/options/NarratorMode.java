@@ -10,10 +10,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public enum NarratorMode {
-	field_18176(0, "options.narrator.off"),
-	field_18177(1, "options.narrator.all"),
-	field_18178(2, "options.narrator.chat"),
-	field_18179(3, "options.narrator.system");
+	OFF(0, "options.narrator.off"),
+	ALL(1, "options.narrator.all"),
+	CHAT(2, "options.narrator.chat"),
+	SYSTEM(3, "options.narrator.system");
 
 	private static final NarratorMode[] VALUES = (NarratorMode[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(NarratorMode::getId))

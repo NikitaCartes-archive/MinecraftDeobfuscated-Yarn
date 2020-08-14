@@ -10,8 +10,8 @@ public abstract class AbstractZombieModel<T extends HostileEntity> extends Biped
 		super(f, g, i, j);
 	}
 
-	public void method_17791(T hostileEntity, float f, float g, float h, float i, float j) {
-		super.method_17087(hostileEntity, f, g, h, i, j);
+	public void setAngles(T hostileEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(hostileEntity, f, g, h, i, j);
 		CrossbowPosing.method_29352(this.leftArm, this.rightArm, this.isAttacking(hostileEntity), this.handSwingProgress, h);
 	}
 

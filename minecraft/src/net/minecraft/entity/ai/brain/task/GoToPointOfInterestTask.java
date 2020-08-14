@@ -17,16 +17,16 @@ public class GoToPointOfInterestTask extends Task<VillagerEntity> {
 	private final int completionRange;
 
 	public GoToPointOfInterestTask(float speed, int completionRange) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 		this.speed = speed;
 		this.completionRange = completionRange;
 	}
 
-	protected boolean method_21636(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		return !serverWorld.isNearOccupiedPointOfInterest(villagerEntity.getBlockPos());
 	}
 
-	protected void method_21637(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 		int i = pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(villagerEntity.getBlockPos()));
 		Vec3d vec3d = null;
@@ -49,7 +49,7 @@ public class GoToPointOfInterestTask extends Task<VillagerEntity> {
 		}
 
 		if (vec3d != null) {
-			villagerEntity.getBrain().remember(MemoryModuleType.field_18445, new WalkTarget(vec3d, this.speed, this.completionRange));
+			villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
 		}
 	}
 }

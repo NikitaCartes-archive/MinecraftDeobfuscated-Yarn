@@ -20,7 +20,7 @@ public class MilkBucketItem extends Item {
 		if (user instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)user;
 			Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
-			serverPlayerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
 		if (user instanceof PlayerEntity && !((PlayerEntity)user).abilities.creativeMode) {
@@ -31,7 +31,7 @@ public class MilkBucketItem extends Item {
 			user.clearStatusEffects();
 		}
 
-		return stack.isEmpty() ? new ItemStack(Items.field_8550) : stack;
+		return stack.isEmpty() ? new ItemStack(Items.BUCKET) : stack;
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class MilkBucketItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.field_8946;
+		return UseAction.DRINK;
 	}
 
 	@Override

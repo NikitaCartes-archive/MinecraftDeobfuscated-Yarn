@@ -29,7 +29,7 @@ public class SmithingRecipeJsonFactory {
 	}
 
 	public static SmithingRecipeJsonFactory create(Ingredient base, Ingredient addition, Item result) {
-		return new SmithingRecipeJsonFactory(RecipeSerializer.field_25387, base, addition, result);
+		return new SmithingRecipeJsonFactory(RecipeSerializer.SMITHING, base, addition, result);
 	}
 
 	public SmithingRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {

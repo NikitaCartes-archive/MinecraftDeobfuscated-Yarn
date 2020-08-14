@@ -27,7 +27,7 @@ public class JungleFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected FoliagePlacerType<?> getType() {
-		return FoliagePlacerType.field_24163;
+		return FoliagePlacerType.JUNGLE_FOLIAGE_PLACER;
 	}
 
 	@Override

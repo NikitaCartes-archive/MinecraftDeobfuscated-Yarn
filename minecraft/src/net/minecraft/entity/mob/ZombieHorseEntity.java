@@ -24,12 +24,12 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createZombieHorseAttributes() {
-		return createBaseHorseAttributes().add(EntityAttributes.field_23716, 15.0).add(EntityAttributes.field_23719, 0.2F);
+		return createBaseHorseAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 15.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F);
 	}
 
 	@Override
 	protected void initAttributes() {
-		this.getAttributeInstance(EntityAttributes.field_23728).setBaseValue(this.getChildJumpStrengthBonus());
+		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
 	}
 
 	@Override
@@ -40,25 +40,25 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		super.getAmbientSound();
-		return SoundEvents.field_15154;
+		return SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
 		super.getDeathSound();
-		return SoundEvents.field_14543;
+		return SoundEvents.ENTITY_ZOMBIE_HORSE_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
 		super.getHurtSound(source);
-		return SoundEvents.field_15179;
+		return SoundEvents.ENTITY_ZOMBIE_HORSE_HURT;
 	}
 
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.field_6048.create(serverWorld);
+		return EntityType.ZOMBIE_HORSE.create(serverWorld);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 			return super.interactMob(player, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem() == Items.field_8175 && !this.isSaddled()) {
+				if (itemStack.getItem() == Items.SADDLE && !this.isSaddled()) {
 					this.openInventory(player);
 					return ActionResult.success(this.world.isClient);
 				}

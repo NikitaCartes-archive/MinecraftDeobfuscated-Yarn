@@ -31,7 +31,7 @@ public class JigsawBlockEntity extends BlockEntity {
 	private Identifier name = new Identifier("empty");
 	private Identifier target = new Identifier("empty");
 	private Identifier pool = new Identifier("empty");
-	private JigsawBlockEntity.Joint joint = JigsawBlockEntity.Joint.field_23329;
+	private JigsawBlockEntity.Joint joint = JigsawBlockEntity.Joint.ROLLABLE;
 	private String finalState = "minecraft:air";
 
 	public JigsawBlockEntity(BlockEntityType<?> blockEntityType) {
@@ -39,7 +39,7 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	public JigsawBlockEntity() {
-		this(BlockEntityType.field_16549);
+		this(BlockEntityType.JIGSAW);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -106,7 +106,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		this.pool = new Identifier(tag.getString("pool"));
 		this.finalState = tag.getString("final_state");
 		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(tag.getString("joint"))
-			.orElseGet(() -> JigsawBlock.getFacing(state).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.field_23330 : JigsawBlockEntity.Joint.field_23329);
+			.orElseGet(() -> JigsawBlock.getFacing(state).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
 	}
 
 	@Nullable
@@ -121,7 +121,7 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {
-		ChunkGenerator chunkGenerator = world.method_14178().getChunkGenerator();
+		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 		StructureManager structureManager = world.getStructureManager();
 		StructureAccessor structureAccessor = world.getStructureAccessor();
 		Random random = world.getRandom();
@@ -131,7 +131,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		structure.saveFromWorld(world, blockPos, new BlockPos(1, 1, 1), false, null);
 		StructurePoolElement structurePoolElement = new SinglePoolElement(structure);
 		PoolStructurePiece poolStructurePiece = new PoolStructurePiece(
-			structureManager, structurePoolElement, blockPos, 1, BlockRotation.field_11467, new BlockBox(blockPos, blockPos)
+			structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos, blockPos)
 		);
 		StructurePoolBasedGenerator.method_27230(
 			world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random
@@ -143,8 +143,8 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	public static enum Joint implements StringIdentifiable {
-		field_23329("rollable"),
-		field_23330("aligned");
+		ROLLABLE("rollable"),
+		ALIGNED("aligned");
 
 		private final String name;
 

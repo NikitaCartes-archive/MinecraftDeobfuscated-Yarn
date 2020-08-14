@@ -40,7 +40,7 @@ public class UpdateSignC2SPacket implements Packet<ServerPlayPacketListener> {
 		}
 	}
 
-	public void method_12509(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onSignUpdate(this);
 	}
 

@@ -62,7 +62,7 @@ public class GuardianEntityModel extends CompositeEntityModel<GuardianEntity> {
 		return ImmutableList.<ModelPart>of(this.body);
 	}
 
-	public void method_17083(GuardianEntity guardianEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(GuardianEntity guardianEntity, float f, float g, float h, float i, float j) {
 		float k = h - (float)guardianEntity.age;
 		this.body.yaw = i * (float) (Math.PI / 180.0);
 		this.body.pitch = j * (float) (Math.PI / 180.0);

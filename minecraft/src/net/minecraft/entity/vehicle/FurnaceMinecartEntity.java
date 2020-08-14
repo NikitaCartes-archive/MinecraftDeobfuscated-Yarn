@@ -28,19 +28,19 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	private int fuel;
 	public double pushX;
 	public double pushZ;
-	private static final Ingredient ACCEPTABLE_FUEL = Ingredient.ofItems(Items.field_8713, Items.field_8665);
+	private static final Ingredient ACCEPTABLE_FUEL = Ingredient.ofItems(Items.COAL, Items.CHARCOAL);
 
 	public FurnaceMinecartEntity(EntityType<? extends FurnaceMinecartEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
 	public FurnaceMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6080, world, x, y, z);
+		super(EntityType.FURNACE_MINECART, world, x, y, z);
 	}
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.field_7679;
+		return AbstractMinecartEntity.Type.FURNACE;
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 		}
 
 		if (this.isLit() && this.random.nextInt(4) == 0) {
-			this.world.addParticle(ParticleTypes.field_11237, this.getX(), this.getY() + 0.8, this.getZ(), 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 0.8, this.getZ(), 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -78,8 +78,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-			this.dropItem(Blocks.field_10181);
+		if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+			this.dropItem(Blocks.FURNACE);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (ACCEPTABLE_FUEL.method_8093(itemStack) && this.fuel + 3600 <= 32000) {
+		if (ACCEPTABLE_FUEL.test(itemStack) && this.fuel + 3600 <= 32000) {
 			if (!player.abilities.creativeMode) {
 				itemStack.decrement(1);
 			}
@@ -159,6 +159,6 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.field_11043).with(FurnaceBlock.LIT, Boolean.valueOf(this.isLit()));
+		return Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH).with(FurnaceBlock.LIT, Boolean.valueOf(this.isLit()));
 	}
 }

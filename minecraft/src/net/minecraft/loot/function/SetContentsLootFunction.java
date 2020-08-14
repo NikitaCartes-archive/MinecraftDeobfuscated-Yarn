@@ -29,7 +29,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25226;
+		return LootFunctionTypes.SET_CONTENTS;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 	public static class Builer extends ConditionalLootFunction.Builder<SetContentsLootFunction.Builer> {
 		private final List<LootPoolEntry> entries = Lists.<LootPoolEntry>newArrayList();
 
-		protected SetContentsLootFunction.Builer method_603() {
+		protected SetContentsLootFunction.Builer getThisBuilder() {
 			return this;
 		}
 
@@ -79,12 +79,12 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetContentsLootFunction> {
-		public void method_604(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, setContentsLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, setContentsLootFunction, jsonSerializationContext);
 			jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.entries));
 		}
 
-		public SetContentsLootFunction method_605(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetContentsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootPoolEntry[] lootPoolEntrys = (LootPoolEntry[])JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootPoolEntry[].class);
 			return new SetContentsLootFunction(lootConditions, Arrays.asList(lootPoolEntrys));
 		}

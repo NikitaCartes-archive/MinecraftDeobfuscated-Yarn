@@ -37,11 +37,11 @@ public class LockButtonWidget extends ButtonWidget {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;
 		if (!this.active) {
-			iconLocation = this.locked ? LockButtonWidget.IconLocation.field_2139 : LockButtonWidget.IconLocation.field_2140;
+			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_DISABLED : LockButtonWidget.IconLocation.UNLOCKED_DISABLED;
 		} else if (this.isHovered()) {
-			iconLocation = this.locked ? LockButtonWidget.IconLocation.field_2138 : LockButtonWidget.IconLocation.field_2133;
+			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_HOVER : LockButtonWidget.IconLocation.UNLOCKED_HOVER;
 		} else {
-			iconLocation = this.locked ? LockButtonWidget.IconLocation.field_2137 : LockButtonWidget.IconLocation.field_2132;
+			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED : LockButtonWidget.IconLocation.UNLOCKED;
 		}
 
 		this.drawTexture(matrices, this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
@@ -49,12 +49,12 @@ public class LockButtonWidget extends ButtonWidget {
 
 	@Environment(EnvType.CLIENT)
 	static enum IconLocation {
-		field_2137(0, 146),
-		field_2138(0, 166),
-		field_2139(0, 186),
-		field_2132(20, 146),
-		field_2133(20, 166),
-		field_2140(20, 186);
+		LOCKED(0, 146),
+		LOCKED_HOVER(0, 166),
+		LOCKED_DISABLED(0, 186),
+		UNLOCKED(20, 146),
+		UNLOCKED_HOVER(20, 166),
+		UNLOCKED_DISABLED(20, 186);
 
 		private final int u;
 		private final int v;

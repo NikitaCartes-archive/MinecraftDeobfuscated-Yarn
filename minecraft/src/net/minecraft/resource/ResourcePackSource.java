@@ -5,9 +5,9 @@ import net.minecraft.text.TranslatableText;
 
 public interface ResourcePackSource {
 	ResourcePackSource field_25347 = method_29485();
-	ResourcePackSource field_25348 = method_29486("pack.source.builtin");
-	ResourcePackSource field_25349 = method_29486("pack.source.world");
-	ResourcePackSource field_25350 = method_29486("pack.source.server");
+	ResourcePackSource PACK_SOURCE_BUILTIN = method_29486("pack.source.builtin");
+	ResourcePackSource PACK_SOURCE_WORLD = method_29486("pack.source.world");
+	ResourcePackSource PACK_SOURCE_SERVER = method_29486("pack.source.server");
 
 	Text decorate(Text text);
 

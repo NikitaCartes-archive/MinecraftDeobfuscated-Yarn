@@ -13,11 +13,11 @@ import net.minecraft.util.Identifier;
  */
 public class ServerTagManagerHolder {
 	private static volatile TagManager tagManager = TagManager.create(
-		TagGroup.create((Map<Identifier, Tag<Block>>)BlockTags.method_31072().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))),
-		TagGroup.create((Map<Identifier, Tag<Item>>)ItemTags.method_31074().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))),
-		TagGroup.create((Map<Identifier, Tag<Fluid>>)FluidTags.all().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))),
+		TagGroup.create((Map<Identifier, Tag<Block>>)BlockTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))),
+		TagGroup.create((Map<Identifier, Tag<Item>>)ItemTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))),
+		TagGroup.create((Map<Identifier, Tag<Fluid>>)FluidTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))),
 		TagGroup.create(
-			(Map<Identifier, Tag<EntityType<?>>>)EntityTypeTags.method_31073().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))
+			(Map<Identifier, Tag<EntityType<?>>>)EntityTypeTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))
 		)
 	);
 

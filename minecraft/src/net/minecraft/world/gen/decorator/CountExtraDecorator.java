@@ -11,7 +11,7 @@ public class CountExtraDecorator extends SimpleDecorator<CountExtraDecoratorConf
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_30451(Random random, CountExtraDecoratorConfig countExtraDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, CountExtraDecoratorConfig countExtraDecoratorConfig, BlockPos blockPos) {
 		int i = countExtraDecoratorConfig.count + (random.nextFloat() < countExtraDecoratorConfig.extraChance ? countExtraDecoratorConfig.extraCount : 0);
 		return IntStream.range(0, i).mapToObj(ix -> blockPos);
 	}

@@ -19,7 +19,7 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25214;
+		return LootFunctionTypes.SET_COUNT;
 	}
 
 	@Override
@@ -33,12 +33,12 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetCountLootFunction> {
-		public void method_623(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, setCountLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, setCountLootFunction, jsonSerializationContext);
 			jsonObject.add("count", LootTableRanges.toJson(setCountLootFunction.countRange, jsonSerializationContext));
 		}
 
-		public SetCountLootFunction method_622(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetCountLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootTableRange lootTableRange = LootTableRanges.fromJson(jsonObject.get("count"), jsonDeserializationContext);
 			return new SetCountLootFunction(lootConditions, lootTableRange);
 		}

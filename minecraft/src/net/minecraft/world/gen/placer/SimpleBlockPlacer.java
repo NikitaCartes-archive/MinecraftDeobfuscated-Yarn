@@ -13,7 +13,7 @@ public class SimpleBlockPlacer extends BlockPlacer {
 
 	@Override
 	protected BlockPlacerType<?> method_28673() {
-		return BlockPlacerType.field_21223;
+		return BlockPlacerType.SIMPLE_BLOCK_PLACER;
 	}
 
 	@Override

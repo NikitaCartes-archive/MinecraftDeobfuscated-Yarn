@@ -9,13 +9,13 @@ public class SwimGoal extends Goal {
 
 	public SwimGoal(MobEntity mob) {
 		this.mob = mob;
-		this.setControls(EnumSet.of(Goal.Control.field_18407));
+		this.setControls(EnumSet.of(Goal.Control.JUMP));
 		mob.getNavigation().setCanSwim(true);
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.mob.isTouchingWater() && this.mob.getFluidHeight(FluidTags.field_15517) > this.mob.method_29241() || this.mob.isInLava();
+		return this.mob.isTouchingWater() && this.mob.getFluidHeight(FluidTags.WATER) > this.mob.method_29241() || this.mob.isInLava();
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class BeeEntityRenderer extends MobEntityRenderer<BeeEntity, BeeEntityMod
 		super(entityRenderDispatcher, new BeeEntityModel<>(), 0.4F);
 	}
 
-	public Identifier method_22129(BeeEntity beeEntity) {
+	public Identifier getTexture(BeeEntity beeEntity) {
 		if (beeEntity.hasAngerTime()) {
 			return beeEntity.hasNectar() ? ANGRY_NECTAR_TEXTURE : ANGRY_TEXTURE;
 		} else {

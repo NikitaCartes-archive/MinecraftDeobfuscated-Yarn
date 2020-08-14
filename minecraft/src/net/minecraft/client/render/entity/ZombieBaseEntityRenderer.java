@@ -16,11 +16,11 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends
 		this.addFeature(new ArmorFeatureRenderer<>(this, zombieEntityModel2, zombieEntityModel3));
 	}
 
-	public Identifier method_4163(ZombieEntity zombieEntity) {
+	public Identifier getTexture(ZombieEntity zombieEntity) {
 		return TEXTURE;
 	}
 
-	protected boolean method_25449(T zombieEntity) {
+	protected boolean isShaking(T zombieEntity) {
 		return zombieEntity.isConvertingInWater();
 	}
 }

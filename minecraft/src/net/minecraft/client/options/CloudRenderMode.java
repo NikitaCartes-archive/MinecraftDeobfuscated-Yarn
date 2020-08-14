@@ -8,9 +8,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public enum CloudRenderMode {
-	field_18162(0, "options.off"),
-	field_18163(1, "options.clouds.fast"),
-	field_18164(2, "options.clouds.fancy");
+	OFF(0, "options.off"),
+	FAST(1, "options.clouds.fast"),
+	FANCY(2, "options.clouds.fancy");
 
 	private static final CloudRenderMode[] VALUES = (CloudRenderMode[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(CloudRenderMode::getId))

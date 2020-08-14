@@ -139,7 +139,7 @@ public class RealmsWorldOptions extends ValueObject {
 		return jsonObject.toString();
 	}
 
-	public RealmsWorldOptions method_25083() {
+	public RealmsWorldOptions clone() {
 		return new RealmsWorldOptions(
 			this.pvp,
 			this.spawnAnimals,

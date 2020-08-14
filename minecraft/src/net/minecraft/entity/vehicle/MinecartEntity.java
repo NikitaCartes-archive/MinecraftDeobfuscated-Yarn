@@ -12,7 +12,7 @@ public class MinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public MinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6096, world, x, y, z);
+		super(EntityType.MINECART, world, x, y, z);
 	}
 
 	@Override
@@ -46,6 +46,6 @@ public class MinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.field_7674;
+		return AbstractMinecartEntity.Type.RIDEABLE;
 	}
 }

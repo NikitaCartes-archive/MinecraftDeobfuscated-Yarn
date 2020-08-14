@@ -13,7 +13,7 @@ public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_24445(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig
 	) {
 		int i = random.nextInt(oreFeatureConfig.size + 1);

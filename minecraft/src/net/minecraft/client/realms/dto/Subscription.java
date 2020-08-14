@@ -13,7 +13,7 @@ public class Subscription extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public long startDate;
 	public int daysLeft;
-	public Subscription.SubscriptionType type = Subscription.SubscriptionType.field_19443;
+	public Subscription.SubscriptionType type = Subscription.SubscriptionType.NORMAL;
 
 	public static Subscription parse(String json) {
 		Subscription subscription = new Subscription();
@@ -23,7 +23,7 @@ public class Subscription extends ValueObject {
 			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
 			subscription.startDate = JsonUtils.getLongOr("startDate", jsonObject, 0L);
 			subscription.daysLeft = JsonUtils.getIntOr("daysLeft", jsonObject, 0);
-			subscription.type = typeFrom(JsonUtils.getStringOr("subscriptionType", jsonObject, Subscription.SubscriptionType.field_19443.name()));
+			subscription.type = typeFrom(JsonUtils.getStringOr("subscriptionType", jsonObject, Subscription.SubscriptionType.NORMAL.name()));
 		} catch (Exception var4) {
 			LOGGER.error("Could not parse Subscription: " + var4.getMessage());
 		}
@@ -35,13 +35,13 @@ public class Subscription extends ValueObject {
 		try {
 			return Subscription.SubscriptionType.valueOf(subscriptionType);
 		} catch (Exception var2) {
-			return Subscription.SubscriptionType.field_19443;
+			return Subscription.SubscriptionType.NORMAL;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum SubscriptionType {
-		field_19443,
-		field_19444;
+		NORMAL,
+		RECURRING;
 	}
 }

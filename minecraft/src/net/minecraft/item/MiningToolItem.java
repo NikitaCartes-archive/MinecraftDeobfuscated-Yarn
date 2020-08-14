@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
 import java.util.Set;
-import net.minecraft.class_5508;
+import net.minecraft.class_5510;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
@@ -24,7 +24,7 @@ public abstract class MiningToolItem extends ToolItem implements Vanishable {
 		this.effectiveBlocks = set;
 		this.miningSpeed = toolMaterial.getMiningSpeedMultiplier();
 		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
-		this.method_31212().method_31214(this.getMaterial(), builder);
+		this.method_31243().method_31245(this.getMaterial(), builder);
 		this.attributeModifiers = builder.build();
 	}
 
@@ -35,27 +35,27 @@ public abstract class MiningToolItem extends ToolItem implements Vanishable {
 
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(2, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+		stack.damage(2, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		return true;
 	}
 
 	@Override
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
 		if (!world.isClient && state.getHardness(world, pos) != 0.0F) {
-			stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+			stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
 		return true;
 	}
 
-	protected abstract class_5508 method_31212();
+	protected abstract class_5510 method_31243();
 
 	@Override
 	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		return slot == EquipmentSlot.field_6173 ? this.attributeModifiers : super.getAttributeModifiers(slot);
+		return slot == EquipmentSlot.MAINHAND ? this.attributeModifiers : super.getAttributeModifiers(slot);
 	}
 
 	public float getAttackDamage() {
-		return this.method_31212().method_31213(this.getMaterial());
+		return this.method_31243().method_31244(this.getMaterial());
 	}
 }

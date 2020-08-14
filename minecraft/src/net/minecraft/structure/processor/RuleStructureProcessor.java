@@ -48,6 +48,6 @@ public class RuleStructureProcessor extends StructureProcessor {
 
 	@Override
 	protected StructureProcessorType<?> getType() {
-		return StructureProcessorType.field_16990;
+		return StructureProcessorType.RULE;
 	}
 }

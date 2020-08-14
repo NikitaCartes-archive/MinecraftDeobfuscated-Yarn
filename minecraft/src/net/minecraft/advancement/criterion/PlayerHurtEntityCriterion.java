@@ -19,7 +19,7 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 		return ID;
 	}
 
-	public PlayerHurtEntityCriterion.Conditions method_9098(
+	public PlayerHurtEntityCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		DamagePredicate damagePredicate = DamagePredicate.fromJson(jsonObject.get("damage"));

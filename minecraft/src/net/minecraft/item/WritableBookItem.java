@@ -24,7 +24,7 @@ public class WritableBookItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.isOf(Blocks.field_16330)) {
+		if (blockState.isOf(Blocks.LECTERN)) {
 			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.success(world.isClient) : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
@@ -35,7 +35,7 @@ public class WritableBookItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		user.openEditBookScreen(itemStack, hand);
-		user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		return TypedActionResult.method_29237(itemStack, world.isClient());
 	}
 

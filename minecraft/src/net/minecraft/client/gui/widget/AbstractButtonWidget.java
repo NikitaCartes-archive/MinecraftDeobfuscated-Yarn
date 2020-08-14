@@ -212,7 +212,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	}
 
 	public void playDownSound(SoundManager soundManager) {
-		soundManager.play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+		soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 	}
 
 	public int getWidth() {

@@ -60,9 +60,9 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.isIn(BlockTags.field_25739)) {
+		if (blockState.isIn(BlockTags.MUSHROOM_GROW_BLOCK)) {
 			return true;
 		} else {
 			return world.getBaseLightLevel(pos, 0) < 13 && this.canPlantOnTop(blockState, world, blockPos);
@@ -72,18 +72,18 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos pos, BlockState state, Random random) {
 		serverWorld.removeBlock(pos, false);
 		ConfiguredFeature<?, ?> configuredFeature;
-		if (this == Blocks.field_10251) {
-			configuredFeature = ConfiguredFeatures.field_26034;
+		if (this == Blocks.BROWN_MUSHROOM) {
+			configuredFeature = ConfiguredFeatures.HUGE_BROWN_MUSHROOM;
 		} else {
-			if (this != Blocks.field_10559) {
+			if (this != Blocks.RED_MUSHROOM) {
 				serverWorld.setBlockState(pos, state, 3);
 				return false;
 			}
 
-			configuredFeature = ConfiguredFeatures.field_26035;
+			configuredFeature = ConfiguredFeatures.HUGE_RED_MUSHROOM;
 		}
 
-		if (configuredFeature.generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), random, pos)) {
+		if (configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
 			return true;
 		} else {
 			serverWorld.setBlockState(pos, state, 3);

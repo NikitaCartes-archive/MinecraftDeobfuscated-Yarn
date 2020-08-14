@@ -15,12 +15,12 @@ public class ElderGuardianEntityRenderer extends GuardianEntityRenderer {
 		super(entityRenderDispatcher, 1.2F);
 	}
 
-	protected void method_3910(GuardianEntity guardianEntity, MatrixStack matrixStack, float f) {
+	protected void scale(GuardianEntity guardianEntity, MatrixStack matrixStack, float f) {
 		matrixStack.scale(ElderGuardianEntity.SCALE, ElderGuardianEntity.SCALE, ElderGuardianEntity.SCALE);
 	}
 
 	@Override
-	public Identifier method_3976(GuardianEntity guardianEntity) {
+	public Identifier getTexture(GuardianEntity guardianEntity) {
 		return TEXTURE;
 	}
 }

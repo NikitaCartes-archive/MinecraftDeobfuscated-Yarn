@@ -47,7 +47,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
 		this.children.add(this.biomeSelectionList);
 		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, buttonWidget -> {
@@ -56,7 +56,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.field_24562)));
 		this.biomeSelectionList
-			.method_20089(
+			.setSelected(
 				(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList
 					.children()
 					.stream()
@@ -102,7 +102,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			return CustomizeBuffetLevelScreen.this.getFocused() == this;
 		}
 
-		public void method_20089(@Nullable CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem buffetBiomeItem) {
+		public void setSelected(@Nullable CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem buffetBiomeItem) {
 			super.setSelected(buffetBiomeItem);
 			if (buffetBiomeItem != null) {
 				CustomizeBuffetLevelScreen.this.field_25040 = buffetBiomeItem.field_24564;
@@ -137,7 +137,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				if (button == 0) {
-					BuffetBiomesListWidget.this.method_20089(this);
+					BuffetBiomesListWidget.this.setSelected(this);
 					return true;
 				} else {
 					return false;

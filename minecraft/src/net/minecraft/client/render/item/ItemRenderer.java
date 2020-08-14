@@ -105,18 +105,16 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	) {
 		if (!stack.isEmpty()) {
 			matrices.push();
-			boolean bl = renderMode == ModelTransformation.Mode.field_4317
-				|| renderMode == ModelTransformation.Mode.field_4318
-				|| renderMode == ModelTransformation.Mode.field_4319;
-			if (stack.getItem() == Items.field_8547 && bl) {
+			boolean bl = renderMode == ModelTransformation.Mode.GUI || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
+			if (stack.getItem() == Items.TRIDENT && bl) {
 				model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
 			}
 
 			model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
 			matrices.translate(-0.5, -0.5, -0.5);
-			if (!model.isBuiltin() && (stack.getItem() != Items.field_8547 || bl)) {
+			if (!model.isBuiltin() && (stack.getItem() != Items.TRIDENT || bl)) {
 				boolean bl2;
-				if (renderMode != ModelTransformation.Mode.field_4317 && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem) {
+				if (renderMode != ModelTransformation.Mode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem) {
 					Block block = ((BlockItem)stack.getItem()).getBlock();
 					bl2 = !(block instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock);
 				} else {
@@ -125,10 +123,10 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl2);
 				VertexConsumer vertexConsumer;
-				if (stack.getItem() == Items.field_8251 && stack.hasGlint()) {
+				if (stack.getItem() == Items.COMPASS && stack.hasGlint()) {
 					matrices.push();
 					MatrixStack.Entry entry = matrices.peek();
-					if (renderMode == ModelTransformation.Mode.field_4317) {
+					if (renderMode == ModelTransformation.Mode.GUI) {
 						entry.getModel().multiply(0.5F);
 					} else if (renderMode.isFirstPerson()) {
 						entry.getModel().multiply(0.75F);
@@ -216,7 +214,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
 		Item item = stack.getItem();
 		BakedModel bakedModel;
-		if (item == Items.field_8547) {
+		if (item == Items.TRIDENT) {
 			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
 		} else {
 			bakedModel = this.models.getModel(stack);
@@ -262,7 +260,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.enableAlphaTest();
 		RenderSystem.defaultAlphaFunc();
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.translatef((float)x, (float)y, 100.0F + this.zOffset);
 		RenderSystem.translatef(8.0F, 8.0F, 0.0F);
@@ -275,7 +273,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			DiffuseLighting.disableGuiDepthLighting();
 		}
 
-		this.renderItem(stack, ModelTransformation.Mode.field_4317, false, matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
+		this.renderItem(stack, ModelTransformation.Mode.GUI, false, matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
 		immediate.draw();
 		RenderSystem.enableDepthTest();
 		if (bl) {

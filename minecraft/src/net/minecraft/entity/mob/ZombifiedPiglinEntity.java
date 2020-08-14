@@ -51,7 +51,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	public ZombifiedPiglinEntity(EntityType<? extends ZombifiedPiglinEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.field_14, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
 	}
 
 	@Override
@@ -75,9 +75,9 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	public static DefaultAttributeContainer.Builder createZombifiedPiglinAttributes() {
 		return ZombieEntity.createZombieAttributes()
-			.add(EntityAttributes.field_23727, 0.0)
-			.add(EntityAttributes.field_23719, 0.23F)
-			.add(EntityAttributes.field_23721, 5.0);
+			.add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	protected void mobTick() {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.field_23719);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		if (this.hasAngerTime()) {
 			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
 				entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
@@ -132,7 +132,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	private void method_29942() {
-		double d = this.getAttributeValue(EntityAttributes.field_23717);
+		double d = this.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
 		Box box = Box.method_29968(this.getPos()).expand(d, 10.0, d);
 		this.world
 			.getEntitiesIncludingUngeneratedChunks(ZombifiedPiglinEntity.class, box)
@@ -144,7 +144,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	private void method_29533() {
-		this.playSound(SoundEvents.field_14852, this.getSoundVolume() * 2.0F, this.getSoundPitch() * 1.8F);
+		this.playSound(SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_ANGRY, this.getSoundVolume() * 2.0F, this.getSoundPitch() * 1.8F);
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getDifficulty() != Difficulty.field_5801 && world.getBlockState(pos.method_10074()).getBlock() != Blocks.field_10541;
+		return world.getDifficulty() != Difficulty.PEACEFUL && world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
 	}
 
 	@Override
@@ -204,22 +204,22 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.hasAngerTime() ? SoundEvents.field_14852 : SoundEvents.field_14926;
+		return this.hasAngerTime() ? SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_ANGRY : SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14710;
+		return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14743;
+		return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_DEATH;
 	}
 
 	@Override
 	protected void initEquipment(LocalDifficulty difficulty) {
-		this.equipStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8845));
+		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 	}
 
 	@Override
@@ -229,7 +229,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	protected void initAttributes() {
-		this.getAttributeInstance(EntityAttributes.field_23727).setBaseValue(0.0);
+		this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(0.0);
 	}
 
 	@Override

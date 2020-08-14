@@ -53,7 +53,7 @@ public class LoomScreenHandler extends ScreenHandler {
 	}
 
 	public LoomScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.field_17339, syncId);
+		super(ScreenHandlerType.LOOM, syncId);
 		this.context = context;
 		this.bannerSlot = this.addSlot(new Slot(this.input, 0, 13, 26) {
 			@Override
@@ -90,7 +90,7 @@ public class LoomScreenHandler extends ScreenHandler {
 				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
 					if (LoomScreenHandler.this.lastTakeResultTime != l) {
-						world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F);
+						world.playSound(null, blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						LoomScreenHandler.this.lastTakeResultTime = l;
 					}
 				}));
@@ -118,7 +118,7 @@ public class LoomScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.field_10083);
+		return canUse(this.context, player, Blocks.LOOM);
 	}
 
 	@Override

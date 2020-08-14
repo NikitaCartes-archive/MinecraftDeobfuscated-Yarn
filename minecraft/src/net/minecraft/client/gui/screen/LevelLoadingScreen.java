@@ -18,19 +18,19 @@ public class LevelLoadingScreen extends Screen {
 	private long field_19101 = -1L;
 	private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = Util.make(new Object2IntOpenHashMap<>(), map -> {
 		map.defaultReturnValue(0);
-		map.put(ChunkStatus.field_12798, 5526612);
-		map.put(ChunkStatus.field_16423, 10066329);
-		map.put(ChunkStatus.field_16422, 6250897);
-		map.put(ChunkStatus.field_12794, 8434258);
-		map.put(ChunkStatus.field_12804, 13750737);
-		map.put(ChunkStatus.field_12796, 7497737);
-		map.put(ChunkStatus.field_12801, 7169628);
-		map.put(ChunkStatus.field_12790, 3159410);
-		map.put(ChunkStatus.field_12795, 2213376);
-		map.put(ChunkStatus.field_12805, 13421772);
-		map.put(ChunkStatus.field_12786, 15884384);
-		map.put(ChunkStatus.field_12800, 15658734);
-		map.put(ChunkStatus.field_12803, 16777215);
+		map.put(ChunkStatus.EMPTY, 5526612);
+		map.put(ChunkStatus.STRUCTURE_STARTS, 10066329);
+		map.put(ChunkStatus.STRUCTURE_REFERENCES, 6250897);
+		map.put(ChunkStatus.BIOMES, 8434258);
+		map.put(ChunkStatus.NOISE, 13750737);
+		map.put(ChunkStatus.SURFACE, 7497737);
+		map.put(ChunkStatus.CARVERS, 7169628);
+		map.put(ChunkStatus.LIQUID_CARVERS, 3159410);
+		map.put(ChunkStatus.FEATURES, 2213376);
+		map.put(ChunkStatus.LIGHT, 13421772);
+		map.put(ChunkStatus.SPAWN, 15884384);
+		map.put(ChunkStatus.HEIGHTMAPS, 15658734);
+		map.put(ChunkStatus.FULL, 16777215);
 	});
 
 	public LevelLoadingScreen(WorldGenerationProgressTracker progressProvider) {

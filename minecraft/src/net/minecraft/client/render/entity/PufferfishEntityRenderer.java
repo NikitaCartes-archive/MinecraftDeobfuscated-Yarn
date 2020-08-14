@@ -25,11 +25,11 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 		this.modelSize = 3;
 	}
 
-	public Identifier method_4096(PufferfishEntity pufferfishEntity) {
+	public Identifier getTexture(PufferfishEntity pufferfishEntity) {
 		return TEXTURE;
 	}
 
-	public void method_4094(PufferfishEntity pufferfishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(PufferfishEntity pufferfishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		int j = pufferfishEntity.getPuffState();
 		if (j != this.modelSize) {
 			if (j == 0) {
@@ -43,10 +43,10 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 
 		this.modelSize = j;
 		this.shadowRadius = 0.1F + 0.1F * (float)j;
-		super.method_4072(pufferfishEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(pufferfishEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	protected void method_4095(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {
 		matrixStack.translate(0.0, (double)(MathHelper.cos(f * 0.05F) * 0.08F), 0.0);
 		super.setupTransforms(pufferfishEntity, matrixStack, f, g, h);
 	}

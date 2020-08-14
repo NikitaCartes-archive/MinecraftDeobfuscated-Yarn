@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class EntityHitResult extends HitResult {
 	private final Entity entity;
-	private final float field_26776;
+	private final float field_26804;
 
 	public EntityHitResult(Entity entity, float f) {
 		this(entity, entity.getPos(), f);
@@ -16,7 +16,7 @@ public class EntityHitResult extends HitResult {
 	public EntityHitResult(Entity entity, Vec3d pos, float f) {
 		super(pos);
 		this.entity = entity;
-		this.field_26776 = f;
+		this.field_26804 = f;
 	}
 
 	public Entity getEntity() {
@@ -25,11 +25,11 @@ public class EntityHitResult extends HitResult {
 
 	@Override
 	public HitResult.Type getType() {
-		return HitResult.Type.field_1331;
+		return HitResult.Type.ENTITY;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_31221() {
-		return this.field_26776;
+	public float method_31252() {
+		return this.field_26804;
 	}
 }

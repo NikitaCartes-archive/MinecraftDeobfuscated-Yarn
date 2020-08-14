@@ -21,7 +21,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	public DispenserBlockEntity() {
-		this(BlockEntityType.field_11887);
+		this(BlockEntityType.DISPENSER);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 		this.container = container;
 	}
 
-	public LecternScreenHandler method_17573() {
+	public LecternScreenHandler getScreenHandler() {
 		return this.container;
 	}
 

@@ -17,7 +17,7 @@ public class CatCollarFeatureRenderer extends FeatureRenderer<CatEntity, CatEnti
 		super(featureRendererContext);
 	}
 
-	public void method_16047(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CatEntity catEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (catEntity.isTamed()) {

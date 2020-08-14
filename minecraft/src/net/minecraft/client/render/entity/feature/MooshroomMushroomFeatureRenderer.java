@@ -18,7 +18,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 		super(featureRendererContext);
 	}
 
-	public void method_4195(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T mooshroomEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (!mooshroomEntity.isBaby() && !mooshroomEntity.isInvisible()) {

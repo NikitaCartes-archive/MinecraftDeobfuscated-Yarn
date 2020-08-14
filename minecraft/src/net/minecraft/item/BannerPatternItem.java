@@ -27,7 +27,7 @@ public class BannerPatternItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(this.getDescription().formatted(Formatting.field_1080));
+		tooltip.add(this.getDescription().formatted(Formatting.GRAY));
 	}
 
 	@Environment(EnvType.CLIENT)

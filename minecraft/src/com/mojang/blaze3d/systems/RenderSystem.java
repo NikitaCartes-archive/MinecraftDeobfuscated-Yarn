@@ -798,7 +798,7 @@ public class RenderSystem {
 
 	public static void defaultBlendFunc() {
 		blendFuncSeparate(
-			GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523, GlStateManager.SrcFactor.field_22534, GlStateManager.DstFactor.field_22527
+			GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 		);
 	}
 
@@ -814,7 +814,7 @@ public class RenderSystem {
 		} else {
 			GameOptions gameOptions = MinecraftClient.getInstance().options;
 			GraphicsMode graphicsMode = gameOptions.graphicsMode;
-			gameOptions.graphicsMode = GraphicsMode.field_25428;
+			gameOptions.graphicsMode = GraphicsMode.FANCY;
 			runnable.run();
 			gameOptions.graphicsMode = graphicsMode;
 		}

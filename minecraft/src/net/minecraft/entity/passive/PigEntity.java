@@ -51,7 +51,7 @@ import net.minecraft.world.World;
 public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable {
 	private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.field_8179, Items.field_8567, Items.field_8186);
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CARROT, Items.POTATO, Items.BEETROOT);
 	private final SaddledComponent saddledComponent = new SaddledComponent(this.dataTracker, BOOST_TIME, SADDLED);
 
 	public PigEntity(EntityType<? extends PigEntity> entityType, World world) {
@@ -63,7 +63,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.field_8184), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.CARROT_ON_A_STICK), false));
 		this.goalSelector.add(4, new TemptGoal(this, 1.2, false, BREEDING_INGREDIENT));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
@@ -72,7 +72,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	public static DefaultAttributeContainer.Builder createPigAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 10.0).add(EntityAttributes.field_23719, 0.25);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
 	}
 
 	@Nullable
@@ -88,7 +88,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 			return false;
 		} else {
 			PlayerEntity playerEntity = (PlayerEntity)entity;
-			return playerEntity.getMainHandStack().getItem() == Items.field_8184 || playerEntity.getOffHandStack().getItem() == Items.field_8184;
+			return playerEntity.getMainHandStack().getItem() == Items.CARROT_ON_A_STICK || playerEntity.getOffHandStack().getItem() == Items.CARROT_ON_A_STICK;
 		}
 	}
 
@@ -122,22 +122,22 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14615;
+		return SoundEvents.ENTITY_PIG_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14750;
+		return SoundEvents.ENTITY_PIG_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14689;
+		return SoundEvents.ENTITY_PIG_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_14894, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PIG_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (!actionResult.isAccepted()) {
 				ItemStack itemStack = player.getStackInHand(hand);
-				return itemStack.getItem() == Items.field_8175 ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
+				return itemStack.getItem() == Items.SADDLE ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
 			} else {
 				return actionResult;
 			}
@@ -169,7 +169,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	protected void dropInventory() {
 		super.dropInventory();
 		if (this.isSaddled()) {
-			this.dropItem(Items.field_8175);
+			this.dropItem(Items.SADDLE);
 		}
 	}
 
@@ -182,14 +182,14 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	public void saddle(@Nullable SoundCategory sound) {
 		this.saddledComponent.setSaddled(true);
 		if (sound != null) {
-			this.world.playSoundFromEntity(null, this, SoundEvents.field_14824, sound, 0.5F, 1.0F);
+			this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_PIG_SADDLE, sound, 0.5F, 1.0F);
 		}
 	}
 
 	@Override
 	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
 		Direction direction = this.getMovementDirection();
-		if (direction.getAxis() == Direction.Axis.field_11052) {
+		if (direction.getAxis() == Direction.Axis.Y) {
 			return super.updatePassengerForDismount(passenger);
 		} else {
 			int[][] is = Dismounting.getDismountOffsets(direction);
@@ -218,9 +218,9 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
-		if (serverWorld.getDifficulty() != Difficulty.field_5801) {
-			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.field_6050.create(serverWorld);
-			zombifiedPiglinEntity.equipStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8845));
+		if (serverWorld.getDifficulty() != Difficulty.PEACEFUL) {
+			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorld);
+			zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 			zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 			zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
 			zombifiedPiglinEntity.setBaby(this.isBaby());
@@ -244,7 +244,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	public float getSaddledSpeed() {
-		return (float)this.getAttributeValue(EntityAttributes.field_23719) * 0.225F;
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225F;
 	}
 
 	@Override
@@ -257,13 +257,13 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		return this.saddledComponent.boost(this.getRandom());
 	}
 
-	public PigEntity method_6574(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.field_6093.create(serverWorld);
+	public PigEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.PIG.create(serverWorld);
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.method_8093(stack);
+		return BREEDING_INGREDIENT.test(stack);
 	}
 
 	@Environment(EnvType.CLIENT)

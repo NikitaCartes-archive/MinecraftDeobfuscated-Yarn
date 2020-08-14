@@ -10,7 +10,7 @@ public class IcebergDecorator extends SimpleDecorator<NopeDecoratorConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_30465(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
 		int i = random.nextInt(8) + 4 + blockPos.getX();
 		int j = random.nextInt(8) + 4 + blockPos.getZ();
 		return Stream.of(new BlockPos(i, blockPos.getY(), j));

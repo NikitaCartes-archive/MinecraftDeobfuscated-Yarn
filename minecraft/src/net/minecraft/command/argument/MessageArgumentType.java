@@ -28,7 +28,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 			.format(command.getSource(), command.getSource().hasPermissionLevel(2));
 	}
 
-	public MessageArgumentType.MessageFormat method_9338(StringReader stringReader) throws CommandSyntaxException {
+	public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
 		return MessageArgumentType.MessageFormat.parse(stringReader, true);
 	}
 

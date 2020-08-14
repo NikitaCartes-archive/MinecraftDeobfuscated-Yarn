@@ -21,7 +21,7 @@ public class ItemUsedOnBlockCriterion extends AbstractCriterion<ItemUsedOnBlockC
 		return ID;
 	}
 
-	public ItemUsedOnBlockCriterion.Conditions method_23890(
+	public ItemUsedOnBlockCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));

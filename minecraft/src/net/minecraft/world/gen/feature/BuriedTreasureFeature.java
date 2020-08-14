@@ -19,7 +19,7 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 		super(codec);
 	}
 
-	protected boolean method_28619(
+	protected boolean shouldStartAt(
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		long l,
@@ -44,7 +44,7 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28620(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,

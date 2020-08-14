@@ -68,7 +68,7 @@ public class BlockCollisionSpliterator extends AbstractSpliterator<VoxelShape> {
 				if (blockView != null) {
 					this.pos.set(i, j, k);
 					BlockState blockState = blockView.getBlockState(this.pos);
-					if (this.field_25669.test(blockState, this.pos) && (l != 1 || blockState.exceedsCube()) && (l != 2 || blockState.isOf(Blocks.field_10008))) {
+					if (this.field_25669.test(blockState, this.pos) && (l != 1 || blockState.exceedsCube()) && (l != 2 || blockState.isOf(Blocks.MOVING_PISTON))) {
 						VoxelShape voxelShape = blockState.getCollisionShape(this.world, this.pos, this.context);
 						if (voxelShape == VoxelShapes.fullCube()) {
 							if (this.box.intersects((double)i, (double)j, (double)k, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)) {

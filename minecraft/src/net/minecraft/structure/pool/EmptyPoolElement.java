@@ -19,7 +19,7 @@ public class EmptyPoolElement extends StructurePoolElement {
 	public static final EmptyPoolElement INSTANCE = new EmptyPoolElement();
 
 	private EmptyPoolElement() {
-		super(StructurePool.Projection.field_16686);
+		super(StructurePool.Projection.TERRAIN_MATCHING);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class EmptyPoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType<?> getType() {
-		return StructurePoolElementType.field_16972;
+		return StructurePoolElementType.EMPTY_POOL_ELEMENT;
 	}
 
 	public String toString() {

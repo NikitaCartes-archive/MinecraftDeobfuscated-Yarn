@@ -28,7 +28,7 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloadList
 		this.dataType = dataType;
 	}
 
-	protected Map<Identifier, JsonElement> method_20731(ResourceManager resourceManager, Profiler profiler) {
+	protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
 		Map<Identifier, JsonElement> map = Maps.<Identifier, JsonElement>newHashMap();
 		int i = this.dataType.length() + 1;
 

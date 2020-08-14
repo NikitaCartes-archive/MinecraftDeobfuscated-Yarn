@@ -20,14 +20,14 @@ public class StrollTask extends Task<PathAwareEntity> {
 	}
 
 	public StrollTask(float speed, int horizontalRadius, int verticalRadius) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 		this.speed = speed;
 		this.horizontalRadius = horizontalRadius;
 		this.verticalRadius = verticalRadius;
 	}
 
-	protected void method_24594(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(pathAwareEntity, this.horizontalRadius, this.verticalRadius));
-		pathAwareEntity.getBrain().remember(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
+		pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
 	}
 }

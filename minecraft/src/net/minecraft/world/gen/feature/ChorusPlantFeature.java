@@ -13,10 +13,10 @@ public class ChorusPlantFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_12843(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		if (structureWorldAccess.isAir(blockPos) && structureWorldAccess.getBlockState(blockPos.method_10074()).isOf(Blocks.field_10471)) {
+		if (structureWorldAccess.isAir(blockPos) && structureWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.END_STONE)) {
 			ChorusFlowerBlock.generate(structureWorldAccess, blockPos, random, 8);
 			return true;
 		} else {

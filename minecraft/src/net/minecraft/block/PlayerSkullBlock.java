@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PlayerSkullBlock extends SkullBlock {
 	protected PlayerSkullBlock(AbstractBlock.Settings settings) {
-		super(SkullBlock.Type.field_11510, settings);
+		super(SkullBlock.Type.PLAYER, settings);
 	}
 
 	@Override

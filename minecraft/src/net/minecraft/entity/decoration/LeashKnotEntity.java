@@ -30,7 +30,7 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 	}
 
 	public LeashKnotEntity(World world, BlockPos pos) {
-		super(EntityType.field_6138, world, pos);
+		super(EntityType.LEASH_KNOT, world, pos);
 		this.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
 		float f = 0.125F;
 		float g = 0.1875F;
@@ -78,7 +78,7 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		this.playSound(SoundEvents.field_15184, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_LEASH_KNOT_BREAK, 1.0F, 1.0F);
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public boolean canStayAttached() {
-		return this.world.getBlockState(this.attachmentPos).getBlock().isIn(BlockTags.field_16584);
+		return this.world.getBlockState(this.attachmentPos).getBlock().isIn(BlockTags.FENCES);
 	}
 
 	public static LeashKnotEntity getOrCreate(World world, BlockPos pos) {
@@ -149,7 +149,7 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onPlace() {
-		this.playSound(SoundEvents.field_15062, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_LEASH_KNOT_PLACE, 1.0F, 1.0F);
 	}
 
 	@Override

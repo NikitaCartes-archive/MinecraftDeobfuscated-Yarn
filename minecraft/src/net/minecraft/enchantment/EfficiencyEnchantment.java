@@ -6,7 +6,7 @@ import net.minecraft.item.Items;
 
 public class EfficiencyEnchantment extends Enchantment {
 	protected EfficiencyEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9069, slotTypes);
+		super(weight, EnchantmentTarget.DIGGER, slotTypes);
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class EfficiencyEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.getItem() == Items.field_8868 ? true : super.isAcceptableItem(stack);
+	public boolean isAcceptableItem(ItemStack stack, boolean bl) {
+		return stack.getItem() == Items.SHEARS ? true : super.isAcceptableItem(stack, bl);
 	}
 }

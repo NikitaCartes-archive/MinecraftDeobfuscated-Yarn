@@ -62,7 +62,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	@Override
 	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
 		ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
-			"vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.field_14281, ResourcePackSource.field_25348
+			"vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.PACK_SOURCE_BUILTIN
 		);
 		if (resourcePackProfile != null) {
 			consumer.accept(resourcePackProfile);
@@ -117,7 +117,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			this.downloadTask = completableFuture.thenCompose(
 					object -> !this.verifyFile(string4, file)
 							? Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"))
-							: this.loadServerPack(file, ResourcePackSource.field_25350)
+							: this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER)
 				)
 				.whenComplete((void_, throwable) -> {
 					if (throwable != null) {
@@ -235,7 +235,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			new TranslatableText("resourcePack.server.name"),
 			packResourceMetadata.getDescription(),
 			ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()),
-			ResourcePackProfile.InsertionPosition.field_14280,
+			ResourcePackProfile.InsertionPosition.TOP,
 			true,
 			resourcePackSource
 		);
@@ -262,7 +262,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 
 	@Nullable
 	private static ResourcePackProfile method_25453(ResourcePackProfile.Factory factory, Supplier<ResourcePack> supplier) {
-		return ResourcePackProfile.of("programer_art", false, supplier, factory, ResourcePackProfile.InsertionPosition.field_14280, ResourcePackSource.field_25348);
+		return ResourcePackProfile.of("programer_art", false, supplier, factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
 	}
 
 	private static DirectoryResourcePack method_25455(File file) {

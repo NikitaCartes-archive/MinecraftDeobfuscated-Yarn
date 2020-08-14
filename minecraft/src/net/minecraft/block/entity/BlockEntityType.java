@@ -18,208 +18,187 @@ import org.apache.logging.log4j.Logger;
 
 public class BlockEntityType<T extends BlockEntity> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final BlockEntityType<FurnaceBlockEntity> field_11903 = create(
-		"furnace", BlockEntityType.Builder.create(FurnaceBlockEntity::new, Blocks.field_10181)
+	public static final BlockEntityType<FurnaceBlockEntity> FURNACE = create("furnace", BlockEntityType.Builder.create(FurnaceBlockEntity::new, Blocks.FURNACE));
+	public static final BlockEntityType<ChestBlockEntity> CHEST = create("chest", BlockEntityType.Builder.create(ChestBlockEntity::new, Blocks.CHEST));
+	public static final BlockEntityType<TrappedChestBlockEntity> TRAPPED_CHEST = create(
+		"trapped_chest", BlockEntityType.Builder.create(TrappedChestBlockEntity::new, Blocks.TRAPPED_CHEST)
 	);
-	public static final BlockEntityType<ChestBlockEntity> field_11914 = create("chest", BlockEntityType.Builder.create(ChestBlockEntity::new, Blocks.field_10034));
-	public static final BlockEntityType<TrappedChestBlockEntity> field_11891 = create(
-		"trapped_chest", BlockEntityType.Builder.create(TrappedChestBlockEntity::new, Blocks.field_10380)
+	public static final BlockEntityType<EnderChestBlockEntity> ENDER_CHEST = create(
+		"ender_chest", BlockEntityType.Builder.create(EnderChestBlockEntity::new, Blocks.ENDER_CHEST)
 	);
-	public static final BlockEntityType<EnderChestBlockEntity> field_11901 = create(
-		"ender_chest", BlockEntityType.Builder.create(EnderChestBlockEntity::new, Blocks.field_10443)
+	public static final BlockEntityType<JukeboxBlockEntity> JUKEBOX = create("jukebox", BlockEntityType.Builder.create(JukeboxBlockEntity::new, Blocks.JUKEBOX));
+	public static final BlockEntityType<DispenserBlockEntity> DISPENSER = create(
+		"dispenser", BlockEntityType.Builder.create(DispenserBlockEntity::new, Blocks.DISPENSER)
 	);
-	public static final BlockEntityType<JukeboxBlockEntity> field_11907 = create(
-		"jukebox", BlockEntityType.Builder.create(JukeboxBlockEntity::new, Blocks.field_10223)
-	);
-	public static final BlockEntityType<DispenserBlockEntity> field_11887 = create(
-		"dispenser", BlockEntityType.Builder.create(DispenserBlockEntity::new, Blocks.field_10200)
-	);
-	public static final BlockEntityType<DropperBlockEntity> field_11899 = create(
-		"dropper", BlockEntityType.Builder.create(DropperBlockEntity::new, Blocks.field_10228)
-	);
-	public static final BlockEntityType<SignBlockEntity> field_11911 = create(
+	public static final BlockEntityType<DropperBlockEntity> DROPPER = create("dropper", BlockEntityType.Builder.create(DropperBlockEntity::new, Blocks.DROPPER));
+	public static final BlockEntityType<SignBlockEntity> SIGN = create(
 		"sign",
 		BlockEntityType.Builder.create(
 			SignBlockEntity::new,
-			Blocks.field_10121,
-			Blocks.field_10411,
-			Blocks.field_10231,
-			Blocks.field_10284,
-			Blocks.field_10544,
-			Blocks.field_10330,
-			Blocks.field_10187,
-			Blocks.field_10088,
-			Blocks.field_10391,
-			Blocks.field_10401,
-			Blocks.field_10587,
-			Blocks.field_10265,
-			Blocks.field_22104,
-			Blocks.field_22106,
-			Blocks.field_22105,
-			Blocks.field_22107
+			Blocks.OAK_SIGN,
+			Blocks.SPRUCE_SIGN,
+			Blocks.BIRCH_SIGN,
+			Blocks.ACACIA_SIGN,
+			Blocks.JUNGLE_SIGN,
+			Blocks.DARK_OAK_SIGN,
+			Blocks.OAK_WALL_SIGN,
+			Blocks.SPRUCE_WALL_SIGN,
+			Blocks.BIRCH_WALL_SIGN,
+			Blocks.ACACIA_WALL_SIGN,
+			Blocks.JUNGLE_WALL_SIGN,
+			Blocks.DARK_OAK_WALL_SIGN,
+			Blocks.CRIMSON_SIGN,
+			Blocks.CRIMSON_WALL_SIGN,
+			Blocks.WARPED_SIGN,
+			Blocks.WARPED_WALL_SIGN
 		)
 	);
-	public static final BlockEntityType<MobSpawnerBlockEntity> field_11889 = create(
-		"mob_spawner", BlockEntityType.Builder.create(MobSpawnerBlockEntity::new, Blocks.field_10260)
+	public static final BlockEntityType<MobSpawnerBlockEntity> MOB_SPAWNER = create(
+		"mob_spawner", BlockEntityType.Builder.create(MobSpawnerBlockEntity::new, Blocks.SPAWNER)
 	);
-	public static final BlockEntityType<PistonBlockEntity> field_11897 = create(
-		"piston", BlockEntityType.Builder.create(PistonBlockEntity::new, Blocks.field_10008)
+	public static final BlockEntityType<PistonBlockEntity> PISTON = create("piston", BlockEntityType.Builder.create(PistonBlockEntity::new, Blocks.MOVING_PISTON));
+	public static final BlockEntityType<BrewingStandBlockEntity> BREWING_STAND = create(
+		"brewing_stand", BlockEntityType.Builder.create(BrewingStandBlockEntity::new, Blocks.BREWING_STAND)
 	);
-	public static final BlockEntityType<BrewingStandBlockEntity> field_11894 = create(
-		"brewing_stand", BlockEntityType.Builder.create(BrewingStandBlockEntity::new, Blocks.field_10333)
+	public static final BlockEntityType<EnchantingTableBlockEntity> ENCHANTING_TABLE = create(
+		"enchanting_table", BlockEntityType.Builder.create(EnchantingTableBlockEntity::new, Blocks.ENCHANTING_TABLE)
 	);
-	public static final BlockEntityType<EnchantingTableBlockEntity> field_11912 = create(
-		"enchanting_table", BlockEntityType.Builder.create(EnchantingTableBlockEntity::new, Blocks.field_10485)
+	public static final BlockEntityType<EndPortalBlockEntity> END_PORTAL = create(
+		"end_portal", BlockEntityType.Builder.create(EndPortalBlockEntity::new, Blocks.END_PORTAL)
 	);
-	public static final BlockEntityType<EndPortalBlockEntity> field_11898 = create(
-		"end_portal", BlockEntityType.Builder.create(EndPortalBlockEntity::new, Blocks.field_10027)
-	);
-	public static final BlockEntityType<BeaconBlockEntity> field_11890 = create(
-		"beacon", BlockEntityType.Builder.create(BeaconBlockEntity::new, Blocks.field_10327)
-	);
-	public static final BlockEntityType<SkullBlockEntity> field_11913 = create(
+	public static final BlockEntityType<BeaconBlockEntity> BEACON = create("beacon", BlockEntityType.Builder.create(BeaconBlockEntity::new, Blocks.BEACON));
+	public static final BlockEntityType<SkullBlockEntity> SKULL = create(
 		"skull",
 		BlockEntityType.Builder.create(
 			SkullBlockEntity::new,
-			Blocks.field_10481,
-			Blocks.field_10388,
-			Blocks.field_10042,
-			Blocks.field_10509,
-			Blocks.field_10337,
-			Blocks.field_10472,
-			Blocks.field_10241,
-			Blocks.field_10581,
-			Blocks.field_10177,
-			Blocks.field_10101,
-			Blocks.field_10432,
-			Blocks.field_10208
+			Blocks.SKELETON_SKULL,
+			Blocks.SKELETON_WALL_SKULL,
+			Blocks.CREEPER_HEAD,
+			Blocks.CREEPER_WALL_HEAD,
+			Blocks.DRAGON_HEAD,
+			Blocks.DRAGON_WALL_HEAD,
+			Blocks.ZOMBIE_HEAD,
+			Blocks.ZOMBIE_WALL_HEAD,
+			Blocks.WITHER_SKELETON_SKULL,
+			Blocks.WITHER_SKELETON_WALL_SKULL,
+			Blocks.PLAYER_HEAD,
+			Blocks.PLAYER_WALL_HEAD
 		)
 	);
-	public static final BlockEntityType<DaylightDetectorBlockEntity> field_11900 = create(
-		"daylight_detector", BlockEntityType.Builder.create(DaylightDetectorBlockEntity::new, Blocks.field_10429)
+	public static final BlockEntityType<DaylightDetectorBlockEntity> DAYLIGHT_DETECTOR = create(
+		"daylight_detector", BlockEntityType.Builder.create(DaylightDetectorBlockEntity::new, Blocks.DAYLIGHT_DETECTOR)
 	);
-	public static final BlockEntityType<HopperBlockEntity> field_11888 = create(
-		"hopper", BlockEntityType.Builder.create(HopperBlockEntity::new, Blocks.field_10312)
+	public static final BlockEntityType<HopperBlockEntity> HOPPER = create("hopper", BlockEntityType.Builder.create(HopperBlockEntity::new, Blocks.HOPPER));
+	public static final BlockEntityType<ComparatorBlockEntity> COMPARATOR = create(
+		"comparator", BlockEntityType.Builder.create(ComparatorBlockEntity::new, Blocks.COMPARATOR)
 	);
-	public static final BlockEntityType<ComparatorBlockEntity> field_11908 = create(
-		"comparator", BlockEntityType.Builder.create(ComparatorBlockEntity::new, Blocks.field_10377)
-	);
-	public static final BlockEntityType<BannerBlockEntity> field_11905 = create(
+	public static final BlockEntityType<BannerBlockEntity> BANNER = create(
 		"banner",
 		BlockEntityType.Builder.create(
 			BannerBlockEntity::new,
-			Blocks.field_10154,
-			Blocks.field_10045,
-			Blocks.field_10438,
-			Blocks.field_10452,
-			Blocks.field_10547,
-			Blocks.field_10229,
-			Blocks.field_10612,
-			Blocks.field_10185,
-			Blocks.field_9985,
-			Blocks.field_10165,
-			Blocks.field_10368,
-			Blocks.field_10281,
-			Blocks.field_10602,
-			Blocks.field_10198,
-			Blocks.field_10406,
-			Blocks.field_10062,
-			Blocks.field_10202,
-			Blocks.field_10599,
-			Blocks.field_10274,
-			Blocks.field_10050,
-			Blocks.field_10139,
-			Blocks.field_10318,
-			Blocks.field_10531,
-			Blocks.field_10267,
-			Blocks.field_10604,
-			Blocks.field_10372,
-			Blocks.field_10054,
-			Blocks.field_10067,
-			Blocks.field_10370,
-			Blocks.field_10594,
-			Blocks.field_10279,
-			Blocks.field_10537
+			Blocks.WHITE_BANNER,
+			Blocks.ORANGE_BANNER,
+			Blocks.MAGENTA_BANNER,
+			Blocks.LIGHT_BLUE_BANNER,
+			Blocks.YELLOW_BANNER,
+			Blocks.LIME_BANNER,
+			Blocks.PINK_BANNER,
+			Blocks.GRAY_BANNER,
+			Blocks.LIGHT_GRAY_BANNER,
+			Blocks.CYAN_BANNER,
+			Blocks.PURPLE_BANNER,
+			Blocks.BLUE_BANNER,
+			Blocks.BROWN_BANNER,
+			Blocks.GREEN_BANNER,
+			Blocks.RED_BANNER,
+			Blocks.BLACK_BANNER,
+			Blocks.WHITE_WALL_BANNER,
+			Blocks.ORANGE_WALL_BANNER,
+			Blocks.MAGENTA_WALL_BANNER,
+			Blocks.LIGHT_BLUE_WALL_BANNER,
+			Blocks.YELLOW_WALL_BANNER,
+			Blocks.LIME_WALL_BANNER,
+			Blocks.PINK_WALL_BANNER,
+			Blocks.GRAY_WALL_BANNER,
+			Blocks.LIGHT_GRAY_WALL_BANNER,
+			Blocks.CYAN_WALL_BANNER,
+			Blocks.PURPLE_WALL_BANNER,
+			Blocks.BLUE_WALL_BANNER,
+			Blocks.BROWN_WALL_BANNER,
+			Blocks.GREEN_WALL_BANNER,
+			Blocks.RED_WALL_BANNER,
+			Blocks.BLACK_WALL_BANNER
 		)
 	);
-	public static final BlockEntityType<StructureBlockBlockEntity> field_11895 = create(
-		"structure_block", BlockEntityType.Builder.create(StructureBlockBlockEntity::new, Blocks.field_10465)
+	public static final BlockEntityType<StructureBlockBlockEntity> STRUCTURE_BLOCK = create(
+		"structure_block", BlockEntityType.Builder.create(StructureBlockBlockEntity::new, Blocks.STRUCTURE_BLOCK)
 	);
-	public static final BlockEntityType<EndGatewayBlockEntity> field_11906 = create(
-		"end_gateway", BlockEntityType.Builder.create(EndGatewayBlockEntity::new, Blocks.field_10613)
+	public static final BlockEntityType<EndGatewayBlockEntity> END_GATEWAY = create(
+		"end_gateway", BlockEntityType.Builder.create(EndGatewayBlockEntity::new, Blocks.END_GATEWAY)
 	);
-	public static final BlockEntityType<CommandBlockBlockEntity> field_11904 = create(
-		"command_block", BlockEntityType.Builder.create(CommandBlockBlockEntity::new, Blocks.field_10525, Blocks.field_10395, Blocks.field_10263)
+	public static final BlockEntityType<CommandBlockBlockEntity> COMMAND_BLOCK = create(
+		"command_block",
+		BlockEntityType.Builder.create(CommandBlockBlockEntity::new, Blocks.COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK)
 	);
-	public static final BlockEntityType<ShulkerBoxBlockEntity> field_11896 = create(
+	public static final BlockEntityType<ShulkerBoxBlockEntity> SHULKER_BOX = create(
 		"shulker_box",
 		BlockEntityType.Builder.create(
 			ShulkerBoxBlockEntity::new,
-			Blocks.field_10603,
-			Blocks.field_10371,
-			Blocks.field_10605,
-			Blocks.field_10373,
-			Blocks.field_10532,
-			Blocks.field_10140,
-			Blocks.field_10055,
-			Blocks.field_10203,
-			Blocks.field_10320,
-			Blocks.field_10275,
-			Blocks.field_10063,
-			Blocks.field_10407,
-			Blocks.field_10051,
-			Blocks.field_10268,
-			Blocks.field_10068,
-			Blocks.field_10199,
-			Blocks.field_10600
+			Blocks.SHULKER_BOX,
+			Blocks.BLACK_SHULKER_BOX,
+			Blocks.BLUE_SHULKER_BOX,
+			Blocks.BROWN_SHULKER_BOX,
+			Blocks.CYAN_SHULKER_BOX,
+			Blocks.GRAY_SHULKER_BOX,
+			Blocks.GREEN_SHULKER_BOX,
+			Blocks.LIGHT_BLUE_SHULKER_BOX,
+			Blocks.LIGHT_GRAY_SHULKER_BOX,
+			Blocks.LIME_SHULKER_BOX,
+			Blocks.MAGENTA_SHULKER_BOX,
+			Blocks.ORANGE_SHULKER_BOX,
+			Blocks.PINK_SHULKER_BOX,
+			Blocks.PURPLE_SHULKER_BOX,
+			Blocks.RED_SHULKER_BOX,
+			Blocks.WHITE_SHULKER_BOX,
+			Blocks.YELLOW_SHULKER_BOX
 		)
 	);
-	public static final BlockEntityType<BedBlockEntity> field_11910 = create(
+	public static final BlockEntityType<BedBlockEntity> BED = create(
 		"bed",
 		BlockEntityType.Builder.create(
 			BedBlockEntity::new,
-			Blocks.field_10069,
-			Blocks.field_10461,
-			Blocks.field_10527,
-			Blocks.field_10288,
-			Blocks.field_10109,
-			Blocks.field_10141,
-			Blocks.field_10561,
-			Blocks.field_10621,
-			Blocks.field_10326,
-			Blocks.field_10180,
-			Blocks.field_10230,
-			Blocks.field_10410,
-			Blocks.field_10610,
-			Blocks.field_10019,
-			Blocks.field_10120,
-			Blocks.field_10356
+			Blocks.RED_BED,
+			Blocks.BLACK_BED,
+			Blocks.BLUE_BED,
+			Blocks.BROWN_BED,
+			Blocks.CYAN_BED,
+			Blocks.GRAY_BED,
+			Blocks.GREEN_BED,
+			Blocks.LIGHT_BLUE_BED,
+			Blocks.LIGHT_GRAY_BED,
+			Blocks.LIME_BED,
+			Blocks.MAGENTA_BED,
+			Blocks.ORANGE_BED,
+			Blocks.PINK_BED,
+			Blocks.PURPLE_BED,
+			Blocks.WHITE_BED,
+			Blocks.YELLOW_BED
 		)
 	);
-	public static final BlockEntityType<ConduitBlockEntity> field_11902 = create(
-		"conduit", BlockEntityType.Builder.create(ConduitBlockEntity::new, Blocks.field_10502)
+	public static final BlockEntityType<ConduitBlockEntity> CONDUIT = create("conduit", BlockEntityType.Builder.create(ConduitBlockEntity::new, Blocks.CONDUIT));
+	public static final BlockEntityType<BarrelBlockEntity> BARREL = create("barrel", BlockEntityType.Builder.create(BarrelBlockEntity::new, Blocks.BARREL));
+	public static final BlockEntityType<SmokerBlockEntity> SMOKER = create("smoker", BlockEntityType.Builder.create(SmokerBlockEntity::new, Blocks.SMOKER));
+	public static final BlockEntityType<BlastFurnaceBlockEntity> BLAST_FURNACE = create(
+		"blast_furnace", BlockEntityType.Builder.create(BlastFurnaceBlockEntity::new, Blocks.BLAST_FURNACE)
 	);
-	public static final BlockEntityType<BarrelBlockEntity> field_16411 = create(
-		"barrel", BlockEntityType.Builder.create(BarrelBlockEntity::new, Blocks.field_16328)
+	public static final BlockEntityType<LecternBlockEntity> LECTERN = create("lectern", BlockEntityType.Builder.create(LecternBlockEntity::new, Blocks.LECTERN));
+	public static final BlockEntityType<BellBlockEntity> BELL = create("bell", BlockEntityType.Builder.create(BellBlockEntity::new, Blocks.BELL));
+	public static final BlockEntityType<JigsawBlockEntity> JIGSAW = create("jigsaw", BlockEntityType.Builder.create(JigsawBlockEntity::new, Blocks.JIGSAW));
+	public static final BlockEntityType<CampfireBlockEntity> CAMPFIRE = create(
+		"campfire", BlockEntityType.Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE)
 	);
-	public static final BlockEntityType<SmokerBlockEntity> field_16414 = create(
-		"smoker", BlockEntityType.Builder.create(SmokerBlockEntity::new, Blocks.field_16334)
-	);
-	public static final BlockEntityType<BlastFurnaceBlockEntity> field_16415 = create(
-		"blast_furnace", BlockEntityType.Builder.create(BlastFurnaceBlockEntity::new, Blocks.field_16333)
-	);
-	public static final BlockEntityType<LecternBlockEntity> field_16412 = create(
-		"lectern", BlockEntityType.Builder.create(LecternBlockEntity::new, Blocks.field_16330)
-	);
-	public static final BlockEntityType<BellBlockEntity> field_16413 = create("bell", BlockEntityType.Builder.create(BellBlockEntity::new, Blocks.field_16332));
-	public static final BlockEntityType<JigsawBlockEntity> field_16549 = create(
-		"jigsaw", BlockEntityType.Builder.create(JigsawBlockEntity::new, Blocks.field_16540)
-	);
-	public static final BlockEntityType<CampfireBlockEntity> field_17380 = create(
-		"campfire", BlockEntityType.Builder.create(CampfireBlockEntity::new, Blocks.field_17350, Blocks.field_23860)
-	);
-	public static final BlockEntityType<BeehiveBlockEntity> field_20431 = create(
-		"beehive", BlockEntityType.Builder.create(BeehiveBlockEntity::new, Blocks.field_20421, Blocks.field_20422)
+	public static final BlockEntityType<BeehiveBlockEntity> BEEHIVE = create(
+		"beehive", BlockEntityType.Builder.create(BeehiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE)
 	);
 	private final Supplier<? extends T> supplier;
 	private final Set<Block> blocks;

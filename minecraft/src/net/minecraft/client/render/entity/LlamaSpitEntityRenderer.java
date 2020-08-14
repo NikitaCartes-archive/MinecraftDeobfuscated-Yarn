@@ -21,7 +21,7 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4061(LlamaSpitEntity llamaSpitEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(LlamaSpitEntity llamaSpitEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.translate(0.0, 0.15F, 0.0);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0F));
@@ -33,7 +33,7 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 		super.render(llamaSpitEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_4062(LlamaSpitEntity llamaSpitEntity) {
+	public Identifier getTexture(LlamaSpitEntity llamaSpitEntity) {
 		return TEXTURE;
 	}
 }

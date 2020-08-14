@@ -27,7 +27,7 @@ public class PotatoesBlock extends CropBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	protected ItemConvertible getSeedsItem() {
-		return Items.field_8567;
+		return Items.POTATO;
 	}
 
 	@Override

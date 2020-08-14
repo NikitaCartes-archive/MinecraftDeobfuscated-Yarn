@@ -46,52 +46,52 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(
-		Biomes.field_9461, Biomes.field_22076, Biomes.field_22075, Biomes.field_22077, Biomes.field_23859
+		BiomeKeys.NETHER_WASTES, BiomeKeys.SOUL_SAND_VALLEY, BiomeKeys.WARPED_FOREST, BiomeKeys.CRIMSON_FOREST, BiomeKeys.BASALT_DELTAS
 	);
 	private static final EntityPredicate.Extended field_25712 = EntityPredicate.Extended.create(
 		EntityPropertiesLootCondition.builder(
-				LootContext.EntityTarget.field_935,
+				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().item(Items.field_8862).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().item(Items.GOLDEN_HELMET).build()).build())
 			)
 			.invert()
 			.build(),
 		EntityPropertiesLootCondition.builder(
-				LootContext.EntityTarget.field_935,
+				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().item(Items.field_8678).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().item(Items.GOLDEN_CHESTPLATE).build()).build())
 			)
 			.invert()
 			.build(),
 		EntityPropertiesLootCondition.builder(
-				LootContext.EntityTarget.field_935,
+				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().item(Items.field_8416).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().item(Items.GOLDEN_LEGGINGS).build()).build())
 			)
 			.invert()
 			.build(),
 		EntityPropertiesLootCondition.builder(
-				LootContext.EntityTarget.field_935,
+				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(Items.field_8753).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(Items.GOLDEN_BOOTS).build()).build())
 			)
 			.invert()
 			.build()
 	);
 
-	public void method_10346(Consumer<Advancement> consumer) {
+	public void accept(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
-				Blocks.field_9986,
+				Blocks.RED_NETHER_BRICKS,
 				new TranslatableText("advancements.nether.root.title"),
 				new TranslatableText("advancements.nether.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/nether.png"),
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				false,
 				false,
 				false
@@ -101,11 +101,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		Advancement advancement2 = Advancement.Task.create()
 			.parent(advancement)
 			.display(
-				Items.field_8814,
+				Items.FIRE_CHARGE,
 				new TranslatableText("advancements.nether.return_to_sender.title"),
 				new TranslatableText("advancements.nether.return_to_sender.description"),
 				null,
-				AdvancementFrame.field_1250,
+				AdvancementFrame.CHALLENGE,
 				true,
 				true,
 				false
@@ -114,33 +114,33 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.field_6107),
-					DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.field_6066))
+					EntityPredicate.Builder.create().type(EntityType.GHAST),
+					DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.FIREBALL))
 				)
 			)
 			.build(consumer, "nether/return_to_sender");
 		Advancement advancement3 = Advancement.Task.create()
 			.parent(advancement)
 			.display(
-				Blocks.field_10266,
+				Blocks.NETHER_BRICKS,
 				new TranslatableText("advancements.nether.find_fortress.title"),
 				new TranslatableText("advancements.nether.find_fortress.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
 			)
-			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.field_24855)))
+			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.FORTRESS)))
 			.build(consumer, "nether/find_fortress");
 		Advancement.Task.create()
 			.parent(advancement)
 			.display(
-				Items.field_8895,
+				Items.MAP,
 				new TranslatableText("advancements.nether.fast_travel.title"),
 				new TranslatableText("advancements.nether.fast_travel.description"),
 				null,
-				AdvancementFrame.field_1250,
+				AdvancementFrame.CHALLENGE,
 				true,
 				true,
 				false
@@ -151,11 +151,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		Advancement.Task.create()
 			.parent(advancement2)
 			.display(
-				Items.field_8070,
+				Items.GHAST_TEAR,
 				new TranslatableText("advancements.nether.uneasy_alliance.title"),
 				new TranslatableText("advancements.nether.uneasy_alliance.description"),
 				null,
-				AdvancementFrame.field_1250,
+				AdvancementFrame.CHALLENGE,
 				true,
 				true,
 				false
@@ -164,60 +164,60 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.field_6107).location(LocationPredicate.dimension(World.OVERWORLD))
+					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.dimension(World.OVERWORLD))
 				)
 			)
 			.build(consumer, "nether/uneasy_alliance");
 		Advancement advancement4 = Advancement.Task.create()
 			.parent(advancement3)
 			.display(
-				Blocks.field_10177,
+				Blocks.WITHER_SKELETON_SKULL,
 				new TranslatableText("advancements.nether.get_wither_skull.title"),
 				new TranslatableText("advancements.nether.get_wither_skull.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
 			)
-			.criterion("wither_skull", InventoryChangedCriterion.Conditions.items(Blocks.field_10177))
+			.criterion("wither_skull", InventoryChangedCriterion.Conditions.items(Blocks.WITHER_SKELETON_SKULL))
 			.build(consumer, "nether/get_wither_skull");
 		Advancement advancement5 = Advancement.Task.create()
 			.parent(advancement4)
 			.display(
-				Items.field_8137,
+				Items.NETHER_STAR,
 				new TranslatableText("advancements.nether.summon_wither.title"),
 				new TranslatableText("advancements.nether.summon_wither.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
 			)
-			.criterion("summoned", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.field_6119)))
+			.criterion("summoned", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.WITHER)))
 			.build(consumer, "nether/summon_wither");
 		Advancement advancement6 = Advancement.Task.create()
 			.parent(advancement3)
 			.display(
-				Items.field_8894,
+				Items.BLAZE_ROD,
 				new TranslatableText("advancements.nether.obtain_blaze_rod.title"),
 				new TranslatableText("advancements.nether.obtain_blaze_rod.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
 			)
-			.criterion("blaze_rod", InventoryChangedCriterion.Conditions.items(Items.field_8894))
+			.criterion("blaze_rod", InventoryChangedCriterion.Conditions.items(Items.BLAZE_ROD))
 			.build(consumer, "nether/obtain_blaze_rod");
 		Advancement advancement7 = Advancement.Task.create()
 			.parent(advancement5)
 			.display(
-				Blocks.field_10327,
+				Blocks.BEACON,
 				new TranslatableText("advancements.nether.create_beacon.title"),
 				new TranslatableText("advancements.nether.create_beacon.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
@@ -227,11 +227,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		Advancement.Task.create()
 			.parent(advancement7)
 			.display(
-				Blocks.field_10327,
+				Blocks.BEACON,
 				new TranslatableText("advancements.nether.create_full_beacon.title"),
 				new TranslatableText("advancements.nether.create_full_beacon.description"),
 				null,
-				AdvancementFrame.field_1249,
+				AdvancementFrame.GOAL,
 				true,
 				true,
 				false
@@ -241,11 +241,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		Advancement advancement8 = Advancement.Task.create()
 			.parent(advancement6)
 			.display(
-				Items.field_8574,
+				Items.POTION,
 				new TranslatableText("advancements.nether.brew_potion.title"),
 				new TranslatableText("advancements.nether.brew_potion.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
@@ -255,11 +255,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		Advancement advancement9 = Advancement.Task.create()
 			.parent(advancement8)
 			.display(
-				Items.field_8103,
+				Items.MILK_BUCKET,
 				new TranslatableText("advancements.nether.all_potions.title"),
 				new TranslatableText("advancements.nether.all_potions.description"),
 				null,
-				AdvancementFrame.field_1250,
+				AdvancementFrame.CHALLENGE,
 				true,
 				true,
 				false
@@ -269,30 +269,30 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				"all_effects",
 				EffectsChangedCriterion.Conditions.create(
 					EntityEffectPredicate.create()
-						.withEffect(StatusEffects.field_5904)
-						.withEffect(StatusEffects.field_5909)
-						.withEffect(StatusEffects.field_5910)
-						.withEffect(StatusEffects.field_5913)
-						.withEffect(StatusEffects.field_5924)
-						.withEffect(StatusEffects.field_5918)
-						.withEffect(StatusEffects.field_5923)
-						.withEffect(StatusEffects.field_5905)
-						.withEffect(StatusEffects.field_5925)
-						.withEffect(StatusEffects.field_5911)
-						.withEffect(StatusEffects.field_5899)
-						.withEffect(StatusEffects.field_5906)
-						.withEffect(StatusEffects.field_5907)
+						.withEffect(StatusEffects.SPEED)
+						.withEffect(StatusEffects.SLOWNESS)
+						.withEffect(StatusEffects.STRENGTH)
+						.withEffect(StatusEffects.JUMP_BOOST)
+						.withEffect(StatusEffects.REGENERATION)
+						.withEffect(StatusEffects.FIRE_RESISTANCE)
+						.withEffect(StatusEffects.WATER_BREATHING)
+						.withEffect(StatusEffects.INVISIBILITY)
+						.withEffect(StatusEffects.NIGHT_VISION)
+						.withEffect(StatusEffects.WEAKNESS)
+						.withEffect(StatusEffects.POISON)
+						.withEffect(StatusEffects.SLOW_FALLING)
+						.withEffect(StatusEffects.RESISTANCE)
 				)
 			)
 			.build(consumer, "nether/all_potions");
 		Advancement.Task.create()
 			.parent(advancement9)
 			.display(
-				Items.field_8550,
+				Items.BUCKET,
 				new TranslatableText("advancements.nether.all_effects.title"),
 				new TranslatableText("advancements.nether.all_effects.description"),
 				null,
-				AdvancementFrame.field_1250,
+				AdvancementFrame.CHALLENGE,
 				true,
 				true,
 				true
@@ -302,32 +302,32 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				"all_effects",
 				EffectsChangedCriterion.Conditions.create(
 					EntityEffectPredicate.create()
-						.withEffect(StatusEffects.field_5904)
-						.withEffect(StatusEffects.field_5909)
-						.withEffect(StatusEffects.field_5910)
-						.withEffect(StatusEffects.field_5913)
-						.withEffect(StatusEffects.field_5924)
-						.withEffect(StatusEffects.field_5918)
-						.withEffect(StatusEffects.field_5923)
-						.withEffect(StatusEffects.field_5905)
-						.withEffect(StatusEffects.field_5925)
-						.withEffect(StatusEffects.field_5911)
-						.withEffect(StatusEffects.field_5899)
-						.withEffect(StatusEffects.field_5920)
-						.withEffect(StatusEffects.field_5917)
-						.withEffect(StatusEffects.field_5901)
-						.withEffect(StatusEffects.field_5902)
-						.withEffect(StatusEffects.field_5912)
-						.withEffect(StatusEffects.field_5898)
-						.withEffect(StatusEffects.field_5903)
-						.withEffect(StatusEffects.field_5916)
-						.withEffect(StatusEffects.field_5907)
-						.withEffect(StatusEffects.field_5906)
-						.withEffect(StatusEffects.field_5927)
-						.withEffect(StatusEffects.field_5900)
-						.withEffect(StatusEffects.field_5919)
-						.withEffect(StatusEffects.field_16595)
-						.withEffect(StatusEffects.field_18980)
+						.withEffect(StatusEffects.SPEED)
+						.withEffect(StatusEffects.SLOWNESS)
+						.withEffect(StatusEffects.STRENGTH)
+						.withEffect(StatusEffects.JUMP_BOOST)
+						.withEffect(StatusEffects.REGENERATION)
+						.withEffect(StatusEffects.FIRE_RESISTANCE)
+						.withEffect(StatusEffects.WATER_BREATHING)
+						.withEffect(StatusEffects.INVISIBILITY)
+						.withEffect(StatusEffects.NIGHT_VISION)
+						.withEffect(StatusEffects.WEAKNESS)
+						.withEffect(StatusEffects.POISON)
+						.withEffect(StatusEffects.WITHER)
+						.withEffect(StatusEffects.HASTE)
+						.withEffect(StatusEffects.MINING_FATIGUE)
+						.withEffect(StatusEffects.LEVITATION)
+						.withEffect(StatusEffects.GLOWING)
+						.withEffect(StatusEffects.ABSORPTION)
+						.withEffect(StatusEffects.HUNGER)
+						.withEffect(StatusEffects.NAUSEA)
+						.withEffect(StatusEffects.RESISTANCE)
+						.withEffect(StatusEffects.SLOW_FALLING)
+						.withEffect(StatusEffects.CONDUIT_POWER)
+						.withEffect(StatusEffects.DOLPHINS_GRACE)
+						.withEffect(StatusEffects.BLINDNESS)
+						.withEffect(StatusEffects.BAD_OMEN)
+						.withEffect(StatusEffects.HERO_OF_THE_VILLAGE)
 				)
 			)
 			.build(consumer, "nether/all_effects");
@@ -338,7 +338,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				new TranslatableText("advancements.nether.obtain_ancient_debris.title"),
 				new TranslatableText("advancements.nether.obtain_ancient_debris.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
@@ -348,17 +348,20 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		Advancement.Task.create()
 			.parent(advancement10)
 			.display(
-				Items.field_22028,
+				Items.NETHERITE_CHESTPLATE,
 				new TranslatableText("advancements.nether.netherite_armor.title"),
 				new TranslatableText("advancements.nether.netherite_armor.description"),
 				null,
-				AdvancementFrame.field_1250,
+				AdvancementFrame.CHALLENGE,
 				true,
 				true,
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion("netherite_armor", InventoryChangedCriterion.Conditions.items(Items.field_22027, Items.field_22028, Items.field_22029, Items.field_22030))
+			.criterion(
+				"netherite_armor",
+				InventoryChangedCriterion.Conditions.items(Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS)
+			)
 			.build(consumer, "nether/netherite_armor");
 		Advancement.Task.create()
 			.parent(advancement10)
@@ -367,7 +370,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				new TranslatableText("advancements.nether.use_lodestone.title"),
 				new TranslatableText("advancements.nether.use_lodestone.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
@@ -375,8 +378,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"use_lodestone",
 				ItemUsedOnBlockCriterion.Conditions.create(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(Blocks.field_23261).build()),
-					ItemPredicate.Builder.create().item(Items.field_8251)
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(Blocks.LODESTONE).build()),
+					ItemPredicate.Builder.create().item(Items.COMPASS)
 				)
 			)
 			.build(consumer, "nether/use_lodestone");
@@ -387,7 +390,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				new TranslatableText("advancements.nether.obtain_crying_obsidian.title"),
 				new TranslatableText("advancements.nether.obtain_crying_obsidian.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
@@ -401,7 +404,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				new TranslatableText("advancements.nether.charge_respawn_anchor.title"),
 				new TranslatableText("advancements.nether.charge_respawn_anchor.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
@@ -412,22 +415,22 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 					LocationPredicate.Builder.create()
 						.block(
 							BlockPredicate.Builder.create()
-								.block(Blocks.field_23152)
+								.block(Blocks.RESPAWN_ANCHOR)
 								.state(StatePredicate.Builder.create().exactMatch(RespawnAnchorBlock.CHARGES, 4).build())
 								.build()
 						),
-					ItemPredicate.Builder.create().item(Blocks.field_10171)
+					ItemPredicate.Builder.create().item(Blocks.GLOWSTONE)
 				)
 			)
 			.build(consumer, "nether/charge_respawn_anchor");
 		Advancement advancement12 = Advancement.Task.create()
 			.parent(advancement)
 			.display(
-				Items.field_23254,
+				Items.WARPED_FUNGUS_ON_A_STICK,
 				new TranslatableText("advancements.nether.ride_strider.title"),
 				new TranslatableText("advancements.nether.ride_strider.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
@@ -435,8 +438,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"used_warped_fungus_on_a_stick",
 				ItemDurabilityChangedCriterion.Conditions.create(
-					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.field_23214).build()).build()),
-					ItemPredicate.Builder.create().item(Items.field_23254).build(),
+					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()).build()),
+					ItemPredicate.Builder.create().item(Items.WARPED_FUNGUS_ON_A_STICK).build(),
 					NumberRange.IntRange.ANY
 				)
 			)
@@ -444,11 +447,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Task.create(), NETHER_BIOMES)
 			.parent(advancement12)
 			.display(
-				Items.field_22030,
+				Items.NETHERITE_BOOTS,
 				new TranslatableText("advancements.nether.explore_nether.title"),
 				new TranslatableText("advancements.nether.explore_nether.description"),
 				null,
-				AdvancementFrame.field_1250,
+				AdvancementFrame.CHALLENGE,
 				true,
 				true,
 				false
@@ -462,21 +465,21 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				new TranslatableText("advancements.nether.find_bastion.title"),
 				new TranslatableText("advancements.nether.find_bastion.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
 			)
-			.criterion("bastion", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.field_24860)))
+			.criterion("bastion", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.BASTION_REMNANT)))
 			.build(consumer, "nether/find_bastion");
 		Advancement.Task.create()
 			.parent(advancement13)
 			.display(
-				Blocks.field_10034,
+				Blocks.CHEST,
 				new TranslatableText("advancements.nether.loot_bastion.title"),
 				new TranslatableText("advancements.nether.loot_bastion.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
@@ -491,11 +494,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.criteriaMerger(CriterionMerger.OR)
 			.display(
-				Items.field_8695,
+				Items.GOLD_INGOT,
 				new TranslatableText("advancements.nether.distract_piglin.title"),
 				new TranslatableText("advancements.nether.distract_piglin.description"),
 				null,
-				AdvancementFrame.field_1254,
+				AdvancementFrame.TASK,
 				true,
 				true,
 				false
@@ -504,9 +507,9 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				"distract_piglin",
 				ThrownItemPickedUpByEntityCriterion.Conditions.create(
 					field_25712,
-					ItemPredicate.Builder.create().tag(ItemTags.field_24481),
+					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED),
 					EntityPredicate.Extended.ofLegacy(
-						EntityPredicate.Builder.create().type(EntityType.field_22281).flags(EntityFlagsPredicate.Builder.create().method_29935(false).build()).build()
+						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().method_29935(false).build()).build()
 					)
 				)
 			)
@@ -516,7 +519,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 					field_25712,
 					ItemPredicate.Builder.create().item(PiglinBrain.BARTERING_ITEM),
 					EntityPredicate.Extended.ofLegacy(
-						EntityPredicate.Builder.create().type(EntityType.field_22281).flags(EntityFlagsPredicate.Builder.create().method_29935(false).build()).build()
+						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().method_29935(false).build()).build()
 					)
 				)
 			)

@@ -18,25 +18,25 @@ public class GoToNearbyPositionTask extends Task<PathAwareEntity> {
 	private long nextRunTime;
 
 	public GoToNearbyPositionTask(MemoryModuleType<GlobalPos> memoryModuleType, float f, int i, int j) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18458, memoryModuleType, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, memoryModuleType, MemoryModuleState.VALUE_PRESENT));
 		this.memoryModuleType = memoryModuleType;
 		this.field_25753 = f;
 		this.completionRange = i;
 		this.maxDistance = j;
 	}
 
-	protected boolean method_19607(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
 		Optional<GlobalPos> optional = pathAwareEntity.getBrain().getOptionalMemory(this.memoryModuleType);
 		return optional.isPresent()
 			&& serverWorld.getRegistryKey() == ((GlobalPos)optional.get()).getDimension()
 			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(pathAwareEntity.getPos(), (double)this.maxDistance);
 	}
 
-	protected void method_19608(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		if (l > this.nextRunTime) {
 			Brain<?> brain = pathAwareEntity.getBrain();
 			Optional<GlobalPos> optional = brain.getOptionalMemory(this.memoryModuleType);
-			optional.ifPresent(globalPos -> brain.remember(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), this.field_25753, this.completionRange)));
+			optional.ifPresent(globalPos -> brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.field_25753, this.completionRange)));
 			this.nextRunTime = l + 80L;
 		}
 	}

@@ -14,8 +14,8 @@ import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Unit;
 
 public class ServerResourceManager implements AutoCloseable {
-	private static final CompletableFuture<Unit> field_25334 = CompletableFuture.completedFuture(Unit.field_17274);
-	private final ReloadableResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.field_14190);
+	private static final CompletableFuture<Unit> field_25334 = CompletableFuture.completedFuture(Unit.INSTANCE);
+	private final ReloadableResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.SERVER_DATA);
 	private final CommandManager commandManager;
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final TagManagerLoader registryTagManager = new TagManagerLoader();

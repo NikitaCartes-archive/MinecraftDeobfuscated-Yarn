@@ -28,7 +28,7 @@ public class PickFromInventoryC2SPacket implements Packet<ServerPlayPacketListen
 		buf.writeVarInt(this.slot);
 	}
 
-	public void method_12292(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPickFromInventory(this);
 	}
 

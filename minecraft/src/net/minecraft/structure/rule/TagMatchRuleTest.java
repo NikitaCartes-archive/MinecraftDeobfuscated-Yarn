@@ -25,6 +25,6 @@ public class TagMatchRuleTest extends RuleTest {
 
 	@Override
 	protected RuleTestType<?> getType() {
-		return RuleTestType.field_16983;
+		return RuleTestType.TAG_MATCH;
 	}
 }

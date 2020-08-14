@@ -33,7 +33,7 @@ public class EntityStatusS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeByte(this.status);
 	}
 
-	public void method_11471(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityStatus(this);
 	}
 

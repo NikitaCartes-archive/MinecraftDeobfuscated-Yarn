@@ -36,7 +36,7 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	public EndCrystalEntity(World world, double x, double y, double z) {
-		this(EntityType.field_6110, world);
+		this(EntityType.END_CRYSTAL, world);
 		this.updatePosition(x, y, z);
 	}
 
@@ -97,7 +97,7 @@ public class EndCrystalEntity extends Entity {
 			if (!this.removed && !this.world.isClient) {
 				this.remove();
 				if (!source.isExplosive()) {
-					this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), 6.0F, Explosion.DestructionType.field_18687);
+					this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), 6.0F, Explosion.DestructionType.DESTROY);
 				}
 
 				this.crystalDestroyed(source);

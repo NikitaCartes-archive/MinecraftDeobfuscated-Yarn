@@ -31,7 +31,7 @@ public class EntityLookTarget implements LookTarget {
 		if (!(this.entity instanceof LivingEntity)) {
 			return true;
 		} else {
-			Optional<List<LivingEntity>> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.field_18442);
+			Optional<List<LivingEntity>> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
 			return this.entity.isAlive() && optional.isPresent() && ((List)optional.get()).contains(this.entity);
 		}
 	}

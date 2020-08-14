@@ -28,7 +28,7 @@ public class FollowMobGoal extends Goal {
 		this.navigation = mob.getNavigation();
 		this.minDistance = minDistance;
 		this.maxDistance = maxDistance;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		if (!(mob.getNavigation() instanceof MobNavigation) && !(mob.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowMobGoal");
 		}
@@ -57,15 +57,15 @@ public class FollowMobGoal extends Goal {
 	@Override
 	public void start() {
 		this.updateCountdownTicks = 0;
-		this.oldWaterPathFindingPenalty = this.mob.getPathfindingPenalty(PathNodeType.field_18);
-		this.mob.setPathfindingPenalty(PathNodeType.field_18, 0.0F);
+		this.oldWaterPathFindingPenalty = this.mob.getPathfindingPenalty(PathNodeType.WATER);
+		this.mob.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 	}
 
 	@Override
 	public void stop() {
 		this.target = null;
 		this.navigation.stop();
-		this.mob.setPathfindingPenalty(PathNodeType.field_18, this.oldWaterPathFindingPenalty);
+		this.mob.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterPathFindingPenalty);
 	}
 
 	@Override

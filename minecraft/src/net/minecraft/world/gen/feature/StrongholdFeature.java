@@ -24,7 +24,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		return StrongholdFeature.Start::new;
 	}
 
-	protected boolean method_28654(
+	protected boolean shouldStartAt(
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		long l,
@@ -39,14 +39,14 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		private final long field_24559;
+		private final long seed;
 
 		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
 			super(structureFeature, i, j, blockBox, k, l);
-			this.field_24559 = l;
+			this.seed = l;
 		}
 
-		public void method_28655(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
@@ -61,7 +61,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 			do {
 				this.children.clear();
 				this.boundingBox = BlockBox.empty();
-				this.random.setCarverSeed(this.field_24559 + (long)(k++), i, j);
+				this.random.setCarverSeed(this.seed + (long)(k++), i, j);
 				StrongholdGenerator.init();
 				start = new StrongholdGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
 				this.children.add(start);

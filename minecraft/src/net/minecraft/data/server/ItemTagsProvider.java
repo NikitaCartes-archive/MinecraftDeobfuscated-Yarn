@@ -22,115 +22,114 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 
 	@Override
 	protected void configure() {
-		this.copy(BlockTags.field_15481, ItemTags.field_15544);
-		this.copy(BlockTags.field_15471, ItemTags.field_15537);
-		this.copy(BlockTags.field_15465, ItemTags.field_15531);
-		this.copy(BlockTags.field_15499, ItemTags.field_15555);
-		this.copy(BlockTags.field_15493, ItemTags.field_15551);
-		this.copy(BlockTags.field_15479, ItemTags.field_15542);
-		this.copy(BlockTags.field_15494, ItemTags.field_15552);
-		this.copy(BlockTags.field_15502, ItemTags.field_15557);
-		this.copy(BlockTags.field_15468, ItemTags.field_15534);
-		this.copy(BlockTags.field_17619, ItemTags.field_17620);
-		this.copy(BlockTags.field_15477, ItemTags.field_15540);
-		this.copy(BlockTags.field_15495, ItemTags.field_15553);
-		this.copy(BlockTags.field_15462, ItemTags.field_15528);
-		this.copy(BlockTags.field_15482, ItemTags.field_15545);
-		this.copy(BlockTags.field_15485, ItemTags.field_15546);
-		this.copy(BlockTags.field_15498, ItemTags.field_15554);
-		this.copy(BlockTags.field_15458, ItemTags.field_15525);
-		this.copy(BlockTags.field_15489, ItemTags.field_15549);
-		this.copy(BlockTags.field_15474, ItemTags.field_15538);
-		this.copy(BlockTags.field_21955, ItemTags.field_21957);
-		this.copy(BlockTags.field_21956, ItemTags.field_21958);
-		this.copy(BlockTags.field_23210, ItemTags.field_23212);
-		this.copy(BlockTags.field_15475, ItemTags.field_15539);
-		this.copy(BlockTags.field_15466, ItemTags.field_15532);
-		this.copy(BlockTags.field_15469, ItemTags.field_15535);
-		this.copy(BlockTags.field_15504, ItemTags.field_15560);
-		this.copy(BlockTags.field_15459, ItemTags.field_15526);
-		this.copy(BlockTags.field_15486, ItemTags.field_15547);
-		this.copy(BlockTags.field_15463, ItemTags.field_15529);
-		this.copy(BlockTags.field_15503, ItemTags.field_15558);
-		this.copy(BlockTags.field_15491, ItemTags.field_15550);
-		this.copy(BlockTags.field_15487, ItemTags.field_15548);
-		this.copy(BlockTags.field_15480, ItemTags.field_15543);
-		this.copy(BlockTags.field_16443, ItemTags.field_16444);
-		this.copy(BlockTags.field_16584, ItemTags.field_16585);
-		this.copy(BlockTags.field_20338, ItemTags.field_20343);
-		this.copy(BlockTags.field_20339, ItemTags.field_20344);
-		this.copy(BlockTags.field_23062, ItemTags.field_23065);
-		this.copy(BlockTags.field_23119, ItemTags.field_23801);
-		this.getOrCreateTagBuilder(ItemTags.field_15556)
+		this.copy(BlockTags.WOOL, ItemTags.WOOL);
+		this.copy(BlockTags.PLANKS, ItemTags.PLANKS);
+		this.copy(BlockTags.STONE_BRICKS, ItemTags.STONE_BRICKS);
+		this.copy(BlockTags.WOODEN_BUTTONS, ItemTags.WOODEN_BUTTONS);
+		this.copy(BlockTags.BUTTONS, ItemTags.BUTTONS);
+		this.copy(BlockTags.CARPETS, ItemTags.CARPETS);
+		this.copy(BlockTags.WOODEN_DOORS, ItemTags.WOODEN_DOORS);
+		this.copy(BlockTags.WOODEN_STAIRS, ItemTags.WOODEN_STAIRS);
+		this.copy(BlockTags.WOODEN_SLABS, ItemTags.WOODEN_SLABS);
+		this.copy(BlockTags.WOODEN_FENCES, ItemTags.WOODEN_FENCES);
+		this.copy(BlockTags.WOODEN_PRESSURE_PLATES, ItemTags.WOODEN_PRESSURE_PLATES);
+		this.copy(BlockTags.DOORS, ItemTags.DOORS);
+		this.copy(BlockTags.SAPLINGS, ItemTags.SAPLINGS);
+		this.copy(BlockTags.OAK_LOGS, ItemTags.OAK_LOGS);
+		this.copy(BlockTags.DARK_OAK_LOGS, ItemTags.DARK_OAK_LOGS);
+		this.copy(BlockTags.BIRCH_LOGS, ItemTags.BIRCH_LOGS);
+		this.copy(BlockTags.ACACIA_LOGS, ItemTags.ACACIA_LOGS);
+		this.copy(BlockTags.SPRUCE_LOGS, ItemTags.SPRUCE_LOGS);
+		this.copy(BlockTags.JUNGLE_LOGS, ItemTags.JUNGLE_LOGS);
+		this.copy(BlockTags.CRIMSON_STEMS, ItemTags.CRIMSON_STEMS);
+		this.copy(BlockTags.WARPED_STEMS, ItemTags.WARPED_STEMS);
+		this.copy(BlockTags.LOGS_THAT_BURN, ItemTags.LOGS_THAT_BURN);
+		this.copy(BlockTags.LOGS, ItemTags.LOGS);
+		this.copy(BlockTags.SAND, ItemTags.SAND);
+		this.copy(BlockTags.SLABS, ItemTags.SLABS);
+		this.copy(BlockTags.WALLS, ItemTags.WALLS);
+		this.copy(BlockTags.STAIRS, ItemTags.STAIRS);
+		this.copy(BlockTags.ANVIL, ItemTags.ANVIL);
+		this.copy(BlockTags.RAILS, ItemTags.RAILS);
+		this.copy(BlockTags.LEAVES, ItemTags.LEAVES);
+		this.copy(BlockTags.WOODEN_TRAPDOORS, ItemTags.WOODEN_TRAPDOORS);
+		this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
+		this.copy(BlockTags.SMALL_FLOWERS, ItemTags.SMALL_FLOWERS);
+		this.copy(BlockTags.BEDS, ItemTags.BEDS);
+		this.copy(BlockTags.FENCES, ItemTags.FENCES);
+		this.copy(BlockTags.TALL_FLOWERS, ItemTags.TALL_FLOWERS);
+		this.copy(BlockTags.FLOWERS, ItemTags.FLOWERS);
+		this.copy(BlockTags.GOLD_ORES, ItemTags.GOLD_ORES);
+		this.copy(BlockTags.SOUL_FIRE_BASE_BLOCKS, ItemTags.SOUL_FIRE_BASE_BLOCKS);
+		this.getOrCreateTagBuilder(ItemTags.BANNERS)
 			.add(
-				Items.field_8539,
-				Items.field_8824,
-				Items.field_8671,
-				Items.field_8379,
-				Items.field_8049,
-				Items.field_8778,
-				Items.field_8329,
-				Items.field_8617,
-				Items.field_8855,
-				Items.field_8629,
-				Items.field_8405,
-				Items.field_8128,
-				Items.field_8124,
-				Items.field_8295,
-				Items.field_8586,
-				Items.field_8572
+				Items.WHITE_BANNER,
+				Items.ORANGE_BANNER,
+				Items.MAGENTA_BANNER,
+				Items.LIGHT_BLUE_BANNER,
+				Items.YELLOW_BANNER,
+				Items.LIME_BANNER,
+				Items.PINK_BANNER,
+				Items.GRAY_BANNER,
+				Items.LIGHT_GRAY_BANNER,
+				Items.CYAN_BANNER,
+				Items.PURPLE_BANNER,
+				Items.BLUE_BANNER,
+				Items.BROWN_BANNER,
+				Items.GREEN_BANNER,
+				Items.RED_BANNER,
+				Items.BLACK_BANNER
 			);
-		this.getOrCreateTagBuilder(ItemTags.field_15536)
-			.add(Items.field_8533, Items.field_8486, Items.field_8442, Items.field_8730, Items.field_8094, Items.field_8138);
-		this.getOrCreateTagBuilder(ItemTags.field_15527)
-			.add(Items.field_8429, Items.field_8373, Items.field_8209, Items.field_8509, Items.field_8323, Items.field_8846);
-		this.copy(BlockTags.field_15472, ItemTags.field_15533);
-		this.getOrCreateTagBuilder(ItemTags.field_23969)
+		this.getOrCreateTagBuilder(ItemTags.BOATS)
+			.add(Items.OAK_BOAT, Items.SPRUCE_BOAT, Items.BIRCH_BOAT, Items.JUNGLE_BOAT, Items.ACACIA_BOAT, Items.DARK_OAK_BOAT);
+		this.getOrCreateTagBuilder(ItemTags.FISHES).add(Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH);
+		this.copy(BlockTags.STANDING_SIGNS, ItemTags.SIGNS);
+		this.getOrCreateTagBuilder(ItemTags.CREEPER_DROP_MUSIC_DISCS)
 			.add(
-				Items.field_8144,
-				Items.field_8075,
-				Items.field_8425,
-				Items.field_8623,
-				Items.field_8502,
-				Items.field_8534,
-				Items.field_8344,
-				Items.field_8834,
-				Items.field_8065,
-				Items.field_8355,
-				Items.field_8731,
-				Items.field_8806
+				Items.MUSIC_DISC_13,
+				Items.MUSIC_DISC_CAT,
+				Items.MUSIC_DISC_BLOCKS,
+				Items.MUSIC_DISC_CHIRP,
+				Items.MUSIC_DISC_FAR,
+				Items.MUSIC_DISC_MALL,
+				Items.MUSIC_DISC_MELLOHI,
+				Items.MUSIC_DISC_STAL,
+				Items.MUSIC_DISC_STRAD,
+				Items.MUSIC_DISC_WARD,
+				Items.MUSIC_DISC_11,
+				Items.MUSIC_DISC_WAIT
 			);
-		this.getOrCreateTagBuilder(ItemTags.field_15541).addTag(ItemTags.field_23969).add(Items.field_23984);
-		this.getOrCreateTagBuilder(ItemTags.field_17487).add(Items.field_8713, Items.field_8665);
-		this.getOrCreateTagBuilder(ItemTags.field_18317).add(Items.field_8107, Items.field_8087, Items.field_8236);
-		this.getOrCreateTagBuilder(ItemTags.field_21465).add(Items.field_8360, Items.field_8674);
-		this.getOrCreateTagBuilder(ItemTags.field_22277).add(Items.field_22020, Items.field_8687, Items.field_8477, Items.field_8695, Items.field_8620);
-		this.getOrCreateTagBuilder(ItemTags.field_23064).add(Items.SOUL_TORCH).add(Items.SOUL_LANTERN).add(Items.SOUL_CAMPFIRE);
-		this.getOrCreateTagBuilder(ItemTags.field_24481)
-			.addTag(ItemTags.field_23065)
+		this.getOrCreateTagBuilder(ItemTags.MUSIC_DISCS).addTag(ItemTags.CREEPER_DROP_MUSIC_DISCS).add(Items.MUSIC_DISC_PIGSTEP);
+		this.getOrCreateTagBuilder(ItemTags.COALS).add(Items.COAL, Items.CHARCOAL);
+		this.getOrCreateTagBuilder(ItemTags.ARROWS).add(Items.ARROW, Items.TIPPED_ARROW, Items.SPECTRAL_ARROW);
+		this.getOrCreateTagBuilder(ItemTags.LECTERN_BOOKS).add(Items.WRITTEN_BOOK, Items.WRITABLE_BOOK);
+		this.getOrCreateTagBuilder(ItemTags.BEACON_PAYMENT_ITEMS).add(Items.NETHERITE_INGOT, Items.EMERALD, Items.DIAMOND, Items.GOLD_INGOT, Items.IRON_INGOT);
+		this.getOrCreateTagBuilder(ItemTags.PIGLIN_REPELLENTS).add(Items.SOUL_TORCH).add(Items.SOUL_LANTERN).add(Items.SOUL_CAMPFIRE);
+		this.getOrCreateTagBuilder(ItemTags.PIGLIN_LOVED)
+			.addTag(ItemTags.GOLD_ORES)
 			.add(
 				Items.GOLD_BLOCK,
 				Items.GILDED_BLACKSTONE,
 				Items.LIGHT_WEIGHTED_PRESSURE_PLATE,
-				Items.field_8695,
+				Items.GOLD_INGOT,
 				Items.BELL,
-				Items.field_8557,
-				Items.field_8071,
-				Items.field_8597,
-				Items.field_8463,
-				Items.field_8367,
-				Items.field_8862,
-				Items.field_8678,
-				Items.field_8416,
-				Items.field_8753,
-				Items.field_8560,
-				Items.field_8845,
-				Items.field_8335,
-				Items.field_8322,
-				Items.field_8825,
-				Items.field_8303
+				Items.CLOCK,
+				Items.GOLDEN_CARROT,
+				Items.GLISTERING_MELON_SLICE,
+				Items.GOLDEN_APPLE,
+				Items.ENCHANTED_GOLDEN_APPLE,
+				Items.GOLDEN_HELMET,
+				Items.GOLDEN_CHESTPLATE,
+				Items.GOLDEN_LEGGINGS,
+				Items.GOLDEN_BOOTS,
+				Items.GOLDEN_HORSE_ARMOR,
+				Items.GOLDEN_SWORD,
+				Items.GOLDEN_PICKAXE,
+				Items.GOLDEN_SHOVEL,
+				Items.GOLDEN_AXE,
+				Items.GOLDEN_HOE
 			);
-		this.getOrCreateTagBuilder(ItemTags.field_23211)
+		this.getOrCreateTagBuilder(ItemTags.NON_FLAMMABLE_WOOD)
 			.add(
 				Items.WARPED_STEM,
 				Items.STRIPPED_WARPED_STEM,
@@ -158,11 +157,11 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.WARPED_BUTTON,
 				Items.CRIMSON_DOOR,
 				Items.WARPED_DOOR,
-				Items.field_22011,
-				Items.field_22012
+				Items.CRIMSON_SIGN,
+				Items.WARPED_SIGN
 			);
-		this.getOrCreateTagBuilder(ItemTags.field_23802).add(Items.COBBLESTONE, Items.BLACKSTONE);
-		this.getOrCreateTagBuilder(ItemTags.field_25808).add(Items.COBBLESTONE, Items.BLACKSTONE);
+		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
+		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
 	}
 
 	protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {

@@ -73,7 +73,7 @@ public class ModelVariant implements ModelBakeSettings {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<ModelVariant> {
-		public ModelVariant method_3513(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public ModelVariant deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Identifier identifier = this.deserializeModel(jsonObject);
 			net.minecraft.client.render.model.ModelRotation modelRotation = this.deserializeRotation(jsonObject);

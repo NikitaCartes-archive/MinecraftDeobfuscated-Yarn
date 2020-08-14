@@ -16,7 +16,7 @@ public class BeaconScreenHandler extends ScreenHandler {
 	private final Inventory payment = new SimpleInventory(1) {
 		@Override
 		public boolean isValid(int slot, ItemStack stack) {
-			return stack.getItem().isIn(ItemTags.field_22277);
+			return stack.getItem().isIn(ItemTags.BEACON_PAYMENT_ITEMS);
 		}
 
 		@Override
@@ -33,7 +33,7 @@ public class BeaconScreenHandler extends ScreenHandler {
 	}
 
 	public BeaconScreenHandler(int syncId, Inventory inventory, PropertyDelegate propertyDelegate, ScreenHandlerContext context) {
-		super(ScreenHandlerType.field_17330, syncId);
+		super(ScreenHandlerType.BEACON, syncId);
 		checkDataCount(propertyDelegate, 3);
 		this.propertyDelegate = propertyDelegate;
 		this.context = context;
@@ -58,7 +58,7 @@ public class BeaconScreenHandler extends ScreenHandler {
 	public void close(PlayerEntity player) {
 		super.close(player);
 		if (!player.world.isClient) {
-			ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxStackAmount());
+			ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxItemCount());
 			if (!itemStack.isEmpty()) {
 				player.dropItem(itemStack, false);
 			}
@@ -67,7 +67,7 @@ public class BeaconScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.field_10327);
+		return canUse(this.context, player, Blocks.BEACON);
 	}
 
 	@Override
@@ -158,11 +158,11 @@ public class BeaconScreenHandler extends ScreenHandler {
 
 		@Override
 		public boolean canInsert(ItemStack stack) {
-			return stack.getItem().isIn(ItemTags.field_22277);
+			return stack.getItem().isIn(ItemTags.BEACON_PAYMENT_ITEMS);
 		}
 
 		@Override
-		public int getMaxStackAmount() {
+		public int getMaxItemCount() {
 			return 1;
 		}
 	}

@@ -19,7 +19,7 @@ public class PathNode {
 	public boolean visited;
 	public float pathLength;
 	public float penalty;
-	public PathNodeType type = PathNodeType.field_22;
+	public PathNodeType type = PathNodeType.BLOCKED;
 
 	public PathNode(int x, int y, int z) {
 		this.x = x;

@@ -28,8 +28,8 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 		super(entityType, world);
 		this.setCanPickUpLoot(true);
 		this.setCanPathThroughDoors();
-		this.setPathfindingPenalty(PathNodeType.field_9, 16.0F);
-		this.setPathfindingPenalty(PathNodeType.field_3, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 	}
 
 	private void setCanPathThroughDoors() {
@@ -96,9 +96,9 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	}
 
 	protected void zombify(ServerWorld world) {
-		ZombifiedPiglinEntity zombifiedPiglinEntity = this.method_29243(EntityType.field_6050, true);
+		ZombifiedPiglinEntity zombifiedPiglinEntity = this.method_29243(EntityType.ZOMBIFIED_PIGLIN, true);
 		if (zombifiedPiglinEntity != null) {
-			zombifiedPiglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.field_5916, 200, 0));
+			zombifiedPiglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
 		}
 	}
 
@@ -112,7 +112,7 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public LivingEntity getTarget() {
-		return (LivingEntity)this.brain.getOptionalMemory(MemoryModuleType.field_22355).orElse(null);
+		return (LivingEntity)this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
 	}
 
 	protected boolean isHoldingTool() {

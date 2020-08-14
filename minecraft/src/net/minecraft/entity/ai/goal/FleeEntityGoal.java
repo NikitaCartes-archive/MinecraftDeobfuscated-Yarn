@@ -45,7 +45,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 		this.fastSpeed = fastSpeed;
 		this.inclusionSelector = inclusionSelector;
 		this.fleeingEntityNavigation = mob.getNavigation();
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 		this.withinRangePredicate = new TargetPredicate().setBaseMaxDistance((double)distance).setPredicate(inclusionSelector.and(extraInclusionSelector));
 	}
 

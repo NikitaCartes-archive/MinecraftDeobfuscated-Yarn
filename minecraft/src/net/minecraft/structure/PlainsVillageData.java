@@ -15,16 +15,16 @@ public class PlainsVillageData {
 			new Identifier("village/plains/town_centers"),
 			new Identifier("empty"),
 			ImmutableList.of(
-				Pair.of(StructurePoolElement.method_30426("village/plains/town_centers/plains_fountain_01", StructureProcessorLists.field_26265), 50),
-				Pair.of(StructurePoolElement.method_30426("village/plains/town_centers/plains_meeting_point_1", StructureProcessorLists.field_26265), 50),
+				Pair.of(StructurePoolElement.method_30426("village/plains/town_centers/plains_fountain_01", StructureProcessorLists.MOSSIFY_20_PERCENT), 50),
+				Pair.of(StructurePoolElement.method_30426("village/plains/town_centers/plains_meeting_point_1", StructureProcessorLists.MOSSIFY_20_PERCENT), 50),
 				Pair.of(StructurePoolElement.method_30425("village/plains/town_centers/plains_meeting_point_2"), 50),
-				Pair.of(StructurePoolElement.method_30426("village/plains/town_centers/plains_meeting_point_3", StructureProcessorLists.field_26266), 50),
-				Pair.of(StructurePoolElement.method_30426("village/plains/zombie/town_centers/plains_fountain_01", StructureProcessorLists.field_26259), 1),
-				Pair.of(StructurePoolElement.method_30426("village/plains/zombie/town_centers/plains_meeting_point_1", StructureProcessorLists.field_26259), 1),
-				Pair.of(StructurePoolElement.method_30426("village/plains/zombie/town_centers/plains_meeting_point_2", StructureProcessorLists.field_26259), 1),
-				Pair.of(StructurePoolElement.method_30426("village/plains/zombie/town_centers/plains_meeting_point_3", StructureProcessorLists.field_26259), 1)
+				Pair.of(StructurePoolElement.method_30426("village/plains/town_centers/plains_meeting_point_3", StructureProcessorLists.MOSSIFY_70_PERCENT), 50),
+				Pair.of(StructurePoolElement.method_30426("village/plains/zombie/town_centers/plains_fountain_01", StructureProcessorLists.ZOMBIE_PLAINS), 1),
+				Pair.of(StructurePoolElement.method_30426("village/plains/zombie/town_centers/plains_meeting_point_1", StructureProcessorLists.ZOMBIE_PLAINS), 1),
+				Pair.of(StructurePoolElement.method_30426("village/plains/zombie/town_centers/plains_meeting_point_2", StructureProcessorLists.ZOMBIE_PLAINS), 1),
+				Pair.of(StructurePoolElement.method_30426("village/plains/zombie/town_centers/plains_meeting_point_3", StructureProcessorLists.ZOMBIE_PLAINS), 1)
 			),
-			StructurePool.Projection.field_16687
+			StructurePool.Projection.RIGID
 		)
 	);
 
@@ -37,24 +37,24 @@ public class PlainsVillageData {
 				new Identifier("village/plains/streets"),
 				new Identifier("village/plains/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/corner_01", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/corner_02", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/corner_03", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_01", StructureProcessorLists.field_26267), 4),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_02", StructureProcessorLists.field_26267), 4),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_03", StructureProcessorLists.field_26267), 7),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_04", StructureProcessorLists.field_26267), 7),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_05", StructureProcessorLists.field_26267), 3),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_06", StructureProcessorLists.field_26267), 4),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_01", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_02", StructureProcessorLists.field_26267), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_03", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_04", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_05", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_06", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/streets/turn_01", StructureProcessorLists.field_26267), 3)
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/corner_01", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/corner_02", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/corner_03", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_01", StructureProcessorLists.STREET_PLAINS), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_02", StructureProcessorLists.STREET_PLAINS), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_03", StructureProcessorLists.STREET_PLAINS), 7),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_04", StructureProcessorLists.STREET_PLAINS), 7),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_05", StructureProcessorLists.STREET_PLAINS), 3),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/straight_06", StructureProcessorLists.STREET_PLAINS), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_01", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_02", StructureProcessorLists.STREET_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_03", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_04", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_05", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/crossroad_06", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/streets/turn_01", StructureProcessorLists.STREET_PLAINS), 3)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -62,24 +62,24 @@ public class PlainsVillageData {
 				new Identifier("village/plains/zombie/streets"),
 				new Identifier("village/plains/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/corner_01", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/corner_02", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/corner_03", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_01", StructureProcessorLists.field_26267), 4),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_02", StructureProcessorLists.field_26267), 4),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_03", StructureProcessorLists.field_26267), 7),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_04", StructureProcessorLists.field_26267), 7),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_05", StructureProcessorLists.field_26267), 3),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_06", StructureProcessorLists.field_26267), 4),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_01", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_02", StructureProcessorLists.field_26267), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_03", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_04", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_05", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_06", StructureProcessorLists.field_26267), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/turn_01", StructureProcessorLists.field_26267), 3)
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/corner_01", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/corner_02", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/corner_03", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_01", StructureProcessorLists.STREET_PLAINS), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_02", StructureProcessorLists.STREET_PLAINS), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_03", StructureProcessorLists.STREET_PLAINS), 7),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_04", StructureProcessorLists.STREET_PLAINS), 7),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_05", StructureProcessorLists.STREET_PLAINS), 3),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/straight_06", StructureProcessorLists.STREET_PLAINS), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_01", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_02", StructureProcessorLists.STREET_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_03", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_04", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_05", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/crossroad_06", StructureProcessorLists.STREET_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/streets/turn_01", StructureProcessorLists.STREET_PLAINS), 3)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -87,45 +87,45 @@ public class PlainsVillageData {
 				new Identifier("village/plains/houses"),
 				new Identifier("village/plains/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_2", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_3", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_4", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_5", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_6", StructureProcessorLists.field_26264), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_7", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_8", StructureProcessorLists.field_26264), 3),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_medium_house_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_medium_house_2", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_big_house_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_butcher_shop_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_butcher_shop_2", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_tool_smith_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_fletcher_house_1", StructureProcessorLists.field_26264), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_2", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_3", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_4", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_5", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_6", StructureProcessorLists.MOSSIFY_10_PERCENT), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_7", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_house_8", StructureProcessorLists.MOSSIFY_10_PERCENT), 3),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_medium_house_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_medium_house_2", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_big_house_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_butcher_shop_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_butcher_shop_2", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_tool_smith_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_fletcher_house_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
 					Pair.of(StructurePoolElement.method_30425("village/plains/houses/plains_shepherds_house_1"), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_armorer_house_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_fisher_cottage_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_tannery_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_cartographer_1", StructureProcessorLists.field_26264), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_library_1", StructureProcessorLists.field_26264), 5),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_library_2", StructureProcessorLists.field_26264), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_masons_house_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_weaponsmith_1", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_temple_3", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_temple_4", StructureProcessorLists.field_26264), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_stable_1", StructureProcessorLists.field_26264), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_armorer_house_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_fisher_cottage_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_tannery_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_cartographer_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_library_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 5),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_library_2", StructureProcessorLists.MOSSIFY_10_PERCENT), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_masons_house_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_weaponsmith_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_temple_3", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_temple_4", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_stable_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 2),
 					Pair.of(StructurePoolElement.method_30425("village/plains/houses/plains_stable_2"), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_large_farm_1", StructureProcessorLists.field_26270), 4),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_farm_1", StructureProcessorLists.field_26270), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_large_farm_1", StructureProcessorLists.FARM_PLAINS), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_farm_1", StructureProcessorLists.FARM_PLAINS), 4),
 					Pair.of(StructurePoolElement.method_30425("village/plains/houses/plains_animal_pen_1"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/plains/houses/plains_animal_pen_2"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/plains/houses/plains_animal_pen_3"), 5),
 					Pair.of(StructurePoolElement.method_30425("village/plains/houses/plains_accessory_1"), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_meeting_point_4", StructureProcessorLists.field_26266), 3),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_meeting_point_4", StructureProcessorLists.MOSSIFY_70_PERCENT), 3),
 					Pair.of(StructurePoolElement.method_30425("village/plains/houses/plains_meeting_point_5"), 1),
 					Pair.of(StructurePoolElement.method_30438(), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -133,44 +133,44 @@ public class PlainsVillageData {
 				new Identifier("village/plains/zombie/houses"),
 				new Identifier("village/plains/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_2", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_3", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_4", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_5", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_6", StructureProcessorLists.field_26259), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_7", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_8", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_medium_house_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_medium_house_2", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_big_house_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_butcher_shop_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_butcher_shop_2", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_tool_smith_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_fletcher_house_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_shepherds_house_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_armorer_house_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_fisher_cottage_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_tannery_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_cartographer_1", StructureProcessorLists.field_26259), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_library_1", StructureProcessorLists.field_26259), 3),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_library_2", StructureProcessorLists.field_26259), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_masons_house_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_weaponsmith_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_temple_3", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_temple_4", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_stable_1", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_stable_2", StructureProcessorLists.field_26259), 2),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_large_farm_1", StructureProcessorLists.field_26259), 4),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_farm_1", StructureProcessorLists.field_26259), 4),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_animal_pen_1", StructureProcessorLists.field_26259), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_animal_pen_2", StructureProcessorLists.field_26259), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_animal_pen_3", StructureProcessorLists.field_26259), 5),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_meeting_point_4", StructureProcessorLists.field_26259), 3),
-					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_meeting_point_5", StructureProcessorLists.field_26259), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_2", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_3", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_4", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_5", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_6", StructureProcessorLists.ZOMBIE_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_7", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_small_house_8", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_medium_house_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_medium_house_2", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_big_house_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_butcher_shop_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_butcher_shop_2", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_tool_smith_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_fletcher_house_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_shepherds_house_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_armorer_house_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_fisher_cottage_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_tannery_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_cartographer_1", StructureProcessorLists.ZOMBIE_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_library_1", StructureProcessorLists.ZOMBIE_PLAINS), 3),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_library_2", StructureProcessorLists.ZOMBIE_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_masons_house_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_weaponsmith_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_temple_3", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_temple_4", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_stable_1", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_stable_2", StructureProcessorLists.ZOMBIE_PLAINS), 2),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_large_farm_1", StructureProcessorLists.ZOMBIE_PLAINS), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_small_farm_1", StructureProcessorLists.ZOMBIE_PLAINS), 4),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_animal_pen_1", StructureProcessorLists.ZOMBIE_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/houses/plains_animal_pen_2", StructureProcessorLists.ZOMBIE_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_animal_pen_3", StructureProcessorLists.ZOMBIE_PLAINS), 5),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_meeting_point_4", StructureProcessorLists.ZOMBIE_PLAINS), 3),
+					Pair.of(StructurePoolElement.method_30426("village/plains/zombie/houses/plains_meeting_point_5", StructureProcessorLists.ZOMBIE_PLAINS), 1),
 					Pair.of(StructurePoolElement.method_30438(), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -178,20 +178,20 @@ public class PlainsVillageData {
 				new Identifier("village/plains/terminators"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_01", StructureProcessorLists.field_26267), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_02", StructureProcessorLists.field_26267), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_03", StructureProcessorLists.field_26267), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_04", StructureProcessorLists.field_26267), 1)
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_01", StructureProcessorLists.STREET_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_02", StructureProcessorLists.STREET_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_03", StructureProcessorLists.STREET_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_04", StructureProcessorLists.STREET_PLAINS), 1)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
 			new StructurePool(
 				new Identifier("village/plains/trees"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26036), 1)),
-				StructurePool.Projection.field_16687
+				ImmutableList.of(Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.OAK), 1)),
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -200,12 +200,12 @@ public class PlainsVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.method_30425("village/plains/plains_lamp_1"), 2),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26036), 1),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26104), 1),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26009), 1),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.OAK), 1),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.FLOWER_PLAIN), 1),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PILE_HAY), 1),
 					Pair.of(StructurePoolElement.method_30438(), 2)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -213,13 +213,13 @@ public class PlainsVillageData {
 				new Identifier("village/plains/zombie/decor"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/plains/plains_lamp_1", StructureProcessorLists.field_26259), 1),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26036), 1),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26104), 1),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26009), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/plains_lamp_1", StructureProcessorLists.ZOMBIE_PLAINS), 1),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.OAK), 1),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.FLOWER_PLAIN), 1),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PILE_HAY), 1),
 					Pair.of(StructurePoolElement.method_30438(), 2)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -231,7 +231,7 @@ public class PlainsVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/plains/villagers/baby"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/plains/villagers/unemployed"), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -242,7 +242,7 @@ public class PlainsVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/plains/zombie/villagers/nitwit"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/plains/zombie/villagers/unemployed"), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -261,7 +261,7 @@ public class PlainsVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/common/animals/sheep_2"), 1),
 					Pair.of(StructurePoolElement.method_30438(), 5)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -272,7 +272,7 @@ public class PlainsVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/common/animals/sheep_1"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/common/animals/sheep_2"), 1)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -292,7 +292,7 @@ public class PlainsVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/common/animals/cat_jellie"), 1),
 					Pair.of(StructurePoolElement.method_30438(), 3)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -305,7 +305,7 @@ public class PlainsVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/common/animals/sheep_1"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/common/animals/sheep_2"), 1)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -313,7 +313,7 @@ public class PlainsVillageData {
 				new Identifier("village/common/iron_golem"),
 				new Identifier("empty"),
 				ImmutableList.of(Pair.of(StructurePoolElement.method_30425("village/common/iron_golem"), 1)),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -321,7 +321,7 @@ public class PlainsVillageData {
 				new Identifier("village/common/well_bottoms"),
 				new Identifier("empty"),
 				ImmutableList.of(Pair.of(StructurePoolElement.method_30425("village/common/well_bottom"), 1)),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 	}

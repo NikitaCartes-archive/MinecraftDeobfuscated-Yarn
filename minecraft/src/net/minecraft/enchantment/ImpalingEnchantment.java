@@ -6,7 +6,7 @@ import net.minecraft.entity.LivingEntity;
 
 public class ImpalingEnchantment extends Enchantment {
 	public ImpalingEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9073, slotTypes);
+		super(weight, EnchantmentTarget.TRIDENT, slotTypes);
 	}
 
 	@Override

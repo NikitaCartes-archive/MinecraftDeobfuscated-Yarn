@@ -25,7 +25,7 @@ public final class DimensionOptions {
 	public static final Codec<DimensionOptions> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					DimensionType.REGISTRY_CODEC.fieldOf("type").forGetter(DimensionOptions::getDimensionTypeSupplier),
-					ChunkGenerator.field_24746.fieldOf("generator").forGetter(DimensionOptions::getChunkGenerator)
+					ChunkGenerator.CODEC.fieldOf("generator").forGetter(DimensionOptions::getChunkGenerator)
 				)
 				.apply(instance, instance.stable(DimensionOptions::new))
 	);
@@ -59,14 +59,14 @@ public final class DimensionOptions {
 		for(RegistryKey<DimensionOptions> registryKey : BASE_DIMENSIONS) {
 			DimensionOptions dimensionOptions = simpleRegistry.get(registryKey);
 			if (dimensionOptions != null) {
-				simpleRegistry2.add(registryKey, dimensionOptions, simpleRegistry.method_31139(dimensionOptions));
+				simpleRegistry2.add(registryKey, dimensionOptions, simpleRegistry.getEntryLifecycle(dimensionOptions));
 			}
 		}
 
 		for(Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey2 = (RegistryKey)entry.getKey();
 			if (!BASE_DIMENSIONS.contains(registryKey2)) {
-				simpleRegistry2.add(registryKey2, entry.getValue(), simpleRegistry.method_31139((DimensionOptions)entry.getValue()));
+				simpleRegistry2.add(registryKey2, entry.getValue(), simpleRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
 			}
 		}
 
@@ -83,12 +83,12 @@ public final class DimensionOptions {
 			Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry3 = (Entry)list.get(2);
 			if (entry.getKey() != OVERWORLD || entry2.getKey() != NETHER || entry3.getKey() != END) {
 				return false;
-			} else if (!((DimensionOptions)entry.getValue()).getDimensionType().method_31108(DimensionType.OVERWORLD)
+			} else if (!((DimensionOptions)entry.getValue()).getDimensionType().equals(DimensionType.OVERWORLD)
 				&& ((DimensionOptions)entry.getValue()).getDimensionType() != DimensionType.OVERWORLD_CAVES) {
 				return false;
-			} else if (!((DimensionOptions)entry2.getValue()).getDimensionType().method_31108(DimensionType.THE_NETHER)) {
+			} else if (!((DimensionOptions)entry2.getValue()).getDimensionType().equals(DimensionType.THE_NETHER)) {
 				return false;
-			} else if (!((DimensionOptions)entry3.getValue()).getDimensionType().method_31108(DimensionType.THE_END)) {
+			} else if (!((DimensionOptions)entry3.getValue()).getDimensionType().equals(DimensionType.THE_END)) {
 				return false;
 			} else if (((DimensionOptions)entry2.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator
 				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator) {
@@ -108,7 +108,7 @@ public final class DimensionOptions {
 						return false;
 					} else {
 						TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)noiseChunkGenerator2.getBiomeSource();
-						return theEndBiomeSource.method_28479(seed);
+						return theEndBiomeSource.isSeedEqual(seed);
 					}
 				}
 			} else {

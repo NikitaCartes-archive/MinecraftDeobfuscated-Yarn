@@ -23,7 +23,14 @@ public class ExperienceBottleItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		world.playSound(
-			null, user.getX(), user.getY(), user.getZ(), SoundEvents.field_14637, SoundCategory.field_15254, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+			null,
+			user.getX(),
+			user.getY(),
+			user.getZ(),
+			SoundEvents.ENTITY_EXPERIENCE_BOTTLE_THROW,
+			SoundCategory.NEUTRAL,
+			0.5F,
+			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
 			ExperienceBottleEntity experienceBottleEntity = new ExperienceBottleEntity(world, user);
@@ -32,7 +39,7 @@ public class ExperienceBottleItem extends Item {
 			world.spawnEntity(experienceBottleEntity);
 		}
 
-		user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		if (!user.abilities.creativeMode) {
 			itemStack.decrement(1);
 		}

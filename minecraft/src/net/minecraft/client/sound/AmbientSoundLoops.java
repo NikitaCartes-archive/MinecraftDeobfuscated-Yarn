@@ -14,7 +14,7 @@ public class AmbientSoundLoops {
 		private final ClientPlayerEntity player;
 
 		protected MusicLoop(ClientPlayerEntity player, SoundEvent soundEvent) {
-			super(soundEvent, SoundCategory.field_15256);
+			super(soundEvent, SoundCategory.AMBIENT);
 			this.player = player;
 			this.repeat = false;
 			this.repeatDelay = 0;
@@ -37,7 +37,7 @@ public class AmbientSoundLoops {
 		private int transitionTimer;
 
 		public Underwater(ClientPlayerEntity clientPlayerEntity) {
-			super(SoundEvents.field_14951, SoundCategory.field_15256);
+			super(SoundEvents.AMBIENT_UNDERWATER_LOOP, SoundCategory.AMBIENT);
 			this.player = clientPlayerEntity;
 			this.repeat = true;
 			this.repeatDelay = 0;

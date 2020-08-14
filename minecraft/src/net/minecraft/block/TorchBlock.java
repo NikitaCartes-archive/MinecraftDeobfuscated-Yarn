@@ -29,14 +29,14 @@ public class TorchBlock extends Block {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return direction == Direction.field_11033 && !this.canPlaceAt(state, world, pos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !this.canPlaceAt(state, world, pos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return sideCoversSmallSquare(world, pos.method_10074(), Direction.field_11036);
+		return sideCoversSmallSquare(world, pos.down(), Direction.UP);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -45,7 +45,7 @@ public class TorchBlock extends Block {
 		double d = (double)pos.getX() + 0.5;
 		double e = (double)pos.getY() + 0.7;
 		double f = (double)pos.getZ() + 0.5;
-		world.addParticle(ParticleTypes.field_11251, d, e, f, 0.0, 0.0, 0.0);
+		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 		world.addParticle(this.particle, d, e, f, 0.0, 0.0, 0.0);
 	}
 }

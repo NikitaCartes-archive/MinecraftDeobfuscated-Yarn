@@ -34,7 +34,7 @@ public class BlockStateVariant implements Supplier<JsonElement> {
 		return blockStateVariant;
 	}
 
-	public JsonElement method_25830() {
+	public JsonElement get() {
 		JsonObject jsonObject = new JsonObject();
 		this.properties.values().forEach(value -> value.writeTo(jsonObject));
 		return jsonObject;
@@ -42,10 +42,10 @@ public class BlockStateVariant implements Supplier<JsonElement> {
 
 	public static JsonElement toJson(List<BlockStateVariant> variants) {
 		if (variants.size() == 1) {
-			return ((BlockStateVariant)variants.get(0)).method_25830();
+			return ((BlockStateVariant)variants.get(0)).get();
 		} else {
 			JsonArray jsonArray = new JsonArray();
-			variants.forEach(blockStateVariant -> jsonArray.add(blockStateVariant.method_25830()));
+			variants.forEach(blockStateVariant -> jsonArray.add(blockStateVariant.get()));
 			return jsonArray;
 		}
 	}

@@ -75,7 +75,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	public static DefaultAttributeContainer.Builder createCreeperAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.field_23719, 0.25);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 
 			int i = this.getFuseSpeed();
 			if (i > 0 && this.currentFuseTime == 0) {
-				this.playSound(SoundEvents.field_15057, 1.0F, 0.5F);
+				this.playSound(SoundEvents.ENTITY_CREEPER_PRIMED, 1.0F, 0.5F);
 			}
 
 			this.currentFuseTime += i;
@@ -160,12 +160,12 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15192;
+		return SoundEvents.ENTITY_CREEPER_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14907;
+		return SoundEvents.ENTITY_CREEPER_DEATH;
 	}
 
 	@Override
@@ -213,9 +213,11 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	@Override
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8884) {
+		if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
 			this.world
-				.playSound(player, this.getX(), this.getY(), this.getZ(), SoundEvents.field_15145, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+				.playSound(
+					player, this.getX(), this.getY(), this.getZ(), SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F
+				);
 			if (!this.world.isClient) {
 				this.ignite();
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
@@ -230,8 +232,8 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	private void explode() {
 		if (!this.world.isClient) {
 			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
-				? Explosion.DestructionType.field_18687
-				: Explosion.DestructionType.field_18685;
+				? Explosion.DestructionType.DESTROY
+				: Explosion.DestructionType.NONE;
 			float f = this.shouldRenderOverlay() ? 2.0F : 1.0F;
 			this.dead = true;
 			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, destructionType);

@@ -25,9 +25,9 @@ public interface CrossbowUser extends RangedAttackMob {
 	void postShoot();
 
 	default void shoot(LivingEntity entity, float speed) {
-		Hand hand = ProjectileUtil.getHandPossiblyHolding(entity, Items.field_8399);
+		Hand hand = ProjectileUtil.getHandPossiblyHolding(entity, Items.CROSSBOW);
 		ItemStack itemStack = entity.getStackInHand(hand);
-		if (entity.isHolding(Items.field_8399)) {
+		if (entity.isHolding(Items.CROSSBOW)) {
 			CrossbowItem.shootAll(entity.world, entity, hand, itemStack, speed, (float)(14 - entity.world.getDifficulty().getId() * 4));
 		}
 
@@ -43,7 +43,7 @@ public interface CrossbowUser extends RangedAttackMob {
 		projectile.setVelocity(
 			(double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), speed, (float)(14 - entity.world.getDifficulty().getId() * 4)
 		);
-		entity.playSound(SoundEvents.field_15187, 1.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+		entity.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
 	}
 
 	default Vector3f getProjectileLaunchVelocity(LivingEntity entity, Vec3d positionDelta, float multishotSpray) {

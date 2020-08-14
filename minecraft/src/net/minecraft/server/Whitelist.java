@@ -30,7 +30,7 @@ public class Whitelist extends ServerConfigList<GameProfile, WhitelistEntry> {
 		return strings;
 	}
 
-	protected String method_14652(GameProfile gameProfile) {
+	protected String toString(GameProfile gameProfile) {
 		return gameProfile.getId().toString();
 	}
 }

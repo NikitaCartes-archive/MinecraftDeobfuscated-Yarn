@@ -24,6 +24,6 @@ public class LuckEnchantment extends Enchantment {
 
 	@Override
 	public boolean canAccept(Enchantment other) {
-		return super.canAccept(other) && other != Enchantments.field_9099;
+		return super.canAccept(other) && other != Enchantments.SILK_TOUCH;
 	}
 }

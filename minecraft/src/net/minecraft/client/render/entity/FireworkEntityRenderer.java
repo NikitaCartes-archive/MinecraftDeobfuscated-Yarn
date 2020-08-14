@@ -21,9 +21,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkRocketEntity>
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void method_3968(
-		FireworkRocketEntity fireworkRocketEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
-	) {
+	public void render(FireworkRocketEntity fireworkRocketEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(this.dispatcher.getRotation());
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
@@ -34,12 +32,12 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkRocketEntity>
 		}
 
 		this.itemRenderer
-			.renderItem(fireworkRocketEntity.getStack(), ModelTransformation.Mode.field_4318, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+			.renderItem(fireworkRocketEntity.getStack(), ModelTransformation.Mode.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
 		matrixStack.pop();
 		super.render(fireworkRocketEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_3969(FireworkRocketEntity fireworkRocketEntity) {
+	public Identifier getTexture(FireworkRocketEntity fireworkRocketEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

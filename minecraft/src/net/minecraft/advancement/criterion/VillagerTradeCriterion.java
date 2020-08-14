@@ -19,7 +19,7 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		return ID;
 	}
 
-	public VillagerTradeCriterion.Conditions method_9148(
+	public VillagerTradeCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "villager", advancementEntityPredicateDeserializer);

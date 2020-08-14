@@ -25,8 +25,8 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> implements Decorata
 		return String.format("[%s %s]", Registry.DECORATOR.getId(this.decorator), this.config);
 	}
 
-	public ConfiguredDecorator<?> method_30446(ConfiguredDecorator<?> configuredDecorator) {
-		return new ConfiguredDecorator<>(Decorator.field_25859, new DecoratedDecoratorConfig(configuredDecorator, this));
+	public ConfiguredDecorator<?> decorate(ConfiguredDecorator<?> configuredDecorator) {
+		return new ConfiguredDecorator<>(Decorator.DECORATED, new DecoratedDecoratorConfig(configuredDecorator, this));
 	}
 
 	public DC getConfig() {

@@ -33,7 +33,7 @@ public class DebugStickItem extends Item {
 	@Override
 	public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
 		if (!world.isClient) {
-			this.use(miner, state, world, pos, false, miner.getStackInHand(Hand.field_5808));
+			this.use(miner, state, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
 		}
 
 		return false;
@@ -90,7 +90,7 @@ public class DebugStickItem extends Item {
 	}
 
 	private static void sendMessage(PlayerEntity player, Text message) {
-		((ServerPlayerEntity)player).sendMessage(message, MessageType.field_11733, Util.NIL_UUID);
+		((ServerPlayerEntity)player).sendMessage(message, MessageType.GAME_INFO, Util.NIL_UUID);
 	}
 
 	private static <T extends Comparable<T>> String getValueString(BlockState state, Property<T> property) {

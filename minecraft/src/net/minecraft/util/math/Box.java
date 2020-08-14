@@ -300,7 +300,7 @@ public class Box {
 				box.maxY,
 				box.minZ,
 				box.maxZ,
-				Direction.field_11039,
+				Direction.WEST,
 				intersectingVector.x,
 				intersectingVector.y,
 				intersectingVector.z
@@ -317,7 +317,7 @@ public class Box {
 				box.maxY,
 				box.minZ,
 				box.maxZ,
-				Direction.field_11034,
+				Direction.EAST,
 				intersectingVector.x,
 				intersectingVector.y,
 				intersectingVector.z
@@ -336,7 +336,7 @@ public class Box {
 				box.maxZ,
 				box.minX,
 				box.maxX,
-				Direction.field_11033,
+				Direction.DOWN,
 				intersectingVector.y,
 				intersectingVector.z,
 				intersectingVector.x
@@ -353,7 +353,7 @@ public class Box {
 				box.maxZ,
 				box.minX,
 				box.maxX,
-				Direction.field_11036,
+				Direction.UP,
 				intersectingVector.y,
 				intersectingVector.z,
 				intersectingVector.x
@@ -372,7 +372,7 @@ public class Box {
 				box.maxX,
 				box.minY,
 				box.maxY,
-				Direction.field_11043,
+				Direction.NORTH,
 				intersectingVector.z,
 				intersectingVector.x,
 				intersectingVector.y
@@ -389,7 +389,7 @@ public class Box {
 				box.maxX,
 				box.minY,
 				box.maxY,
-				Direction.field_11035,
+				Direction.SOUTH,
 				intersectingVector.z,
 				intersectingVector.x,
 				intersectingVector.y

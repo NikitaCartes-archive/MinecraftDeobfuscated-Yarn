@@ -212,10 +212,10 @@ public class LootContext {
 	}
 
 	public static enum EntityTarget {
-		field_935("this", LootContextParameters.field_1226),
-		field_936("killer", LootContextParameters.field_1230),
-		field_939("direct_killer", LootContextParameters.field_1227),
-		field_937("killer_player", LootContextParameters.field_1233);
+		THIS("this", LootContextParameters.THIS_ENTITY),
+		KILLER("killer", LootContextParameters.KILLER_ENTITY),
+		DIRECT_KILLER("direct_killer", LootContextParameters.DIRECT_KILLER_ENTITY),
+		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER);
 
 		private final String type;
 		private final LootContextParameter<? extends Entity> parameter;
@@ -240,11 +240,11 @@ public class LootContext {
 		}
 
 		public static class Serializer extends TypeAdapter<LootContext.EntityTarget> {
-			public void method_318(JsonWriter jsonWriter, LootContext.EntityTarget entityTarget) throws IOException {
+			public void write(JsonWriter jsonWriter, LootContext.EntityTarget entityTarget) throws IOException {
 				jsonWriter.value(entityTarget.type);
 			}
 
-			public LootContext.EntityTarget method_317(JsonReader jsonReader) throws IOException {
+			public LootContext.EntityTarget read(JsonReader jsonReader) throws IOException {
 				return LootContext.EntityTarget.fromString(jsonReader.nextString());
 			}
 		}

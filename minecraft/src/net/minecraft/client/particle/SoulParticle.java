@@ -37,7 +37,7 @@ public class SoulParticle extends AbstractSlowingParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_25994(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SoulParticle soulParticle = new SoulParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 			soulParticle.setColorAlpha(1.0F);
 			return soulParticle;

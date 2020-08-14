@@ -43,11 +43,11 @@ public abstract class BaseText implements MutableText {
 		return this.style;
 	}
 
-	public abstract BaseText method_27653();
+	public abstract BaseText copy();
 
 	@Override
 	public final MutableText shallowCopy() {
-		BaseText baseText = this.method_27653();
+		BaseText baseText = this.copy();
 		baseText.siblings.addAll(this.siblings);
 		baseText.setStyle(this.style);
 		return baseText;

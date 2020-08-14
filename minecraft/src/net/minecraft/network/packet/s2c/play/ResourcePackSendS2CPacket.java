@@ -34,7 +34,7 @@ public class ResourcePackSendS2CPacket implements Packet<ClientPlayPacketListene
 		buf.writeString(this.hash);
 	}
 
-	public void method_11774(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onResourcePackSend(this);
 	}
 

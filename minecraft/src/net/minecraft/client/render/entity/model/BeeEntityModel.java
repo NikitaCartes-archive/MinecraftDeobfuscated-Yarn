@@ -72,13 +72,13 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		this.backLegs.addCuboid("backLegBox", -5.0F, 0.0F, 0.0F, 7, 2, 0, 0.0F, 26, 5);
 	}
 
-	public void method_22111(T beeEntity, float f, float g, float h) {
+	public void animateModel(T beeEntity, float f, float g, float h) {
 		super.animateModel(beeEntity, f, g, h);
 		this.bodyPitch = beeEntity.getBodyPitch(h);
 		this.stinger.visible = !beeEntity.hasStung();
 	}
 
-	public void method_22112(T beeEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T beeEntity, float f, float g, float h, float i, float j) {
 		this.rightWing.pitch = 0.0F;
 		this.leftAntenna.pitch = 0.0F;
 		this.rightAntenna.pitch = 0.0F;

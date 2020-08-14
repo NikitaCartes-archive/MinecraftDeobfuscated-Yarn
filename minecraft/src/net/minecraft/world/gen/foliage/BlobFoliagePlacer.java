@@ -28,7 +28,7 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	protected FoliagePlacerType<?> getType() {
-		return FoliagePlacerType.field_21299;
+		return FoliagePlacerType.BLOB_FOLIAGE_PLACER;
 	}
 
 	@Override

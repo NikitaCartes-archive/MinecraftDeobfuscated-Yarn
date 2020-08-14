@@ -18,24 +18,24 @@ public final class StatusEffectUtil {
 	}
 
 	public static boolean hasHaste(LivingEntity entity) {
-		return entity.hasStatusEffect(StatusEffects.field_5917) || entity.hasStatusEffect(StatusEffects.field_5927);
+		return entity.hasStatusEffect(StatusEffects.HASTE) || entity.hasStatusEffect(StatusEffects.CONDUIT_POWER);
 	}
 
 	public static int getHasteAmplifier(LivingEntity entity) {
 		int i = 0;
 		int j = 0;
-		if (entity.hasStatusEffect(StatusEffects.field_5917)) {
-			i = entity.getStatusEffect(StatusEffects.field_5917).getAmplifier();
+		if (entity.hasStatusEffect(StatusEffects.HASTE)) {
+			i = entity.getStatusEffect(StatusEffects.HASTE).getAmplifier();
 		}
 
-		if (entity.hasStatusEffect(StatusEffects.field_5927)) {
-			j = entity.getStatusEffect(StatusEffects.field_5927).getAmplifier();
+		if (entity.hasStatusEffect(StatusEffects.CONDUIT_POWER)) {
+			j = entity.getStatusEffect(StatusEffects.CONDUIT_POWER).getAmplifier();
 		}
 
 		return Math.max(i, j);
 	}
 
 	public static boolean hasWaterBreathing(LivingEntity entity) {
-		return entity.hasStatusEffect(StatusEffects.field_5923) || entity.hasStatusEffect(StatusEffects.field_5927);
+		return entity.hasStatusEffect(StatusEffects.WATER_BREATHING) || entity.hasStatusEffect(StatusEffects.CONDUIT_POWER);
 	}
 }

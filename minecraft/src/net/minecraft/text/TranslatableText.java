@@ -114,7 +114,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 		}
 	}
 
-	public TranslatableText method_11020() {
+	public TranslatableText copy() {
 		return new TranslatableText(this.key, this.args);
 	}
 

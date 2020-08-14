@@ -44,7 +44,7 @@ public class VehicleMoveS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeFloat(this.pitch);
 	}
 
-	public void method_11672(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onVehicleMove(this);
 	}
 

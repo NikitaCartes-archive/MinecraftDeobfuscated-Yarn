@@ -30,7 +30,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	public PaintingEntity(World world, BlockPos pos, Direction direction) {
-		super(EntityType.field_6120, world, pos);
+		super(EntityType.PAINTING, world, pos);
 		List<PaintingMotive> list = Lists.<PaintingMotive>newArrayList();
 		int i = 0;
 
@@ -96,8 +96,8 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-			this.playSound(SoundEvents.field_14809, 1.0F, 1.0F);
+		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
 				if (playerEntity.abilities.creativeMode) {
@@ -105,13 +105,13 @@ public class PaintingEntity extends AbstractDecorationEntity {
 				}
 			}
 
-			this.dropItem(Items.field_8892);
+			this.dropItem(Items.PAINTING);
 		}
 	}
 
 	@Override
 	public void onPlace() {
-		this.playSound(SoundEvents.field_14875, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PAINTING_PLACE, 1.0F, 1.0F);
 	}
 
 	@Override

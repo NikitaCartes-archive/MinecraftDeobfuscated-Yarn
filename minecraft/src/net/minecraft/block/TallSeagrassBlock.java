@@ -33,13 +33,13 @@ public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isSideSolidFullSquare(world, pos, Direction.field_11036) && !floor.isOf(Blocks.field_10092);
+		return floor.isSideSolidFullSquare(world, pos, Direction.UP) && !floor.isOf(Blocks.MAGMA_BLOCK);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return new ItemStack(Blocks.field_10376);
+		return new ItemStack(Blocks.SEAGRASS);
 	}
 
 	@Nullable
@@ -48,7 +48,7 @@ public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 		BlockState blockState = super.getPlacementState(ctx);
 		if (blockState != null) {
 			FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos().up());
-			if (fluidState.isIn(FluidTags.field_15517) && fluidState.getLevel() == 8) {
+			if (fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8) {
 				return blockState;
 			}
 		}
@@ -58,12 +58,12 @@ public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		if (state.get(HALF) == DoubleBlockHalf.field_12609) {
-			BlockState blockState = world.getBlockState(pos.method_10074());
-			return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.field_12607;
+		if (state.get(HALF) == DoubleBlockHalf.UPPER) {
+			BlockState blockState = world.getBlockState(pos.down());
+			return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
 		} else {
 			FluidState fluidState = world.getFluidState(pos);
-			return super.canPlaceAt(state, world, pos) && fluidState.isIn(FluidTags.field_15517) && fluidState.getLevel() == 8;
+			return super.canPlaceAt(state, world, pos) && fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8;
 		}
 	}
 

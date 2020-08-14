@@ -23,7 +23,7 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		return this.id;
 	}
 
-	public OnKilledCriterion.Conditions method_8989(
+	public OnKilledCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		return new OnKilledCriterion.Conditions(

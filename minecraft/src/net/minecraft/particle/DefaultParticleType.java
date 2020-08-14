@@ -8,21 +8,21 @@ import net.minecraft.util.registry.Registry;
 
 public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleEffect {
 	private static final ParticleEffect.Factory<DefaultParticleType> PARAMETER_FACTORY = new ParticleEffect.Factory<DefaultParticleType>() {
-		public DefaultParticleType method_10307(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
 			return (DefaultParticleType)particleType;
 		}
 
-		public DefaultParticleType method_10306(ParticleType<DefaultParticleType> particleType, PacketByteBuf packetByteBuf) {
+		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, PacketByteBuf packetByteBuf) {
 			return (DefaultParticleType)particleType;
 		}
 	};
-	private final Codec<DefaultParticleType> field_25127 = Codec.unit(this::method_29140);
+	private final Codec<DefaultParticleType> field_25127 = Codec.unit(this::getType);
 
 	protected DefaultParticleType(boolean bl) {
 		super(bl, PARAMETER_FACTORY);
 	}
 
-	public DefaultParticleType method_29140() {
+	public DefaultParticleType getType() {
 		return this;
 	}
 

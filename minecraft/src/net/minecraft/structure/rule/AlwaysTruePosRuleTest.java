@@ -19,6 +19,6 @@ public class AlwaysTruePosRuleTest extends PosRuleTest {
 
 	@Override
 	protected PosRuleTestType<?> getType() {
-		return PosRuleTestType.field_23344;
+		return PosRuleTestType.ALWAYS_TRUE;
 	}
 }

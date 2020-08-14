@@ -33,7 +33,7 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 		this.conditionManager = conditionManager;
 	}
 
-	protected void method_20724(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		Map<Identifier, Advancement.Task> map2 = Maps.<Identifier, Advancement.Task>newHashMap();
 		map.forEach((identifier, jsonElement) -> {
 			try {

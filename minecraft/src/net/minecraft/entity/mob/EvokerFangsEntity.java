@@ -29,7 +29,7 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	public EvokerFangsEntity(World world, double x, double y, double z, float yaw, int warmup, LivingEntity owner) {
-		this(EntityType.field_6060, world);
+		this(EntityType.EVOKER_FANGS, world);
 		this.warmup = warmup;
 		this.setOwner(owner);
 		this.yaw = yaw * (180.0F / (float)Math.PI);
@@ -87,7 +87,7 @@ public class EvokerFangsEntity extends Entity {
 						double g = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
 						double h = 0.3 + this.random.nextDouble() * 0.3;
 						double j = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
-						this.world.addParticle(ParticleTypes.field_11205, d, e + 1.0, f, g, h, j);
+						this.world.addParticle(ParticleTypes.CRIT, d, e + 1.0, f, g, h, j);
 					}
 				}
 			}
@@ -132,7 +132,16 @@ public class EvokerFangsEntity extends Entity {
 			this.playingAnimation = true;
 			if (!this.isSilent()) {
 				this.world
-					.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.field_14692, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
+					.playSound(
+						this.getX(),
+						this.getY(),
+						this.getZ(),
+						SoundEvents.ENTITY_EVOKER_FANGS_ATTACK,
+						this.getSoundCategory(),
+						1.0F,
+						this.random.nextFloat() * 0.2F + 0.85F,
+						false
+					);
 			}
 		}
 	}

@@ -21,7 +21,7 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 	public static class FloatRangeArgumentType implements NumberRangeArgumentType<NumberRange.FloatRange> {
 		private static final Collection<String> EXAMPLES = Arrays.asList("0..5.2", "0", "-5.4", "-100.76..", "..100");
 
-		public NumberRange.FloatRange method_9423(StringReader stringReader) throws CommandSyntaxException {
+		public NumberRange.FloatRange parse(StringReader stringReader) throws CommandSyntaxException {
 			return NumberRange.FloatRange.parse(stringReader);
 		}
 
@@ -38,7 +38,7 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 			return commandContext.getArgument(string, NumberRange.IntRange.class);
 		}
 
-		public NumberRange.IntRange method_9426(StringReader stringReader) throws CommandSyntaxException {
+		public NumberRange.IntRange parse(StringReader stringReader) throws CommandSyntaxException {
 			return NumberRange.IntRange.parse(stringReader);
 		}
 

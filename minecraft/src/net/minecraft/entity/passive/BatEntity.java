@@ -57,17 +57,17 @@ public class BatEntity extends AmbientEntity {
 	@Nullable
 	@Override
 	public SoundEvent getAmbientSound() {
-		return this.isRoosting() && this.random.nextInt(4) != 0 ? null : SoundEvents.field_15009;
+		return this.isRoosting() && this.random.nextInt(4) != 0 ? null : SoundEvents.ENTITY_BAT_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14746;
+		return SoundEvents.ENTITY_BAT_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14911;
+		return SoundEvents.ENTITY_BAT_DEATH;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createBatAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.field_23716, 6.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 6.0);
 	}
 
 	public boolean isRoosting() {

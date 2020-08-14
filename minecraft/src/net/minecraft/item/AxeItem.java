@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.class_5508;
+import net.minecraft.class_5510;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,34 +24,34 @@ public class AxeItem extends MiningToolItem {
 		Material.WOOD, Material.NETHER_WOOD, Material.PLANT, Material.REPLACEABLE_PLANT, Material.BAMBOO, Material.GOURD
 	);
 	private static final Set<Block> EFFECTIVE_BLOCKS = Sets.<Block>newHashSet(
-		Blocks.field_9983,
-		Blocks.field_16492,
-		Blocks.field_10057,
-		Blocks.field_10066,
-		Blocks.field_10417,
-		Blocks.field_10553,
-		Blocks.field_10493,
-		Blocks.field_10278,
-		Blocks.field_22100,
-		Blocks.field_22101
+		Blocks.LADDER,
+		Blocks.SCAFFOLDING,
+		Blocks.OAK_BUTTON,
+		Blocks.SPRUCE_BUTTON,
+		Blocks.BIRCH_BUTTON,
+		Blocks.JUNGLE_BUTTON,
+		Blocks.DARK_OAK_BUTTON,
+		Blocks.ACACIA_BUTTON,
+		Blocks.CRIMSON_BUTTON,
+		Blocks.WARPED_BUTTON
 	);
 	protected static final Map<Block, Block> STRIPPED_BLOCKS = new Builder<Block, Block>()
-		.put(Blocks.field_10126, Blocks.field_10250)
-		.put(Blocks.field_10431, Blocks.field_10519)
-		.put(Blocks.field_10178, Blocks.field_10374)
-		.put(Blocks.field_10010, Blocks.field_10244)
-		.put(Blocks.field_9999, Blocks.field_10103)
-		.put(Blocks.field_10533, Blocks.field_10622)
-		.put(Blocks.field_10307, Blocks.field_10204)
-		.put(Blocks.field_10511, Blocks.field_10366)
-		.put(Blocks.field_10303, Blocks.field_10084)
-		.put(Blocks.field_10306, Blocks.field_10254)
-		.put(Blocks.field_10155, Blocks.field_10558)
-		.put(Blocks.field_10037, Blocks.field_10436)
-		.put(Blocks.field_22111, Blocks.field_22112)
-		.put(Blocks.field_22503, Blocks.field_22504)
-		.put(Blocks.field_22118, Blocks.field_22119)
-		.put(Blocks.field_22505, Blocks.field_22506)
+		.put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
+		.put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
+		.put(Blocks.DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_WOOD)
+		.put(Blocks.DARK_OAK_LOG, Blocks.STRIPPED_DARK_OAK_LOG)
+		.put(Blocks.ACACIA_WOOD, Blocks.STRIPPED_ACACIA_WOOD)
+		.put(Blocks.ACACIA_LOG, Blocks.STRIPPED_ACACIA_LOG)
+		.put(Blocks.BIRCH_WOOD, Blocks.STRIPPED_BIRCH_WOOD)
+		.put(Blocks.BIRCH_LOG, Blocks.STRIPPED_BIRCH_LOG)
+		.put(Blocks.JUNGLE_WOOD, Blocks.STRIPPED_JUNGLE_WOOD)
+		.put(Blocks.JUNGLE_LOG, Blocks.STRIPPED_JUNGLE_LOG)
+		.put(Blocks.SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_WOOD)
+		.put(Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG)
+		.put(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM)
+		.put(Blocks.WARPED_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE)
+		.put(Blocks.CRIMSON_STEM, Blocks.STRIPPED_CRIMSON_STEM)
+		.put(Blocks.CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_HYPHAE)
 		.build();
 
 	protected AxeItem(ToolMaterial toolMaterial, Item.Settings settings) {
@@ -65,8 +65,8 @@ public class AxeItem extends MiningToolItem {
 	}
 
 	@Override
-	protected class_5508 method_31212() {
-		return class_5508.field_26764;
+	protected class_5510 method_31243() {
+		return class_5510.field_26792;
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class AxeItem extends MiningToolItem {
 		Block block = (Block)STRIPPED_BLOCKS.get(blockState.getBlock());
 		if (block != null) {
 			PlayerEntity playerEntity = context.getPlayer();
-			world.playSound(playerEntity, blockPos, SoundEvents.field_14675, SoundCategory.field_15245, 1.0F, 1.0F);
+			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			if (!world.isClient) {
 				world.setBlockState(blockPos, block.getDefaultState().with(PillarBlock.AXIS, blockState.get(PillarBlock.AXIS)), 11);
 				if (playerEntity != null) {
@@ -93,7 +93,7 @@ public class AxeItem extends MiningToolItem {
 
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(1, attacker, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+		stack.damage(1, attacker, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		return true;
 	}
 }

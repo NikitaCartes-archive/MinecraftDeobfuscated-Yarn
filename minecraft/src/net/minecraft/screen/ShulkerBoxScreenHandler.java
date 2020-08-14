@@ -16,7 +16,7 @@ public class ShulkerBoxScreenHandler extends ScreenHandler {
 	}
 
 	public ShulkerBoxScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-		super(ScreenHandlerType.field_17341, syncId);
+		super(ScreenHandlerType.SHULKER_BOX, syncId);
 		checkSize(inventory, 27);
 		this.inventory = inventory;
 		inventory.onOpen(playerInventory.player);

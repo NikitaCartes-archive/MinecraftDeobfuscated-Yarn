@@ -24,13 +24,11 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		super(entityRenderDispatcher);
 	}
 
-	protected int method_24091(ShulkerBulletEntity shulkerBulletEntity, BlockPos blockPos) {
+	protected int getBlockLight(ShulkerBulletEntity shulkerBulletEntity, BlockPos blockPos) {
 		return 15;
 	}
 
-	public void method_4103(
-		ShulkerBulletEntity shulkerBulletEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
-	) {
+	public void render(ShulkerBulletEntity shulkerBulletEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		float h = MathHelper.lerpAngle(shulkerBulletEntity.prevYaw, shulkerBulletEntity.yaw, g);
 		float j = MathHelper.lerp(g, shulkerBulletEntity.prevPitch, shulkerBulletEntity.pitch);
@@ -50,7 +48,7 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		super.render(shulkerBulletEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_4105(ShulkerBulletEntity shulkerBulletEntity) {
+	public Identifier getTexture(ShulkerBulletEntity shulkerBulletEntity) {
 		return TEXTURE;
 	}
 }

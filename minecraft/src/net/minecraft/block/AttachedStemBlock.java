@@ -23,20 +23,20 @@ public class AttachedStemBlock extends PlantBlock {
 	private final GourdBlock gourdBlock;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.field_11035,
+			Direction.SOUTH,
 			Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 16.0),
-			Direction.field_11039,
+			Direction.WEST,
 			Block.createCuboidShape(0.0, 0.0, 6.0, 10.0, 10.0, 10.0),
-			Direction.field_11043,
+			Direction.NORTH,
 			Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 10.0, 10.0),
-			Direction.field_11034,
+			Direction.EAST,
 			Block.createCuboidShape(6.0, 0.0, 6.0, 16.0, 10.0, 10.0)
 		)
 	);
 
 	protected AttachedStemBlock(GourdBlock gourdBlock, AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 		this.gourdBlock = gourdBlock;
 	}
 
@@ -54,15 +54,15 @@ public class AttachedStemBlock extends PlantBlock {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isOf(Blocks.field_10362);
+		return floor.isOf(Blocks.FARMLAND);
 	}
 
 	@Environment(EnvType.CLIENT)
 	protected Item getSeeds() {
-		if (this.gourdBlock == Blocks.field_10261) {
-			return Items.field_8706;
+		if (this.gourdBlock == Blocks.PUMPKIN) {
+			return Items.PUMPKIN_SEEDS;
 		} else {
-			return this.gourdBlock == Blocks.field_10545 ? Items.field_8188 : Items.AIR;
+			return this.gourdBlock == Blocks.MELON ? Items.MELON_SEEDS : Items.AIR;
 		}
 	}
 

@@ -44,7 +44,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		return i;
 	}
 
-	public void method_3996(ItemEntity itemEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(ItemEntity itemEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		ItemStack itemStack = itemEntity.getStack();
 		int j = itemStack.isEmpty() ? 187 : Item.getRawId(itemStack.getItem()) + itemStack.getDamage();
@@ -54,7 +54,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		int k = this.getRenderedAmount(itemStack);
 		float h = 0.25F;
 		float l = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
-		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Mode.field_4318).scale.getY();
+		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.getY();
 		matrixStack.translate(0.0, (double)(l + 0.25F * m), 0.0);
 		float n = itemEntity.method_27314(g);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(n));
@@ -84,7 +84,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			}
 
 			this.itemRenderer
-				.renderItem(itemStack, ModelTransformation.Mode.field_4318, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
+				.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
 			matrixStack.pop();
 			if (!bl) {
 				matrixStack.translate((double)(0.0F * o), (double)(0.0F * p), (double)(0.09375F * q));
@@ -95,7 +95,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		super.render(itemEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_3999(ItemEntity itemEntity) {
+	public Identifier getTexture(ItemEntity itemEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

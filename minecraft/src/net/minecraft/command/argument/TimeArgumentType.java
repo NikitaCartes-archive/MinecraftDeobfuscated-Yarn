@@ -28,7 +28,7 @@ public class TimeArgumentType implements ArgumentType<Integer> {
 		return new TimeArgumentType();
 	}
 
-	public Integer method_9490(StringReader stringReader) throws CommandSyntaxException {
+	public Integer parse(StringReader stringReader) throws CommandSyntaxException {
 		float f = stringReader.readFloat();
 		String string = stringReader.readUnquotedString();
 		int i = units.getOrDefault(string, 0);

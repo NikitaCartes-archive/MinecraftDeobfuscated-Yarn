@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 public class FrostWalkerEnchantment extends Enchantment {
 	public FrostWalkerEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9079, slotTypes);
+		super(weight, EnchantmentTarget.ARMOR_FEET, slotTypes);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 
 	public static void freezeWater(LivingEntity entity, World world, BlockPos blockPos, int level) {
 		if (entity.isOnGround()) {
-			BlockState blockState = Blocks.field_10110.getDefaultState();
+			BlockState blockState = Blocks.FROSTED_ICE.getDefaultState();
 			float f = (float)Math.min(16, 2 + level);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -53,7 +53,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 							&& blockState.canPlaceAt(world, blockPos2)
 							&& world.canPlace(blockState, blockPos2, ShapeContext.absent())) {
 							world.setBlockState(blockPos2, blockState);
-							world.getBlockTickScheduler().schedule(blockPos2, Blocks.field_10110, MathHelper.nextInt(entity.getRandom(), 60, 120));
+							world.getBlockTickScheduler().schedule(blockPos2, Blocks.FROSTED_ICE, MathHelper.nextInt(entity.getRandom(), 60, 120));
 						}
 					}
 				}
@@ -63,6 +63,6 @@ public class FrostWalkerEnchantment extends Enchantment {
 
 	@Override
 	public boolean canAccept(Enchantment other) {
-		return super.canAccept(other) && other != Enchantments.field_9128;
+		return super.canAccept(other) && other != Enchantments.DEPTH_STRIDER;
 	}
 }

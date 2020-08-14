@@ -130,9 +130,9 @@ public class SwimNavigation extends EntityNavigation {
 	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target, int sizeX, int sizeY, int sizeZ) {
 		Vec3d vec3d = new Vec3d(target.x, target.y + (double)this.entity.getHeight() * 0.5, target.z);
 		return this.world
-				.rayTrace(new RayTraceContext(origin, vec3d, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this.entity))
+				.rayTrace(new RayTraceContext(origin, vec3d, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.entity))
 				.getType()
-			== HitResult.Type.field_1333;
+			== HitResult.Type.MISS;
 	}
 
 	@Override

@@ -32,12 +32,12 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18442,
-				MemoryModuleState.field_18456
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.VISIBLE_MOBS,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.entityType = entityType;
@@ -61,7 +61,7 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	}
 
 	private boolean method_24582(E livingEntity) {
-		List<LivingEntity> list = (List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get();
+		List<LivingEntity> list = (List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
 		return list.stream().anyMatch(this::method_24583);
 	}
 
@@ -72,7 +72,7 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	@Override
 	protected void run(ServerWorld world, E entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.field_18442)
+		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
 			.ifPresent(
 				list -> list.stream()
 						.filter(livingEntity -> this.entityType.equals(livingEntity.getType()))
@@ -82,8 +82,8 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 						.findFirst()
 						.ifPresent(livingEntity -> {
 							brain.remember(this.targetModule, (T)livingEntity);
-							brain.remember(MemoryModuleType.field_18446, new EntityLookTarget(livingEntity, true));
-							brain.remember(MemoryModuleType.field_18445, new WalkTarget(new EntityLookTarget(livingEntity, false), this.speed, this.completionRange));
+							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
+							brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(livingEntity, false), this.speed, this.completionRange));
 						})
 			);
 	}

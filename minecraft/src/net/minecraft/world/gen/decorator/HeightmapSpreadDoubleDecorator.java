@@ -13,7 +13,7 @@ public class HeightmapSpreadDoubleDecorator<DC extends DecoratorConfig> extends 
 
 	@Override
 	protected Heightmap.Type getHeightmapType(DC config) {
-		return Heightmap.Type.field_13197;
+		return Heightmap.Type.MOTION_BLOCKING;
 	}
 
 	@Override

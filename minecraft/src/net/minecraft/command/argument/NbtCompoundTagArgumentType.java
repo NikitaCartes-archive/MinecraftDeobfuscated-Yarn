@@ -23,7 +23,7 @@ public class NbtCompoundTagArgumentType implements ArgumentType<CompoundTag> {
 		return context.getArgument(name, CompoundTag.class);
 	}
 
-	public CompoundTag method_9286(StringReader stringReader) throws CommandSyntaxException {
+	public CompoundTag parse(StringReader stringReader) throws CommandSyntaxException {
 		return new StringNbtReader(stringReader).parseCompoundTag();
 	}
 

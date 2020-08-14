@@ -27,13 +27,13 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isIn(BlockTags.field_21953) || floor.isOf(Blocks.field_10402) || floor.isOf(Blocks.field_22090) || super.canPlantOnTop(floor, world, pos);
+		return floor.isIn(BlockTags.NYLIUM) || floor.isOf(Blocks.MYCELIUM) || floor.isOf(Blocks.SOUL_SOIL) || super.canPlantOnTop(floor, world, pos);
 	}
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
 		Block block = ((HugeFungusFeatureConfig)((ConfiguredFeature)this.field_22135.get()).config).validBaseBlock.getBlock();
-		Block block2 = world.getBlockState(pos.method_10074()).getBlock();
+		Block block2 = world.getBlockState(pos.down()).getBlock();
 		return block2 == block;
 	}
 
@@ -44,6 +44,6 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		((ConfiguredFeature)this.field_22135.get()).generate(world, world.method_14178().getChunkGenerator(), random, pos);
+		((ConfiguredFeature)this.field_22135.get()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos);
 	}
 }

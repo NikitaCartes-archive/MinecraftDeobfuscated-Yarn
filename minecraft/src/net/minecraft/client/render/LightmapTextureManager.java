@@ -88,9 +88,9 @@ public class LightmapTextureManager implements AutoCloseable {
 
 				float h = this.client.player.getUnderwaterVisibility();
 				float i;
-				if (this.client.player.hasStatusEffect(StatusEffects.field_5925)) {
+				if (this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
 					i = GameRenderer.getNightVisionStrength(this.client.player, delta);
-				} else if (h > 0.0F && this.client.player.hasStatusEffect(StatusEffects.field_5927)) {
+				} else if (h > 0.0F && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)) {
 					i = h;
 				} else {
 					i = 0.0F;

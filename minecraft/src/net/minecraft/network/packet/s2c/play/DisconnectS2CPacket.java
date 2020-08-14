@@ -28,7 +28,7 @@ public class DisconnectS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeText(this.reason);
 	}
 
-	public void method_11467(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onDisconnect(this);
 	}
 

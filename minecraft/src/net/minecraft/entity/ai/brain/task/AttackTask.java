@@ -17,32 +17,32 @@ public class AttackTask<E extends MobEntity> extends Task<E> {
 	public AttackTask(int distance, float forwardMovement) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_22355,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_18442,
-				MemoryModuleState.field_18456
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.ATTACK_TARGET,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.VISIBLE_MOBS,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.distance = distance;
 		this.forwardMovement = forwardMovement;
 	}
 
-	protected boolean method_24552(ServerWorld serverWorld, E mobEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, E mobEntity) {
 		return this.isAttackTargetVisible(mobEntity) && this.isNearAttackTarget(mobEntity);
 	}
 
-	protected void method_24553(ServerWorld serverWorld, E mobEntity, long l) {
-		mobEntity.getBrain().remember(MemoryModuleType.field_18446, new EntityLookTarget(this.getAttackTarget(mobEntity), true));
+	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
+		mobEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(this.getAttackTarget(mobEntity), true));
 		mobEntity.getMoveControl().strafeTo(-this.forwardMovement, 0.0F);
 		mobEntity.yaw = MathHelper.stepAngleTowards(mobEntity.yaw, mobEntity.headYaw, 0.0F);
 	}
 
 	private boolean isAttackTargetVisible(E entity) {
-		return ((List)entity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get()).contains(this.getAttackTarget(entity));
+		return ((List)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).contains(this.getAttackTarget(entity));
 	}
 
 	private boolean isNearAttackTarget(E entity) {
@@ -50,6 +50,6 @@ public class AttackTask<E extends MobEntity> extends Task<E> {
 	}
 
 	private LivingEntity getAttackTarget(E entity) {
-		return (LivingEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.field_22355).get();
+		return (LivingEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
 	}
 }

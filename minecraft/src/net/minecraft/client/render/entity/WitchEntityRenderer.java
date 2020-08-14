@@ -18,16 +18,16 @@ public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEnt
 		this.addFeature(new WitchHeldItemFeatureRenderer<>(this));
 	}
 
-	public void method_4155(WitchEntity witchEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(WitchEntity witchEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		this.model.setLiftingNose(!witchEntity.getMainHandStack().isEmpty());
-		super.method_4072(witchEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(witchEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_4154(WitchEntity witchEntity) {
+	public Identifier getTexture(WitchEntity witchEntity) {
 		return TEXTURE;
 	}
 
-	protected void method_4157(WitchEntity witchEntity, MatrixStack matrixStack, float f) {
+	protected void scale(WitchEntity witchEntity, MatrixStack matrixStack, float f) {
 		float g = 0.9375F;
 		matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
 	}

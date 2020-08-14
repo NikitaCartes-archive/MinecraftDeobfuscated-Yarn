@@ -16,7 +16,7 @@ import org.apache.commons.lang3.Validate;
 
 @Environment(EnvType.CLIENT)
 public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
-	public SoundEntry method_4791(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+	public SoundEntry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "entry");
 		boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
 		String string = JsonHelper.getString(jsonObject, "subtitle", null);
@@ -33,7 +33,7 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 				JsonElement jsonElement = jsonArray.get(i);
 				if (JsonHelper.isString(jsonElement)) {
 					String string = JsonHelper.asString(jsonElement, "sound");
-					list.add(new Sound(string, 1.0F, 1.0F, 1, Sound.RegistrationType.field_5474, false, false, 16));
+					list.add(new Sound(string, 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16));
 				} else {
 					list.add(this.deserializeSound(JsonHelper.asObject(jsonElement, "sound")));
 				}
@@ -45,7 +45,7 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 
 	private Sound deserializeSound(JsonObject json) {
 		String string = JsonHelper.getString(json, "name");
-		Sound.RegistrationType registrationType = this.deserializeType(json, Sound.RegistrationType.field_5474);
+		Sound.RegistrationType registrationType = this.deserializeType(json, Sound.RegistrationType.FILE);
 		float f = JsonHelper.getFloat(json, "volume", 1.0F);
 		Validate.isTrue(f > 0.0F, "Invalid volume");
 		float g = JsonHelper.getFloat(json, "pitch", 1.0F);

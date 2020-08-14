@@ -13,7 +13,7 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13005(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig
 	) {
 		boolean bl = false;

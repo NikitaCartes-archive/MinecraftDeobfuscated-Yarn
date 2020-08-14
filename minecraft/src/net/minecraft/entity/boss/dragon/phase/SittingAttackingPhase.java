@@ -18,7 +18,7 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 				this.dragon.getX(),
 				this.dragon.getY(),
 				this.dragon.getZ(),
-				SoundEvents.field_14671,
+				SoundEvents.ENTITY_ENDER_DRAGON_GROWL,
 				this.dragon.getSoundCategory(),
 				2.5F,
 				0.8F + this.dragon.getRandom().nextFloat() * 0.3F,
@@ -29,7 +29,7 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 	@Override
 	public void serverTick() {
 		if (this.ticks++ >= 40) {
-			this.dragon.getPhaseManager().setPhase(PhaseType.field_7072);
+			this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_FLAMING);
 		}
 	}
 
@@ -40,6 +40,6 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 
 	@Override
 	public PhaseType<SittingAttackingPhase> getType() {
-		return PhaseType.field_7073;
+		return PhaseType.SITTING_ATTACKING;
 	}
 }

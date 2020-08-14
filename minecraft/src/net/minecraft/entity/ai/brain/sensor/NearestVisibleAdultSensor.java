@@ -12,11 +12,11 @@ import net.minecraft.server.world.ServerWorld;
 public class NearestVisibleAdultSensor extends Sensor<PassiveEntity> {
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_25359, MemoryModuleType.field_18442);
+		return ImmutableSet.of(MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleType.VISIBLE_MOBS);
 	}
 
-	protected void method_29531(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		passiveEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).ifPresent(list -> this.findNearestVisibleAdult(passiveEntity, list));
+	protected void sense(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		passiveEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> this.findNearestVisibleAdult(passiveEntity, list));
 	}
 
 	private void findNearestVisibleAdult(PassiveEntity entity, List<LivingEntity> visibleMobs) {
@@ -25,6 +25,6 @@ public class NearestVisibleAdultSensor extends Sensor<PassiveEntity> {
 			.map(livingEntity -> (PassiveEntity)livingEntity)
 			.filter(passiveEntity -> !passiveEntity.isBaby())
 			.findFirst();
-		entity.getBrain().remember(MemoryModuleType.field_25359, optional);
+		entity.getBrain().remember(MemoryModuleType.NEAREST_VISIBLE_ADULT, optional);
 	}
 }

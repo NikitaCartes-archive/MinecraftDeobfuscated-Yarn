@@ -18,7 +18,7 @@ public class UpdateDifficultyLockC2SPacket implements Packet<ServerPlayPacketLis
 		this.difficultyLocked = difficultyLocked;
 	}
 
-	public void method_19484(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onUpdateDifficultyLock(this);
 	}
 

@@ -109,9 +109,9 @@ public abstract class Enchantment {
 	public Text getName(int level) {
 		MutableText mutableText = new TranslatableText(this.getTranslationKey());
 		if (this.isCursed()) {
-			mutableText.formatted(Formatting.field_1061);
+			mutableText.formatted(Formatting.RED);
 		} else {
-			mutableText.formatted(Formatting.field_1080);
+			mutableText.formatted(Formatting.GRAY);
 		}
 
 		if (level != 1 || this.getMaxLevel() != 1) {
@@ -121,8 +121,8 @@ public abstract class Enchantment {
 		return mutableText;
 	}
 
-	public boolean isAcceptableItem(ItemStack stack) {
-		return this.type.isAcceptableItem(stack.getItem());
+	public boolean isAcceptableItem(ItemStack stack, boolean bl) {
+		return this.type.isAcceptableItem(stack.getItem(), bl);
 	}
 
 	public void onTargetDamaged(LivingEntity user, Entity target, int level) {
@@ -162,10 +162,10 @@ public abstract class Enchantment {
 	 * loots as well as the combination cost in anvil.
 	 */
 	public static enum Rarity {
-		field_9087(10),
-		field_9090(5),
-		field_9088(2),
-		field_9091(1);
+		COMMON(10),
+		UNCOMMON(5),
+		RARE(2),
+		VERY_RARE(1);
 
 		private final int weight;
 

@@ -34,7 +34,7 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 		return i;
 	}
 
-	public Sound method_4887() {
+	public Sound getSound() {
 		int i = this.getWeight();
 		if (!this.sounds.isEmpty() && i != 0) {
 			int j = this.random.nextInt(i);

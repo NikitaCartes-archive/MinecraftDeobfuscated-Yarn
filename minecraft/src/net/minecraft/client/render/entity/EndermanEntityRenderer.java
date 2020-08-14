@@ -24,15 +24,15 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 		this.addFeature(new EndermanBlockFeatureRenderer(this));
 	}
 
-	public void method_3911(EndermanEntity endermanEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(EndermanEntity endermanEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		BlockState blockState = endermanEntity.getCarriedBlock();
 		EndermanEntityModel<EndermanEntity> endermanEntityModel = this.getModel();
 		endermanEntityModel.carryingBlock = blockState != null;
 		endermanEntityModel.angry = endermanEntity.isAngry();
-		super.method_4072(endermanEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(endermanEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Vec3d method_23160(EndermanEntity endermanEntity, float f) {
+	public Vec3d getPositionOffset(EndermanEntity endermanEntity, float f) {
 		if (endermanEntity.isAngry()) {
 			double d = 0.02;
 			return new Vec3d(this.random.nextGaussian() * 0.02, 0.0, this.random.nextGaussian() * 0.02);
@@ -41,7 +41,7 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 		}
 	}
 
-	public Identifier method_3912(EndermanEntity endermanEntity) {
+	public Identifier getTexture(EndermanEntity endermanEntity) {
 		return TEXTURE;
 	}
 }

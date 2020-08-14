@@ -33,17 +33,17 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25228;
+		return LootFunctionTypes.APPLY_BONUS;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1229);
+		return ImmutableSet.of(LootContextParameters.TOOL);
 	}
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		ItemStack itemStack = context.get(LootContextParameters.field_1229);
+		ItemStack itemStack = context.get(LootContextParameters.TOOL);
 		if (itemStack != null) {
 			int i = EnchantmentHelper.getLevel(this.enchantment, itemStack);
 			int j = this.formula.getValue(context.getRandom(), stack.getCount(), i);
@@ -161,8 +161,8 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<ApplyBonusLootFunction> {
-		public void method_469(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, applyBonusLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, applyBonusLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());
 			jsonObject.addProperty("formula", applyBonusLootFunction.formula.getId().toString());
 			JsonObject jsonObject2 = new JsonObject();
@@ -172,7 +172,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public ApplyBonusLootFunction method_470(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public ApplyBonusLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
 			Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
 				.getOrEmpty(identifier)

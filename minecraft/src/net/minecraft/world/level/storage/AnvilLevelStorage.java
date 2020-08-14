@@ -23,7 +23,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
@@ -55,21 +55,21 @@ public class AnvilLevelStorage {
 		int i = list.size() + list2.size() + list3.size();
 		LOGGER.info("Total conversion count is {}", i);
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-		RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, ResourceManager.Empty.field_25351, impl);
+		RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, ResourceManager.Empty.INSTANCE, impl);
 		SaveProperties saveProperties = session.readLevelProperties(registryOps, DataPackSettings.SAFE_MODE);
 		long l = saveProperties != null ? saveProperties.getGeneratorOptions().getSeed() : 0L;
 		Registry<Biome> registry = impl.get(Registry.BIOME_KEY);
 		BiomeSource biomeSource;
 		if (saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld()) {
-			biomeSource = new FixedBiomeSource(registry.method_31140(Biomes.field_9451));
+			biomeSource = new FixedBiomeSource(registry.getOrThrow(BiomeKeys.PLAINS));
 		} else {
 			biomeSource = new VanillaLayeredBiomeSource(l, false, false, registry);
 		}
 
 		convertRegions(impl, new File(file, "region"), list, biomeSource, 0, i, progressListener);
-		convertRegions(impl, new File(file2, "region"), list2, new FixedBiomeSource(registry.method_31140(Biomes.field_9461)), list.size(), i, progressListener);
+		convertRegions(impl, new File(file2, "region"), list2, new FixedBiomeSource(registry.getOrThrow(BiomeKeys.NETHER_WASTES)), list.size(), i, progressListener);
 		convertRegions(
-			impl, new File(file3, "region"), list3, new FixedBiomeSource(registry.method_31140(Biomes.field_9411)), list.size() + list2.size(), i, progressListener
+			impl, new File(file3, "region"), list3, new FixedBiomeSource(registry.getOrThrow(BiomeKeys.THE_END)), list.size() + list2.size(), i, progressListener
 		);
 		makeMcrLevelDatBackup(session);
 		session.method_27425(impl, saveProperties);
@@ -77,7 +77,7 @@ public class AnvilLevelStorage {
 	}
 
 	private static void makeMcrLevelDatBackup(LevelStorage.Session session) {
-		File file = session.getDirectory(WorldSavePath.field_24184).toFile();
+		File file = session.getDirectory(WorldSavePath.LEVEL_DAT).toFile();
 		if (!file.exists()) {
 			LOGGER.warn("Unable to create level.dat_mcr backup");
 		} else {

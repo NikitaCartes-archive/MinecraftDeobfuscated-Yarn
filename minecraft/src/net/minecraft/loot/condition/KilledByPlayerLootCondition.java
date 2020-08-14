@@ -18,16 +18,16 @@ public class KilledByPlayerLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25240;
+		return LootConditionTypes.KILLED_BY_PLAYER;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1233);
+		return ImmutableSet.of(LootContextParameters.LAST_DAMAGE_PLAYER);
 	}
 
-	public boolean method_938(LootContext lootContext) {
-		return lootContext.hasParameter(LootContextParameters.field_1233);
+	public boolean test(LootContext lootContext) {
+		return lootContext.hasParameter(LootContextParameters.LAST_DAMAGE_PLAYER);
 	}
 
 	public static LootCondition.Builder builder() {
@@ -35,10 +35,10 @@ public class KilledByPlayerLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<KilledByPlayerLootCondition> {
-		public void method_942(JsonObject jsonObject, KilledByPlayerLootCondition killedByPlayerLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, KilledByPlayerLootCondition killedByPlayerLootCondition, JsonSerializationContext jsonSerializationContext) {
 		}
 
-		public KilledByPlayerLootCondition method_943(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public KilledByPlayerLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return KilledByPlayerLootCondition.INSTANCE;
 		}
 	}

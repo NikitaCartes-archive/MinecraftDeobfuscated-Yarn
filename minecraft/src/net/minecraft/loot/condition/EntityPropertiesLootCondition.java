@@ -25,17 +25,17 @@ public class EntityPropertiesLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25239;
+		return LootConditionTypes.ENTITY_PROPERTIES;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_24424, this.entity.getParameter());
+		return ImmutableSet.of(LootContextParameters.ORIGIN, this.entity.getParameter());
 	}
 
-	public boolean method_914(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		Entity entity = lootContext.get(this.entity.getParameter());
-		Vec3d vec3d = lootContext.get(LootContextParameters.field_24424);
+		Vec3d vec3d = lootContext.get(LootContextParameters.ORIGIN);
 		return this.predicate.test(lootContext.getWorld(), vec3d, entity);
 	}
 
@@ -52,12 +52,12 @@ public class EntityPropertiesLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<EntityPropertiesLootCondition> {
-		public void method_919(JsonObject jsonObject, EntityPropertiesLootCondition entityPropertiesLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, EntityPropertiesLootCondition entityPropertiesLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("predicate", entityPropertiesLootCondition.predicate.toJson());
 			jsonObject.add("entity", jsonSerializationContext.serialize(entityPropertiesLootCondition.entity));
 		}
 
-		public EntityPropertiesLootCondition method_920(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public EntityPropertiesLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("predicate"));
 			return new EntityPropertiesLootCondition(
 				entityPredicate, JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class)

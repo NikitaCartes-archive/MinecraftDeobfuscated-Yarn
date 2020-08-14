@@ -48,7 +48,7 @@ public interface Recipe<C extends Inventory> {
 
 	@Environment(EnvType.CLIENT)
 	default ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.field_9980);
+		return new ItemStack(Blocks.CRAFTING_TABLE);
 	}
 
 	Identifier getId();

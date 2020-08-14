@@ -12,15 +12,17 @@ public class WantNewItemTask<E extends PiglinEntity> extends Task<E> {
 	private final int range;
 
 	public WantNewItemTask(int range) {
-		super(ImmutableMap.of(MemoryModuleType.field_22334, MemoryModuleState.field_18456, MemoryModuleType.field_22332, MemoryModuleState.field_18458));
+		super(
+			ImmutableMap.of(MemoryModuleType.ADMIRING_ITEM, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleState.REGISTERED)
+		);
 		this.range = range;
 	}
 
-	protected boolean method_24619(ServerWorld serverWorld, E piglinEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
 		if (!piglinEntity.getOffHandStack().isEmpty()) {
 			return false;
 		} else {
-			Optional<ItemEntity> optional = piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.field_22332);
+			Optional<ItemEntity> optional = piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM);
 			if (!optional.isPresent()) {
 				return true;
 			} else {
@@ -29,7 +31,7 @@ public class WantNewItemTask<E extends PiglinEntity> extends Task<E> {
 		}
 	}
 
-	protected void method_24620(ServerWorld serverWorld, E piglinEntity, long l) {
-		piglinEntity.getBrain().forget(MemoryModuleType.field_22334);
+	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
+		piglinEntity.getBrain().forget(MemoryModuleType.ADMIRING_ITEM);
 	}
 }

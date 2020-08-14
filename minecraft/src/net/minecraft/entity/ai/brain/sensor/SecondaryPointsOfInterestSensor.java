@@ -18,7 +18,7 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 		super(40);
 	}
 
-	protected void method_19617(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected void sense(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		BlockPos blockPos = villagerEntity.getBlockPos();
 		List<GlobalPos> list = Lists.<GlobalPos>newArrayList();
@@ -37,14 +37,14 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 
 		Brain<?> brain = villagerEntity.getBrain();
 		if (!list.isEmpty()) {
-			brain.remember(MemoryModuleType.field_18873, list);
+			brain.remember(MemoryModuleType.SECONDARY_JOB_SITE, list);
 		} else {
-			brain.forget(MemoryModuleType.field_18873);
+			brain.forget(MemoryModuleType.SECONDARY_JOB_SITE);
 		}
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_18873);
+		return ImmutableSet.of(MemoryModuleType.SECONDARY_JOB_SITE);
 	}
 }

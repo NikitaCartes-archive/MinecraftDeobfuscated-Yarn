@@ -6,7 +6,7 @@ public interface TickScheduler<T> {
 	boolean isScheduled(BlockPos pos, T object);
 
 	default void schedule(BlockPos pos, T object, int delay) {
-		this.schedule(pos, object, delay, TickPriority.field_9314);
+		this.schedule(pos, object, delay, TickPriority.NORMAL);
 	}
 
 	void schedule(BlockPos pos, T object, int delay, TickPriority priority);

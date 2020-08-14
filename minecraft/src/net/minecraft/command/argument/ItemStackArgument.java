@@ -28,7 +28,7 @@ public class ItemStackArgument implements Predicate<ItemStack> {
 		return this.item;
 	}
 
-	public boolean method_9783(ItemStack itemStack) {
+	public boolean test(ItemStack itemStack) {
 		return itemStack.getItem() == this.item && NbtHelper.matches(this.tag, itemStack.getTag(), true);
 	}
 

@@ -47,7 +47,7 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends CompositeEn
 		return ImmutableList.<ModelPart>of(this.head, this.torso, this.rightLeg, this.leftLeg, this.rightArm, this.leftArm);
 	}
 
-	public void method_17097(T ironGolemEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T ironGolemEntity, float f, float g, float h, float i, float j) {
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.rightLeg.pitch = -1.5F * MathHelper.method_24504(f, 13.0F) * g;
@@ -56,7 +56,7 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends CompositeEn
 		this.leftLeg.yaw = 0.0F;
 	}
 
-	public void method_17095(T ironGolemEntity, float f, float g, float h) {
+	public void animateModel(T ironGolemEntity, float f, float g, float h) {
 		int i = ironGolemEntity.getAttackTicksLeft();
 		if (i > 0) {
 			this.rightArm.pitch = -2.0F + 1.5F * MathHelper.method_24504((float)i - h, 10.0F);

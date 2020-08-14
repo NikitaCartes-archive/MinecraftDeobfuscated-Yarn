@@ -9,8 +9,8 @@ import net.minecraft.util.StringIdentifiable;
 
 public class GenerationStep {
 	public static enum Carver implements StringIdentifiable {
-		field_13169("air"),
-		field_13166("liquid");
+		AIR("air"),
+		LIQUID("liquid");
 
 		public static final Codec<GenerationStep.Carver> field_24770 = StringIdentifiable.createCodec(
 			GenerationStep.Carver::values, GenerationStep.Carver::method_28546
@@ -39,15 +39,15 @@ public class GenerationStep {
 	}
 
 	public static enum Feature {
-		field_13174,
-		field_25186,
-		field_13171,
-		field_13172,
-		field_13173,
-		field_25187,
-		field_13176,
-		field_13177,
-		field_13178,
-		field_13179;
+		RAW_GENERATION,
+		LAKES,
+		LOCAL_MODIFICATIONS,
+		UNDERGROUND_STRUCTURES,
+		SURFACE_STRUCTURES,
+		STRONGHOLDS,
+		UNDERGROUND_ORES,
+		UNDERGROUND_DECORATION,
+		VEGETAL_DECORATION,
+		TOP_LAYER_MODIFICATION;
 	}
 }

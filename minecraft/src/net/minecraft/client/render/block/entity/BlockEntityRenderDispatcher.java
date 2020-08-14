@@ -35,25 +35,25 @@ public class BlockEntityRenderDispatcher {
 	public HitResult crosshairTarget;
 
 	private BlockEntityRenderDispatcher() {
-		this.register(BlockEntityType.field_11911, new SignBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11889, new MobSpawnerBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11897, new PistonBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11914, new ChestBlockEntityRenderer<>(this));
-		this.register(BlockEntityType.field_11901, new ChestBlockEntityRenderer<>(this));
-		this.register(BlockEntityType.field_11891, new ChestBlockEntityRenderer<>(this));
-		this.register(BlockEntityType.field_11912, new EnchantingTableBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_16412, new LecternBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11898, new EndPortalBlockEntityRenderer<>(this));
-		this.register(BlockEntityType.field_11906, new EndGatewayBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11890, new BeaconBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11913, new SkullBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11905, new BannerBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11895, new StructureBlockBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11896, new ShulkerBoxBlockEntityRenderer(new ShulkerEntityModel(), this));
-		this.register(BlockEntityType.field_11910, new BedBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_11902, new ConduitBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_16413, new BellBlockEntityRenderer(this));
-		this.register(BlockEntityType.field_17380, new CampfireBlockEntityRenderer(this));
+		this.register(BlockEntityType.SIGN, new SignBlockEntityRenderer(this));
+		this.register(BlockEntityType.MOB_SPAWNER, new MobSpawnerBlockEntityRenderer(this));
+		this.register(BlockEntityType.PISTON, new PistonBlockEntityRenderer(this));
+		this.register(BlockEntityType.CHEST, new ChestBlockEntityRenderer<>(this));
+		this.register(BlockEntityType.ENDER_CHEST, new ChestBlockEntityRenderer<>(this));
+		this.register(BlockEntityType.TRAPPED_CHEST, new ChestBlockEntityRenderer<>(this));
+		this.register(BlockEntityType.ENCHANTING_TABLE, new EnchantingTableBlockEntityRenderer(this));
+		this.register(BlockEntityType.LECTERN, new LecternBlockEntityRenderer(this));
+		this.register(BlockEntityType.END_PORTAL, new EndPortalBlockEntityRenderer<>(this));
+		this.register(BlockEntityType.END_GATEWAY, new EndGatewayBlockEntityRenderer(this));
+		this.register(BlockEntityType.BEACON, new BeaconBlockEntityRenderer(this));
+		this.register(BlockEntityType.SKULL, new SkullBlockEntityRenderer(this));
+		this.register(BlockEntityType.BANNER, new BannerBlockEntityRenderer(this));
+		this.register(BlockEntityType.STRUCTURE_BLOCK, new StructureBlockBlockEntityRenderer(this));
+		this.register(BlockEntityType.SHULKER_BOX, new ShulkerBoxBlockEntityRenderer(new ShulkerEntityModel(), this));
+		this.register(BlockEntityType.BED, new BedBlockEntityRenderer(this));
+		this.register(BlockEntityType.CONDUIT, new ConduitBlockEntityRenderer(this));
+		this.register(BlockEntityType.BELL, new BellBlockEntityRenderer(this));
+		this.register(BlockEntityType.CAMPFIRE, new CampfireBlockEntityRenderer(this));
 	}
 
 	private <E extends BlockEntity> void register(BlockEntityType<E> blockEntityType, BlockEntityRenderer<E> blockEntityRenderer) {

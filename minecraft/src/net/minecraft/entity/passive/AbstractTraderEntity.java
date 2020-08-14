@@ -47,8 +47,8 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	public AbstractTraderEntity(EntityType<? extends AbstractTraderEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.field_9, 16.0F);
-		this.setPathfindingPenalty(PathNodeType.field_3, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 	}
 
 	@Override
@@ -147,15 +147,15 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Override
 	public SoundEvent getYesSound() {
-		return SoundEvents.field_14815;
+		return SoundEvents.ENTITY_VILLAGER_YES;
 	}
 
 	protected SoundEvent getTradingSound(boolean sold) {
-		return sold ? SoundEvents.field_14815 : SoundEvents.field_15008;
+		return sold ? SoundEvents.ENTITY_VILLAGER_YES : SoundEvents.ENTITY_VILLAGER_NO;
 	}
 
 	public void playCelebrateSound() {
-		this.playSound(SoundEvents.field_19152, this.getSoundVolume(), this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_VILLAGER_CELEBRATE, this.getSoundVolume(), this.getSoundPitch());
 	}
 
 	@Override

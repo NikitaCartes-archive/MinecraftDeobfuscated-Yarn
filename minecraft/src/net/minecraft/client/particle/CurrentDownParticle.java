@@ -46,7 +46,7 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 			this.velocityX *= 0.07;
 			this.velocityZ *= 0.07;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.field_15517) || this.onGround) {
+			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.WATER) || this.onGround) {
 				this.markDead();
 			}
 
@@ -62,7 +62,7 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3114(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			CurrentDownParticle currentDownParticle = new CurrentDownParticle(clientWorld, d, e, f);
 			currentDownParticle.setSprite(this.spriteProvider);
 			return currentDownParticle;

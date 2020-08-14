@@ -4,9 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 public enum MessageType {
-	field_11737((byte)0, false),
-	field_11735((byte)1, true),
-	field_11733((byte)2, true);
+	CHAT((byte)0, false),
+	SYSTEM((byte)1, true),
+	GAME_INFO((byte)2, true);
 
 	private final byte id;
 	private final boolean interruptsNarration;
@@ -27,7 +27,7 @@ public enum MessageType {
 			}
 		}
 
-		return field_11737;
+		return CHAT;
 	}
 
 	@Environment(EnvType.CLIENT)

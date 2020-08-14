@@ -138,12 +138,9 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	}
 
 	private void method_22692(int i, int j, int k) {
-		ItemStack itemStack = new ItemStack(Items.field_8617);
+		ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
 		CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-		ListTag listTag = new BannerPattern.Patterns()
-			.add(BannerPattern.field_11834, DyeColor.field_7944)
-			.add(BannerPattern.values()[i], DyeColor.field_7952)
-			.toTag();
+		ListTag listTag = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[i], DyeColor.WHITE).toTag();
 		compoundTag.put("Patterns", listTag);
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.push();
@@ -156,7 +153,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
 		this.bannerField.pitch = 0.0F;
 		this.bannerField.pivotY = -32.0F;
-		List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.field_7944, BannerBlockEntity.getPatternListTag(itemStack));
+		List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.GRAY, BannerBlockEntity.getPatternListTag(itemStack));
 		BannerBlockEntityRenderer.method_29999(matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
 		matrixStack.pop();
 		immediate.draw();
@@ -175,7 +172,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 				double d = mouseX - (double)(i + m % 4 * 14);
 				double e = mouseY - (double)(j + m / 4 * 14);
 				if (d >= 0.0 && e >= 0.0 && d < 14.0 && e < 14.0 && this.handler.onButtonClick(this.client.player, l)) {
-					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_14920, 1.0F));
+					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_LOOM_SELECT_PATTERN, 1.0F));
 					this.client.interactionManager.clickButton(this.handler.syncId, l);
 					return true;
 				}

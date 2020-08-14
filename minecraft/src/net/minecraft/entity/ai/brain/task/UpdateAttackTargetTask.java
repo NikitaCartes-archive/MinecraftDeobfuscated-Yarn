@@ -15,7 +15,9 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 	private final Function<E, Optional<? extends LivingEntity>> targetGetter;
 
 	public UpdateAttackTargetTask(Predicate<E> startCondition, Function<E, Optional<? extends LivingEntity>> targetGetter) {
-		super(ImmutableMap.of(MemoryModuleType.field_22355, MemoryModuleState.field_18457, MemoryModuleType.field_19293, MemoryModuleState.field_18458));
+		super(
+			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED)
+		);
 		this.startCondition = startCondition;
 		this.targetGetter = targetGetter;
 	}
@@ -24,7 +26,7 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 		this(mobEntity -> true, targetGetter);
 	}
 
-	protected boolean method_24613(ServerWorld serverWorld, E mobEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, E mobEntity) {
 		if (!this.startCondition.test(mobEntity)) {
 			return false;
 		} else {
@@ -33,12 +35,12 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 		}
 	}
 
-	protected void method_24614(ServerWorld serverWorld, E mobEntity, long l) {
+	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
 		((Optional)this.targetGetter.apply(mobEntity)).ifPresent(livingEntity -> this.updateAttackTarget(mobEntity, livingEntity));
 	}
 
 	private void updateAttackTarget(E entity, LivingEntity target) {
-		entity.getBrain().remember(MemoryModuleType.field_22355, target);
-		entity.getBrain().forget(MemoryModuleType.field_19293);
+		entity.getBrain().remember(MemoryModuleType.ATTACK_TARGET, target);
+		entity.getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 	}
 }

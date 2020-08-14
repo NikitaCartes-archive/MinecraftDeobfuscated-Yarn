@@ -74,11 +74,11 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 		}
 
 		@Nullable
-		public Particle method_3033(
+		public Particle createParticle(
 			BlockStateParticleEffect blockStateParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
 		) {
 			BlockState blockState = blockStateParticleEffect.getBlockState();
-			if (!blockState.isAir() && blockState.getRenderType() == BlockRenderType.field_11455) {
+			if (!blockState.isAir() && blockState.getRenderType() == BlockRenderType.INVISIBLE) {
 				return null;
 			} else {
 				BlockPos blockPos = new BlockPos(d, e, f);

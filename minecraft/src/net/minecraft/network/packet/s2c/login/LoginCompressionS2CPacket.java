@@ -27,7 +27,7 @@ public class LoginCompressionS2CPacket implements Packet<ClientLoginPacketListen
 		buf.writeVarInt(this.compressionThreshold);
 	}
 
-	public void method_12633(ClientLoginPacketListener clientLoginPacketListener) {
+	public void apply(ClientLoginPacketListener clientLoginPacketListener) {
 		clientLoginPacketListener.onCompression(this);
 	}
 

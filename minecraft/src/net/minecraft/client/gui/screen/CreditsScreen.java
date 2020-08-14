@@ -34,7 +34,7 @@ public class CreditsScreen extends Screen {
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-	private static final String field_24260 = "" + Formatting.field_1068 + Formatting.field_1051 + Formatting.field_1060 + Formatting.field_1075;
+	private static final String field_24260 = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 	private final boolean endCredits;
 	private final Runnable finishAction;
 	private float time;
@@ -94,7 +94,7 @@ public class CreditsScreen extends Screen {
 						String string3;
 						for(string = string.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
 							(j = string.indexOf(field_24260)) != -1;
-							string = string2 + Formatting.field_1068 + Formatting.field_1051 + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3
+							string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3
 						) {
 							string2 = string.substring(0, j);
 							string3 = string.substring(j + field_24260.length());
@@ -224,7 +224,7 @@ public class CreditsScreen extends Screen {
 		RenderSystem.popMatrix();
 		this.client.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.field_22544, GlStateManager.DstFactor.field_22524);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
 		int m = this.width;
 		int n = this.height;
 		Tessellator tessellator = Tessellator.getInstance();

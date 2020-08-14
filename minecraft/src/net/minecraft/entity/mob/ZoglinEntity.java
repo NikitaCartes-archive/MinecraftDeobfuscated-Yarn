@@ -53,19 +53,19 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int movementCooldownTicks;
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super ZoglinEntity>>> USED_SENSORS = ImmutableList.of(
-		SensorType.field_18466, SensorType.field_18467
+		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS
 	);
 	protected static final ImmutableList<? extends MemoryModuleType<?>> USED_MEMORY_MODULES = ImmutableList.of(
-		MemoryModuleType.field_18441,
-		MemoryModuleType.field_18442,
-		MemoryModuleType.field_18444,
-		MemoryModuleType.field_22354,
-		MemoryModuleType.field_18446,
-		MemoryModuleType.field_18445,
-		MemoryModuleType.field_19293,
-		MemoryModuleType.field_18449,
-		MemoryModuleType.field_22355,
-		MemoryModuleType.field_22475
+		MemoryModuleType.MOBS,
+		MemoryModuleType.VISIBLE_MOBS,
+		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
+		MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER,
+		MemoryModuleType.LOOK_TARGET,
+		MemoryModuleType.WALK_TARGET,
+		MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+		MemoryModuleType.PATH,
+		MemoryModuleType.ATTACK_TARGET,
+		MemoryModuleType.ATTACK_COOLING_DOWN
 	);
 
 	public ZoglinEntity(EntityType<? extends ZoglinEntity> entityType, World world) {
@@ -84,19 +84,19 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		method_26928(brain);
 		method_26929(brain);
 		method_26930(brain);
-		brain.setCoreActivities(ImmutableSet.of(Activity.field_18594));
-		brain.setDefaultActivity(Activity.field_18595);
+		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
+		brain.setDefaultActivity(Activity.IDLE);
 		brain.resetPossibleActivities();
 		return brain;
 	}
 
 	private static void method_26928(Brain<ZoglinEntity> brain) {
-		brain.setTaskList(Activity.field_18594, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
 	}
 
 	private static void method_26929(Brain<ZoglinEntity> brain) {
 		brain.setTaskList(
-			Activity.field_18595,
+			Activity.IDLE,
 			10,
 			ImmutableList.of(
 				new UpdateAttackTargetTask<>(ZoglinEntity::method_26934),
@@ -108,7 +108,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 
 	private static void method_26930(Brain<ZoglinEntity> brain) {
 		brain.setTaskList(
-			Activity.field_22396,
+			Activity.FIGHT,
 			10,
 			ImmutableList.of(
 				new RangedApproachTask(1.0F),
@@ -116,12 +116,12 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 				new ConditionalTask<>(ZoglinEntity::isBaby, new MeleeAttackTask(15)),
 				new ForgetAttackTargetTask()
 			),
-			MemoryModuleType.field_22355
+			MemoryModuleType.ATTACK_TARGET
 		);
 	}
 
 	private Optional<? extends LivingEntity> method_26934() {
-		return ((List)this.getBrain().getOptionalMemory(MemoryModuleType.field_18442).orElse(ImmutableList.of()))
+		return ((List)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of()))
 			.stream()
 			.filter(ZoglinEntity::method_26936)
 			.findFirst();
@@ -129,9 +129,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 
 	private static boolean method_26936(LivingEntity livingEntity) {
 		EntityType<?> entityType = livingEntity.getType();
-		return entityType != EntityType.field_23696
-			&& entityType != EntityType.field_6046
-			&& EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity);
+		return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity);
 	}
 
 	@Override
@@ -150,11 +148,11 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 
 	public static DefaultAttributeContainer.Builder createZoglinAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23716, 40.0)
-			.add(EntityAttributes.field_23719, 0.3F)
-			.add(EntityAttributes.field_23718, 0.6F)
-			.add(EntityAttributes.field_23722, 1.0)
-			.add(EntityAttributes.field_23721, 6.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.6F)
+			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
 	}
 
 	public boolean isAdult() {
@@ -168,7 +166,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		} else {
 			this.movementCooldownTicks = 10;
 			this.world.sendEntityStatus(this, (byte)4);
-			this.playSound(SoundEvents.field_23674, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 			return Hoglin.tryAttack(this, (LivingEntity)target);
 		}
 	}
@@ -208,8 +206,8 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	private void method_26938(LivingEntity livingEntity) {
-		this.brain.forget(MemoryModuleType.field_19293);
-		this.brain.remember(MemoryModuleType.field_22355, livingEntity, 200L);
+		this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+		this.brain.remember(MemoryModuleType.ATTACK_TARGET, livingEntity, 200L);
 	}
 
 	@Override
@@ -219,13 +217,13 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 
 	protected void method_26931() {
 		Activity activity = (Activity)this.brain.getFirstPossibleNonCoreActivity().orElse(null);
-		this.brain.resetPossibleActivities(ImmutableList.of(Activity.field_22396, Activity.field_18595));
+		this.brain.resetPossibleActivities(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
 		Activity activity2 = (Activity)this.brain.getFirstPossibleNonCoreActivity().orElse(null);
-		if (activity2 == Activity.field_22396 && activity != Activity.field_22396) {
+		if (activity2 == Activity.FIGHT && activity != Activity.FIGHT) {
 			this.playAngrySound();
 		}
 
-		this.setAttacking(this.brain.hasMemoryModule(MemoryModuleType.field_22355));
+		this.setAttacking(this.brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET));
 	}
 
 	@Override
@@ -240,7 +238,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	public void setBaby(boolean baby) {
 		this.getDataTracker().set(BABY, baby);
 		if (!this.world.isClient && baby) {
-			this.getAttributeInstance(EntityAttributes.field_23721).setBaseValue(0.5);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
 		}
 	}
 
@@ -263,7 +261,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	public void handleStatus(byte status) {
 		if (status == 4) {
 			this.movementCooldownTicks = 10;
-			this.playSound(SoundEvents.field_23674, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 		} else {
 			super.handleStatus(status);
 		}
@@ -280,27 +278,27 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		if (this.world.isClient) {
 			return null;
 		} else {
-			return this.brain.hasMemoryModule(MemoryModuleType.field_22355) ? SoundEvents.field_23673 : SoundEvents.field_23672;
+			return this.brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET) ? SoundEvents.ENTITY_ZOGLIN_ANGRY : SoundEvents.ENTITY_ZOGLIN_AMBIENT;
 		}
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_23676;
+		return SoundEvents.ENTITY_ZOGLIN_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_23675;
+		return SoundEvents.ENTITY_ZOGLIN_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_23677, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_ZOGLIN_STEP, 0.15F, 1.0F);
 	}
 
 	protected void playAngrySound() {
-		this.playSound(SoundEvents.field_23673, 1.0F, this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_ZOGLIN_ANGRY, 1.0F, this.getSoundPitch());
 	}
 
 	@Override

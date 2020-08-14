@@ -44,7 +44,7 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 		this.prevPosZ = this.z;
 		float f = (float)this.age / (float)this.maxAge;
 		if (this.random.nextFloat() > f) {
-			this.world.addParticle(ParticleTypes.field_11251, this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ);
+			this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ);
 		}
 
 		if (this.age++ >= this.maxAge) {
@@ -70,7 +70,7 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3039(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			LavaEmberParticle lavaEmberParticle = new LavaEmberParticle(clientWorld, d, e, f);
 			lavaEmberParticle.setSprite(this.spriteProvider);
 			return lavaEmberParticle;

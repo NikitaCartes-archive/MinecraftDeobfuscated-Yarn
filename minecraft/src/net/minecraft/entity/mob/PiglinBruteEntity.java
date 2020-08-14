@@ -31,28 +31,28 @@ import net.minecraft.world.World;
 
 public class PiglinBruteEntity extends AbstractPiglinEntity {
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinBruteEntity>>> SENSOR_TYPES = ImmutableList.of(
-		SensorType.field_18466, SensorType.field_18467, SensorType.field_22358, SensorType.field_18469, SensorType.field_25757
+		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_BRUTE_SPECIFIC_SENSOR
 	);
 	protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(
-		MemoryModuleType.field_18446,
-		MemoryModuleType.field_26389,
-		MemoryModuleType.field_18441,
-		MemoryModuleType.field_18442,
-		MemoryModuleType.field_18444,
-		MemoryModuleType.field_22354,
-		MemoryModuleType.field_22343,
-		MemoryModuleType.field_25755,
-		MemoryModuleType.field_18451,
-		MemoryModuleType.field_18452,
-		MemoryModuleType.field_18445,
-		MemoryModuleType.field_19293,
-		MemoryModuleType.field_22355,
-		MemoryModuleType.field_22475,
-		MemoryModuleType.field_18447,
-		MemoryModuleType.field_18449,
-		MemoryModuleType.field_22333,
-		MemoryModuleType.field_25360,
-		MemoryModuleType.field_18438
+		MemoryModuleType.LOOK_TARGET,
+		MemoryModuleType.DOORS_TO_CLOSE,
+		MemoryModuleType.MOBS,
+		MemoryModuleType.VISIBLE_MOBS,
+		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
+		MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER,
+		MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS,
+		MemoryModuleType.NEARBY_ADULT_PIGLINS,
+		MemoryModuleType.HURT_BY,
+		MemoryModuleType.HURT_BY_ENTITY,
+		MemoryModuleType.WALK_TARGET,
+		MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+		MemoryModuleType.ATTACK_TARGET,
+		MemoryModuleType.ATTACK_COOLING_DOWN,
+		MemoryModuleType.INTERACTION_TARGET,
+		MemoryModuleType.PATH,
+		MemoryModuleType.ANGRY_AT,
+		MemoryModuleType.NEAREST_VISIBLE_NEMESIS,
+		MemoryModuleType.HOME
 	);
 
 	public PiglinBruteEntity(EntityType<? extends PiglinBruteEntity> entityType, World world) {
@@ -62,9 +62,9 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 
 	public static DefaultAttributeContainer.Builder createPiglinBruteAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23716, 50.0)
-			.add(EntityAttributes.field_23719, 0.35F)
-			.add(EntityAttributes.field_23721, 7.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 50.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 7.0);
 	}
 
 	@Nullable
@@ -79,7 +79,7 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 
 	@Override
 	protected void initEquipment(LocalDifficulty difficulty) {
-		this.equipStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8825));
+		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 
 	@Override
 	public boolean canGather(ItemStack stack) {
-		return stack.getItem() == Items.field_8825 ? super.canGather(stack) : false;
+		return stack.getItem() == Items.GOLDEN_AXE ? super.canGather(stack) : false;
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public PiglinActivity getActivity() {
-		return this.isAttacking() && this.isHoldingTool() ? PiglinActivity.field_25165 : PiglinActivity.field_22386;
+		return this.isAttacking() && this.isHoldingTool() ? PiglinActivity.ATTACKING_WITH_MELEE_WEAPON : PiglinActivity.DEFAULT;
 	}
 
 	@Override
@@ -139,30 +139,30 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_25728;
+		return SoundEvents.ENTITY_PIGLIN_BRUTE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_25731;
+		return SoundEvents.ENTITY_PIGLIN_BRUTE_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_25730;
+		return SoundEvents.ENTITY_PIGLIN_BRUTE_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_25732, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_STEP, 0.15F, 1.0F);
 	}
 
 	protected void playAngrySound() {
-		this.playSound(SoundEvents.field_25729, 1.0F, this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_ANGRY, 1.0F, this.getSoundPitch());
 	}
 
 	@Override
 	protected void playZombificationSound() {
-		this.playSound(SoundEvents.field_25733, 1.0F, this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_CONVERTED_TO_ZOMBIFIED, 1.0F, this.getSoundPitch());
 	}
 }

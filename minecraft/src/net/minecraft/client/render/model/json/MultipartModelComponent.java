@@ -54,7 +54,7 @@ public class MultipartModelComponent {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<MultipartModelComponent> {
-		public MultipartModelComponent method_3535(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public MultipartModelComponent deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			return new MultipartModelComponent(
 				this.deserializeSelectorOrDefault(jsonObject), jsonDeserializationContext.deserialize(jsonObject.get("apply"), WeightedUnbakedModel.class)

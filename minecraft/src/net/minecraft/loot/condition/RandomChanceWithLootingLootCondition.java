@@ -25,16 +25,16 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25238;
+		return LootConditionTypes.RANDOM_CHANCE_WITH_LOOTING;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1230);
+		return ImmutableSet.of(LootContextParameters.KILLER_ENTITY);
 	}
 
-	public boolean method_950(LootContext lootContext) {
-		Entity entity = lootContext.get(LootContextParameters.field_1230);
+	public boolean test(LootContext lootContext) {
+		Entity entity = lootContext.get(LootContextParameters.KILLER_ENTITY);
 		int i = 0;
 		if (entity instanceof LivingEntity) {
 			i = EnchantmentHelper.getLooting((LivingEntity)entity);
@@ -48,14 +48,14 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<RandomChanceWithLootingLootCondition> {
-		public void method_955(
+		public void toJson(
 			JsonObject jsonObject, RandomChanceWithLootingLootCondition randomChanceWithLootingLootCondition, JsonSerializationContext jsonSerializationContext
 		) {
 			jsonObject.addProperty("chance", randomChanceWithLootingLootCondition.chance);
 			jsonObject.addProperty("looting_multiplier", randomChanceWithLootingLootCondition.lootingMultiplier);
 		}
 
-		public RandomChanceWithLootingLootCondition method_956(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public RandomChanceWithLootingLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return new RandomChanceWithLootingLootCondition(JsonHelper.getFloat(jsonObject, "chance"), JsonHelper.getFloat(jsonObject, "looting_multiplier"));
 		}
 	}

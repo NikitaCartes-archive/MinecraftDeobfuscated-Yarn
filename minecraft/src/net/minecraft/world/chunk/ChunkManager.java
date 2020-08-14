@@ -11,7 +11,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
 	public WorldChunk getWorldChunk(int chunkX, int chunkZ, boolean create) {
-		return (WorldChunk)this.getChunk(chunkX, chunkZ, ChunkStatus.field_12803, create);
+		return (WorldChunk)this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, create);
 	}
 
 	@Nullable
@@ -22,11 +22,11 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
 	@Override
 	public BlockView getChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.field_12798, false);
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
 	}
 
 	public boolean isChunkLoaded(int x, int z) {
-		return this.getChunk(x, z, ChunkStatus.field_12803, false) != null;
+		return this.getChunk(x, z, ChunkStatus.FULL, false) != null;
 	}
 
 	@Nullable

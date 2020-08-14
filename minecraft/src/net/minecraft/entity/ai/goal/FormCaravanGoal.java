@@ -16,7 +16,7 @@ public class FormCaravanGoal extends Goal {
 	public FormCaravanGoal(LlamaEntity llama, double speed) {
 		this.llama = llama;
 		this.speed = speed;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class FormCaravanGoal extends Goal {
 		if (!this.llama.isLeashed() && !this.llama.isFollowing()) {
 			List<Entity> list = this.llama.world.getOtherEntities(this.llama, this.llama.getBoundingBox().expand(9.0, 4.0, 9.0), entityx -> {
 				EntityType<?> entityType = entityx.getType();
-				return entityType == EntityType.field_6074 || entityType == EntityType.field_17714;
+				return entityType == EntityType.LLAMA || entityType == EntityType.TRADER_LLAMA;
 			});
 			LlamaEntity llamaEntity = null;
 			double d = Double.MAX_VALUE;

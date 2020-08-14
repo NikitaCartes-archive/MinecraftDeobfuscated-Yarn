@@ -18,7 +18,7 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 		return new ItemStackArgumentType();
 	}
 
-	public ItemStackArgument method_9778(StringReader stringReader) throws CommandSyntaxException {
+	public ItemStackArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
 		return new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getTag());
 	}

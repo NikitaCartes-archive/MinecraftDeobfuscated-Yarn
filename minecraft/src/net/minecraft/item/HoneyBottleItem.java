@@ -24,18 +24,18 @@ public class HoneyBottleItem extends Item {
 		if (user instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)user;
 			Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
-			serverPlayerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
 		if (!world.isClient) {
-			user.removeStatusEffect(StatusEffects.field_5899);
+			user.removeStatusEffect(StatusEffects.POISON);
 		}
 
 		if (stack.isEmpty()) {
-			return new ItemStack(Items.field_8469);
+			return new ItemStack(Items.GLASS_BOTTLE);
 		} else {
 			if (user instanceof PlayerEntity && !((PlayerEntity)user).abilities.creativeMode) {
-				ItemStack itemStack = new ItemStack(Items.field_8469);
+				ItemStack itemStack = new ItemStack(Items.GLASS_BOTTLE);
 				PlayerEntity playerEntity = (PlayerEntity)user;
 				if (!playerEntity.inventory.insertStack(itemStack)) {
 					playerEntity.dropItem(itemStack, false);
@@ -53,17 +53,17 @@ public class HoneyBottleItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.field_8946;
+		return UseAction.DRINK;
 	}
 
 	@Override
 	public SoundEvent getDrinkSound() {
-		return SoundEvents.field_20615;
+		return SoundEvents.ITEM_HONEY_BOTTLE_DRINK;
 	}
 
 	@Override
 	public SoundEvent getEatSound() {
-		return SoundEvents.field_20615;
+		return SoundEvents.ITEM_HONEY_BOTTLE_DRINK;
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<Ench
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_3571(
+	public void render(
 		EnchantingTableBlockEntity enchantingTableBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
 	) {
 		matrixStack.push();

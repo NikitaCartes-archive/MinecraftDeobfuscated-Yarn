@@ -19,7 +19,7 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeashKnotEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4035(LeashKnotEntity leashKnotEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(LeashKnotEntity leashKnotEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.model.setAngles(leashKnotEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
@@ -29,7 +29,7 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeashKnotEntity> {
 		super.render(leashKnotEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_4036(LeashKnotEntity leashKnotEntity) {
+	public Identifier getTexture(LeashKnotEntity leashKnotEntity) {
 		return TEXTURE;
 	}
 }

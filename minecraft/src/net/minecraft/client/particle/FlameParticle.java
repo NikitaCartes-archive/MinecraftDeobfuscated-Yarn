@@ -52,7 +52,7 @@ public class FlameParticle extends AbstractSlowingParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3036(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			FlameParticle flameParticle = new FlameParticle(clientWorld, d, e, f, g, h, i);
 			flameParticle.setSprite(this.spriteProvider);
 			return flameParticle;

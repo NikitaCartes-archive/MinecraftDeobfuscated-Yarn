@@ -61,7 +61,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			this.addButtons();
 		}
 
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		Realms.narrateNow((String)Stream.concat(Stream.of(this.field_24204), Stream.of(this.message)).map(Text::getString).collect(Collectors.joining(" ")));
 	}
 
@@ -190,7 +190,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

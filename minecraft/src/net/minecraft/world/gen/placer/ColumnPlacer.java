@@ -27,7 +27,7 @@ public class ColumnPlacer extends BlockPlacer {
 
 	@Override
 	protected BlockPlacerType<?> method_28673() {
-		return BlockPlacerType.field_21225;
+		return BlockPlacerType.COLUMN_PLACER;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class ColumnPlacer extends BlockPlacer {
 
 		for(int j = 0; j < i; ++j) {
 			worldAccess.setBlockState(mutable, blockState, 2);
-			mutable.move(Direction.field_11036);
+			mutable.move(Direction.UP);
 		}
 	}
 }

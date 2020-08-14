@@ -26,10 +26,8 @@ public final class ProjectileUtil {
 		World world = entity.world;
 		Vec3d vec3d2 = entity.getPos();
 		Vec3d vec3d3 = vec3d2.add(vec3d);
-		HitResult hitResult = world.rayTrace(
-			new RayTraceContext(vec3d2, vec3d3, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, entity)
-		);
-		if (hitResult.getType() != HitResult.Type.field_1333) {
+		HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, entity));
+		if (hitResult.getType() != HitResult.Type.MISS) {
 			vec3d3 = hitResult.getPos();
 		}
 
@@ -128,14 +126,14 @@ public final class ProjectileUtil {
 	}
 
 	public static Hand getHandPossiblyHolding(LivingEntity entity, Item item) {
-		return entity.getMainHandStack().getItem() == item ? Hand.field_5808 : Hand.field_5810;
+		return entity.getMainHandStack().getItem() == item ? Hand.MAIN_HAND : Hand.OFF_HAND;
 	}
 
 	public static PersistentProjectileEntity createArrowProjectile(LivingEntity entity, ItemStack stack, float damageModifier) {
-		ArrowItem arrowItem = (ArrowItem)(stack.getItem() instanceof ArrowItem ? stack.getItem() : Items.field_8107);
+		ArrowItem arrowItem = (ArrowItem)(stack.getItem() instanceof ArrowItem ? stack.getItem() : Items.ARROW);
 		PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(entity.world, stack, entity);
 		persistentProjectileEntity.applyEnchantmentEffects(entity, damageModifier);
-		if (stack.getItem() == Items.field_8087 && persistentProjectileEntity instanceof ArrowEntity) {
+		if (stack.getItem() == Items.TIPPED_ARROW && persistentProjectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)persistentProjectileEntity).initFromStack(stack);
 		}
 

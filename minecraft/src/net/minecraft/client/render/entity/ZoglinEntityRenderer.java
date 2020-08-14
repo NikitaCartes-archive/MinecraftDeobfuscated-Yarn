@@ -14,7 +14,7 @@ public class ZoglinEntityRenderer extends MobEntityRenderer<ZoglinEntity, Hoglin
 		super(entityRenderDispatcher, new HoglinEntityModel<>(), 0.7F);
 	}
 
-	public Identifier method_27039(ZoglinEntity zoglinEntity) {
+	public Identifier getTexture(ZoglinEntity zoglinEntity) {
 		return TEXTURE;
 	}
 }

@@ -16,7 +16,7 @@ public class BreatheAirGoal extends Goal {
 
 	public BreatheAirGoal(PathAwareEntity mob) {
 		this.mob = mob;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override
@@ -68,11 +68,11 @@ public class BreatheAirGoal extends Goal {
 	public void tick() {
 		this.moveToAir();
 		this.mob.updateVelocity(0.02F, new Vec3d((double)this.mob.sidewaysSpeed, (double)this.mob.upwardSpeed, (double)this.mob.forwardSpeed));
-		this.mob.move(MovementType.field_6308, this.mob.getVelocity());
+		this.mob.move(MovementType.SELF, this.mob.getVelocity());
 	}
 
 	private boolean isAirPos(WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
-		return (world.getFluidState(pos).isEmpty() || blockState.isOf(Blocks.field_10422)) && blockState.canPathfindThrough(world, pos, NavigationType.field_50);
+		return (world.getFluidState(pos).isEmpty() || blockState.isOf(Blocks.BUBBLE_COLUMN)) && blockState.canPathfindThrough(world, pos, NavigationType.LAND);
 	}
 }

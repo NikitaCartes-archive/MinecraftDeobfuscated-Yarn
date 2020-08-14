@@ -12,7 +12,7 @@ public class CountNoiseDecorator extends Decorator<CountNoiseDecoratorConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_30449(DecoratorContext decoratorContext, Random random, CountNoiseDecoratorConfig countNoiseDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, CountNoiseDecoratorConfig countNoiseDecoratorConfig, BlockPos blockPos) {
 		double d = Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 200.0, (double)blockPos.getZ() / 200.0, false);
 		int i = d < countNoiseDecoratorConfig.noiseLevel ? countNoiseDecoratorConfig.belowNoise : countNoiseDecoratorConfig.aboveNoise;
 		return IntStream.range(0, i).mapToObj(ix -> blockPos);

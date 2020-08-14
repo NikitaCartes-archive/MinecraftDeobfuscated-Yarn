@@ -22,11 +22,11 @@ public class LocationCheckLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25247;
+		return LootConditionTypes.LOCATION_CHECK;
 	}
 
-	public boolean method_881(LootContext lootContext) {
-		Vec3d vec3d = lootContext.get(LootContextParameters.field_24424);
+	public boolean test(LootContext lootContext) {
+		Vec3d vec3d = lootContext.get(LootContextParameters.ORIGIN);
 		return vec3d != null
 			&& this.predicate
 				.test(
@@ -43,7 +43,7 @@ public class LocationCheckLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<LocationCheckLootCondition> {
-		public void method_886(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("predicate", locationCheckLootCondition.predicate.toJson());
 			if (locationCheckLootCondition.offset.getX() != 0) {
 				jsonObject.addProperty("offsetX", locationCheckLootCondition.offset.getX());
@@ -58,7 +58,7 @@ public class LocationCheckLootCondition implements LootCondition {
 			}
 		}
 
-		public LocationCheckLootCondition method_885(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public LocationCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("predicate"));
 			int i = JsonHelper.getInt(jsonObject, "offsetX", 0);
 			int j = JsonHelper.getInt(jsonObject, "offsetY", 0);

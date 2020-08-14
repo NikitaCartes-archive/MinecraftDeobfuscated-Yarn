@@ -53,7 +53,7 @@ public class TimeLimitedTask<E extends LivingEntity> extends Task<E> {
 	@Override
 	protected void keepRunning(ServerWorld world, E entity, long time) {
 		this.delegate.keepRunning(world, entity, time);
-		this.delegateRunning = this.delegate.getStatus() == Task.Status.field_18338;
+		this.delegateRunning = this.delegate.getStatus() == Task.Status.RUNNING;
 	}
 
 	@Override

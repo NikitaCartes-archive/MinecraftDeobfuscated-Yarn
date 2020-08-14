@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 public class HayBlock extends PillarBlock {
 	public HayBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(AXIS, Direction.Axis.field_11052));
+		this.setDefaultState(this.stateManager.getDefaultState().with(AXIS, Direction.Axis.Y));
 	}
 
 	@Override

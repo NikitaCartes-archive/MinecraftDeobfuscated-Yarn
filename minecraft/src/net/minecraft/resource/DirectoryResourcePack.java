@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 public class DirectoryResourcePack extends AbstractFileResourcePack {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final boolean IS_WINDOWS = Util.getOperatingSystem() == Util.OperatingSystem.field_1133;
+	private static final boolean IS_WINDOWS = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
 	private static final CharMatcher BACKSLASH_MATCHER = CharMatcher.is('\\');
 
 	public DirectoryResourcePack(File file) {

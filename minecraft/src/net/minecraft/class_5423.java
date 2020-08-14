@@ -29,8 +29,8 @@ public interface class_5423 extends EntityView, WorldView, ModifiableTestableWor
 	}
 
 	@Override
-	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
-		return WorldView.super.getTopPosition(heightmap, pos);
+	default BlockPos getTopPosition(Heightmap.Type type, BlockPos pos) {
+		return WorldView.super.getTopPosition(type, pos);
 	}
 
 	DynamicRegistryManager getRegistryManager();

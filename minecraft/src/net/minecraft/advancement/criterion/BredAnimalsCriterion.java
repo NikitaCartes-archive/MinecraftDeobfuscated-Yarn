@@ -19,7 +19,7 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		return ID;
 	}
 
-	public BredAnimalsCriterion.Conditions method_854(
+	public BredAnimalsCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "parent", advancementEntityPredicateDeserializer);

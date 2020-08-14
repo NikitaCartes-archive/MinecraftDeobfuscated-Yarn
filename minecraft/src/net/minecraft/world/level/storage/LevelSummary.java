@@ -60,7 +60,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.field_25023.getLastPlayed();
 	}
 
-	public int method_251(LevelSummary levelSummary) {
+	public int compareTo(LevelSummary levelSummary) {
 		if (this.field_25023.getLastPlayed() < levelSummary.field_25023.getLastPlayed()) {
 			return 1;
 		} else {
@@ -126,12 +126,12 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	@Environment(EnvType.CLIENT)
 	private Text method_27430() {
 		if (this.isLocked()) {
-			return new TranslatableText("selectWorld.locked").formatted(Formatting.field_1061);
+			return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
 		} else if (this.requiresConversion()) {
 			return new TranslatableText("selectWorld.conversion");
 		} else {
 			MutableText mutableText = (MutableText)(this.isHardcore()
-				? new LiteralText("").append(new TranslatableText("gameMode.hardcore").formatted(Formatting.field_1079))
+				? new LiteralText("").append(new TranslatableText("gameMode.hardcore").formatted(Formatting.DARK_RED))
 				: new TranslatableText("gameMode." + this.getGameMode().getName()));
 			if (this.hasCheats()) {
 				mutableText.append(", ").append(new TranslatableText("selectWorld.cheats"));
@@ -140,7 +140,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 			MutableText mutableText2 = this.getVersion();
 			MutableText mutableText3 = new LiteralText(", ").append(new TranslatableText("selectWorld.version")).append(" ");
 			if (this.isDifferentVersion()) {
-				mutableText3.append(mutableText2.formatted(this.isFutureLevel() ? Formatting.field_1061 : Formatting.field_1056));
+				mutableText3.append(mutableText2.formatted(this.isFutureLevel() ? Formatting.RED : Formatting.ITALIC));
 			} else {
 				mutableText3.append(mutableText2);
 			}

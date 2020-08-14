@@ -33,7 +33,7 @@ public class SetBlockCommand {
 											commandContext.getSource(),
 											BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 											BlockStateArgumentType.getBlockState(commandContext, "block"),
-											SetBlockCommand.Mode.field_13722,
+											SetBlockCommand.Mode.REPLACE,
 											null
 										)
 								)
@@ -44,7 +44,7 @@ public class SetBlockCommand {
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
-													SetBlockCommand.Mode.field_13721,
+													SetBlockCommand.Mode.DESTROY,
 													null
 												)
 										)
@@ -56,7 +56,7 @@ public class SetBlockCommand {
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
-													SetBlockCommand.Mode.field_13722,
+													SetBlockCommand.Mode.REPLACE,
 													cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
 												)
 										)
@@ -68,7 +68,7 @@ public class SetBlockCommand {
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
-													SetBlockCommand.Mode.field_13722,
+													SetBlockCommand.Mode.REPLACE,
 													null
 												)
 										)
@@ -86,7 +86,7 @@ public class SetBlockCommand {
 			throw FAILED_EXCEPTION.create();
 		} else {
 			boolean bl;
-			if (mode == SetBlockCommand.Mode.field_13721) {
+			if (mode == SetBlockCommand.Mode.DESTROY) {
 				serverWorld.breakBlock(pos, true);
 				bl = !block.getBlockState().isAir() || !serverWorld.getBlockState(pos).isAir();
 			} else {
@@ -111,7 +111,7 @@ public class SetBlockCommand {
 	}
 
 	public static enum Mode {
-		field_13722,
-		field_13721;
+		REPLACE,
+		DESTROY;
 	}
 }

@@ -7,11 +7,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum GameMode {
-	field_9218(-1, ""),
-	field_9215(0, "survival"),
-	field_9220(1, "creative"),
-	field_9216(2, "adventure"),
-	field_9219(3, "spectator");
+	NOT_SET(-1, ""),
+	SURVIVAL(0, "survival"),
+	CREATIVE(1, "creative"),
+	ADVENTURE(2, "adventure"),
+	SPECTATOR(3, "spectator");
 
 	private final int id;
 	private final String name;
@@ -34,11 +34,11 @@ public enum GameMode {
 	}
 
 	public void setAbilities(PlayerAbilities abilities) {
-		if (this == field_9220) {
+		if (this == CREATIVE) {
 			abilities.allowFlying = true;
 			abilities.creativeMode = true;
 			abilities.invulnerable = true;
-		} else if (this == field_9219) {
+		} else if (this == SPECTATOR) {
 			abilities.allowFlying = true;
 			abilities.creativeMode = false;
 			abilities.invulnerable = true;
@@ -54,34 +54,34 @@ public enum GameMode {
 	}
 
 	public boolean isBlockBreakingRestricted() {
-		return this == field_9216 || this == field_9219;
+		return this == ADVENTURE || this == SPECTATOR;
 	}
 
 	public boolean isCreative() {
-		return this == field_9220;
+		return this == CREATIVE;
 	}
 
 	public boolean isSurvivalLike() {
-		return this == field_9215 || this == field_9216;
+		return this == SURVIVAL || this == ADVENTURE;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_31218() {
-		return 3.0F;
+	public float method_31249() {
+		return 2.5F;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_31219() {
+	public float method_31250() {
 		return 6.0F;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_31220() {
+	public float method_31251() {
 		return this.isCreative() ? 5.0F : 4.5F;
 	}
 
 	public static GameMode byId(int id) {
-		return byId(id, field_9215);
+		return byId(id, SURVIVAL);
 	}
 
 	public static GameMode byId(int id, GameMode defaultMode) {
@@ -95,7 +95,7 @@ public enum GameMode {
 	}
 
 	public static GameMode byName(String name) {
-		return byName(name, field_9215);
+		return byName(name, SURVIVAL);
 	}
 
 	public static GameMode byName(String name, GameMode defaultMode) {

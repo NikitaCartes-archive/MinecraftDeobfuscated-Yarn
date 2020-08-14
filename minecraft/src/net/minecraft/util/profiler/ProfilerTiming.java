@@ -16,7 +16,7 @@ public final class ProfilerTiming implements Comparable<ProfilerTiming> {
 		this.visitCount = visitCount;
 	}
 
-	public int method_15408(ProfilerTiming profilerTiming) {
+	public int compareTo(ProfilerTiming profilerTiming) {
 		if (profilerTiming.parentSectionUsagePercentage < this.parentSectionUsagePercentage) {
 			return -1;
 		} else {

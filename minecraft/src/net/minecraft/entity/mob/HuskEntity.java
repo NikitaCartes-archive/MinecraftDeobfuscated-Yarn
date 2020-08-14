@@ -21,7 +21,7 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	public static boolean canSpawn(EntityType<HuskEntity> type, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return canSpawnInDark(type, serverWorldAccess, spawnReason, pos, random) && (spawnReason == SpawnReason.field_16469 || serverWorldAccess.isSkyVisible(pos));
+		return canSpawnInDark(type, serverWorldAccess, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || serverWorldAccess.isSkyVisible(pos));
 	}
 
 	@Override
@@ -31,22 +31,22 @@ public class HuskEntity extends ZombieEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14680;
+		return SoundEvents.ENTITY_HUSK_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15196;
+		return SoundEvents.ENTITY_HUSK_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14892;
+		return SoundEvents.ENTITY_HUSK_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getStepSound() {
-		return SoundEvents.field_15046;
+		return SoundEvents.ENTITY_HUSK_STEP;
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class HuskEntity extends ZombieEntity {
 		boolean bl = super.tryAttack(target);
 		if (bl && this.getMainHandStack().isEmpty() && target instanceof LivingEntity) {
 			float f = this.world.getLocalDifficulty(this.getBlockPos()).getLocalDifficulty();
-			((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.field_5903, 140 * (int)f));
+			((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f));
 		}
 
 		return bl;
@@ -67,7 +67,7 @@ public class HuskEntity extends ZombieEntity {
 
 	@Override
 	protected void convertInWater() {
-		this.convertTo(EntityType.field_6051);
+		this.convertTo(EntityType.ZOMBIE);
 		if (!this.isSilent()) {
 			this.world.syncWorldEvent(null, 1041, this.getBlockPos(), 0);
 		}

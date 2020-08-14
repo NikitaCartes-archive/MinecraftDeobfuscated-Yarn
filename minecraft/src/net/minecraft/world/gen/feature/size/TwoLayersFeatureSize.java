@@ -32,7 +32,7 @@ public class TwoLayersFeatureSize extends FeatureSize {
 
 	@Override
 	protected FeatureSizeType<?> getType() {
-		return FeatureSizeType.field_24147;
+		return FeatureSizeType.TWO_LAYERS_FEATURE_SIZE;
 	}
 
 	@Override

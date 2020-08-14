@@ -48,14 +48,14 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 		return this.blockModelCache;
 	}
 
-	protected ModelLoader method_18178(ResourceManager resourceManager, Profiler profiler) {
+	protected ModelLoader prepare(ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		ModelLoader modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmap);
 		profiler.endTick();
 		return modelLoader;
 	}
 
-	protected void method_18179(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("upload");
 		if (this.atlasManager != null) {

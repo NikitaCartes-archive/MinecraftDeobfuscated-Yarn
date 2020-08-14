@@ -15,11 +15,11 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinEntityModel<MobEntity>> {
 	private static final Map<EntityType<?>, Identifier> field_25793 = ImmutableMap.of(
-		EntityType.field_22281,
+		EntityType.PIGLIN,
 		new Identifier("textures/entity/piglin/piglin.png"),
-		EntityType.field_6050,
+		EntityType.ZOMBIFIED_PIGLIN,
 		new Identifier("textures/entity/piglin/zombified_piglin.png"),
-		EntityType.field_25751,
+		EntityType.PIGLIN_BRUTE,
 		new Identifier("textures/entity/piglin/piglin_brute.png")
 	);
 
@@ -38,7 +38,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 	}
 
 	@Override
-	public Identifier method_3982(MobEntity mobEntity) {
+	public Identifier getTexture(MobEntity mobEntity) {
 		Identifier identifier = (Identifier)field_25793.get(mobEntity.getType());
 		if (identifier == null) {
 			throw new IllegalArgumentException("I don't know what texture to use for " + mobEntity.getType());
@@ -47,7 +47,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 		}
 	}
 
-	protected boolean method_25451(MobEntity mobEntity) {
+	protected boolean isShaking(MobEntity mobEntity) {
 		return mobEntity instanceof AbstractPiglinEntity && ((AbstractPiglinEntity)mobEntity).shouldZombify();
 	}
 }

@@ -51,7 +51,7 @@ public class SilverfishEntityModel<T extends Entity> extends CompositeEntityMode
 		this.parts = builder.build();
 	}
 
-	public ImmutableList<ModelPart> method_22969() {
+	public ImmutableList<ModelPart> getParts() {
 		return this.parts;
 	}
 

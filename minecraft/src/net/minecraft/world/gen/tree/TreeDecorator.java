@@ -26,7 +26,7 @@ public abstract class TreeDecorator {
 	);
 
 	protected void placeVine(ModifiableWorld world, BlockPos pos, BooleanProperty directionProperty, Set<BlockPos> set, BlockBox box) {
-		this.setBlockStateAndEncompassPosition(world, pos, Blocks.field_10597.getDefaultState().with(directionProperty, Boolean.valueOf(true)), set, box);
+		this.setBlockStateAndEncompassPosition(world, pos, Blocks.VINE.getDefaultState().with(directionProperty, Boolean.valueOf(true)), set, box);
 	}
 
 	protected void setBlockStateAndEncompassPosition(ModifiableWorld world, BlockPos pos, BlockState state, Set<BlockPos> set, BlockBox box) {

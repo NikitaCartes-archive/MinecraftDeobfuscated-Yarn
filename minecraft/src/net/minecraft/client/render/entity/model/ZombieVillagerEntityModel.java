@@ -53,8 +53,8 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 		}
 	}
 
-	public void method_17135(T zombieEntity, float f, float g, float h, float i, float j) {
-		super.method_17087(zombieEntity, f, g, h, i, j);
+	public void setAngles(T zombieEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(zombieEntity, f, g, h, i, j);
 		CrossbowPosing.method_29352(this.leftArm, this.rightArm, zombieEntity.isAttacking(), this.handSwingProgress, h);
 	}
 

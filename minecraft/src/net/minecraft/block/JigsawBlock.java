@@ -25,7 +25,7 @@ public class JigsawBlock extends Block implements BlockEntityProvider {
 
 	protected JigsawBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(ORIENTATION, JigsawOrientation.field_23391));
+		this.setDefaultState(this.stateManager.getDefaultState().with(ORIENTATION, JigsawOrientation.NORTH_UP));
 	}
 
 	@Override
@@ -47,10 +47,10 @@ public class JigsawBlock extends Block implements BlockEntityProvider {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		Direction direction = ctx.getSide();
 		Direction direction2;
-		if (direction.getAxis() == Direction.Axis.field_11052) {
+		if (direction.getAxis() == Direction.Axis.Y) {
 			direction2 = ctx.getPlayerFacing().getOpposite();
 		} else {
-			direction2 = Direction.field_11036;
+			direction2 = Direction.UP;
 		}
 
 		return this.getDefaultState().with(ORIENTATION, JigsawOrientation.byDirections(direction, direction2));
@@ -79,8 +79,8 @@ public class JigsawBlock extends Block implements BlockEntityProvider {
 		Direction direction3 = getRotation(info1.state);
 		Direction direction4 = getRotation(info2.state);
 		JigsawBlockEntity.Joint joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(info1.tag.getString("joint"))
-			.orElseGet(() -> direction.getAxis().isHorizontal() ? JigsawBlockEntity.Joint.field_23330 : JigsawBlockEntity.Joint.field_23329);
-		boolean bl = joint == JigsawBlockEntity.Joint.field_23329;
+			.orElseGet(() -> direction.getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
+		boolean bl = joint == JigsawBlockEntity.Joint.ROLLABLE;
 		return direction == direction2.getOpposite() && (bl || direction3 == direction4) && info1.tag.getString("target").equals(info2.tag.getString("name"));
 	}
 

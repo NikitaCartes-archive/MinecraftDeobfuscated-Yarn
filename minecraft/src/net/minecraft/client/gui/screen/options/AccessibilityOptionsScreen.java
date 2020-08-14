@@ -23,7 +23,7 @@ public class AccessibilityOptionsScreen extends class_5500 {
 		Option.SPRINT_TOGGLED,
 		Option.DISTORTION_EFFECT_SCALE,
 		Option.FOV_EFFECT_SCALE,
-		Option.field_26779
+		Option.field_26807
 	};
 
 	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 
 public class UnbreakingEnchantment extends Enchantment {
 	protected UnbreakingEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9082, slotTypes);
+		super(weight, EnchantmentTarget.BREAKABLE, slotTypes);
 	}
 
 	@Override
@@ -26,8 +26,8 @@ public class UnbreakingEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.isDamageable() ? true : super.isAcceptableItem(stack);
+	public boolean isAcceptableItem(ItemStack stack, boolean bl) {
+		return stack.isDamageable() ? true : super.isAcceptableItem(stack, bl);
 	}
 
 	public static boolean shouldPreventDamage(ItemStack item, int level, Random random) {

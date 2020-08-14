@@ -35,7 +35,7 @@ public interface StringIdentifiable {
 		ToIntFunction<E> compressedEncoder, IntFunction<E> compressedDecoder, Function<? super String, ? extends E> decoder
 	) {
 		return new Codec<E>() {
-			public <T> DataResult<T> method_28144(E stringIdentifiable, DynamicOps<T> dynamicOps, T object) {
+			public <T> DataResult<T> encode(E stringIdentifiable, DynamicOps<T> dynamicOps, T object) {
 				return dynamicOps.compressMaps()
 					? dynamicOps.mergeToPrimitive(object, dynamicOps.createInt(compressedEncoder.applyAsInt(stringIdentifiable)))
 					: dynamicOps.mergeToPrimitive(object, dynamicOps.createString(stringIdentifiable.asString()));

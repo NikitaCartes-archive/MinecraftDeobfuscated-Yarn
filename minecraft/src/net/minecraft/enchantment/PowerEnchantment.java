@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class PowerEnchantment extends Enchantment {
 	public PowerEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9070, slotTypes);
+		super(weight, EnchantmentTarget.BOW, slotTypes);
 	}
 
 	@Override

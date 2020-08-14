@@ -5,145 +5,391 @@ import net.fabricmc.api.Environment;
 
 public class BlockSoundGroup {
 	public static final BlockSoundGroup WOOD = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15215, SoundEvents.field_15053, SoundEvents.field_14718, SoundEvents.field_14808, SoundEvents.field_14607
+		1.0F, 1.0F, SoundEvents.BLOCK_WOOD_BREAK, SoundEvents.BLOCK_WOOD_STEP, SoundEvents.BLOCK_WOOD_PLACE, SoundEvents.BLOCK_WOOD_HIT, SoundEvents.BLOCK_WOOD_FALL
 	);
 	public static final BlockSoundGroup GRAVEL = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15211, SoundEvents.field_14798, SoundEvents.field_14609, SoundEvents.field_14697, SoundEvents.field_15156
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_GRAVEL_BREAK,
+		SoundEvents.BLOCK_GRAVEL_STEP,
+		SoundEvents.BLOCK_GRAVEL_PLACE,
+		SoundEvents.BLOCK_GRAVEL_HIT,
+		SoundEvents.BLOCK_GRAVEL_FALL
 	);
 	public static final BlockSoundGroup GRASS = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15037, SoundEvents.field_14573, SoundEvents.field_14653, SoundEvents.field_14720, SoundEvents.field_14965
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_GRASS_BREAK,
+		SoundEvents.BLOCK_GRASS_STEP,
+		SoundEvents.BLOCK_GRASS_PLACE,
+		SoundEvents.BLOCK_GRASS_HIT,
+		SoundEvents.BLOCK_GRASS_FALL
 	);
 	public static final BlockSoundGroup LILY_PAD = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15037, SoundEvents.field_14573, SoundEvents.field_15173, SoundEvents.field_14720, SoundEvents.field_14965
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_GRASS_BREAK,
+		SoundEvents.BLOCK_GRASS_STEP,
+		SoundEvents.BLOCK_LILY_PAD_PLACE,
+		SoundEvents.BLOCK_GRASS_HIT,
+		SoundEvents.BLOCK_GRASS_FALL
 	);
 	public static final BlockSoundGroup STONE = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15026, SoundEvents.field_14921, SoundEvents.field_14574, SoundEvents.field_14658, SoundEvents.field_14723
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_STONE_BREAK,
+		SoundEvents.BLOCK_STONE_STEP,
+		SoundEvents.BLOCK_STONE_PLACE,
+		SoundEvents.BLOCK_STONE_HIT,
+		SoundEvents.BLOCK_STONE_FALL
 	);
 	public static final BlockSoundGroup METAL = new BlockSoundGroup(
-		1.0F, 1.5F, SoundEvents.field_15044, SoundEvents.field_14924, SoundEvents.field_15167, SoundEvents.field_14557, SoundEvents.field_15142
+		1.0F,
+		1.5F,
+		SoundEvents.BLOCK_METAL_BREAK,
+		SoundEvents.BLOCK_METAL_STEP,
+		SoundEvents.BLOCK_METAL_PLACE,
+		SoundEvents.BLOCK_METAL_HIT,
+		SoundEvents.BLOCK_METAL_FALL
 	);
 	public static final BlockSoundGroup GLASS = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15081, SoundEvents.field_14769, SoundEvents.field_14843, SoundEvents.field_14583, SoundEvents.field_14666
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_GLASS_BREAK,
+		SoundEvents.BLOCK_GLASS_STEP,
+		SoundEvents.BLOCK_GLASS_PLACE,
+		SoundEvents.BLOCK_GLASS_HIT,
+		SoundEvents.BLOCK_GLASS_FALL
 	);
 	public static final BlockSoundGroup WOOL = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_14983, SoundEvents.field_15181, SoundEvents.field_15226, SoundEvents.field_14628, SoundEvents.field_15048
+		1.0F, 1.0F, SoundEvents.BLOCK_WOOL_BREAK, SoundEvents.BLOCK_WOOL_STEP, SoundEvents.BLOCK_WOOL_PLACE, SoundEvents.BLOCK_WOOL_HIT, SoundEvents.BLOCK_WOOL_FALL
 	);
 	public static final BlockSoundGroup SAND = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15074, SoundEvents.field_14677, SoundEvents.field_15144, SoundEvents.field_15221, SoundEvents.field_14943
+		1.0F, 1.0F, SoundEvents.BLOCK_SAND_BREAK, SoundEvents.BLOCK_SAND_STEP, SoundEvents.BLOCK_SAND_PLACE, SoundEvents.BLOCK_SAND_HIT, SoundEvents.BLOCK_SAND_FALL
 	);
 	public static final BlockSoundGroup SNOW = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15165, SoundEvents.field_15060, SoundEvents.field_14945, SoundEvents.field_15040, SoundEvents.field_15092
+		1.0F, 1.0F, SoundEvents.BLOCK_SNOW_BREAK, SoundEvents.BLOCK_SNOW_STEP, SoundEvents.BLOCK_SNOW_PLACE, SoundEvents.BLOCK_SNOW_HIT, SoundEvents.BLOCK_SNOW_FALL
 	);
 	public static final BlockSoundGroup LADDER = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_14546, SoundEvents.field_14948, SoundEvents.field_14853, SoundEvents.field_14775, SoundEvents.field_14646
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_LADDER_BREAK,
+		SoundEvents.BLOCK_LADDER_STEP,
+		SoundEvents.BLOCK_LADDER_PLACE,
+		SoundEvents.BLOCK_LADDER_HIT,
+		SoundEvents.BLOCK_LADDER_FALL
 	);
 	public static final BlockSoundGroup ANVIL = new BlockSoundGroup(
-		0.3F, 1.0F, SoundEvents.field_14542, SoundEvents.field_14695, SoundEvents.field_14785, SoundEvents.field_14927, SoundEvents.field_14727
+		0.3F,
+		1.0F,
+		SoundEvents.BLOCK_ANVIL_BREAK,
+		SoundEvents.BLOCK_ANVIL_STEP,
+		SoundEvents.BLOCK_ANVIL_PLACE,
+		SoundEvents.BLOCK_ANVIL_HIT,
+		SoundEvents.BLOCK_ANVIL_FALL
 	);
 	public static final BlockSoundGroup SLIME = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15194, SoundEvents.field_15180, SoundEvents.field_14788, SoundEvents.field_14640, SoundEvents.field_14560
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SLIME_BLOCK_BREAK,
+		SoundEvents.BLOCK_SLIME_BLOCK_STEP,
+		SoundEvents.BLOCK_SLIME_BLOCK_PLACE,
+		SoundEvents.BLOCK_SLIME_BLOCK_HIT,
+		SoundEvents.BLOCK_SLIME_BLOCK_FALL
 	);
 	public static final BlockSoundGroup HONEY = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21070, SoundEvents.field_21075, SoundEvents.field_21073, SoundEvents.field_21072, SoundEvents.field_21071
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_HONEY_BLOCK_BREAK,
+		SoundEvents.BLOCK_HONEY_BLOCK_STEP,
+		SoundEvents.BLOCK_HONEY_BLOCK_PLACE,
+		SoundEvents.BLOCK_HONEY_BLOCK_HIT,
+		SoundEvents.BLOCK_HONEY_BLOCK_FALL
 	);
 	public static final BlockSoundGroup WET_GRASS = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15120, SoundEvents.field_14774, SoundEvents.field_15025, SoundEvents.field_14953, SoundEvents.field_15207
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_WET_GRASS_BREAK,
+		SoundEvents.BLOCK_WET_GRASS_STEP,
+		SoundEvents.BLOCK_WET_GRASS_PLACE,
+		SoundEvents.BLOCK_WET_GRASS_HIT,
+		SoundEvents.BLOCK_WET_GRASS_FALL
 	);
 	public static final BlockSoundGroup CORAL = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_14804, SoundEvents.field_14935, SoundEvents.field_15087, SoundEvents.field_14672, SoundEvents.field_14551
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CORAL_BLOCK_BREAK,
+		SoundEvents.BLOCK_CORAL_BLOCK_STEP,
+		SoundEvents.BLOCK_CORAL_BLOCK_PLACE,
+		SoundEvents.BLOCK_CORAL_BLOCK_HIT,
+		SoundEvents.BLOCK_CORAL_BLOCK_FALL
 	);
 	public static final BlockSoundGroup BAMBOO = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_14740, SoundEvents.field_14635, SoundEvents.field_14719, SoundEvents.field_14811, SoundEvents.field_14906
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_BAMBOO_BREAK,
+		SoundEvents.BLOCK_BAMBOO_STEP,
+		SoundEvents.BLOCK_BAMBOO_PLACE,
+		SoundEvents.BLOCK_BAMBOO_HIT,
+		SoundEvents.BLOCK_BAMBOO_FALL
 	);
 	public static final BlockSoundGroup BAMBOO_SAPLING = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_14629, SoundEvents.field_14635, SoundEvents.field_15125, SoundEvents.field_15227, SoundEvents.field_14906
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_BAMBOO_SAPLING_BREAK,
+		SoundEvents.BLOCK_BAMBOO_STEP,
+		SoundEvents.BLOCK_BAMBOO_SAPLING_PLACE,
+		SoundEvents.BLOCK_BAMBOO_SAPLING_HIT,
+		SoundEvents.BLOCK_BAMBOO_FALL
 	);
 	public static final BlockSoundGroup SCAFFOLDING = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_16509, SoundEvents.field_16508, SoundEvents.field_16507, SoundEvents.field_16506, SoundEvents.field_16510
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SCAFFOLDING_BREAK,
+		SoundEvents.BLOCK_SCAFFOLDING_STEP,
+		SoundEvents.BLOCK_SCAFFOLDING_PLACE,
+		SoundEvents.BLOCK_SCAFFOLDING_HIT,
+		SoundEvents.BLOCK_SCAFFOLDING_FALL
 	);
 	public static final BlockSoundGroup SWEET_BERRY_BUSH = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_17615, SoundEvents.field_14573, SoundEvents.field_17616, SoundEvents.field_14720, SoundEvents.field_14965
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SWEET_BERRY_BUSH_BREAK,
+		SoundEvents.BLOCK_GRASS_STEP,
+		SoundEvents.BLOCK_SWEET_BERRY_BUSH_PLACE,
+		SoundEvents.BLOCK_GRASS_HIT,
+		SoundEvents.BLOCK_GRASS_FALL
 	);
 	public static final BlockSoundGroup CROP = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_17610, SoundEvents.field_14573, SoundEvents.field_17611, SoundEvents.field_14720, SoundEvents.field_14965
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CROP_BREAK,
+		SoundEvents.BLOCK_GRASS_STEP,
+		SoundEvents.ITEM_CROP_PLANT,
+		SoundEvents.BLOCK_GRASS_HIT,
+		SoundEvents.BLOCK_GRASS_FALL
 	);
 	public static final BlockSoundGroup STEM = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15215, SoundEvents.field_15053, SoundEvents.field_17611, SoundEvents.field_14808, SoundEvents.field_14607
+		1.0F, 1.0F, SoundEvents.BLOCK_WOOD_BREAK, SoundEvents.BLOCK_WOOD_STEP, SoundEvents.ITEM_CROP_PLANT, SoundEvents.BLOCK_WOOD_HIT, SoundEvents.BLOCK_WOOD_FALL
 	);
 	public static final BlockSoundGroup VINE = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_15037, SoundEvents.field_23061, SoundEvents.field_14653, SoundEvents.field_14720, SoundEvents.field_14965
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_GRASS_BREAK,
+		SoundEvents.BLOCK_VINE_STEP,
+		SoundEvents.BLOCK_GRASS_PLACE,
+		SoundEvents.BLOCK_GRASS_HIT,
+		SoundEvents.BLOCK_GRASS_FALL
 	);
 	public static final BlockSoundGroup NETHER_WART = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_17612, SoundEvents.field_14921, SoundEvents.field_17613, SoundEvents.field_14658, SoundEvents.field_14723
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_WART_BREAK,
+		SoundEvents.BLOCK_STONE_STEP,
+		SoundEvents.ITEM_NETHER_WART_PLANT,
+		SoundEvents.BLOCK_STONE_HIT,
+		SoundEvents.BLOCK_STONE_FALL
 	);
 	public static final BlockSoundGroup LANTERN = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_17745, SoundEvents.field_17744, SoundEvents.field_17743, SoundEvents.field_17742, SoundEvents.field_17746
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_LANTERN_BREAK,
+		SoundEvents.BLOCK_LANTERN_STEP,
+		SoundEvents.BLOCK_LANTERN_PLACE,
+		SoundEvents.BLOCK_LANTERN_HIT,
+		SoundEvents.BLOCK_LANTERN_FALL
 	);
 	public static final BlockSoundGroup NETHER_STEM = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21887, SoundEvents.field_21888, SoundEvents.field_21889, SoundEvents.field_21890, SoundEvents.field_21892
+		1.0F, 1.0F, SoundEvents.BLOCK_STEM_BREAK, SoundEvents.BLOCK_STEM_STEP, SoundEvents.BLOCK_STEM_PLACE, SoundEvents.BLOCK_STEM_HIT, SoundEvents.BLOCK_STEM_FALL
 	);
 	public static final BlockSoundGroup NYLIUM = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21893, SoundEvents.field_21894, SoundEvents.field_21895, SoundEvents.field_21896, SoundEvents.field_21897
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NYLIUM_BREAK,
+		SoundEvents.BLOCK_NYLIUM_STEP,
+		SoundEvents.BLOCK_NYLIUM_PLACE,
+		SoundEvents.BLOCK_NYLIUM_HIT,
+		SoundEvents.BLOCK_NYLIUM_FALL
 	);
 	public static final BlockSoundGroup FUNGUS = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21903, SoundEvents.field_21904, SoundEvents.field_21905, SoundEvents.field_21907, SoundEvents.field_21908
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_FUNGUS_BREAK,
+		SoundEvents.BLOCK_FUNGUS_STEP,
+		SoundEvents.BLOCK_FUNGUS_PLACE,
+		SoundEvents.BLOCK_FUNGUS_HIT,
+		SoundEvents.BLOCK_FUNGUS_FALL
 	);
 	public static final BlockSoundGroup ROOTS = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21877, SoundEvents.field_21878, SoundEvents.field_21879, SoundEvents.field_21880, SoundEvents.field_21881
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_ROOTS_BREAK,
+		SoundEvents.BLOCK_ROOTS_STEP,
+		SoundEvents.BLOCK_ROOTS_PLACE,
+		SoundEvents.BLOCK_ROOTS_HIT,
+		SoundEvents.BLOCK_ROOTS_FALL
 	);
 	public static final BlockSoundGroup SHROOMLIGHT = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21931, SoundEvents.field_21932, SoundEvents.field_21933, SoundEvents.field_21934, SoundEvents.field_21935
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SHROOMLIGHT_BREAK,
+		SoundEvents.BLOCK_SHROOMLIGHT_STEP,
+		SoundEvents.BLOCK_SHROOMLIGHT_PLACE,
+		SoundEvents.BLOCK_SHROOMLIGHT_HIT,
+		SoundEvents.BLOCK_SHROOMLIGHT_FALL
 	);
 	public static final BlockSoundGroup WEEPING_VINES = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21909, SoundEvents.field_21910, SoundEvents.field_21911, SoundEvents.field_21912, SoundEvents.field_21913
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_WEEPING_VINES_BREAK,
+		SoundEvents.BLOCK_WEEPING_VINES_STEP,
+		SoundEvents.BLOCK_WEEPING_VINES_PLACE,
+		SoundEvents.BLOCK_WEEPING_VINES_HIT,
+		SoundEvents.BLOCK_WEEPING_VINES_FALL
 	);
 	public static final BlockSoundGroup WEEPING_VINES_LOW_PITCH = new BlockSoundGroup(
-		1.0F, 0.5F, SoundEvents.field_21909, SoundEvents.field_21910, SoundEvents.field_21911, SoundEvents.field_21912, SoundEvents.field_21913
+		1.0F,
+		0.5F,
+		SoundEvents.BLOCK_WEEPING_VINES_BREAK,
+		SoundEvents.BLOCK_WEEPING_VINES_STEP,
+		SoundEvents.BLOCK_WEEPING_VINES_PLACE,
+		SoundEvents.BLOCK_WEEPING_VINES_HIT,
+		SoundEvents.BLOCK_WEEPING_VINES_FALL
 	);
 	public static final BlockSoundGroup SOUL_SAND = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21949, SoundEvents.field_21950, SoundEvents.field_21951, SoundEvents.field_21942, SoundEvents.field_21943
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SOUL_SAND_BREAK,
+		SoundEvents.BLOCK_SOUL_SAND_STEP,
+		SoundEvents.BLOCK_SOUL_SAND_PLACE,
+		SoundEvents.BLOCK_SOUL_SAND_HIT,
+		SoundEvents.BLOCK_SOUL_SAND_FALL
 	);
 	public static final BlockSoundGroup SOUL_SOIL = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21944, SoundEvents.field_21945, SoundEvents.field_21946, SoundEvents.field_21947, SoundEvents.field_21948
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SOUL_SOIL_BREAK,
+		SoundEvents.BLOCK_SOUL_SOIL_STEP,
+		SoundEvents.BLOCK_SOUL_SOIL_PLACE,
+		SoundEvents.BLOCK_SOUL_SOIL_HIT,
+		SoundEvents.BLOCK_SOUL_SOIL_FALL
 	);
 	public static final BlockSoundGroup BASALT = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21867, SoundEvents.field_21868, SoundEvents.field_21869, SoundEvents.field_21870, SoundEvents.field_21871
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_BASALT_BREAK,
+		SoundEvents.BLOCK_BASALT_STEP,
+		SoundEvents.BLOCK_BASALT_PLACE,
+		SoundEvents.BLOCK_BASALT_HIT,
+		SoundEvents.BLOCK_BASALT_FALL
 	);
 	public static final BlockSoundGroup WART_BLOCK = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21914, SoundEvents.field_21915, SoundEvents.field_21916, SoundEvents.field_21917, SoundEvents.field_21918
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_WART_BLOCK_BREAK,
+		SoundEvents.BLOCK_WART_BLOCK_STEP,
+		SoundEvents.BLOCK_WART_BLOCK_PLACE,
+		SoundEvents.BLOCK_WART_BLOCK_HIT,
+		SoundEvents.BLOCK_WART_BLOCK_FALL
 	);
 	public static final BlockSoundGroup NETHERRACK = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21924, SoundEvents.field_21925, SoundEvents.field_21926, SoundEvents.field_21927, SoundEvents.field_21928
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHERRACK_BREAK,
+		SoundEvents.BLOCK_NETHERRACK_STEP,
+		SoundEvents.BLOCK_NETHERRACK_PLACE,
+		SoundEvents.BLOCK_NETHERRACK_HIT,
+		SoundEvents.BLOCK_NETHERRACK_FALL
 	);
 	public static final BlockSoundGroup NETHER_BRICKS = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21882, SoundEvents.field_21883, SoundEvents.field_21884, SoundEvents.field_21885, SoundEvents.field_21886
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_BRICKS_BREAK,
+		SoundEvents.BLOCK_NETHER_BRICKS_STEP,
+		SoundEvents.BLOCK_NETHER_BRICKS_PLACE,
+		SoundEvents.BLOCK_NETHER_BRICKS_HIT,
+		SoundEvents.BLOCK_NETHER_BRICKS_FALL
 	);
 	public static final BlockSoundGroup NETHER_SPROUTS = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21898, SoundEvents.field_21899, SoundEvents.field_21900, SoundEvents.field_21901, SoundEvents.field_21902
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_SPROUTS_BREAK,
+		SoundEvents.BLOCK_NETHER_SPROUTS_STEP,
+		SoundEvents.BLOCK_NETHER_SPROUTS_PLACE,
+		SoundEvents.BLOCK_NETHER_SPROUTS_HIT,
+		SoundEvents.BLOCK_NETHER_SPROUTS_FALL
 	);
 	public static final BlockSoundGroup NETHER_ORE = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21937, SoundEvents.field_21941, SoundEvents.field_21940, SoundEvents.field_21939, SoundEvents.field_21938
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_ORE_BREAK,
+		SoundEvents.BLOCK_NETHER_ORE_STEP,
+		SoundEvents.BLOCK_NETHER_ORE_PLACE,
+		SoundEvents.BLOCK_NETHER_ORE_HIT,
+		SoundEvents.BLOCK_NETHER_ORE_FALL
 	);
 	public static final BlockSoundGroup BONE = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21872, SoundEvents.field_21876, SoundEvents.field_21875, SoundEvents.field_21874, SoundEvents.field_21873
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_BONE_BLOCK_BREAK,
+		SoundEvents.BLOCK_BONE_BLOCK_STEP,
+		SoundEvents.BLOCK_BONE_BLOCK_PLACE,
+		SoundEvents.BLOCK_BONE_BLOCK_HIT,
+		SoundEvents.BLOCK_BONE_BLOCK_FALL
 	);
 	public static final BlockSoundGroup NETHERITE = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21919, SoundEvents.field_21920, SoundEvents.field_21921, SoundEvents.field_21922, SoundEvents.field_21923
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_BREAK,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_STEP,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_PLACE,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_HIT,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_FALL
 	);
 	public static final BlockSoundGroup ANCIENT_DEBRIS = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_21891, SoundEvents.field_21906, SoundEvents.field_21929, SoundEvents.field_21930, SoundEvents.field_21936
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_BREAK,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_STEP,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_PLACE,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_HIT,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_FALL
 	);
 	public static final BlockSoundGroup LODESTONE = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_23194, SoundEvents.field_23195, SoundEvents.field_23196, SoundEvents.field_23197, SoundEvents.field_23198
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_LODESTONE_BREAK,
+		SoundEvents.BLOCK_LODESTONE_STEP,
+		SoundEvents.BLOCK_LODESTONE_PLACE,
+		SoundEvents.BLOCK_LODESTONE_HIT,
+		SoundEvents.BLOCK_LODESTONE_FALL
 	);
 	public static final BlockSoundGroup CHAIN = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_24065, SoundEvents.field_24064, SoundEvents.field_24063, SoundEvents.field_24062, SoundEvents.field_24061
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CHAIN_BREAK,
+		SoundEvents.BLOCK_CHAIN_STEP,
+		SoundEvents.BLOCK_CHAIN_PLACE,
+		SoundEvents.BLOCK_CHAIN_HIT,
+		SoundEvents.BLOCK_CHAIN_FALL
 	);
 	public static final BlockSoundGroup NETHER_GOLD_ORE = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_24071, SoundEvents.field_24075, SoundEvents.field_24074, SoundEvents.field_24073, SoundEvents.field_24072
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_GOLD_ORE_BREAK,
+		SoundEvents.BLOCK_NETHER_GOLD_ORE_STEP,
+		SoundEvents.BLOCK_NETHER_GOLD_ORE_PLACE,
+		SoundEvents.BLOCK_NETHER_GOLD_ORE_HIT,
+		SoundEvents.BLOCK_NETHER_GOLD_ORE_FALL
 	);
 	public static final BlockSoundGroup GILDED_BLACKSTONE = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.field_24066, SoundEvents.field_24070, SoundEvents.field_24069, SoundEvents.field_24068, SoundEvents.field_24067
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_GILDED_BLACKSTONE_BREAK,
+		SoundEvents.BLOCK_GILDED_BLACKSTONE_STEP,
+		SoundEvents.BLOCK_GILDED_BLACKSTONE_PLACE,
+		SoundEvents.BLOCK_GILDED_BLACKSTONE_HIT,
+		SoundEvents.BLOCK_GILDED_BLACKSTONE_FALL
 	);
 	public final float volume;
 	public final float pitch;

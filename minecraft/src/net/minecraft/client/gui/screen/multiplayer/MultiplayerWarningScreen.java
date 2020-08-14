@@ -16,7 +16,7 @@ import net.minecraft.util.Formatting;
 @Environment(EnvType.CLIENT)
 public class MultiplayerWarningScreen extends Screen {
 	private final Screen parent;
-	private static final Text header = new TranslatableText("multiplayerWarning.header").formatted(Formatting.field_1067);
+	private static final Text header = new TranslatableText("multiplayerWarning.header").formatted(Formatting.BOLD);
 	private static final Text message = new TranslatableText("multiplayerWarning.message");
 	private static final Text checkMessage = new TranslatableText("multiplayerWarning.check");
 	private static final Text proceedText = header.shallowCopy().append("\n").append(message);

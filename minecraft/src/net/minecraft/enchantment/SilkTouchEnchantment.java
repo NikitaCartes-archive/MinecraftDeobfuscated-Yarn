@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class SilkTouchEnchantment extends Enchantment {
 	protected SilkTouchEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9069, slotTypes);
+		super(weight, EnchantmentTarget.DIGGER, slotTypes);
 	}
 
 	@Override
@@ -24,6 +24,6 @@ public class SilkTouchEnchantment extends Enchantment {
 
 	@Override
 	public boolean canAccept(Enchantment other) {
-		return super.canAccept(other) && other != Enchantments.field_9130;
+		return super.canAccept(other) && other != Enchantments.FORTUNE;
 	}
 }

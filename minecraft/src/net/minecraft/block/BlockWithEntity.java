@@ -13,7 +13,7 @@ public abstract class BlockWithEntity extends Block implements BlockEntityProvid
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11455;
+		return BlockRenderType.INVISIBLE;
 	}
 
 	@Override

@@ -18,7 +18,7 @@ public class TwistingVinesFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_25985(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		return method_26265(structureWorldAccess, random, blockPos, 8, 4, 8);
@@ -72,15 +72,15 @@ public class TwistingVinesFeature extends Feature<DefaultFeatureConfig> {
 			if (world.isAir(pos)) {
 				if (i == maxLength || !world.isAir(pos.up())) {
 					world.setBlockState(
-						pos, Blocks.field_23078.getDefaultState().with(AbstractPlantStemBlock.AGE, Integer.valueOf(MathHelper.nextInt(random, minAge, maxAge))), 2
+						pos, Blocks.TWISTING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, Integer.valueOf(MathHelper.nextInt(random, minAge, maxAge))), 2
 					);
 					break;
 				}
 
-				world.setBlockState(pos, Blocks.field_23079.getDefaultState(), 2);
+				world.setBlockState(pos, Blocks.TWISTING_VINES_PLANT.getDefaultState(), 2);
 			}
 
-			pos.move(Direction.field_11036);
+			pos.move(Direction.UP);
 		}
 	}
 
@@ -88,8 +88,8 @@ public class TwistingVinesFeature extends Feature<DefaultFeatureConfig> {
 		if (!worldAccess.isAir(blockPos)) {
 			return true;
 		} else {
-			BlockState blockState = worldAccess.getBlockState(blockPos.method_10074());
-			return !blockState.isOf(Blocks.field_10515) && !blockState.isOf(Blocks.field_22113) && !blockState.isOf(Blocks.field_22115);
+			BlockState blockState = worldAccess.getBlockState(blockPos.down());
+			return !blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.WARPED_NYLIUM) && !blockState.isOf(Blocks.WARPED_WART_BLOCK);
 		}
 	}
 }

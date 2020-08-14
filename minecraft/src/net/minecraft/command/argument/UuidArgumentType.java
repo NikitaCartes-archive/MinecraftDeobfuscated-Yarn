@@ -26,7 +26,7 @@ public class UuidArgumentType implements ArgumentType<UUID> {
 		return new UuidArgumentType();
 	}
 
-	public UUID method_27644(StringReader stringReader) throws CommandSyntaxException {
+	public UUID parse(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.getRemaining();
 		Matcher matcher = VALID_CHARACTERS.matcher(string);
 		if (matcher.find()) {

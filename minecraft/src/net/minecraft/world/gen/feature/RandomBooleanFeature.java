@@ -11,7 +11,7 @@ public class RandomBooleanFeature extends Feature<RandomBooleanFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13679(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess,
 		ChunkGenerator chunkGenerator,
 		Random random,

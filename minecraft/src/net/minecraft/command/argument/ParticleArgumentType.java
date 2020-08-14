@@ -32,7 +32,7 @@ public class ParticleArgumentType implements ArgumentType<ParticleEffect> {
 		return context.getArgument(name, ParticleEffect.class);
 	}
 
-	public ParticleEffect method_9416(StringReader stringReader) throws CommandSyntaxException {
+	public ParticleEffect parse(StringReader stringReader) throws CommandSyntaxException {
 		return readParameters(stringReader);
 	}
 

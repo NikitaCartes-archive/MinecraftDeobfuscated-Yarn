@@ -34,7 +34,7 @@ public class NetherWartBlock extends PlantBlock {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isOf(Blocks.field_10114);
+		return floor.isOf(Blocks.SOUL_SAND);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class NetherWartBlock extends PlantBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return new ItemStack(Items.field_8790);
+		return new ItemStack(Items.NETHER_WART);
 	}
 
 	@Override

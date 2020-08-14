@@ -19,7 +19,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 		super(featureRendererContext);
 	}
 
-	public void method_4201(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,
@@ -38,13 +38,13 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 			matrixStack.translate(0.0, -0.34375, 0.0);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			matrixStack.scale(0.625F, -0.625F, -0.625F);
-			ItemStack itemStack = new ItemStack(Blocks.field_10147);
+			ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
 			MinecraftClient.getInstance()
 				.getItemRenderer()
 				.renderItem(
 					snowGolemEntity,
 					itemStack,
-					ModelTransformation.Mode.field_4316,
+					ModelTransformation.Mode.HEAD,
 					false,
 					matrixStack,
 					vertexConsumerProvider,

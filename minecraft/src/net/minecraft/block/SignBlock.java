@@ -25,7 +25,7 @@ public class SignBlock extends AbstractSignBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos.method_10074()).getMaterial().isSolid();
+		return world.getBlockState(pos.down()).getMaterial().isSolid();
 	}
 
 	@Override
@@ -38,8 +38,8 @@ public class SignBlock extends AbstractSignBlock {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return direction == Direction.field_11033 && !this.canPlaceAt(state, world, pos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !this.canPlaceAt(state, world, pos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 

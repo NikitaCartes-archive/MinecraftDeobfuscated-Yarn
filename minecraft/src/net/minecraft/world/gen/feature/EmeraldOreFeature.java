@@ -11,7 +11,7 @@ public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean method_13811(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EmeraldOreFeatureConfig emeraldOreFeatureConfig
 	) {
 		if (structureWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {

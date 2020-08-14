@@ -57,7 +57,7 @@ public class CustomPayloadS2CPacket implements Packet<ClientPlayPacketListener> 
 		buf.writeBytes(this.data.copy());
 	}
 
-	public void method_11457(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCustomPayload(this);
 	}
 

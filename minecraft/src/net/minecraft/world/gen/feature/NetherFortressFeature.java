@@ -19,18 +19,18 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(
-		new SpawnSettings.SpawnEntry(EntityType.field_6099, 10, 2, 3),
-		new SpawnSettings.SpawnEntry(EntityType.field_6050, 5, 4, 4),
-		new SpawnSettings.SpawnEntry(EntityType.field_6076, 8, 5, 5),
-		new SpawnSettings.SpawnEntry(EntityType.field_6137, 2, 5, 5),
-		new SpawnSettings.SpawnEntry(EntityType.field_6102, 3, 4, 4)
+		new SpawnSettings.SpawnEntry(EntityType.BLAZE, 10, 2, 3),
+		new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 5, 4, 4),
+		new SpawnSettings.SpawnEntry(EntityType.WITHER_SKELETON, 8, 5, 5),
+		new SpawnSettings.SpawnEntry(EntityType.SKELETON, 2, 5, 5),
+		new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
 	);
 
 	public NetherFortressFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
 	}
 
-	protected boolean method_28640(
+	protected boolean shouldStartAt(
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		long l,
@@ -59,7 +59,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28641(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,

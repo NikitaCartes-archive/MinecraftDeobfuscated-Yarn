@@ -62,7 +62,7 @@ public class IntProperty extends Property<Integer> {
 		}
 	}
 
-	public String method_11868(Integer integer) {
+	public String name(Integer integer) {
 		return integer.toString();
 	}
 }

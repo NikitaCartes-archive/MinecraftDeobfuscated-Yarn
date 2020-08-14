@@ -24,7 +24,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25229;
+		return LootFunctionTypes.SET_LOOT_TABLE;
 	}
 
 	@Override
@@ -59,15 +59,15 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetLootTableLootFunction> {
-		public void method_626(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, setLootTableLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("name", setLootTableLootFunction.id.toString());
 			if (setLootTableLootFunction.seed != 0L) {
 				jsonObject.addProperty("seed", setLootTableLootFunction.seed);
 			}
 		}
 
-		public SetLootTableLootFunction method_627(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetLootTableLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
 			long l = JsonHelper.getLong(jsonObject, "seed", 0L);
 			return new SetLootTableLootFunction(lootConditions, identifier, l);

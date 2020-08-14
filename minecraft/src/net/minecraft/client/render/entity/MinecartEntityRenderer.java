@@ -27,7 +27,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		this.shadowRadius = 0.7F;
 	}
 
-	public void method_4063(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		super.render(abstractMinecartEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		matrixStack.push();
 		long l = (long)abstractMinecartEntity.getEntityId() * 493286711L;
@@ -77,7 +77,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 		int r = abstractMinecartEntity.getBlockOffset();
 		BlockState blockState = abstractMinecartEntity.getContainedBlock();
-		if (blockState.getRenderType() != BlockRenderType.field_11455) {
+		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 			matrixStack.push();
 			float s = 0.75F;
 			matrixStack.scale(0.75F, 0.75F, 0.75F);
@@ -89,12 +89,12 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.model.setAngles(abstractMinecartEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_4065(abstractMinecartEntity)));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(abstractMinecartEntity)));
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 	}
 
-	public Identifier method_4065(T abstractMinecartEntity) {
+	public Identifier getTexture(T abstractMinecartEntity) {
 		return TEXTURE;
 	}
 

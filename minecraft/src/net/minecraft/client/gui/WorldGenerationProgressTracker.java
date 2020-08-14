@@ -17,7 +17,7 @@ public class WorldGenerationProgressTracker implements WorldGenerationProgressLi
 	private final int centerSize;
 	private final int radius;
 	private final int size;
-	private boolean isRunning;
+	private boolean running;
 
 	public WorldGenerationProgressTracker(int radius) {
 		this.progressLogger = new WorldGenerationProgressLogger(radius);
@@ -29,7 +29,7 @@ public class WorldGenerationProgressTracker implements WorldGenerationProgressLi
 
 	@Override
 	public void start(ChunkPos spawnPos) {
-		if (this.isRunning) {
+		if (this.running) {
 			this.progressLogger.start(spawnPos);
 			this.spawnPos = spawnPos;
 		}
@@ -37,7 +37,7 @@ public class WorldGenerationProgressTracker implements WorldGenerationProgressLi
 
 	@Override
 	public void setChunkStatus(ChunkPos pos, @Nullable ChunkStatus status) {
-		if (this.isRunning) {
+		if (this.running) {
 			this.progressLogger.setChunkStatus(pos, status);
 			if (status == null) {
 				this.chunkStatuses.remove(pos.toLong());
@@ -48,13 +48,13 @@ public class WorldGenerationProgressTracker implements WorldGenerationProgressLi
 	}
 
 	public void start() {
-		this.isRunning = true;
+		this.running = true;
 		this.chunkStatuses.clear();
 	}
 
 	@Override
 	public void stop() {
-		this.isRunning = false;
+		this.running = false;
 		this.progressLogger.stop();
 	}
 

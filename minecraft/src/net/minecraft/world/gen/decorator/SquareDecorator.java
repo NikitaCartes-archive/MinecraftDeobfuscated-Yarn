@@ -10,7 +10,7 @@ public class SquareDecorator extends SimpleDecorator<NopeDecoratorConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_30469(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
 		int i = random.nextInt(16) + blockPos.getX();
 		int j = random.nextInt(16) + blockPos.getZ();
 		int k = blockPos.getY();

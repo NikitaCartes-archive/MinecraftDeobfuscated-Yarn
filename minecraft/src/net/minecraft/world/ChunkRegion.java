@@ -92,7 +92,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public Chunk getChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.field_12798);
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY);
 	}
 
 	@Nullable
@@ -183,7 +183,7 @@ public class ChunkRegion implements StructureWorldAccess {
 				Block.dropStacks(blockState, this.world, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			return this.setBlockState(pos, Blocks.field_10124.getDefaultState(), 3, maxUpdateDepth);
+			return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3, maxUpdateDepth);
 		}
 	}
 
@@ -268,7 +268,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public boolean removeBlock(BlockPos pos, boolean move) {
-		return this.setBlockState(pos, Blocks.field_10124.getDefaultState(), 3);
+		return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
 	}
 
 	@Override
@@ -308,7 +308,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public ChunkManager getChunkManager() {
-		return this.world.method_14178();
+		return this.world.getChunkManager();
 	}
 
 	@Override

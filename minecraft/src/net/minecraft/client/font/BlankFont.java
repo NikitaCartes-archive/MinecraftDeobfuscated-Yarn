@@ -11,7 +11,7 @@ public class BlankFont implements Font {
 	@Nullable
 	@Override
 	public RenderableGlyph getGlyph(int codePoint) {
-		return BlankGlyph.field_2283;
+		return BlankGlyph.INSTANCE;
 	}
 
 	@Override

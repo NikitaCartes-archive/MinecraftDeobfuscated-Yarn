@@ -5,7 +5,7 @@ import net.minecraft.text.TranslatableText;
 
 public class DropperBlockEntity extends DispenserBlockEntity {
 	public DropperBlockEntity() {
-		super(BlockEntityType.field_11899);
+		super(BlockEntityType.DROPPER);
 	}
 
 	@Override

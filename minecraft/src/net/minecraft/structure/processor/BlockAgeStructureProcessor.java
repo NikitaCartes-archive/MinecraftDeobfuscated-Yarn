@@ -40,15 +40,15 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 		BlockState blockState = structureBlockInfo2.state;
 		BlockPos blockPos2 = structureBlockInfo2.pos;
 		BlockState blockState2 = null;
-		if (blockState.isOf(Blocks.field_10056) || blockState.isOf(Blocks.field_10340) || blockState.isOf(Blocks.field_10552)) {
+		if (blockState.isOf(Blocks.STONE_BRICKS) || blockState.isOf(Blocks.STONE) || blockState.isOf(Blocks.CHISELED_STONE_BRICKS)) {
 			blockState2 = this.processBlocks(random);
-		} else if (blockState.isIn(BlockTags.field_15459)) {
+		} else if (blockState.isIn(BlockTags.STAIRS)) {
 			blockState2 = this.processStairs(random, structureBlockInfo2.state);
-		} else if (blockState.isIn(BlockTags.field_15469)) {
+		} else if (blockState.isIn(BlockTags.SLABS)) {
 			blockState2 = this.processSlabs(random);
-		} else if (blockState.isIn(BlockTags.field_15504)) {
+		} else if (blockState.isIn(BlockTags.WALLS)) {
 			blockState2 = this.processWalls(random);
-		} else if (blockState.isOf(Blocks.field_10540)) {
+		} else if (blockState.isOf(Blocks.OBSIDIAN)) {
 			blockState2 = this.processObsidian(random);
 		}
 
@@ -60,8 +60,8 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 		if (random.nextFloat() >= 0.5F) {
 			return null;
 		} else {
-			BlockState[] blockStates = new BlockState[]{Blocks.field_10416.getDefaultState(), randomStairProperties(random, Blocks.field_10392)};
-			BlockState[] blockStates2 = new BlockState[]{Blocks.field_10065.getDefaultState(), randomStairProperties(random, Blocks.field_10173)};
+			BlockState[] blockStates = new BlockState[]{Blocks.CRACKED_STONE_BRICKS.getDefaultState(), randomStairProperties(random, Blocks.STONE_BRICK_STAIRS)};
+			BlockState[] blockStates2 = new BlockState[]{Blocks.MOSSY_STONE_BRICKS.getDefaultState(), randomStairProperties(random, Blocks.MOSSY_STONE_BRICK_STAIRS)};
 			return this.process(random, blockStates, blockStates2);
 		}
 	}
@@ -73,9 +73,10 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 		if (random.nextFloat() >= 0.5F) {
 			return null;
 		} else {
-			BlockState[] blockStates = new BlockState[]{Blocks.field_10454.getDefaultState(), Blocks.field_10131.getDefaultState()};
+			BlockState[] blockStates = new BlockState[]{Blocks.STONE_SLAB.getDefaultState(), Blocks.STONE_BRICK_SLAB.getDefaultState()};
 			BlockState[] blockStates2 = new BlockState[]{
-				Blocks.field_10173.getDefaultState().with(StairsBlock.FACING, direction).with(StairsBlock.HALF, blockHalf), Blocks.field_10024.getDefaultState()
+				Blocks.MOSSY_STONE_BRICK_STAIRS.getDefaultState().with(StairsBlock.FACING, direction).with(StairsBlock.HALF, blockHalf),
+				Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState()
 			};
 			return this.process(random, blockStates, blockStates2);
 		}
@@ -83,22 +84,22 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	private BlockState processSlabs(Random random) {
-		return random.nextFloat() < this.mossiness ? Blocks.field_10024.getDefaultState() : null;
+		return random.nextFloat() < this.mossiness ? Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState() : null;
 	}
 
 	@Nullable
 	private BlockState processWalls(Random random) {
-		return random.nextFloat() < this.mossiness ? Blocks.field_10059.getDefaultState() : null;
+		return random.nextFloat() < this.mossiness ? Blocks.MOSSY_STONE_BRICK_WALL.getDefaultState() : null;
 	}
 
 	@Nullable
 	private BlockState processObsidian(Random random) {
-		return random.nextFloat() < 0.15F ? Blocks.field_22423.getDefaultState() : null;
+		return random.nextFloat() < 0.15F ? Blocks.CRYING_OBSIDIAN.getDefaultState() : null;
 	}
 
 	private static BlockState randomStairProperties(Random random, Block stairs) {
 		return stairs.getDefaultState()
-			.with(StairsBlock.FACING, Direction.Type.field_11062.random(random))
+			.with(StairsBlock.FACING, Direction.Type.HORIZONTAL.random(random))
 			.with(StairsBlock.HALF, BlockHalf.values()[random.nextInt(BlockHalf.values().length)]);
 	}
 
@@ -112,6 +113,6 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 
 	@Override
 	protected StructureProcessorType<?> getType() {
-		return StructureProcessorType.field_24044;
+		return StructureProcessorType.BLOCK_AGE;
 	}
 }

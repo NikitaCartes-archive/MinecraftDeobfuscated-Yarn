@@ -30,7 +30,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 		int i = getDataVersion(tag);
 		int j = 1493;
 		if (i < 1493) {
-			tag = NbtHelper.update(this.dataFixer, DataFixTypes.field_19214, tag, i, 1493);
+			tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, i, 1493);
 			if (tag.getCompound("Level").getBoolean("hasLegacyStructureData")) {
 				if (this.featureUpdater == null) {
 					this.featureUpdater = FeatureUpdater.create(registryKey, (PersistentStateManager)persistentStateManagerFactory.get());
@@ -40,7 +40,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 			}
 		}
 
-		tag = NbtHelper.update(this.dataFixer, DataFixTypes.field_19214, tag, Math.max(1493, i));
+		tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, Math.max(1493, i));
 		if (i < SharedConstants.getGameVersion().getWorldVersion()) {
 			tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 		}

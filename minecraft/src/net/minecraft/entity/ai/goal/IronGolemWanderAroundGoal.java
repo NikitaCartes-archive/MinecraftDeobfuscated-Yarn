@@ -52,7 +52,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 	@Nullable
 	private Vec3d method_27926() {
 		ServerWorld serverWorld = (ServerWorld)this.mob.world;
-		List<VillagerEntity> list = serverWorld.getEntitiesByType(EntityType.field_6077, this.mob.getBoundingBox().expand(32.0), this::method_27922);
+		List<VillagerEntity> list = serverWorld.getEntitiesByType(EntityType.VILLAGER, this.mob.getBoundingBox().expand(32.0), this::method_27922);
 		if (list.isEmpty()) {
 			return null;
 		} else {
@@ -87,7 +87,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 		ServerWorld serverWorld = (ServerWorld)this.mob.world;
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 		List<BlockPos> list = (List)pointOfInterestStorage.getInCircle(
-				pointOfInterestType -> true, chunkSectionPos.getCenterPos(), 8, PointOfInterestStorage.OccupationStatus.field_18488
+				pointOfInterestType -> true, chunkSectionPos.getCenterPos(), 8, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
 			)
 			.map(PointOfInterest::getPos)
 			.collect(Collectors.toList());

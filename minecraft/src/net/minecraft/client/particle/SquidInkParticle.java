@@ -58,7 +58,7 @@ public class SquidInkParticle extends AnimatedParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3105(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new SquidInkParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}

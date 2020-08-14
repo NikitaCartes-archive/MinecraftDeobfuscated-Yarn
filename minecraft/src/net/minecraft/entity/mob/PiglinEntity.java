@@ -61,47 +61,47 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	private final SimpleInventory inventory = new SimpleInventory(8);
 	private boolean cannotHunt = false;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(
-		SensorType.field_18466, SensorType.field_18467, SensorType.field_22358, SensorType.field_18469, SensorType.field_22359
+		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_SPECIFIC_SENSOR
 	);
 	protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(
-		MemoryModuleType.field_18446,
-		MemoryModuleType.field_26389,
-		MemoryModuleType.field_18441,
-		MemoryModuleType.field_18442,
-		MemoryModuleType.field_18444,
-		MemoryModuleType.field_22354,
-		MemoryModuleType.field_22343,
-		MemoryModuleType.field_25755,
-		MemoryModuleType.field_22332,
-		MemoryModuleType.field_18451,
-		MemoryModuleType.field_18452,
-		MemoryModuleType.field_18445,
-		MemoryModuleType.field_19293,
-		MemoryModuleType.field_22355,
-		MemoryModuleType.field_22475,
-		MemoryModuleType.field_18447,
-		MemoryModuleType.field_18449,
-		MemoryModuleType.field_22333,
-		MemoryModuleType.field_25361,
-		MemoryModuleType.field_22357,
-		MemoryModuleType.field_22334,
-		MemoryModuleType.field_25813,
-		MemoryModuleType.field_22473,
-		MemoryModuleType.field_25814,
-		MemoryModuleType.field_22337,
-		MemoryModuleType.field_25159,
-		MemoryModuleType.field_22336,
-		MemoryModuleType.field_22340,
-		MemoryModuleType.field_25360,
-		MemoryModuleType.field_22346,
-		MemoryModuleType.field_22356,
-		MemoryModuleType.field_22347,
-		MemoryModuleType.field_22348,
-		MemoryModuleType.field_22339,
-		MemoryModuleType.field_22342,
-		MemoryModuleType.field_22349,
-		MemoryModuleType.field_22350,
-		MemoryModuleType.field_22474
+		MemoryModuleType.LOOK_TARGET,
+		MemoryModuleType.DOORS_TO_CLOSE,
+		MemoryModuleType.MOBS,
+		MemoryModuleType.VISIBLE_MOBS,
+		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
+		MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER,
+		MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS,
+		MemoryModuleType.NEARBY_ADULT_PIGLINS,
+		MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
+		MemoryModuleType.HURT_BY,
+		MemoryModuleType.HURT_BY_ENTITY,
+		MemoryModuleType.WALK_TARGET,
+		MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+		MemoryModuleType.ATTACK_TARGET,
+		MemoryModuleType.ATTACK_COOLING_DOWN,
+		MemoryModuleType.INTERACTION_TARGET,
+		MemoryModuleType.PATH,
+		MemoryModuleType.ANGRY_AT,
+		MemoryModuleType.UNIVERSAL_ANGER,
+		MemoryModuleType.AVOID_TARGET,
+		MemoryModuleType.ADMIRING_ITEM,
+		MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM,
+		MemoryModuleType.ADMIRING_DISABLED,
+		MemoryModuleType.DISABLE_WALK_TO_ADMIRE_ITEM,
+		MemoryModuleType.CELEBRATE_LOCATION,
+		MemoryModuleType.DANCING,
+		MemoryModuleType.HUNTED_RECENTLY,
+		MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN,
+		MemoryModuleType.NEAREST_VISIBLE_NEMESIS,
+		MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED,
+		MemoryModuleType.RIDE_TARGET,
+		MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT,
+		MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT,
+		MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN,
+		MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD,
+		MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM,
+		MemoryModuleType.ATE_RECENTLY,
+		MemoryModuleType.NEAREST_REPELLENT
 	);
 
 	public PiglinEntity(EntityType<? extends AbstractPiglinEntity> entityType, World world) {
@@ -163,13 +163,13 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 
 	public static DefaultAttributeContainer.Builder createPiglinAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23716, 16.0)
-			.add(EntityAttributes.field_23719, 0.35F)
-			.add(EntityAttributes.field_23721, 5.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
 	}
 
 	public static boolean canSpawn(EntityType<PiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return !world.getBlockState(pos.method_10074()).isOf(Blocks.field_10541);
+		return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
 	}
 
 	@Nullable
@@ -177,11 +177,11 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	public EntityData initialize(
 		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		if (spawnReason != SpawnReason.field_16474) {
+		if (spawnReason != SpawnReason.STRUCTURE) {
 			if (serverWorldAccess.getRandom().nextFloat() < 0.2F) {
 				this.setBaby(true);
 			} else if (this.isAdult()) {
-				this.equipStack(EquipmentSlot.field_6173, this.makeInitialWeapon());
+				this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
 			}
 		}
 
@@ -204,10 +204,10 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	@Override
 	protected void initEquipment(LocalDifficulty difficulty) {
 		if (this.isAdult()) {
-			this.equipAtChance(EquipmentSlot.field_6169, new ItemStack(Items.field_8862));
-			this.equipAtChance(EquipmentSlot.field_6174, new ItemStack(Items.field_8678));
-			this.equipAtChance(EquipmentSlot.field_6172, new ItemStack(Items.field_8416));
-			this.equipAtChance(EquipmentSlot.field_6166, new ItemStack(Items.field_8753));
+			this.equipAtChance(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
+			this.equipAtChance(EquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE));
+			this.equipAtChance(EquipmentSlot.LEGS, new ItemStack(Items.GOLDEN_LEGGINGS));
+			this.equipAtChance(EquipmentSlot.FEET, new ItemStack(Items.GOLDEN_BOOTS));
 		}
 	}
 
@@ -240,7 +240,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		} else if (!this.world.isClient) {
 			return PiglinBrain.playerInteract(this, player, hand);
 		} else {
-			boolean bl = PiglinBrain.isWillingToTrade(this, player.getStackInHand(hand)) && this.getActivity() != PiglinActivity.field_22385;
+			boolean bl = PiglinBrain.isWillingToTrade(this, player.getStackInHand(hand)) && this.getActivity() != PiglinActivity.ADMIRING_ITEM;
 			return bl ? ActionResult.SUCCESS : ActionResult.PASS;
 		}
 	}
@@ -259,7 +259,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	public void setBaby(boolean baby) {
 		this.getDataTracker().set(BABY, baby);
 		if (!this.world.isClient) {
-			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.field_23719);
+			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST);
 			if (baby) {
 				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST);
@@ -303,7 +303,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	private ItemStack makeInitialWeapon() {
-		return (double)this.random.nextFloat() < 0.5 ? new ItemStack(Items.field_8399) : new ItemStack(Items.field_8845);
+		return (double)this.random.nextFloat() < 0.5 ? new ItemStack(Items.CROSSBOW) : new ItemStack(Items.GOLDEN_SWORD);
 	}
 
 	private boolean isCharging() {
@@ -323,15 +323,15 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	@Override
 	public PiglinActivity getActivity() {
 		if (this.isDancing()) {
-			return PiglinActivity.field_25166;
+			return PiglinActivity.DANCING;
 		} else if (PiglinBrain.isGoldenItem(this.getOffHandStack().getItem())) {
-			return PiglinActivity.field_22385;
+			return PiglinActivity.ADMIRING_ITEM;
 		} else if (this.isAttacking() && this.isHoldingTool()) {
-			return PiglinActivity.field_25165;
+			return PiglinActivity.ATTACKING_WITH_MELEE_WEAPON;
 		} else if (this.isCharging()) {
-			return PiglinActivity.field_22384;
+			return PiglinActivity.CROSSBOW_CHARGE;
 		} else {
-			return this.isAttacking() && this.isHolding(Items.field_8399) ? PiglinActivity.field_22383 : PiglinActivity.field_22386;
+			return this.isAttacking() && this.isHolding(Items.CROSSBOW) ? PiglinActivity.CROSSBOW_HOLD : PiglinActivity.DEFAULT;
 		}
 	}
 
@@ -369,19 +369,19 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 
 	@Override
 	public boolean canUseRangedWeapon(RangedWeaponItem weapon) {
-		return weapon == Items.field_8399;
+		return weapon == Items.CROSSBOW;
 	}
 
 	protected void equipToMainHand(ItemStack stack) {
-		this.equipLootStack(EquipmentSlot.field_6173, stack);
+		this.equipLootStack(EquipmentSlot.MAINHAND, stack);
 	}
 
 	protected void equipToOffHand(ItemStack stack) {
 		if (stack.getItem() == PiglinBrain.BARTERING_ITEM) {
-			this.equipStack(EquipmentSlot.field_6171, stack);
-			this.updateDropChances(EquipmentSlot.field_6171);
+			this.equipStack(EquipmentSlot.OFFHAND, stack);
+			this.updateDropChances(EquipmentSlot.OFFHAND);
 		} else {
-			this.equipLootStack(EquipmentSlot.field_6171, stack);
+			this.equipLootStack(EquipmentSlot.OFFHAND, stack);
 		}
 	}
 
@@ -401,14 +401,14 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		if (EnchantmentHelper.hasBindingCurse(oldStack)) {
 			return false;
 		} else {
-			boolean bl = PiglinBrain.isGoldenItem(newStack.getItem()) || newStack.getItem() == Items.field_8399;
-			boolean bl2 = PiglinBrain.isGoldenItem(oldStack.getItem()) || oldStack.getItem() == Items.field_8399;
+			boolean bl = PiglinBrain.isGoldenItem(newStack.getItem()) || newStack.getItem() == Items.CROSSBOW;
+			boolean bl2 = PiglinBrain.isGoldenItem(oldStack.getItem()) || oldStack.getItem() == Items.CROSSBOW;
 			if (bl && !bl2) {
 				return true;
 			} else if (!bl && bl2) {
 				return false;
 			} else {
-				return this.isAdult() && newStack.getItem() != Items.field_8399 && oldStack.getItem() == Items.field_8399
+				return this.isAdult() && newStack.getItem() != Items.CROSSBOW && oldStack.getItem() == Items.CROSSBOW
 					? false
 					: super.prefersNewEquipment(newStack, oldStack);
 			}
@@ -423,7 +423,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 
 	@Override
 	public boolean startRiding(Entity entity, boolean force) {
-		if (this.isBaby() && entity.getType() == EntityType.field_21973) {
+		if (this.isBaby() && entity.getType() == EntityType.HOGLIN) {
 			entity = this.method_26089(entity, 3);
 		}
 
@@ -442,17 +442,17 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_22269;
+		return SoundEvents.ENTITY_PIGLIN_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_22267;
+		return SoundEvents.ENTITY_PIGLIN_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_22271, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PIGLIN_STEP, 0.15F, 1.0F);
 	}
 
 	protected void playSound(SoundEvent sound) {
@@ -461,6 +461,6 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 
 	@Override
 	protected void playZombificationSound() {
-		this.playSound(SoundEvents.field_22272);
+		this.playSound(SoundEvents.ENTITY_PIGLIN_CONVERTED_TO_ZOMBIFIED);
 	}
 }

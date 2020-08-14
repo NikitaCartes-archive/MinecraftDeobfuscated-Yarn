@@ -42,7 +42,7 @@ public class BlockEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeVarInt(Registry.BLOCK.getRawId(this.block));
 	}
 
-	public void method_11297(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onBlockEvent(this);
 	}
 

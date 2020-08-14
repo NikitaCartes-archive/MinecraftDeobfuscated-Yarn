@@ -13,16 +13,16 @@ public class SoulFireBlock extends AbstractFireBlock {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return this.canPlaceAt(state, world, pos) ? this.getDefaultState() : Blocks.field_10124.getDefaultState();
+		return this.canPlaceAt(state, world, pos) ? this.getDefaultState() : Blocks.AIR.getDefaultState();
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return isSoulBase(world.getBlockState(pos.method_10074()).getBlock());
+		return isSoulBase(world.getBlockState(pos.down()).getBlock());
 	}
 
 	public static boolean isSoulBase(Block block) {
-		return block.isIn(BlockTags.field_23119);
+		return block.isIn(BlockTags.SOUL_FIRE_BASE_BLOCKS);
 	}
 
 	@Override

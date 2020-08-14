@@ -16,7 +16,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class ElderGuardianEntity extends GuardianEntity {
-	public static final float SCALE = EntityType.field_6086.getWidth() / EntityType.field_6118.getWidth();
+	public static final float SCALE = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
 
 	public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {
 		super(entityType, world);
@@ -28,9 +28,9 @@ public class ElderGuardianEntity extends GuardianEntity {
 
 	public static DefaultAttributeContainer.Builder createElderGuardianAttributes() {
 		return GuardianEntity.createGuardianAttributes()
-			.add(EntityAttributes.field_23719, 0.3F)
-			.add(EntityAttributes.field_23721, 8.0)
-			.add(EntityAttributes.field_23716, 80.0);
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 80.0);
 	}
 
 	@Override
@@ -40,22 +40,22 @@ public class ElderGuardianEntity extends GuardianEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15127 : SoundEvents.field_14569;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_AMBIENT : SoundEvents.ENTITY_ELDER_GUARDIAN_AMBIENT_LAND;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14868 : SoundEvents.field_14652;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_HURT : SoundEvents.ENTITY_ELDER_GUARDIAN_HURT_LAND;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15052 : SoundEvents.field_14973;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_DEATH : SoundEvents.ENTITY_ELDER_GUARDIAN_DEATH_LAND;
 	}
 
 	@Override
 	protected SoundEvent getFlopSound() {
-		return SoundEvents.field_14939;
+		return SoundEvents.ENTITY_ELDER_GUARDIAN_FLOP;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 		super.mobTick();
 		int i = 1200;
 		if ((this.age + this.getEntityId()) % 1200 == 0) {
-			StatusEffect statusEffect = StatusEffects.field_5901;
+			StatusEffect statusEffect = StatusEffects.MINING_FATIGUE;
 			List<ServerPlayerEntity> list = ((ServerWorld)this.world)
 				.getPlayers(serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.interactionManager.isSurvivalLike());
 			int j = 2;

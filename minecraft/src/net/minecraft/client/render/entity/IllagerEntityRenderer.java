@@ -14,7 +14,7 @@ public abstract class IllagerEntityRenderer<T extends IllagerEntity> extends Mob
 		this.addFeature(new HeadFeatureRenderer<>(this));
 	}
 
-	protected void method_16460(T illagerEntity, MatrixStack matrixStack, float f) {
+	protected void scale(T illagerEntity, MatrixStack matrixStack, float f) {
 		float g = 0.9375F;
 		matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
 	}

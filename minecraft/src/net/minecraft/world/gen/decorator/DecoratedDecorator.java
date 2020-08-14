@@ -10,7 +10,7 @@ public class DecoratedDecorator extends Decorator<DecoratedDecoratorConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_30454(DecoratorContext decoratorContext, Random random, DecoratedDecoratorConfig decoratedDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, DecoratedDecoratorConfig decoratedDecoratorConfig, BlockPos blockPos) {
 		return decoratedDecoratorConfig.getOuter()
 			.getPositions(decoratorContext, random, blockPos)
 			.flatMap(blockPosx -> decoratedDecoratorConfig.getInner().getPositions(decoratorContext, random, blockPosx));

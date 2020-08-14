@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransformer {
-	field_16134;
+	INSTANCE;
 
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Int2IntMap field_26727 = Util.make(new Int2IntOpenHashMap(), int2IntOpenHashMap -> {

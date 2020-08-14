@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class DepthStriderEnchantment extends Enchantment {
 	public DepthStriderEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9079, slotTypes);
+		super(weight, EnchantmentTarget.ARMOR_FEET, slotTypes);
 	}
 
 	@Override
@@ -24,6 +24,6 @@ public class DepthStriderEnchantment extends Enchantment {
 
 	@Override
 	public boolean canAccept(Enchantment other) {
-		return super.canAccept(other) && other != Enchantments.field_9122;
+		return super.canAccept(other) && other != Enchantments.FROST_WALKER;
 	}
 }

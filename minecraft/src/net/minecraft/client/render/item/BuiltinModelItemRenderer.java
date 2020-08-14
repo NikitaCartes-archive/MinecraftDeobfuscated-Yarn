@@ -88,13 +88,13 @@ public class BuiltinModelItemRenderer {
 				} else if (block instanceof BedBlock) {
 					this.renderBed.setColor(((BedBlock)block).getColor());
 					blockEntity = this.renderBed;
-				} else if (block == Blocks.field_10502) {
+				} else if (block == Blocks.CONDUIT) {
 					blockEntity = this.renderConduit;
-				} else if (block == Blocks.field_10034) {
+				} else if (block == Blocks.CHEST) {
 					blockEntity = this.renderChestNormal;
-				} else if (block == Blocks.field_10443) {
+				} else if (block == Blocks.ENDER_CHEST) {
 					blockEntity = this.renderChestEnder;
-				} else if (block == Blocks.field_10380) {
+				} else if (block == Blocks.TRAPPED_CHEST) {
 					blockEntity = this.renderChestTrapped;
 				} else {
 					if (!(block instanceof ShulkerBoxBlock)) {
@@ -112,7 +112,7 @@ public class BuiltinModelItemRenderer {
 				BlockEntityRenderDispatcher.INSTANCE.renderEntity(blockEntity, matrixStack, vertexConsumerProvider, i, j);
 			}
 		} else {
-			if (item == Items.field_8255) {
+			if (item == Items.SHIELD) {
 				boolean bl = stack.getSubTag("BlockEntityTag") != null;
 				matrixStack.push();
 				matrixStack.scale(1.0F, -1.0F, -1.0F);
@@ -132,7 +132,7 @@ public class BuiltinModelItemRenderer {
 				}
 
 				matrixStack.pop();
-			} else if (item == Items.field_8547) {
+			} else if (item == Items.TRIDENT) {
 				matrixStack.push();
 				matrixStack.scale(1.0F, -1.0F, -1.0F);
 				VertexConsumer vertexConsumer2 = ItemRenderer.getDirectGlintVertexConsumer(

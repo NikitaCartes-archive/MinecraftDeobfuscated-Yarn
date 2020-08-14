@@ -228,10 +228,10 @@ public class EntityPredicate {
 
 	public static LootContext createAdvancementEntityLootContext(ServerPlayerEntity player, Entity target) {
 		return new LootContext.Builder(player.getServerWorld())
-			.parameter(LootContextParameters.field_1226, target)
-			.parameter(LootContextParameters.field_24424, player.getPos())
+			.parameter(LootContextParameters.THIS_ENTITY, target)
+			.parameter(LootContextParameters.ORIGIN, player.getPos())
 			.random(player.getRandom())
-			.build(LootContextTypes.field_24423);
+			.build(LootContextTypes.ADVANCEMENT_ENTITY);
 	}
 
 	public static class Builder {
@@ -402,7 +402,7 @@ public class EntityPredicate {
 		private static EntityPredicate.Extended fromJson(String key, AdvancementEntityPredicateDeserializer predicateDeserializer, @Nullable JsonElement json) {
 			if (json != null && json.isJsonArray()) {
 				LootCondition[] lootConditions = predicateDeserializer.loadConditions(
-					json.getAsJsonArray(), predicateDeserializer.getAdvancementId().toString() + "/" + key, LootContextTypes.field_24423
+					json.getAsJsonArray(), predicateDeserializer.getAdvancementId().toString() + "/" + key, LootContextTypes.ADVANCEMENT_ENTITY
 				);
 				return new EntityPredicate.Extended(lootConditions);
 			} else {
@@ -415,7 +415,7 @@ public class EntityPredicate {
 			if (predicate == EntityPredicate.ANY) {
 				return EMPTY;
 			} else {
-				LootCondition lootCondition = EntityPropertiesLootCondition.builder(LootContext.EntityTarget.field_935, predicate).build();
+				LootCondition lootCondition = EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, predicate).build();
 				return new EntityPredicate.Extended(new LootCondition[]{lootCondition});
 			}
 		}

@@ -4,7 +4,7 @@ import net.minecraft.world.biome.layer.type.DiagonalCrossSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum AddMushroomIslandLayer implements DiagonalCrossSamplingLayer {
-	field_16055;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource context, int sw, int se, int ne, int nw, int center) {

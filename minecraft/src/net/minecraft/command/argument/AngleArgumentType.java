@@ -23,7 +23,7 @@ public class AngleArgumentType implements ArgumentType<AngleArgumentType.Angle> 
 		return context.<AngleArgumentType.Angle>getArgument(name, AngleArgumentType.Angle.class).getAngle(context.getSource());
 	}
 
-	public AngleArgumentType.Angle method_30659(StringReader stringReader) throws CommandSyntaxException {
+	public AngleArgumentType.Angle parse(StringReader stringReader) throws CommandSyntaxException {
 		if (!stringReader.canRead()) {
 			throw INCOMPLETE_ANGLE_EXCEPTION.createWithContext(stringReader);
 		} else {

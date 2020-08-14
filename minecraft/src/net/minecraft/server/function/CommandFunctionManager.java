@@ -30,7 +30,7 @@ public class CommandFunctionManager {
 	}
 
 	public int getMaxCommandChainLength() {
-		return this.server.getGameRules().getInt(GameRules.field_19408);
+		return this.server.getGameRules().getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH);
 	}
 
 	public CommandDispatcher<ServerCommandSource> getDispatcher() {

@@ -30,7 +30,7 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.actionType = actionType;
 	}
 
-	public void method_12191(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClickWindow(this);
 	}
 

@@ -21,7 +21,7 @@ public class FireSmokeParticle extends AscendingParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3101(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new FireSmokeParticle(clientWorld, d, e, f, g, h, i, 1.0F, this.spriteProvider);
 		}
 	}

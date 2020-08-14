@@ -27,7 +27,7 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 		buf.writeIdentifier(this.recipeId);
 	}
 
-	public void method_12400(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onRecipeBookData(this);
 	}
 

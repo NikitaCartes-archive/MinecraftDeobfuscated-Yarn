@@ -14,14 +14,14 @@ public class HuskEntityRenderer extends ZombieEntityRenderer {
 		super(entityRenderDispatcher);
 	}
 
-	protected void method_3985(ZombieEntity zombieEntity, MatrixStack matrixStack, float f) {
+	protected void scale(ZombieEntity zombieEntity, MatrixStack matrixStack, float f) {
 		float g = 1.0625F;
 		matrixStack.scale(1.0625F, 1.0625F, 1.0625F);
 		super.scale(zombieEntity, matrixStack, f);
 	}
 
 	@Override
-	public Identifier method_4163(ZombieEntity zombieEntity) {
+	public Identifier getTexture(ZombieEntity zombieEntity) {
 		return TEXTURE;
 	}
 }

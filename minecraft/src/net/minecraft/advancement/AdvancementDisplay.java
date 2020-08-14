@@ -107,7 +107,7 @@ public class AdvancementDisplay {
 		if (text != null && text2 != null) {
 			ItemStack itemStack = iconFromJson(JsonHelper.getObject(obj, "icon"));
 			Identifier identifier = obj.has("background") ? new Identifier(JsonHelper.getString(obj, "background")) : null;
-			AdvancementFrame advancementFrame = obj.has("frame") ? AdvancementFrame.forName(JsonHelper.getString(obj, "frame")) : AdvancementFrame.field_1254;
+			AdvancementFrame advancementFrame = obj.has("frame") ? AdvancementFrame.forName(JsonHelper.getString(obj, "frame")) : AdvancementFrame.TASK;
 			boolean bl = JsonHelper.getBoolean(obj, "show_toast", true);
 			boolean bl2 = JsonHelper.getBoolean(obj, "announce_to_chat", true);
 			boolean bl3 = JsonHelper.getBoolean(obj, "hidden", false);

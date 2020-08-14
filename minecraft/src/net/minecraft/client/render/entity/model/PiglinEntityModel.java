@@ -48,12 +48,12 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 		this.field_25633 = this.leftArm.method_29991();
 	}
 
-	public void method_24803(T mobEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
 		this.torso.copyPositionAndRotation(this.field_25634);
 		this.head.copyPositionAndRotation(this.field_25635);
 		this.leftArm.copyPositionAndRotation(this.field_25632);
 		this.rightArm.copyPositionAndRotation(this.field_25633);
-		super.method_17087(mobEntity, f, g, h, i, j);
+		super.setAngles(mobEntity, f, g, h, i, j);
 		float k = (float) (Math.PI / 6);
 		float l = h * 0.1F + f * 0.5F;
 		float m = 0.08F + g * 0.4F;
@@ -62,7 +62,7 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 		if (mobEntity instanceof AbstractPiglinEntity) {
 			AbstractPiglinEntity abstractPiglinEntity = (AbstractPiglinEntity)mobEntity;
 			PiglinActivity piglinActivity = abstractPiglinEntity.getActivity();
-			if (piglinActivity == PiglinActivity.field_25166) {
+			if (piglinActivity == PiglinActivity.DANCING) {
 				float n = h / 60.0F;
 				this.leftEar.roll = (float) (Math.PI / 6) + (float) (Math.PI / 180.0) * MathHelper.sin(n * 30.0F) * 10.0F;
 				this.rightEar.roll = (float) (-Math.PI / 6) - (float) (Math.PI / 180.0) * MathHelper.cos(n * 30.0F) * 10.0F;
@@ -73,13 +73,13 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 				this.rightArm.pivotY = MathHelper.sin(n * 40.0F) * 0.5F + 1.5F;
 				this.leftArm.pivotY = MathHelper.sin(n * 40.0F) * 0.5F + 1.5F;
 				this.torso.pivotY = MathHelper.sin(n * 40.0F) * 0.35F;
-			} else if (piglinActivity == PiglinActivity.field_25165 && this.handSwingProgress == 0.0F) {
+			} else if (piglinActivity == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON && this.handSwingProgress == 0.0F) {
 				this.method_29354(mobEntity);
-			} else if (piglinActivity == PiglinActivity.field_22383) {
+			} else if (piglinActivity == PiglinActivity.CROSSBOW_HOLD) {
 				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, !mobEntity.isLeftHanded());
-			} else if (piglinActivity == PiglinActivity.field_22384) {
+			} else if (piglinActivity == PiglinActivity.CROSSBOW_CHARGE) {
 				CrossbowPosing.charge(this.rightArm, this.leftArm, mobEntity, !mobEntity.isLeftHanded());
-			} else if (piglinActivity == PiglinActivity.field_22385) {
+			} else if (piglinActivity == PiglinActivity.ADMIRING_ITEM) {
 				this.head.pitch = 0.5F;
 				this.head.yaw = 0.0F;
 				if (mobEntity.isLeftHanded()) {
@@ -90,7 +90,7 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 					this.leftArm.pitch = -0.9F;
 				}
 			}
-		} else if (mobEntity.getType() == EntityType.field_6050) {
+		} else if (mobEntity.getType() == EntityType.ZOMBIFIED_PIGLIN) {
 			CrossbowPosing.method_29352(this.leftArm, this.rightArm, mobEntity.isAttacking(), this.handSwingProgress, h);
 		}
 
@@ -102,8 +102,10 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 		this.helmet.copyPositionAndRotation(this.head);
 	}
 
-	protected void method_29355(T mobEntity, float f) {
-		if (this.handSwingProgress > 0.0F && mobEntity instanceof PiglinEntity && ((PiglinEntity)mobEntity).getActivity() == PiglinActivity.field_25165) {
+	protected void method_29353(T mobEntity, float f) {
+		if (this.handSwingProgress > 0.0F
+			&& mobEntity instanceof PiglinEntity
+			&& ((PiglinEntity)mobEntity).getActivity() == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON) {
 			CrossbowPosing.method_29351(this.rightArm, this.leftArm, mobEntity, this.handSwingProgress, f);
 		} else {
 			super.method_29353(mobEntity, f);

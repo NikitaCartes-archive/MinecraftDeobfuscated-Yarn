@@ -6,8 +6,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class SimpleRandomFeatureConfig implements FeatureConfig {
-	public static final Codec<SimpleRandomFeatureConfig> CODEC = ConfiguredFeature.CODEC
-		.listOf()
+	public static final Codec<SimpleRandomFeatureConfig> CODEC = ConfiguredFeature.field_26756
 		.fieldOf("features")
 		.<SimpleRandomFeatureConfig>xmap(SimpleRandomFeatureConfig::new, simpleRandomFeatureConfig -> simpleRandomFeatureConfig.features)
 		.codec();

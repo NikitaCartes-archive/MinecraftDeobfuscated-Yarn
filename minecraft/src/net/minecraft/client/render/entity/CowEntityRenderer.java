@@ -14,7 +14,7 @@ public class CowEntityRenderer extends MobEntityRenderer<CowEntity, CowEntityMod
 		super(entityRenderDispatcher, new CowEntityModel<>(), 0.7F);
 	}
 
-	public Identifier method_3895(CowEntity cowEntity) {
+	public Identifier getTexture(CowEntity cowEntity) {
 		return TEXTURE;
 	}
 }

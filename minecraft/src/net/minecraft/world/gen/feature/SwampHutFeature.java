@@ -14,8 +14,8 @@ import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SwampHutFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.field_6145, 1, 1, 1));
-	private static final List<SpawnSettings.SpawnEntry> CREATURE_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.field_16281, 1, 1, 1));
+	private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.WITCH, 1, 1, 1));
+	private static final List<SpawnSettings.SpawnEntry> CREATURE_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.CAT, 1, 1, 1));
 
 	public SwampHutFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
@@ -41,7 +41,7 @@ public class SwampHutFeature extends StructureFeature<DefaultFeatureConfig> {
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28666(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,

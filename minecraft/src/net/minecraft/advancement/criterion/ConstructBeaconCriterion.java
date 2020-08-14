@@ -17,7 +17,7 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 		return ID;
 	}
 
-	public ConstructBeaconCriterion.Conditions method_8811(
+	public ConstructBeaconCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("level"));

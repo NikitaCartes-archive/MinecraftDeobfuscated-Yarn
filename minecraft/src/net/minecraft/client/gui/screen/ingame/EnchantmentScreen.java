@@ -191,11 +191,11 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			int m = j + 1;
 			if (this.isPointWithinBounds(60, 14 + 19 * j, 108, 17, (double)mouseX, (double)mouseY) && k > 0 && l >= 0 && enchantment != null) {
 				List<Text> list = Lists.<Text>newArrayList();
-				list.add(new TranslatableText("container.enchant.clue", enchantment.getName(l)).formatted(Formatting.field_1068));
+				list.add(new TranslatableText("container.enchant.clue", enchantment.getName(l)).formatted(Formatting.WHITE));
 				if (!bl) {
 					list.add(LiteralText.EMPTY);
 					if (this.client.player.experienceLevel < k) {
-						list.add(new TranslatableText("container.enchant.level.requirement", this.handler.enchantmentPower[j]).formatted(Formatting.field_1061));
+						list.add(new TranslatableText("container.enchant.level.requirement", this.handler.enchantmentPower[j]).formatted(Formatting.RED));
 					} else {
 						MutableText mutableText;
 						if (m == 1) {
@@ -204,7 +204,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 							mutableText = new TranslatableText("container.enchant.lapis.many", m);
 						}
 
-						list.add(mutableText.formatted(i >= m ? Formatting.field_1080 : Formatting.field_1061));
+						list.add(mutableText.formatted(i >= m ? Formatting.GRAY : Formatting.RED));
 						MutableText mutableText2;
 						if (m == 1) {
 							mutableText2 = new TranslatableText("container.enchant.level.one");
@@ -212,11 +212,11 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 							mutableText2 = new TranslatableText("container.enchant.level.many", m);
 						}
 
-						list.add(mutableText2.formatted(Formatting.field_1080));
+						list.add(mutableText2.formatted(Formatting.GRAY));
 					}
 				}
 
-				this.method_30901(matrices, list, mouseX, mouseY);
+				this.renderTooltip(matrices, list, mouseX, mouseY);
 				break;
 			}
 		}

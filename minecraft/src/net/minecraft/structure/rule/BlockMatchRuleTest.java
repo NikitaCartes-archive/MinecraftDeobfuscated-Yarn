@@ -24,6 +24,6 @@ public class BlockMatchRuleTest extends RuleTest {
 
 	@Override
 	protected RuleTestType<?> getType() {
-		return RuleTestType.field_16981;
+		return RuleTestType.BLOCK_MATCH;
 	}
 }

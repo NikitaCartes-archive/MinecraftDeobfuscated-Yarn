@@ -16,7 +16,7 @@ public class PigEntityRenderer extends MobEntityRenderer<PigEntity, PigEntityMod
 		this.addFeature(new SaddleFeatureRenderer<>(this, new PigEntityModel<>(0.5F), new Identifier("textures/entity/pig/pig_saddle.png")));
 	}
 
-	public Identifier method_4087(PigEntity pigEntity) {
+	public Identifier getTexture(PigEntity pigEntity) {
 		return TEXTURE;
 	}
 }

@@ -8,7 +8,7 @@ public class TopSolidHeightmapDecorator extends HeightmapDecorator<NopeDecorator
 		super(codec);
 	}
 
-	protected Heightmap.Type method_30470(NopeDecoratorConfig nopeDecoratorConfig) {
-		return Heightmap.Type.field_13195;
+	protected Heightmap.Type getHeightmapType(NopeDecoratorConfig nopeDecoratorConfig) {
+		return Heightmap.Type.OCEAN_FLOOR_WG;
 	}
 }

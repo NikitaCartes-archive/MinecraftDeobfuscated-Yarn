@@ -91,14 +91,14 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
-		super.method_17087(livingEntity, f, g, h, i, j);
+	public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(livingEntity, f, g, h, i, j);
 		this.leftPantLeg.copyPositionAndRotation(this.leftLeg);
 		this.rightPantLeg.copyPositionAndRotation(this.rightLeg);
 		this.leftSleeve.copyPositionAndRotation(this.leftArm);
 		this.rightSleeve.copyPositionAndRotation(this.rightArm);
 		this.jacket.copyPositionAndRotation(this.torso);
-		if (livingEntity.getEquippedStack(EquipmentSlot.field_6174).isEmpty()) {
+		if (livingEntity.getEquippedStack(EquipmentSlot.CHEST).isEmpty()) {
 			if (livingEntity.isInSneakingPose()) {
 				this.cape.pivotZ = 1.4F;
 				this.cape.pivotY = 1.85F;
@@ -131,7 +131,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	public void setArmAngle(Arm arm, MatrixStack matrices) {
 		ModelPart modelPart = this.getArm(arm);
 		if (this.thinArms) {
-			float f = 0.5F * (float)(arm == Arm.field_6183 ? 1 : -1);
+			float f = 0.5F * (float)(arm == Arm.RIGHT ? 1 : -1);
 			modelPart.pivotX += f;
 			modelPart.rotate(matrices);
 			modelPart.pivotX -= f;
@@ -145,7 +145,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void method_22696(ModelPart modelPart) {
+	public void accept(ModelPart modelPart) {
 		if (this.parts == null) {
 			this.parts = Lists.<ModelPart>newArrayList();
 		}

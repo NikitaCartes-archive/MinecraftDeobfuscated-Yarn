@@ -19,7 +19,7 @@ import net.minecraft.text.LiteralText;
 public class TestClassArgumentType implements ArgumentType<String> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("techtests", "mobtests");
 
-	public String method_22261(StringReader stringReader) throws CommandSyntaxException {
+	public String parse(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
 		if (TestFunctions.testClassExists(string)) {
 			return string;

@@ -19,16 +19,16 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 
 	@Override
 	public LootConditionType getType() {
-		return LootConditionTypes.field_25245;
+		return LootConditionTypes.SURVIVES_EXPLOSION;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1225);
+		return ImmutableSet.of(LootContextParameters.EXPLOSION_RADIUS);
 	}
 
-	public boolean method_869(LootContext lootContext) {
-		Float float_ = lootContext.get(LootContextParameters.field_1225);
+	public boolean test(LootContext lootContext) {
+		Float float_ = lootContext.get(LootContextParameters.EXPLOSION_RADIUS);
 		if (float_ != null) {
 			Random random = lootContext.getRandom();
 			float f = 1.0F / float_;
@@ -43,12 +43,10 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 	}
 
 	public static class Serializer implements JsonSerializer<SurvivesExplosionLootCondition> {
-		public void method_874(
-			JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext
-		) {
+		public void toJson(JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext) {
 		}
 
-		public SurvivesExplosionLootCondition method_873(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public SurvivesExplosionLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return SurvivesExplosionLootCondition.INSTANCE;
 		}
 	}

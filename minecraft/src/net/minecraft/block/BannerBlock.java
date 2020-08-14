@@ -32,7 +32,7 @@ public class BannerBlock extends AbstractBannerBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos.method_10074()).getMaterial().isSolid();
+		return world.getBlockState(pos.down()).getMaterial().isSolid();
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class BannerBlock extends AbstractBannerBlock {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return direction == Direction.field_11033 && !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !state.canPlaceAt(world, pos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
@@ -69,6 +69,6 @@ public class BannerBlock extends AbstractBannerBlock {
 
 	@Environment(EnvType.CLIENT)
 	public static Block getForColor(DyeColor color) {
-		return (Block)COLORED_BANNERS.getOrDefault(color, Blocks.field_10154);
+		return (Block)COLORED_BANNERS.getOrDefault(color, Blocks.WHITE_BANNER);
 	}
 }

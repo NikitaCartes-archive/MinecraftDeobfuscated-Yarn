@@ -21,7 +21,7 @@ public class OpenHorseScreenS2CPacket implements Packet<ClientPlayPacketListener
 		this.horseId = horseId;
 	}
 
-	public void method_11437(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onOpenHorseScreen(this);
 	}
 

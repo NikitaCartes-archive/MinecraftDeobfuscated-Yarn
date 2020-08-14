@@ -17,22 +17,22 @@ public class KelpBlock extends AbstractPlantStemBlock implements FluidFillable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
 	protected KelpBlock(AbstractBlock.Settings settings) {
-		super(settings, Direction.field_11036, SHAPE, true, 0.14);
+		super(settings, Direction.UP, SHAPE, true, 0.14);
 	}
 
 	@Override
 	protected boolean chooseStemState(BlockState state) {
-		return state.isOf(Blocks.field_10382);
+		return state.isOf(Blocks.WATER);
 	}
 
 	@Override
 	protected Block getPlant() {
-		return Blocks.field_10463;
+		return Blocks.KELP_PLANT;
 	}
 
 	@Override
 	protected boolean canAttachTo(Block block) {
-		return block != Blocks.field_10092;
+		return block != Blocks.MAGMA_BLOCK;
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class KelpBlock extends AbstractPlantStemBlock implements FluidFillable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-		return fluidState.isIn(FluidTags.field_15517) && fluidState.getLevel() == 8 ? super.getPlacementState(ctx) : null;
+		return fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8 ? super.getPlacementState(ctx) : null;
 	}
 
 	@Override

@@ -63,7 +63,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	};
 
 	public CommandBlockBlockEntity() {
-		super(BlockEntityType.field_11904);
+		super(BlockEntityType.COMMAND_BLOCK);
 	}
 
 	@Override
@@ -121,14 +121,14 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public void setAuto(boolean auto) {
 		boolean bl = this.auto;
 		this.auto = auto;
-		if (!bl && auto && !this.powered && this.world != null && this.getCommandBlockType() != CommandBlockBlockEntity.Type.field_11922) {
+		if (!bl && auto && !this.powered && this.world != null && this.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 			this.method_23360();
 		}
 	}
 
 	public void method_23359() {
 		CommandBlockBlockEntity.Type type = this.getCommandBlockType();
-		if (type == CommandBlockBlockEntity.Type.field_11923 && (this.powered || this.auto) && this.world != null) {
+		if (type == CommandBlockBlockEntity.Type.AUTO && (this.powered || this.auto) && this.world != null) {
 			this.method_23360();
 		}
 	}
@@ -170,12 +170,12 @@ public class CommandBlockBlockEntity extends BlockEntity {
 
 	public CommandBlockBlockEntity.Type getCommandBlockType() {
 		BlockState blockState = this.getCachedState();
-		if (blockState.isOf(Blocks.field_10525)) {
-			return CommandBlockBlockEntity.Type.field_11924;
-		} else if (blockState.isOf(Blocks.field_10263)) {
-			return CommandBlockBlockEntity.Type.field_11923;
+		if (blockState.isOf(Blocks.COMMAND_BLOCK)) {
+			return CommandBlockBlockEntity.Type.REDSTONE;
+		} else if (blockState.isOf(Blocks.REPEATING_COMMAND_BLOCK)) {
+			return CommandBlockBlockEntity.Type.AUTO;
 		} else {
-			return blockState.isOf(Blocks.field_10395) ? CommandBlockBlockEntity.Type.field_11922 : CommandBlockBlockEntity.Type.field_11924;
+			return blockState.isOf(Blocks.CHAIN_COMMAND_BLOCK) ? CommandBlockBlockEntity.Type.SEQUENCE : CommandBlockBlockEntity.Type.REDSTONE;
 		}
 	}
 
@@ -191,8 +191,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public static enum Type {
-		field_11922,
-		field_11923,
-		field_11924;
+		SEQUENCE,
+		AUTO,
+		REDSTONE;
 	}
 }

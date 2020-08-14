@@ -18,7 +18,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 		super(featureRendererContext);
 	}
 
-	public void method_17160(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,
@@ -30,7 +30,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 		float k,
 		float l
 	) {
-		boolean bl = dolphinEntity.getMainArm() == Arm.field_6183;
+		boolean bl = dolphinEntity.getMainArm() == Arm.RIGHT;
 		matrixStack.push();
 		float m = 1.0F;
 		float n = -1.0F;
@@ -44,7 +44,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 		ItemStack itemStack = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
 		MinecraftClient.getInstance()
 			.getHeldItemRenderer()
-			.renderItem(dolphinEntity, itemStack, ModelTransformation.Mode.field_4318, false, matrixStack, vertexConsumerProvider, i);
+			.renderItem(dolphinEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}
 }

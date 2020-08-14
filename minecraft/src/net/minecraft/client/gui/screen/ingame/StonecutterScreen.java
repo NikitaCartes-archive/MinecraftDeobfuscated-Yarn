@@ -114,7 +114,7 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 				double d = mouseX - (double)(i + m % 4 * 16);
 				double e = mouseY - (double)(j + m / 4 * 18);
 				if (d >= 0.0 && e >= 0.0 && d < 16.0 && e < 18.0 && this.handler.onButtonClick(this.client.player, l)) {
-					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_17711, 1.0F));
+					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_STONECUTTER_SELECT_RECIPE, 1.0F));
 					this.client.interactionManager.clickButton(this.handler.syncId, l);
 					return true;
 				}

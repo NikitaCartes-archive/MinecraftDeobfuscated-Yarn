@@ -32,7 +32,7 @@ public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 		return identifier;
 	}
 
-	public Identifier method_9325(StringReader stringReader) throws CommandSyntaxException {
+	public Identifier parse(StringReader stringReader) throws CommandSyntaxException {
 		return validate(Identifier.fromCommandInput(stringReader));
 	}
 

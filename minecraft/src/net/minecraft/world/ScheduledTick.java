@@ -12,7 +12,7 @@ public class ScheduledTick<T> {
 	private final long id;
 
 	public ScheduledTick(BlockPos pos, T t) {
-		this(pos, t, 0L, TickPriority.field_9314);
+		this(pos, t, 0L, TickPriority.NORMAL);
 	}
 
 	public ScheduledTick(BlockPos pos, T t, long time, TickPriority priority) {

@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.VideoOptionsScreen;
-import net.minecraft.client.gui.screen.pack.AbstractPackScreen;
+import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
@@ -60,7 +60,7 @@ public class OptionsScreen extends Screen {
 					}
 				)
 			);
-			if (this.client.isIntegratedServerRunning() && !this.client.world.method_28104().isHardcore()) {
+			if (this.client.isIntegratedServerRunning() && !this.client.world.getLevelProperties().isHardcore()) {
 				this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
 				this.lockDifficultyButton = this.addButton(
 					new LockButtonWidget(
@@ -72,13 +72,13 @@ public class OptionsScreen extends Screen {
 										this::lockDifficulty,
 										new TranslatableText("difficulty.lock.title"),
 										new TranslatableText(
-											"difficulty.lock.question", new TranslatableText("options.difficulty." + this.client.world.method_28104().getDifficulty().getName())
+											"difficulty.lock.question", new TranslatableText("options.difficulty." + this.client.world.getLevelProperties().getDifficulty().getName())
 										)
 									)
 								)
 					)
 				);
-				this.lockDifficultyButton.setLocked(this.client.world.method_28104().isDifficultyLocked());
+				this.lockDifficultyButton.setLocked(this.client.world.getLevelProperties().isDifficultyLocked());
 				this.lockDifficultyButton.active = !this.lockDifficultyButton.isLocked();
 				this.difficultyButton.active = !this.lockDifficultyButton.isLocked();
 			} else {
@@ -171,7 +171,7 @@ public class OptionsScreen extends Screen {
 				new TranslatableText("options.resourcepack"),
 				buttonWidget -> this.client
 						.openScreen(
-							new AbstractPackScreen(
+							new PackScreen(
 								this, this.client.getResourcePackManager(), this::method_29975, this.client.getResourcePackDir(), new TranslatableText("resourcePack.title")
 							)
 						)

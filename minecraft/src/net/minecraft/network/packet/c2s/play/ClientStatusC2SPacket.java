@@ -25,7 +25,7 @@ public class ClientStatusC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeEnumConstant(this.mode);
 	}
 
-	public void method_12120(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClientStatus(this);
 	}
 
@@ -34,7 +34,7 @@ public class ClientStatusC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public static enum Mode {
-		field_12774,
-		field_12775;
+		PERFORM_RESPAWN,
+		REQUEST_STATS;
 	}
 }

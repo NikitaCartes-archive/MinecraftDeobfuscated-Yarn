@@ -40,7 +40,7 @@ public class CrossbowPosing {
 		modelPart2.roll = 0.0F;
 		modelPart.yaw = (float) (Math.PI / 20);
 		modelPart2.yaw = (float) (-Math.PI / 20);
-		if (mobEntity.getMainArm() == Arm.field_6183) {
+		if (mobEntity.getMainArm() == Arm.RIGHT) {
 			modelPart.pitch = -1.8849558F + MathHelper.cos(g * 0.09F) * 0.15F;
 			modelPart2.pitch = -0.0F + MathHelper.cos(g * 0.19F) * 0.5F;
 			modelPart.pitch += h * 2.2F - i * 0.4F;

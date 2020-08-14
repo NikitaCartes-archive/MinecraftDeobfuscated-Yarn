@@ -19,9 +19,7 @@ public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlo
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_17581(
-		CampfireBlockEntity campfireBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
-	) {
+	public void render(CampfireBlockEntity campfireBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		Direction direction = campfireBlockEntity.getCachedState().get(CampfireBlock.FACING);
 		DefaultedList<ItemStack> defaultedList = campfireBlockEntity.getItemsBeingCooked();
 
@@ -36,7 +34,7 @@ public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlo
 				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 				matrixStack.translate(-0.3125, -0.3125, 0.0);
 				matrixStack.scale(0.375F, 0.375F, 0.375F);
-				MinecraftClient.getInstance().getItemRenderer().renderItem(itemStack, ModelTransformation.Mode.field_4319, i, j, matrixStack, vertexConsumerProvider);
+				MinecraftClient.getInstance().getItemRenderer().renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider);
 				matrixStack.pop();
 			}
 		}

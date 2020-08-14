@@ -68,7 +68,7 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void method_11731(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onLookAt(this);
 	}
 

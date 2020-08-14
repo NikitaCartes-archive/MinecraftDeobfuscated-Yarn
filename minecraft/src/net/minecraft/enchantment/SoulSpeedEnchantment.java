@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class SoulSpeedEnchantment extends Enchantment {
 	public SoulSpeedEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9079, slotTypes);
+		super(weight, EnchantmentTarget.ARMOR_FEET, slotTypes);
 	}
 
 	@Override

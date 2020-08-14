@@ -109,7 +109,7 @@ public class BlockPattern {
 			this.forceLoad = forceLoad;
 		}
 
-		public CachedBlockPosition method_11714(BlockPos blockPos) throws Exception {
+		public CachedBlockPosition load(BlockPos blockPos) throws Exception {
 			return new CachedBlockPosition(this.world, blockPos, this.forceLoad);
 		}
 	}

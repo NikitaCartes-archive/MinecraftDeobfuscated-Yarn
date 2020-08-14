@@ -3,7 +3,7 @@ package net.minecraft.item;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
-import net.minecraft.class_5508;
+import net.minecraft.class_5510;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -32,7 +32,7 @@ public class TridentItem extends Item implements Vanishable {
 	public TridentItem(Item.Settings settings) {
 		super(settings);
 		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
-		class_5508.field_26768.method_31214(ToolMaterials.field_8923, builder);
+		class_5510.field_26796.method_31245(ToolMaterials.IRON, builder);
 		this.field_23746 = builder.build();
 	}
 
@@ -43,7 +43,7 @@ public class TridentItem extends Item implements Vanishable {
 
 	@Override
 	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.field_8951;
+		return UseAction.SPEAR;
 	}
 
 	@Override
@@ -65,18 +65,18 @@ public class TridentItem extends Item implements Vanishable {
 							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, stack);
 							tridentEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 2.5F + (float)j * 0.5F, 1.0F);
 							if (playerEntity.abilities.creativeMode) {
-								tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.field_7594;
+								tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 							}
 
 							world.spawnEntity(tridentEntity);
-							world.playSoundFromEntity(null, tridentEntity, SoundEvents.field_15001, SoundCategory.field_15248, 1.0F, 1.0F);
+							world.playSoundFromEntity(null, tridentEntity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0F, 1.0F);
 							if (!playerEntity.abilities.creativeMode) {
 								playerEntity.inventory.removeOne(stack);
 							}
 						}
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 					if (j > 0) {
 						float f = playerEntity.yaw;
 						float g = playerEntity.pitch;
@@ -92,19 +92,19 @@ public class TridentItem extends Item implements Vanishable {
 						playerEntity.setRiptideTicks(20);
 						if (playerEntity.isOnGround()) {
 							float o = 1.1999999F;
-							playerEntity.move(MovementType.field_6308, new Vec3d(0.0, 1.1999999F, 0.0));
+							playerEntity.move(MovementType.SELF, new Vec3d(0.0, 1.1999999F, 0.0));
 						}
 
 						SoundEvent soundEvent;
 						if (j >= 3) {
-							soundEvent = SoundEvents.field_14717;
+							soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_3;
 						} else if (j == 2) {
-							soundEvent = SoundEvents.field_14806;
+							soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_2;
 						} else {
-							soundEvent = SoundEvents.field_14606;
+							soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_1;
 						}
 
-						world.playSoundFromEntity(null, playerEntity, soundEvent, SoundCategory.field_15248, 1.0F, 1.0F);
+						world.playSoundFromEntity(null, playerEntity, soundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
 					}
 				}
 			}
@@ -126,14 +126,14 @@ public class TridentItem extends Item implements Vanishable {
 
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+		stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		return true;
 	}
 
 	@Override
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
 		if ((double)state.getHardness(world, pos) != 0.0) {
-			stack.damage(2, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+			stack.damage(2, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
 		return true;
@@ -141,7 +141,7 @@ public class TridentItem extends Item implements Vanishable {
 
 	@Override
 	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		return slot == EquipmentSlot.field_6173 ? this.field_23746 : super.getAttributeModifiers(slot);
+		return slot == EquipmentSlot.MAINHAND ? this.field_23746 : super.getAttributeModifiers(slot);
 	}
 
 	@Override

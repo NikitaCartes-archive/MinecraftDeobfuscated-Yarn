@@ -42,7 +42,7 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 		JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer
 	);
 
-	public final T method_27853(JsonObject jsonObject, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
+	public final T conditionsFromJson(JsonObject jsonObject, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
 		EntityPredicate.Extended extended = EntityPredicate.Extended.getInJson(jsonObject, "player", advancementEntityPredicateDeserializer);
 		return this.conditionsFromJson(jsonObject, extended, advancementEntityPredicateDeserializer);
 	}

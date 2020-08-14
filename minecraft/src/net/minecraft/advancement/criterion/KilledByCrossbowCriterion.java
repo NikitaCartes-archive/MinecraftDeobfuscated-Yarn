@@ -25,7 +25,7 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		return ID;
 	}
 
-	public KilledByCrossbowCriterion.Conditions method_8979(
+	public KilledByCrossbowCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		EntityPredicate.Extended[] extendeds = EntityPredicate.Extended.requireInJson(jsonObject, "victims", advancementEntityPredicateDeserializer);

@@ -38,7 +38,7 @@ public class TitleCommand {
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													TextArgumentType.getTextArgument(commandContext, "title"),
-													TitleS2CPacket.Action.field_12630
+													TitleS2CPacket.Action.TITLE
 												)
 										)
 								)
@@ -52,7 +52,7 @@ public class TitleCommand {
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													TextArgumentType.getTextArgument(commandContext, "title"),
-													TitleS2CPacket.Action.field_12632
+													TitleS2CPacket.Action.SUBTITLE
 												)
 										)
 								)
@@ -66,7 +66,7 @@ public class TitleCommand {
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													TextArgumentType.getTextArgument(commandContext, "title"),
-													TitleS2CPacket.Action.field_12627
+													TitleS2CPacket.Action.ACTIONBAR
 												)
 										)
 								)
@@ -97,7 +97,7 @@ public class TitleCommand {
 	}
 
 	private static int executeClear(ServerCommandSource source, Collection<ServerPlayerEntity> targets) {
-		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.field_12633, null);
+		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.CLEAR, null);
 
 		for(ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
@@ -113,7 +113,7 @@ public class TitleCommand {
 	}
 
 	private static int executeReset(ServerCommandSource source, Collection<ServerPlayerEntity> targets) {
-		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.field_12628, null);
+		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.RESET, null);
 
 		for(ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);

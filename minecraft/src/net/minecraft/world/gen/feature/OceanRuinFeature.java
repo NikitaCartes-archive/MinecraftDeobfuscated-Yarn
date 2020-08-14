@@ -27,8 +27,8 @@ public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 	}
 
 	public static enum BiomeType implements StringIdentifiable {
-		field_14532("warm"),
-		field_14528("cold");
+		WARM("warm"),
+		COLD("cold");
 
 		public static final Codec<OceanRuinFeature.BiomeType> field_24990 = StringIdentifiable.createCodec(
 			OceanRuinFeature.BiomeType::values, OceanRuinFeature.BiomeType::byName
@@ -61,7 +61,7 @@ public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void method_28948(
+		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,

@@ -64,7 +64,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	};
 
 	public BrewingStandBlockEntity() {
-		super(BlockEntityType.field_11894);
+		super(BlockEntityType.BREWING_STAND);
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	@Override
 	public void tick() {
 		ItemStack itemStack = this.inventory.get(4);
-		if (this.fuel <= 0 && itemStack.getItem() == Items.field_8183) {
+		if (this.fuel <= 0 && itemStack.getItem() == Items.BLAZE_POWDER) {
 			this.fuel = 20;
 			itemStack.decrement(1);
 			this.markDirty();
@@ -246,19 +246,20 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		} else {
 			Item item = stack.getItem();
 			if (slot == 4) {
-				return item == Items.field_8183;
+				return item == Items.BLAZE_POWDER;
 			} else {
-				return (item == Items.field_8574 || item == Items.field_8436 || item == Items.field_8150 || item == Items.field_8469) && this.getStack(slot).isEmpty();
+				return (item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE)
+					&& this.getStack(slot).isEmpty();
 			}
 		}
 	}
 
 	@Override
 	public int[] getAvailableSlots(Direction side) {
-		if (side == Direction.field_11036) {
+		if (side == Direction.UP) {
 			return TOP_SLOTS;
 		} else {
-			return side == Direction.field_11033 ? BOTTOM_SLOTS : SIDE_SLOTS;
+			return side == Direction.DOWN ? BOTTOM_SLOTS : SIDE_SLOTS;
 		}
 	}
 
@@ -270,7 +271,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	@Override
 	public boolean canExtract(int slot, ItemStack stack, Direction dir) {
 		if (slot == 3) {
-			return stack.getItem() == Items.field_8469;
+			return stack.getItem() == Items.GLASS_BOTTLE;
 		} else {
 			return true;
 		}

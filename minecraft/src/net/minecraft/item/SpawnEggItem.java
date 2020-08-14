@@ -57,7 +57,7 @@ public class SpawnEggItem extends Item {
 			BlockPos blockPos = context.getBlockPos();
 			Direction direction = context.getSide();
 			BlockState blockState = world.getBlockState(blockPos);
-			if (blockState.isOf(Blocks.field_10260)) {
+			if (blockState.isOf(Blocks.SPAWNER)) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
@@ -83,9 +83,9 @@ public class SpawnEggItem extends Item {
 					itemStack,
 					context.getPlayer(),
 					blockPos2,
-					SpawnReason.field_16465,
+					SpawnReason.SPAWN_EGG,
 					true,
-					!Objects.equals(blockPos, blockPos2) && direction == Direction.field_11036
+					!Objects.equals(blockPos, blockPos2) && direction == Direction.UP
 				)
 				!= null) {
 				itemStack.decrement(1);
@@ -98,8 +98,8 @@ public class SpawnEggItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.field_1345);
-		if (hitResult.getType() != HitResult.Type.field_1332) {
+		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
+		if (hitResult.getType() != HitResult.Type.BLOCK) {
 			return TypedActionResult.pass(itemStack);
 		} else if (!(world instanceof ServerWorld)) {
 			return TypedActionResult.success(itemStack);
@@ -110,14 +110,14 @@ public class SpawnEggItem extends Item {
 				return TypedActionResult.pass(itemStack);
 			} else if (world.canPlayerModifyAt(user, blockPos) && user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 				EntityType<?> entityType = this.getEntityType(itemStack.getTag());
-				if (entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.field_16465, false, false) == null) {
+				if (entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
 					return TypedActionResult.pass(itemStack);
 				} else {
 					if (!user.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
 
-					user.incrementStat(Stats.field_15372.getOrCreateStat(this));
+					user.incrementStat(Stats.USED.getOrCreateStat(this));
 					return TypedActionResult.consume(itemStack);
 				}
 			} else {

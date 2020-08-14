@@ -25,7 +25,7 @@ public class HorseScreenHandler extends ScreenHandler {
 		this.addSlot(new Slot(inventory, 0, 8, 18) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.getItem() == Items.field_8175 && !this.hasStack() && entity.canBeSaddled();
+				return stack.getItem() == Items.SADDLE && !this.hasStack() && entity.canBeSaddled();
 			}
 
 			@Environment(EnvType.CLIENT)
@@ -47,7 +47,7 @@ public class HorseScreenHandler extends ScreenHandler {
 			}
 
 			@Override
-			public int getMaxStackAmount() {
+			public int getMaxItemCount() {
 				return 1;
 			}
 		});

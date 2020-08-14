@@ -38,7 +38,7 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 
 	public BlockDustParticle setBlockPos(BlockPos blockPos) {
 		this.blockPos = blockPos;
-		if (this.blockState.isOf(Blocks.field_10219)) {
+		if (this.blockState.isOf(Blocks.GRASS_BLOCK)) {
 			return this;
 		} else {
 			this.updateColor(blockPos);
@@ -48,7 +48,7 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 
 	public BlockDustParticle setBlockPosFromPosition() {
 		this.blockPos = new BlockPos(this.x, this.y, this.z);
-		if (this.blockState.isOf(Blocks.field_10219)) {
+		if (this.blockState.isOf(Blocks.GRASS_BLOCK)) {
 			return this;
 		} else {
 			this.updateColor(this.blockPos);
@@ -96,11 +96,11 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<BlockStateParticleEffect> {
-		public Particle method_3109(
+		public Particle createParticle(
 			BlockStateParticleEffect blockStateParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
 		) {
 			BlockState blockState = blockStateParticleEffect.getBlockState();
-			return !blockState.isAir() && !blockState.isOf(Blocks.field_10008)
+			return !blockState.isAir() && !blockState.isOf(Blocks.MOVING_PISTON)
 				? new BlockDustParticle(clientWorld, d, e, f, g, h, i, blockState).setBlockPosFromPosition()
 				: null;
 		}

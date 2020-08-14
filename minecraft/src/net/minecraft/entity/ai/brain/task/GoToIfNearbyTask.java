@@ -18,23 +18,23 @@ public class GoToIfNearbyTask extends Task<PathAwareEntity> {
 	private float field_25752;
 
 	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float f, int i) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18458, target, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, target, MemoryModuleState.VALUE_PRESENT));
 		this.target = target;
 		this.field_25752 = f;
 		this.maxDistance = i;
 	}
 
-	protected boolean method_18993(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
 		Optional<GlobalPos> optional = pathAwareEntity.getBrain().getOptionalMemory(this.target);
 		return optional.isPresent()
 			&& serverWorld.getRegistryKey() == ((GlobalPos)optional.get()).getDimension()
 			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(pathAwareEntity.getPos(), (double)this.maxDistance);
 	}
 
-	protected void method_18994(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		if (l > this.nextUpdateTime) {
 			Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(pathAwareEntity, 8, 6));
-			pathAwareEntity.getBrain().remember(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.field_25752, 1)));
+			pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.field_25752, 1)));
 			this.nextUpdateTime = l + 180L;
 		}
 	}

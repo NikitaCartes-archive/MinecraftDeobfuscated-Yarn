@@ -5,8 +5,8 @@ import net.minecraft.world.biome.layer.util.LayerSampleContext;
 import net.minecraft.world.biome.layer.util.LayerSampler;
 
 public enum ScaleLayer implements ParentedLayer {
-	field_16196,
-	field_16198 {
+	NORMAL,
+	FUZZY {
 		@Override
 		protected int sample(LayerSampleContext<?> context, int i, int j, int k, int l) {
 			return context.choose(i, j, k, l);

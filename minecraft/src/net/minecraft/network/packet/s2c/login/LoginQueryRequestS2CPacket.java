@@ -32,7 +32,7 @@ public class LoginQueryRequestS2CPacket implements Packet<ClientLoginPacketListe
 		buf.writeBytes(this.payload.copy());
 	}
 
-	public void method_12591(ClientLoginPacketListener clientLoginPacketListener) {
+	public void apply(ClientLoginPacketListener clientLoginPacketListener) {
 		clientLoginPacketListener.onQueryRequest(this);
 	}
 

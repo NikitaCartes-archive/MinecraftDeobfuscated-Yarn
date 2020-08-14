@@ -11,7 +11,7 @@ public class MountainSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		super(codec);
 	}
 
-	public void method_15233(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -26,9 +26,9 @@ public class MountainSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
 		if (d > 1.0) {
-			SurfaceBuilder.field_15701.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.STONE_CONFIG);
+			SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.STONE_CONFIG);
 		} else {
-			SurfaceBuilder.field_15701.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.GRASS_CONFIG);
+			SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.GRASS_CONFIG);
 		}
 	}
 }

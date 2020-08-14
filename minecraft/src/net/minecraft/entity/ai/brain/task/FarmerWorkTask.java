@@ -17,15 +17,15 @@ import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 
 public class FarmerWorkTask extends VillagerWorkTask {
-	private static final List<Item> COMPOSTABLES = ImmutableList.of(Items.field_8317, Items.field_8309);
+	private static final List<Item> COMPOSTABLES = ImmutableList.of(Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS);
 
 	@Override
 	protected void performAdditionalWork(ServerWorld world, VillagerEntity entity) {
-		Optional<GlobalPos> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.field_18439);
+		Optional<GlobalPos> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
 		if (optional.isPresent()) {
 			GlobalPos globalPos = (GlobalPos)optional.get();
 			BlockState blockState = world.getBlockState(globalPos.getPos());
-			if (blockState.isOf(Blocks.field_17563)) {
+			if (blockState.isOf(Blocks.COMPOSTER)) {
 				this.craftAndDropBread(entity);
 				this.compostSeeds(world, entity, globalPos, blockState);
 			}
@@ -76,15 +76,15 @@ public class FarmerWorkTask extends VillagerWorkTask {
 
 	private void craftAndDropBread(VillagerEntity entity) {
 		SimpleInventory simpleInventory = entity.getInventory();
-		if (simpleInventory.count(Items.field_8229) <= 36) {
-			int i = simpleInventory.count(Items.field_8861);
+		if (simpleInventory.count(Items.BREAD) <= 36) {
+			int i = simpleInventory.count(Items.WHEAT);
 			int j = 3;
 			int k = 3;
 			int l = Math.min(3, i / 3);
 			if (l != 0) {
 				int m = l * 3;
-				simpleInventory.removeItem(Items.field_8861, m);
-				ItemStack itemStack = simpleInventory.addStack(new ItemStack(Items.field_8229, l));
+				simpleInventory.removeItem(Items.WHEAT, m);
+				ItemStack itemStack = simpleInventory.addStack(new ItemStack(Items.BREAD, l));
 				if (!itemStack.isEmpty()) {
 					entity.dropStack(itemStack, 0.5F);
 				}

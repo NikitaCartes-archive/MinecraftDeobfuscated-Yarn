@@ -16,18 +16,18 @@ public class MemoryTransferTask<E extends MobEntity, T> extends Task<E> {
 	private final IntRange duration;
 
 	public MemoryTransferTask(Predicate<E> runPredicate, MemoryModuleType<? extends T> memoryModuleType, MemoryModuleType<T> memoryModuleType2, IntRange duration) {
-		super(ImmutableMap.of(memoryModuleType, MemoryModuleState.field_18456, memoryModuleType2, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_PRESENT, memoryModuleType2, MemoryModuleState.VALUE_ABSENT));
 		this.runPredicate = runPredicate;
 		this.sourceType = memoryModuleType;
 		this.targetType = memoryModuleType2;
 		this.duration = duration;
 	}
 
-	protected boolean method_24566(ServerWorld serverWorld, E mobEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, E mobEntity) {
 		return this.runPredicate.test(mobEntity);
 	}
 
-	protected void method_24567(ServerWorld serverWorld, E mobEntity, long l) {
+	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
 		Brain<?> brain = mobEntity.getBrain();
 		brain.remember(this.targetType, (T)brain.getOptionalMemory(this.sourceType).get(), (long)this.duration.choose(serverWorld.random));
 	}

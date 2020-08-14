@@ -11,7 +11,7 @@ public class GroupEntry extends CombinedEntry {
 
 	@Override
 	public LootPoolEntryType getType() {
-		return LootPoolEntryTypes.field_25212;
+		return LootPoolEntryTypes.SEQUENCE;
 	}
 
 	@Override

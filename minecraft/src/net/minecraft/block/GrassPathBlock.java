@@ -26,13 +26,13 @@ public class GrassPathBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		return !this.getDefaultState().canPlaceAt(ctx.getWorld(), ctx.getBlockPos())
-			? Block.pushEntitiesUpBeforeBlockChange(this.getDefaultState(), Blocks.field_10566.getDefaultState(), ctx.getWorld(), ctx.getBlockPos())
+			? Block.pushEntitiesUpBeforeBlockChange(this.getDefaultState(), Blocks.DIRT.getDefaultState(), ctx.getWorld(), ctx.getBlockPos())
 			: super.getPlacementState(ctx);
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		if (direction == Direction.field_11036 && !state.canPlaceAt(world, pos)) {
+		if (direction == Direction.UP && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 

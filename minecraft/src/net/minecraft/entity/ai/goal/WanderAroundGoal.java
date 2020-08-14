@@ -29,7 +29,7 @@ public class WanderAroundGoal extends Goal {
 		this.speed = d;
 		this.chance = i;
 		this.field_24463 = bl;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override

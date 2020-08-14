@@ -15,7 +15,7 @@ public class GoToWalkTargetGoal extends Goal {
 	public GoToWalkTargetGoal(PathAwareEntity mob, double speed) {
 		this.mob = mob;
 		this.speed = speed;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override

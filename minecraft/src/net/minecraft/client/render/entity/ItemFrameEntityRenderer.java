@@ -36,11 +36,11 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void method_3994(ItemFrameEntity itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(ItemFrameEntity itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		super.render(itemFrameEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		matrixStack.push();
 		Direction direction = itemFrameEntity.getHorizontalFacing();
-		Vec3d vec3d = this.method_23174(itemFrameEntity, g);
+		Vec3d vec3d = this.getPositionOffset(itemFrameEntity, g);
 		matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
 		double d = 0.46875;
 		matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
@@ -50,7 +50,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		if (!bl) {
 			BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
 			BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
-			ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204 ? MAP_FRAME : NORMAL_FRAME;
+			ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
 			matrixStack.push();
 			matrixStack.translate(-0.5, -0.5, -0.5);
 			blockRenderManager.getModelRenderer()
@@ -70,7 +70,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 
 		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 		if (!itemStack.isEmpty()) {
-			boolean bl2 = itemStack.getItem() == Items.field_8204;
+			boolean bl2 = itemStack.getItem() == Items.FILLED_MAP;
 			if (bl) {
 				matrixStack.translate(0.0, 0.0, 0.5);
 			} else {
@@ -91,14 +91,14 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				}
 			} else {
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.field_4319, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+				this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
 			}
 		}
 
 		matrixStack.pop();
 	}
 
-	public Vec3d method_23174(ItemFrameEntity itemFrameEntity, float f) {
+	public Vec3d getPositionOffset(ItemFrameEntity itemFrameEntity, float f) {
 		return new Vec3d(
 			(double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3F),
 			-0.25,
@@ -106,11 +106,11 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		);
 	}
 
-	public Identifier method_3993(ItemFrameEntity itemFrameEntity) {
+	public Identifier getTexture(ItemFrameEntity itemFrameEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 
-	protected boolean method_23176(ItemFrameEntity itemFrameEntity) {
+	protected boolean hasLabel(ItemFrameEntity itemFrameEntity) {
 		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
 			&& itemFrameEntity.getHeldItemStack().hasCustomName()
@@ -123,7 +123,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		}
 	}
 
-	protected void method_23175(ItemFrameEntity itemFrameEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	protected void renderLabelIfPresent(ItemFrameEntity itemFrameEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		super.renderLabelIfPresent(itemFrameEntity, itemFrameEntity.getHeldItemStack().getName(), matrixStack, vertexConsumerProvider, i);
 	}
 }

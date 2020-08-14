@@ -40,7 +40,7 @@ public class BeetrootsBlock extends CropBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	protected ItemConvertible getSeedsItem() {
-		return Items.field_8309;
+		return Items.BEETROOT_SEEDS;
 	}
 
 	@Override

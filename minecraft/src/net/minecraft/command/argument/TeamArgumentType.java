@@ -37,7 +37,7 @@ public class TeamArgumentType implements ArgumentType<String> {
 		}
 	}
 
-	public String method_9483(StringReader stringReader) throws CommandSyntaxException {
+	public String parse(StringReader stringReader) throws CommandSyntaxException {
 		return stringReader.readUnquotedString();
 	}
 

@@ -21,11 +21,11 @@ public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, Parrot
 		super(entityRenderDispatcher, new ParrotEntityModel(), 0.3F);
 	}
 
-	public Identifier method_4080(ParrotEntity parrotEntity) {
+	public Identifier getTexture(ParrotEntity parrotEntity) {
 		return TEXTURES[parrotEntity.getVariant()];
 	}
 
-	public float method_4081(ParrotEntity parrotEntity, float f) {
+	public float getAnimationProgress(ParrotEntity parrotEntity, float f) {
 		float g = MathHelper.lerp(f, parrotEntity.prevFlapProgress, parrotEntity.flapProgress);
 		float h = MathHelper.lerp(f, parrotEntity.prevMaxWingDeviation, parrotEntity.maxWingDeviation);
 		return (MathHelper.sin(g) + 1.0F) * h;

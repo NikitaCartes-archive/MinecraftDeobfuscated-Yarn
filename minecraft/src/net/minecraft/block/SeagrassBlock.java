@@ -30,14 +30,14 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isSideSolidFullSquare(world, pos, Direction.field_11036) && !floor.isOf(Blocks.field_10092);
+		return floor.isSideSolidFullSquare(world, pos, Direction.UP) && !floor.isOf(Blocks.MAGMA_BLOCK);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-		return fluidState.isIn(FluidTags.field_15517) && fluidState.getLevel() == 8 ? super.getPlacementState(ctx) : null;
+		return fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8 ? super.getPlacementState(ctx) : null;
 	}
 
 	@Override
@@ -67,10 +67,10 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		BlockState blockState = Blocks.field_10238.getDefaultState();
-		BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.field_12609);
+		BlockState blockState = Blocks.TALL_SEAGRASS.getDefaultState();
+		BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
 		BlockPos blockPos = pos.up();
-		if (world.getBlockState(blockPos).isOf(Blocks.field_10382)) {
+		if (world.getBlockState(blockPos).isOf(Blocks.WATER)) {
 			world.setBlockState(pos, blockState, 2);
 			world.setBlockState(blockPos, blockState2, 2);
 		}

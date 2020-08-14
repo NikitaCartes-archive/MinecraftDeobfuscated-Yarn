@@ -16,14 +16,14 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 	public DefeatTargetTask(int duration, BiPredicate<LivingEntity, LivingEntity> biPredicate) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_22355,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_22333,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_22337,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_25159,
-				MemoryModuleState.field_18458
+				MemoryModuleType.ATTACK_TARGET,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.ANGRY_AT,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.CELEBRATE_LOCATION,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.DANCING,
+				MemoryModuleState.REGISTERED
 			)
 		);
 		this.duration = duration;
@@ -39,17 +39,17 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		LivingEntity livingEntity = this.getAttackTarget(entity);
 		if (this.field_25157.test(entity, livingEntity)) {
-			entity.getBrain().remember(MemoryModuleType.field_25159, true, (long)this.duration);
+			entity.getBrain().remember(MemoryModuleType.DANCING, true, (long)this.duration);
 		}
 
-		entity.getBrain().remember(MemoryModuleType.field_22337, livingEntity.getBlockPos(), (long)this.duration);
-		if (livingEntity.getType() != EntityType.field_6097 || world.getGameRules().getBoolean(GameRules.field_25401)) {
-			entity.getBrain().forget(MemoryModuleType.field_22355);
-			entity.getBrain().forget(MemoryModuleType.field_22333);
+		entity.getBrain().remember(MemoryModuleType.CELEBRATE_LOCATION, livingEntity.getBlockPos(), (long)this.duration);
+		if (livingEntity.getType() != EntityType.PLAYER || world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+			entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+			entity.getBrain().forget(MemoryModuleType.ANGRY_AT);
 		}
 	}
 
 	private LivingEntity getAttackTarget(LivingEntity entity) {
-		return (LivingEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.field_22355).get();
+		return (LivingEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
 	}
 }

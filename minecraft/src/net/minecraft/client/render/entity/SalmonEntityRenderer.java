@@ -17,11 +17,11 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 		super(entityRenderDispatcher, new SalmonEntityModel<>(), 0.4F);
 	}
 
-	public Identifier method_4101(SalmonEntity salmonEntity) {
+	public Identifier getTexture(SalmonEntity salmonEntity) {
 		return TEXTURE;
 	}
 
-	protected void method_4100(SalmonEntity salmonEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(SalmonEntity salmonEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(salmonEntity, matrixStack, f, g, h);
 		float i = 1.0F;
 		float j = 1.0F;

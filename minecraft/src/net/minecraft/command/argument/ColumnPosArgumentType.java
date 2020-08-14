@@ -31,7 +31,7 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 		return new ColumnPos(blockPos.getX(), blockPos.getZ());
 	}
 
-	public PosArgument method_9703(StringReader stringReader) throws CommandSyntaxException {
+	public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 		if (!stringReader.canRead()) {
 			throw INCOMPLETE_EXCEPTION.createWithContext(stringReader);
@@ -61,7 +61,7 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 				collection = ((CommandSource)context.getSource()).getBlockPositionSuggestions();
 			}
 
-			return CommandSource.suggestColumnPositions(string, collection, builder, CommandManager.getCommandValidator(this::method_9703));
+			return CommandSource.suggestColumnPositions(string, collection, builder, CommandManager.getCommandValidator(this::parse));
 		}
 	}
 

@@ -6,8 +6,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum Arm {
-	field_6182(new TranslatableText("options.mainHand.left")),
-	field_6183(new TranslatableText("options.mainHand.right"));
+	LEFT(new TranslatableText("options.mainHand.left")),
+	RIGHT(new TranslatableText("options.mainHand.right"));
 
 	private final Text optionName;
 
@@ -17,7 +17,7 @@ public enum Arm {
 
 	@Environment(EnvType.CLIENT)
 	public Arm getOpposite() {
-		return this == field_6182 ? field_6183 : field_6182;
+		return this == LEFT ? RIGHT : LEFT;
 	}
 
 	public String toString() {

@@ -72,7 +72,7 @@ public abstract class TrackTargetGoal extends Goal {
 	}
 
 	protected double getFollowRange() {
-		return this.mob.getAttributeValue(EntityAttributes.field_23717);
+		return this.mob.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class KnockbackEnchantment extends Enchantment {
 	protected KnockbackEnchantment(Enchantment.Rarity weight, EquipmentSlot... slot) {
-		super(weight, EnchantmentTarget.field_9074, slot);
+		super(weight, EnchantmentTarget.WEAPON, slot);
 	}
 
 	@Override

@@ -11,7 +11,7 @@ public class NopeSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		super(codec);
 	}
 
-	public void method_15299(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,

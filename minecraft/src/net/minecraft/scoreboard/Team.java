@@ -23,17 +23,17 @@ public class Team extends AbstractTeam {
 	private Text suffix = LiteralText.EMPTY;
 	private boolean friendlyFire = true;
 	private boolean showFriendlyInvisibles = true;
-	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
-	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
-	private Formatting color = Formatting.field_1070;
-	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.field_1437;
+	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
+	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
+	private Formatting color = Formatting.RESET;
+	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.ALWAYS;
 	private final Style field_24195;
 
 	public Team(Scoreboard scoreboard, String name) {
 		this.scoreboard = scoreboard;
 		this.name = name;
 		this.displayName = new LiteralText(name);
-		this.field_24195 = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.field_24342, new LiteralText(name)));
+		this.field_24195 = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(name)));
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class Team extends AbstractTeam {
 	public MutableText getFormattedName() {
 		MutableText mutableText = Texts.bracketed(this.displayName.shallowCopy().fillStyle(this.field_24195));
 		Formatting formatting = this.getColor();
-		if (formatting != Formatting.field_1070) {
+		if (formatting != Formatting.RESET) {
 			mutableText.formatted(formatting);
 		}
 
@@ -91,7 +91,7 @@ public class Team extends AbstractTeam {
 	public MutableText modifyText(Text text) {
 		MutableText mutableText = new LiteralText("").append(this.prefix).append(text).append(this.suffix);
 		Formatting formatting = this.getColor();
-		if (formatting != Formatting.field_1070) {
+		if (formatting != Formatting.RESET) {
 			mutableText.formatted(formatting);
 		}
 

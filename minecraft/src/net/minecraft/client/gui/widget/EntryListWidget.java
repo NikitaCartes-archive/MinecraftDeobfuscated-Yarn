@@ -78,7 +78,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Nullable
-	public E method_25336() {
+	public E getFocused() {
 		return (E)super.getFocused();
 	}
 
@@ -219,7 +219,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		RenderSystem.disableDepthTest();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
-			GlStateManager.SrcFactor.field_22541, GlStateManager.DstFactor.field_22523, GlStateManager.SrcFactor.field_22544, GlStateManager.DstFactor.field_22518
+			GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE
 		);
 		RenderSystem.disableAlphaTest();
 		RenderSystem.shadeModel(7425);
@@ -334,8 +334,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		if (this.method_25336() != null) {
-			this.method_25336().mouseReleased(mouseX, mouseY, button);
+		if (this.getFocused() != null) {
+			this.getFocused().mouseReleased(mouseX, mouseY, button);
 		}
 
 		return false;
@@ -523,7 +523,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		private Entries() {
 		}
 
-		public E method_1912(int i) {
+		public E get(int i) {
 			return (E)this.entries.get(i);
 		}
 
@@ -531,18 +531,18 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			return this.entries.size();
 		}
 
-		public E method_1909(int i, E entry) {
+		public E set(int i, E entry) {
 			E entry2 = (E)this.entries.set(i, entry);
 			EntryListWidget.this.method_29621(entry);
 			return entry2;
 		}
 
-		public void method_1910(int i, E entry) {
+		public void add(int i, E entry) {
 			this.entries.add(i, entry);
 			EntryListWidget.this.method_29621(entry);
 		}
 
-		public E method_1911(int i) {
+		public E remove(int i) {
 			return (E)this.entries.remove(i);
 		}
 	}

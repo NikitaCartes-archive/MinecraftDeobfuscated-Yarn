@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class BindingCurseEnchantment extends Enchantment {
 	public BindingCurseEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9078, slotTypes);
+		super(weight, EnchantmentTarget.WEARABLE, slotTypes);
 	}
 
 	@Override

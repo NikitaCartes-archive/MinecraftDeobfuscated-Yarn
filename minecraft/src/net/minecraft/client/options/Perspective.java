@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public enum Perspective {
-	field_26664(true, false),
-	field_26665(false, false),
-	field_26666(false, true);
+	FIRST_PERSON(true, false),
+	THIRD_PERSON_BACK(false, false),
+	THIRD_PERSON_FRONT(false, true);
 
 	private static final Perspective[] VALUES = values();
 	private boolean firstPerson;

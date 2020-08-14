@@ -14,26 +14,26 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 	private long lastCheckedTime;
 
 	public VillagerWorkTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456, MemoryModuleType.field_18446, MemoryModuleState.field_18458));
+		super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
 	}
 
-	protected boolean method_21641(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		if (serverWorld.getTime() - this.lastCheckedTime < 300L) {
 			return false;
 		} else if (serverWorld.random.nextInt(2) != 0) {
 			return false;
 		} else {
 			this.lastCheckedTime = serverWorld.getTime();
-			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18439).get();
+			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
 			return globalPos.getDimension() == serverWorld.getRegistryKey() && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
 
-	protected void method_21642(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
-		brain.remember(MemoryModuleType.field_19386, l);
-		brain.getOptionalMemory(MemoryModuleType.field_18439)
-			.ifPresent(globalPos -> brain.remember(MemoryModuleType.field_18446, new BlockPosLookTarget(globalPos.getPos())));
+		brain.remember(MemoryModuleType.LAST_WORKED_AT_POI, l);
+		brain.getOptionalMemory(MemoryModuleType.JOB_SITE)
+			.ifPresent(globalPos -> brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(globalPos.getPos())));
 		villagerEntity.playWorkSound();
 		this.performAdditionalWork(serverWorld, villagerEntity);
 		if (villagerEntity.shouldRestock()) {
@@ -44,8 +44,8 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 	protected void performAdditionalWork(ServerWorld world, VillagerEntity entity) {
 	}
 
-	protected boolean method_26336(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18439);
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
 		if (!optional.isPresent()) {
 			return false;
 		} else {

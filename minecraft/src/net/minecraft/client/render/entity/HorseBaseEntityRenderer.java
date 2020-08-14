@@ -15,7 +15,7 @@ public abstract class HorseBaseEntityRenderer<T extends HorseBaseEntity, M exten
 		this.scale = scale;
 	}
 
-	protected void method_3874(T horseBaseEntity, MatrixStack matrixStack, float f) {
+	protected void scale(T horseBaseEntity, MatrixStack matrixStack, float f) {
 		matrixStack.scale(this.scale, this.scale, this.scale);
 		super.scale(horseBaseEntity, matrixStack, f);
 	}

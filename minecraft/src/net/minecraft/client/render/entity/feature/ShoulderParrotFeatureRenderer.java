@@ -21,7 +21,7 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends Featu
 		super(featureRendererContext);
 	}
 
-	public void method_4185(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T playerEntity, float f, float g, float h, float j, float k, float l
 	) {
 		this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, k, l, true);
@@ -40,7 +40,7 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends Featu
 		boolean leftShoulder
 	) {
 		CompoundTag compoundTag = leftShoulder ? player.getShoulderEntityLeft() : player.getShoulderEntityRight();
-		EntityType.get(compoundTag.getString("id")).filter(entityType -> entityType == EntityType.field_6104).ifPresent(entityType -> {
+		EntityType.get(compoundTag.getString("id")).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
 			matrices.push();
 			matrices.translate(leftShoulder ? 0.4F : -0.4F, player.isInSneakingPose() ? -1.3F : -1.5, 0.0);
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(ParrotEntityRenderer.TEXTURES[compoundTag.getInt("Variant")]));

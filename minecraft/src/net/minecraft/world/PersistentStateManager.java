@@ -117,7 +117,7 @@ public class PersistentStateManager {
 					}
 
 					int i = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-					var10 = NbtHelper.update(this.dataFixer, DataFixTypes.field_19219, compoundTag, i, dataVersion);
+					var10 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, i, dataVersion);
 				} catch (Throwable var56) {
 					var7 = var56;
 					throw var56;

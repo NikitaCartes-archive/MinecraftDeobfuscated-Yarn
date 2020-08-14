@@ -19,7 +19,7 @@ public class ObserverBlock extends FacingBlock {
 
 	public ObserverBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11035).with(POWERED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.SOUTH).with(POWERED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class ObserverBlock extends FacingBlock {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
 		} else {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
-			world.method_14196().schedule(pos, this, 2);
+			world.getBlockTickScheduler().schedule(pos, this, 2);
 		}
 
 		this.updateNeighbors(world, pos, state);

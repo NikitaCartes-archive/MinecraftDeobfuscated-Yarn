@@ -40,7 +40,7 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Proper
 		return Optional.ofNullable(this.byName.get(name));
 	}
 
-	public String method_11846(T enum_) {
+	public String name(T enum_) {
 		return enum_.asString();
 	}
 

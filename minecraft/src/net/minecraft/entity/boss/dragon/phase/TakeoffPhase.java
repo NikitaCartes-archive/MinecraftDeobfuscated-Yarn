@@ -21,9 +21,9 @@ public class TakeoffPhase extends AbstractPhase {
 	@Override
 	public void serverTick() {
 		if (!this.field_7056 && this.field_7054 != null) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
 			if (!blockPos.isWithinDistance(this.dragon.getPos(), 10.0)) {
-				this.dragon.getPhaseManager().setPhase(PhaseType.field_7069);
+				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 			}
 		} else {
 			this.field_7056 = false;
@@ -82,6 +82,6 @@ public class TakeoffPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<TakeoffPhase> getType() {
-		return PhaseType.field_7077;
+		return PhaseType.TAKEOFF;
 	}
 }

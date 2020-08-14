@@ -32,7 +32,7 @@ public class ItemScatterer {
 	}
 
 	public static void spawn(World world, double x, double y, double z, ItemStack item) {
-		double d = (double)EntityType.field_6052.getWidth();
+		double d = (double)EntityType.ITEM.getWidth();
 		double e = 1.0 - d;
 		double f = d / 2.0;
 		double g = Math.floor(x) + RANDOM.nextDouble() * e + f;

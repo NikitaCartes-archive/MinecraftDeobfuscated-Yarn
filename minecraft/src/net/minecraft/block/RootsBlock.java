@@ -19,11 +19,11 @@ public class RootsBlock extends PlantBlock {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isIn(BlockTags.field_21953) || floor.isOf(Blocks.field_22090) || super.canPlantOnTop(floor, world, pos);
+		return floor.isIn(BlockTags.NYLIUM) || floor.isOf(Blocks.SOUL_SOIL) || super.canPlantOnTop(floor, world, pos);
 	}
 
 	@Override
 	public AbstractBlock.OffsetType getOffsetType() {
-		return AbstractBlock.OffsetType.field_10657;
+		return AbstractBlock.OffsetType.XZ;
 	}
 }

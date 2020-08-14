@@ -23,20 +23,20 @@ public class WallSignBlock extends AbstractSignBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.field_11043,
+			Direction.NORTH,
 			Block.createCuboidShape(0.0, 4.5, 14.0, 16.0, 12.5, 16.0),
-			Direction.field_11035,
+			Direction.SOUTH,
 			Block.createCuboidShape(0.0, 4.5, 0.0, 16.0, 12.5, 2.0),
-			Direction.field_11034,
+			Direction.EAST,
 			Block.createCuboidShape(0.0, 4.5, 0.0, 2.0, 12.5, 16.0),
-			Direction.field_11039,
+			Direction.WEST,
 			Block.createCuboidShape(14.0, 4.5, 0.0, 16.0, 12.5, 16.0)
 		)
 	);
 
 	public WallSignBlock(AbstractBlock.Settings settings, SignType signType) {
 		super(settings, signType);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class WallSignBlock extends AbstractSignBlock {
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 

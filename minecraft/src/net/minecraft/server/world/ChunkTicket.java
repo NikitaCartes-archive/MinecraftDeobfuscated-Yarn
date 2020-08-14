@@ -17,7 +17,7 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 		this.argument = argument;
 	}
 
-	public int method_14285(ChunkTicket<?> chunkTicket) {
+	public int compareTo(ChunkTicket<?> chunkTicket) {
 		int i = Integer.compare(this.level, chunkTicket.level);
 		if (i != 0) {
 			return i;

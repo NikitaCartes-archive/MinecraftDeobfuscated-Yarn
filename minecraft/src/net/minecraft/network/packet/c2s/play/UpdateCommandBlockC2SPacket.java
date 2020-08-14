@@ -64,7 +64,7 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 		buf.writeByte(i);
 	}
 
-	public void method_12469(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onUpdateCommandBlock(this);
 	}
 

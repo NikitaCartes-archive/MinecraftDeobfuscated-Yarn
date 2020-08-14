@@ -36,7 +36,7 @@ public class Vec2ArgumentType implements ArgumentType<PosArgument> {
 		return new Vec2f((float)vec3d.x, (float)vec3d.z);
 	}
 
-	public PosArgument method_9725(StringReader stringReader) throws CommandSyntaxException {
+	public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 		if (!stringReader.canRead()) {
 			throw INCOMPLETE_EXCEPTION.createWithContext(stringReader);
@@ -66,7 +66,7 @@ public class Vec2ArgumentType implements ArgumentType<PosArgument> {
 				collection = ((CommandSource)context.getSource()).getPositionSuggestions();
 			}
 
-			return CommandSource.suggestColumnPositions(string, collection, builder, CommandManager.getCommandValidator(this::method_9725));
+			return CommandSource.suggestColumnPositions(string, collection, builder, CommandManager.getCommandValidator(this::parse));
 		}
 	}
 

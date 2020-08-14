@@ -6,18 +6,18 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Direction;
 
 public enum JigsawOrientation implements StringIdentifiable {
-	field_23381("down_east", Direction.field_11033, Direction.field_11034),
-	field_23382("down_north", Direction.field_11033, Direction.field_11043),
-	field_23383("down_south", Direction.field_11033, Direction.field_11035),
-	field_23384("down_west", Direction.field_11033, Direction.field_11039),
-	field_23385("up_east", Direction.field_11036, Direction.field_11034),
-	field_23386("up_north", Direction.field_11036, Direction.field_11043),
-	field_23387("up_south", Direction.field_11036, Direction.field_11035),
-	field_23388("up_west", Direction.field_11036, Direction.field_11039),
-	field_23389("west_up", Direction.field_11039, Direction.field_11036),
-	field_23390("east_up", Direction.field_11034, Direction.field_11036),
-	field_23391("north_up", Direction.field_11043, Direction.field_11036),
-	field_23392("south_up", Direction.field_11035, Direction.field_11036);
+	DOWN_EAST("down_east", Direction.DOWN, Direction.EAST),
+	DOWN_NORTH("down_north", Direction.DOWN, Direction.NORTH),
+	DOWN_SOUTH("down_south", Direction.DOWN, Direction.SOUTH),
+	DOWN_WEST("down_west", Direction.DOWN, Direction.WEST),
+	UP_EAST("up_east", Direction.UP, Direction.EAST),
+	UP_NORTH("up_north", Direction.UP, Direction.NORTH),
+	UP_SOUTH("up_south", Direction.UP, Direction.SOUTH),
+	UP_WEST("up_west", Direction.UP, Direction.WEST),
+	WEST_UP("west_up", Direction.WEST, Direction.UP),
+	EAST_UP("east_up", Direction.EAST, Direction.UP),
+	NORTH_UP("north_up", Direction.NORTH, Direction.UP),
+	SOUTH_UP("south_up", Direction.SOUTH, Direction.UP);
 
 	private static final Int2ObjectMap<JigsawOrientation> BY_INDEX = new Int2ObjectOpenHashMap<>(values().length);
 	private final String name;

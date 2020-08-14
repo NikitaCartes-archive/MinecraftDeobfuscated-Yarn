@@ -36,7 +36,7 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
 		this.bottom.addCuboid(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F);
 	}
 
-	public void method_3908(EndCrystalEntity endCrystalEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(EndCrystalEntity endCrystalEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		float h = getYOffset(endCrystalEntity, g);
 		float j = ((float)endCrystalEntity.endCrystalAge + g) * 3.0F;
@@ -86,11 +86,11 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
 		return g - 1.4F;
 	}
 
-	public Identifier method_3909(EndCrystalEntity endCrystalEntity) {
+	public Identifier getTexture(EndCrystalEntity endCrystalEntity) {
 		return TEXTURE;
 	}
 
-	public boolean method_3907(EndCrystalEntity endCrystalEntity, Frustum frustum, double d, double e, double f) {
+	public boolean shouldRender(EndCrystalEntity endCrystalEntity, Frustum frustum, double d, double e, double f) {
 		return super.shouldRender(endCrystalEntity, frustum, d, e, f) || endCrystalEntity.getBeamTarget() != null;
 	}
 }

@@ -21,7 +21,7 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 		return ID;
 	}
 
-	public ConsumeItemCriterion.Conditions method_8820(
+	public ConsumeItemCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		return new ConsumeItemCriterion.Conditions(extended, ItemPredicate.fromJson(jsonObject.get("item")));

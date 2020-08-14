@@ -7,9 +7,9 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public enum AdvancementFrame {
-	field_1254("task", 0, Formatting.field_1060),
-	field_1250("challenge", 26, Formatting.field_1064),
-	field_1249("goal", 52, Formatting.field_1060);
+	TASK("task", 0, Formatting.GREEN),
+	CHALLENGE("challenge", 26, Formatting.DARK_PURPLE),
+	GOAL("goal", 52, Formatting.GREEN);
 
 	private final String id;
 	private final int textureV;

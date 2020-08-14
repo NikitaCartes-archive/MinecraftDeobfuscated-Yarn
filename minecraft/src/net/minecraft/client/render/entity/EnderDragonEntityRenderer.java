@@ -36,7 +36,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		this.shadowRadius = 0.5F;
 	}
 
-	public void method_3918(EnderDragonEntity enderDragonEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(EnderDragonEntity enderDragonEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		float h = (float)enderDragonEntity.getSegmentProperties(7, g)[0];
 		float j = (float)(enderDragonEntity.getSegmentProperties(5, g)[1] - enderDragonEntity.getSegmentProperties(10, g)[1]);
@@ -46,7 +46,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		matrixStack.translate(0.0, -1.501F, 0.0);
 		boolean bl = enderDragonEntity.hurtTime > 0;
-		this.model.method_23620(enderDragonEntity, 0.0F, 0.0F, g);
+		this.model.animateModel(enderDragonEntity, 0.0F, 0.0F, g);
 		if (enderDragonEntity.ticksSinceDeath > 0) {
 			float k = (float)enderDragonEntity.ticksSinceDeath / 200.0F;
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEXTURE, k));
@@ -185,7 +185,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		matrices.pop();
 	}
 
-	public Identifier method_3914(EnderDragonEntity enderDragonEntity) {
+	public Identifier getTexture(EnderDragonEntity enderDragonEntity) {
 		return TEXTURE;
 	}
 
@@ -307,12 +307,12 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			this.rearLegTip.addChild(this.rearFoot);
 		}
 
-		public void method_23620(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
+		public void animateModel(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
 			this.dragon = enderDragonEntity;
 			this.tickDelta = h;
 		}
 
-		public void method_23621(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j) {
+		public void setAngles(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j) {
 		}
 
 		@Override

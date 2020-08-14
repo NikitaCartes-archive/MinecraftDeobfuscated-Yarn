@@ -24,7 +24,7 @@ public final class VerticalBlockSample implements BlockView {
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
 		int i = pos.getY();
-		return i >= 0 && i < this.states.length ? this.states[i] : Blocks.field_10124.getDefaultState();
+		return i >= 0 && i < this.states.length ? this.states[i] : Blocks.AIR.getDefaultState();
 	}
 
 	@Override

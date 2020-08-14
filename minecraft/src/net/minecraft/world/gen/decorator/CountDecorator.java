@@ -12,7 +12,7 @@ public class CountDecorator extends SimpleDecorator<CountConfig> {
 		super(codec);
 	}
 
-	public Stream<BlockPos> method_30448(Random random, CountConfig countConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, CountConfig countConfig, BlockPos blockPos) {
 		return IntStream.range(0, countConfig.getCount().getValue(random)).mapToObj(i -> blockPos);
 	}
 }

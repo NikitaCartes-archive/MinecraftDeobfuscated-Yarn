@@ -282,7 +282,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return this.permanent;
 	}
 
-	public int method_5587(StatusEffectInstance statusEffectInstance) {
+	public int compareTo(StatusEffectInstance statusEffectInstance) {
 		int i = 32147;
 		return (this.getDuration() <= 32147 || statusEffectInstance.getDuration() <= 32147) && (!this.isAmbient() || !statusEffectInstance.isAmbient())
 			? ComparisonChain.start()

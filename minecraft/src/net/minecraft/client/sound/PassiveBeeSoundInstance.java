@@ -9,7 +9,7 @@ import net.minecraft.sound.SoundEvents;
 @Environment(EnvType.CLIENT)
 public class PassiveBeeSoundInstance extends AbstractBeeSoundInstance {
 	public PassiveBeeSoundInstance(BeeEntity beeEntity) {
-		super(beeEntity, SoundEvents.field_20605, SoundCategory.field_15254);
+		super(beeEntity, SoundEvents.ENTITY_BEE_LOOP, SoundCategory.NEUTRAL);
 	}
 
 	@Override

@@ -23,22 +23,22 @@ public class SnowballEntity extends ThrownItemEntity {
 	}
 
 	public SnowballEntity(World world, LivingEntity owner) {
-		super(EntityType.field_6068, owner, world);
+		super(EntityType.SNOWBALL, owner, world);
 	}
 
 	public SnowballEntity(World world, double x, double y, double z) {
-		super(EntityType.field_6068, x, y, z, world);
+		super(EntityType.SNOWBALL, x, y, z, world);
 	}
 
 	@Override
 	protected Item getDefaultItem() {
-		return Items.field_8543;
+		return Items.SNOWBALL;
 	}
 
 	@Environment(EnvType.CLIENT)
 	private ParticleEffect getParticleParameters() {
 		ItemStack itemStack = this.getItem();
-		return (ParticleEffect)(itemStack.isEmpty() ? ParticleTypes.field_11230 : new ItemStackParticleEffect(ParticleTypes.field_11218, itemStack));
+		return (ParticleEffect)(itemStack.isEmpty() ? ParticleTypes.ITEM_SNOWBALL : new ItemStackParticleEffect(ParticleTypes.ITEM, itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)

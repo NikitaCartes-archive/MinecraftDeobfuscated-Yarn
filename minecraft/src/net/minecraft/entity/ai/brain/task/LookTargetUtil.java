@@ -32,7 +32,7 @@ public class LookTargetUtil {
 	}
 
 	public static boolean canSee(Brain<?> brain, LivingEntity target) {
-		return brain.getOptionalMemory(MemoryModuleType.field_18442).filter(list -> list.contains(target)).isPresent();
+		return brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).filter(list -> list.contains(target)).isPresent();
 	}
 
 	public static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryModuleType, EntityType<?> entityType) {
@@ -49,7 +49,7 @@ public class LookTargetUtil {
 	}
 
 	public static void lookAt(LivingEntity entity, LivingEntity target) {
-		entity.getBrain().remember(MemoryModuleType.field_18446, new EntityLookTarget(target, true));
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 	}
 
 	private static void walkTowardsEachOther(LivingEntity first, LivingEntity second, float speed) {
@@ -60,14 +60,14 @@ public class LookTargetUtil {
 
 	public static void walkTowards(LivingEntity entity, Entity target, float speed, int completionRange) {
 		WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), speed, completionRange);
-		entity.getBrain().remember(MemoryModuleType.field_18446, new EntityLookTarget(target, true));
-		entity.getBrain().remember(MemoryModuleType.field_18445, walkTarget);
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
+		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 
 	public static void walkTowards(LivingEntity entity, BlockPos target, float speed, int completionRange) {
 		WalkTarget walkTarget = new WalkTarget(new BlockPosLookTarget(target), speed, completionRange);
-		entity.getBrain().remember(MemoryModuleType.field_18446, new BlockPosLookTarget(target));
-		entity.getBrain().remember(MemoryModuleType.field_18445, walkTarget);
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(target));
+		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 
 	public static void give(LivingEntity entity, ItemStack stack, Vec3d targetLocation) {
@@ -113,7 +113,7 @@ public class LookTargetUtil {
 	 * @param extraDistance the max distance this new target can be farther compared to the existing target
 	 */
 	public static boolean isNewTargetTooFar(LivingEntity source, LivingEntity target, double extraDistance) {
-		Optional<LivingEntity> optional = source.getBrain().getOptionalMemory(MemoryModuleType.field_22355);
+		Optional<LivingEntity> optional = source.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
@@ -125,7 +125,7 @@ public class LookTargetUtil {
 
 	public static boolean isVisibleInMemory(LivingEntity source, LivingEntity target) {
 		Brain<?> brain = source.getBrain();
-		return !brain.hasMemoryModule(MemoryModuleType.field_18442) ? false : ((List)brain.getOptionalMemory(MemoryModuleType.field_18442).get()).contains(target);
+		return !brain.hasMemoryModule(MemoryModuleType.VISIBLE_MOBS) ? false : ((List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).contains(target);
 	}
 
 	public static LivingEntity getCloserEntity(LivingEntity source, Optional<LivingEntity> first, LivingEntity second) {
@@ -145,7 +145,7 @@ public class LookTargetUtil {
 
 	public static Stream<VillagerEntity> streamSeenVillagers(VillagerEntity villager, Predicate<VillagerEntity> filter) {
 		return (Stream<VillagerEntity>)villager.getBrain()
-			.getOptionalMemory(MemoryModuleType.field_18441)
+			.getOptionalMemory(MemoryModuleType.MOBS)
 			.map(
 				list -> list.stream()
 						.filter(livingEntity -> livingEntity instanceof VillagerEntity && livingEntity != villager)

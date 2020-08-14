@@ -17,7 +17,7 @@ public class DrownedOverlayFeatureRenderer<T extends DrownedEntity> extends Feat
 		super(featureRendererContext);
 	}
 
-	public void method_4182(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T drownedEntity, float f, float g, float h, float j, float k, float l
 	) {
 		render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, drownedEntity, f, g, j, k, l, h, 1.0F, 1.0F, 1.0F);

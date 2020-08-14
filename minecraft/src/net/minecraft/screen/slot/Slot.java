@@ -65,12 +65,12 @@ public class Slot {
 		this.inventory.markDirty();
 	}
 
-	public int getMaxStackAmount() {
+	public int getMaxItemCount() {
 		return this.inventory.getMaxCountPerStack();
 	}
 
-	public int getMaxStackAmount(ItemStack stack) {
-		return this.getMaxStackAmount();
+	public int getMaxItemCount(ItemStack stack) {
+		return this.getMaxItemCount();
 	}
 
 	@Nullable

@@ -18,7 +18,7 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 		return ID;
 	}
 
-	public LevitationCriterion.Conditions method_9006(
+	public LevitationCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		DistancePredicate distancePredicate = DistancePredicate.fromJson(jsonObject.get("distance"));

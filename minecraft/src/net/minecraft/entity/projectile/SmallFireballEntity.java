@@ -19,11 +19,11 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	}
 
 	public SmallFireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.field_6049, owner, velocityX, velocityY, velocityZ, world);
+		super(EntityType.SMALL_FIREBALL, owner, velocityX, velocityY, velocityZ, world);
 	}
 
 	public SmallFireballEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.field_6049, x, y, z, velocityX, velocityY, velocityZ, world);
+		super(EntityType.SMALL_FIREBALL, x, y, z, velocityX, velocityY, velocityZ, world);
 	}
 
 	@Override

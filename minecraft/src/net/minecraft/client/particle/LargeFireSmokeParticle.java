@@ -21,7 +21,7 @@ public class LargeFireSmokeParticle extends FireSmokeParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3040(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new LargeFireSmokeParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}

@@ -146,7 +146,7 @@ public class PlayerAdvancementTracker {
 					}
 
 					dynamic = this.field_25324
-						.update(DataFixTypes.field_19220.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
+						.update(DataFixTypes.ADVANCEMENTS.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
 					dynamic = dynamic.remove("DataVersion");
 					Map<Identifier, AdvancementProgress> map = (Map)GSON.getAdapter(JSON_TYPE).fromJsonTree(dynamic.getValue());
 					if (map == null) {
@@ -275,7 +275,7 @@ public class PlayerAdvancementTracker {
 					this.field_25325
 						.broadcastChatMessage(
 							new TranslatableText("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText()),
-							MessageType.field_11735,
+							MessageType.SYSTEM,
 							Util.NIL_UUID
 						);
 				}

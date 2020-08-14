@@ -43,7 +43,7 @@ public class CraftFailedResponseS2CPacket implements Packet<ClientPlayPacketList
 		buf.writeIdentifier(this.recipeId);
 	}
 
-	public void method_11686(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCraftFailedResponse(this);
 	}
 }

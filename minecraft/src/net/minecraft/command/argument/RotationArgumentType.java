@@ -24,7 +24,7 @@ public class RotationArgumentType implements ArgumentType<PosArgument> {
 		return context.getArgument(name, PosArgument.class);
 	}
 
-	public PosArgument method_9718(StringReader stringReader) throws CommandSyntaxException {
+	public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 		if (!stringReader.canRead()) {
 			throw INCOMPLETE_ROTATION_EXCEPTION.createWithContext(stringReader);

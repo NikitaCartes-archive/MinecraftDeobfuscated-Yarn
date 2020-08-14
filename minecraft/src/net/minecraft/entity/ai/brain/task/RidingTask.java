@@ -13,7 +13,7 @@ public class RidingTask<E extends LivingEntity, T extends Entity> extends Task<E
 	private final BiPredicate<E, Entity> alternativeRideCondition;
 
 	public RidingTask(int range, BiPredicate<E, Entity> alternativeRideCondition) {
-		super(ImmutableMap.of(MemoryModuleType.field_22356, MemoryModuleState.field_18458));
+		super(ImmutableMap.of(MemoryModuleType.RIDE_TARGET, MemoryModuleState.REGISTERED));
 		this.range = range;
 		this.alternativeRideCondition = alternativeRideCondition;
 	}
@@ -21,7 +21,7 @@ public class RidingTask<E extends LivingEntity, T extends Entity> extends Task<E
 	@Override
 	protected boolean shouldRun(ServerWorld world, E entity) {
 		Entity entity2 = entity.getVehicle();
-		Entity entity3 = (Entity)entity.getBrain().getOptionalMemory(MemoryModuleType.field_22356).orElse(null);
+		Entity entity3 = (Entity)entity.getBrain().getOptionalMemory(MemoryModuleType.RIDE_TARGET).orElse(null);
 		if (entity2 == null && entity3 == null) {
 			return false;
 		} else {
@@ -37,6 +37,6 @@ public class RidingTask<E extends LivingEntity, T extends Entity> extends Task<E
 	@Override
 	protected void run(ServerWorld world, E entity, long time) {
 		entity.stopRiding();
-		entity.getBrain().forget(MemoryModuleType.field_22356);
+		entity.getBrain().forget(MemoryModuleType.RIDE_TARGET);
 	}
 }

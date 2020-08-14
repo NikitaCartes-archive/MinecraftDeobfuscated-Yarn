@@ -20,11 +20,11 @@ public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.world.getGameRules().getBoolean(GameRules.field_25402) && this.method_29932();
+		return this.mob.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.method_29932();
 	}
 
 	private boolean method_29932() {
-		return this.mob.getAttacker() != null && this.mob.getAttacker().getType() == EntityType.field_6097 && this.mob.getLastAttackedTime() > this.field_25606;
+		return this.mob.getAttacker() != null && this.mob.getAttacker().getType() == EntityType.PLAYER && this.mob.getLastAttackedTime() > this.field_25606;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
 	}
 
 	private List<MobEntity> getOthersInRange() {
-		double d = this.mob.getAttributeValue(EntityAttributes.field_23717);
+		double d = this.mob.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
 		Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0, d);
 		return this.mob.world.getEntitiesIncludingUngeneratedChunks(this.mob.getClass(), box);
 	}

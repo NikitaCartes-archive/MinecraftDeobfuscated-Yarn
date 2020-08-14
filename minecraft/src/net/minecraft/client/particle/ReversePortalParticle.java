@@ -42,7 +42,7 @@ public class ReversePortalParticle extends PortalParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_26268(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			ReversePortalParticle reversePortalParticle = new ReversePortalParticle(clientWorld, d, e, f, g, h, i);
 			reversePortalParticle.setSprite(this.spriteProvider);
 			return reversePortalParticle;

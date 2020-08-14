@@ -22,7 +22,7 @@ public class ServerInfo {
 	public Text version = new LiteralText(SharedConstants.getGameVersion().getName());
 	public boolean online;
 	public List<Text> playerListSummary = Collections.emptyList();
-	private ServerInfo.ResourcePackState resourcePackState = ServerInfo.ResourcePackState.field_3767;
+	private ServerInfo.ResourcePackState resourcePackState = ServerInfo.ResourcePackState.PROMPT;
 	@Nullable
 	private String icon;
 	private boolean local;
@@ -41,9 +41,9 @@ public class ServerInfo {
 			compoundTag.putString("icon", this.icon);
 		}
 
-		if (this.resourcePackState == ServerInfo.ResourcePackState.field_3768) {
+		if (this.resourcePackState == ServerInfo.ResourcePackState.ENABLED) {
 			compoundTag.putBoolean("acceptTextures", true);
-		} else if (this.resourcePackState == ServerInfo.ResourcePackState.field_3764) {
+		} else if (this.resourcePackState == ServerInfo.ResourcePackState.DISABLED) {
 			compoundTag.putBoolean("acceptTextures", false);
 		}
 
@@ -66,12 +66,12 @@ public class ServerInfo {
 
 		if (tag.contains("acceptTextures", 1)) {
 			if (tag.getBoolean("acceptTextures")) {
-				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.field_3768);
+				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.ENABLED);
 			} else {
-				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.field_3764);
+				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.DISABLED);
 			}
 		} else {
-			serverInfo.setResourcePackState(ServerInfo.ResourcePackState.field_3767);
+			serverInfo.setResourcePackState(ServerInfo.ResourcePackState.PROMPT);
 		}
 
 		return serverInfo;
@@ -100,9 +100,9 @@ public class ServerInfo {
 
 	@Environment(EnvType.CLIENT)
 	public static enum ResourcePackState {
-		field_3768("enabled"),
-		field_3764("disabled"),
-		field_3767("prompt");
+		ENABLED("enabled"),
+		DISABLED("disabled"),
+		PROMPT("prompt");
 
 		private final Text name;
 

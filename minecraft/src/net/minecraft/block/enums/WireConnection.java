@@ -3,9 +3,9 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum WireConnection implements StringIdentifiable {
-	field_12686("up"),
-	field_12689("side"),
-	field_12687("none");
+	UP("up"),
+	SIDE("side"),
+	NONE("none");
 
 	private final String name;
 
@@ -23,6 +23,6 @@ public enum WireConnection implements StringIdentifiable {
 	}
 
 	public boolean isConnected() {
-		return this != field_12687;
+		return this != NONE;
 	}
 }

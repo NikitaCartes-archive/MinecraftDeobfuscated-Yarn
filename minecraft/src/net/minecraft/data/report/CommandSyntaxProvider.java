@@ -23,7 +23,7 @@ public class CommandSyntaxProvider implements DataProvider {
 	@Override
 	public void run(DataCache cache) throws IOException {
 		Path path = this.root.getOutput().resolve("reports/commands.json");
-		CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(CommandManager.RegistrationEnvironment.field_25419).getDispatcher();
+		CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(CommandManager.RegistrationEnvironment.ALL).getDispatcher();
 		DataProvider.writeToPath(GSON, cache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
 	}
 

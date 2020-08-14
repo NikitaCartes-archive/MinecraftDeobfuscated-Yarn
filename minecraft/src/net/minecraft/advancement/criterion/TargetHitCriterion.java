@@ -19,7 +19,7 @@ public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Con
 		return ID;
 	}
 
-	public TargetHitCriterion.Conditions method_24863(
+	public TargetHitCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("signal_strength"));

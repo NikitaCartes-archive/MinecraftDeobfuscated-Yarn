@@ -16,7 +16,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 
 	public MoveToRaidCenterGoal(T actor) {
 		this.actor = actor;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override

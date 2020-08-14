@@ -79,7 +79,7 @@ public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel
 		return ImmutableList.<ModelPart>of(this.torso, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
 	}
 
-	public void method_24461(T mobEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
 		this.rightEar.roll = (float) (-Math.PI * 2.0 / 9.0) - g * MathHelper.sin(f);
 		this.leftEar.roll = (float) (Math.PI * 2.0 / 9.0) + g * MathHelper.sin(f);
 		this.head.yaw = i * (float) (Math.PI / 180.0);

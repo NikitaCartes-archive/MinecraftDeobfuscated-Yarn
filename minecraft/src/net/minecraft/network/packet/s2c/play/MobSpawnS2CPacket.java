@@ -81,7 +81,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeShort(this.velocityZ);
 	}
 
-	public void method_11217(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onMobSpawn(this);
 	}
 

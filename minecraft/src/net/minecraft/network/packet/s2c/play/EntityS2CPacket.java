@@ -61,7 +61,7 @@ public class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeVarInt(this.id);
 	}
 
-	public void method_11651(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityUpdate(this);
 	}
 

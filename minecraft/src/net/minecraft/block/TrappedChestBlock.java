@@ -14,7 +14,7 @@ import net.minecraft.world.BlockView;
 
 public class TrappedChestBlock extends ChestBlock {
 	public TrappedChestBlock(AbstractBlock.Settings settings) {
-		super(settings, () -> BlockEntityType.field_11891);
+		super(settings, () -> BlockEntityType.TRAPPED_CHEST);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class TrappedChestBlock extends ChestBlock {
 
 	@Override
 	protected Stat<Identifier> getOpenStat() {
-		return Stats.field_15419.getOrCreateStat(Stats.field_15402);
+		return Stats.CUSTOM.getOrCreateStat(Stats.TRIGGER_TRAPPED_CHEST);
 	}
 
 	@Override
@@ -39,6 +39,6 @@ public class TrappedChestBlock extends ChestBlock {
 
 	@Override
 	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		return direction == Direction.field_11036 ? state.getWeakRedstonePower(world, pos, direction) : 0;
+		return direction == Direction.UP ? state.getWeakRedstonePower(world, pos, direction) : 0;
 	}
 }

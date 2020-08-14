@@ -17,22 +17,22 @@ public class SeagrassFeature extends Feature<ProbabilityConfig> {
 		super(codec);
 	}
 
-	public boolean method_13926(
+	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
 	) {
 		boolean bl = false;
 		int i = random.nextInt(8) - random.nextInt(8);
 		int j = random.nextInt(8) - random.nextInt(8);
-		int k = structureWorldAccess.getTopY(Heightmap.Type.field_13200, blockPos.getX() + i, blockPos.getZ() + j);
+		int k = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + i, blockPos.getZ() + j);
 		BlockPos blockPos2 = new BlockPos(blockPos.getX() + i, k, blockPos.getZ() + j);
-		if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.field_10382)) {
+		if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)) {
 			boolean bl2 = random.nextDouble() < (double)probabilityConfig.probability;
-			BlockState blockState = bl2 ? Blocks.field_10238.getDefaultState() : Blocks.field_10376.getDefaultState();
+			BlockState blockState = bl2 ? Blocks.TALL_SEAGRASS.getDefaultState() : Blocks.SEAGRASS.getDefaultState();
 			if (blockState.canPlaceAt(structureWorldAccess, blockPos2)) {
 				if (bl2) {
-					BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.field_12609);
+					BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
 					BlockPos blockPos3 = blockPos2.up();
-					if (structureWorldAccess.getBlockState(blockPos3).isOf(Blocks.field_10382)) {
+					if (structureWorldAccess.getBlockState(blockPos3).isOf(Blocks.WATER)) {
 						structureWorldAccess.setBlockState(blockPos2, blockState, 2);
 						structureWorldAccess.setBlockState(blockPos3, blockState2, 2);
 					}

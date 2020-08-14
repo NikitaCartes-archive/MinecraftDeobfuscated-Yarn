@@ -11,7 +11,7 @@ import net.minecraft.world.WorldView;
 public abstract class WaterCreatureEntity extends PathAwareEntity {
 	protected WaterCreatureEntity(EntityType<? extends WaterCreatureEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.field_18, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 	}
 
 	@Override

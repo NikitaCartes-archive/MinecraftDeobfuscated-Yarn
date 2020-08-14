@@ -33,7 +33,7 @@ public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 			field_24617.warn("SNBT Too old, do not forget to update: " + i + " < " + 2532 + ": " + string);
 		}
 
-		CompoundTag compoundTag2 = NbtHelper.update(Schemas.getFixer(), DataFixTypes.field_19217, compoundTag, i);
+		CompoundTag compoundTag2 = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, compoundTag, i);
 		structure.fromTag(compoundTag2);
 		return structure.toTag(new CompoundTag());
 	}

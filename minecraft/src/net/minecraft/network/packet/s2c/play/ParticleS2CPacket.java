@@ -45,7 +45,7 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void read(PacketByteBuf buf) throws IOException {
 		ParticleType<?> particleType = Registry.PARTICLE_TYPE.get(buf.readInt());
 		if (particleType == null) {
-			particleType = ParticleTypes.field_11235;
+			particleType = ParticleTypes.BARRIER;
 		}
 
 		this.longDistance = buf.readBoolean();
@@ -129,7 +129,7 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		return this.parameters;
 	}
 
-	public void method_11553(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onParticle(this);
 	}
 }

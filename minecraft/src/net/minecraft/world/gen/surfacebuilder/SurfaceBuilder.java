@@ -9,26 +9,26 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public abstract class SurfaceBuilder<C extends SurfaceConfig> {
-	private static final BlockState DIRT = Blocks.field_10566.getDefaultState();
-	private static final BlockState GRASS_BLOCK = Blocks.field_10219.getDefaultState();
-	private static final BlockState PODZOL = Blocks.field_10520.getDefaultState();
-	private static final BlockState GRAVEL = Blocks.field_10255.getDefaultState();
-	private static final BlockState STONE = Blocks.field_10340.getDefaultState();
-	private static final BlockState COARSE_DIRT = Blocks.field_10253.getDefaultState();
-	private static final BlockState SAND = Blocks.field_10102.getDefaultState();
-	private static final BlockState RED_SAND = Blocks.field_10534.getDefaultState();
-	private static final BlockState WHITE_TERRACOTTA = Blocks.field_10611.getDefaultState();
-	private static final BlockState MYCELIUM = Blocks.field_10402.getDefaultState();
-	private static final BlockState SOUL_SAND = Blocks.field_10114.getDefaultState();
-	private static final BlockState NETHERRACK = Blocks.field_10515.getDefaultState();
-	private static final BlockState END_STONE = Blocks.field_10471.getDefaultState();
-	private static final BlockState CRIMSON_NYLIUM = Blocks.field_22120.getDefaultState();
-	private static final BlockState WARPED_NYLIUM = Blocks.field_22113.getDefaultState();
-	private static final BlockState NETHER_WART_BLOCK = Blocks.field_10541.getDefaultState();
-	private static final BlockState WARPED_WART_BLOCK = Blocks.field_22115.getDefaultState();
-	private static final BlockState BLACKSTONE = Blocks.field_23869.getDefaultState();
-	private static final BlockState BASALT = Blocks.field_22091.getDefaultState();
-	private static final BlockState MAGMA_BLOCK = Blocks.field_10092.getDefaultState();
+	private static final BlockState DIRT = Blocks.DIRT.getDefaultState();
+	private static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
+	private static final BlockState PODZOL = Blocks.PODZOL.getDefaultState();
+	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
+	private static final BlockState STONE = Blocks.STONE.getDefaultState();
+	private static final BlockState COARSE_DIRT = Blocks.COARSE_DIRT.getDefaultState();
+	private static final BlockState SAND = Blocks.SAND.getDefaultState();
+	private static final BlockState RED_SAND = Blocks.RED_SAND.getDefaultState();
+	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
+	private static final BlockState MYCELIUM = Blocks.MYCELIUM.getDefaultState();
+	private static final BlockState SOUL_SAND = Blocks.SOUL_SAND.getDefaultState();
+	private static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
+	private static final BlockState END_STONE = Blocks.END_STONE.getDefaultState();
+	private static final BlockState CRIMSON_NYLIUM = Blocks.CRIMSON_NYLIUM.getDefaultState();
+	private static final BlockState WARPED_NYLIUM = Blocks.WARPED_NYLIUM.getDefaultState();
+	private static final BlockState NETHER_WART_BLOCK = Blocks.NETHER_WART_BLOCK.getDefaultState();
+	private static final BlockState WARPED_WART_BLOCK = Blocks.WARPED_WART_BLOCK.getDefaultState();
+	private static final BlockState BLACKSTONE = Blocks.BLACKSTONE.getDefaultState();
+	private static final BlockState BASALT = Blocks.BASALT.getDefaultState();
+	private static final BlockState MAGMA_BLOCK = Blocks.MAGMA_BLOCK.getDefaultState();
 	public static final TernarySurfaceConfig PODZOL_CONFIG = new TernarySurfaceConfig(PODZOL, DIRT, GRAVEL);
 	public static final TernarySurfaceConfig GRAVEL_CONFIG = new TernarySurfaceConfig(GRAVEL, GRAVEL, GRAVEL);
 	public static final TernarySurfaceConfig GRASS_CONFIG = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, GRAVEL);
@@ -45,33 +45,33 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	public static final TernarySurfaceConfig CRIMSON_NYLIUM_CONFIG = new TernarySurfaceConfig(CRIMSON_NYLIUM, NETHERRACK, NETHER_WART_BLOCK);
 	public static final TernarySurfaceConfig WARPED_NYLIUM_CONFIG = new TernarySurfaceConfig(WARPED_NYLIUM, NETHERRACK, WARPED_WART_BLOCK);
 	public static final TernarySurfaceConfig BASALT_DELTA_CONFIG = new TernarySurfaceConfig(BLACKSTONE, BASALT, MAGMA_BLOCK);
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15701 = register("default", new DefaultSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15692 = register("mountain", new MountainSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15680 = register(
+	public static final SurfaceBuilder<TernarySurfaceConfig> DEFAULT = register("default", new DefaultSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> MOUNTAIN = register("mountain", new MountainSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> SHATTERED_SAVANNA = register(
 		"shattered_savanna", new ShatteredSavannaSurfaceBuilder(TernarySurfaceConfig.CODEC)
 	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15702 = register(
+	public static final SurfaceBuilder<TernarySurfaceConfig> GRAVELLY_MOUNTAIN = register(
 		"gravelly_mountain", new GravellyMountainSurfaceBuilder(TernarySurfaceConfig.CODEC)
 	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15688 = register(
+	public static final SurfaceBuilder<TernarySurfaceConfig> GIANT_TREE_TAIGA = register(
 		"giant_tree_taiga", new GiantTreeTaigaSurfaceBuilder(TernarySurfaceConfig.CODEC)
 	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15681 = register("swamp", new SwampSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15698 = register("badlands", new BadlandsSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15689 = register(
+	public static final SurfaceBuilder<TernarySurfaceConfig> SWAMP = register("swamp", new SwampSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> BADLANDS = register("badlands", new BadlandsSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> WOODED_BADLANDS = register(
 		"wooded_badlands", new WoodedBadlandsSurfaceBuilder(TernarySurfaceConfig.CODEC)
 	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15684 = register(
+	public static final SurfaceBuilder<TernarySurfaceConfig> ERODED_BADLANDS = register(
 		"eroded_badlands", new ErodedBadlandsSurfaceBuilder(TernarySurfaceConfig.CODEC)
 	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15699 = register("frozen_ocean", new FrozenOceanSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15693 = register("nether", new NetherSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_22216 = register("nether_forest", new NetherForestSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_22217 = register(
+	public static final SurfaceBuilder<TernarySurfaceConfig> FROZEN_OCEAN = register("frozen_ocean", new FrozenOceanSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> NETHER = register("nether", new NetherSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> NETHER_FOREST = register("nether_forest", new NetherForestSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> SOUL_SAND_VALLEY = register(
 		"soul_sand_valley", new SoulSandValleySurfaceBuilder(TernarySurfaceConfig.CODEC)
 	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_23926 = register("basalt_deltas", new BasaltDeltasSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> field_15683 = register("nope", new NopeSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> BASALT_DELTAS = register("basalt_deltas", new BasaltDeltasSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = register("nope", new NopeSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	private final Codec<ConfiguredSurfaceBuilder<C>> field_25016;
 
 	private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String string, F surfaceBuilder) {

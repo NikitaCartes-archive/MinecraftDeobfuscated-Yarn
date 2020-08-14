@@ -73,20 +73,20 @@ public abstract class PatrolEntity extends HostileEntity {
 	public EntityData initialize(
 		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		if (spawnReason != SpawnReason.field_16527
-			&& spawnReason != SpawnReason.field_16467
-			&& spawnReason != SpawnReason.field_16474
+		if (spawnReason != SpawnReason.PATROL
+			&& spawnReason != SpawnReason.EVENT
+			&& spawnReason != SpawnReason.STRUCTURE
 			&& this.random.nextFloat() < 0.06F
 			&& this.canLead()) {
 			this.patrolLeader = true;
 		}
 
 		if (this.isPatrolLeader()) {
-			this.equipStack(EquipmentSlot.field_6169, Raid.getOminousBanner());
-			this.setEquipmentDropChance(EquipmentSlot.field_6169, 2.0F);
+			this.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner());
+			this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
 		}
 
-		if (spawnReason == SpawnReason.field_16527) {
+		if (spawnReason == SpawnReason.PATROL) {
 			this.patrolling = true;
 		}
 
@@ -94,7 +94,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	}
 
 	public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getLightLevel(LightType.field_9282, pos) > 8 ? false : canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random);
+		return world.getLightLevel(LightType.BLOCK, pos) > 8 ? false : canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random);
 	}
 
 	@Override
@@ -152,7 +152,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			this.leaderSpeed = leaderSpeed;
 			this.followSpeed = followSpeed;
 			this.nextPatrolSearchTime = -1L;
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -186,7 +186,7 @@ public abstract class PatrolEntity extends HostileEntity {
 					vec3d = vec3d3.rotateY(90.0F).multiply(0.4).add(vec3d);
 					Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 					BlockPos blockPos = new BlockPos(vec3d4);
-					blockPos = this.entity.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
+					blockPos = this.entity.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
 					if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), bl ? this.followSpeed : this.leaderSpeed)) {
 						this.wander();
 						this.nextPatrolSearchTime = this.entity.world.getTime() + 200L;
@@ -211,7 +211,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			Random random = this.entity.getRandom();
 			BlockPos blockPos = this.entity
 				.world
-				.getTopPosition(Heightmap.Type.field_13203, this.entity.getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.entity.getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 			return this.entity.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
 		}
 	}

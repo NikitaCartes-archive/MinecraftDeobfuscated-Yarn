@@ -22,7 +22,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 		return ID;
 	}
 
-	public SlideDownBlockCriterion.Conditions method_23911(
+	public SlideDownBlockCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Block block = getBlock(jsonObject);

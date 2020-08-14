@@ -62,13 +62,13 @@ public abstract class TrunkPlacer {
 	private static boolean method_27403(TestableWorld testableWorld, BlockPos blockPos) {
 		return testableWorld.testBlockState(blockPos, blockState -> {
 			Block block = blockState.getBlock();
-			return Feature.isSoil(block) && !blockState.isOf(Blocks.field_10219) && !blockState.isOf(Blocks.field_10402);
+			return Feature.isSoil(block) && !blockState.isOf(Blocks.GRASS_BLOCK) && !blockState.isOf(Blocks.MYCELIUM);
 		});
 	}
 
 	protected static void method_27400(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
 		if (!method_27403(modifiableTestableWorld, blockPos)) {
-			TreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableTestableWorld, blockPos, Blocks.field_10566.getDefaultState());
+			TreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableTestableWorld, blockPos, Blocks.DIRT.getDefaultState());
 		}
 	}
 

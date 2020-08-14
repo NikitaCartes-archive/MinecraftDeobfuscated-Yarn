@@ -37,7 +37,7 @@ public class JigsawGeneratingC2SPacket implements Packet<ServerPlayPacketListene
 		buf.writeBoolean(this.keepJigsaws);
 	}
 
-	public void method_27274(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onJigsawGenerating(this);
 	}
 

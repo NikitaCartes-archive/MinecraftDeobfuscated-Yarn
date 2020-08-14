@@ -28,12 +28,12 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.field_25219;
+		return LootFunctionTypes.LOOTING_ENCHANT;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1230);
+		return ImmutableSet.of(LootContextParameters.KILLER_ENTITY);
 	}
 
 	private boolean hasLimit() {
@@ -42,7 +42,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Entity entity = context.get(LootContextParameters.field_1230);
+		Entity entity = context.get(LootContextParameters.KILLER_ENTITY);
 		if (entity instanceof LivingEntity) {
 			int i = EnchantmentHelper.getLooting((LivingEntity)entity);
 			if (i == 0) {
@@ -71,7 +71,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 			this.countRange = countRange;
 		}
 
-		protected LootingEnchantLootFunction.Builder method_552() {
+		protected LootingEnchantLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
@@ -87,15 +87,15 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<LootingEnchantLootFunction> {
-		public void method_553(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
 			jsonObject.add("count", jsonSerializationContext.serialize(lootingEnchantLootFunction.countRange));
 			if (lootingEnchantLootFunction.hasLimit()) {
 				jsonObject.add("limit", jsonSerializationContext.serialize(lootingEnchantLootFunction.limit));
 			}
 		}
 
-		public LootingEnchantLootFunction method_554(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public LootingEnchantLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			int i = JsonHelper.getInt(jsonObject, "limit", 0);
 			return new LootingEnchantLootFunction(
 				lootConditions, JsonHelper.deserialize(jsonObject, "count", jsonDeserializationContext, UniformLootTableRange.class), i

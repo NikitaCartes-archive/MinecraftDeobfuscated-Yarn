@@ -8,7 +8,7 @@ public class TwistingVinesBlock extends AbstractPlantStemBlock {
 	public static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 15.0, 12.0);
 
 	public TwistingVinesBlock(AbstractBlock.Settings settings) {
-		super(settings, Direction.field_11036, SHAPE, false, 0.1);
+		super(settings, Direction.UP, SHAPE, false, 0.1);
 	}
 
 	@Override
@@ -18,7 +18,7 @@ public class TwistingVinesBlock extends AbstractPlantStemBlock {
 
 	@Override
 	protected Block getPlant() {
-		return Blocks.field_23079;
+		return Blocks.TWISTING_VINES_PLANT;
 	}
 
 	@Override

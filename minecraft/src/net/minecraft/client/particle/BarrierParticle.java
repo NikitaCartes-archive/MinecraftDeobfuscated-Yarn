@@ -30,8 +30,8 @@ public class BarrierParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		public Particle method_3010(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			return new BarrierParticle(clientWorld, d, e, f, Blocks.field_10499.asItem());
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new BarrierParticle(clientWorld, d, e, f, Blocks.BARRIER.asItem());
 		}
 	}
 }

@@ -13,12 +13,12 @@ public class WorkStationCompetitionTask extends Task<VillagerEntity> {
 	final VillagerProfession profession;
 
 	public WorkStationCompetitionTask(VillagerProfession profession) {
-		super(ImmutableMap.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456, MemoryModuleType.field_18441, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.MOBS, MemoryModuleState.VALUE_PRESENT));
 		this.profession = profession;
 	}
 
-	protected void method_29258(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18439).get();
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
 		serverWorld.getPointOfInterestStorage()
 			.getType(globalPos.getPos())
 			.ifPresent(
@@ -40,13 +40,13 @@ public class WorkStationCompetitionTask extends Task<VillagerEntity> {
 			villagerEntity2 = first;
 		}
 
-		villagerEntity2.getBrain().forget(MemoryModuleType.field_18439);
+		villagerEntity2.getBrain().forget(MemoryModuleType.JOB_SITE);
 		return villagerEntity;
 	}
 
 	private boolean isUsingWorkStationAt(GlobalPos pos, PointOfInterestType poiType, VillagerEntity villager) {
 		return this.hasJobSite(villager)
-			&& pos.equals(villager.getBrain().getOptionalMemory(MemoryModuleType.field_18439).get())
+			&& pos.equals(villager.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get())
 			&& this.isCompletedWorkStation(poiType, villager.getVillagerData().getProfession());
 	}
 
@@ -55,6 +55,6 @@ public class WorkStationCompetitionTask extends Task<VillagerEntity> {
 	}
 
 	private boolean hasJobSite(VillagerEntity villager) {
-		return villager.getBrain().getOptionalMemory(MemoryModuleType.field_18439).isPresent();
+		return villager.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).isPresent();
 	}
 }

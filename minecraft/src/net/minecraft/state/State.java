@@ -20,7 +20,7 @@ import net.minecraft.state.property.Property;
 
 public abstract class State<O, S> {
 	private static final Function<Entry<Property<?>, Comparable<?>>, String> PROPERTY_MAP_PRINTER = new Function<Entry<Property<?>, Comparable<?>>, String>() {
-		public String method_11576(@Nullable Entry<Property<?>, Comparable<?>> entry) {
+		public String apply(@Nullable Entry<Property<?>, Comparable<?>> entry) {
 			if (entry == null) {
 				return "<NULL>";
 			} else {

@@ -55,7 +55,7 @@ public class TradeOutputSlot extends Slot {
 			ItemStack itemStack2 = this.traderInventory.getStack(1);
 			if (tradeOffer.depleteBuyItems(itemStack, itemStack2) || tradeOffer.depleteBuyItems(itemStack2, itemStack)) {
 				this.trader.trade(tradeOffer);
-				player.incrementStat(Stats.field_15378);
+				player.incrementStat(Stats.TRADED_WITH_VILLAGER);
 				this.traderInventory.setStack(0, itemStack);
 				this.traderInventory.setStack(1, itemStack2);
 			}

@@ -22,7 +22,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 		return ID;
 	}
 
-	public EnterBlockCriterion.Conditions method_8883(
+	public EnterBlockCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Block block = getBlock(jsonObject);

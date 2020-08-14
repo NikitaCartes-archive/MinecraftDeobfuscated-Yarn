@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class MultishotEnchantment extends Enchantment {
 	public MultishotEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.field_9081, slotTypes);
+		super(weight, EnchantmentTarget.CROSSBOW, slotTypes);
 	}
 
 	@Override
@@ -24,6 +24,6 @@ public class MultishotEnchantment extends Enchantment {
 
 	@Override
 	public boolean canAccept(Enchantment other) {
-		return super.canAccept(other) && other != Enchantments.field_9132;
+		return super.canAccept(other) && other != Enchantments.PIERCING;
 	}
 }

@@ -27,7 +27,7 @@ public class HeldItemChangeS2CPacket implements Packet<ClientPlayPacketListener>
 		buf.writeByte(this.slot);
 	}
 
-	public void method_11802(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onHeldItemChange(this);
 	}
 

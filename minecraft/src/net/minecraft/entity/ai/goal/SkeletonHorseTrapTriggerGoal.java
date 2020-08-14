@@ -32,7 +32,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 		this.skeletonHorse.setTrapped(false);
 		this.skeletonHorse.setTame(true);
 		this.skeletonHorse.setBreedingAge(0);
-		LightningEntity lightningEntity = EntityType.field_6112.create(serverWorld);
+		LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(serverWorld);
 		lightningEntity.refreshPositionAfterTeleport(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
 		lightningEntity.setCosmetic(true);
 		serverWorld.spawnEntity(lightningEntity);
@@ -50,8 +50,8 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	}
 
 	private HorseBaseEntity getHorse(LocalDifficulty localDifficulty) {
-		SkeletonHorseEntity skeletonHorseEntity = EntityType.field_6075.create(this.skeletonHorse.world);
-		skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.world, localDifficulty, SpawnReason.field_16461, null, null);
+		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
+		skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
 		skeletonHorseEntity.updatePosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
 		skeletonHorseEntity.timeUntilRegen = 60;
 		skeletonHorseEntity.setPersistent();
@@ -61,17 +61,17 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	}
 
 	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity vehicle) {
-		SkeletonEntity skeletonEntity = EntityType.field_6137.create(vehicle.world);
-		skeletonEntity.initialize((ServerWorld)vehicle.world, localDifficulty, SpawnReason.field_16461, null, null);
+		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.world);
+		skeletonEntity.initialize((ServerWorld)vehicle.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
 		skeletonEntity.updatePosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
 		skeletonEntity.timeUntilRegen = 60;
 		skeletonEntity.setPersistent();
-		if (skeletonEntity.getEquippedStack(EquipmentSlot.field_6169).isEmpty()) {
-			skeletonEntity.equipStack(EquipmentSlot.field_6169, new ItemStack(Items.field_8743));
+		if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+			skeletonEntity.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
 		}
 
 		skeletonEntity.equipStack(
-			EquipmentSlot.field_6173,
+			EquipmentSlot.MAINHAND,
 			EnchantmentHelper.enchant(
 				skeletonEntity.getRandom(),
 				this.method_30768(skeletonEntity.getMainHandStack()),
@@ -80,10 +80,10 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 			)
 		);
 		skeletonEntity.equipStack(
-			EquipmentSlot.field_6169,
+			EquipmentSlot.HEAD,
 			EnchantmentHelper.enchant(
 				skeletonEntity.getRandom(),
-				this.method_30768(skeletonEntity.getEquippedStack(EquipmentSlot.field_6169)),
+				this.method_30768(skeletonEntity.getEquippedStack(EquipmentSlot.HEAD)),
 				(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)),
 				false
 			)

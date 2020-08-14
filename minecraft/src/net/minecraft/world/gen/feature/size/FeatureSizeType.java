@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.registry.Registry;
 
 public class FeatureSizeType<P extends FeatureSize> {
-	public static final FeatureSizeType<TwoLayersFeatureSize> field_24147 = register("two_layers_feature_size", TwoLayersFeatureSize.CODEC);
-	public static final FeatureSizeType<ThreeLayersFeatureSize> field_24148 = register("three_layers_feature_size", ThreeLayersFeatureSize.CODEC);
+	public static final FeatureSizeType<TwoLayersFeatureSize> TWO_LAYERS_FEATURE_SIZE = register("two_layers_feature_size", TwoLayersFeatureSize.CODEC);
+	public static final FeatureSizeType<ThreeLayersFeatureSize> THREE_LAYERS_FEATURE_SIZE = register("three_layers_feature_size", ThreeLayersFeatureSize.CODEC);
 	private final Codec<P> codec;
 
 	private static <P extends FeatureSize> FeatureSizeType<P> register(String id, Codec<P> codec) {

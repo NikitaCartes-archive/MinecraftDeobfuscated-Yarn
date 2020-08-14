@@ -49,7 +49,7 @@ public class PaintingSpawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		buf.writeByte(this.facing.getHorizontal());
 	}
 
-	public void method_11224(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPaintingSpawn(this);
 	}
 

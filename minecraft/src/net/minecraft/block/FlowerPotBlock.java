@@ -38,20 +38,20 @@ public class FlowerPotBlock extends Block {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		Block block = item instanceof BlockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.field_10124) : Blocks.field_10124;
-		boolean bl = block == Blocks.field_10124;
-		boolean bl2 = this.content == Blocks.field_10124;
+		Block block = item instanceof BlockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR;
+		boolean bl = block == Blocks.AIR;
+		boolean bl2 = this.content == Blocks.AIR;
 		if (bl != bl2) {
 			if (bl2) {
 				world.setBlockState(pos, block.getDefaultState(), 3);
-				player.incrementStat(Stats.field_15412);
+				player.incrementStat(Stats.POT_FLOWER);
 				if (!player.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -63,7 +63,7 @@ public class FlowerPotBlock extends Block {
 					player.dropItem(itemStack2, false);
 				}
 
-				world.setBlockState(pos, Blocks.field_10495.getDefaultState(), 3);
+				world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), 3);
 			}
 
 			return ActionResult.success(world.isClient);
@@ -75,13 +75,13 @@ public class FlowerPotBlock extends Block {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return this.content == Blocks.field_10124 ? super.getPickStack(world, pos, state) : new ItemStack(this.content);
+		return this.content == Blocks.AIR ? super.getPickStack(world, pos, state) : new ItemStack(this.content);
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return direction == Direction.field_11033 && !state.canPlaceAt(world, pos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !state.canPlaceAt(world, pos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 

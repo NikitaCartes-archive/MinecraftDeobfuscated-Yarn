@@ -60,9 +60,9 @@ public class SilverfishEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createSilverfishAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.field_23716, 8.0)
-			.add(EntityAttributes.field_23719, 0.25)
-			.add(EntityAttributes.field_23721, 1.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0);
 	}
 
 	@Override
@@ -72,22 +72,22 @@ public class SilverfishEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14786;
+		return SoundEvents.ENTITY_SILVERFISH_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_14593;
+		return SoundEvents.ENTITY_SILVERFISH_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14673;
+		return SoundEvents.ENTITY_SILVERFISH_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_15084, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_SILVERFISH_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class SilverfishEntity extends HostileEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return InfestedBlock.isInfestable(world.getBlockState(pos.method_10074())) ? 10.0F : super.getPathfindingFavor(pos, world);
+		return InfestedBlock.isInfestable(world.getBlockState(pos.down())) ? 10.0F : super.getPathfindingFavor(pos, world);
 	}
 
 	public static boolean canSpawn(EntityType<SilverfishEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -191,7 +191,7 @@ public class SilverfishEntity extends HostileEntity {
 
 		public WanderAndInfestGoal(SilverfishEntity silverfish) {
 			super(silverfish, 1.0, 10);
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override

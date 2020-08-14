@@ -53,7 +53,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob {
-	private static final Ingredient field_25375 = Ingredient.ofItems(Items.field_8861, Blocks.field_10359.asItem());
+	private static final Ingredient field_25375 = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
 	private static final TrackedData<Integer> ATTR_STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -124,7 +124,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	public static DefaultAttributeContainer.Builder createLlamaAttributes() {
-		return createAbstractDonkeyAttributes().add(EntityAttributes.field_23717, 40.0);
+		return createAbstractDonkeyAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 40.0);
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return field_25375.method_8093(stack);
+		return field_25375.test(stack);
 	}
 
 	@Override
@@ -182,11 +182,11 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		float f = 0.0F;
 		boolean bl = false;
 		Item item2 = item.getItem();
-		if (item2 == Items.field_8861) {
+		if (item2 == Items.WHEAT) {
 			i = 10;
 			j = 3;
 			f = 2.0F;
-		} else if (item2 == Blocks.field_10359.asItem()) {
+		} else if (item2 == Blocks.HAY_BLOCK.asItem()) {
 			i = 90;
 			j = 6;
 			f = 10.0F;
@@ -202,7 +202,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 
 		if (this.isBaby() && i > 0) {
-			this.world.addParticle(ParticleTypes.field_11211, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.growUp(i);
 			}
@@ -262,38 +262,38 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Override
 	protected SoundEvent getAngrySound() {
-		return SoundEvents.field_14586;
+		return SoundEvents.ENTITY_LLAMA_ANGRY;
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14682;
+		return SoundEvents.ENTITY_LLAMA_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.field_15031;
+		return SoundEvents.ENTITY_LLAMA_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15189;
+		return SoundEvents.ENTITY_LLAMA_DEATH;
 	}
 
 	@Nullable
 	@Override
 	protected SoundEvent getEatSound() {
-		return SoundEvents.field_14884;
+		return SoundEvents.ENTITY_LLAMA_EAT;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.field_14795, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_LLAMA_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
 	protected void playAddChestSound() {
-		this.playSound(SoundEvents.field_15097, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+		this.playSound(SoundEvents.ENTITY_LLAMA_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 
 	@Override
@@ -322,7 +322,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Override
 	public boolean isHorseArmor(ItemStack item) {
 		Item item2 = item.getItem();
-		return ItemTags.field_15542.contains(item2);
+		return ItemTags.CARPETS.contains(item2);
 	}
 
 	@Override
@@ -336,7 +336,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		super.onInventoryChanged(sender);
 		DyeColor dyeColor2 = this.getCarpetColor();
 		if (this.age > 20 && dyeColor2 != null && dyeColor2 != dyeColor) {
-			this.playSound(SoundEvents.field_14554, 0.5F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_LLAMA_SWAG, 0.5F, 1.0F);
 		}
 	}
 
@@ -374,7 +374,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		return other != this && other instanceof LlamaEntity && this.canBreed() && ((LlamaEntity)other).canBreed();
 	}
 
-	public LlamaEntity method_6804(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+	public LlamaEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		LlamaEntity llamaEntity = this.createChild();
 		this.setChildAttributes(passiveEntity, llamaEntity);
 		LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
@@ -389,7 +389,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	protected LlamaEntity createChild() {
-		return EntityType.field_6074.create(this.world);
+		return EntityType.LLAMA.create(this.world);
 	}
 
 	private void spitAt(LivingEntity target) {
@@ -406,7 +406,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 					this.getX(),
 					this.getY(),
 					this.getZ(),
-					SoundEvents.field_14789,
+					SoundEvents.ENTITY_LLAMA_SPIT,
 					this.getSoundCategory(),
 					1.0F,
 					1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F

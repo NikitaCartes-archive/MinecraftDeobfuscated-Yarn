@@ -18,11 +18,11 @@ public class DesertVillageData {
 				Pair.of(StructurePoolElement.method_30425("village/desert/town_centers/desert_meeting_point_1"), 98),
 				Pair.of(StructurePoolElement.method_30425("village/desert/town_centers/desert_meeting_point_2"), 98),
 				Pair.of(StructurePoolElement.method_30425("village/desert/town_centers/desert_meeting_point_3"), 49),
-				Pair.of(StructurePoolElement.method_30426("village/desert/zombie/town_centers/desert_meeting_point_1", StructureProcessorLists.field_26263), 2),
-				Pair.of(StructurePoolElement.method_30426("village/desert/zombie/town_centers/desert_meeting_point_2", StructureProcessorLists.field_26263), 2),
-				Pair.of(StructurePoolElement.method_30426("village/desert/zombie/town_centers/desert_meeting_point_3", StructureProcessorLists.field_26263), 1)
+				Pair.of(StructurePoolElement.method_30426("village/desert/zombie/town_centers/desert_meeting_point_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+				Pair.of(StructurePoolElement.method_30426("village/desert/zombie/town_centers/desert_meeting_point_2", StructureProcessorLists.ZOMBIE_DESERT), 2),
+				Pair.of(StructurePoolElement.method_30426("village/desert/zombie/town_centers/desert_meeting_point_3", StructureProcessorLists.ZOMBIE_DESERT), 1)
 			),
-			StructurePool.Projection.field_16687
+			StructurePool.Projection.RIGID
 		)
 	);
 
@@ -47,7 +47,7 @@ public class DesertVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/desert/streets/square_02"), 3),
 					Pair.of(StructurePoolElement.method_30425("village/desert/streets/turn_01"), 3)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -67,7 +67,7 @@ public class DesertVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/desert/zombie/streets/square_02"), 3),
 					Pair.of(StructurePoolElement.method_30425("village/desert/zombie/streets/turn_01"), 3)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -98,14 +98,14 @@ public class DesertVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/desert/houses/desert_weaponsmith_1"), 2),
 					Pair.of(StructurePoolElement.method_30425("village/desert/houses/desert_temple_1"), 2),
 					Pair.of(StructurePoolElement.method_30425("village/desert/houses/desert_temple_2"), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_large_farm_1", StructureProcessorLists.field_26274), 11),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_farm_1", StructureProcessorLists.field_26274), 4),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_farm_2", StructureProcessorLists.field_26274), 4),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_large_farm_1", StructureProcessorLists.FARM_DESERT), 11),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_farm_1", StructureProcessorLists.FARM_DESERT), 4),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_farm_2", StructureProcessorLists.FARM_DESERT), 4),
 					Pair.of(StructurePoolElement.method_30425("village/desert/houses/desert_animal_pen_1"), 2),
 					Pair.of(StructurePoolElement.method_30425("village/desert/houses/desert_animal_pen_2"), 2),
 					Pair.of(StructurePoolElement.method_30438(), 5)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -113,37 +113,37 @@ public class DesertVillageData {
 				new Identifier("village/desert/zombie/houses"),
 				new Identifier("village/desert/zombie/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_2", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_3", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_4", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_5", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_6", StructureProcessorLists.field_26263), 1),
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_7", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_8", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_medium_house_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_medium_house_2", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_butcher_shop_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_tool_smith_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_fletcher_house_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_shepherd_house_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_armorer_1", StructureProcessorLists.field_26263), 1),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_fisher_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_tannery_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_cartographer_house_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_library_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_mason_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_weaponsmith_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_temple_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_temple_2", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_large_farm_1", StructureProcessorLists.field_26263), 7),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_farm_1", StructureProcessorLists.field_26263), 4),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_farm_2", StructureProcessorLists.field_26263), 4),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_animal_pen_1", StructureProcessorLists.field_26263), 2),
-					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_animal_pen_2", StructureProcessorLists.field_26263), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_2", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_3", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_4", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_5", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_6", StructureProcessorLists.ZOMBIE_DESERT), 1),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_7", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_small_house_8", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_medium_house_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/zombie/houses/desert_medium_house_2", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_butcher_shop_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_tool_smith_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_fletcher_house_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_shepherd_house_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_armorer_1", StructureProcessorLists.ZOMBIE_DESERT), 1),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_fisher_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_tannery_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_cartographer_house_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_library_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_mason_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_weaponsmith_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_temple_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_temple_2", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_large_farm_1", StructureProcessorLists.ZOMBIE_DESERT), 7),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_farm_1", StructureProcessorLists.ZOMBIE_DESERT), 4),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_farm_2", StructureProcessorLists.ZOMBIE_DESERT), 4),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_animal_pen_1", StructureProcessorLists.ZOMBIE_DESERT), 2),
+					Pair.of(StructurePoolElement.method_30426("village/desert/houses/desert_animal_pen_2", StructureProcessorLists.ZOMBIE_DESERT), 2),
 					Pair.of(StructurePoolElement.method_30438(), 5)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -154,7 +154,7 @@ public class DesertVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/desert/terminators/terminator_01"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/desert/terminators/terminator_02"), 1)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -165,7 +165,7 @@ public class DesertVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/desert/terminators/terminator_01"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/desert/zombie/terminators/terminator_02"), 1)
 				),
-				StructurePool.Projection.field_16686
+				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
@@ -174,11 +174,11 @@ public class DesertVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.method_30425("village/desert/desert_lamp_1"), 10),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_25989), 4),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26009), 4),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PATCH_CACTUS), 4),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PILE_HAY), 4),
 					Pair.of(StructurePoolElement.method_30438(), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -186,12 +186,12 @@ public class DesertVillageData {
 				new Identifier("village/desert/zombie/decor"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/desert/desert_lamp_1", StructureProcessorLists.field_26263), 10),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_25989), 4),
-					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.field_26009), 4),
+					Pair.of(StructurePoolElement.method_30426("village/desert/desert_lamp_1", StructureProcessorLists.ZOMBIE_DESERT), 10),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PATCH_CACTUS), 4),
+					Pair.of(StructurePoolElement.method_30421(ConfiguredFeatures.PILE_HAY), 4),
 					Pair.of(StructurePoolElement.method_30438(), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -203,7 +203,7 @@ public class DesertVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/desert/villagers/baby"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/desert/villagers/unemployed"), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
@@ -214,7 +214,7 @@ public class DesertVillageData {
 					Pair.of(StructurePoolElement.method_30425("village/desert/zombie/villagers/nitwit"), 1),
 					Pair.of(StructurePoolElement.method_30425("village/desert/zombie/villagers/unemployed"), 10)
 				),
-				StructurePool.Projection.field_16687
+				StructurePool.Projection.RIGID
 			)
 		);
 	}

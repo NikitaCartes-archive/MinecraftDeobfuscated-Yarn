@@ -14,10 +14,10 @@ import net.minecraft.server.world.ServerWorld;
 public class NearestItemsSensor extends Sensor<MobEntity> {
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_22332);
+		return ImmutableSet.of(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM);
 	}
 
-	protected void method_24645(ServerWorld serverWorld, MobEntity mobEntity) {
+	protected void sense(ServerWorld serverWorld, MobEntity mobEntity) {
 		Brain<?> brain = mobEntity.getBrain();
 		List<ItemEntity> list = serverWorld.getEntitiesByClass(ItemEntity.class, mobEntity.getBoundingBox().expand(8.0, 4.0, 8.0), itemEntity -> true);
 		list.sort(Comparator.comparingDouble(mobEntity::squaredDistanceTo));
@@ -26,6 +26,6 @@ public class NearestItemsSensor extends Sensor<MobEntity> {
 			.filter(itemEntity -> itemEntity.isInRange(mobEntity, 9.0))
 			.filter(mobEntity::canSee)
 			.findFirst();
-		brain.remember(MemoryModuleType.field_22332, optional);
+		brain.remember(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, optional);
 	}
 }
