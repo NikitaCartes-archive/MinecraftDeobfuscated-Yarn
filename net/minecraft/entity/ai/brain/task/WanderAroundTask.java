@@ -70,7 +70,7 @@ extends Task<MobEntity> {
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-        if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET) && !this.hasReached(mobEntity, mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get())) {
+        if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET) && !this.hasReached(mobEntity, mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get()) && mobEntity.getNavigation().method_31267()) {
             this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(40);
         }
         mobEntity.getNavigation().stop();

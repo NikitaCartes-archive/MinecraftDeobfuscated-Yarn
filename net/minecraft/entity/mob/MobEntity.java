@@ -796,6 +796,7 @@ extends LivingEntity {
                 itemStack.setDamage(itemStack.getMaxDamage() - this.random.nextInt(1 + this.random.nextInt(Math.max(itemStack.getMaxDamage() - 3, 1))));
             }
             this.dropStack(itemStack);
+            this.equipStack(equipmentSlot, ItemStack.EMPTY);
         }
     }
 

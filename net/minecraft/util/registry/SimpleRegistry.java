@@ -148,9 +148,6 @@ extends MutableRegistry<T> {
         return (T)this.rawIdToEntry.get(index);
     }
 
-    /**
-     * Gets the lifecycle of a registry entry.
-     */
     @Override
     public Lifecycle getEntryLifecycle(T object) {
         return this.entryToLifecycle.get(object);

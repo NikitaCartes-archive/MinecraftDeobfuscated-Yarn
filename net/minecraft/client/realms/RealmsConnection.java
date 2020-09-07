@@ -66,7 +66,7 @@ public class RealmsConnection {
                         return;
                     }
                     LOGGER.error("Couldn't connect to world", (Throwable)unknownHostException);
-                    DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'"));
+                    DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'"));
                     minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
                 } catch (Exception exception) {
                     minecraftClient.getResourcePackDownloader().clear();
@@ -79,7 +79,7 @@ public class RealmsConnection {
                         String string2 = inetAddress + ":" + port;
                         string = string.replaceAll(string2, "");
                     }
-                    DisconnectedRealmsScreen disconnectedRealmsScreen2 = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", string));
+                    DisconnectedRealmsScreen disconnectedRealmsScreen2 = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string));
                     minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen2));
                 }
             }
