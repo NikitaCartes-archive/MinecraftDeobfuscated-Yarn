@@ -16,7 +16,7 @@ public class ScreenTexts {
 	public static final Text NO = new TranslatableText("gui.no");
 	public static final Text PROCEED = new TranslatableText("gui.proceed");
 	public static final Text BACK = new TranslatableText("gui.back");
-	public static final Text FAILED = new TranslatableText("connect.failed");
+	public static final Text CONNECT_FAILED = new TranslatableText("connect.failed");
 
 	public static Text getToggleText(boolean value) {
 		return value ? ON : OFF;

@@ -44,6 +44,7 @@ public abstract class EntityNavigation {
 	private int currentDistance;
 	private float rangeMultiplier = 1.0F;
 	private final PathNodeNavigator pathNodeNavigator;
+	private boolean field_26820;
 
 	public EntityNavigation(MobEntity mob, World world) {
 		this.entity = mob;
@@ -245,7 +246,10 @@ public abstract class EntityNavigation {
 	protected void checkTimeouts(Vec3d currentPos) {
 		if (this.tickCount - this.pathStartTime > 100) {
 			if (currentPos.squaredDistanceTo(this.pathStartPos) < 2.25) {
+				this.field_26820 = true;
 				this.stop();
+			} else {
+				this.field_26820 = false;
 			}
 
 			this.pathStartTime = this.tickCount;
@@ -263,18 +267,23 @@ public abstract class EntityNavigation {
 			}
 
 			if (this.currentNodeTimeout > 0.0 && (double)this.currentNodeMs > this.currentNodeTimeout * 3.0) {
-				this.method_26085();
-				this.stop();
+				this.method_31266();
 			}
 
 			this.lastActiveTickMs = Util.getMeasuringTimeMs();
 		}
 	}
 
+	private void method_31266() {
+		this.method_26085();
+		this.stop();
+	}
+
 	private void method_26085() {
 		this.lastNodePosition = Vec3i.ZERO;
 		this.currentNodeMs = 0L;
 		this.currentNodeTimeout = 0.0;
+		this.field_26820 = false;
 	}
 
 	public boolean isIdle() {
@@ -348,5 +357,9 @@ public abstract class EntityNavigation {
 				this.recalculatePath();
 			}
 		}
+	}
+
+	public boolean method_31267() {
+		return this.field_26820;
 	}
 }

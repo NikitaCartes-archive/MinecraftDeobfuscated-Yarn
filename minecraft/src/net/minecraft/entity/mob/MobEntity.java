@@ -836,6 +836,7 @@ public abstract class MobEntity extends LivingEntity {
 				}
 
 				this.dropStack(itemStack);
+				this.equipStack(equipmentSlot, ItemStack.EMPTY);
 			}
 		}
 	}

@@ -69,7 +69,7 @@ public class RealmsConnection {
 
 						RealmsConnection.LOGGER.error("Couldn't connect to world", (Throwable)var5);
 						DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(
-							RealmsConnection.this.onlineScreen, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'")
+							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'")
 						);
 						minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
 					} catch (Exception var6) {
@@ -86,7 +86,7 @@ public class RealmsConnection {
 						}
 
 						DisconnectedRealmsScreen disconnectedRealmsScreen2 = new DisconnectedRealmsScreen(
-							RealmsConnection.this.onlineScreen, ScreenTexts.FAILED, new TranslatableText("disconnect.genericReason", string)
+							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string)
 						);
 						minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen2));
 					}

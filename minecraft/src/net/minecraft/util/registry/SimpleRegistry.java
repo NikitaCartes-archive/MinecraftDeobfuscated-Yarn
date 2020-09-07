@@ -156,9 +156,6 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return (T)(index >= 0 && index < this.rawIdToEntry.size() ? this.rawIdToEntry.get(index) : null);
 	}
 
-	/**
-	 * Gets the lifecycle of a registry entry.
-	 */
 	@Override
 	public Lifecycle getEntryLifecycle(T object) {
 		return (Lifecycle)this.entryToLifecycle.get(object);

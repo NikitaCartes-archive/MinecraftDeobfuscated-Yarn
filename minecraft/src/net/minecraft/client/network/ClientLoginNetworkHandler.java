@@ -104,9 +104,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onDisconnected(Text reason) {
 		if (this.parentGui != null && this.parentGui instanceof RealmsScreen) {
-			this.client.openScreen(new DisconnectedRealmsScreen(this.parentGui, ScreenTexts.FAILED, reason));
+			this.client.openScreen(new DisconnectedRealmsScreen(this.parentGui, ScreenTexts.CONNECT_FAILED, reason));
 		} else {
-			this.client.openScreen(new DisconnectedScreen(this.parentGui, ScreenTexts.FAILED, reason));
+			this.client.openScreen(new DisconnectedScreen(this.parentGui, ScreenTexts.CONNECT_FAILED, reason));
 		}
 	}
 
