@@ -55,15 +55,15 @@ extends StructureFeature<DefaultFeatureConfig> {
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig) {
             NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
             this.children.add(start);
-            start.placeJigsaw(start, this.children, this.random);
-            List<StructurePiece> list = start.field_14505;
+            start.fillOpenings(start, this.children, this.random);
+            List<StructurePiece> list = start.pieces;
             while (!list.isEmpty()) {
                 int k = this.random.nextInt(list.size());
                 StructurePiece structurePiece = list.remove(k);
-                structurePiece.placeJigsaw(start, this.children, this.random);
+                structurePiece.fillOpenings(start, this.children, this.random);
             }
             this.setBoundingBoxFromChildren();
-            this.method_14976(this.random, 48, 70);
+            this.randomUpwardTranslation(this.random, 48, 70);
         }
     }
 }

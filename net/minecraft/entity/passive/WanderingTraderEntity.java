@@ -26,7 +26,7 @@ import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.entity.mob.ZoglinEntity;
 import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.entity.passive.AbstractTraderEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -45,19 +45,19 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
-import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class WanderingTraderEntity
-extends AbstractTraderEntity {
+extends MerchantEntity {
     @Nullable
     private BlockPos wanderTarget;
     private int despawnDelay;
 
     public WanderingTraderEntity(EntityType<? extends WanderingTraderEntity> entityType, World world) {
-        super((EntityType<? extends AbstractTraderEntity>)entityType, world);
+        super((EntityType<? extends MerchantEntity>)entityType, world);
         this.teleporting = true;
     }
 
@@ -90,7 +90,7 @@ extends AbstractTraderEntity {
     }
 
     @Override
-    public boolean isLeveledTrader() {
+    public boolean isLeveledMerchant() {
         return false;
     }
 
@@ -120,13 +120,13 @@ extends AbstractTraderEntity {
         if (factorys == null || factorys2 == null) {
             return;
         }
-        TraderOfferList traderOfferList = this.getOffers();
-        this.fillRecipesFromPool(traderOfferList, factorys, 5);
+        TradeOfferList tradeOfferList = this.getOffers();
+        this.fillRecipesFromPool(tradeOfferList, factorys, 5);
         int i = this.random.nextInt(factorys2.length);
         TradeOffers.Factory factory = factorys2[i];
         TradeOffer tradeOffer = factory.create(this, this.random);
         if (tradeOffer != null) {
-            traderOfferList.add(tradeOffer);
+            tradeOfferList.add(tradeOffer);
         }
     }
 

@@ -259,7 +259,7 @@ AutoCloseable {
         this.networkIo = new ServerNetworkIo(this);
         this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
         this.session = session;
-        this.saveHandler = session.method_27427();
+        this.saveHandler = session.createSaveHandler();
         this.dataFixer = dataFixer;
         this.commandFunctionManager = new CommandFunctionManager(this, serverResourceManager.getFunctionLoader());
         this.structureManager = new StructureManager(serverResourceManager.getResourceManager(), session, dataFixer);
@@ -382,28 +382,28 @@ AutoCloseable {
         }
     }
 
-    private static void setupSpawn(ServerWorld serverWorld, ServerWorldProperties serverWorldProperties, boolean bl, boolean bl2, boolean bl3) {
+    private static void setupSpawn(ServerWorld world, ServerWorldProperties serverWorldProperties, boolean bonusChest, boolean debugWorld, boolean bl) {
         ChunkPos chunkPos;
-        ChunkGenerator chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
-        if (!bl3) {
+        ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
+        if (!bl) {
             serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(chunkGenerator.getSpawnHeight()), 0.0f);
             return;
         }
-        if (bl2) {
+        if (debugWorld) {
             serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(), 0.0f);
             return;
         }
         BiomeSource biomeSource = chunkGenerator.getBiomeSource();
-        Random random = new Random(serverWorld.getSeed());
-        BlockPos blockPos = biomeSource.locateBiome(0, serverWorld.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random);
+        Random random = new Random(world.getSeed());
+        BlockPos blockPos = biomeSource.locateBiome(0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random);
         ChunkPos chunkPos2 = chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
         if (blockPos == null) {
             LOGGER.warn("Unable to find spawn biome");
         }
-        boolean bl4 = false;
+        boolean bl2 = false;
         for (Block block : BlockTags.VALID_SPAWN.values()) {
             if (!biomeSource.getTopMaterials().contains(block.getDefaultState())) continue;
-            bl4 = true;
+            bl2 = true;
             break;
         }
         serverWorldProperties.setSpawnPos(chunkPos.getStartPos().add(8, chunkGenerator.getSpawnHeight(), 8), 0.0f);
@@ -414,7 +414,7 @@ AutoCloseable {
         int m = 32;
         for (int n = 0; n < 1024; ++n) {
             BlockPos blockPos2;
-            if (i > -16 && i <= 16 && j > -16 && j <= 16 && (blockPos2 = SpawnLocating.findServerSpawnPoint(serverWorld, new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl4)) != null) {
+            if (i > -16 && i <= 16 && j > -16 && j <= 16 && (blockPos2 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl2)) != null) {
                 serverWorldProperties.setSpawnPos(blockPos2, 0.0f);
                 break;
             }
@@ -426,9 +426,9 @@ AutoCloseable {
             i += k;
             j += l;
         }
-        if (bl) {
+        if (bonusChest) {
             ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeatures.BONUS_CHEST;
-            configuredFeature.generate(serverWorld, chunkGenerator, serverWorld.random, new BlockPos(serverWorldProperties.getSpawnX(), serverWorldProperties.getSpawnY(), serverWorldProperties.getSpawnZ()));
+            configuredFeature.generate(world, chunkGenerator, world.random, new BlockPos(serverWorldProperties.getSpawnX(), serverWorldProperties.getSpawnY(), serverWorldProperties.getSpawnZ()));
         }
     }
 
@@ -501,21 +501,21 @@ AutoCloseable {
 
     public abstract boolean shouldBroadcastRconToOps();
 
-    public boolean save(boolean bl, boolean bl2, boolean bl3) {
-        boolean bl4 = false;
+    public boolean save(boolean suppressLogs, boolean bl, boolean bl2) {
+        boolean bl3 = false;
         for (ServerWorld serverWorld : this.getWorlds()) {
-            if (!bl) {
+            if (!suppressLogs) {
                 LOGGER.info("Saving chunks for level '{}'/{}", (Object)serverWorld, (Object)serverWorld.getRegistryKey().getValue());
             }
-            serverWorld.save(null, bl2, serverWorld.savingDisabled && !bl3);
-            bl4 = true;
+            serverWorld.save(null, bl, serverWorld.savingDisabled && !bl2);
+            bl3 = true;
         }
         ServerWorld serverWorld2 = this.getOverworld();
         ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
         serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
         this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
-        this.session.method_27426(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
-        return bl4;
+        this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
+        return bl3;
     }
 
     @Override
@@ -824,8 +824,11 @@ AutoCloseable {
         return !this.serverThread.isAlive();
     }
 
-    public File getFile(String string) {
-        return new File(this.getRunDirectory(), string);
+    /**
+     * @param path relative path from the run directory
+     */
+    public File getFile(String path) {
+        return new File(this.getRunDirectory(), path);
     }
 
     public final ServerWorld getOverworld() {
@@ -922,8 +925,8 @@ AutoCloseable {
         this.keyPair = keyPair;
     }
 
-    public void setDifficulty(Difficulty difficulty, boolean bl) {
-        if (!bl && this.saveProperties.isDifficultyLocked()) {
+    public void setDifficulty(Difficulty difficulty, boolean forceUpdate) {
+        if (!forceUpdate && this.saveProperties.isDifficultyLocked()) {
             return;
         }
         this.saveProperties.setDifficulty(this.saveProperties.isHardcore() ? Difficulty.HARD : difficulty);

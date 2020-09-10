@@ -359,7 +359,7 @@ Drawable {
     public void renderBackgroundTexture(int vOffset) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+        this.client.getTextureManager().bindTexture(OPTIONS_BACKGROUND_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);

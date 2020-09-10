@@ -17,7 +17,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class DecoratedFeatureConfig
 implements FeatureConfig {
-    public static final Codec<DecoratedFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.CODEC.fieldOf("feature")).forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.feature), ((MapCodec)ConfiguredDecorator.CODEC.fieldOf("decorator")).forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.decorator)).apply((Applicative<DecoratedFeatureConfig, ?>)instance, DecoratedFeatureConfig::new));
+    public static final Codec<DecoratedFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.feature), ((MapCodec)ConfiguredDecorator.CODEC.fieldOf("decorator")).forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.decorator)).apply((Applicative<DecoratedFeatureConfig, ?>)instance, DecoratedFeatureConfig::new));
     public final Supplier<ConfiguredFeature<?, ?>> feature;
     public final ConfiguredDecorator<?> decorator;
 

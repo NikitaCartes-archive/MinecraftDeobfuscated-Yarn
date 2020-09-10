@@ -11,12 +11,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.village.TradeOffer;
 import org.jetbrains.annotations.Nullable;
 
-public class TraderOfferList
+public class TradeOfferList
 extends ArrayList<TradeOffer> {
-    public TraderOfferList() {
+    public TradeOfferList() {
     }
 
-    public TraderOfferList(CompoundTag compoundTag) {
+    public TradeOfferList(CompoundTag compoundTag) {
         ListTag listTag = compoundTag.getList("Recipes", 10);
         for (int i = 0; i < listTag.size(); ++i) {
             this.add(new TradeOffer(listTag.getCompound(i)));
@@ -24,7 +24,7 @@ extends ArrayList<TradeOffer> {
     }
 
     @Nullable
-    public TradeOffer getValidRecipe(ItemStack firstBuyItem, ItemStack secondBuyItem, int index) {
+    public TradeOffer getValidOffer(ItemStack firstBuyItem, ItemStack secondBuyItem, int index) {
         if (index > 0 && index < this.size()) {
             TradeOffer tradeOffer = (TradeOffer)this.get(index);
             if (tradeOffer.matchesBuyItems(firstBuyItem, secondBuyItem)) {
@@ -54,15 +54,15 @@ extends ArrayList<TradeOffer> {
             buffer.writeBoolean(tradeOffer.isDisabled());
             buffer.writeInt(tradeOffer.getUses());
             buffer.writeInt(tradeOffer.getMaxUses());
-            buffer.writeInt(tradeOffer.getTraderExperience());
+            buffer.writeInt(tradeOffer.getMerchantExperience());
             buffer.writeInt(tradeOffer.getSpecialPrice());
             buffer.writeFloat(tradeOffer.getPriceMultiplier());
             buffer.writeInt(tradeOffer.getDemandBonus());
         }
     }
 
-    public static TraderOfferList fromPacket(PacketByteBuf byteBuf) {
-        TraderOfferList traderOfferList = new TraderOfferList();
+    public static TradeOfferList fromPacket(PacketByteBuf byteBuf) {
+        TradeOfferList tradeOfferList = new TradeOfferList();
         int i = byteBuf.readByte() & 0xFF;
         for (int j = 0; j < i; ++j) {
             ItemStack itemStack = byteBuf.readItemStack();
@@ -83,9 +83,9 @@ extends ArrayList<TradeOffer> {
                 tradeOffer.clearUses();
             }
             tradeOffer.setSpecialPrice(n);
-            traderOfferList.add(tradeOffer);
+            tradeOfferList.add(tradeOffer);
         }
-        return traderOfferList;
+        return tradeOfferList;
     }
 
     public CompoundTag toTag() {

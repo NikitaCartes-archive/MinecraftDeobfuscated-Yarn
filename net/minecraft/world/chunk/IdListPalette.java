@@ -14,11 +14,11 @@ import net.minecraft.world.chunk.Palette;
 public class IdListPalette<T>
 implements Palette<T> {
     private final IdList<T> idList;
-    private final T fallback;
+    private final T defaultValue;
 
     public IdListPalette(IdList<T> idList, T defaultValue) {
         this.idList = idList;
-        this.fallback = defaultValue;
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -35,7 +35,7 @@ implements Palette<T> {
     @Override
     public T getByIndex(int index) {
         T object = this.idList.get(index);
-        return object == null ? this.fallback : object;
+        return object == null ? this.defaultValue : object;
     }
 
     @Override

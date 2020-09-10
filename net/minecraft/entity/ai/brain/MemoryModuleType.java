@@ -65,7 +65,7 @@ public class MemoryModuleType<U> {
     public static final MemoryModuleType<PassiveEntity> NEAREST_VISIBLE_ADULT = MemoryModuleType.register("nearest_visible_adult");
     public static final MemoryModuleType<ItemEntity> NEAREST_VISIBLE_WANTED_ITEM = MemoryModuleType.register("nearest_visible_wanted_item");
     public static final MemoryModuleType<MobEntity> NEAREST_VISIBLE_NEMESIS = MemoryModuleType.register("nearest_visible_nemesis");
-    public static final MemoryModuleType<UUID> ANGRY_AT = MemoryModuleType.register("angry_at", DynamicSerializableUuid.field_25122);
+    public static final MemoryModuleType<UUID> ANGRY_AT = MemoryModuleType.register("angry_at", DynamicSerializableUuid.CODEC);
     public static final MemoryModuleType<Boolean> UNIVERSAL_ANGER = MemoryModuleType.register("universal_anger", Codec.BOOL);
     public static final MemoryModuleType<Boolean> ADMIRING_ITEM = MemoryModuleType.register("admiring_item", Codec.BOOL);
     public static final MemoryModuleType<Integer> TIME_TRYING_TO_REACH_ADMIRE_ITEM = MemoryModuleType.register("time_trying_to_reach_admire_item");

@@ -90,7 +90,7 @@ extends StructurePieceWithDimensions {
         this.addBlock(structureWorldAccess, (BlockState)blockState4.with(StairsBlock.SHAPE, StairShape.OUTER_RIGHT), 6, 4, 8, boundingBox);
         for (i = 2; i <= 7; i += 5) {
             for (j = 1; j <= 5; j += 4) {
-                this.method_14936(structureWorldAccess, Blocks.OAK_LOG.getDefaultState(), j, -1, i, boundingBox);
+                this.fillDownwards(structureWorldAccess, Blocks.OAK_LOG.getDefaultState(), j, -1, i, boundingBox);
             }
         }
         if (!this.hasWitch && boundingBox.contains(new BlockPos(i = this.applyXTransform(2, 5), j = this.applyYTransform(2), k = this.applyZTransform(2, 5)))) {

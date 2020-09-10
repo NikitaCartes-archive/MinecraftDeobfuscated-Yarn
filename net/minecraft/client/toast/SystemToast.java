@@ -63,7 +63,7 @@ implements Toast {
             this.startTime = startTime;
             this.justUpdated = false;
         }
-        manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+        manager.getGame().getTextureManager().bindTexture(TEXTURE);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         int i = this.getWidth();
         int j = 12;

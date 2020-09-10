@@ -50,9 +50,9 @@ extends AbstractTexture
 implements TextureTickListener {
     private static final Logger LOGGER = LogManager.getLogger();
     @Deprecated
-    public static final Identifier BLOCK_ATLAS_TEX = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
+    public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     @Deprecated
-    public static final Identifier PARTICLE_ATLAS_TEX = new Identifier("textures/atlas/particles.png");
+    public static final Identifier PARTICLE_ATLAS_TEXTURE = new Identifier("textures/atlas/particles.png");
     private final List<Sprite> animatedSprites = Lists.newArrayList();
     private final Set<Identifier> spritesToLoad = Sets.newHashSet();
     private final Map<Identifier, Sprite> sprites = Maps.newHashMap();

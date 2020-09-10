@@ -19,7 +19,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkSection {
-    private static final Palette<BlockState> palette = new IdListPalette<BlockState>(Block.STATE_IDS, Blocks.AIR.getDefaultState());
+    private static final Palette<BlockState> PALETTE = new IdListPalette<BlockState>(Block.STATE_IDS, Blocks.AIR.getDefaultState());
     private final int yOffset;
     private short nonEmptyBlockCount;
     private short randomTickableBlockCount;
@@ -35,7 +35,7 @@ public class ChunkSection {
         this.nonEmptyBlockCount = nonEmptyBlockCount;
         this.randomTickableBlockCount = randomTickableBlockCount;
         this.nonEmptyFluidCount = nonEmptyFluidCount;
-        this.container = new PalettedContainer<BlockState>(palette, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
+        this.container = new PalettedContainer<BlockState>(PALETTE, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
     }
 
     public BlockState getBlockState(int x, int y, int z) {

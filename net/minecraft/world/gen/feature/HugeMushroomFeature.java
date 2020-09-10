@@ -48,7 +48,7 @@ extends Feature<HugeMushroomFeatureConfig> {
             return false;
         }
         for (int j = 0; j <= height; ++j) {
-            int k = this.getCapSize(-1, -1, config.capSize, j);
+            int k = this.getCapSize(-1, -1, config.foliageRadius, j);
             for (int l = -k; l <= k; ++l) {
                 for (int m = -k; m <= k; ++m) {
                     BlockState blockState = world.getBlockState(mutable.set(pos, l, j, m));

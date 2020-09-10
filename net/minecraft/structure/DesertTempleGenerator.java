@@ -57,7 +57,7 @@ extends StructurePieceWithDimensions {
         for (i = 0; i < this.width; ++i) {
             for (int j = 0; j < this.depth; ++j) {
                 int k = -5;
-                this.method_14936(structureWorldAccess, Blocks.SANDSTONE.getDefaultState(), i, -5, j, boundingBox);
+                this.fillDownwards(structureWorldAccess, Blocks.SANDSTONE.getDefaultState(), i, -5, j, boundingBox);
             }
         }
         BlockState blockState = (BlockState)Blocks.SANDSTONE_STAIRS.getDefaultState().with(StairsBlock.FACING, Direction.NORTH);

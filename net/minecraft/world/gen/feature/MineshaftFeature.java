@@ -50,7 +50,7 @@ extends StructureFeature<MineshaftFeatureConfig> {
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, MineshaftFeatureConfig mineshaftFeatureConfig) {
             MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, this.random, (i << 4) + 2, (j << 4) + 2, mineshaftFeatureConfig.type);
             this.children.add(mineshaftRoom);
-            mineshaftRoom.placeJigsaw(mineshaftRoom, this.children, this.random);
+            mineshaftRoom.fillOpenings(mineshaftRoom, this.children, this.random);
             this.setBoundingBoxFromChildren();
             if (mineshaftFeatureConfig.type == Type.MESA) {
                 int k = -5;
@@ -60,7 +60,7 @@ extends StructureFeature<MineshaftFeatureConfig> {
                     structurePiece.translate(0, l, 0);
                 }
             } else {
-                this.method_14978(chunkGenerator.getSeaLevel(), this.random, 10);
+                this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), this.random, 10);
             }
         }
     }
@@ -74,8 +74,8 @@ extends StructureFeature<MineshaftFeatureConfig> {
         private static final Map<String, Type> BY_NAME;
         private final String name;
 
-        private Type(String string2) {
-            this.name = string2;
+        private Type(String name) {
+            this.name = name;
         }
 
         public String getName() {

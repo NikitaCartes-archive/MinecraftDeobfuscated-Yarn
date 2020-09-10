@@ -39,27 +39,27 @@ import org.apache.logging.log4j.Logger;
 public class RegistryOps<T>
 extends ForwardingDynamicOps<T> {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final class_5506 field_26738;
+    private final EntryLoader entryLoader;
     private final DynamicRegistryManager.Impl registryManager;
     private final Map<RegistryKey<? extends Registry<?>>, ValueHolder<?>> valueHolders;
-    private final RegistryOps<JsonElement> field_26739;
+    private final RegistryOps<JsonElement> entryOps;
 
     public static <T> RegistryOps<T> of(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager.Impl impl) {
-        return RegistryOps.method_31150(delegate, class_5506.method_31154(resourceManager), impl);
+        return RegistryOps.of(delegate, EntryLoader.resourceBacked(resourceManager), impl);
     }
 
-    public static <T> RegistryOps<T> method_31150(DynamicOps<T> dynamicOps, class_5506 arg, DynamicRegistryManager.Impl impl) {
-        RegistryOps<T> registryOps = new RegistryOps<T>(dynamicOps, arg, impl, Maps.newIdentityHashMap());
+    public static <T> RegistryOps<T> of(DynamicOps<T> dynamicOps, EntryLoader entryLoader, DynamicRegistryManager.Impl impl) {
+        RegistryOps<T> registryOps = new RegistryOps<T>(dynamicOps, entryLoader, impl, Maps.newIdentityHashMap());
         DynamicRegistryManager.load(impl, registryOps);
         return registryOps;
     }
 
-    private RegistryOps(DynamicOps<T> delegate, class_5506 arg, DynamicRegistryManager.Impl impl, IdentityHashMap<RegistryKey<? extends Registry<?>>, ValueHolder<?>> identityHashMap) {
+    private RegistryOps(DynamicOps<T> delegate, EntryLoader entryLoader, DynamicRegistryManager.Impl impl, IdentityHashMap<RegistryKey<? extends Registry<?>>, ValueHolder<?>> identityHashMap) {
         super(delegate);
-        this.field_26738 = arg;
+        this.entryLoader = entryLoader;
         this.registryManager = impl;
         this.valueHolders = identityHashMap;
-        this.field_26739 = delegate == JsonOps.INSTANCE ? this : new RegistryOps<JsonElement>(JsonOps.INSTANCE, arg, impl, identityHashMap);
+        this.entryOps = delegate == JsonOps.INSTANCE ? this : new RegistryOps<JsonElement>(JsonOps.INSTANCE, entryLoader, impl, identityHashMap);
     }
 
     /**
@@ -70,7 +70,7 @@ extends ForwardingDynamicOps<T> {
      * 
      * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, MapCodec)
      */
-    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean bl) {
+    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean allowInlineDefinitions) {
         Optional optional = this.registryManager.getOptional(registryKey);
         if (!optional.isPresent()) {
             return DataResult.error("Unknown registry: " + registryKey);
@@ -78,7 +78,7 @@ extends ForwardingDynamicOps<T> {
         MutableRegistry mutableRegistry = optional.get();
         DataResult dataResult = Identifier.CODEC.decode(this.delegate, object);
         if (!dataResult.result().isPresent()) {
-            if (!bl) {
+            if (!allowInlineDefinitions) {
                 return DataResult.error("Inline definitions not allowed here");
             }
             return codec.decode(this, object).map(pair -> pair.mapFirst(object -> () -> object));
@@ -92,7 +92,7 @@ extends ForwardingDynamicOps<T> {
      * Loads elements into a registry just loaded from a decoder.
      */
     public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec) {
-        Collection<Identifier> collection = this.field_26738.method_31156(registryKey);
+        Collection<Identifier> collection = this.entryLoader.getKnownEntryPaths(registryKey);
         DataResult<SimpleRegistry<Object>> dataResult = DataResult.success(registry, Lifecycle.stable());
         String string = registryKey.getValue().getPath() + "/";
         for (Identifier identifier : collection) {
@@ -132,7 +132,7 @@ extends ForwardingDynamicOps<T> {
             return object;
         });
         ((ValueHolder)valueHolder).values.put(registryKey2, DataResult.success(supplier));
-        DataResult<Pair<java.util.function.Supplier, OptionalInt>> dataResult2 = this.field_26738.method_31155(this.field_26739, registryKey, registryKey2, codec);
+        DataResult<Pair<java.util.function.Supplier, OptionalInt>> dataResult2 = this.entryLoader.load(this.entryOps, registryKey, registryKey2, codec);
         Optional optional = dataResult2.result();
         if (optional.isPresent()) {
             Pair pair2 = optional.get();
@@ -151,16 +151,16 @@ extends ForwardingDynamicOps<T> {
         return this.registryManager.getOptional(registryKey).map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle())).orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
     }
 
-    public static interface class_5506 {
-        public Collection<Identifier> method_31156(RegistryKey<? extends Registry<?>> var1);
+    public static interface EntryLoader {
+        public Collection<Identifier> getKnownEntryPaths(RegistryKey<? extends Registry<?>> var1);
 
-        public <E> DataResult<Pair<E, OptionalInt>> method_31155(DynamicOps<JsonElement> var1, RegistryKey<? extends Registry<E>> var2, RegistryKey<E> var3, Decoder<E> var4);
+        public <E> DataResult<Pair<E, OptionalInt>> load(DynamicOps<JsonElement> var1, RegistryKey<? extends Registry<E>> var2, RegistryKey<E> var3, Decoder<E> var4);
 
-        public static class_5506 method_31154(final ResourceManager resourceManager) {
-            return new class_5506(){
+        public static EntryLoader resourceBacked(final ResourceManager resourceManager) {
+            return new EntryLoader(){
 
                 @Override
-                public Collection<Identifier> method_31156(RegistryKey<? extends Registry<?>> registryKey) {
+                public Collection<Identifier> getKnownEntryPaths(RegistryKey<? extends Registry<?>> registryKey) {
                     return resourceManager.findResources(registryKey.getValue().getPath(), string -> string.endsWith(".json"));
                 }
 
@@ -168,7 +168,7 @@ extends ForwardingDynamicOps<T> {
                  * Exception decompiling
                  */
                 @Override
-                public <E> DataResult<Pair<E, OptionalInt>> method_31155(DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryKey, RegistryKey<E> registryKey2, Decoder<E> decoder) {
+                public <E> DataResult<Pair<E, OptionalInt>> load(DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryId, RegistryKey<E> entryId, Decoder<E> decoder) {
                     /*
                      * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
                      * 
@@ -232,36 +232,36 @@ extends ForwardingDynamicOps<T> {
             };
         }
 
-        public static final class class_5507
-        implements class_5506 {
-            private final Map<RegistryKey<?>, JsonElement> field_26741 = Maps.newIdentityHashMap();
-            private final Object2IntMap<RegistryKey<?>> field_26742 = new Object2IntOpenCustomHashMap(Util.identityHashStrategy());
-            private final Map<RegistryKey<?>, Lifecycle> field_26743 = Maps.newIdentityHashMap();
+        public static final class Impl
+        implements EntryLoader {
+            private final Map<RegistryKey<?>, JsonElement> values = Maps.newIdentityHashMap();
+            private final Object2IntMap<RegistryKey<?>> entryToRawId = new Object2IntOpenCustomHashMap(Util.identityHashStrategy());
+            private final Map<RegistryKey<?>, Lifecycle> entryToLifecycle = Maps.newIdentityHashMap();
 
-            public <E> void method_31159(DynamicRegistryManager.Impl impl, RegistryKey<E> registryKey, Encoder<E> encoder, int i, E object, Lifecycle lifecycle) {
+            public <E> void add(DynamicRegistryManager.Impl impl, RegistryKey<E> registryKey, Encoder<E> encoder, int rawId, E object, Lifecycle lifecycle) {
                 DataResult<JsonElement> dataResult = encoder.encodeStart(RegistryReadingOps.of(JsonOps.INSTANCE, impl), object);
                 Optional<DataResult.PartialResult<JsonElement>> optional = dataResult.error();
                 if (optional.isPresent()) {
                     LOGGER.error("Error adding element: {}", (Object)optional.get().message());
                     return;
                 }
-                this.field_26741.put(registryKey, dataResult.result().get());
-                this.field_26742.put((RegistryKey<?>)registryKey, i);
-                this.field_26743.put(registryKey, lifecycle);
+                this.values.put(registryKey, dataResult.result().get());
+                this.entryToRawId.put((RegistryKey<?>)registryKey, rawId);
+                this.entryToLifecycle.put(registryKey, lifecycle);
             }
 
             @Override
-            public Collection<Identifier> method_31156(RegistryKey<? extends Registry<?>> registryKey) {
-                return this.field_26741.keySet().stream().filter(registryKey2 -> registryKey2.isOf(registryKey)).map(registryKey2 -> new Identifier(registryKey2.getValue().getNamespace(), registryKey.getValue().getPath() + "/" + registryKey2.getValue().getPath() + ".json")).collect(Collectors.toList());
+            public Collection<Identifier> getKnownEntryPaths(RegistryKey<? extends Registry<?>> registryKey) {
+                return this.values.keySet().stream().filter(registryKey2 -> registryKey2.isOf(registryKey)).map(registryKey2 -> new Identifier(registryKey2.getValue().getNamespace(), registryKey.getValue().getPath() + "/" + registryKey2.getValue().getPath() + ".json")).collect(Collectors.toList());
             }
 
             @Override
-            public <E> DataResult<Pair<E, OptionalInt>> method_31155(DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryKey, RegistryKey<E> registryKey2, Decoder<E> decoder) {
-                JsonElement jsonElement = this.field_26741.get(registryKey2);
+            public <E> DataResult<Pair<E, OptionalInt>> load(DynamicOps<JsonElement> dynamicOps, RegistryKey<? extends Registry<E>> registryId, RegistryKey<E> entryId, Decoder<E> decoder) {
+                JsonElement jsonElement = this.values.get(entryId);
                 if (jsonElement == null) {
-                    return DataResult.error("Unknown element: " + registryKey2);
+                    return DataResult.error("Unknown element: " + entryId);
                 }
-                return decoder.parse(dynamicOps, jsonElement).setLifecycle(this.field_26743.get(registryKey2)).map(object -> Pair.of(object, OptionalInt.of(this.field_26742.getInt(registryKey2))));
+                return decoder.parse(dynamicOps, jsonElement).setLifecycle(this.entryToLifecycle.get(entryId)).map(object -> Pair.of(object, OptionalInt.of(this.entryToRawId.getInt(entryId))));
             }
         }
     }

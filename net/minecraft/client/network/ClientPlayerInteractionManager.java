@@ -78,7 +78,7 @@ public class ClientPlayerInteractionManager {
         this.gameMode.setAbilities(player.abilities);
     }
 
-    public void method_30108(GameMode gameMode) {
+    public void setPreviousGameMode(GameMode gameMode) {
         this.previousGameMode = gameMode;
     }
 

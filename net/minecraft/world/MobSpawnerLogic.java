@@ -132,7 +132,7 @@ public abstract class MobSpawnerLogic {
                         ((MobEntity)entity2).initialize(serverWorld, world.getLocalDifficulty(entity2.getBlockPos()), SpawnReason.SPAWNER, null, null);
                     }
                 }
-                if (!serverWorld.method_30736(entity2)) {
+                if (!serverWorld.shouldCreateNewEntityWithPassenger(entity2)) {
                     this.updateSpawns();
                     return;
                 }

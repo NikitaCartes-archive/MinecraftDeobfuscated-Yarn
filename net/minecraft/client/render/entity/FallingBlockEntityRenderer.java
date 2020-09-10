@@ -51,7 +51,7 @@ extends EntityRenderer<FallingBlockEntity> {
 
     @Override
     public Identifier getTexture(FallingBlockEntity fallingBlockEntity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     }
 }
 

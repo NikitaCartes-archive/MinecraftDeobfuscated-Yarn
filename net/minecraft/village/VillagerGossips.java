@@ -175,11 +175,11 @@ public class VillagerGossips {
         }
 
         public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-            return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Target"), DynamicSerializableUuid.field_25122.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new), dynamicOps.createString("Type"), dynamicOps.createString(this.type.key), dynamicOps.createString("Value"), dynamicOps.createInt(this.value))));
+            return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Target"), DynamicSerializableUuid.CODEC.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new), dynamicOps.createString("Type"), dynamicOps.createString(this.type.key), dynamicOps.createString("Value"), dynamicOps.createInt(this.value))));
         }
 
         public static DataResult<GossipEntry> deserialize(Dynamic<?> dynamic) {
-            return DataResult.unbox(DataResult.instance().group(dynamic.get("Target").read(DynamicSerializableUuid.field_25122), dynamic.get("Type").asString().map(VillageGossipType::byKey), dynamic.get("Value").asNumber().map(Number::intValue)).apply(DataResult.instance(), GossipEntry::new));
+            return DataResult.unbox(DataResult.instance().group(dynamic.get("Target").read(DynamicSerializableUuid.CODEC), dynamic.get("Type").asString().map(VillageGossipType::byKey), dynamic.get("Value").asNumber().map(Number::intValue)).apply(DataResult.instance(), GossipEntry::new));
         }
     }
 }

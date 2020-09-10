@@ -69,7 +69,7 @@ public class AnvilLevelStorage {
         AnvilLevelStorage.convertRegions(impl, new File(file2, "region"), list2, new FixedBiomeSource(registry.getOrThrow(BiomeKeys.NETHER_WASTES)), list.size(), i, progressListener);
         AnvilLevelStorage.convertRegions(impl, new File(file3, "region"), list3, new FixedBiomeSource(registry.getOrThrow(BiomeKeys.THE_END)), list.size() + list2.size(), i, progressListener);
         AnvilLevelStorage.makeMcrLevelDatBackup(session);
-        session.method_27425(impl, saveProperties);
+        session.backupLevelDataFile(impl, saveProperties);
         return true;
     }
 

@@ -52,7 +52,7 @@ public abstract class EntityNavigation {
     private int currentDistance;
     private float rangeMultiplier = 1.0f;
     private final PathNodeNavigator pathNodeNavigator;
-    private boolean field_26820;
+    private boolean nearPathStartPos;
 
     public EntityNavigation(MobEntity mob, World world) {
         this.entity = mob;
@@ -145,7 +145,7 @@ public abstract class EntityNavigation {
         if (path != null && path.getTarget() != null) {
             this.currentTarget = path.getTarget();
             this.currentDistance = distance;
-            this.method_26085();
+            this.resetNode();
         }
         return path;
     }
@@ -245,10 +245,10 @@ public abstract class EntityNavigation {
     protected void checkTimeouts(Vec3d currentPos) {
         if (this.tickCount - this.pathStartTime > 100) {
             if (currentPos.squaredDistanceTo(this.pathStartPos) < 2.25) {
-                this.field_26820 = true;
+                this.nearPathStartPos = true;
                 this.stop();
             } else {
-                this.field_26820 = false;
+                this.nearPathStartPos = false;
             }
             this.pathStartTime = this.tickCount;
             this.pathStartPos = currentPos;
@@ -263,22 +263,22 @@ public abstract class EntityNavigation {
                 double d2 = this.currentNodeTimeout = this.entity.getMovementSpeed() > 0.0f ? d / (double)this.entity.getMovementSpeed() * 1000.0 : 0.0;
             }
             if (this.currentNodeTimeout > 0.0 && (double)this.currentNodeMs > this.currentNodeTimeout * 3.0) {
-                this.method_31266();
+                this.resetNodeAndStop();
             }
             this.lastActiveTickMs = Util.getMeasuringTimeMs();
         }
     }
 
-    private void method_31266() {
-        this.method_26085();
+    private void resetNodeAndStop() {
+        this.resetNode();
         this.stop();
     }
 
-    private void method_26085() {
+    private void resetNode() {
         this.lastNodePosition = Vec3i.ZERO;
         this.currentNodeMs = 0L;
         this.currentNodeTimeout = 0.0;
-        this.field_26820 = false;
+        this.nearPathStartPos = false;
     }
 
     public boolean isIdle() {
@@ -352,8 +352,8 @@ public abstract class EntityNavigation {
         }
     }
 
-    public boolean method_31267() {
-        return this.field_26820;
+    public boolean isNearPathStartPos() {
+        return this.nearPathStartPos;
     }
 }
 

@@ -13,19 +13,19 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class NetherrackReplaceBlobsFeatureConfig
 implements FeatureConfig {
-    public static final Codec<NetherrackReplaceBlobsFeatureConfig> field_25848 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("target")).forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.field_25849), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.field_25850), ((MapCodec)UniformIntDistribution.CODEC.fieldOf("radius")).forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.field_25851)).apply((Applicative<NetherrackReplaceBlobsFeatureConfig, ?>)instance, NetherrackReplaceBlobsFeatureConfig::new));
-    public final BlockState field_25849;
-    public final BlockState field_25850;
-    private final UniformIntDistribution field_25851;
+    public static final Codec<NetherrackReplaceBlobsFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("target")).forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.target), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.state), ((MapCodec)UniformIntDistribution.CODEC.fieldOf("radius")).forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.radius)).apply((Applicative<NetherrackReplaceBlobsFeatureConfig, ?>)instance, NetherrackReplaceBlobsFeatureConfig::new));
+    public final BlockState target;
+    public final BlockState state;
+    private final UniformIntDistribution radius;
 
-    public NetherrackReplaceBlobsFeatureConfig(BlockState blockState, BlockState blockState2, UniformIntDistribution uniformIntDistribution) {
-        this.field_25849 = blockState;
-        this.field_25850 = blockState2;
-        this.field_25851 = uniformIntDistribution;
+    public NetherrackReplaceBlobsFeatureConfig(BlockState target, BlockState state, UniformIntDistribution radius) {
+        this.target = target;
+        this.state = state;
+        this.radius = radius;
     }
 
-    public UniformIntDistribution method_30405() {
-        return this.field_25851;
+    public UniformIntDistribution getRadius() {
+        return this.radius;
     }
 }
 

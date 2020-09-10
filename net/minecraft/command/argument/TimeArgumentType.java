@@ -16,7 +16,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.CommandSource;
 import net.minecraft.text.TranslatableText;
 
 public class TimeArgumentType
@@ -24,7 +24,7 @@ implements ArgumentType<Integer> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0d", "0s", "0t", "0");
     private static final SimpleCommandExceptionType INVALID_UNIT_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.time.invalid_unit"));
     private static final DynamicCommandExceptionType INVALID_COUNT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.time.invalid_tick_count", object));
-    private static final Object2IntMap<String> units = new Object2IntOpenHashMap<String>();
+    private static final Object2IntMap<String> UNITS = new Object2IntOpenHashMap<String>();
 
     public static TimeArgumentType time() {
         return new TimeArgumentType();
@@ -34,7 +34,7 @@ implements ArgumentType<Integer> {
     public Integer parse(StringReader stringReader) throws CommandSyntaxException {
         float f = stringReader.readFloat();
         String string = stringReader.readUnquotedString();
-        int i = units.getOrDefault((Object)string, 0);
+        int i = UNITS.getOrDefault((Object)string, 0);
         if (i == 0) {
             throw INVALID_UNIT_EXCEPTION.create();
         }
@@ -53,7 +53,7 @@ implements ArgumentType<Integer> {
         } catch (CommandSyntaxException commandSyntaxException) {
             return builder.buildFuture();
         }
-        return CommandSource.suggestMatching(units.keySet(), builder.createOffset(builder.getStart() + stringReader.getCursor()));
+        return CommandSource.suggestMatching(UNITS.keySet(), builder.createOffset(builder.getStart() + stringReader.getCursor()));
     }
 
     @Override
@@ -67,10 +67,10 @@ implements ArgumentType<Integer> {
     }
 
     static {
-        units.put("d", 24000);
-        units.put("s", 20);
-        units.put("t", 1);
-        units.put("", 1);
+        UNITS.put("d", 24000);
+        UNITS.put("s", 20);
+        UNITS.put("t", 1);
+        UNITS.put("", 1);
     }
 }
 

@@ -13,8 +13,8 @@ implements FeatureConfig {
     public static final Codec<RuinedPortalFeatureConfig> CODEC = ((MapCodec)RuinedPortalFeature.Type.CODEC.fieldOf("portal_type")).xmap(RuinedPortalFeatureConfig::new, ruinedPortalFeatureConfig -> ruinedPortalFeatureConfig.portalType).codec();
     public final RuinedPortalFeature.Type portalType;
 
-    public RuinedPortalFeatureConfig(RuinedPortalFeature.Type type) {
-        this.portalType = type;
+    public RuinedPortalFeatureConfig(RuinedPortalFeature.Type portalType) {
+        this.portalType = portalType;
     }
 }
 

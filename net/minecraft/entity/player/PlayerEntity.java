@@ -108,7 +108,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -845,7 +845,7 @@ extends LivingEntity {
         return OptionalInt.empty();
     }
 
-    public void sendTradeOffers(int syncId, TraderOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
+    public void sendTradeOffers(int syncId, TradeOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
     }
 
     public void openEditBookScreen(ItemStack book, Hand hand) {
@@ -1861,7 +1861,7 @@ extends LivingEntity {
             } else {
                 l = 0.0f;
             }
-            return this.method_30950(f).add(new Vec3d(d, -0.11, 0.85).method_31033(-l).rotateX(-g).rotateY(-h));
+            return this.method_30950(f).add(new Vec3d(d, -0.11, 0.85).rotateZ(-l).rotateX(-g).rotateY(-h));
         }
         if (this.isInSwimmingPose()) {
             return this.method_30950(f).add(new Vec3d(d, 0.2, -0.15).rotateX(-g).rotateY(-h));

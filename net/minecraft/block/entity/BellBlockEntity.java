@@ -32,7 +32,7 @@ implements Tickable {
     public Direction lastSideHit;
     private List<LivingEntity> hearingEntities;
     private boolean resonating;
-    private int field_19158;
+    private int resonateTime;
 
     public BellBlockEntity() {
         super(BlockEntityType.BELL);
@@ -42,7 +42,7 @@ implements Tickable {
     public boolean onSyncedBlockEvent(int type, int data) {
         if (type == 1) {
             this.notifyMemoriesOfBell();
-            this.field_19158 = 0;
+            this.resonateTime = 0;
             this.lastSideHit = Direction.byId(data);
             this.ringTicks = 0;
             this.ringing = true;
@@ -60,13 +60,13 @@ implements Tickable {
             this.ringing = false;
             this.ringTicks = 0;
         }
-        if (this.ringTicks >= 5 && this.field_19158 == 0 && this.method_20523()) {
+        if (this.ringTicks >= 5 && this.resonateTime == 0 && this.raidersHearBell()) {
             this.resonating = true;
             this.playResonateSound();
         }
         if (this.resonating) {
-            if (this.field_19158 < 40) {
-                ++this.field_19158;
+            if (this.resonateTime < 40) {
+                ++this.resonateTime;
             } else {
                 this.applyGlowToRaiders(this.world);
                 this.applyParticlesToRaiders(this.world);
@@ -105,7 +105,7 @@ implements Tickable {
         }
     }
 
-    private boolean method_20523() {
+    private boolean raidersHearBell() {
         BlockPos blockPos = this.getPos();
         for (LivingEntity livingEntity : this.hearingEntities) {
             if (!livingEntity.isAlive() || livingEntity.removed || !blockPos.isWithinDistance(livingEntity.getPos(), 32.0) || !livingEntity.getType().isIn(EntityTypeTags.RAIDERS)) continue;
@@ -118,7 +118,7 @@ implements Tickable {
         if (world.isClient) {
             return;
         }
-        this.hearingEntities.stream().filter(this::isRaiderEntity).forEach(this::glowEntity);
+        this.hearingEntities.stream().filter(this::isRaiderEntity).forEach(this::applyGlowToEntity);
     }
 
     private void applyParticlesToRaiders(World world) {
@@ -148,7 +148,7 @@ implements Tickable {
         return entity.isAlive() && !entity.removed && this.getPos().isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
     }
 
-    private void glowEntity(LivingEntity entity) {
+    private void applyGlowToEntity(LivingEntity entity) {
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
     }
 }

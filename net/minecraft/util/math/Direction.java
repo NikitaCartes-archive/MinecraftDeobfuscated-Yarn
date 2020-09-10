@@ -83,31 +83,34 @@ public enum Direction implements StringIdentifiable
         Direction direction4 = direction3 = bl3 ? SOUTH : NORTH;
         if (l > n) {
             if (m > o) {
-                return Direction.method_10145(direction2, direction, direction3);
+                return Direction.listClosest(direction2, direction, direction3);
             }
             if (p > m) {
-                return Direction.method_10145(direction, direction3, direction2);
+                return Direction.listClosest(direction, direction3, direction2);
             }
-            return Direction.method_10145(direction, direction2, direction3);
+            return Direction.listClosest(direction, direction2, direction3);
         }
         if (m > p) {
-            return Direction.method_10145(direction2, direction3, direction);
+            return Direction.listClosest(direction2, direction3, direction);
         }
         if (o > m) {
-            return Direction.method_10145(direction3, direction, direction2);
+            return Direction.listClosest(direction3, direction, direction2);
         }
-        return Direction.method_10145(direction3, direction2, direction);
+        return Direction.listClosest(direction3, direction2, direction);
     }
 
-    private static Direction[] method_10145(Direction direction, Direction direction2, Direction direction3) {
-        return new Direction[]{direction, direction2, direction3, direction3.getOpposite(), direction2.getOpposite(), direction.getOpposite()};
+    /**
+     * Helper function that returns the 3 directions given, followed by the 3 opposite given in opposite order.
+     */
+    private static Direction[] listClosest(Direction first, Direction second, Direction third) {
+        return new Direction[]{first, second, third, third.getOpposite(), second.getOpposite(), first.getOpposite()};
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static Direction transform(Matrix4f matrix4f, Direction direction) {
+    public static Direction transform(Matrix4f matrix, Direction direction) {
         Vec3i vec3i = direction.getVector();
         Vector4f vector4f = new Vector4f(vec3i.getX(), vec3i.getY(), vec3i.getZ(), 0.0f);
-        vector4f.transform(matrix4f);
+        vector4f.transform(matrix);
         return Direction.getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
@@ -323,9 +326,9 @@ public enum Direction implements StringIdentifiable
         private final Direction[] facingArray;
         private final Axis[] axisArray;
 
-        private Type(Direction[] directions, Axis[] axiss) {
-            this.facingArray = directions;
-            this.axisArray = axiss;
+        private Type(Direction[] facingArray, Axis[] axisArray) {
+            this.facingArray = facingArray;
+            this.axisArray = axisArray;
         }
 
         public Direction random(Random random) {
@@ -357,11 +360,11 @@ public enum Direction implements StringIdentifiable
         NEGATIVE(-1, "Towards negative");
 
         private final int offset;
-        private final String desc;
+        private final String description;
 
         private AxisDirection(int offset, String description) {
             this.offset = offset;
-            this.desc = description;
+            this.description = description;
         }
 
         public int offset() {
@@ -369,7 +372,7 @@ public enum Direction implements StringIdentifiable
         }
 
         public String toString() {
-            return this.desc;
+            return this.description;
         }
 
         public AxisDirection getOpposite() {
@@ -434,13 +437,13 @@ public enum Direction implements StringIdentifiable
             }
         };
 
-        private static final Axis[] field_23780;
-        public static final Codec<Axis> field_25065;
+        private static final Axis[] VALUES;
+        public static final Codec<Axis> CODEC;
         private static final Map<String, Axis> BY_NAME;
         private final String name;
 
-        private Axis(String string2) {
-            this.name = string2;
+        private Axis(String name) {
+            this.name = name;
         }
 
         @Nullable
@@ -465,7 +468,7 @@ public enum Direction implements StringIdentifiable
         }
 
         public static Axis pickRandomAxis(Random random) {
-            return Util.getRandom(field_23780, random);
+            return Util.getRandom(VALUES, random);
         }
 
         @Override
@@ -501,9 +504,9 @@ public enum Direction implements StringIdentifiable
         }
 
         static {
-            field_23780 = Axis.values();
-            field_25065 = StringIdentifiable.createCodec(Axis::values, Axis::fromName);
-            BY_NAME = Arrays.stream(field_23780).collect(Collectors.toMap(Axis::getName, axis -> axis));
+            VALUES = Axis.values();
+            CODEC = StringIdentifiable.createCodec(Axis::values, Axis::fromName);
+            BY_NAME = Arrays.stream(VALUES).collect(Collectors.toMap(Axis::getName, axis -> axis));
         }
     }
 }

@@ -100,10 +100,10 @@ extends World {
     });
     private final ClientChunkManager chunkManager;
 
-    public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, Properties properties, RegistryKey<World> registryKey, DimensionType dimensionType, int i, Supplier<Profiler> supplier, WorldRenderer worldRenderer, boolean debugWorld, long l) {
-        super(properties, registryKey, dimensionType, supplier, true, debugWorld, l);
-        this.netHandler = clientPlayNetworkHandler;
-        this.chunkManager = new ClientChunkManager(this, i);
+    public ClientWorld(ClientPlayNetworkHandler networkHandler, Properties properties, RegistryKey<World> registryRef, DimensionType dimensionType, int loadDistance, Supplier<Profiler> profiler, WorldRenderer worldRenderer, boolean debugWorld, long seed) {
+        super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
+        this.netHandler = networkHandler;
+        this.chunkManager = new ClientChunkManager(this, loadDistance);
         this.clientWorldProperties = properties;
         this.worldRenderer = worldRenderer;
         this.skyProperties = SkyProperties.byDimensionType(dimensionType);

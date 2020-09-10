@@ -8,9 +8,9 @@ import net.minecraft.util.math.MathHelper;
 
 public class SimplexNoiseSampler {
     protected static final int[][] gradients = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}, {1, 1, 0}, {0, -1, 1}, {-1, 1, 0}, {0, -1, -1}};
-    private static final double sqrt3 = Math.sqrt(3.0);
-    private static final double SKEW_FACTOR_2D = 0.5 * (sqrt3 - 1.0);
-    private static final double UNSKEW_FACTOR_2D = (3.0 - sqrt3) / 6.0;
+    private static final double SQRT_3 = Math.sqrt(3.0);
+    private static final double SKEW_FACTOR_2D = 0.5 * (SQRT_3 - 1.0);
+    private static final double UNSKEW_FACTOR_2D = (3.0 - SQRT_3) / 6.0;
     private final int[] permutations = new int[512];
     public final double originX;
     public final double originY;

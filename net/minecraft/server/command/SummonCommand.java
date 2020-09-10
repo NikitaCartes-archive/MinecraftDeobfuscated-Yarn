@@ -53,7 +53,7 @@ public class SummonCommand {
         if (initialize && entity22 instanceof MobEntity) {
             ((MobEntity)entity22).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity22.getBlockPos()), SpawnReason.COMMAND, null, null);
         }
-        if (!serverWorld.method_30736(entity22)) {
+        if (!serverWorld.shouldCreateNewEntityWithPassenger(entity22)) {
             throw field_26629.create();
         }
         source.sendFeedback(new TranslatableText("commands.summon.success", entity22.getDisplayName()), true);

@@ -7,22 +7,22 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.stat.Stats;
+import net.minecraft.village.Merchant;
+import net.minecraft.village.MerchantInventory;
 import net.minecraft.village.TradeOffer;
-import net.minecraft.village.Trader;
-import net.minecraft.village.TraderInventory;
 
 public class TradeOutputSlot
 extends Slot {
-    private final TraderInventory traderInventory;
+    private final MerchantInventory merchantInventory;
     private final PlayerEntity player;
     private int amount;
-    private final Trader trader;
+    private final Merchant merchant;
 
-    public TradeOutputSlot(PlayerEntity player, Trader trader, TraderInventory traderInventory, int index, int x, int y) {
-        super(traderInventory, index, x, y);
+    public TradeOutputSlot(PlayerEntity player, Merchant merchant, MerchantInventory merchantInventory, int index, int x, int y) {
+        super(merchantInventory, index, x, y);
         this.player = player;
-        this.trader = trader;
-        this.traderInventory = traderInventory;
+        this.merchant = merchant;
+        this.merchantInventory = merchantInventory;
     }
 
     @Override
@@ -53,17 +53,17 @@ extends Slot {
     @Override
     public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
         this.onCrafted(stack);
-        TradeOffer tradeOffer = this.traderInventory.getTradeOffer();
+        TradeOffer tradeOffer = this.merchantInventory.getTradeOffer();
         if (tradeOffer != null) {
             ItemStack itemStack2;
-            ItemStack itemStack = this.traderInventory.getStack(0);
-            if (tradeOffer.depleteBuyItems(itemStack, itemStack2 = this.traderInventory.getStack(1)) || tradeOffer.depleteBuyItems(itemStack2, itemStack)) {
-                this.trader.trade(tradeOffer);
+            ItemStack itemStack = this.merchantInventory.getStack(0);
+            if (tradeOffer.depleteBuyItems(itemStack, itemStack2 = this.merchantInventory.getStack(1)) || tradeOffer.depleteBuyItems(itemStack2, itemStack)) {
+                this.merchant.trade(tradeOffer);
                 player.incrementStat(Stats.TRADED_WITH_VILLAGER);
-                this.traderInventory.setStack(0, itemStack);
-                this.traderInventory.setStack(1, itemStack2);
+                this.merchantInventory.setStack(0, itemStack);
+                this.merchantInventory.setStack(1, itemStack2);
             }
-            this.trader.setExperienceFromServer(this.trader.getExperience() + tradeOffer.getTraderExperience());
+            this.merchant.setExperienceFromServer(this.merchant.getExperience() + tradeOffer.getMerchantExperience());
         }
         return stack;
     }

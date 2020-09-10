@@ -115,20 +115,20 @@ Tickable {
         }
     }
 
-    public static int tickViewerCount(World world, LockableContainerBlockEntity blockEntity, int ticksOpen, int x, int y, int z, int viewerCount) {
+    public static int tickViewerCount(World world, LockableContainerBlockEntity inventory, int ticksOpen, int x, int y, int z, int viewerCount) {
         if (!world.isClient && viewerCount != 0 && (ticksOpen + x + y + z) % 200 == 0) {
-            viewerCount = ChestBlockEntity.countViewers(world, blockEntity, x, y, z);
+            viewerCount = ChestBlockEntity.countViewers(world, inventory, x, y, z);
         }
         return viewerCount;
     }
 
-    public static int countViewers(World world, LockableContainerBlockEntity container, int ticksOpen, int x, int y) {
+    public static int countViewers(World world, LockableContainerBlockEntity inventory, int x, int y, int z) {
         int i = 0;
         float f = 5.0f;
-        List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, new Box((float)ticksOpen - 5.0f, (float)x - 5.0f, (float)y - 5.0f, (float)(ticksOpen + 1) + 5.0f, (float)(x + 1) + 5.0f, (float)(y + 1) + 5.0f));
+        List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, new Box((float)x - 5.0f, (float)y - 5.0f, (float)z - 5.0f, (float)(x + 1) + 5.0f, (float)(y + 1) + 5.0f, (float)(z + 1) + 5.0f));
         for (PlayerEntity playerEntity : list) {
-            Inventory inventory;
-            if (!(playerEntity.currentScreenHandler instanceof GenericContainerScreenHandler) || (inventory = ((GenericContainerScreenHandler)playerEntity.currentScreenHandler).getInventory()) != container && (!(inventory instanceof DoubleInventory) || !((DoubleInventory)inventory).isPart(container))) continue;
+            Inventory inventory2;
+            if (!(playerEntity.currentScreenHandler instanceof GenericContainerScreenHandler) || (inventory2 = ((GenericContainerScreenHandler)playerEntity.currentScreenHandler).getInventory()) != inventory && (!(inventory2 instanceof DoubleInventory) || !((DoubleInventory)inventory2).isPart(inventory))) continue;
             ++i;
         }
         return i;

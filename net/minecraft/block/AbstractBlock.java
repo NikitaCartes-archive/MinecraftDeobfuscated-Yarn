@@ -917,8 +917,8 @@ public abstract class AbstractBlock {
             return this;
         }
 
-        public Settings lightLevel(ToIntFunction<BlockState> levelFunction) {
-            this.luminance = levelFunction;
+        public Settings luminance(ToIntFunction<BlockState> luminance) {
+            this.luminance = luminance;
             return this;
         }
 

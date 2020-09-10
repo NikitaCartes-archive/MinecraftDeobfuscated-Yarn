@@ -40,12 +40,12 @@ extends Screen {
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-    private static final String field_24260 = "" + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + (Object)((Object)Formatting.GREEN) + (Object)((Object)Formatting.AQUA);
+    private static final String OBFUSCATION_PLACEHOLDER = "" + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + (Object)((Object)Formatting.GREEN) + (Object)((Object)Formatting.AQUA);
     private final boolean endCredits;
     private final Runnable finishAction;
     private float time;
     private List<OrderedText> credits;
-    private IntSet field_24261;
+    private IntSet centeredLines;
     private int creditsHeight;
     private float speed = 0.5f;
 
@@ -87,7 +87,7 @@ extends Screen {
             return;
         }
         this.credits = Lists.newArrayList();
-        this.field_24261 = new IntOpenHashSet();
+        this.centeredLines = new IntOpenHashSet();
         Resource resource = null;
         try {
             String string4;
@@ -103,9 +103,9 @@ extends Screen {
                 Random random = new Random(8124371L);
                 while ((string = bufferedReader.readLine()) != null) {
                     string = string.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
-                    while ((j = string.indexOf(field_24260)) != -1) {
+                    while ((j = string.indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
                         String string2 = string.substring(0, j);
-                        String string3 = string.substring(j + field_24260.length());
+                        String string3 = string.substring(j + OBFUSCATION_PLACEHOLDER.length());
                         string = string2 + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
                     }
                     this.credits.addAll(this.client.textRenderer.wrapLines(new LiteralText(string), 274));
@@ -130,7 +130,7 @@ extends Screen {
                 List<OrderedText> list = this.client.textRenderer.wrapLines(new LiteralText(string4), 274);
                 for (OrderedText orderedText : list) {
                     if (bl) {
-                        this.field_24261.add(this.credits.size());
+                        this.centeredLines.add(this.credits.size());
                     }
                     this.credits.add(orderedText);
                 }
@@ -147,7 +147,7 @@ extends Screen {
     }
 
     private void renderBackground(int mouseX, int mouseY, float tickDelta) {
-        this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_TEXTURE);
+        this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
         int i = this.width;
         float f = -this.time * 0.5f * this.speed;
         float g = (float)this.height - this.time * 0.5f * this.speed;
@@ -204,7 +204,7 @@ extends Screen {
             }
             if ((float)l + f + 12.0f + 8.0f > 0.0f && (float)l + f < (float)this.height) {
                 OrderedText orderedText = this.credits.get(m);
-                if (this.field_24261.contains(m)) {
+                if (this.centeredLines.contains(m)) {
                     this.textRenderer.drawWithShadow(matrices, orderedText, (float)(j + (274 - this.textRenderer.getWidth(orderedText)) / 2), (float)l, 0xFFFFFF);
                 } else {
                     this.textRenderer.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0f));

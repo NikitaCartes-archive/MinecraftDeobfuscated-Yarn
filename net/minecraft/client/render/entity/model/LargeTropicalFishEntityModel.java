@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class LargeTropicalFishEntityModel<T extends Entity>
 extends TintableCompositeModel<T> {
-    private final ModelPart field_3597;
+    private final ModelPart body;
     private final ModelPart field_3599;
     private final ModelPart field_3598;
     private final ModelPart field_3596;
@@ -25,9 +25,9 @@ extends TintableCompositeModel<T> {
         this.textureWidth = 32;
         this.textureHeight = 32;
         int i = 19;
-        this.field_3597 = new ModelPart(this, 0, 20);
-        this.field_3597.addCuboid(-1.0f, -3.0f, -3.0f, 2.0f, 6.0f, 6.0f, scale);
-        this.field_3597.setPivot(0.0f, 19.0f, 0.0f);
+        this.body = new ModelPart(this, 0, 20);
+        this.body.addCuboid(-1.0f, -3.0f, -3.0f, 2.0f, 6.0f, 6.0f, scale);
+        this.body.setPivot(0.0f, 19.0f, 0.0f);
         this.field_3599 = new ModelPart(this, 21, 16);
         this.field_3599.addCuboid(0.0f, -3.0f, 0.0f, 0.0f, 6.0f, 5.0f, scale);
         this.field_3599.setPivot(0.0f, 19.0f, 3.0f);
@@ -49,7 +49,7 @@ extends TintableCompositeModel<T> {
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.field_3597, this.field_3599, this.field_3598, this.field_3596, this.field_3595, this.field_3600);
+        return ImmutableList.of(this.body, this.field_3599, this.field_3598, this.field_3596, this.field_3595, this.field_3600);
     }
 
     @Override

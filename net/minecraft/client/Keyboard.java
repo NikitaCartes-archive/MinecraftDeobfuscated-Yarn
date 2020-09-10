@@ -8,12 +8,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_5500;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
+import net.minecraft.client.gui.screen.options.NarratorOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.options.KeyBinding;
@@ -285,8 +285,8 @@ public class Keyboard {
         boolean bl2 = bl = parentElement == null || !(parentElement.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)parentElement.getFocused()).isActive();
         if (i != 0 && key == 66 && Screen.hasControlDown() && bl) {
             Option.NARRATOR.cycle(this.client.options, 1);
-            if (parentElement instanceof class_5500) {
-                ((class_5500)parentElement).method_31050();
+            if (parentElement instanceof NarratorOptionsScreen) {
+                ((NarratorOptionsScreen)parentElement).updateNarratorButtonText();
             }
         }
         if (parentElement != null) {

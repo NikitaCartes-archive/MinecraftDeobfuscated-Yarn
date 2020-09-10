@@ -44,9 +44,9 @@ extends DoubleOption {
             }
             double d = doubleOption.get((GameOptions)gameOptions);
             if (d == -1.0) {
-                return doubleOption.method_30501(new TranslatableText("options.fullscreen.current"));
+                return doubleOption.getGenericLabel(new TranslatableText("options.fullscreen.current"));
             }
-            return doubleOption.method_30501(new LiteralText(monitor.getVideoMode((int)d).toString()));
+            return doubleOption.getGenericLabel(new LiteralText(monitor.getVideoMode((int)d).toString()));
         });
     }
 }

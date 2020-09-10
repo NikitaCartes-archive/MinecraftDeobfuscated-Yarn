@@ -26,7 +26,10 @@ public final class Material {
      */
     public static final Material UNDERWATER_PLANT = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().build();
     public static final Material REPLACEABLE_PLANT = Builder.method_15808(new Builder(MaterialColor.FOLIAGE).allowsMovement()).notSolid().destroyedByPiston().replaceable().burnable().build();
-    public static final Material field_26708 = Builder.method_15808(new Builder(MaterialColor.FOLIAGE).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
+    /**
+     * Material for crimson and warped roots, as well as Nether sprouts.
+     */
+    public static final Material NETHER_SHOOTS = Builder.method_15808(new Builder(MaterialColor.FOLIAGE).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
     public static final Material REPLACEABLE_UNDERWATER_PLANT = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
     public static final Material WATER = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();
     public static final Material BUBBLE_COLUMN = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();
@@ -93,6 +96,9 @@ public final class Material {
      * Material for blocks that are stone or made from it, and generally prefer to be broken by a pickaxe.
      */
     public static final Material STONE = new Builder(MaterialColor.STONE).build();
+    /**
+     * Material for blocks metallic in nature, such as cauldrons, bells, iron doors, and iron trapdoors. It also includes non-obvious blocks such as brewing stands and compressed ore blocks, including diamond, redstone, and lapis blocks.
+     */
     public static final Material METAL = new Builder(MaterialColor.IRON).build();
     /**
      * Material for full sized snow blocks.

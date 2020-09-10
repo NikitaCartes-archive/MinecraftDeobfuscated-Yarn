@@ -30,8 +30,8 @@ extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
 
     @Override
     protected void setupTransforms(SquidEntity squidEntity, MatrixStack matrixStack, float f, float g, float h) {
-        float i = MathHelper.lerp(h, squidEntity.field_6905, squidEntity.field_6907);
-        float j = MathHelper.lerp(h, squidEntity.field_6906, squidEntity.field_6903);
+        float i = MathHelper.lerp(h, squidEntity.prevTiltAngle, squidEntity.tiltAngle);
+        float j = MathHelper.lerp(h, squidEntity.prevRollAngle, squidEntity.rollAngle);
         matrixStack.translate(0.0, 0.5, 0.0);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - g));
         matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(i));
@@ -41,7 +41,7 @@ extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
 
     @Override
     protected float getAnimationProgress(SquidEntity squidEntity, float f) {
-        return MathHelper.lerp(f, squidEntity.field_6900, squidEntity.field_6904);
+        return MathHelper.lerp(f, squidEntity.prevTentacleAngle, squidEntity.tentacleAngle);
     }
 }
 

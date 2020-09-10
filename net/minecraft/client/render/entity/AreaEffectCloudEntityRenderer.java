@@ -20,7 +20,7 @@ extends EntityRenderer<AreaEffectCloudEntity> {
 
     @Override
     public Identifier getTexture(AreaEffectCloudEntity areaEffectCloudEntity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     }
 }
 

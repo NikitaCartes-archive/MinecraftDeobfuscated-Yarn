@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DataTracker {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Map<Class<? extends Entity>, Integer> trackedEntities = Maps.newHashMap();
+    private static final Map<Class<? extends Entity>, Integer> TRACKED_ENTITIES = Maps.newHashMap();
     private final Entity trackedEntity;
     private final Map<Integer, Entry<?>> entries = Maps.newHashMap();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -54,14 +54,14 @@ public class DataTracker {
                 // empty catch block
             }
         }
-        if (trackedEntities.containsKey(entityClass)) {
-            i = trackedEntities.get(entityClass) + 1;
+        if (TRACKED_ENTITIES.containsKey(entityClass)) {
+            i = TRACKED_ENTITIES.get(entityClass) + 1;
         } else {
             int j = 0;
             Class<? extends Entity> class2 = entityClass;
             while (class2 != Entity.class) {
-                if (!trackedEntities.containsKey(class2 = class2.getSuperclass())) continue;
-                j = trackedEntities.get(class2) + 1;
+                if (!TRACKED_ENTITIES.containsKey(class2 = class2.getSuperclass())) continue;
+                j = TRACKED_ENTITIES.get(class2) + 1;
                 break;
             }
             i = j;
@@ -69,7 +69,7 @@ public class DataTracker {
         if (i > 254) {
             throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
         }
-        trackedEntities.put(entityClass, i);
+        TRACKED_ENTITIES.put(entityClass, i);
         return dataHandler.create(i);
     }
 

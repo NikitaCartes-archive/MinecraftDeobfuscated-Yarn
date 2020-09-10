@@ -121,7 +121,7 @@ implements ResourceReloadListener {
     private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap();
     private final Queue<Particle> newParticles = Queues.newArrayDeque();
     private final Map<Identifier, SimpleSpriteProvider> spriteAwareFactories = Maps.newHashMap();
-    private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
+    private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 
     public ParticleManager(ClientWorld world, TextureManager textureManager) {
         textureManager.registerTexture(this.particleAtlasTexture.getId(), this.particleAtlasTexture);

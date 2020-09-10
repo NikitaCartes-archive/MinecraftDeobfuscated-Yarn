@@ -60,7 +60,7 @@ import org.jetbrains.annotations.Nullable;
 public class CreativeInventoryScreen
 extends AbstractInventoryScreen<CreativeScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
-    private static final SimpleInventory inventory = new SimpleInventory(45);
+    private static final SimpleInventory INVENTORY = new SimpleInventory(45);
     private static final Text field_26563 = new TranslatableText("inventory.binSlot");
     private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
     private float scrollPosition;
@@ -125,7 +125,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                     this.client.player.playerScreenHandler.onSlotClick(slot == null ? invSlot : ((CreativeSlot)((CreativeSlot)slot)).slot.id, clickData, actionType, this.client.player);
                     this.client.player.playerScreenHandler.sendContentUpdates();
                 }
-            } else if (actionType != SlotActionType.QUICK_CRAFT && slot.inventory == inventory) {
+            } else if (actionType != SlotActionType.QUICK_CRAFT && slot.inventory == INVENTORY) {
                 PlayerInventory playerInventory = this.client.player.inventory;
                 ItemStack itemStack2 = playerInventory.getCursorStack();
                 ItemStack itemStack3 = slot.getStack();
@@ -218,7 +218,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     }
 
     private boolean isCreativeInventorySlot(@Nullable Slot slot) {
-        return slot != null && slot.inventory == inventory;
+        return slot != null && slot.inventory == INVENTORY;
     }
 
     @Override
@@ -470,7 +470,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                 CreativeSlot slot = new CreativeSlot(screenHandler.slots.get(j), j, o, k);
                 ((CreativeScreenHandler)this.handler).slots.add(slot);
             }
-            this.deleteItemSlot = new Slot(inventory, 0, 173, 112);
+            this.deleteItemSlot = new Slot(INVENTORY, 0, 173, 112);
             ((CreativeScreenHandler)this.handler).slots.add(this.deleteItemSlot);
         } else if (i == ItemGroup.INVENTORY.getIndex()) {
             ((CreativeScreenHandler)this.handler).slots.clear();
@@ -797,7 +797,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             PlayerInventory playerInventory = playerEntity.inventory;
             for (i = 0; i < 5; ++i) {
                 for (int j = 0; j < 9; ++j) {
-                    this.addSlot(new LockableSlot(inventory, i * 9 + j, 9 + j * 18, 18 + i * 18));
+                    this.addSlot(new LockableSlot(INVENTORY, i * 9 + j, 9 + j * 18, 18 + i * 18));
                 }
             }
             for (i = 0; i < 9; ++i) {
@@ -821,10 +821,10 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                 for (int l = 0; l < 9; ++l) {
                     int m = l + (k + j) * 9;
                     if (m >= 0 && m < this.itemList.size()) {
-                        inventory.setStack(l + k * 9, this.itemList.get(m));
+                        INVENTORY.setStack(l + k * 9, this.itemList.get(m));
                         continue;
                     }
-                    inventory.setStack(l + k * 9, ItemStack.EMPTY);
+                    INVENTORY.setStack(l + k * 9, ItemStack.EMPTY);
                 }
             }
         }
@@ -844,12 +844,12 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
 
         @Override
         public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-            return slot.inventory != inventory;
+            return slot.inventory != INVENTORY;
         }
 
         @Override
         public boolean canInsertIntoSlot(Slot slot) {
-            return slot.inventory != inventory;
+            return slot.inventory != INVENTORY;
         }
     }
 }

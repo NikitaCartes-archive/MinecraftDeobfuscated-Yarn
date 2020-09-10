@@ -22,7 +22,7 @@ public interface ParticleTextureSheet {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.depthMask(true);
-            textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+            textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 
@@ -41,7 +41,7 @@ public interface ParticleTextureSheet {
         public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
-            textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
+            textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 
@@ -59,7 +59,7 @@ public interface ParticleTextureSheet {
         @Override
         public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
             RenderSystem.depthMask(true);
-            textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
+            textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
             RenderSystem.alphaFunc(516, 0.003921569f);
@@ -81,7 +81,7 @@ public interface ParticleTextureSheet {
         public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
-            textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
+            textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 

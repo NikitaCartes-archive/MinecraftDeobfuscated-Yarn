@@ -34,68 +34,68 @@ extends EntityModel<T> {
         this.leftFoot.addCuboid(-1.0f, 5.5f, -3.7f, 2.0f, 1.0f, 7.0f);
         this.leftFoot.setPivot(3.0f, 17.5f, 3.7f);
         this.leftFoot.mirror = true;
-        this.method_2827(this.leftFoot, 0.0f, 0.0f, 0.0f);
+        this.setAngle(this.leftFoot, 0.0f, 0.0f, 0.0f);
         this.rightFoot = new ModelPart(this, 8, 24);
         this.rightFoot.addCuboid(-1.0f, 5.5f, -3.7f, 2.0f, 1.0f, 7.0f);
         this.rightFoot.setPivot(-3.0f, 17.5f, 3.7f);
         this.rightFoot.mirror = true;
-        this.method_2827(this.rightFoot, 0.0f, 0.0f, 0.0f);
+        this.setAngle(this.rightFoot, 0.0f, 0.0f, 0.0f);
         this.leftBackLeg = new ModelPart(this, 30, 15);
         this.leftBackLeg.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 4.0f, 5.0f);
         this.leftBackLeg.setPivot(3.0f, 17.5f, 3.7f);
         this.leftBackLeg.mirror = true;
-        this.method_2827(this.leftBackLeg, -0.34906584f, 0.0f, 0.0f);
+        this.setAngle(this.leftBackLeg, -0.34906584f, 0.0f, 0.0f);
         this.rightBackLeg = new ModelPart(this, 16, 15);
         this.rightBackLeg.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 4.0f, 5.0f);
         this.rightBackLeg.setPivot(-3.0f, 17.5f, 3.7f);
         this.rightBackLeg.mirror = true;
-        this.method_2827(this.rightBackLeg, -0.34906584f, 0.0f, 0.0f);
+        this.setAngle(this.rightBackLeg, -0.34906584f, 0.0f, 0.0f);
         this.torso = new ModelPart(this, 0, 0);
         this.torso.addCuboid(-3.0f, -2.0f, -10.0f, 6.0f, 5.0f, 10.0f);
         this.torso.setPivot(0.0f, 19.0f, 8.0f);
         this.torso.mirror = true;
-        this.method_2827(this.torso, -0.34906584f, 0.0f, 0.0f);
+        this.setAngle(this.torso, -0.34906584f, 0.0f, 0.0f);
         this.leftFrontLeg = new ModelPart(this, 8, 15);
         this.leftFrontLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 7.0f, 2.0f);
         this.leftFrontLeg.setPivot(3.0f, 17.0f, -1.0f);
         this.leftFrontLeg.mirror = true;
-        this.method_2827(this.leftFrontLeg, -0.17453292f, 0.0f, 0.0f);
+        this.setAngle(this.leftFrontLeg, -0.17453292f, 0.0f, 0.0f);
         this.rightFrontLeg = new ModelPart(this, 0, 15);
         this.rightFrontLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 7.0f, 2.0f);
         this.rightFrontLeg.setPivot(-3.0f, 17.0f, -1.0f);
         this.rightFrontLeg.mirror = true;
-        this.method_2827(this.rightFrontLeg, -0.17453292f, 0.0f, 0.0f);
+        this.setAngle(this.rightFrontLeg, -0.17453292f, 0.0f, 0.0f);
         this.head = new ModelPart(this, 32, 0);
         this.head.addCuboid(-2.5f, -4.0f, -5.0f, 5.0f, 4.0f, 5.0f);
         this.head.setPivot(0.0f, 16.0f, -1.0f);
         this.head.mirror = true;
-        this.method_2827(this.head, 0.0f, 0.0f, 0.0f);
+        this.setAngle(this.head, 0.0f, 0.0f, 0.0f);
         this.rightEar = new ModelPart(this, 52, 0);
         this.rightEar.addCuboid(-2.5f, -9.0f, -1.0f, 2.0f, 5.0f, 1.0f);
         this.rightEar.setPivot(0.0f, 16.0f, -1.0f);
         this.rightEar.mirror = true;
-        this.method_2827(this.rightEar, 0.0f, -0.2617994f, 0.0f);
+        this.setAngle(this.rightEar, 0.0f, -0.2617994f, 0.0f);
         this.leftEar = new ModelPart(this, 58, 0);
         this.leftEar.addCuboid(0.5f, -9.0f, -1.0f, 2.0f, 5.0f, 1.0f);
         this.leftEar.setPivot(0.0f, 16.0f, -1.0f);
         this.leftEar.mirror = true;
-        this.method_2827(this.leftEar, 0.0f, 0.2617994f, 0.0f);
+        this.setAngle(this.leftEar, 0.0f, 0.2617994f, 0.0f);
         this.tail = new ModelPart(this, 52, 6);
         this.tail.addCuboid(-1.5f, -1.5f, 0.0f, 3.0f, 3.0f, 2.0f);
         this.tail.setPivot(0.0f, 20.0f, 7.0f);
         this.tail.mirror = true;
-        this.method_2827(this.tail, -0.3490659f, 0.0f, 0.0f);
+        this.setAngle(this.tail, -0.3490659f, 0.0f, 0.0f);
         this.nose = new ModelPart(this, 32, 9);
         this.nose.addCuboid(-0.5f, -2.5f, -5.5f, 1.0f, 1.0f, 1.0f);
         this.nose.setPivot(0.0f, 16.0f, -1.0f);
         this.nose.mirror = true;
-        this.method_2827(this.nose, 0.0f, 0.0f, 0.0f);
+        this.setAngle(this.nose, 0.0f, 0.0f, 0.0f);
     }
 
-    private void method_2827(ModelPart modelPart, float f, float g, float h) {
-        modelPart.pitch = f;
-        modelPart.yaw = g;
-        modelPart.roll = h;
+    private void setAngle(ModelPart modelPart, float pitch, float yaw, float roll) {
+        modelPart.pitch = pitch;
+        modelPart.yaw = yaw;
+        modelPart.roll = roll;
     }
 
     @Override

@@ -70,7 +70,7 @@ extends Item {
                     if (!world.isClient) {
                         Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
                     }
-                    return TypedActionResult.method_29237(itemStack2, world.isClient());
+                    return TypedActionResult.success(itemStack2, world.isClient());
                 }
                 return TypedActionResult.fail(itemStack);
             }
@@ -82,7 +82,7 @@ extends Item {
                     Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, itemStack);
                 }
                 user.incrementStat(Stats.USED.getOrCreateStat(this));
-                return TypedActionResult.method_29237(this.getEmptiedStack(itemStack, user), world.isClient());
+                return TypedActionResult.success(this.getEmptiedStack(itemStack, user), world.isClient());
             }
             return TypedActionResult.fail(itemStack);
         }

@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class SnowmanEntityModel<T extends Entity>
+public class SnowGolemEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
     private final ModelPart middleSnowball;
     private final ModelPart bottomSnowball;
@@ -20,7 +20,7 @@ extends CompositeEntityModel<T> {
     private final ModelPart leftArm;
     private final ModelPart rightArm;
 
-    public SnowmanEntityModel() {
+    public SnowGolemEntityModel() {
         float f = 4.0f;
         float g = 0.0f;
         this.topSnowball = new ModelPart(this, 0, 0).setTextureSize(64, 64);

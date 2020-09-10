@@ -54,7 +54,7 @@ import org.jetbrains.annotations.Nullable;
 public class PresetsScreen
 extends Screen {
     private static final Logger field_25043 = LogManager.getLogger();
-    private static final List<SuperflatPreset> presets = Lists.newArrayList();
+    private static final List<SuperflatPreset> PRESETS = Lists.newArrayList();
     private final CustomizeFlatLevelScreen parent;
     private Text shareText;
     private Text listText;
@@ -223,7 +223,7 @@ extends Screen {
     }
 
     private static void addPreset(Text text, ItemConvertible icon, RegistryKey<Biome> registryKey, List<StructureFeature<?>> structures, boolean bl, boolean bl2, boolean bl3, FlatChunkGeneratorLayer ... flatChunkGeneratorLayers) {
-        presets.add(new SuperflatPreset(icon.asItem(), text, registry -> {
+        PRESETS.add(new SuperflatPreset(icon.asItem(), text, registry -> {
             HashMap<StructureFeature<?>, StructureConfig> map = Maps.newHashMap();
             for (StructureFeature structureFeature : structures) {
                 map.put(structureFeature, StructuresConfig.DEFAULT_STRUCTURES.get(structureFeature));
@@ -279,7 +279,7 @@ extends Screen {
     extends AlwaysSelectedEntryListWidget<SuperflatPresetEntry> {
         public SuperflatPresetsListWidget() {
             super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
-            for (int i = 0; i < presets.size(); ++i) {
+            for (int i = 0; i < PRESETS.size(); ++i) {
                 this.addEntry(new SuperflatPresetEntry());
             }
         }
@@ -288,7 +288,7 @@ extends Screen {
         public void setSelected(@Nullable SuperflatPresetEntry superflatPresetEntry) {
             super.setSelected(superflatPresetEntry);
             if (superflatPresetEntry != null) {
-                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)presets.get(this.children().indexOf(superflatPresetEntry))).getName()).getString());
+                NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)PRESETS.get(this.children().indexOf(superflatPresetEntry))).getName()).getString());
             }
             PresetsScreen.this.updateSelectButton(superflatPresetEntry != null);
         }
@@ -314,7 +314,7 @@ extends Screen {
         extends AlwaysSelectedEntryListWidget.Entry<SuperflatPresetEntry> {
             @Override
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(index);
+                SuperflatPreset superflatPreset = (SuperflatPreset)PRESETS.get(index);
                 this.method_2200(matrices, x, y, superflatPreset.icon);
                 PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 0xFFFFFF);
             }
@@ -329,7 +329,7 @@ extends Screen {
 
             private void setPreset() {
                 SuperflatPresetsListWidget.this.setSelected(this);
-                SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(SuperflatPresetsListWidget.this.children().indexOf(this));
+                SuperflatPreset superflatPreset = (SuperflatPreset)PRESETS.get(SuperflatPresetsListWidget.this.children().indexOf(this));
                 MutableRegistry<Biome> registry = ((PresetsScreen)PresetsScreen.this).parent.parent.moreOptionsDialog.method_29700().get(Registry.BIOME_KEY);
                 PresetsScreen.this.field_25044 = superflatPreset.field_25045.apply(registry);
                 PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(registry, PresetsScreen.this.field_25044));

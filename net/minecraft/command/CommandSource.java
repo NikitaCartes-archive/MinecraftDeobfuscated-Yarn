@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.server.command;
+package net.minecraft.command;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;

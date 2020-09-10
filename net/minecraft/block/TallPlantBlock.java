@@ -81,7 +81,7 @@ extends PlantBlock {
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (!world.isClient) {
             if (player.isCreative()) {
-                TallPlantBlock.method_30036(world, pos, state, player);
+                TallPlantBlock.onBreakInCreative(world, pos, state, player);
             } else {
                 TallPlantBlock.dropStacks(state, world, pos, null, player, player.getMainHandStack());
             }
@@ -94,13 +94,19 @@ extends PlantBlock {
         super.afterBreak(world, player, pos, Blocks.AIR.getDefaultState(), blockEntity, stack);
     }
 
-    protected static void method_30036(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-        BlockPos blockPos2;
-        BlockState blockState2;
-        DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
-        if (doubleBlockHalf == DoubleBlockHalf.UPPER && (blockState2 = world.getBlockState(blockPos2 = blockPos.down())).getBlock() == blockState.getBlock() && blockState2.get(HALF) == DoubleBlockHalf.LOWER) {
-            world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
-            world.syncWorldEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
+    /**
+     * Destroys a bottom half of a tall double block (such as a plant or a door)
+     * without dropping an item when broken in creative.
+     * 
+     * @see Block#onBreak(World, BlockPos, BlockState, PlayerEntity)
+     */
+    protected static void onBreakInCreative(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        BlockPos blockPos;
+        BlockState blockState;
+        DoubleBlockHalf doubleBlockHalf = state.get(HALF);
+        if (doubleBlockHalf == DoubleBlockHalf.UPPER && (blockState = world.getBlockState(blockPos = pos.down())).getBlock() == state.getBlock() && blockState.get(HALF) == DoubleBlockHalf.LOWER) {
+            world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
+            world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
         }
     }
 

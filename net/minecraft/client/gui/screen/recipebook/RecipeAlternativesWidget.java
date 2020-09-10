@@ -32,7 +32,7 @@ public class RecipeAlternativesWidget
 extends DrawableHelper
 implements Drawable,
 Element {
-    private static final Identifier BG_TEX = new Identifier("textures/gui/recipe_book.png");
+    private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
     private final List<AlternativeButtonWidget> alternativeButtons = Lists.newArrayList();
     private boolean visible;
     private int buttonX;
@@ -129,7 +129,7 @@ Element {
         this.time += delta;
         RenderSystem.enableBlend();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(BG_TEX);
+        this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, 0.0f, 170.0f);
         int i = this.alternativeButtons.size() <= 16 ? 4 : 5;
@@ -215,7 +215,7 @@ Element {
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             int j;
             RenderSystem.enableAlphaTest();
-            RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(BG_TEX);
+            RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
             int i = 152;
             if (!this.craftable) {
                 i += 26;

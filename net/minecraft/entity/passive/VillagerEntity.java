@@ -49,8 +49,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WitchEntity;
-import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
@@ -78,8 +78,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
-import net.minecraft.village.TraderOfferList;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
@@ -96,7 +96,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public class VillagerEntity
-extends AbstractTraderEntity
+extends MerchantEntity
 implements InteractionObserver,
 VillagerDataContainer {
     private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
@@ -124,7 +124,7 @@ VillagerDataContainer {
     }
 
     public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world, VillagerType type) {
-        super((EntityType<? extends AbstractTraderEntity>)entityType, world);
+        super((EntityType<? extends MerchantEntity>)entityType, world);
         ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         this.getNavigation().setCanSwim(true);
         this.setCanPickUpLoot(true);
@@ -403,7 +403,7 @@ VillagerDataContainer {
             dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
         if (tag.contains("Offers", 10)) {
-            this.offers = new TraderOfferList(tag.getCompound("Offers"));
+            this.offers = new TradeOfferList(tag.getCompound("Offers"));
         }
         if (tag.contains("FoodLevel", 1)) {
             this.foodLevel = tag.getByte("FoodLevel");
@@ -475,7 +475,7 @@ VillagerDataContainer {
     @Override
     protected void afterUsing(TradeOffer offer) {
         int i = 3 + this.random.nextInt(4);
-        this.experience += offer.getTraderExperience();
+        this.experience += offer.getMerchantExperience();
         this.lastCustomer = this.getCurrentCustomer();
         if (this.canLevelUp()) {
             this.levelUpTimer = 40;
@@ -588,7 +588,7 @@ VillagerDataContainer {
         this.depleteFood(12);
     }
 
-    public void setOffers(TraderOfferList offers) {
+    public void setOffers(TradeOfferList offers) {
         this.offers = offers;
     }
 
@@ -722,8 +722,8 @@ VillagerDataContainer {
         if (factorys == null) {
             return;
         }
-        TraderOfferList traderOfferList = this.getOffers();
-        this.fillRecipesFromPool(traderOfferList, factorys, 2);
+        TradeOfferList tradeOfferList = this.getOffers();
+        this.fillRecipesFromPool(tradeOfferList, factorys, 2);
     }
 
     public void talkWithVillager(ServerWorld world, VillagerEntity villager, long time) {

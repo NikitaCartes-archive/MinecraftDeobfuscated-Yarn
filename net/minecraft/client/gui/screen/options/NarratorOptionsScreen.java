@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.client.gui.screen.options;
 
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -21,45 +21,45 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public abstract class class_5500
+public abstract class NarratorOptionsScreen
 extends GameOptionsScreen {
-    private final Option[] field_26679;
+    private final Option[] options;
     @Nullable
-    private AbstractButtonWidget field_26680;
-    private ButtonListWidget field_26681;
+    private AbstractButtonWidget narratorButton;
+    private ButtonListWidget buttonList;
 
-    public class_5500(Screen screen, GameOptions gameOptions, Text text, Option[] options) {
-        super(screen, gameOptions, text);
-        this.field_26679 = options;
+    public NarratorOptionsScreen(Screen parent, GameOptions gameOptions, Text title, Option[] options) {
+        super(parent, gameOptions, title);
+        this.options = options;
     }
 
     @Override
     protected void init() {
-        this.field_26681 = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
-        this.field_26681.addAll(this.field_26679);
-        this.children.add(this.field_26681);
+        this.buttonList = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+        this.buttonList.addAll(this.options);
+        this.children.add(this.buttonList);
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
-        this.field_26680 = this.field_26681.method_31046(Option.NARRATOR);
-        if (this.field_26680 != null) {
-            this.field_26680.active = NarratorManager.INSTANCE.isActive();
+        this.narratorButton = this.buttonList.getButtonFor(Option.NARRATOR);
+        if (this.narratorButton != null) {
+            this.narratorButton.active = NarratorManager.INSTANCE.isActive();
         }
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.field_26681.render(matrices, mouseX, mouseY, delta);
-        class_5500.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
+        this.buttonList.render(matrices, mouseX, mouseY, delta);
+        NarratorOptionsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
-        List<OrderedText> list = class_5500.method_31048(this.field_26681, mouseX, mouseY);
+        List<OrderedText> list = NarratorOptionsScreen.getHoveredButtonTooltip(this.buttonList, mouseX, mouseY);
         if (list != null) {
             this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
         }
     }
 
-    public void method_31050() {
-        if (this.field_26680 != null) {
-            this.field_26680.setMessage(Option.NARRATOR.getMessage(this.gameOptions));
+    public void updateNarratorButtonText() {
+        if (this.narratorButton != null) {
+            this.narratorButton.setMessage(Option.NARRATOR.getMessage(this.gameOptions));
         }
     }
 }

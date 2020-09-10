@@ -172,26 +172,26 @@ extends ResourceTexture {
         return image;
     }
 
-    private static void stripColor(NativeImage image, int x, int y, int width, int height) {
+    private static void stripColor(NativeImage image, int x1, int y1, int x2, int y2) {
         int j;
         int i;
-        for (i = x; i < width; ++i) {
-            for (j = y; j < height; ++j) {
+        for (i = x1; i < x2; ++i) {
+            for (j = y1; j < y2; ++j) {
                 int k = image.getPixelColor(i, j);
                 if ((k >> 24 & 0xFF) >= 128) continue;
                 return;
             }
         }
-        for (i = x; i < width; ++i) {
-            for (j = y; j < height; ++j) {
+        for (i = x1; i < x2; ++i) {
+            for (j = y1; j < y2; ++j) {
                 image.setPixelColor(i, j, image.getPixelColor(i, j) & 0xFFFFFF);
             }
         }
     }
 
-    private static void stripAlpha(NativeImage image, int x, int y, int width, int height) {
-        for (int i = x; i < width; ++i) {
-            for (int j = y; j < height; ++j) {
+    private static void stripAlpha(NativeImage image, int x1, int y1, int x2, int y2) {
+        for (int i = x1; i < x2; ++i) {
+            for (int j = y1; j < y2; ++j) {
                 image.setPixelColor(i, j, image.getPixelColor(i, j) | 0xFF000000);
             }
         }

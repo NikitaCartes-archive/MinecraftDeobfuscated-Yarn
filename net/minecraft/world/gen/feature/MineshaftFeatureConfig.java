@@ -16,8 +16,8 @@ implements FeatureConfig {
     public final float probability;
     public final MineshaftFeature.Type type;
 
-    public MineshaftFeatureConfig(float f, MineshaftFeature.Type type) {
-        this.probability = f;
+    public MineshaftFeatureConfig(float probability, MineshaftFeature.Type type) {
+        this.probability = probability;
         this.type = type;
     }
 }

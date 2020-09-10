@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class Int2ObjectBiMap<K>
 implements IndexedIterable<K> {
-    private static final Object empty = null;
+    private static final Object EMPTY = null;
     private K[] values;
     private int[] ids;
     private K[] idToValues;
@@ -103,14 +103,14 @@ implements IndexedIterable<K> {
             if (this.values[i] == value) {
                 return i;
             }
-            if (this.values[i] != empty) continue;
+            if (this.values[i] != EMPTY) continue;
             return -1;
         }
         for (i = 0; i < id; ++i) {
             if (this.values[i] == value) {
                 return i;
             }
-            if (this.values[i] != empty) continue;
+            if (this.values[i] != EMPTY) continue;
             return -1;
         }
         return -1;
@@ -119,11 +119,11 @@ implements IndexedIterable<K> {
     private int findFree(int size) {
         int i;
         for (i = size; i < this.values.length; ++i) {
-            if (this.values[i] != empty) continue;
+            if (this.values[i] != EMPTY) continue;
             return i;
         }
         for (i = 0; i < size; ++i) {
-            if (this.values[i] != empty) continue;
+            if (this.values[i] != EMPTY) continue;
             return i;
         }
         throw new RuntimeException("Overflowed :(");

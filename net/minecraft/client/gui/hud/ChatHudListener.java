@@ -12,11 +12,11 @@ import net.minecraft.network.MessageType;
 import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
-public class ChatListenerHud
+public class ChatHudListener
 implements ClientChatListener {
     private final MinecraftClient client;
 
-    public ChatListenerHud(MinecraftClient client) {
+    public ChatHudListener(MinecraftClient client) {
         this.client = client;
     }
 

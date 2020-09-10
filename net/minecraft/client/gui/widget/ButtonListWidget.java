@@ -51,7 +51,7 @@ extends ElementListWidget<ButtonEntry> {
     }
 
     @Nullable
-    public AbstractButtonWidget method_31046(Option option) {
+    public AbstractButtonWidget getButtonFor(Option option) {
         for (ButtonEntry buttonEntry : this.children()) {
             for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
                 if (!(abstractButtonWidget instanceof OptionButtonWidget) || ((OptionButtonWidget)abstractButtonWidget).getOption() != option) continue;

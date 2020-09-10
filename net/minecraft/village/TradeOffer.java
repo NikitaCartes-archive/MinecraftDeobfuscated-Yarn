@@ -18,7 +18,7 @@ public class TradeOffer {
     private int specialPrice;
     private int demandBonus;
     private float priceMultiplier;
-    private int traderExperience = 1;
+    private int merchantExperience = 1;
 
     public TradeOffer(CompoundTag compoundTag) {
         this.firstBuyItem = ItemStack.fromTag(compoundTag.getCompound("buy"));
@@ -30,7 +30,7 @@ public class TradeOffer {
             this.rewardingPlayerExperience = compoundTag.getBoolean("rewardExp");
         }
         if (compoundTag.contains("xp", 3)) {
-            this.traderExperience = compoundTag.getInt("xp");
+            this.merchantExperience = compoundTag.getInt("xp");
         }
         if (compoundTag.contains("priceMultiplier", 5)) {
             this.priceMultiplier = compoundTag.getFloat("priceMultiplier");
@@ -57,7 +57,7 @@ public class TradeOffer {
         this.sellItem = itemStack3;
         this.uses = i;
         this.maxUses = j;
-        this.traderExperience = k;
+        this.merchantExperience = k;
         this.priceMultiplier = f;
         this.demandBonus = l;
     }
@@ -130,8 +130,8 @@ public class TradeOffer {
         return this.priceMultiplier;
     }
 
-    public int getTraderExperience() {
-        return this.traderExperience;
+    public int getMerchantExperience() {
+        return this.merchantExperience;
     }
 
     public boolean isDisabled() {
@@ -158,7 +158,7 @@ public class TradeOffer {
         compoundTag.putInt("uses", this.uses);
         compoundTag.putInt("maxUses", this.maxUses);
         compoundTag.putBoolean("rewardExp", this.rewardingPlayerExperience);
-        compoundTag.putInt("xp", this.traderExperience);
+        compoundTag.putInt("xp", this.merchantExperience);
         compoundTag.putFloat("priceMultiplier", this.priceMultiplier);
         compoundTag.putInt("specialPrice", this.specialPrice);
         compoundTag.putInt("demand", this.demandBonus);

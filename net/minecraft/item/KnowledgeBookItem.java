@@ -56,7 +56,7 @@ extends Item {
             user.unlockRecipes(list);
             user.incrementStat(Stats.USED.getOrCreateStat(this));
         }
-        return TypedActionResult.method_29237(itemStack, world.isClient());
+        return TypedActionResult.success(itemStack, world.isClient());
     }
 }
 

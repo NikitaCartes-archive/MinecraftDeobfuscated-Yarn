@@ -323,6 +323,9 @@ IndexedIterable<T> {
     @Nullable
     public abstract T get(@Nullable Identifier var1);
 
+    /**
+     * Gets the lifecycle of a registry entry.
+     */
     protected abstract Lifecycle getEntryLifecycle(T var1);
 
     public abstract Lifecycle getLifecycle();

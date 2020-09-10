@@ -142,7 +142,7 @@ extends Screen {
         }
         if (button == 0) {
             ChatHud chatHud = this.client.inGameHud.getChatHud();
-            if (chatHud.method_27146(mouseX, mouseY)) {
+            if (chatHud.mouseClicked(mouseX, mouseY)) {
                 return true;
             }
             Style style = chatHud.getText(mouseX, mouseY);

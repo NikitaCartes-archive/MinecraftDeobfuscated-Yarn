@@ -34,8 +34,8 @@ implements FeatureConfig {
     public final boolean project;
     public final boolean needsWater;
 
-    private RandomPatchFeatureConfig(BlockStateProvider blockStateProvider, BlockPlacer blockPlacer, List<BlockState> list, List<BlockState> list2, int i, int j, int k, int l, boolean bl, boolean bl2, boolean bl3) {
-        this(blockStateProvider, blockPlacer, list.stream().map(AbstractBlock.AbstractBlockState::getBlock).collect(Collectors.toSet()), ImmutableSet.copyOf(list2), i, j, k, l, bl, bl2, bl3);
+    private RandomPatchFeatureConfig(BlockStateProvider stateProvider, BlockPlacer blockPlacer, List<BlockState> whitelist, List<BlockState> blacklist, int tries, int spreadX, int spreadY, int spreadZ, boolean canReplace, boolean project, boolean needsWater) {
+        this(stateProvider, blockPlacer, whitelist.stream().map(AbstractBlock.AbstractBlockState::getBlock).collect(Collectors.toSet()), ImmutableSet.copyOf(blacklist), tries, spreadX, spreadY, spreadZ, canReplace, project, needsWater);
     }
 
     private RandomPatchFeatureConfig(BlockStateProvider stateProvider, BlockPlacer blockPlacer, Set<Block> whitelist, Set<BlockState> blacklist, int tries, int spreadX, int spreadY, int spreadZ, boolean canReplace, boolean project, boolean needsWater) {

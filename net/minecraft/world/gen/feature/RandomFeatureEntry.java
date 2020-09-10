@@ -15,7 +15,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class RandomFeatureEntry {
-    public static final Codec<RandomFeatureEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.CODEC.fieldOf("feature")).forGetter(randomFeatureEntry -> randomFeatureEntry.feature), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("chance")).forGetter(randomFeatureEntry -> Float.valueOf(randomFeatureEntry.chance))).apply((Applicative<RandomFeatureEntry, ?>)instance, RandomFeatureEntry::new));
+    public static final Codec<RandomFeatureEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(randomFeatureEntry -> randomFeatureEntry.feature), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("chance")).forGetter(randomFeatureEntry -> Float.valueOf(randomFeatureEntry.chance))).apply((Applicative<RandomFeatureEntry, ?>)instance, RandomFeatureEntry::new));
     public final Supplier<ConfiguredFeature<?, ?>> feature;
     public final float chance;
 
@@ -23,13 +23,13 @@ public class RandomFeatureEntry {
         this(() -> feature, chance);
     }
 
-    private RandomFeatureEntry(Supplier<ConfiguredFeature<?, ?>> supplier, float f) {
-        this.feature = supplier;
-        this.chance = f;
+    private RandomFeatureEntry(Supplier<ConfiguredFeature<?, ?>> feature, float chance) {
+        this.feature = feature;
+        this.chance = chance;
     }
 
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos) {
-        return this.feature.get().generate(structureWorldAccess, chunkGenerator, random, blockPos);
+    public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
+        return this.feature.get().generate(world, chunkGenerator, random, pos);
     }
 }
 

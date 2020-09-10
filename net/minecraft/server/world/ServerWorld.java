@@ -178,11 +178,11 @@ implements StructureWorldAccess {
     @Nullable
     private final EnderDragonFight enderDragonFight;
     private final StructureAccessor structureAccessor;
-    private final boolean field_25143;
+    private final boolean shouldTickTime;
 
     public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long l, List<Spawner> list, boolean bl) {
         super(properties, registryKey, dimensionType, server::getProfiler, false, debugWorld, l);
-        this.field_25143 = bl;
+        this.shouldTickTime = bl;
         this.server = server;
         this.spawners = list;
         this.worldProperties = properties;
@@ -360,7 +360,7 @@ implements StructureWorldAccess {
     }
 
     protected void tickTime() {
-        if (!this.field_25143) {
+        if (!this.shouldTickTime) {
             return;
         }
         long l = this.properties.getTime() + 1L;
@@ -743,7 +743,7 @@ implements StructureWorldAccess {
 
     private boolean checkUuid(Entity entity) {
         UUID uUID = entity.getUuid();
-        Entity entity2 = this.method_30735(uUID);
+        Entity entity2 = this.checkIfUuidExists(uUID);
         if (entity2 == null) {
             return false;
         }
@@ -752,7 +752,7 @@ implements StructureWorldAccess {
     }
 
     @Nullable
-    private Entity method_30735(UUID uUID) {
+    private Entity checkIfUuidExists(UUID uUID) {
         Entity entity = this.entitiesByUuid.get(uUID);
         if (entity != null) {
             return entity;
@@ -766,7 +766,7 @@ implements StructureWorldAccess {
         return null;
     }
 
-    public boolean method_30736(Entity entity) {
+    public boolean shouldCreateNewEntityWithPassenger(Entity entity) {
         if (entity.streamPassengersRecursively().anyMatch(this::checkUuid)) {
             return false;
         }

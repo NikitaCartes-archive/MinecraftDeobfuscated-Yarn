@@ -136,7 +136,7 @@ extends GameOptionsScreen {
         this.list.render(matrices, mouseX, mouseY, delta);
         VideoOptionsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 5, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
-        List<OrderedText> list = VideoOptionsScreen.method_31048(this.list, mouseX, mouseY);
+        List<OrderedText> list = VideoOptionsScreen.getHoveredButtonTooltip(this.list, mouseX, mouseY);
         if (list != null) {
             this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
         }

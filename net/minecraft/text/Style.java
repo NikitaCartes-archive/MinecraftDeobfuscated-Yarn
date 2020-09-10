@@ -211,9 +211,13 @@ public class Style {
         return new Style(this.color, this.bold, italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
     }
 
+    /**
+     * Returns a new style with the underline attribute provided and all other
+     * attributes of this style.
+     */
     @Environment(value=EnvType.CLIENT)
-    public Style method_30938(@Nullable Boolean boolean_) {
-        return new Style(this.color, this.bold, this.italic, boolean_, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
+    public Style withUnderline(@Nullable Boolean underline) {
+        return new Style(this.color, this.bold, this.italic, underline, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
     }
 
     /**

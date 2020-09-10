@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public interface Toast {
-    public static final Identifier TOASTS_TEX = new Identifier("textures/gui/toasts.png");
+    public static final Identifier TEXTURE = new Identifier("textures/gui/toasts.png");
     public static final Object TYPE = new Object();
 
     public Visibility draw(MatrixStack var1, ToastManager var2, long var3);

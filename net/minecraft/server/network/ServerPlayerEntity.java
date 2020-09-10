@@ -128,7 +128,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
@@ -269,7 +269,7 @@ implements ScreenHandlerListener {
     public void writeCustomDataToTag(CompoundTag tag2) {
         super.writeCustomDataToTag(tag2);
         tag2.putInt("playerGameType", this.interactionManager.getGameMode().getId());
-        tag2.putInt("previousPlayerGameType", this.interactionManager.method_30119().getId());
+        tag2.putInt("previousPlayerGameType", this.interactionManager.getPreviousGameMode().getId());
         tag2.putBoolean("seenCredits", this.seenCredits);
         if (this.enteredNetherPos != null) {
             CompoundTag compoundTag = new CompoundTag();
@@ -598,7 +598,7 @@ implements ScreenHandlerListener {
             return this;
         }
         WorldProperties worldProperties = destination.getLevelProperties();
-        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(destination.getDimension(), destination.getRegistryKey(), BiomeAccess.hashSeed(destination.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.method_30119(), destination.isDebugWorld(), destination.isFlat(), true));
+        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(destination.getDimension(), destination.getRegistryKey(), BiomeAccess.hashSeed(destination.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), destination.isDebugWorld(), destination.isFlat(), true));
         this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
         PlayerManager playerManager = this.server.getPlayerManager();
         playerManager.sendCommandTree(this);
@@ -844,7 +844,7 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void sendTradeOffers(int syncId, TraderOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
+    public void sendTradeOffers(int syncId, TradeOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
         this.networkHandler.sendPacket(new SetTradeOffersS2CPacket(syncId, offers, levelProgress, experience, leveled, refreshable));
     }
 
@@ -1109,7 +1109,7 @@ implements ScreenHandlerListener {
 
     @Override
     public void setGameMode(GameMode gameMode) {
-        this.interactionManager.method_30118(gameMode);
+        this.interactionManager.setGameMode(gameMode);
         this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_MODE_CHANGED, gameMode.getId()));
         if (gameMode == GameMode.SPECTATOR) {
             this.dropShoulderEntities();
@@ -1272,7 +1272,7 @@ implements ScreenHandlerListener {
         } else {
             ServerWorld serverWorld = this.getServerWorld();
             WorldProperties worldProperties = targetWorld.getLevelProperties();
-            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(targetWorld.getDimension(), targetWorld.getRegistryKey(), BiomeAccess.hashSeed(targetWorld.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.method_30119(), targetWorld.isDebugWorld(), targetWorld.isFlat(), true));
+            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(targetWorld.getDimension(), targetWorld.getRegistryKey(), BiomeAccess.hashSeed(targetWorld.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), targetWorld.isDebugWorld(), targetWorld.isFlat(), true));
             this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
             this.server.getPlayerManager().sendCommandTree(this);
             serverWorld.removePlayer(this);

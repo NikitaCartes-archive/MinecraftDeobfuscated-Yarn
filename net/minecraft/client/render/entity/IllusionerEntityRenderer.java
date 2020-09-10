@@ -34,7 +34,7 @@ extends IllagerEntityRenderer<IllusionerEntity> {
                 }
             }
         });
-        ((IllagerEntityModel)this.model).method_2812().visible = true;
+        ((IllagerEntityModel)this.model).getHat().visible = true;
     }
 
     @Override

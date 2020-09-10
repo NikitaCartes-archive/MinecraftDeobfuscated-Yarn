@@ -91,14 +91,14 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void generateStructure(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-            super.generateStructure(structureWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
+        public void generateStructure(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos) {
+            super.generateStructure(world, structureAccessor, chunkGenerator, random, box, chunkPos);
             int i = this.boundingBox.minY;
-            for (int j = blockBox.minX; j <= blockBox.maxX; ++j) {
-                for (int k = blockBox.minZ; k <= blockBox.maxZ; ++k) {
+            for (int j = box.minX; j <= box.maxX; ++j) {
+                for (int k = box.minZ; k <= box.maxZ; ++k) {
                     BlockPos blockPos2;
                     BlockPos blockPos = new BlockPos(j, i, k);
-                    if (structureWorldAccess.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
+                    if (world.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
                     boolean bl = false;
                     for (StructurePiece structurePiece : this.children) {
                         if (!structurePiece.getBoundingBox().contains(blockPos)) continue;
@@ -106,8 +106,8 @@ extends StructureFeature<DefaultFeatureConfig> {
                         break;
                     }
                     if (!bl) continue;
-                    for (int l = i - 1; l > 1 && (structureWorldAccess.isAir(blockPos2 = new BlockPos(j, l, k)) || structureWorldAccess.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
-                        structureWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+                    for (int l = i - 1; l > 1 && (world.isAir(blockPos2 = new BlockPos(j, l, k)) || world.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
+                        world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
                     }
                 }
             }

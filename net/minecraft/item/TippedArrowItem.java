@@ -27,8 +27,8 @@ extends ArrowItem {
     }
 
     @Override
-    public ItemStack getStackForRender() {
-        return PotionUtil.setPotion(super.getStackForRender(), Potions.POISON);
+    public ItemStack getDefaultStack() {
+        return PotionUtil.setPotion(super.getDefaultStack(), Potions.POISON);
     }
 
     @Override

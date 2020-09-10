@@ -10,22 +10,22 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.village.Merchant;
 import net.minecraft.village.TradeOffer;
-import net.minecraft.village.Trader;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 import org.jetbrains.annotations.Nullable;
 
-public class TraderInventory
+public class MerchantInventory
 implements Inventory {
-    private final Trader trader;
+    private final Merchant merchant;
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
     @Nullable
-    private TradeOffer traderRecipe;
+    private TradeOffer tradeOffer;
     private int recipeIndex;
-    private int traderRewardedExperience;
+    private int merchantRewardedExperience;
 
-    public TraderInventory(Trader trader) {
-        this.trader = trader;
+    public MerchantInventory(Merchant merchant) {
+        this.merchant = merchant;
     }
 
     @Override
@@ -82,7 +82,7 @@ implements Inventory {
 
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
-        return this.trader.getCurrentCustomer() == player;
+        return this.merchant.getCurrentCustomer() == player;
     }
 
     @Override
@@ -93,7 +93,7 @@ implements Inventory {
     public void updateRecipes() {
         ItemStack itemStack2;
         ItemStack itemStack;
-        this.traderRecipe = null;
+        this.tradeOffer = null;
         if (this.inventory.get(0).isEmpty()) {
             itemStack = this.inventory.get(1);
             itemStack2 = ItemStack.EMPTY;
@@ -103,31 +103,31 @@ implements Inventory {
         }
         if (itemStack.isEmpty()) {
             this.setStack(2, ItemStack.EMPTY);
-            this.traderRewardedExperience = 0;
+            this.merchantRewardedExperience = 0;
             return;
         }
-        TraderOfferList traderOfferList = this.trader.getOffers();
-        if (!traderOfferList.isEmpty()) {
-            TradeOffer tradeOffer = traderOfferList.getValidRecipe(itemStack, itemStack2, this.recipeIndex);
+        TradeOfferList tradeOfferList = this.merchant.getOffers();
+        if (!tradeOfferList.isEmpty()) {
+            TradeOffer tradeOffer = tradeOfferList.getValidOffer(itemStack, itemStack2, this.recipeIndex);
             if (tradeOffer == null || tradeOffer.isDisabled()) {
-                this.traderRecipe = tradeOffer;
-                tradeOffer = traderOfferList.getValidRecipe(itemStack2, itemStack, this.recipeIndex);
+                this.tradeOffer = tradeOffer;
+                tradeOffer = tradeOfferList.getValidOffer(itemStack2, itemStack, this.recipeIndex);
             }
             if (tradeOffer != null && !tradeOffer.isDisabled()) {
-                this.traderRecipe = tradeOffer;
+                this.tradeOffer = tradeOffer;
                 this.setStack(2, tradeOffer.getSellItem());
-                this.traderRewardedExperience = tradeOffer.getTraderExperience();
+                this.merchantRewardedExperience = tradeOffer.getMerchantExperience();
             } else {
                 this.setStack(2, ItemStack.EMPTY);
-                this.traderRewardedExperience = 0;
+                this.merchantRewardedExperience = 0;
             }
         }
-        this.trader.onSellingItem(this.getStack(2));
+        this.merchant.onSellingItem(this.getStack(2));
     }
 
     @Nullable
     public TradeOffer getTradeOffer() {
-        return this.traderRecipe;
+        return this.tradeOffer;
     }
 
     public void setRecipeIndex(int index) {
@@ -141,8 +141,8 @@ implements Inventory {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getTraderRewardedExperience() {
-        return this.traderRewardedExperience;
+    public int getMerchantRewardedExperience() {
+        return this.merchantRewardedExperience;
     }
 }
 

@@ -41,8 +41,8 @@ extends StructureFeature<OceanRuinFeatureConfig> {
         private static final Map<String, BiomeType> BY_NAME;
         private final String name;
 
-        private BiomeType(String string2) {
-            this.name = string2;
+        private BiomeType(String name) {
+            this.name = name;
         }
 
         public String getName() {

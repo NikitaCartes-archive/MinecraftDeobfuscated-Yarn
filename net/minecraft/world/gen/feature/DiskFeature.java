@@ -28,7 +28,7 @@ extends Feature<DiskFeatureConfig> {
                 int m;
                 int l = j - blockPos.getX();
                 if (l * l + (m = k - blockPos.getZ()) * m > i * i) continue;
-                block2: for (int n = blockPos.getY() - diskFeatureConfig.ySize; n <= blockPos.getY() + diskFeatureConfig.ySize; ++n) {
+                block2: for (int n = blockPos.getY() - diskFeatureConfig.halfHeight; n <= blockPos.getY() + diskFeatureConfig.halfHeight; ++n) {
                     BlockPos blockPos2 = new BlockPos(j, n, k);
                     Block block = structureWorldAccess.getBlockState(blockPos2).getBlock();
                     for (BlockState blockState : diskFeatureConfig.targets) {

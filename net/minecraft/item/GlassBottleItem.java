@@ -39,7 +39,7 @@ extends Item {
             AreaEffectCloudEntity areaEffectCloudEntity = list.get(0);
             areaEffectCloudEntity.setRadius(areaEffectCloudEntity.getRadius() - 0.5f);
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-            return TypedActionResult.method_29237(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
+            return TypedActionResult.success(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
         }
         BlockHitResult hitResult = GlassBottleItem.raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
         if (((HitResult)hitResult).getType() == HitResult.Type.MISS) {
@@ -52,7 +52,7 @@ extends Item {
             }
             if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
                 world.playSound(user, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-                return TypedActionResult.method_29237(this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)), world.isClient());
+                return TypedActionResult.success(this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)), world.isClient());
             }
         }
         return TypedActionResult.pass(itemStack);

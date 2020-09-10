@@ -99,7 +99,7 @@ extends EntityRenderer<ItemFrameEntity> {
 
     @Override
     public Identifier getTexture(ItemFrameEntity itemFrameEntity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     }
 
     @Override

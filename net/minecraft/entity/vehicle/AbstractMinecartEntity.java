@@ -154,8 +154,8 @@ extends Entity {
     }
 
     @Override
-    public boolean method_30949(Entity entity) {
-        return BoatEntity.method_30959(this, entity);
+    public boolean collidesWith(Entity other) {
+        return BoatEntity.method_30959(this, other);
     }
 
     @Override

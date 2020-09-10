@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Unmodifiable;
 @Unmodifiable
 public class Vec3i
 implements Comparable<Vec3i> {
-    public static final Codec<Vec3i> field_25123 = Codec.INT_STREAM.comapFlatMap(intStream -> Util.toIntArray(intStream, 3).map(is -> new Vec3i(is[0], is[1], is[2])), vec3i -> IntStream.of(vec3i.getX(), vec3i.getY(), vec3i.getZ()));
+    public static final Codec<Vec3i> CODEC = Codec.INT_STREAM.comapFlatMap(intStream -> Util.toIntArray(intStream, 3).map(is -> new Vec3i(is[0], is[1], is[2])), vec3i -> IntStream.of(vec3i.getX(), vec3i.getY(), vec3i.getZ()));
     public static final Vec3i ZERO = new Vec3i(0, 0, 0);
     private int x;
     private int y;
@@ -93,16 +93,16 @@ implements Comparable<Vec3i> {
         return this.up(1);
     }
 
-    public Vec3i up(int i) {
-        return this.offset(Direction.UP, i);
+    public Vec3i up(int distance) {
+        return this.offset(Direction.UP, distance);
     }
 
     public Vec3i down() {
         return this.down(1);
     }
 
-    public Vec3i down(int i) {
-        return this.offset(Direction.DOWN, i);
+    public Vec3i down(int distance) {
+        return this.offset(Direction.DOWN, distance);
     }
 
     public Vec3i offset(Direction direction, int distance) {
@@ -147,7 +147,7 @@ implements Comparable<Vec3i> {
         return (int)(f + g + h);
     }
 
-    public int method_30558(Direction.Axis axis) {
+    public int getComponentAlongAxis(Direction.Axis axis) {
         return axis.choose(this.x, this.y, this.z);
     }
 

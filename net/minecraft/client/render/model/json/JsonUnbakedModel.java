@@ -239,7 +239,7 @@ implements UnbakedModel {
             spriteName = either.right().get();
             if (list.contains(spriteName)) {
                 LOGGER.warn("Unable to resolve texture due to reference chain {}->{} in {}", (Object)Joiner.on("->").join(list), (Object)spriteName, (Object)this.id);
-                return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, MissingSprite.getMissingSpriteId());
+                return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, MissingSprite.getMissingSpriteId());
             }
             list.add(spriteName);
         }
@@ -255,7 +255,7 @@ implements UnbakedModel {
             }
             jsonUnbakedModel = jsonUnbakedModel.parent;
         }
-        return Either.left(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, MissingSprite.getMissingSpriteId()));
+        return Either.left(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, MissingSprite.getMissingSpriteId()));
     }
 
     private static boolean isTextureReference(String reference) {
@@ -349,7 +349,7 @@ implements UnbakedModel {
         }
 
         private Map<String, Either<SpriteIdentifier, String>> deserializeTextures(JsonObject object) {
-            Identifier identifier = SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+            Identifier identifier = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
             HashMap<String, Either<SpriteIdentifier, String>> map = Maps.newHashMap();
             if (object.has("textures")) {
                 JsonObject jsonObject = JsonHelper.getObject(object, "textures");

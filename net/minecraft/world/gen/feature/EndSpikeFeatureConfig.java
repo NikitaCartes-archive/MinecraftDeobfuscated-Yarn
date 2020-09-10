@@ -26,10 +26,10 @@ implements FeatureConfig {
         this(crystalInvulnerable, spikes, Optional.ofNullable(crystalBeamTarget));
     }
 
-    private EndSpikeFeatureConfig(boolean bl, List<EndSpikeFeature.Spike> list, Optional<BlockPos> optional) {
-        this.crystalInvulnerable = bl;
-        this.spikes = list;
-        this.crystalBeamTarget = optional.orElse(null);
+    private EndSpikeFeatureConfig(boolean crystalInvulnerable, List<EndSpikeFeature.Spike> spikes, Optional<BlockPos> crystalBeamTarget) {
+        this.crystalInvulnerable = crystalInvulnerable;
+        this.spikes = spikes;
+        this.crystalBeamTarget = crystalBeamTarget.orElse(null);
     }
 
     public boolean isCrystalInvulnerable() {

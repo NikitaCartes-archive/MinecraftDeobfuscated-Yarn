@@ -92,7 +92,7 @@ extends EntityRenderer<LightningEntity> {
 
     @Override
     public Identifier getTexture(LightningEntity lightningEntity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     }
 }
 

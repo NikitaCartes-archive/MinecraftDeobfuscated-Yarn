@@ -255,7 +255,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
      * {@link #getStartChunk}. Specific structures override this method to reduce the spawn probability or
      * restrict the spawn in some other way.
      */
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos, C featureConfig) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkRandom random, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos, C config) {
         return true;
     }
 

@@ -54,7 +54,7 @@ public abstract class DynamicRegistryManager {
         DynamicRegistryManager.register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, ConfiguredSurfaceBuilder.CODEC);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_CARVER_WORLDGEN, ConfiguredCarver.CODEC);
-        DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_WORLDGEN, ConfiguredFeature.field_25833);
+        DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_WORLDGEN, ConfiguredFeature.CODEC);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, ConfiguredStructureFeature.CODEC);
         DynamicRegistryManager.register(builder, Registry.PROCESSOR_LIST_WORLDGEN, StructureProcessorType.field_25876);
         DynamicRegistryManager.register(builder, Registry.TEMPLATE_POOL_WORLDGEN, StructurePool.CODEC);
@@ -100,15 +100,15 @@ public abstract class DynamicRegistryManager {
      */
     public static Impl create() {
         Impl impl = new Impl();
-        RegistryOps.class_5506.class_5507 lv = new RegistryOps.class_5506.class_5507();
+        RegistryOps.EntryLoader.Impl impl2 = new RegistryOps.EntryLoader.Impl();
         for (Info<?> info : INFOS.values()) {
-            DynamicRegistryManager.method_31141(impl, lv, info);
+            DynamicRegistryManager.method_31141(impl, impl2, info);
         }
-        RegistryOps.method_31150(JsonOps.INSTANCE, lv, impl);
+        RegistryOps.of(JsonOps.INSTANCE, impl2, impl);
         return impl;
     }
 
-    private static <E> void method_31141(Impl impl, RegistryOps.class_5506.class_5507 arg, Info<E> info) {
+    private static <E> void method_31141(Impl impl, RegistryOps.EntryLoader.Impl impl2, Info<E> info) {
         RegistryKey<Registry<E>> registryKey = info.getRegistry();
         boolean bl = !registryKey.equals(Registry.NOISE_SETTINGS_WORLDGEN) && !registryKey.equals(Registry.DIMENSION_TYPE_KEY);
         MutableRegistry<E> registry = BUILTIN.get(registryKey);
@@ -116,7 +116,7 @@ public abstract class DynamicRegistryManager {
         for (Map.Entry entry : registry.getEntries()) {
             Object object = entry.getValue();
             if (bl) {
-                arg.method_31159(BUILTIN, entry.getKey(), info.getEntryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
+                impl2.add(BUILTIN, entry.getKey(), info.getEntryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
                 continue;
             }
             mutableRegistry.set(registry.getRawId(object), entry.getKey(), object, registry.getEntryLifecycle(object));

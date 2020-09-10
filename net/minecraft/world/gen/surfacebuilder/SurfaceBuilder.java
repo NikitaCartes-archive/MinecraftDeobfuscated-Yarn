@@ -89,15 +89,15 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     }
 
     public SurfaceBuilder(Codec<C> codec) {
-        this.codec = ((MapCodec)codec.fieldOf("config")).xmap(this::method_30478, ConfiguredSurfaceBuilder::getConfig).codec();
+        this.codec = ((MapCodec)codec.fieldOf("config")).xmap(this::withConfig, ConfiguredSurfaceBuilder::getConfig).codec();
     }
 
     public Codec<ConfiguredSurfaceBuilder<C>> getCodec() {
         return this.codec;
     }
 
-    public ConfiguredSurfaceBuilder<C> method_30478(C surfaceConfig) {
-        return new ConfiguredSurfaceBuilder<C>(this, surfaceConfig);
+    public ConfiguredSurfaceBuilder<C> withConfig(C config) {
+        return new ConfiguredSurfaceBuilder<C>(this, config);
     }
 
     public abstract void generate(Random var1, Chunk var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, long var12, C var14);

@@ -14,16 +14,16 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class DiskFeatureConfig
 implements FeatureConfig {
-    public static final Codec<DiskFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(diskFeatureConfig -> diskFeatureConfig.state), ((MapCodec)UniformIntDistribution.createValidatedCodec(0, 4, 4).fieldOf("radius")).forGetter(diskFeatureConfig -> diskFeatureConfig.radius), ((MapCodec)Codec.intRange(0, 4).fieldOf("half_height")).forGetter(diskFeatureConfig -> diskFeatureConfig.ySize), ((MapCodec)BlockState.CODEC.listOf().fieldOf("targets")).forGetter(diskFeatureConfig -> diskFeatureConfig.targets)).apply((Applicative<DiskFeatureConfig, ?>)instance, DiskFeatureConfig::new));
+    public static final Codec<DiskFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(diskFeatureConfig -> diskFeatureConfig.state), ((MapCodec)UniformIntDistribution.createValidatedCodec(0, 4, 4).fieldOf("radius")).forGetter(diskFeatureConfig -> diskFeatureConfig.radius), ((MapCodec)Codec.intRange(0, 4).fieldOf("half_height")).forGetter(diskFeatureConfig -> diskFeatureConfig.halfHeight), ((MapCodec)BlockState.CODEC.listOf().fieldOf("targets")).forGetter(diskFeatureConfig -> diskFeatureConfig.targets)).apply((Applicative<DiskFeatureConfig, ?>)instance, DiskFeatureConfig::new));
     public final BlockState state;
     public final UniformIntDistribution radius;
-    public final int ySize;
+    public final int halfHeight;
     public final List<BlockState> targets;
 
-    public DiskFeatureConfig(BlockState state, UniformIntDistribution uniformIntDistribution, int ySize, List<BlockState> targets) {
+    public DiskFeatureConfig(BlockState state, UniformIntDistribution radius, int halfHeight, List<BlockState> targets) {
         this.state = state;
-        this.radius = uniformIntDistribution;
-        this.ySize = ySize;
+        this.radius = radius;
+        this.halfHeight = halfHeight;
         this.targets = targets;
     }
 }

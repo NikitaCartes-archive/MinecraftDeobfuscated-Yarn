@@ -35,7 +35,7 @@ extends HitResult {
         return new BlockHitResult(this.missed, this.pos, side, this.blockPos, this.insideBlock);
     }
 
-    public BlockHitResult method_29328(BlockPos blockPos) {
+    public BlockHitResult withBlockPos(BlockPos blockPos) {
         return new BlockHitResult(this.missed, this.pos, this.side, blockPos, this.insideBlock);
     }
 

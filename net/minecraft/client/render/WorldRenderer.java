@@ -946,10 +946,10 @@ AutoCloseable {
             this.renderEntity(entity, d, e, f, tickDelta, matrices, vertexConsumerProvider);
         }
         this.checkEmpty(matrices);
-        immediate.draw(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-        immediate.draw(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-        immediate.draw(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-        immediate.draw(RenderLayer.getEntitySmoothCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        immediate.draw(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
+        immediate.draw(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
+        immediate.draw(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
+        immediate.draw(RenderLayer.getEntitySmoothCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         profiler.swap("blockentities");
         for (ChunkInfo chunkInfo : this.visibleChunks) {
             List<BlockEntity> list = chunkInfo.chunk.getData().getBlockEntities();
@@ -1035,10 +1035,10 @@ AutoCloseable {
         immediate.draw(RenderLayer.getArmorGlint());
         immediate.draw(RenderLayer.getArmorEntityGlint());
         immediate.draw(RenderLayer.getGlint());
-        immediate.draw(RenderLayer.getGlintDirect());
+        immediate.draw(RenderLayer.getDirectGlint());
         immediate.draw(RenderLayer.method_30676());
         immediate.draw(RenderLayer.getEntityGlint());
-        immediate.draw(RenderLayer.getEntityGlintDirect());
+        immediate.draw(RenderLayer.getDirectEntityGlint());
         immediate.draw(RenderLayer.getWaterMask());
         this.bufferBuilders.getEffectVertexConsumers().draw();
         if (this.transparencyShader != null) {

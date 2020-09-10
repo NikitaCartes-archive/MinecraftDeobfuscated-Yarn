@@ -47,7 +47,7 @@ extends EntityRenderer<TntEntity> {
 
     @Override
     public Identifier getTexture(TntEntity tntEntity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     }
 }
 

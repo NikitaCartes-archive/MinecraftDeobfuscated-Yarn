@@ -13,8 +13,8 @@ implements FeatureConfig {
     public static final Codec<BlockPileFeatureConfig> CODEC = ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("state_provider")).xmap(BlockPileFeatureConfig::new, blockPileFeatureConfig -> blockPileFeatureConfig.stateProvider).codec();
     public final BlockStateProvider stateProvider;
 
-    public BlockPileFeatureConfig(BlockStateProvider blockStateProvider) {
-        this.stateProvider = blockStateProvider;
+    public BlockPileFeatureConfig(BlockStateProvider stateProvider) {
+        this.stateProvider = stateProvider;
     }
 }
 

@@ -40,8 +40,8 @@ extends Feature<EndSpikeFeatureConfig> {
         super(codec);
     }
 
-    public static List<Spike> getSpikes(StructureWorldAccess structureWorldAccess) {
-        Random random = new Random(structureWorldAccess.getSeed());
+    public static List<Spike> getSpikes(StructureWorldAccess world) {
+        Random random = new Random(world.getSeed());
         long l = random.nextLong() & 0xFFFFL;
         return CACHE.getUnchecked(l);
     }
@@ -59,15 +59,15 @@ extends Feature<EndSpikeFeatureConfig> {
         return true;
     }
 
-    private void generateSpike(ServerWorldAccess serverWorldAccess, Random random, EndSpikeFeatureConfig config, Spike spike) {
+    private void generateSpike(ServerWorldAccess world, Random random, EndSpikeFeatureConfig config, Spike spike) {
         int i = spike.getRadius();
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
             if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ(), false) <= (double)(i * i + 1) && blockPos.getY() < spike.getHeight()) {
-                this.setBlockState(serverWorldAccess, blockPos, Blocks.OBSIDIAN.getDefaultState());
+                this.setBlockState(world, blockPos, Blocks.OBSIDIAN.getDefaultState());
                 continue;
             }
             if (blockPos.getY() <= 65) continue;
-            this.setBlockState(serverWorldAccess, blockPos, Blocks.AIR.getDefaultState());
+            this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
         }
         if (spike.isGuarded()) {
             int j = -2;
@@ -85,17 +85,17 @@ extends Feature<EndSpikeFeatureConfig> {
                         boolean bl42 = m == -2 || m == 2 || bl3;
                         boolean bl5 = n == -2 || n == 2 || bl3;
                         BlockState blockState = (BlockState)((BlockState)((BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.NORTH, bl42 && n != -2)).with(PaneBlock.SOUTH, bl42 && n != 2)).with(PaneBlock.WEST, bl5 && m != -2)).with(PaneBlock.EAST, bl5 && m != 2);
-                        this.setBlockState(serverWorldAccess, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
+                        this.setBlockState(world, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
                     }
                 }
             }
         }
-        EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(serverWorldAccess.toServerWorld());
+        EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(world.toServerWorld());
         endCrystalEntity.setBeamTarget(config.getPos());
         endCrystalEntity.setInvulnerable(config.isCrystalInvulnerable());
         endCrystalEntity.refreshPositionAndAngles((double)spike.getCenterX() + 0.5, spike.getHeight() + 1, (double)spike.getCenterZ() + 0.5, random.nextFloat() * 360.0f, 0.0f);
-        serverWorldAccess.spawnEntity(endCrystalEntity);
-        this.setBlockState(serverWorldAccess, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
+        world.spawnEntity(endCrystalEntity);
+        this.setBlockState(world, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
     }
 
     static class SpikeCache
@@ -135,12 +135,12 @@ extends Feature<EndSpikeFeatureConfig> {
         private final boolean guarded;
         private final Box boundingBox;
 
-        public Spike(int centerX, int centerZ, int radius, int height, boolean bl) {
+        public Spike(int centerX, int centerZ, int radius, int height, boolean guarded) {
             this.centerX = centerX;
             this.centerZ = centerZ;
             this.radius = radius;
             this.height = height;
-            this.guarded = bl;
+            this.guarded = guarded;
             this.boundingBox = new Box(centerX - radius, 0.0, centerZ - radius, centerX + radius, 256.0, centerZ + radius);
         }
 

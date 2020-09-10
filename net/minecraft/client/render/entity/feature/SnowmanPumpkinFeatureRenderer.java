@@ -11,7 +11,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.SnowmanEntityModel;
+import net.minecraft.client.render.entity.model.SnowGolemEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -20,8 +20,8 @@ import net.minecraft.item.ItemStack;
 
 @Environment(value=EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer
-extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
-    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> featureRendererContext) {
+extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> {
+    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> featureRendererContext) {
         super(featureRendererContext);
     }
 
@@ -31,7 +31,7 @@ extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
             return;
         }
         matrixStack.push();
-        ((SnowmanEntityModel)this.getContextModel()).getTopSnowball().rotate(matrixStack);
+        ((SnowGolemEntityModel)this.getContextModel()).getTopSnowball().rotate(matrixStack);
         float m = 0.625f;
         matrixStack.translate(0.0, -0.34375, 0.0);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));

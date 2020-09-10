@@ -23,24 +23,24 @@ extends Feature<BlockPileFeatureConfig> {
 
     @Override
     public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
-        return NetherForestVegetationFeature.method_26264(structureWorldAccess, random, blockPos, blockPileFeatureConfig, 8, 4);
+        return NetherForestVegetationFeature.generate(structureWorldAccess, random, blockPos, blockPileFeatureConfig, 8, 4);
     }
 
-    public static boolean method_26264(WorldAccess worldAccess, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig, int i, int j) {
-        Block block = worldAccess.getBlockState(blockPos.down()).getBlock();
+    public static boolean generate(WorldAccess world, Random random, BlockPos pos, BlockPileFeatureConfig config, int i, int j) {
+        Block block = world.getBlockState(pos.down()).getBlock();
         if (!block.isIn(BlockTags.NYLIUM)) {
             return false;
         }
-        int k = blockPos.getY();
+        int k = pos.getY();
         if (k < 1 || k + 1 >= 256) {
             return false;
         }
         int l = 0;
         for (int m = 0; m < i * i; ++m) {
-            BlockPos blockPos2 = blockPos.add(random.nextInt(i) - random.nextInt(i), random.nextInt(j) - random.nextInt(j), random.nextInt(i) - random.nextInt(i));
-            BlockState blockState = blockPileFeatureConfig.stateProvider.getBlockState(random, blockPos2);
-            if (!worldAccess.isAir(blockPos2) || blockPos2.getY() <= 0 || !blockState.canPlaceAt(worldAccess, blockPos2)) continue;
-            worldAccess.setBlockState(blockPos2, blockState, 2);
+            BlockPos blockPos = pos.add(random.nextInt(i) - random.nextInt(i), random.nextInt(j) - random.nextInt(j), random.nextInt(i) - random.nextInt(i));
+            BlockState blockState = config.stateProvider.getBlockState(random, blockPos);
+            if (!world.isAir(blockPos) || blockPos.getY() <= 0 || !blockState.canPlaceAt(world, blockPos)) continue;
+            world.setBlockState(blockPos, blockState, 2);
             ++l;
         }
         return l > 0;

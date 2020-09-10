@@ -13,33 +13,33 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class DeltaFeatureConfig
 implements FeatureConfig {
-    public static final Codec<DeltaFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("contents")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.contents), ((MapCodec)BlockState.CODEC.fieldOf("rim")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.rim), ((MapCodec)UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("size")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.field_25843), ((MapCodec)UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("rim_size")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.field_25844)).apply((Applicative<DeltaFeatureConfig, ?>)instance, DeltaFeatureConfig::new));
+    public static final Codec<DeltaFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("contents")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.contents), ((MapCodec)BlockState.CODEC.fieldOf("rim")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.rim), ((MapCodec)UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("size")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.size), ((MapCodec)UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("rim_size")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.rimSize)).apply((Applicative<DeltaFeatureConfig, ?>)instance, DeltaFeatureConfig::new));
     private final BlockState contents;
     private final BlockState rim;
-    private final UniformIntDistribution field_25843;
-    private final UniformIntDistribution field_25844;
+    private final UniformIntDistribution size;
+    private final UniformIntDistribution rimSize;
 
-    public DeltaFeatureConfig(BlockState contents, BlockState rim, UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2) {
+    public DeltaFeatureConfig(BlockState contents, BlockState rim, UniformIntDistribution size, UniformIntDistribution rimSize) {
         this.contents = contents;
         this.rim = rim;
-        this.field_25843 = uniformIntDistribution;
-        this.field_25844 = uniformIntDistribution2;
+        this.size = size;
+        this.rimSize = rimSize;
     }
 
-    public BlockState method_30397() {
+    public BlockState getContents() {
         return this.contents;
     }
 
-    public BlockState method_30400() {
+    public BlockState getRim() {
         return this.rim;
     }
 
-    public UniformIntDistribution method_30402() {
-        return this.field_25843;
+    public UniformIntDistribution getSize() {
+        return this.size;
     }
 
-    public UniformIntDistribution method_30403() {
-        return this.field_25844;
+    public UniformIntDistribution getRimSize() {
+        return this.rimSize;
     }
 }
 

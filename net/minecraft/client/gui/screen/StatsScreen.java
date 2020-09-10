@@ -141,7 +141,7 @@ implements StatsListener {
     private void renderStatItem(MatrixStack matrixStack, int i, int j, Item item) {
         this.renderIcon(matrixStack, i + 1, j + 1, 0, 0);
         RenderSystem.enableRescaleNormal();
-        this.itemRenderer.renderGuiItemIcon(item.getStackForRender(), i + 2, j + 2);
+        this.itemRenderer.renderGuiItemIcon(item.getDefaultStack(), i + 2, j + 2);
         RenderSystem.disableRescaleNormal();
     }
 

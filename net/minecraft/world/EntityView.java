@@ -88,7 +88,7 @@ public interface EntityView {
             return Stream.empty();
         }
         Box box2 = box.expand(1.0E-7);
-        return this.getOtherEntities(entity2, box2, predicate.and(entity -> entity.getBoundingBox().intersects(box2) && (entity2 == null ? entity.method_30948() : entity2.method_30949((Entity)entity)))).stream().map(Entity::getBoundingBox).map(VoxelShapes::cuboid);
+        return this.getOtherEntities(entity2, box2, predicate.and(entity -> entity.getBoundingBox().intersects(box2) && (entity2 == null ? entity.isCollidable() : entity2.collidesWith((Entity)entity)))).stream().map(Entity::getBoundingBox).map(VoxelShapes::cuboid);
     }
 
     @Nullable

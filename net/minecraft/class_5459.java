@@ -58,7 +58,7 @@ public class class_5459 {
             q = u;
             r = v;
         }
-        return new class_5460(blockPos.method_30513(axis, o - m).method_30513(axis2, p - n), q, r);
+        return new class_5460(blockPos.offset(axis, o - m).offset(axis2, p - n), q, r);
     }
 
     private static int method_30575(Predicate<BlockPos> predicate, BlockPos.Mutable mutable, Direction direction, int i) {

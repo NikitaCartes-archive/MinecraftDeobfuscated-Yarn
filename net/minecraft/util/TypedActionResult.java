@@ -38,8 +38,8 @@ public class TypedActionResult<T> {
         return new TypedActionResult<T>(ActionResult.FAIL, data);
     }
 
-    public static <T> TypedActionResult<T> method_29237(T object, boolean bl) {
-        return bl ? TypedActionResult.success(object) : TypedActionResult.consume(object);
+    public static <T> TypedActionResult<T> success(T data, boolean swingHand) {
+        return swingHand ? TypedActionResult.success(data) : TypedActionResult.consume(data);
     }
 }
 

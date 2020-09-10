@@ -15,37 +15,37 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class SilverfishEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
-    private final ModelPart[] field_3560;
-    private final ModelPart[] field_3557;
+    private final ModelPart[] body;
+    private final ModelPart[] scales;
     private final ImmutableList<ModelPart> parts;
-    private final float[] field_3561 = new float[7];
-    private static final int[][] field_3558 = new int[][]{{3, 2, 2}, {4, 3, 2}, {6, 4, 3}, {3, 3, 3}, {2, 2, 3}, {2, 1, 2}, {1, 1, 2}};
-    private static final int[][] field_3559 = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
+    private final float[] scaleSizes = new float[7];
+    private static final int[][] segmentLocations = new int[][]{{3, 2, 2}, {4, 3, 2}, {6, 4, 3}, {3, 3, 3}, {2, 2, 3}, {2, 1, 2}, {1, 1, 2}};
+    private static final int[][] segmentSizes = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
 
     public SilverfishEntityModel() {
-        this.field_3560 = new ModelPart[7];
+        this.body = new ModelPart[7];
         float f = -3.5f;
-        for (int i = 0; i < this.field_3560.length; ++i) {
-            this.field_3560[i] = new ModelPart(this, field_3559[i][0], field_3559[i][1]);
-            this.field_3560[i].addCuboid((float)field_3558[i][0] * -0.5f, 0.0f, (float)field_3558[i][2] * -0.5f, field_3558[i][0], field_3558[i][1], field_3558[i][2]);
-            this.field_3560[i].setPivot(0.0f, 24 - field_3558[i][1], f);
-            this.field_3561[i] = f;
-            if (i >= this.field_3560.length - 1) continue;
-            f += (float)(field_3558[i][2] + field_3558[i + 1][2]) * 0.5f;
+        for (int i = 0; i < this.body.length; ++i) {
+            this.body[i] = new ModelPart(this, segmentSizes[i][0], segmentSizes[i][1]);
+            this.body[i].addCuboid((float)segmentLocations[i][0] * -0.5f, 0.0f, (float)segmentLocations[i][2] * -0.5f, segmentLocations[i][0], segmentLocations[i][1], segmentLocations[i][2]);
+            this.body[i].setPivot(0.0f, 24 - segmentLocations[i][1], f);
+            this.scaleSizes[i] = f;
+            if (i >= this.body.length - 1) continue;
+            f += (float)(segmentLocations[i][2] + segmentLocations[i + 1][2]) * 0.5f;
         }
-        this.field_3557 = new ModelPart[3];
-        this.field_3557[0] = new ModelPart(this, 20, 0);
-        this.field_3557[0].addCuboid(-5.0f, 0.0f, (float)field_3558[2][2] * -0.5f, 10.0f, 8.0f, field_3558[2][2]);
-        this.field_3557[0].setPivot(0.0f, 16.0f, this.field_3561[2]);
-        this.field_3557[1] = new ModelPart(this, 20, 11);
-        this.field_3557[1].addCuboid(-3.0f, 0.0f, (float)field_3558[4][2] * -0.5f, 6.0f, 4.0f, field_3558[4][2]);
-        this.field_3557[1].setPivot(0.0f, 20.0f, this.field_3561[4]);
-        this.field_3557[2] = new ModelPart(this, 20, 18);
-        this.field_3557[2].addCuboid(-3.0f, 0.0f, (float)field_3558[4][2] * -0.5f, 6.0f, 5.0f, field_3558[1][2]);
-        this.field_3557[2].setPivot(0.0f, 19.0f, this.field_3561[1]);
+        this.scales = new ModelPart[3];
+        this.scales[0] = new ModelPart(this, 20, 0);
+        this.scales[0].addCuboid(-5.0f, 0.0f, (float)segmentLocations[2][2] * -0.5f, 10.0f, 8.0f, segmentLocations[2][2]);
+        this.scales[0].setPivot(0.0f, 16.0f, this.scaleSizes[2]);
+        this.scales[1] = new ModelPart(this, 20, 11);
+        this.scales[1].addCuboid(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 4.0f, segmentLocations[4][2]);
+        this.scales[1].setPivot(0.0f, 20.0f, this.scaleSizes[4]);
+        this.scales[2] = new ModelPart(this, 20, 18);
+        this.scales[2].addCuboid(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 5.0f, segmentLocations[1][2]);
+        this.scales[2].setPivot(0.0f, 19.0f, this.scaleSizes[1]);
         ImmutableList.Builder builder = ImmutableList.builder();
-        builder.addAll(Arrays.asList(this.field_3560));
-        builder.addAll(Arrays.asList(this.field_3557));
+        builder.addAll(Arrays.asList(this.body));
+        builder.addAll(Arrays.asList(this.scales));
         this.parts = builder.build();
     }
 
@@ -55,15 +55,15 @@ extends CompositeEntityModel<T> {
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        for (int i = 0; i < this.field_3560.length; ++i) {
-            this.field_3560[i].yaw = MathHelper.cos(animationProgress * 0.9f + (float)i * 0.15f * (float)Math.PI) * (float)Math.PI * 0.05f * (float)(1 + Math.abs(i - 2));
-            this.field_3560[i].pivotX = MathHelper.sin(animationProgress * 0.9f + (float)i * 0.15f * (float)Math.PI) * (float)Math.PI * 0.2f * (float)Math.abs(i - 2);
+        for (int i = 0; i < this.body.length; ++i) {
+            this.body[i].yaw = MathHelper.cos(animationProgress * 0.9f + (float)i * 0.15f * (float)Math.PI) * (float)Math.PI * 0.05f * (float)(1 + Math.abs(i - 2));
+            this.body[i].pivotX = MathHelper.sin(animationProgress * 0.9f + (float)i * 0.15f * (float)Math.PI) * (float)Math.PI * 0.2f * (float)Math.abs(i - 2);
         }
-        this.field_3557[0].yaw = this.field_3560[2].yaw;
-        this.field_3557[1].yaw = this.field_3560[4].yaw;
-        this.field_3557[1].pivotX = this.field_3560[4].pivotX;
-        this.field_3557[2].yaw = this.field_3560[1].yaw;
-        this.field_3557[2].pivotX = this.field_3560[1].pivotX;
+        this.scales[0].yaw = this.body[2].yaw;
+        this.scales[1].yaw = this.body[4].yaw;
+        this.scales[1].pivotX = this.body[4].pivotX;
+        this.scales[2].yaw = this.body[1].yaw;
+        this.scales[2].pivotX = this.body[1].pivotX;
     }
 
     @Override

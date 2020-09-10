@@ -19,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class TextureStitcher {
-    private static final Comparator<Holder> comparator = Comparator.comparing(holder -> -holder.height).thenComparing(holder -> -holder.width).thenComparing(holder -> holder.sprite.getId());
+    private static final Comparator<Holder> COMPARATOR = Comparator.comparing(holder -> -holder.height).thenComparing(holder -> -holder.width).thenComparing(holder -> holder.sprite.getId());
     private final int mipLevel;
     private final Set<Holder> holders = Sets.newHashSetWithExpectedSize(256);
     private final List<Slot> slots = Lists.newArrayListWithCapacity(256);
@@ -49,7 +49,7 @@ public class TextureStitcher {
 
     public void stitch() {
         ArrayList<Holder> list = Lists.newArrayList(this.holders);
-        list.sort(comparator);
+        list.sort(COMPARATOR);
         for (Holder holder2 : list) {
             if (this.fit(holder2)) continue;
             throw new TextureStitcherCannotFitException(holder2.sprite, list.stream().map(holder -> holder.sprite).collect(ImmutableList.toImmutableList()));

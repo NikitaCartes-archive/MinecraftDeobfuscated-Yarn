@@ -121,16 +121,16 @@ extends Entity {
     }
 
     @Override
-    public boolean method_30949(Entity entity) {
-        return BoatEntity.method_30959(this, entity);
+    public boolean collidesWith(Entity other) {
+        return BoatEntity.method_30959(this, other);
     }
 
     public static boolean method_30959(Entity entity, Entity entity2) {
-        return (entity2.method_30948() || entity2.isPushable()) && !entity.isConnectedThroughVehicle(entity2);
+        return (entity2.isCollidable() || entity2.isPushable()) && !entity.isConnectedThroughVehicle(entity2);
     }
 
     @Override
-    public boolean method_30948() {
+    public boolean isCollidable() {
         return true;
     }
 

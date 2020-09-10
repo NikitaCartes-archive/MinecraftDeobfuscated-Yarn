@@ -32,15 +32,15 @@ extends Feature<BasaltColumnsFeatureConfig> {
         if (!BasaltColumnsFeature.method_30379(structureWorldAccess, i, blockPos.mutableCopy())) {
             return false;
         }
-        int j = basaltColumnsFeatureConfig.method_30394().getValue(random);
+        int j = basaltColumnsFeatureConfig.getHeight().getValue(random);
         boolean bl = random.nextFloat() < 0.9f;
         int k = Math.min(j, bl ? 5 : 8);
         int l = bl ? 50 : 15;
         boolean bl2 = false;
-        for (BlockPos blockPos2 : BlockPos.method_27156(random, l, blockPos.getX() - k, blockPos.getY(), blockPos.getZ() - k, blockPos.getX() + k, blockPos.getY(), blockPos.getZ() + k)) {
+        for (BlockPos blockPos2 : BlockPos.iterateRandomly(random, l, blockPos.getX() - k, blockPos.getY(), blockPos.getZ() - k, blockPos.getX() + k, blockPos.getY(), blockPos.getZ() + k)) {
             int m = j - blockPos2.getManhattanDistance(blockPos);
             if (m < 0) continue;
-            bl2 |= this.method_27096(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.method_30391().getValue(random));
+            bl2 |= this.method_27096(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().getValue(random));
         }
         return bl2;
     }

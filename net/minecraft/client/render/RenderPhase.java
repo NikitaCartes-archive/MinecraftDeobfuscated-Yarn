@@ -64,8 +64,8 @@ public abstract class RenderPhase {
     protected static final Alpha HALF_ALPHA = new Alpha(0.5f);
     protected static final ShadeModel SHADE_MODEL = new ShadeModel(false);
     protected static final ShadeModel SMOOTH_SHADE_MODEL = new ShadeModel(true);
-    protected static final Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEX, false, true);
-    protected static final Texture BLOCK_ATLAS_TEXTURE = new Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEX, false, false);
+    protected static final Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, true);
+    protected static final Texture BLOCK_ATLAS_TEXTURE = new Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false);
     protected static final Texture NO_TEXTURE = new Texture();
     protected static final Texturing DEFAULT_TEXTURING = new Texturing("default_texturing", () -> {}, () -> {});
     protected static final Texturing OUTLINE_TEXTURING = new Texturing("outline_texturing", () -> RenderSystem.setupOutline(), () -> RenderSystem.teardownOutline());

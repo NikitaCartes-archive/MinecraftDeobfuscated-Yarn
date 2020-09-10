@@ -4,22 +4,22 @@
 package net.minecraft.entity.ai.goal;
 
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
-import net.minecraft.entity.passive.AbstractTraderEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class LookAtCustomerGoal
 extends LookAtEntityGoal {
-    private final AbstractTraderEntity trader;
+    private final MerchantEntity merchant;
 
-    public LookAtCustomerGoal(AbstractTraderEntity trader) {
-        super(trader, PlayerEntity.class, 8.0f);
-        this.trader = trader;
+    public LookAtCustomerGoal(MerchantEntity merchant) {
+        super(merchant, PlayerEntity.class, 8.0f);
+        this.merchant = merchant;
     }
 
     @Override
     public boolean canStart() {
-        if (this.trader.hasCustomer()) {
-            this.target = this.trader.getCurrentCustomer();
+        if (this.merchant.hasCustomer()) {
+            this.target = this.merchant.getCurrentCustomer();
             return true;
         }
         return false;

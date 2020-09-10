@@ -44,7 +44,7 @@ extends EntityRenderer<FireworkRocketEntity> {
 
     @Override
     public Identifier getTexture(FireworkRocketEntity fireworkRocketEntity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     }
 }
 

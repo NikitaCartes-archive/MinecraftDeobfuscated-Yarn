@@ -156,14 +156,14 @@ ModelWithHead {
         this.rightAttackingArm.visible = !bl;
     }
 
-    private ModelPart method_2813(Arm arm) {
+    private ModelPart getAttackingArm(Arm arm) {
         if (arm == Arm.LEFT) {
             return this.leftAttackingArm;
         }
         return this.rightAttackingArm;
     }
 
-    public ModelPart method_2812() {
+    public ModelPart getHat() {
         return this.hat;
     }
 
@@ -174,7 +174,7 @@ ModelWithHead {
 
     @Override
     public void setArmAngle(Arm arm, MatrixStack matrices) {
-        this.method_2813(arm).rotate(matrices);
+        this.getAttackingArm(arm).rotate(matrices);
     }
 }
 

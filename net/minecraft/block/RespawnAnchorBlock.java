@@ -180,7 +180,7 @@ extends Block {
     private static Optional<Vec3d> method_30842(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, boolean bl) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Vec3i vec3i : field_26443) {
-            mutable.set(blockPos).method_30927(vec3i);
+            mutable.set(blockPos).move(vec3i);
             Vec3d vec3d = Dismounting.method_30769(entityType, collisionView, mutable, bl);
             if (vec3d == null) continue;
             return Optional.of(vec3d);

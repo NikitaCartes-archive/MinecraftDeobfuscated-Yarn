@@ -22,8 +22,8 @@ import net.minecraft.util.math.MathHelper;
 public class SpectatorHud
 extends DrawableHelper
 implements SpectatorMenuCloseCallback {
-    private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/widgets.png");
-    public static final Identifier SPECTATOR_TEX = new Identifier("textures/gui/spectator_widgets.png");
+    private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+    public static final Identifier SPECTATOR_TEXTURE = new Identifier("textures/gui/spectator_widgets.png");
     private final MinecraftClient client;
     private long lastInteractionTime;
     private SpectatorMenu spectatorMenu;
@@ -69,7 +69,7 @@ implements SpectatorMenuCloseCallback {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, f);
-        this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+        this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
         this.drawTexture(matrixStack, i - 91, j, 0, 0, 182, 22);
         if (spectatorMenuState.getSelectedSlot() >= 0) {
             this.drawTexture(matrixStack, i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
@@ -82,7 +82,7 @@ implements SpectatorMenuCloseCallback {
     }
 
     private void renderSpectatorCommand(MatrixStack matrixStack, int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
-        this.client.getTextureManager().bindTexture(SPECTATOR_TEX);
+        this.client.getTextureManager().bindTexture(SPECTATOR_TEXTURE);
         if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
             int k = (int)(g * 255.0f);
             RenderSystem.pushMatrix();

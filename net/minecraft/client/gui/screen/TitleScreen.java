@@ -158,7 +158,7 @@ extends Screen {
         this.buttonResetDemo = this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.resetdemo"), buttonWidget -> {
             LevelStorage levelStorage = this.client.getLevelStorage();
             try (LevelStorage.Session session = levelStorage.createSession("Demo_World");){
-                LevelSummary levelSummary = session.method_29584();
+                LevelSummary levelSummary = session.getLevelSummary();
                 if (levelSummary != null) {
                     this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", levelSummary.getDisplayName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
                 }
@@ -177,7 +177,7 @@ extends Screen {
      */
     private boolean method_31129() {
         try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World");){
-            boolean bl = session.method_29584() != null;
+            boolean bl = session.getLevelSummary() != null;
             return bl;
         } catch (IOException iOException) {
             SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");

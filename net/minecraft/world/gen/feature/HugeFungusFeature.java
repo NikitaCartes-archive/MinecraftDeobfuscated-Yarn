@@ -155,9 +155,9 @@ extends Feature<HugeFungusFeatureConfig> {
         }
     }
 
-    private static void generateVines(BlockPos blockPos, WorldAccess worldAccess, Random random) {
-        BlockPos.Mutable mutable = blockPos.mutableCopy().move(Direction.DOWN);
-        if (!worldAccess.isAir(mutable)) {
+    private static void generateVines(BlockPos pos, WorldAccess world, Random random) {
+        BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.DOWN);
+        if (!world.isAir(mutable)) {
             return;
         }
         int i = MathHelper.nextInt(random, 1, 5);
@@ -166,7 +166,7 @@ extends Feature<HugeFungusFeatureConfig> {
         }
         int j = 23;
         int k = 25;
-        WeepingVinesFeature.generateVineColumn(worldAccess, random, mutable, i, 23, 25);
+        WeepingVinesFeature.generateVineColumn(world, random, mutable, i, 23, 25);
     }
 }
 

@@ -28,7 +28,7 @@ import net.minecraft.client.gui.GameInfoChatListener;
 import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.hud.ChatListenerHud;
+import net.minecraft.client.gui.hud.ChatHudListener;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.SpectatorHud;
@@ -134,9 +134,9 @@ extends DrawableHelper {
             this.listeners.put(messageType, Lists.newArrayList());
         }
         NarratorManager clientChatListener = NarratorManager.INSTANCE;
-        this.listeners.get((Object)MessageType.CHAT).add(new ChatListenerHud(client));
+        this.listeners.get((Object)MessageType.CHAT).add(new ChatHudListener(client));
         this.listeners.get((Object)MessageType.CHAT).add(clientChatListener);
-        this.listeners.get((Object)MessageType.SYSTEM).add(new ChatListenerHud(client));
+        this.listeners.get((Object)MessageType.SYSTEM).add(new ChatHudListener(client));
         this.listeners.get((Object)MessageType.SYSTEM).add(clientChatListener);
         this.listeners.get((Object)MessageType.GAME_INFO).add(new GameInfoChatListener(client));
         this.setDefaultTitleFade();
@@ -322,11 +322,11 @@ extends DrawableHelper {
         RenderSystem.enableAlphaTest();
     }
 
-    private void drawTextBackground(MatrixStack matrixStack, TextRenderer textRenderer, int i, int j, int k) {
-        int l = this.client.options.getTextBackgroundColor(0.0f);
-        if (l != 0) {
-            int m = -j / 2;
-            InGameHud.fill(matrixStack, m - 2, i - 2, m + j + 2, i + textRenderer.fontHeight + 2, BackgroundHelper.ColorMixer.mixColor(l, k));
+    private void drawTextBackground(MatrixStack matrices, TextRenderer textRenderer, int yOffset, int width, int color) {
+        int i = this.client.options.getTextBackgroundColor(0.0f);
+        if (i != 0) {
+            int j = -width / 2;
+            InGameHud.fill(matrices, j - 2, yOffset - 2, j + width + 2, yOffset + textRenderer.fontHeight + 2, BackgroundHelper.ColorMixer.mixColor(i, color));
         }
     }
 
@@ -435,8 +435,8 @@ extends DrawableHelper {
         list.forEach(Runnable::run);
     }
 
-    protected void renderHotbar(float f, MatrixStack matrixStack) {
-        float g;
+    protected void renderHotbar(float tickDelta, MatrixStack matrices) {
+        float f;
         int o;
         int n;
         int m;
@@ -453,13 +453,13 @@ extends DrawableHelper {
         int k = 182;
         int l = 91;
         this.setZOffset(-90);
-        this.drawTexture(matrixStack, i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
-        this.drawTexture(matrixStack, i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
+        this.drawTexture(matrices, i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
+        this.drawTexture(matrices, i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
         if (!itemStack.isEmpty()) {
             if (arm == Arm.LEFT) {
-                this.drawTexture(matrixStack, i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
+                this.drawTexture(matrices, i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
             } else {
-                this.drawTexture(matrixStack, i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
+                this.drawTexture(matrices, i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
             }
         }
         this.setZOffset(j);
@@ -469,27 +469,27 @@ extends DrawableHelper {
         for (m = 0; m < 9; ++m) {
             n = i - 90 + m * 20 + 2;
             o = this.scaledHeight - 16 - 3;
-            this.renderHotbarItem(n, o, f, playerEntity, playerEntity.inventory.main.get(m));
+            this.renderHotbarItem(n, o, tickDelta, playerEntity, playerEntity.inventory.main.get(m));
         }
         if (!itemStack.isEmpty()) {
             m = this.scaledHeight - 16 - 3;
             if (arm == Arm.LEFT) {
-                this.renderHotbarItem(i - 91 - 26, m, f, playerEntity, itemStack);
+                this.renderHotbarItem(i - 91 - 26, m, tickDelta, playerEntity, itemStack);
             } else {
-                this.renderHotbarItem(i + 91 + 10, m, f, playerEntity, itemStack);
+                this.renderHotbarItem(i + 91 + 10, m, tickDelta, playerEntity, itemStack);
             }
         }
-        if (this.client.options.attackIndicator == AttackIndicator.HOTBAR && (g = this.client.player.getAttackCooldownProgress(0.0f)) < 1.0f) {
+        if (this.client.options.attackIndicator == AttackIndicator.HOTBAR && (f = this.client.player.getAttackCooldownProgress(0.0f)) < 1.0f) {
             n = this.scaledHeight - 20;
             o = i + 91 + 6;
             if (arm == Arm.RIGHT) {
                 o = i - 91 - 22;
             }
             this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
-            int p = (int)(g * 19.0f);
+            int p = (int)(f * 19.0f);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.drawTexture(matrixStack, o, n, 0, 94, 18, 18);
-            this.drawTexture(matrixStack, o, n + 18 - p, 18, 112 - p, 18, p);
+            this.drawTexture(matrices, o, n, 0, 94, 18, 18);
+            this.drawTexture(matrices, o, n + 18 - p, 18, 112 - p, 18, p);
         }
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableBlend();
@@ -539,7 +539,7 @@ extends DrawableHelper {
         }
     }
 
-    public void renderHeldItemTooltip(MatrixStack matrixStack) {
+    public void renderHeldItemTooltip(MatrixStack matrices) {
         this.client.getProfiler().push("selectedItemName");
         if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
             int l;
@@ -560,8 +560,8 @@ extends DrawableHelper {
                 RenderSystem.pushMatrix();
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
-                InGameHud.fill(matrixStack, j - 2, k - 2, j + i + 2, k + this.getFontRenderer().fontHeight + 2, this.client.options.getTextBackgroundColor(0));
-                this.getFontRenderer().drawWithShadow(matrixStack, mutableText, (float)j, (float)k, 0xFFFFFF + (l << 24));
+                InGameHud.fill(matrices, j - 2, k - 2, j + i + 2, k + this.getFontRenderer().fontHeight + 2, this.client.options.getTextBackgroundColor(0));
+                this.getFontRenderer().drawWithShadow(matrices, mutableText, (float)j, (float)k, 0xFFFFFF + (l << 24));
                 RenderSystem.disableBlend();
                 RenderSystem.popMatrix();
             }
@@ -901,30 +901,30 @@ extends DrawableHelper {
         RenderSystem.defaultBlendFunc();
     }
 
-    private void renderPortalOverlay(float f) {
-        if (f < 1.0f) {
-            f *= f;
-            f *= f;
-            f = f * 0.8f + 0.2f;
+    private void renderPortalOverlay(float nauseaStrength) {
+        if (nauseaStrength < 1.0f) {
+            nauseaStrength *= nauseaStrength;
+            nauseaStrength *= nauseaStrength;
+            nauseaStrength = nauseaStrength * 0.8f + 0.2f;
         }
         RenderSystem.disableAlphaTest();
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.defaultBlendFunc();
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, f);
-        this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, nauseaStrength);
+        this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
         Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.NETHER_PORTAL.getDefaultState());
-        float g = sprite.getMinU();
-        float h = sprite.getMinV();
-        float i = sprite.getMaxU();
-        float j = sprite.getMaxV();
+        float f = sprite.getMinU();
+        float g = sprite.getMinV();
+        float h = sprite.getMaxU();
+        float i = sprite.getMaxV();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(g, j).next();
-        bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(i, j).next();
-        bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(i, h).next();
-        bufferBuilder.vertex(0.0, 0.0, -90.0).texture(g, h).next();
+        bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(f, i).next();
+        bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(h, i).next();
+        bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(h, g).next();
+        bufferBuilder.vertex(0.0, 0.0, -90.0).texture(f, g).next();
         tessellator.draw();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
@@ -932,23 +932,23 @@ extends DrawableHelper {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    private void renderHotbarItem(int i, int j, float f, PlayerEntity playerEntity, ItemStack itemStack) {
-        if (itemStack.isEmpty()) {
+    private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack) {
+        if (stack.isEmpty()) {
             return;
         }
-        float g = (float)itemStack.getCooldown() - f;
-        if (g > 0.0f) {
+        float f = (float)stack.getCooldown() - tickDelta;
+        if (f > 0.0f) {
             RenderSystem.pushMatrix();
-            float h = 1.0f + g / 5.0f;
-            RenderSystem.translatef(i + 8, j + 12, 0.0f);
-            RenderSystem.scalef(1.0f / h, (h + 1.0f) / 2.0f, 1.0f);
-            RenderSystem.translatef(-(i + 8), -(j + 12), 0.0f);
+            float g = 1.0f + f / 5.0f;
+            RenderSystem.translatef(x + 8, y + 12, 0.0f);
+            RenderSystem.scalef(1.0f / g, (g + 1.0f) / 2.0f, 1.0f);
+            RenderSystem.translatef(-(x + 8), -(y + 12), 0.0f);
         }
-        this.itemRenderer.renderInGuiWithOverrides(playerEntity, itemStack, i, j);
-        if (g > 0.0f) {
+        this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y);
+        if (f > 0.0f) {
             RenderSystem.popMatrix();
         }
-        this.itemRenderer.renderGuiItemOverlay(this.client.textRenderer, itemStack, i, j);
+        this.itemRenderer.renderGuiItemOverlay(this.client.textRenderer, stack, x, y);
     }
 
     public void tick() {
@@ -990,30 +990,30 @@ extends DrawableHelper {
         this.overlayTinted = tinted;
     }
 
-    public void setTitles(@Nullable Text text, @Nullable Text text2, int i, int j, int k) {
-        if (text == null && text2 == null && i < 0 && j < 0 && k < 0) {
+    public void setTitles(@Nullable Text title, @Nullable Text subtitle, int titleFadeInTicks, int titleRemainTicks, int titleFadeOutTicks) {
+        if (title == null && subtitle == null && titleFadeInTicks < 0 && titleRemainTicks < 0 && titleFadeOutTicks < 0) {
             this.title = null;
             this.subtitle = null;
             this.titleTotalTicks = 0;
             return;
         }
-        if (text != null) {
-            this.title = text;
+        if (title != null) {
+            this.title = title;
             this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
             return;
         }
-        if (text2 != null) {
-            this.subtitle = text2;
+        if (subtitle != null) {
+            this.subtitle = subtitle;
             return;
         }
-        if (i >= 0) {
-            this.titleFadeInTicks = i;
+        if (titleFadeInTicks >= 0) {
+            this.titleFadeInTicks = titleFadeInTicks;
         }
-        if (j >= 0) {
-            this.titleRemainTicks = j;
+        if (titleRemainTicks >= 0) {
+            this.titleRemainTicks = titleRemainTicks;
         }
-        if (k >= 0) {
-            this.titleFadeOutTicks = k;
+        if (titleFadeOutTicks >= 0) {
+            this.titleFadeOutTicks = titleFadeOutTicks;
         }
         if (this.titleTotalTicks > 0) {
             this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;

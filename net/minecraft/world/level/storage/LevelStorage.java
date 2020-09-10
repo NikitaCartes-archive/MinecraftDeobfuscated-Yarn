@@ -76,7 +76,7 @@ import org.jetbrains.annotations.Nullable;
 public class LevelStorage {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder().appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD).appendLiteral('-').appendValue(ChronoField.MONTH_OF_YEAR, 2).appendLiteral('-').appendValue(ChronoField.DAY_OF_MONTH, 2).appendLiteral('_').appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral('-').appendValue(ChronoField.MINUTE_OF_HOUR, 2).appendLiteral('-').appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter();
-    private static final ImmutableList<String> field_25020 = ImmutableList.of("RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest");
+    private static final ImmutableList<String> GENERATOR_OPTION_KEYS = ImmutableList.of("RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest");
     private final Path savesDirectory;
     private final Path backupsDirectory;
     private final DataFixer dataFixer;
@@ -96,9 +96,9 @@ public class LevelStorage {
         return new LevelStorage(path, path.resolve("../backups"), Schemas.getFixer());
     }
 
-    private static <T> Pair<GeneratorOptions, Lifecycle> method_29010(Dynamic<T> dynamic, DataFixer dataFixer, int i) {
+    private static <T> Pair<GeneratorOptions, Lifecycle> readGeneratorProperties(Dynamic<T> dynamic, DataFixer dataFixer, int i) {
         Dynamic<T> dynamic2 = dynamic.get("WorldGenSettings").orElseEmptyMap();
-        for (String string : field_25020) {
+        for (String string : GENERATOR_OPTION_KEYS) {
             Optional<Dynamic<T>> optional = dynamic.get(string).result();
             if (!optional.isPresent()) continue;
             dynamic2 = dynamic2.set(string, optional.get());
@@ -113,7 +113,7 @@ public class LevelStorage {
         }), dataResult.lifecycle());
     }
 
-    private static DataPackSettings method_29580(Dynamic<?> dynamic) {
+    private static DataPackSettings parseDataPackSettings(Dynamic<?> dynamic) {
         return DataPackSettings.CODEC.parse(dynamic).resultOrPartial(LOGGER::error).orElse(DataPackSettings.SAFE_MODE);
     }
 
@@ -133,7 +133,7 @@ public class LevelStorage {
                 LOGGER.warn("Failed to read {} lock", (Object)file, (Object)exception);
                 continue;
             }
-            LevelSummary levelSummary = this.readLevelProperties(file, this.method_29014(file, bl));
+            LevelSummary levelSummary = this.readLevelProperties(file, this.createLevelDataParser(file, bl));
             if (levelSummary == null) continue;
             list.add(levelSummary);
         }
@@ -145,38 +145,38 @@ public class LevelStorage {
     }
 
     @Nullable
-    private <T> T readLevelProperties(File file, BiFunction<File, DataFixer, T> biFunction) {
+    private <T> T readLevelProperties(File file, BiFunction<File, DataFixer, T> levelDataParser) {
         T object;
         if (!file.exists()) {
             return null;
         }
         File file2 = new File(file, "level.dat");
-        if (file2.exists() && (object = biFunction.apply(file2, this.dataFixer)) != null) {
+        if (file2.exists() && (object = levelDataParser.apply(file2, this.dataFixer)) != null) {
             return object;
         }
         file2 = new File(file, "level.dat_old");
         if (file2.exists()) {
-            return biFunction.apply(file2, this.dataFixer);
+            return levelDataParser.apply(file2, this.dataFixer);
         }
         return null;
     }
 
     @Nullable
-    private static DataPackSettings method_29583(File file, DataFixer dataFixer) {
+    private static DataPackSettings readDataPackSettings(File file, DataFixer dataFixer) {
         try {
             CompoundTag compoundTag = NbtIo.readCompressed(file);
             CompoundTag compoundTag2 = compoundTag.getCompound("Data");
             compoundTag2.remove("Player");
             int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
             Dynamic<CompoundTag> dynamic = dataFixer.update(DataFixTypes.LEVEL.getTypeReference(), new Dynamic<CompoundTag>(NbtOps.INSTANCE, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion());
-            return dynamic.get("DataPacks").result().map(LevelStorage::method_29580).orElse(DataPackSettings.SAFE_MODE);
+            return dynamic.get("DataPacks").result().map(LevelStorage::parseDataPackSettings).orElse(DataPackSettings.SAFE_MODE);
         } catch (Exception exception) {
             LOGGER.error("Exception reading {}", (Object)file, (Object)exception);
             return null;
         }
     }
 
-    private static BiFunction<File, DataFixer, LevelProperties> readLevelProperties(DynamicOps<Tag> dynamicOps, DataPackSettings dataPackSettings) {
+    private static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<Tag> dynamicOps, DataPackSettings dataPackSettings) {
         return (file, dataFixer) -> {
             try {
                 CompoundTag compoundTag = NbtIo.readCompressed(file);
@@ -185,7 +185,7 @@ public class LevelStorage {
                 compoundTag2.remove("Player");
                 int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
                 Dynamic<Tag> dynamic = dataFixer.update(DataFixTypes.LEVEL.getTypeReference(), new Dynamic<CompoundTag>(dynamicOps, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion());
-                Pair<GeneratorOptions, Lifecycle> pair = LevelStorage.method_29010(dynamic, dataFixer, i);
+                Pair<GeneratorOptions, Lifecycle> pair = LevelStorage.readGeneratorProperties(dynamic, dataFixer, i);
                 SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
                 LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
                 return LevelProperties.method_29029(dynamic, dataFixer, i, compoundTag3, levelInfo, saveVersionInfo, pair.getFirst(), pair.getSecond());
@@ -196,7 +196,7 @@ public class LevelStorage {
         };
     }
 
-    private BiFunction<File, DataFixer, LevelSummary> method_29014(File file, boolean bl) {
+    private BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
         return (file2, dataFixer) -> {
             try {
                 CompoundTag compoundTag = NbtIo.readCompressed(file2);
@@ -209,9 +209,9 @@ public class LevelStorage {
                 if (j == 19132 || j == 19133) {
                     boolean bl2 = j != this.getCurrentVersion();
                     File file3 = new File(file, "icon.png");
-                    DataPackSettings dataPackSettings = dynamic.get("DataPacks").result().map(LevelStorage::method_29580).orElse(DataPackSettings.SAFE_MODE);
+                    DataPackSettings dataPackSettings = dynamic.get("DataPacks").result().map(LevelStorage::parseDataPackSettings).orElse(DataPackSettings.SAFE_MODE);
                     LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
-                    return new LevelSummary(levelInfo, saveVersionInfo, file.getName(), bl2, bl, file3);
+                    return new LevelSummary(levelInfo, saveVersionInfo, file.getName(), bl2, locked, file3);
                 }
                 return null;
             } catch (Exception exception) {
@@ -283,13 +283,13 @@ public class LevelStorage {
             }
         }
 
-        public WorldSaveHandler method_27427() {
+        public WorldSaveHandler createSaveHandler() {
             this.checkValid();
             return new WorldSaveHandler(this, LevelStorage.this.dataFixer);
         }
 
         public boolean needsConversion() {
-            LevelSummary levelSummary = this.method_29584();
+            LevelSummary levelSummary = this.getLevelSummary();
             return levelSummary != null && levelSummary.method_29586().getLevelFormatVersion() != LevelStorage.this.getCurrentVersion();
         }
 
@@ -299,28 +299,28 @@ public class LevelStorage {
         }
 
         @Nullable
-        public LevelSummary method_29584() {
+        public LevelSummary getLevelSummary() {
             this.checkValid();
-            return (LevelSummary)LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.this.method_29014(this.directory.toFile(), false));
+            return (LevelSummary)LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.this.createLevelDataParser(this.directory.toFile(), false));
         }
 
         @Nullable
         public SaveProperties readLevelProperties(DynamicOps<Tag> dynamicOps, DataPackSettings dataPackSettings) {
             this.checkValid();
-            return (SaveProperties)LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.readLevelProperties(dynamicOps, dataPackSettings));
+            return (SaveProperties)LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.createLevelDataParser(dynamicOps, dataPackSettings));
         }
 
         @Nullable
-        public DataPackSettings method_29585() {
+        public DataPackSettings getDatapackSettings() {
             this.checkValid();
-            return (DataPackSettings)LevelStorage.this.readLevelProperties(this.directory.toFile(), (file, dataFixer) -> LevelStorage.method_29583(file, dataFixer));
+            return (DataPackSettings)LevelStorage.this.readLevelProperties(this.directory.toFile(), (file, dataFixer) -> LevelStorage.readDataPackSettings(file, dataFixer));
         }
 
-        public void method_27425(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties) {
-            this.method_27426(dynamicRegistryManager, saveProperties, null);
+        public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties) {
+            this.backupLevelDataFile(dynamicRegistryManager, saveProperties, null);
         }
 
-        public void method_27426(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties, @Nullable CompoundTag compoundTag) {
+        public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties, @Nullable CompoundTag compoundTag) {
             File file = this.directory.toFile();
             CompoundTag compoundTag2 = saveProperties.cloneWorldTag(dynamicRegistryManager, compoundTag);
             CompoundTag compoundTag3 = new CompoundTag();

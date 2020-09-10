@@ -5,15 +5,15 @@ package net.minecraft.client.gui.screen.options;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5500;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.options.NarratorOptionsScreen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class AccessibilityOptionsScreen
-extends class_5500 {
+extends NarratorOptionsScreen {
     private static final Option[] OPTIONS = new Option[]{Option.NARRATOR, Option.SUBTITLES, Option.TEXT_BACKGROUND_OPACITY, Option.TEXT_BACKGROUND, Option.CHAT_OPACITY, Option.CHAT_LINE_SPACING, Option.CHAT_DELAY_INSTANT, Option.AUTO_JUMP, Option.SNEAK_TOGGLED, Option.SPRINT_TOGGLED, Option.DISTORTION_EFFECT_SCALE, Option.FOV_EFFECT_SCALE};
 
     public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {

@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class AdvancementWidget
 extends DrawableHelper {
-    private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/advancements/widgets.png");
+    private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/advancements/widgets.png");
     private static final int[] field_24262 = new int[]{0, 10, -10, 25, -25};
     private final AdvancementTab tab;
     private final Advancement advancement;
@@ -128,7 +128,7 @@ extends DrawableHelper {
         if (!this.display.isHidden() || this.progress != null && this.progress.isDone()) {
             float f = this.progress == null ? 0.0f : this.progress.getProgressBarPercentage();
             AdvancementObtainedStatus advancementObtainedStatus = f >= 1.0f ? AdvancementObtainedStatus.OBTAINED : AdvancementObtainedStatus.UNOBTAINED;
-            this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+            this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
             this.drawTexture(matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
             this.client.getItemRenderer().renderInGui(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
         }
@@ -176,7 +176,7 @@ extends DrawableHelper {
             advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
         }
         int n = this.width - m;
-        this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+        this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         int o = j + this.yPos;

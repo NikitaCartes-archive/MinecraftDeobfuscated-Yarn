@@ -152,15 +152,15 @@ extends DrawableHelper {
         LOGGER.info("[CHAT] {}", (Object)message.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
     }
 
-    private void addMessage(Text message, int messageId, int timestamp, boolean bl) {
+    private void addMessage(Text message, int messageId, int timestamp, boolean refresh) {
         if (messageId != 0) {
             this.removeMessage(messageId);
         }
         int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
         List<OrderedText> list = ChatMessages.breakRenderedChatMessageLines(message, i, this.client.textRenderer);
-        boolean bl2 = this.isChatFocused();
+        boolean bl = this.isChatFocused();
         for (OrderedText orderedText : list) {
-            if (bl2 && this.scrolledLines > 0) {
+            if (bl && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
                 this.scroll(1.0);
             }
@@ -169,7 +169,7 @@ extends DrawableHelper {
         while (this.visibleMessages.size() > 100) {
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
         }
-        if (!bl) {
+        if (!refresh) {
             this.messages.add(0, new ChatHudLine<Text>(timestamp, message, messageId));
             while (this.messages.size() > 100) {
                 this.messages.remove(this.messages.size() - 1);
@@ -213,13 +213,13 @@ extends DrawableHelper {
         }
     }
 
-    public boolean method_27146(double d, double e) {
+    public boolean mouseClicked(double mouseX, double mouseY) {
         if (!this.isChatFocused() || this.client.options.hudHidden || this.isChatHidden() || this.messageQueue.isEmpty()) {
             return false;
         }
-        double f = d - 2.0;
-        double g = (double)this.client.getWindow().getScaledHeight() - e - 40.0;
-        if (f <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && g < 0.0 && g > (double)MathHelper.floor(-9.0 * this.getChatScale())) {
+        double d = mouseX - 2.0;
+        double e = (double)this.client.getWindow().getScaledHeight() - mouseY - 40.0;
+        if (d <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && e < 0.0 && e > (double)MathHelper.floor(-9.0 * this.getChatScale())) {
             this.addMessage(this.messageQueue.remove());
             this.lastMessageAddedTime = System.currentTimeMillis();
             return true;
@@ -253,8 +253,8 @@ extends DrawableHelper {
     }
 
     private void removeMessage(int messageId) {
-        this.visibleMessages.removeIf(chatHudLine -> chatHudLine.getId() == messageId);
-        this.messages.removeIf(chatHudLine -> chatHudLine.getId() == messageId);
+        this.visibleMessages.removeIf(message -> message.getId() == messageId);
+        this.messages.removeIf(message -> message.getId() == messageId);
     }
 
     public int getWidth() {
