@@ -30,25 +30,36 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class SquidEntity extends WaterCreatureEntity {
-	public float field_6907;
-	public float field_6905;
-	public float field_6903;
-	public float field_6906;
-	public float field_6908;
-	public float field_6902;
-	public float field_6904;
-	public float field_6900;
-	private float constantVelocityRate;
-	private float field_6912;
-	private float field_6913;
-	private float constantVelocityX;
-	private float constantVelocityY;
-	private float constantVelocityZ;
+	public float tiltAngle;
+	public float prevTiltAngle;
+	public float rollAngle;
+	public float prevRollAngle;
+	/**
+	 * Timer between thrusts as the squid swims. Represented as an angle from 0 to 2PI.
+	 */
+	public float thrustTimer;
+	/**
+	 * This serves no real purpose.
+	 */
+	public float prevThrustTimer;
+	public float tentacleAngle;
+	public float prevTentacleAngle;
+	/**
+	 * A scale factor for the squid's swimming speed.
+	 * 
+	 * Gets reset to 1 at the beginning of each thrust and gradually decreases to make the squid lurch around.
+	 */
+	private float swimVelocityScale;
+	private float thrustTimerSpeed;
+	private float turningSpeed;
+	private float swimX;
+	private float swimY;
+	private float swimZ;
 
 	public SquidEntity(EntityType<? extends SquidEntity> entityType, World world) {
 		super(entityType, world);
 		this.random.setSeed((long)this.getEntityId());
-		this.field_6912 = 1.0F / (this.random.nextFloat() + 1.0F) * 0.2F;
+		this.thrustTimerSpeed = 1.0F / (this.random.nextFloat() + 1.0F) * 0.2F;
 	}
 
 	@Override
@@ -94,18 +105,18 @@ public class SquidEntity extends WaterCreatureEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		this.field_6905 = this.field_6907;
-		this.field_6906 = this.field_6903;
-		this.field_6902 = this.field_6908;
-		this.field_6900 = this.field_6904;
-		this.field_6908 = this.field_6908 + this.field_6912;
-		if ((double)this.field_6908 > Math.PI * 2) {
+		this.prevTiltAngle = this.tiltAngle;
+		this.prevRollAngle = this.rollAngle;
+		this.prevThrustTimer = this.thrustTimer;
+		this.prevTentacleAngle = this.tentacleAngle;
+		this.thrustTimer = this.thrustTimer + this.thrustTimerSpeed;
+		if ((double)this.thrustTimer > Math.PI * 2) {
 			if (this.world.isClient) {
-				this.field_6908 = (float) (Math.PI * 2);
+				this.thrustTimer = (float) (Math.PI * 2);
 			} else {
-				this.field_6908 = (float)((double)this.field_6908 - (Math.PI * 2));
+				this.thrustTimer = (float)((double)this.thrustTimer - (Math.PI * 2));
 				if (this.random.nextInt(10) == 0) {
-					this.field_6912 = 1.0F / (this.random.nextFloat() + 1.0F) * 0.2F;
+					this.thrustTimerSpeed = 1.0F / (this.random.nextFloat() + 1.0F) * 0.2F;
 				}
 
 				this.world.sendEntityStatus(this, (byte)19);
@@ -113,26 +124,24 @@ public class SquidEntity extends WaterCreatureEntity {
 		}
 
 		if (this.isInsideWaterOrBubbleColumn()) {
-			if (this.field_6908 < (float) Math.PI) {
-				float f = this.field_6908 / (float) Math.PI;
-				this.field_6904 = MathHelper.sin(f * f * (float) Math.PI) * (float) Math.PI * 0.25F;
+			if (this.thrustTimer < (float) Math.PI) {
+				float f = this.thrustTimer / (float) Math.PI;
+				this.tentacleAngle = MathHelper.sin(f * f * (float) Math.PI) * (float) Math.PI * 0.25F;
 				if ((double)f > 0.75) {
-					this.constantVelocityRate = 1.0F;
-					this.field_6913 = 1.0F;
+					this.swimVelocityScale = 1.0F;
+					this.turningSpeed = 1.0F;
 				} else {
-					this.field_6913 *= 0.8F;
+					this.turningSpeed *= 0.8F;
 				}
 			} else {
-				this.field_6904 = 0.0F;
-				this.constantVelocityRate *= 0.9F;
-				this.field_6913 *= 0.99F;
+				this.tentacleAngle = 0.0F;
+				this.swimVelocityScale *= 0.9F;
+				this.turningSpeed *= 0.99F;
 			}
 
 			if (!this.world.isClient) {
 				this.setVelocity(
-					(double)(this.constantVelocityX * this.constantVelocityRate),
-					(double)(this.constantVelocityY * this.constantVelocityRate),
-					(double)(this.constantVelocityZ * this.constantVelocityRate)
+					(double)(this.swimX * this.swimVelocityScale), (double)(this.swimY * this.swimVelocityScale), (double)(this.swimZ * this.swimVelocityScale)
 				);
 			}
 
@@ -140,10 +149,10 @@ public class SquidEntity extends WaterCreatureEntity {
 			float g = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 			this.bodyYaw = this.bodyYaw + (-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI) - this.bodyYaw) * 0.1F;
 			this.yaw = this.bodyYaw;
-			this.field_6903 = (float)((double)this.field_6903 + Math.PI * (double)this.field_6913 * 1.5);
-			this.field_6907 = this.field_6907 + (-((float)MathHelper.atan2((double)g, vec3d.y)) * (180.0F / (float)Math.PI) - this.field_6907) * 0.1F;
+			this.rollAngle = (float)((double)this.rollAngle + Math.PI * (double)this.turningSpeed * 1.5);
+			this.tiltAngle = this.tiltAngle + (-((float)MathHelper.atan2((double)g, vec3d.y)) * (180.0F / (float)Math.PI) - this.tiltAngle) * 0.1F;
 		} else {
-			this.field_6904 = MathHelper.abs(MathHelper.sin(this.field_6908)) * (float) Math.PI * 0.25F;
+			this.tentacleAngle = MathHelper.abs(MathHelper.sin(this.thrustTimer)) * (float) Math.PI * 0.25F;
 			if (!this.world.isClient) {
 				double d = this.getVelocity().y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
@@ -155,7 +164,7 @@ public class SquidEntity extends WaterCreatureEntity {
 				this.setVelocity(0.0, d * 0.98F, 0.0);
 			}
 
-			this.field_6907 = (float)((double)this.field_6907 + (double)(-90.0F - this.field_6907) * 0.02);
+			this.tiltAngle = (float)((double)this.tiltAngle + (double)(-90.0F - this.tiltAngle) * 0.02);
 		}
 	}
 
@@ -169,17 +178,17 @@ public class SquidEntity extends WaterCreatureEntity {
 		}
 	}
 
-	private Vec3d method_6671(Vec3d vec3d) {
-		Vec3d vec3d2 = vec3d.rotateX(this.field_6905 * (float) (Math.PI / 180.0));
-		return vec3d2.rotateY(-this.prevBodyYaw * (float) (Math.PI / 180.0));
+	private Vec3d applyBodyRotations(Vec3d shootVector) {
+		Vec3d vec3d = shootVector.rotateX(this.prevTiltAngle * (float) (Math.PI / 180.0));
+		return vec3d.rotateY(-this.prevBodyYaw * (float) (Math.PI / 180.0));
 	}
 
 	private void squirt() {
 		this.playSound(SoundEvents.ENTITY_SQUID_SQUIRT, this.getSoundVolume(), this.getSoundPitch());
-		Vec3d vec3d = this.method_6671(new Vec3d(0.0, -1.0, 0.0)).add(this.getX(), this.getY(), this.getZ());
+		Vec3d vec3d = this.applyBodyRotations(new Vec3d(0.0, -1.0, 0.0)).add(this.getX(), this.getY(), this.getZ());
 
 		for (int i = 0; i < 30; i++) {
-			Vec3d vec3d2 = this.method_6671(new Vec3d((double)this.random.nextFloat() * 0.6 - 0.3, -1.0, (double)this.random.nextFloat() * 0.6 - 0.3));
+			Vec3d vec3d2 = this.applyBodyRotations(new Vec3d((double)this.random.nextFloat() * 0.6 - 0.3, -1.0, (double)this.random.nextFloat() * 0.6 - 0.3));
 			Vec3d vec3d3 = vec3d2.multiply(0.3 + (double)(this.random.nextFloat() * 2.0F));
 			((ServerWorld)this.world).spawnParticles(ParticleTypes.SQUID_INK, vec3d.x, vec3d.y + 0.5, vec3d.z, 0, vec3d3.x, vec3d3.y, vec3d3.z, 0.1F);
 		}
@@ -198,20 +207,23 @@ public class SquidEntity extends WaterCreatureEntity {
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 19) {
-			this.field_6908 = 0.0F;
+			this.thrustTimer = 0.0F;
 		} else {
 			super.handleStatus(status);
 		}
 	}
 
-	public void setConstantVelocity(float x, float y, float z) {
-		this.constantVelocityX = x;
-		this.constantVelocityY = y;
-		this.constantVelocityZ = z;
+	/**
+	 * Sets the direction and velocity the squid must go when fleeing an enemy. Only has an effect when in the water.
+	 */
+	public void setSwimmingVector(float x, float y, float z) {
+		this.swimX = x;
+		this.swimY = y;
+		this.swimZ = z;
 	}
 
-	public boolean hasConstantVelocity() {
-		return this.constantVelocityX != 0.0F || this.constantVelocityY != 0.0F || this.constantVelocityZ != 0.0F;
+	public boolean hasSwimmingVector() {
+		return this.swimX != 0.0F || this.swimY != 0.0F || this.swimZ != 0.0F;
 	}
 
 	class EscapeAttackerGoal extends Goal {
@@ -261,7 +273,7 @@ public class SquidEntity extends WaterCreatureEntity {
 						vec3d = vec3d.subtract(0.0, vec3d.y, 0.0);
 					}
 
-					SquidEntity.this.setConstantVelocity((float)vec3d.x / 20.0F, (float)vec3d.y / 20.0F, (float)vec3d.z / 20.0F);
+					SquidEntity.this.setSwimmingVector((float)vec3d.x / 20.0F, (float)vec3d.y / 20.0F, (float)vec3d.z / 20.0F);
 				}
 
 				if (this.timer % 10 == 5) {
@@ -287,13 +299,13 @@ public class SquidEntity extends WaterCreatureEntity {
 		public void tick() {
 			int i = this.squid.getDespawnCounter();
 			if (i > 100) {
-				this.squid.setConstantVelocity(0.0F, 0.0F, 0.0F);
-			} else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.touchingWater || !this.squid.hasConstantVelocity()) {
+				this.squid.setSwimmingVector(0.0F, 0.0F, 0.0F);
+			} else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.touchingWater || !this.squid.hasSwimmingVector()) {
 				float f = this.squid.getRandom().nextFloat() * (float) (Math.PI * 2);
 				float g = MathHelper.cos(f) * 0.2F;
 				float h = -0.1F + this.squid.getRandom().nextFloat() * 0.2F;
 				float j = MathHelper.sin(f) * 0.2F;
-				this.squid.setConstantVelocity(g, h, j);
+				this.squid.setSwimmingVector(g, h, j);
 			}
 		}
 	}

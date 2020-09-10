@@ -24,7 +24,7 @@ import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class InGameOverlayRenderer {
-	private static final Identifier UNDERWATER_TEX = new Identifier("textures/misc/underwater.png");
+	private static final Identifier UNDERWATER_TEXTURE = new Identifier("textures/misc/underwater.png");
 
 	public static void renderOverlays(MinecraftClient minecraftClient, MatrixStack matrixStack) {
 		RenderSystem.disableAlphaTest();
@@ -92,7 +92,7 @@ public class InGameOverlayRenderer {
 
 	private static void renderUnderwaterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack) {
 		RenderSystem.enableTexture();
-		minecraftClient.getTextureManager().bindTexture(UNDERWATER_TEX);
+		minecraftClient.getTextureManager().bindTexture(UNDERWATER_TEXTURE);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		float f = minecraftClient.player.getBrightnessAtEyes();
 		RenderSystem.enableBlend();

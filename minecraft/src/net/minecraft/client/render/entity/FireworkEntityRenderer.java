@@ -38,6 +38,6 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkRocketEntity>
 	}
 
 	public Identifier getTexture(FireworkRocketEntity fireworkRocketEntity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 }

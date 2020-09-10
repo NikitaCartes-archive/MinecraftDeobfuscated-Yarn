@@ -7,11 +7,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.PacketByteBuf;
 
-public class TraderOfferList extends ArrayList<TradeOffer> {
-	public TraderOfferList() {
+public class TradeOfferList extends ArrayList<TradeOffer> {
+	public TradeOfferList() {
 	}
 
-	public TraderOfferList(CompoundTag compoundTag) {
+	public TradeOfferList(CompoundTag compoundTag) {
 		ListTag listTag = compoundTag.getList("Recipes", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
@@ -20,7 +20,7 @@ public class TraderOfferList extends ArrayList<TradeOffer> {
 	}
 
 	@Nullable
-	public TradeOffer getValidRecipe(ItemStack firstBuyItem, ItemStack secondBuyItem, int index) {
+	public TradeOffer getValidOffer(ItemStack firstBuyItem, ItemStack secondBuyItem, int index) {
 		if (index > 0 && index < this.size()) {
 			TradeOffer tradeOffer = (TradeOffer)this.get(index);
 			return tradeOffer.matchesBuyItems(firstBuyItem, secondBuyItem) ? tradeOffer : null;
@@ -52,15 +52,15 @@ public class TraderOfferList extends ArrayList<TradeOffer> {
 			buffer.writeBoolean(tradeOffer.isDisabled());
 			buffer.writeInt(tradeOffer.getUses());
 			buffer.writeInt(tradeOffer.getMaxUses());
-			buffer.writeInt(tradeOffer.getTraderExperience());
+			buffer.writeInt(tradeOffer.getMerchantExperience());
 			buffer.writeInt(tradeOffer.getSpecialPrice());
 			buffer.writeFloat(tradeOffer.getPriceMultiplier());
 			buffer.writeInt(tradeOffer.getDemandBonus());
 		}
 	}
 
-	public static TraderOfferList fromPacket(PacketByteBuf byteBuf) {
-		TraderOfferList traderOfferList = new TraderOfferList();
+	public static TradeOfferList fromPacket(PacketByteBuf byteBuf) {
+		TradeOfferList tradeOfferList = new TradeOfferList();
 		int i = byteBuf.readByte() & 255;
 
 		for (int j = 0; j < i; j++) {
@@ -84,10 +84,10 @@ public class TraderOfferList extends ArrayList<TradeOffer> {
 			}
 
 			tradeOffer.setSpecialPrice(n);
-			traderOfferList.add(tradeOffer);
+			tradeOfferList.add(tradeOffer);
 		}
 
-		return traderOfferList;
+		return tradeOfferList;
 	}
 
 	public CompoundTag toTag() {

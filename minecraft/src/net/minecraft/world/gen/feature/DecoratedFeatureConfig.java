@@ -10,7 +10,7 @@ import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 public class DecoratedFeatureConfig implements FeatureConfig {
 	public static final Codec<DecoratedFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ConfiguredFeature.CODEC.fieldOf("feature").forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.feature),
+					ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.feature),
 					ConfiguredDecorator.CODEC.fieldOf("decorator").forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.decorator)
 				)
 				.apply(instance, DecoratedFeatureConfig::new)

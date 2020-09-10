@@ -219,7 +219,7 @@ public class TitleScreen extends Screen {
 					LevelStorage levelStorage = this.client.getLevelStorage();
 
 					try (LevelStorage.Session session = levelStorage.createSession("Demo_World")) {
-						LevelSummary levelSummary = session.method_29584();
+						LevelSummary levelSummary = session.getLevelSummary();
 						if (levelSummary != null) {
 							this.client
 								.openScreen(
@@ -244,7 +244,7 @@ public class TitleScreen extends Screen {
 
 	private boolean method_31129() {
 		try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
-			return session.method_29584() != null;
+			return session.getLevelSummary() != null;
 		} catch (IOException var15) {
 			SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
 			field_23775.warn("Failed to read demo world data", (Throwable)var15);

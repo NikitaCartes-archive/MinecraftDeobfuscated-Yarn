@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TextureStitcher {
-	private static final Comparator<TextureStitcher.Holder> comparator = Comparator.comparing(holder -> -holder.height)
+	private static final Comparator<TextureStitcher.Holder> COMPARATOR = Comparator.comparing(holder -> -holder.height)
 		.thenComparing(holder -> -holder.width)
 		.thenComparing(holder -> holder.sprite.getId());
 	private final int mipLevel;
@@ -46,7 +46,7 @@ public class TextureStitcher {
 
 	public void stitch() {
 		List<TextureStitcher.Holder> list = Lists.<TextureStitcher.Holder>newArrayList(this.holders);
-		list.sort(comparator);
+		list.sort(COMPARATOR);
 
 		for (TextureStitcher.Holder holder : list) {
 			if (!this.fit(holder)) {

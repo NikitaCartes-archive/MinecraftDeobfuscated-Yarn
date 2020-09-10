@@ -251,7 +251,7 @@ public class OceanMonumentGenerator {
 					for (int n = 0; n < 4; n++) {
 						for (int o = 0; o < 4; o++) {
 							this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, l + n, 0, m + o, boundingBox);
-							this.method_14936(structureWorldAccess, PRISMARINE_BRICKS, l + n, -1, m + o, boundingBox);
+							this.fillDownwards(structureWorldAccess, PRISMARINE_BRICKS, l + n, -1, m + o, boundingBox);
 						}
 					}
 

@@ -170,7 +170,7 @@ public class AreaHelper {
 		BlockPos blockPos = arg.field_25936;
 		double g;
 		if (d > 0.0) {
-			float f = (float)blockPos.method_30558(axis) + entityDimensions.width / 2.0F;
+			float f = (float)blockPos.getComponentAlongAxis(axis) + entityDimensions.width / 2.0F;
 			g = MathHelper.clamp(MathHelper.getLerpProgress(vec3d.getComponentAlongAxis(axis) - (double)f, 0.0, d), 0.0, 1.0);
 		} else {
 			g = 0.5;
@@ -179,13 +179,13 @@ public class AreaHelper {
 		double h;
 		if (e > 0.0) {
 			Direction.Axis axis2 = Direction.Axis.Y;
-			h = MathHelper.clamp(MathHelper.getLerpProgress(vec3d.getComponentAlongAxis(axis2) - (double)blockPos.method_30558(axis2), 0.0, e), 0.0, 1.0);
+			h = MathHelper.clamp(MathHelper.getLerpProgress(vec3d.getComponentAlongAxis(axis2) - (double)blockPos.getComponentAlongAxis(axis2), 0.0, e), 0.0, 1.0);
 		} else {
 			h = 0.0;
 		}
 
 		Direction.Axis axis2 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
-		double i = vec3d.getComponentAlongAxis(axis2) - ((double)blockPos.method_30558(axis2) + 0.5);
+		double i = vec3d.getComponentAlongAxis(axis2) - ((double)blockPos.getComponentAlongAxis(axis2) + 0.5);
 		return new Vec3d(g, h, i);
 	}
 

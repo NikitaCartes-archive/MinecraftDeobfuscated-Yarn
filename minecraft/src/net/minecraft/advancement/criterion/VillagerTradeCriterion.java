@@ -1,7 +1,7 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
-import net.minecraft.entity.passive.AbstractTraderEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
@@ -27,8 +27,8 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		return new VillagerTradeCriterion.Conditions(extended, extended2, itemPredicate);
 	}
 
-	public void handle(ServerPlayerEntity player, AbstractTraderEntity trader, ItemStack stack) {
-		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, trader);
+	public void handle(ServerPlayerEntity player, MerchantEntity merchant, ItemStack stack) {
+		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, merchant);
 		this.test(player, conditions -> conditions.matches(lootContext, stack));
 	}
 
@@ -46,8 +46,8 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 			return new VillagerTradeCriterion.Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, ItemPredicate.ANY);
 		}
 
-		public boolean matches(LootContext traderContext, ItemStack stack) {
-			return !this.villager.test(traderContext) ? false : this.item.test(stack);
+		public boolean matches(LootContext merchantContext, ItemStack stack) {
+			return !this.villager.test(merchantContext) ? false : this.item.test(stack);
 		}
 
 		@Override

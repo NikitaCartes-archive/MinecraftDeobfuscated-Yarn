@@ -103,7 +103,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 
 			for (int i = 2; i <= 7; i += 5) {
 				for (int j = 1; j <= 5; j += 4) {
-					this.method_14936(structureWorldAccess, Blocks.OAK_LOG.getDefaultState(), j, -1, i, boundingBox);
+					this.fillDownwards(structureWorldAccess, Blocks.OAK_LOG.getDefaultState(), j, -1, i, boundingBox);
 				}
 			}
 

@@ -20,10 +20,10 @@ public class SimpleBlockFeatureConfig implements FeatureConfig {
 	public final List<BlockState> placeIn;
 	public final List<BlockState> placeUnder;
 
-	public SimpleBlockFeatureConfig(BlockState blockState, List<BlockState> list, List<BlockState> list2, List<BlockState> list3) {
-		this.toPlace = blockState;
-		this.placeOn = list;
-		this.placeIn = list2;
-		this.placeUnder = list3;
+	public SimpleBlockFeatureConfig(BlockState toPlace, List<BlockState> placeOn, List<BlockState> placeIn, List<BlockState> placeUnder) {
+		this.toPlace = toPlace;
+		this.placeOn = placeOn;
+		this.placeIn = placeIn;
+		this.placeUnder = placeUnder;
 	}
 }

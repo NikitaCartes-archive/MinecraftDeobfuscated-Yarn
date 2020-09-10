@@ -65,18 +65,18 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 				StrongholdGenerator.init();
 				start = new StrongholdGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
 				this.children.add(start);
-				start.placeJigsaw(start, this.children, this.random);
-				List<StructurePiece> list = start.field_15282;
+				start.fillOpenings(start, this.children, this.random);
+				List<StructurePiece> list = start.pieces;
 
 				while (!list.isEmpty()) {
 					int l = this.random.nextInt(list.size());
 					StructurePiece structurePiece = (StructurePiece)list.remove(l);
-					structurePiece.placeJigsaw(start, this.children, this.random);
+					structurePiece.fillOpenings(start, this.children, this.random);
 				}
 
 				this.setBoundingBoxFromChildren();
-				this.method_14978(chunkGenerator.getSeaLevel(), this.random, 10);
-			} while (this.children.isEmpty() || start.field_15283 == null);
+				this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), this.random, 10);
+			} while (this.children.isEmpty() || start.portalRoom == null);
 		}
 	}
 }

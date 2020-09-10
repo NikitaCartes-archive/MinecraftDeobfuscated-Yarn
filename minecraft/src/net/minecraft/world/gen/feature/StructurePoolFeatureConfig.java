@@ -20,8 +20,8 @@ public class StructurePoolFeatureConfig implements FeatureConfig {
 	private final Supplier<StructurePool> startPool;
 	private final int size;
 
-	public StructurePoolFeatureConfig(Supplier<StructurePool> supplier, int size) {
-		this.startPool = supplier;
+	public StructurePoolFeatureConfig(Supplier<StructurePool> startPool, int size) {
+		this.startPool = startPool;
 		this.size = size;
 	}
 

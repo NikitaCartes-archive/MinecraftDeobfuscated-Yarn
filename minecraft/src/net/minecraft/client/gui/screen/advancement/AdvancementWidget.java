@@ -24,7 +24,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementWidget extends DrawableHelper {
-	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/advancements/widgets.png");
+	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/advancements/widgets.png");
 	private static final int[] field_24262 = new int[]{0, 10, -10, 25, -25};
 	private final AdvancementTab tab;
 	private final Advancement advancement;
@@ -134,7 +134,7 @@ public class AdvancementWidget extends DrawableHelper {
 				advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
 			}
 
-			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+			this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
 			this.drawTexture(
 				matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26
 			);
@@ -186,7 +186,7 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 
 		int n = this.width - m;
-		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+		this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		int o = j + this.yPos;

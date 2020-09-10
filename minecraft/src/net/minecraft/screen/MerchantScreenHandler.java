@@ -11,15 +11,15 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.TradeOutputSlot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.village.SimpleTrader;
+import net.minecraft.village.Merchant;
+import net.minecraft.village.MerchantInventory;
+import net.minecraft.village.SimpleMerchant;
 import net.minecraft.village.TradeOffer;
-import net.minecraft.village.Trader;
-import net.minecraft.village.TraderInventory;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 
 public class MerchantScreenHandler extends ScreenHandler {
-	private final Trader trader;
-	private final TraderInventory traderInventory;
+	private final Merchant merchant;
+	private final MerchantInventory merchantInventory;
 	@Environment(EnvType.CLIENT)
 	private int levelProgress;
 	@Environment(EnvType.CLIENT)
@@ -28,16 +28,16 @@ public class MerchantScreenHandler extends ScreenHandler {
 	private boolean canRefreshTrades;
 
 	public MerchantScreenHandler(int syncId, PlayerInventory playerInventory) {
-		this(syncId, playerInventory, new SimpleTrader(playerInventory.player));
+		this(syncId, playerInventory, new SimpleMerchant(playerInventory.player));
 	}
 
-	public MerchantScreenHandler(int syncId, PlayerInventory playerInventory, Trader trader) {
+	public MerchantScreenHandler(int syncId, PlayerInventory playerInventory, Merchant merchant) {
 		super(ScreenHandlerType.MERCHANT, syncId);
-		this.trader = trader;
-		this.traderInventory = new TraderInventory(trader);
-		this.addSlot(new Slot(this.traderInventory, 0, 136, 37));
-		this.addSlot(new Slot(this.traderInventory, 1, 162, 37));
-		this.addSlot(new TradeOutputSlot(playerInventory.player, trader, this.traderInventory, 2, 220, 37));
+		this.merchant = merchant;
+		this.merchantInventory = new MerchantInventory(merchant);
+		this.addSlot(new Slot(this.merchantInventory, 0, 136, 37));
+		this.addSlot(new Slot(this.merchantInventory, 1, 162, 37));
+		this.addSlot(new TradeOutputSlot(playerInventory.player, merchant, this.merchantInventory, 2, 220, 37));
 
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -57,32 +57,32 @@ public class MerchantScreenHandler extends ScreenHandler {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.traderInventory.updateRecipes();
+		this.merchantInventory.updateRecipes();
 		super.onContentChanged(inventory);
 	}
 
 	public void setRecipeIndex(int index) {
-		this.traderInventory.setRecipeIndex(index);
+		this.merchantInventory.setRecipeIndex(index);
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return this.trader.getCurrentCustomer() == player;
+		return this.merchant.getCurrentCustomer() == player;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int getExperience() {
-		return this.trader.getExperience();
+		return this.merchant.getExperience();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getTraderRewardedExperience() {
-		return this.traderInventory.getTraderRewardedExperience();
+	public int getMerchantRewardedExperience() {
+		return this.merchantInventory.getMerchantRewardedExperience();
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void setExperienceFromServer(int experience) {
-		this.trader.setExperienceFromServer(experience);
+		this.merchant.setExperienceFromServer(experience);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -153,55 +153,57 @@ public class MerchantScreenHandler extends ScreenHandler {
 	}
 
 	private void playYesSound() {
-		if (!this.trader.getTraderWorld().isClient) {
-			Entity entity = (Entity)this.trader;
-			this.trader.getTraderWorld().playSound(entity.getX(), entity.getY(), entity.getZ(), this.trader.getYesSound(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
+		if (!this.merchant.getMerchantWorld().isClient) {
+			Entity entity = (Entity)this.merchant;
+			this.merchant
+				.getMerchantWorld()
+				.playSound(entity.getX(), entity.getY(), entity.getZ(), this.merchant.getYesSound(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
 		}
 	}
 
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.trader.setCurrentCustomer(null);
-		if (!this.trader.getTraderWorld().isClient) {
+		this.merchant.setCurrentCustomer(null);
+		if (!this.merchant.getMerchantWorld().isClient) {
 			if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
-				ItemStack itemStack = this.traderInventory.removeStack(0);
+				ItemStack itemStack = this.merchantInventory.removeStack(0);
 				if (!itemStack.isEmpty()) {
 					player.dropItem(itemStack, false);
 				}
 
-				itemStack = this.traderInventory.removeStack(1);
+				itemStack = this.merchantInventory.removeStack(1);
 				if (!itemStack.isEmpty()) {
 					player.dropItem(itemStack, false);
 				}
 			} else {
-				player.inventory.offerOrDrop(player.world, this.traderInventory.removeStack(0));
-				player.inventory.offerOrDrop(player.world, this.traderInventory.removeStack(1));
+				player.inventory.offerOrDrop(player.world, this.merchantInventory.removeStack(0));
+				player.inventory.offerOrDrop(player.world, this.merchantInventory.removeStack(1));
 			}
 		}
 	}
 
 	public void switchTo(int recipeIndex) {
 		if (this.getRecipes().size() > recipeIndex) {
-			ItemStack itemStack = this.traderInventory.getStack(0);
+			ItemStack itemStack = this.merchantInventory.getStack(0);
 			if (!itemStack.isEmpty()) {
 				if (!this.insertItem(itemStack, 3, 39, true)) {
 					return;
 				}
 
-				this.traderInventory.setStack(0, itemStack);
+				this.merchantInventory.setStack(0, itemStack);
 			}
 
-			ItemStack itemStack2 = this.traderInventory.getStack(1);
+			ItemStack itemStack2 = this.merchantInventory.getStack(1);
 			if (!itemStack2.isEmpty()) {
 				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return;
 				}
 
-				this.traderInventory.setStack(1, itemStack2);
+				this.merchantInventory.setStack(1, itemStack2);
 			}
 
-			if (this.traderInventory.getStack(0).isEmpty() && this.traderInventory.getStack(1).isEmpty()) {
+			if (this.merchantInventory.getStack(0).isEmpty() && this.merchantInventory.getStack(1).isEmpty()) {
 				ItemStack itemStack3 = ((TradeOffer)this.getRecipes().get(recipeIndex)).getAdjustedFirstBuyItem();
 				this.autofill(0, itemStack3);
 				ItemStack itemStack4 = ((TradeOffer)this.getRecipes().get(recipeIndex)).getSecondBuyItem();
@@ -215,14 +217,14 @@ public class MerchantScreenHandler extends ScreenHandler {
 			for (int i = 3; i < 39; i++) {
 				ItemStack itemStack = ((Slot)this.slots.get(i)).getStack();
 				if (!itemStack.isEmpty() && this.equals(stack, itemStack)) {
-					ItemStack itemStack2 = this.traderInventory.getStack(slot);
+					ItemStack itemStack2 = this.merchantInventory.getStack(slot);
 					int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
 					int k = Math.min(stack.getMaxCount() - j, itemStack.getCount());
 					ItemStack itemStack3 = itemStack.copy();
 					int l = j + k;
 					itemStack.decrement(k);
 					itemStack3.setCount(l);
-					this.traderInventory.setStack(slot, itemStack3);
+					this.merchantInventory.setStack(slot, itemStack3);
 					if (l >= stack.getMaxCount()) {
 						break;
 					}
@@ -236,12 +238,12 @@ public class MerchantScreenHandler extends ScreenHandler {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setOffers(TraderOfferList offers) {
-		this.trader.setOffersFromServer(offers);
+	public void setOffers(TradeOfferList offers) {
+		this.merchant.setOffersFromServer(offers);
 	}
 
-	public TraderOfferList getRecipes() {
-		return this.trader.getOffers();
+	public TradeOfferList getRecipes() {
+		return this.merchant.getOffers();
 	}
 
 	@Environment(EnvType.CLIENT)

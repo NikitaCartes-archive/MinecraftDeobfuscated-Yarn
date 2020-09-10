@@ -50,6 +50,9 @@ public abstract class Property<T extends Comparable<T>> {
 		return this.type;
 	}
 
+	/**
+	 * Returns all possible values the property can take.
+	 */
 	public abstract Collection<T> getValues();
 
 	public abstract String name(T value);

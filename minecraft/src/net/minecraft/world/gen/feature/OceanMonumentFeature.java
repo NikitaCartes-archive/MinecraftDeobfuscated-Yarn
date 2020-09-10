@@ -98,19 +98,14 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 
 		@Override
 		public void generateStructure(
-			StructureWorldAccess structureWorldAccess,
-			StructureAccessor structureAccessor,
-			ChunkGenerator chunkGenerator,
-			Random random,
-			BlockBox blockBox,
-			ChunkPos chunkPos
+			StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos
 		) {
 			if (!this.field_13717) {
 				this.children.clear();
 				this.method_16588(this.getChunkX(), this.getChunkZ());
 			}
 
-			super.generateStructure(structureWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
+			super.generateStructure(world, structureAccessor, chunkGenerator, random, box, chunkPos);
 		}
 	}
 }

@@ -38,7 +38,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 				}
 			}
 		);
-		this.model.method_2812().visible = true;
+		this.model.getHat().visible = true;
 	}
 
 	public Identifier getTexture(IllusionerEntity illusionerEntity) {

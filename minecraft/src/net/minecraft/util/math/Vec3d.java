@@ -175,13 +175,13 @@ public class Vec3d implements Position {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vec3d method_31033(float f) {
-		float g = MathHelper.cos(f);
-		float h = MathHelper.sin(f);
-		double d = this.x * (double)g + this.y * (double)h;
-		double e = this.y * (double)g - this.x * (double)h;
-		double i = this.z;
-		return new Vec3d(d, e, i);
+	public Vec3d rotateZ(float angle) {
+		float f = MathHelper.cos(angle);
+		float g = MathHelper.sin(angle);
+		double d = this.x * (double)f + this.y * (double)g;
+		double e = this.y * (double)f - this.x * (double)g;
+		double h = this.z;
+		return new Vec3d(d, e, h);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -12,28 +12,28 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
-public interface Trader {
+public interface Merchant {
 	void setCurrentCustomer(@Nullable PlayerEntity customer);
 
 	@Nullable
 	PlayerEntity getCurrentCustomer();
 
-	TraderOfferList getOffers();
+	TradeOfferList getOffers();
 
 	@Environment(EnvType.CLIENT)
-	void setOffersFromServer(@Nullable TraderOfferList offers);
+	void setOffersFromServer(@Nullable TradeOfferList offers);
 
 	void trade(TradeOffer offer);
 
 	void onSellingItem(ItemStack stack);
 
-	World getTraderWorld();
+	World getMerchantWorld();
 
 	int getExperience();
 
 	void setExperienceFromServer(int experience);
 
-	boolean isLeveledTrader();
+	boolean isLeveledMerchant();
 
 	SoundEvent getYesSound();
 
@@ -46,9 +46,9 @@ public interface Trader {
 			new SimpleNamedScreenHandlerFactory((ix, playerInventory, playerEntityx) -> new MerchantScreenHandler(ix, playerInventory, this), text)
 		);
 		if (optionalInt.isPresent()) {
-			TraderOfferList traderOfferList = this.getOffers();
-			if (!traderOfferList.isEmpty()) {
-				playerEntity.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i, this.getExperience(), this.isLeveledTrader(), this.canRefreshTrades());
+			TradeOfferList tradeOfferList = this.getOffers();
+			if (!tradeOfferList.isEmpty()) {
+				playerEntity.sendTradeOffers(optionalInt.getAsInt(), tradeOfferList, i, this.getExperience(), this.isLeveledMerchant(), this.canRefreshTrades());
 			}
 		}
 	}

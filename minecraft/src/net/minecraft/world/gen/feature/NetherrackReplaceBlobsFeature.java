@@ -23,12 +23,12 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 		BlockPos blockPos,
 		NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig
 	) {
-		Block block = netherrackReplaceBlobsFeatureConfig.field_25849.getBlock();
-		BlockPos blockPos2 = method_27107(structureWorldAccess, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, structureWorldAccess.getHeight() - 1), block);
+		Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
+		BlockPos blockPos2 = method_27107(structureWorldAccess, blockPos.mutableCopy().clamp(Direction.Axis.Y, 1, structureWorldAccess.getHeight() - 1), block);
 		if (blockPos2 == null) {
 			return false;
 		} else {
-			int i = netherrackReplaceBlobsFeatureConfig.method_30405().getValue(random);
+			int i = netherrackReplaceBlobsFeatureConfig.getRadius().getValue(random);
 			boolean bl = false;
 
 			for (BlockPos blockPos3 : BlockPos.iterateOutwards(blockPos2, i, i, i)) {
@@ -38,7 +38,7 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 
 				BlockState blockState = structureWorldAccess.getBlockState(blockPos3);
 				if (blockState.isOf(block)) {
-					this.setBlockState(structureWorldAccess, blockPos3, netherrackReplaceBlobsFeatureConfig.field_25850);
+					this.setBlockState(structureWorldAccess, blockPos3, netherrackReplaceBlobsFeatureConfig.state);
 					bl = true;
 				}
 			}

@@ -45,8 +45,8 @@ public class FullScreenOption extends DoubleOption {
 				} else {
 					double d = doubleOption.get(gameOptions);
 					return d == -1.0
-						? doubleOption.method_30501(new TranslatableText("options.fullscreen.current"))
-						: doubleOption.method_30501(new LiteralText(monitor.getVideoMode((int)d).toString()));
+						? doubleOption.getGenericLabel(new TranslatableText("options.fullscreen.current"))
+						: doubleOption.getGenericLabel(new LiteralText(monitor.getVideoMode((int)d).toString()));
 				}
 			}
 		);

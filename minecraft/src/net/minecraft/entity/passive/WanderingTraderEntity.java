@@ -41,11 +41,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
-import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.World;
 
-public class WanderingTraderEntity extends AbstractTraderEntity {
+public class WanderingTraderEntity extends MerchantEntity {
 	@Nullable
 	private BlockPos wanderTarget;
 	private int despawnDelay;
@@ -102,7 +102,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	public boolean isLeveledTrader() {
+	public boolean isLeveledMerchant() {
 		return false;
 	}
 
@@ -134,13 +134,13 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		TradeOffers.Factory[] factorys = TradeOffers.WANDERING_TRADER_TRADES.get(1);
 		TradeOffers.Factory[] factorys2 = TradeOffers.WANDERING_TRADER_TRADES.get(2);
 		if (factorys != null && factorys2 != null) {
-			TraderOfferList traderOfferList = this.getOffers();
-			this.fillRecipesFromPool(traderOfferList, factorys, 5);
+			TradeOfferList tradeOfferList = this.getOffers();
+			this.fillRecipesFromPool(tradeOfferList, factorys, 5);
 			int i = this.random.nextInt(factorys2.length);
 			TradeOffers.Factory factory = factorys2[i];
 			TradeOffer tradeOffer = factory.create(this, this.random);
 			if (tradeOffer != null) {
-				traderOfferList.add(tradeOffer);
+				tradeOfferList.add(tradeOffer);
 			}
 		}
 	}

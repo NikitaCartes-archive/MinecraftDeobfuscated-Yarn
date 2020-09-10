@@ -1595,11 +1595,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return ActionResult.PASS;
 	}
 
-	public boolean method_30949(Entity entity) {
-		return entity.method_30948() && !this.isConnectedThroughVehicle(entity);
+	public boolean collidesWith(Entity other) {
+		return other.isCollidable() && !this.isConnectedThroughVehicle(other);
 	}
 
-	public boolean method_30948() {
+	public boolean isCollidable() {
 		return false;
 	}
 

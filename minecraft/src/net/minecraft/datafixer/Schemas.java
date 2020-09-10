@@ -197,7 +197,7 @@ import net.minecraft.util.Util;
 public class Schemas {
 	private static final BiFunction<Integer, Schema, Schema> EMPTY = Schema::new;
 	private static final BiFunction<Integer, Schema, Schema> EMPTY_IDENTIFIER_NORMALIZE = IdentifierNormalizingSchema::new;
-	private static final DataFixer fixer = create();
+	private static final DataFixer FIXER = create();
 
 	private static DataFixer create() {
 		DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getWorldVersion());
@@ -206,7 +206,7 @@ public class Schemas {
 	}
 
 	public static DataFixer getFixer() {
-		return fixer;
+		return FIXER;
 	}
 
 	private static void build(DataFixerBuilder builder) {

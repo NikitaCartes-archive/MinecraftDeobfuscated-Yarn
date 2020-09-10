@@ -45,7 +45,7 @@ import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.SelectVillagerTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
@@ -302,7 +302,7 @@ public enum NetworkState {
 					.register(RenameItemC2SPacket.class, RenameItemC2SPacket::new)
 					.register(ResourcePackStatusC2SPacket.class, ResourcePackStatusC2SPacket::new)
 					.register(AdvancementTabC2SPacket.class, AdvancementTabC2SPacket::new)
-					.register(SelectVillagerTradeC2SPacket.class, SelectVillagerTradeC2SPacket::new)
+					.register(SelectMerchantTradeC2SPacket.class, SelectMerchantTradeC2SPacket::new)
 					.register(UpdateBeaconC2SPacket.class, UpdateBeaconC2SPacket::new)
 					.register(UpdateSelectedSlotC2SPacket.class, UpdateSelectedSlotC2SPacket::new)
 					.register(UpdateCommandBlockC2SPacket.class, UpdateCommandBlockC2SPacket::new)

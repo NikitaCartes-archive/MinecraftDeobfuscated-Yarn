@@ -69,8 +69,8 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		world.setBlockState(pos, state, 19);
 	}
 
-	public static boolean canReplace(TestableWorld testableWorld, BlockPos pos) {
-		return isAirOrLeaves(testableWorld, pos) || isReplaceablePlant(testableWorld, pos) || isWater(testableWorld, pos);
+	public static boolean canReplace(TestableWorld world, BlockPos pos) {
+		return isAirOrLeaves(world, pos) || isReplaceablePlant(world, pos) || isWater(world, pos);
 	}
 
 	private boolean generate(

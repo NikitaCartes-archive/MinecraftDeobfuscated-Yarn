@@ -13,7 +13,7 @@ public class HugeBrownMushroomFeature extends HugeMushroomFeature {
 
 	@Override
 	protected void generateCap(WorldAccess world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
-		int i = config.capSize;
+		int i = config.foliageRadius;
 
 		for (int j = -i; j <= i; j++) {
 			for (int k = -i; k <= i; k++) {

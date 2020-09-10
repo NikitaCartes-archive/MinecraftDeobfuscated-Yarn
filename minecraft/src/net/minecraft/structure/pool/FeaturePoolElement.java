@@ -25,7 +25,7 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class FeaturePoolElement extends StructurePoolElement {
 	public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(ConfiguredFeature.CODEC.fieldOf("feature").forGetter(featurePoolElement -> featurePoolElement.feature), method_28883())
+		instance -> instance.group(ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(featurePoolElement -> featurePoolElement.feature), method_28883())
 				.apply(instance, FeaturePoolElement::new)
 	);
 	private final Supplier<ConfiguredFeature<?, ?>> feature;

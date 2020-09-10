@@ -14,14 +14,14 @@ public abstract class FlowerFeature<U extends FeatureConfig> extends Feature<U> 
 	}
 
 	@Override
-	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, U featureConfig) {
-		BlockState blockState = this.getFlowerState(random, blockPos, featureConfig);
+	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos, U config) {
+		BlockState blockState = this.getFlowerState(random, pos, config);
 		int i = 0;
 
-		for (int j = 0; j < this.getFlowerAmount(featureConfig); j++) {
-			BlockPos blockPos2 = this.getPos(random, blockPos, featureConfig);
-			if (world.isAir(blockPos2) && blockPos2.getY() < 255 && blockState.canPlaceAt(world, blockPos2) && this.isPosValid(world, blockPos2, featureConfig)) {
-				world.setBlockState(blockPos2, blockState, 2);
+		for (int j = 0; j < this.getFlowerAmount(config); j++) {
+			BlockPos blockPos = this.getPos(random, pos, config);
+			if (world.isAir(blockPos) && blockPos.getY() < 255 && blockState.canPlaceAt(world, blockPos) && this.isPosValid(world, blockPos, config)) {
+				world.setBlockState(blockPos, blockState, 2);
 				i++;
 			}
 		}

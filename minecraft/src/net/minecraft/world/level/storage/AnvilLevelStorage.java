@@ -72,7 +72,7 @@ public class AnvilLevelStorage {
 			impl, new File(file3, "region"), list3, new FixedBiomeSource(registry.getOrThrow(BiomeKeys.THE_END)), list.size() + list2.size(), i, progressListener
 		);
 		makeMcrLevelDatBackup(session);
-		session.method_27425(impl, saveProperties);
+		session.backupLevelDataFile(impl, saveProperties);
 		return true;
 	}
 

@@ -143,7 +143,7 @@ public class VillagerGossips {
 				dynamicOps.createMap(
 					ImmutableMap.of(
 						dynamicOps.createString("Target"),
-						(T)DynamicSerializableUuid.field_25122.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new),
+						(T)DynamicSerializableUuid.CODEC.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new),
 						dynamicOps.createString("Type"),
 						dynamicOps.createString(this.type.key),
 						dynamicOps.createString("Value"),
@@ -157,7 +157,7 @@ public class VillagerGossips {
 			return DataResult.unbox(
 				DataResult.instance()
 					.group(
-						dynamic.get("Target").read(DynamicSerializableUuid.field_25122),
+						dynamic.get("Target").read(DynamicSerializableUuid.CODEC),
 						dynamic.get("Type").asString().map(VillageGossipType::byKey),
 						dynamic.get("Value").asNumber().map(Number::intValue)
 					)

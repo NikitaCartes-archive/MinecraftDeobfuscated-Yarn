@@ -15,13 +15,13 @@ public final class GlobalPos {
 	private final RegistryKey<World> dimension;
 	private final BlockPos pos;
 
-	private GlobalPos(RegistryKey<World> registryKey, BlockPos pos) {
-		this.dimension = registryKey;
+	private GlobalPos(RegistryKey<World> dimension, BlockPos pos) {
+		this.dimension = dimension;
 		this.pos = pos;
 	}
 
-	public static GlobalPos create(RegistryKey<World> registryKey, BlockPos pos) {
-		return new GlobalPos(registryKey, pos);
+	public static GlobalPos create(RegistryKey<World> dimension, BlockPos pos) {
+		return new GlobalPos(dimension, pos);
 	}
 
 	public RegistryKey<World> getDimension() {

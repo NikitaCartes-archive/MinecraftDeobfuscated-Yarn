@@ -21,12 +21,12 @@ import java.util.Queue;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.server.command.CommandSource;
 
 public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 	private RootCommandNode<CommandSource> commandTree;

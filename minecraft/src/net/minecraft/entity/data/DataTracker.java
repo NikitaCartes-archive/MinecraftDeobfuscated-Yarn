@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 public class DataTracker {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Map<Class<? extends Entity>, Integer> trackedEntities = Maps.<Class<? extends Entity>, Integer>newHashMap();
+	private static final Map<Class<? extends Entity>, Integer> TRACKED_ENTITIES = Maps.<Class<? extends Entity>, Integer>newHashMap();
 	private final Entity trackedEntity;
 	private final Map<Integer, DataTracker.Entry<?>> entries = Maps.<Integer, DataTracker.Entry<?>>newHashMap();
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -47,16 +47,16 @@ public class DataTracker {
 		}
 
 		int i;
-		if (trackedEntities.containsKey(entityClass)) {
-			i = (Integer)trackedEntities.get(entityClass) + 1;
+		if (TRACKED_ENTITIES.containsKey(entityClass)) {
+			i = (Integer)TRACKED_ENTITIES.get(entityClass) + 1;
 		} else {
 			int j = 0;
 			Class<?> class2 = entityClass;
 
 			while (class2 != Entity.class) {
 				class2 = class2.getSuperclass();
-				if (trackedEntities.containsKey(class2)) {
-					j = (Integer)trackedEntities.get(class2) + 1;
+				if (TRACKED_ENTITIES.containsKey(class2)) {
+					j = (Integer)TRACKED_ENTITIES.get(class2) + 1;
 					break;
 				}
 			}
@@ -67,7 +67,7 @@ public class DataTracker {
 		if (i > 254) {
 			throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
 		} else {
-			trackedEntities.put(entityClass, i);
+			TRACKED_ENTITIES.put(entityClass, i);
 			return dataHandler.create(i);
 		}
 	}

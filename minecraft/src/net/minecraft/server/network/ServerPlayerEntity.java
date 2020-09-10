@@ -118,7 +118,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
@@ -271,7 +271,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		tag.putInt("playerGameType", this.interactionManager.getGameMode().getId());
-		tag.putInt("previousPlayerGameType", this.interactionManager.method_30119().getId());
+		tag.putInt("previousPlayerGameType", this.interactionManager.getPreviousGameMode().getId());
 		tag.putBoolean("seenCredits", this.seenCredits);
 		if (this.enteredNetherPos != null) {
 			CompoundTag compoundTag = new CompoundTag();
@@ -653,7 +653,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 						destination.getRegistryKey(),
 						BiomeAccess.hashSeed(destination.getSeed()),
 						this.interactionManager.getGameMode(),
-						this.interactionManager.method_30119(),
+						this.interactionManager.getPreviousGameMode(),
 						destination.isDebugWorld(),
 						destination.isFlat(),
 						true
@@ -924,7 +924,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void sendTradeOffers(int syncId, TraderOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
+	public void sendTradeOffers(int syncId, TradeOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
 		this.networkHandler.sendPacket(new SetTradeOffersS2CPacket(syncId, offers, levelProgress, experience, leveled, refreshable));
 	}
 
@@ -1195,7 +1195,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public void setGameMode(GameMode gameMode) {
-		this.interactionManager.method_30118(gameMode);
+		this.interactionManager.setGameMode(gameMode);
 		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_MODE_CHANGED, (float)gameMode.getId()));
 		if (gameMode == GameMode.SPECTATOR) {
 			this.dropShoulderEntities();
@@ -1372,7 +1372,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 						targetWorld.getRegistryKey(),
 						BiomeAccess.hashSeed(targetWorld.getSeed()),
 						this.interactionManager.getGameMode(),
-						this.interactionManager.method_30119(),
+						this.interactionManager.getPreviousGameMode(),
 						targetWorld.isDebugWorld(),
 						targetWorld.isFlat(),
 						true

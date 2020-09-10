@@ -79,15 +79,15 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	}
 
 	public SurfaceBuilder(Codec<C> codec) {
-		this.codec = codec.fieldOf("config").<ConfiguredSurfaceBuilder<C>>xmap(this::method_30478, ConfiguredSurfaceBuilder::getConfig).codec();
+		this.codec = codec.fieldOf("config").<ConfiguredSurfaceBuilder<C>>xmap(this::withConfig, ConfiguredSurfaceBuilder::getConfig).codec();
 	}
 
 	public Codec<ConfiguredSurfaceBuilder<C>> getCodec() {
 		return this.codec;
 	}
 
-	public ConfiguredSurfaceBuilder<C> method_30478(C surfaceConfig) {
-		return new ConfiguredSurfaceBuilder<>(this, surfaceConfig);
+	public ConfiguredSurfaceBuilder<C> withConfig(C config) {
+		return new ConfiguredSurfaceBuilder<>(this, config);
 	}
 
 	public abstract void generate(

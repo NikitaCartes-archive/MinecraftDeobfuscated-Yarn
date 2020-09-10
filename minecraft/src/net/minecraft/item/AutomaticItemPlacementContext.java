@@ -17,12 +17,12 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 
 	@Override
 	public BlockPos getBlockPos() {
-		return this.method_30344().getBlockPos();
+		return this.getHitResult().getBlockPos();
 	}
 
 	@Override
 	public boolean canPlace() {
-		return this.getWorld().getBlockState(this.method_30344().getBlockPos()).canReplace(this);
+		return this.getWorld().getBlockState(this.getHitResult().getBlockPos()).canReplace(this);
 	}
 
 	@Override

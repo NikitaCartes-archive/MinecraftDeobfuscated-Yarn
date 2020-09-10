@@ -29,23 +29,23 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.village.Merchant;
 import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
-import net.minecraft.village.Trader;
-import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-public abstract class AbstractTraderEntity extends PassiveEntity implements Npc, Trader {
-	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(AbstractTraderEntity.class, TrackedDataHandlerRegistry.INTEGER);
+public abstract class MerchantEntity extends PassiveEntity implements Npc, Merchant {
+	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(MerchantEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	@Nullable
 	private PlayerEntity customer;
 	@Nullable
-	protected TraderOfferList offers;
+	protected TradeOfferList offers;
 	private final SimpleInventory inventory = new SimpleInventory(8);
 
-	public AbstractTraderEntity(EntityType<? extends AbstractTraderEntity> entityType, World world) {
+	public MerchantEntity(EntityType<? extends MerchantEntity> entityType, World world) {
 		super(entityType, world);
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
@@ -102,9 +102,9 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public TraderOfferList getOffers() {
+	public TradeOfferList getOffers() {
 		if (this.offers == null) {
-			this.offers = new TraderOfferList();
+			this.offers = new TradeOfferList();
 			this.fillRecipes();
 		}
 
@@ -113,7 +113,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setOffersFromServer(@Nullable TraderOfferList offers) {
+	public void setOffersFromServer(@Nullable TradeOfferList offers) {
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	protected abstract void afterUsing(TradeOffer offer);
 
 	@Override
-	public boolean isLeveledTrader() {
+	public boolean isLeveledMerchant() {
 		return true;
 	}
 
@@ -161,9 +161,9 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		TraderOfferList traderOfferList = this.getOffers();
-		if (!traderOfferList.isEmpty()) {
-			tag.put("Offers", traderOfferList.toTag());
+		TradeOfferList tradeOfferList = this.getOffers();
+		if (!tradeOfferList.isEmpty()) {
+			tag.put("Offers", tradeOfferList.toTag());
 		}
 
 		tag.put("Inventory", this.inventory.getTags());
@@ -173,7 +173,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		if (tag.contains("Offers", 10)) {
-			this.offers = new TraderOfferList(tag.getCompound("Offers"));
+			this.offers = new TradeOfferList(tag.getCompound("Offers"));
 		}
 
 		this.inventory.readTags(tag.getList("Inventory", 10));
@@ -231,13 +231,13 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public World getTraderWorld() {
+	public World getMerchantWorld() {
 		return this.world;
 	}
 
 	protected abstract void fillRecipes();
 
-	protected void fillRecipesFromPool(TraderOfferList recipeList, TradeOffers.Factory[] pool, int count) {
+	protected void fillRecipesFromPool(TradeOfferList recipeList, TradeOffers.Factory[] pool, int count) {
 		Set<Integer> set = Sets.<Integer>newHashSet();
 		if (pool.length > count) {
 			while (set.size() < count) {

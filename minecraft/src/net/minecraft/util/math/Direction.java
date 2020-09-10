@@ -80,26 +80,29 @@ public enum Direction implements StringIdentifiable {
 		Direction direction3 = bl3 ? SOUTH : NORTH;
 		if (l > n) {
 			if (m > o) {
-				return method_10145(direction2, direction, direction3);
+				return listClosest(direction2, direction, direction3);
 			} else {
-				return p > m ? method_10145(direction, direction3, direction2) : method_10145(direction, direction2, direction3);
+				return p > m ? listClosest(direction, direction3, direction2) : listClosest(direction, direction2, direction3);
 			}
 		} else if (m > p) {
-			return method_10145(direction2, direction3, direction);
+			return listClosest(direction2, direction3, direction);
 		} else {
-			return o > m ? method_10145(direction3, direction, direction2) : method_10145(direction3, direction2, direction);
+			return o > m ? listClosest(direction3, direction, direction2) : listClosest(direction3, direction2, direction);
 		}
 	}
 
-	private static Direction[] method_10145(Direction direction, Direction direction2, Direction direction3) {
-		return new Direction[]{direction, direction2, direction3, direction3.getOpposite(), direction2.getOpposite(), direction.getOpposite()};
+	/**
+	 * Helper function that returns the 3 directions given, followed by the 3 opposite given in opposite order.
+	 */
+	private static Direction[] listClosest(Direction first, Direction second, Direction third) {
+		return new Direction[]{first, second, third, third.getOpposite(), second.getOpposite(), first.getOpposite()};
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static Direction transform(Matrix4f matrix4f, Direction direction) {
+	public static Direction transform(Matrix4f matrix, Direction direction) {
 		Vec3i vec3i = direction.getVector();
 		Vector4f vector4f = new Vector4f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), 0.0F);
-		vector4f.transform(matrix4f);
+		vector4f.transform(matrix);
 		return getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
 	}
 
@@ -324,14 +327,14 @@ public enum Direction implements StringIdentifiable {
 			}
 		};
 
-		private static final Direction.Axis[] field_23780 = values();
-		public static final Codec<Direction.Axis> field_25065 = StringIdentifiable.createCodec(Direction.Axis::values, Direction.Axis::fromName);
-		private static final Map<String, Direction.Axis> BY_NAME = (Map<String, Direction.Axis>)Arrays.stream(field_23780)
+		private static final Direction.Axis[] VALUES = values();
+		public static final Codec<Direction.Axis> CODEC = StringIdentifiable.createCodec(Direction.Axis::values, Direction.Axis::fromName);
+		private static final Map<String, Direction.Axis> BY_NAME = (Map<String, Direction.Axis>)Arrays.stream(VALUES)
 			.collect(Collectors.toMap(Direction.Axis::getName, axis -> axis));
 		private final String name;
 
-		private Axis(String string2) {
-			this.name = string2;
+		private Axis(String name) {
+			this.name = name;
 		}
 
 		@Nullable
@@ -356,7 +359,7 @@ public enum Direction implements StringIdentifiable {
 		}
 
 		public static Direction.Axis pickRandomAxis(Random random) {
-			return Util.getRandom(field_23780, random);
+			return Util.getRandom(VALUES, random);
 		}
 
 		public boolean test(@Nullable Direction direction) {
@@ -390,11 +393,11 @@ public enum Direction implements StringIdentifiable {
 		NEGATIVE(-1, "Towards negative");
 
 		private final int offset;
-		private final String desc;
+		private final String description;
 
 		private AxisDirection(int offset, String description) {
 			this.offset = offset;
-			this.desc = description;
+			this.description = description;
 		}
 
 		public int offset() {
@@ -402,7 +405,7 @@ public enum Direction implements StringIdentifiable {
 		}
 
 		public String toString() {
-			return this.desc;
+			return this.description;
 		}
 
 		public Direction.AxisDirection getOpposite() {
@@ -417,9 +420,9 @@ public enum Direction implements StringIdentifiable {
 		private final Direction[] facingArray;
 		private final Direction.Axis[] axisArray;
 
-		private Type(Direction[] directions, Direction.Axis[] axiss) {
-			this.facingArray = directions;
-			this.axisArray = axiss;
+		private Type(Direction[] facingArray, Direction.Axis[] axisArray) {
+			this.facingArray = facingArray;
+			this.axisArray = axisArray;
 		}
 
 		public Direction random(Random random) {

@@ -326,6 +326,9 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	@Nullable
 	public abstract T get(@Nullable Identifier id);
 
+	/**
+	 * Gets the lifecycle of a registry entry.
+	 */
 	protected abstract Lifecycle getEntryLifecycle(T object);
 
 	public abstract Lifecycle getLifecycle();

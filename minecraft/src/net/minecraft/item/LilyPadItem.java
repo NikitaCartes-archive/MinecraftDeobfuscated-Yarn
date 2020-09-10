@@ -22,7 +22,7 @@ public class LilyPadItem extends BlockItem {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
-		BlockHitResult blockHitResult2 = blockHitResult.method_29328(blockHitResult.getBlockPos().up());
+		BlockHitResult blockHitResult2 = blockHitResult.withBlockPos(blockHitResult.getBlockPos().up());
 		ActionResult actionResult = super.useOnBlock(new ItemUsageContext(user, hand, blockHitResult2));
 		return new TypedActionResult<>(actionResult, user.getStackInHand(hand));
 	}

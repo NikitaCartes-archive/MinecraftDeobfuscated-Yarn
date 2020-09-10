@@ -116,32 +116,32 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		}
 	}
 
-	public static int tickViewerCount(World world, LockableContainerBlockEntity blockEntity, int ticksOpen, int x, int y, int z, int viewerCount) {
+	public static int tickViewerCount(World world, LockableContainerBlockEntity inventory, int ticksOpen, int x, int y, int z, int viewerCount) {
 		if (!world.isClient && viewerCount != 0 && (ticksOpen + x + y + z) % 200 == 0) {
-			viewerCount = countViewers(world, blockEntity, x, y, z);
+			viewerCount = countViewers(world, inventory, x, y, z);
 		}
 
 		return viewerCount;
 	}
 
-	public static int countViewers(World world, LockableContainerBlockEntity container, int ticksOpen, int x, int y) {
+	public static int countViewers(World world, LockableContainerBlockEntity inventory, int x, int y, int z) {
 		int i = 0;
 		float f = 5.0F;
 
 		for (PlayerEntity playerEntity : world.getNonSpectatingEntities(
 			PlayerEntity.class,
 			new Box(
-				(double)((float)ticksOpen - 5.0F),
 				(double)((float)x - 5.0F),
 				(double)((float)y - 5.0F),
-				(double)((float)(ticksOpen + 1) + 5.0F),
+				(double)((float)z - 5.0F),
 				(double)((float)(x + 1) + 5.0F),
-				(double)((float)(y + 1) + 5.0F)
+				(double)((float)(y + 1) + 5.0F),
+				(double)((float)(z + 1) + 5.0F)
 			)
 		)) {
 			if (playerEntity.currentScreenHandler instanceof GenericContainerScreenHandler) {
-				Inventory inventory = ((GenericContainerScreenHandler)playerEntity.currentScreenHandler).getInventory();
-				if (inventory == container || inventory instanceof DoubleInventory && ((DoubleInventory)inventory).isPart(container)) {
+				Inventory inventory2 = ((GenericContainerScreenHandler)playerEntity.currentScreenHandler).getInventory();
+				if (inventory2 == inventory || inventory2 instanceof DoubleInventory && ((DoubleInventory)inventory2).isPart(inventory)) {
 					i++;
 				}
 			}

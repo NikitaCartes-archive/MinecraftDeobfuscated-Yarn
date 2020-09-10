@@ -107,7 +107,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	}
 
 	public Identifier getTexture(ItemFrameEntity itemFrameEntity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
 	protected boolean hasLabel(ItemFrameEntity itemFrameEntity) {

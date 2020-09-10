@@ -31,7 +31,7 @@ import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.SelectVillagerTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
@@ -124,7 +124,7 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onStructureBlockUpdate(UpdateStructureBlockC2SPacket packet);
 
-	void onVillagerTradeSelect(SelectVillagerTradeC2SPacket packet);
+	void onMerchantTradeSelect(SelectMerchantTradeC2SPacket packet);
 
 	void onBookUpdate(BookUpdateC2SPacket packet);
 

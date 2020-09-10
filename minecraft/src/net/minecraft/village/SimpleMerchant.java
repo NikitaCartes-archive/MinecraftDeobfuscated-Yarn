@@ -9,15 +9,15 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
-public class SimpleTrader implements Trader {
-	private final TraderInventory traderInventory;
+public class SimpleMerchant implements Merchant {
+	private final MerchantInventory merchantInventory;
 	private final PlayerEntity player;
-	private TraderOfferList recipeList = new TraderOfferList();
+	private TradeOfferList recipeList = new TradeOfferList();
 	private int experience;
 
-	public SimpleTrader(PlayerEntity playerEntity) {
+	public SimpleMerchant(PlayerEntity playerEntity) {
 		this.player = playerEntity;
-		this.traderInventory = new TraderInventory(this);
+		this.merchantInventory = new MerchantInventory(this);
 	}
 
 	@Nullable
@@ -31,13 +31,13 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public TraderOfferList getOffers() {
+	public TradeOfferList getOffers() {
 		return this.recipeList;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setOffersFromServer(@Nullable TraderOfferList offers) {
+	public void setOffersFromServer(@Nullable TradeOfferList offers) {
 		this.recipeList = offers;
 	}
 
@@ -51,7 +51,7 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public World getTraderWorld() {
+	public World getMerchantWorld() {
 		return this.player.world;
 	}
 
@@ -66,7 +66,7 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public boolean isLeveledTrader() {
+	public boolean isLeveledMerchant() {
 		return true;
 	}
 

@@ -101,20 +101,15 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 		@Override
 		public void generateStructure(
-			StructureWorldAccess structureWorldAccess,
-			StructureAccessor structureAccessor,
-			ChunkGenerator chunkGenerator,
-			Random random,
-			BlockBox blockBox,
-			ChunkPos chunkPos
+			StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos
 		) {
-			super.generateStructure(structureWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
+			super.generateStructure(world, structureAccessor, chunkGenerator, random, box, chunkPos);
 			int i = this.boundingBox.minY;
 
-			for (int j = blockBox.minX; j <= blockBox.maxX; j++) {
-				for (int k = blockBox.minZ; k <= blockBox.maxZ; k++) {
+			for (int j = box.minX; j <= box.maxX; j++) {
+				for (int k = box.minZ; k <= box.maxZ; k++) {
 					BlockPos blockPos = new BlockPos(j, i, k);
-					if (!structureWorldAccess.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
+					if (!world.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
 						boolean bl = false;
 
 						for (StructurePiece structurePiece : this.children) {
@@ -127,11 +122,11 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 						if (bl) {
 							for (int l = i - 1; l > 1; l--) {
 								BlockPos blockPos2 = new BlockPos(j, l, k);
-								if (!structureWorldAccess.isAir(blockPos2) && !structureWorldAccess.getBlockState(blockPos2).getMaterial().isLiquid()) {
+								if (!world.isAir(blockPos2) && !world.getBlockState(blockPos2).getMaterial().isLiquid()) {
 									break;
 								}
 
-								structureWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+								world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
 							}
 						}
 					}

@@ -25,7 +25,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RecipeAlternativesWidget extends DrawableHelper implements Drawable, Element {
-	private static final Identifier BG_TEX = new Identifier("textures/gui/recipe_book.png");
+	private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
 	private final List<RecipeAlternativesWidget.AlternativeButtonWidget> alternativeButtons = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget>newArrayList();
 	private boolean visible;
 	private int buttonX;
@@ -131,7 +131,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 			this.time += delta;
 			RenderSystem.enableBlend();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(BG_TEX);
+			this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 170.0F);
 			int i = this.alternativeButtons.size() <= 16 ? 4 : 5;
@@ -221,7 +221,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		@Override
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			RenderSystem.enableAlphaTest();
-			RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(RecipeAlternativesWidget.BG_TEX);
+			RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(RecipeAlternativesWidget.BACKGROUND_TEXTURE);
 			int i = 152;
 			if (!this.craftable) {
 				i += 26;

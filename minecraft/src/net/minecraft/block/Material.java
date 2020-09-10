@@ -34,7 +34,10 @@ public final class Material {
 		.replaceable()
 		.burnable()
 		.build();
-	public static final Material field_26708 = new Material.Builder(MaterialColor.FOLIAGE)
+	/**
+	 * Material for crimson and warped roots, as well as Nether sprouts.
+	 */
+	public static final Material NETHER_SHOOTS = new Material.Builder(MaterialColor.FOLIAGE)
 		.allowsMovement()
 		.lightPassesThrough()
 		.notSolid()
@@ -151,6 +154,9 @@ public final class Material {
 	 * Material for blocks that are stone or made from it, and generally prefer to be broken by a pickaxe.
 	 */
 	public static final Material STONE = new Material.Builder(MaterialColor.STONE).build();
+	/**
+	 * Material for blocks metallic in nature, such as cauldrons, bells, iron doors, and iron trapdoors. It also includes non-obvious blocks such as brewing stands and compressed ore blocks, including diamond, redstone, and lapis blocks.
+	 */
 	public static final Material METAL = new Material.Builder(MaterialColor.IRON).build();
 	/**
 	 * Material for full sized snow blocks.

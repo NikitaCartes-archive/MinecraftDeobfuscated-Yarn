@@ -156,7 +156,7 @@ public abstract class MobSpawnerLogic {
 								}
 							}
 
-							if (!serverWorld.method_30736(entity)) {
+							if (!serverWorld.shouldCreateNewEntityWithPassenger(entity)) {
 								this.updateSpawns();
 								return;
 							}

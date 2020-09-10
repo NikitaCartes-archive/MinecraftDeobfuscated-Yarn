@@ -102,7 +102,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						}
 
 						if (x == 1) {
-							structureWorldAccess.setBlockState(blockPos3, StructurePiece.method_14916(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), 2);
+							structureWorldAccess.setBlockState(blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), 2);
 							LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
 							break;
 						}

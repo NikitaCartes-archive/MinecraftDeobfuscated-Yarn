@@ -96,7 +96,7 @@ public class Util {
 		return Instant.now().toEpochMilli();
 	}
 
-	private static ExecutorService createWorker(String string) {
+	private static ExecutorService createWorker(String name) {
 		int i = MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 7);
 		ExecutorService executorService;
 		if (i <= 0) {
@@ -114,7 +114,7 @@ public class Util {
 						super.onTermination(throwable);
 					}
 				};
-				forkJoinWorkerThread.setName("Worker-" + string + "-" + NEXT_WORKER_ID.getAndIncrement());
+				forkJoinWorkerThread.setName("Worker-" + name + "-" + NEXT_WORKER_ID.getAndIncrement());
 				return forkJoinWorkerThread;
 			}, Util::method_18347, true);
 		}

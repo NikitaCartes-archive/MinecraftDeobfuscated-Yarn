@@ -16,11 +16,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> implements Decoratable<ConfiguredFeature<?, ?>> {
-	public static final Codec<ConfiguredFeature<?, ?>> field_25833 = Registry.FEATURE.dispatch(configuredFeature -> configuredFeature.feature, Feature::getCodec);
-	public static final Codec<Supplier<ConfiguredFeature<?, ?>>> CODEC = RegistryElementCodec.of(Registry.CONFIGURED_FEATURE_WORLDGEN, field_25833);
-	public static final Codec<List<Supplier<ConfiguredFeature<?, ?>>>> field_26756 = RegistryElementCodec.method_31194(
-		Registry.CONFIGURED_FEATURE_WORLDGEN, field_25833
-	);
+	public static final Codec<ConfiguredFeature<?, ?>> CODEC = Registry.FEATURE.dispatch(configuredFeature -> configuredFeature.feature, Feature::getCodec);
+	public static final Codec<Supplier<ConfiguredFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_FEATURE_WORLDGEN, CODEC);
+	public static final Codec<List<Supplier<ConfiguredFeature<?, ?>>>> field_26756 = RegistryElementCodec.method_31194(Registry.CONFIGURED_FEATURE_WORLDGEN, CODEC);
 	public static final Logger LOGGER = LogManager.getLogger();
 	public final F feature;
 	public final FC config;
@@ -46,8 +44,8 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
 		return new RandomFeatureEntry(this, chance);
 	}
 
-	public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos) {
-		return this.feature.generate(structureWorldAccess, chunkGenerator, random, blockPos, this.config);
+	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
+		return this.feature.generate(world, chunkGenerator, random, pos, this.config);
 	}
 
 	public Stream<ConfiguredFeature<?, ?>> method_30648() {

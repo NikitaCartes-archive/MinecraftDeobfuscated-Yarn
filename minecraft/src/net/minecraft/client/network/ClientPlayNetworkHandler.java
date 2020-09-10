@@ -88,6 +88,7 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.command.CommandSource;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -266,7 +267,6 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.command.CommandSource;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
@@ -290,7 +290,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
@@ -392,7 +392,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.player.setReducedDebugInfo(packet.hasReducedDebugInfo());
 		this.client.player.setShowsDeathScreen(packet.showsDeathScreen());
 		this.client.interactionManager.setGameMode(packet.getGameMode());
-		this.client.interactionManager.method_30108(packet.getPreviousGameMode());
+		this.client.interactionManager.setPreviousGameMode(packet.getPreviousGameMode());
 		this.client.options.onPlayerModelPartChange();
 		this.connection
 			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
@@ -1067,7 +1067,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		this.client.interactionManager.setGameMode(packet.getGameMode());
-		this.client.interactionManager.method_30108(packet.method_30117());
+		this.client.interactionManager.setPreviousGameMode(packet.getPreviousGameMode());
 	}
 
 	@Override
@@ -2213,7 +2213,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
 		if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler) {
-			((MerchantScreenHandler)screenHandler).setOffers(new TraderOfferList(packet.getOffers().toTag()));
+			((MerchantScreenHandler)screenHandler).setOffers(new TradeOfferList(packet.getOffers().toTag()));
 			((MerchantScreenHandler)screenHandler).setExperienceFromServer(packet.getExperience());
 			((MerchantScreenHandler)screenHandler).setLevelProgress(packet.getLevelProgress());
 			((MerchantScreenHandler)screenHandler).setCanLevel(packet.isLeveled());

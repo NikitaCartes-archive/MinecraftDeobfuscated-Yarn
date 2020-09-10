@@ -9,17 +9,17 @@ public class HugeMushroomFeatureConfig implements FeatureConfig {
 		instance -> instance.group(
 					BlockStateProvider.TYPE_CODEC.fieldOf("cap_provider").forGetter(hugeMushroomFeatureConfig -> hugeMushroomFeatureConfig.capProvider),
 					BlockStateProvider.TYPE_CODEC.fieldOf("stem_provider").forGetter(hugeMushroomFeatureConfig -> hugeMushroomFeatureConfig.stemProvider),
-					Codec.INT.fieldOf("foliage_radius").orElse(2).forGetter(hugeMushroomFeatureConfig -> hugeMushroomFeatureConfig.capSize)
+					Codec.INT.fieldOf("foliage_radius").orElse(2).forGetter(hugeMushroomFeatureConfig -> hugeMushroomFeatureConfig.foliageRadius)
 				)
 				.apply(instance, HugeMushroomFeatureConfig::new)
 	);
 	public final BlockStateProvider capProvider;
 	public final BlockStateProvider stemProvider;
-	public final int capSize;
+	public final int foliageRadius;
 
-	public HugeMushroomFeatureConfig(BlockStateProvider capProvider, BlockStateProvider stemProvider, int capSize) {
+	public HugeMushroomFeatureConfig(BlockStateProvider capProvider, BlockStateProvider stemProvider, int foliageRadius) {
 		this.capProvider = capProvider;
 		this.stemProvider = stemProvider;
-		this.capSize = capSize;
+		this.foliageRadius = foliageRadius;
 	}
 }

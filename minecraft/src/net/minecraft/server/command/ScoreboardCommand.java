@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.ObjectiveArgumentType;
 import net.minecraft.command.argument.ObjectiveCriteriaArgumentType;
 import net.minecraft.command.argument.OperationArgumentType;

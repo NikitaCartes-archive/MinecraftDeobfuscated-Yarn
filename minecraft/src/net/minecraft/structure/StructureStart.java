@@ -79,24 +79,20 @@ public abstract class StructureStart<C extends FeatureConfig> {
 	}
 
 	public void generateStructure(
-		StructureWorldAccess structureWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockBox blockBox,
-		ChunkPos chunkPos
+		StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos
 	) {
 		synchronized (this.children) {
 			if (!this.children.isEmpty()) {
-				BlockBox blockBox2 = ((StructurePiece)this.children.get(0)).boundingBox;
-				Vec3i vec3i = blockBox2.getCenter();
-				BlockPos blockPos = new BlockPos(vec3i.getX(), blockBox2.minY, vec3i.getZ());
+				BlockBox blockBox = ((StructurePiece)this.children.get(0)).boundingBox;
+				Vec3i vec3i = blockBox.getCenter();
+				BlockPos blockPos = new BlockPos(vec3i.getX(), blockBox.minY, vec3i.getZ());
 				Iterator<StructurePiece> iterator = this.children.iterator();
 
 				while (iterator.hasNext()) {
 					StructurePiece structurePiece = (StructurePiece)iterator.next();
-					if (structurePiece.getBoundingBox().intersects(blockBox)
-						&& !structurePiece.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) {
+					if (structurePiece.getBoundingBox().intersects(box) && !structurePiece.generate(world, structureAccessor, chunkGenerator, random, box, chunkPos, blockPos)
+						)
+					 {
 						iterator.remove();
 					}
 				}
@@ -137,35 +133,35 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		}
 	}
 
-	protected void method_14978(int i, Random random, int j) {
-		int k = i - j;
-		int l = this.boundingBox.getBlockCountY() + 1;
-		if (l < k) {
-			l += random.nextInt(k - l);
+	protected void randomUpwardTranslation(int seaLevel, Random random, int minSeaLevelDistance) {
+		int i = seaLevel - minSeaLevelDistance;
+		int j = this.boundingBox.getBlockCountY() + 1;
+		if (j < i) {
+			j += random.nextInt(i - j);
 		}
 
-		int m = l - this.boundingBox.maxY;
-		this.boundingBox.move(0, m, 0);
+		int k = j - this.boundingBox.maxY;
+		this.boundingBox.move(0, k, 0);
 
 		for (StructurePiece structurePiece : this.children) {
-			structurePiece.translate(0, m, 0);
+			structurePiece.translate(0, k, 0);
 		}
 	}
 
-	protected void method_14976(Random random, int i, int j) {
-		int k = j - i + 1 - this.boundingBox.getBlockCountY();
-		int l;
-		if (k > 1) {
-			l = i + random.nextInt(k);
+	protected void randomUpwardTranslation(Random random, int minY, int maxY) {
+		int i = maxY - minY + 1 - this.boundingBox.getBlockCountY();
+		int j;
+		if (i > 1) {
+			j = minY + random.nextInt(i);
 		} else {
-			l = i;
+			j = minY;
 		}
 
-		int m = l - this.boundingBox.minY;
-		this.boundingBox.move(0, m, 0);
+		int k = j - this.boundingBox.minY;
+		this.boundingBox.move(0, k, 0);
 
 		for (StructurePiece structurePiece : this.children) {
-			structurePiece.translate(0, m, 0);
+			structurePiece.translate(0, k, 0);
 		}
 	}
 

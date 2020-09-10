@@ -17,7 +17,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	private RegistryKey<World> dimension;
 	private long sha256Seed;
 	private GameMode gameMode;
-	private GameMode field_25714;
+	private GameMode previousGameMode;
 	private boolean debugWorld;
 	private boolean flatWorld;
 	private boolean keepPlayerAttributes;
@@ -26,13 +26,13 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public PlayerRespawnS2CPacket(
-		DimensionType dimensionType, RegistryKey<World> registryKey, long l, GameMode gameMode, GameMode gameMode2, boolean bl, boolean bl2, boolean bl3
+		DimensionType dimensionType, RegistryKey<World> registryKey, long l, GameMode gameMode, GameMode previousGameMode, boolean bl, boolean bl2, boolean bl3
 	) {
 		this.field_25322 = dimensionType;
 		this.dimension = registryKey;
 		this.sha256Seed = l;
 		this.gameMode = gameMode;
-		this.field_25714 = gameMode2;
+		this.previousGameMode = previousGameMode;
 		this.debugWorld = bl;
 		this.flatWorld = bl2;
 		this.keepPlayerAttributes = bl3;
@@ -48,7 +48,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.dimension = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.gameMode = GameMode.byId(buf.readUnsignedByte());
-		this.field_25714 = GameMode.byId(buf.readUnsignedByte());
+		this.previousGameMode = GameMode.byId(buf.readUnsignedByte());
 		this.debugWorld = buf.readBoolean();
 		this.flatWorld = buf.readBoolean();
 		this.keepPlayerAttributes = buf.readBoolean();
@@ -60,7 +60,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		buf.writeIdentifier(this.dimension.getValue());
 		buf.writeLong(this.sha256Seed);
 		buf.writeByte(this.gameMode.getId());
-		buf.writeByte(this.field_25714.getId());
+		buf.writeByte(this.previousGameMode.getId());
 		buf.writeBoolean(this.debugWorld);
 		buf.writeBoolean(this.flatWorld);
 		buf.writeBoolean(this.keepPlayerAttributes);
@@ -87,8 +87,8 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public GameMode method_30117() {
-		return this.field_25714;
+	public GameMode getPreviousGameMode() {
+		return this.previousGameMode;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -33,7 +33,7 @@ public class RecipeToast implements Toast {
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.HIDE;
 		} else {
-			manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+			manager.getGame().getTextureManager().bindTexture(TEXTURE);
 			RenderSystem.color3f(1.0F, 1.0F, 1.0F);
 			manager.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
 			manager.getGame().textRenderer.draw(matrices, field_26533, 30.0F, 7.0F, -11534256);

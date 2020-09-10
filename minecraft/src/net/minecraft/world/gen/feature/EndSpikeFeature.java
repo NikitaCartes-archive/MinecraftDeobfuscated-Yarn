@@ -33,8 +33,8 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		super(codec);
 	}
 
-	public static List<EndSpikeFeature.Spike> getSpikes(StructureWorldAccess structureWorldAccess) {
-		Random random = new Random(structureWorldAccess.getSeed());
+	public static List<EndSpikeFeature.Spike> getSpikes(StructureWorldAccess world) {
+		Random random = new Random(world.getSeed());
 		long l = random.nextLong() & 65535L;
 		return CACHE.getUnchecked(l);
 	}
@@ -56,7 +56,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		return true;
 	}
 
-	private void generateSpike(ServerWorldAccess serverWorldAccess, Random random, EndSpikeFeatureConfig config, EndSpikeFeature.Spike spike) {
+	private void generateSpike(ServerWorldAccess world, Random random, EndSpikeFeatureConfig config, EndSpikeFeature.Spike spike) {
 		int i = spike.getRadius();
 
 		for (BlockPos blockPos : BlockPos.iterate(
@@ -64,9 +64,9 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		)) {
 			if (blockPos.getSquaredDistance((double)spike.getCenterX(), (double)blockPos.getY(), (double)spike.getCenterZ(), false) <= (double)(i * i + 1)
 				&& blockPos.getY() < spike.getHeight()) {
-				this.setBlockState(serverWorldAccess, blockPos, Blocks.OBSIDIAN.getDefaultState());
+				this.setBlockState(world, blockPos, Blocks.OBSIDIAN.getDefaultState());
 			} else if (blockPos.getY() > 65) {
-				this.setBlockState(serverWorldAccess, blockPos, Blocks.AIR.getDefaultState());
+				this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
 			}
 		}
 
@@ -91,21 +91,21 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 								.with(PaneBlock.SOUTH, Boolean.valueOf(bl4 && n != 2))
 								.with(PaneBlock.WEST, Boolean.valueOf(bl5 && m != -2))
 								.with(PaneBlock.EAST, Boolean.valueOf(bl5 && m != 2));
-							this.setBlockState(serverWorldAccess, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
+							this.setBlockState(world, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
 						}
 					}
 				}
 			}
 		}
 
-		EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(serverWorldAccess.toServerWorld());
+		EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(world.toServerWorld());
 		endCrystalEntity.setBeamTarget(config.getPos());
 		endCrystalEntity.setInvulnerable(config.isCrystalInvulnerable());
 		endCrystalEntity.refreshPositionAndAngles(
 			(double)spike.getCenterX() + 0.5, (double)(spike.getHeight() + 1), (double)spike.getCenterZ() + 0.5, random.nextFloat() * 360.0F, 0.0F
 		);
-		serverWorldAccess.spawnEntity(endCrystalEntity);
-		this.setBlockState(serverWorldAccess, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
+		world.spawnEntity(endCrystalEntity);
+		this.setBlockState(world, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
 	}
 
 	public static class Spike {
@@ -126,12 +126,12 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		private final boolean guarded;
 		private final Box boundingBox;
 
-		public Spike(int centerX, int centerZ, int radius, int height, boolean bl) {
+		public Spike(int centerX, int centerZ, int radius, int height, boolean guarded) {
 			this.centerX = centerX;
 			this.centerZ = centerZ;
 			this.radius = radius;
 			this.height = height;
-			this.guarded = bl;
+			this.guarded = guarded;
 			this.boundingBox = new Box((double)(centerX - radius), 0.0, (double)(centerZ - radius), (double)(centerX + radius), 256.0, (double)(centerZ + radius));
 		}
 

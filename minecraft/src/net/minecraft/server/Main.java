@@ -110,7 +110,7 @@ public class Main {
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
 			MinecraftServer.convertLevel(session);
-			DataPackSettings dataPackSettings = session.method_29585();
+			DataPackSettings dataPackSettings = session.getDatapackSettings();
 			boolean bl = optionSet.has(optionSpec7);
 			if (bl) {
 				LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
@@ -171,7 +171,7 @@ public class Main {
 				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions().getWorlds());
 			}
 
-			session.method_27425(impl, saveProperties);
+			session.backupLevelDataFile(impl, saveProperties);
 			SaveProperties saveProperties2 = saveProperties;
 			final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(
 				serverThread -> {

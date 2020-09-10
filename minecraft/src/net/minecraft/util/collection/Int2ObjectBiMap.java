@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.MathHelper;
 
 public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
-	private static final Object empty = null;
+	private static final Object EMPTY = null;
 	private K[] values;
 	private int[] ids;
 	private K[] idToValues;
@@ -99,7 +99,7 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 				return i;
 			}
 
-			if (this.values[i] == empty) {
+			if (this.values[i] == EMPTY) {
 				return -1;
 			}
 		}
@@ -109,7 +109,7 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 				return i;
 			}
 
-			if (this.values[i] == empty) {
+			if (this.values[i] == EMPTY) {
 				return -1;
 			}
 		}
@@ -119,13 +119,13 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 
 	private int findFree(int size) {
 		for (int i = size; i < this.values.length; i++) {
-			if (this.values[i] == empty) {
+			if (this.values[i] == EMPTY) {
 				return i;
 			}
 		}
 
 		for (int ix = 0; ix < size; ix++) {
-			if (this.values[ix] == empty) {
+			if (this.values[ix] == EMPTY) {
 				return ix;
 			}
 		}

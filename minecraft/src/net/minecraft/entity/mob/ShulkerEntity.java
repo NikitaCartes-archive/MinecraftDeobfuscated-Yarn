@@ -377,7 +377,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public boolean method_30948() {
+	public boolean isCollidable() {
 		return this.isAlive();
 	}
 

@@ -73,8 +73,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
-import net.minecraft.village.TraderOfferList;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
@@ -89,7 +89,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
-public class VillagerEntity extends AbstractTraderEntity implements InteractionObserver, VillagerDataContainer {
+public class VillagerEntity extends MerchantEntity implements InteractionObserver, VillagerDataContainer {
 	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
 	public static final Map<Item, Integer> ITEM_FOOD_VALUES = ImmutableMap.of(Items.BREAD, 4, Items.POTATO, 1, Items.CARROT, 1, Items.BEETROOT, 1);
 	private static final Set<Item> GATHERABLE_ITEMS = ImmutableSet.of(
@@ -479,7 +479,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		if (tag.contains("Offers", 10)) {
-			this.offers = new TraderOfferList(tag.getCompound("Offers"));
+			this.offers = new TradeOfferList(tag.getCompound("Offers"));
 		}
 
 		if (tag.contains("FoodLevel", 1)) {
@@ -554,7 +554,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Override
 	protected void afterUsing(TradeOffer offer) {
 		int i = 3 + this.random.nextInt(4);
-		this.experience = this.experience + offer.getTraderExperience();
+		this.experience = this.experience + offer.getMerchantExperience();
 		this.lastCustomer = this.getCurrentCustomer();
 		if (this.canLevelUp()) {
 			this.levelUpTimer = 40;
@@ -673,7 +673,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.depleteFood(12);
 	}
 
-	public void setOffers(TraderOfferList offers) {
+	public void setOffers(TradeOfferList offers) {
 		this.offers = offers;
 	}
 
@@ -819,8 +819,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		if (int2ObjectMap != null && !int2ObjectMap.isEmpty()) {
 			TradeOffers.Factory[] factorys = int2ObjectMap.get(villagerData.getLevel());
 			if (factorys != null) {
-				TraderOfferList traderOfferList = this.getOffers();
-				this.fillRecipesFromPool(traderOfferList, factorys, 2);
+				TradeOfferList tradeOfferList = this.getOffers();
+				this.fillRecipesFromPool(tradeOfferList, factorys, 2);
 			}
 		}
 	}

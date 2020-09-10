@@ -29,7 +29,7 @@ public class ItemUsageContext {
 		this.world = world;
 	}
 
-	protected final BlockHitResult method_30344() {
+	protected final BlockHitResult getHitResult() {
 		return this.hit;
 	}
 

@@ -93,7 +93,7 @@ public interface EntityView {
 			return this.getOtherEntities(
 					entity,
 					box2,
-					predicate.and(entityx -> entityx.getBoundingBox().intersects(box2) && (entity == null ? entityx.method_30948() : entity.method_30949(entityx)))
+					predicate.and(entityx -> entityx.getBoundingBox().intersects(box2) && (entity == null ? entityx.isCollidable() : entity.collidesWith(entityx)))
 				)
 				.stream()
 				.map(Entity::getBoundingBox)

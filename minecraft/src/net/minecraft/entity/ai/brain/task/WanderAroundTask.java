@@ -78,7 +78,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 	protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)
 			&& !this.hasReached(mobEntity, (WalkTarget)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get())
-			&& mobEntity.getNavigation().method_31267()) {
+			&& mobEntity.getNavigation().isNearPathStartPos()) {
 			this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(40);
 		}
 

@@ -40,7 +40,7 @@ public interface BlockView {
 	}
 
 	default Stream<BlockState> method_29546(Box box) {
-		return BlockPos.method_29715(box).map(this::getBlockState);
+		return BlockPos.stream(box).map(this::getBlockState);
 	}
 
 	default BlockHitResult raycast(RaycastContext context) {

@@ -1238,7 +1238,7 @@ public class ConfiguredFeatures {
 						.cannotProject()
 						.build()
 				),
-		() -> Feature.field_26361
+		() -> Feature.NO_BONEMEAL_FLOWER
 				.configure(
 					new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ConfiguredFeatures.States.LILY_OF_THE_VALLEY), SimpleBlockPlacer.INSTANCE)
 						.tries(64)
