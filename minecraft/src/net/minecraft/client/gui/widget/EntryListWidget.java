@@ -163,7 +163,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		int j = i + 6;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_TEXTURE);
+		this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -191,7 +191,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 
 		this.renderList(matrices, k, l, mouseX, mouseY, delta);
-		this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_TEXTURE);
+		this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 		RenderSystem.enableDepthTest();
 		RenderSystem.depthFunc(519);
 		float g = 32.0F;

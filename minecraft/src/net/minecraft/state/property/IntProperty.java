@@ -48,6 +48,17 @@ public class IntProperty extends Property<Integer> {
 		return 31 * super.computeHashCode() + this.values.hashCode();
 	}
 
+	/**
+	 * Creates an integer property.
+	 * 
+	 * <p>{@code min} must be non-negative and {@code max} must be greater than {@code min}.
+	 * 
+	 * <p>Note that this method takes O({@code max} - {@code min}) time as it computes all possible values during instantiation.
+	 * 
+	 * @param name the name of the property
+	 * @param min the minimum value the property can take
+	 * @param max the maximum value the property can take
+	 */
 	public static IntProperty of(String name, int min, int max) {
 		return new IntProperty(name, min, max);
 	}

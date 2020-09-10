@@ -146,11 +146,11 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 		this.rightAttackingArm.visible = !bl;
 	}
 
-	private ModelPart method_2813(Arm arm) {
+	private ModelPart getAttackingArm(Arm arm) {
 		return arm == Arm.LEFT ? this.leftAttackingArm : this.rightAttackingArm;
 	}
 
-	public ModelPart method_2812() {
+	public ModelPart getHat() {
 		return this.hat;
 	}
 
@@ -161,6 +161,6 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 
 	@Override
 	public void setArmAngle(Arm arm, MatrixStack matrices) {
-		this.method_2813(arm).rotate(matrices);
+		this.getAttackingArm(arm).rotate(matrices);
 	}
 }

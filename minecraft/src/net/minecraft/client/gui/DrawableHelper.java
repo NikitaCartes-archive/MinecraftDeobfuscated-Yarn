@@ -22,7 +22,7 @@ public abstract class DrawableHelper {
 	/**
 	 * The texture used by options for background.
 	 */
-	public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/options_background.png");
+	public static final Identifier OPTIONS_BACKGROUND_TEXTURE = new Identifier("textures/gui/options_background.png");
 	/**
 	 * The texture of icons used in the stats screen.
 	 */

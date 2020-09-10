@@ -167,7 +167,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Nullable
 	private final EnderDragonFight enderDragonFight;
 	private final StructureAccessor structureAccessor;
-	private final boolean field_25143;
+	private final boolean shouldTickTime;
 
 	public ServerWorld(
 		MinecraftServer server,
@@ -184,7 +184,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		boolean bl
 	) {
 		super(properties, registryKey, dimensionType, server::getProfiler, false, debugWorld, l);
-		this.field_25143 = bl;
+		this.shouldTickTime = bl;
 		this.server = server;
 		this.spawners = list;
 		this.worldProperties = properties;
@@ -422,7 +422,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	protected void tickTime() {
-		if (this.field_25143) {
+		if (this.shouldTickTime) {
 			long l = this.properties.getTime() + 1L;
 			this.worldProperties.setTime(l);
 			this.worldProperties.getScheduledEvents().processEvents(this.server, l);
@@ -834,7 +834,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	private boolean checkUuid(Entity entity) {
 		UUID uUID = entity.getUuid();
-		Entity entity2 = this.method_30735(uUID);
+		Entity entity2 = this.checkIfUuidExists(uUID);
 		if (entity2 == null) {
 			return false;
 		} else {
@@ -851,7 +851,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Nullable
-	private Entity method_30735(UUID uUID) {
+	private Entity checkIfUuidExists(UUID uUID) {
 		Entity entity = (Entity)this.entitiesByUuid.get(uUID);
 		if (entity != null) {
 			return entity;
@@ -868,7 +868,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 	}
 
-	public boolean method_30736(Entity entity) {
+	public boolean shouldCreateNewEntityWithPassenger(Entity entity) {
 		if (entity.streamPassengersRecursively().anyMatch(this::checkUuid)) {
 			return false;
 		} else {

@@ -116,7 +116,7 @@ public class ArmorItem extends Item implements Wearable {
 		if (itemStack2.isEmpty()) {
 			user.equipStack(equipmentSlot, itemStack.copy());
 			itemStack.setCount(0);
-			return TypedActionResult.method_29237(itemStack, world.isClient());
+			return TypedActionResult.success(itemStack, world.isClient());
 		} else {
 			return TypedActionResult.fail(itemStack);
 		}

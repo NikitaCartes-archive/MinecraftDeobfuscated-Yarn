@@ -87,6 +87,9 @@ public class Item implements ItemConvertible {
 		return false;
 	}
 
+	/**
+	 * Checks if a player can break a block while holding the item.
+	 */
 	public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
 		return true;
 	}
@@ -96,6 +99,16 @@ public class Item implements ItemConvertible {
 		return this;
 	}
 
+	/**
+	 * Called when an item is used on a block.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution when using this method.
+	 * The logical side can be checked using {@link net.minecraft.world.World#isClient() context.getWorld().isClient()}.
+	 * 
+	 * @return an action result that specifies if using the item on a block was successful.
+	 * 
+	 * @param context the usage context
+	 */
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		return ActionResult.PASS;
 	}
@@ -104,6 +117,20 @@ public class Item implements ItemConvertible {
 		return 1.0F;
 	}
 
+	/**
+	 * Called when an item is used by a player.
+	 * The use action, by default, is bound to the right mouse button.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution when overriding this method.
+	 * The logical side can be checked using {@link net.minecraft.world.World#isClient() world.isClient()}.
+	 * 
+	 * @return a typed action result that specifies whether using the item was successful.
+	 * The action result contains the new item stack that the player's hand will be set to.
+	 * 
+	 * @param world the world the item was used in
+	 * @param user the player who used the item
+	 * @param hand the hand used
+	 */
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if (this.isFood()) {
 			ItemStack itemStack = user.getStackInHand(hand);
@@ -167,23 +194,40 @@ public class Item implements ItemConvertible {
 		return this.translationKey;
 	}
 
+	/**
+	 * Gets the translation key of this item.
+	 */
 	public String getTranslationKey() {
 		return this.getOrCreateTranslationKey();
 	}
 
+	/**
+	 * Gets the translation key of this item using the provided item stack for context.
+	 */
 	public String getTranslationKey(ItemStack stack) {
 		return this.getTranslationKey();
 	}
 
+	/**
+	 * Checks if an item should have its NBT data stored in {@link #tag} sent to the client.
+	 * 
+	 * <p>If an item is damageable, this method is ignored and data is always synced to client.
+	 */
 	public boolean shouldSyncTagToClient() {
 		return true;
 	}
 
+	/**
+	 * Gets the remainder item that should be left behind when this item is used as a crafting ingredient.
+	 */
 	@Nullable
 	public final Item getRecipeRemainder() {
 		return this.recipeRemainder;
 	}
 
+	/**
+	 * Checks if this item has a remainder item that is left behind when used as a crafting ingredient.
+	 */
 	public boolean hasRecipeRemainder() {
 		return this.recipeRemainder != null;
 	}
@@ -191,6 +235,9 @@ public class Item implements ItemConvertible {
 	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 	}
 
+	/**
+	 * Called when a player acquires the item by crafting, smelting, smithing, etc.
+	 */
 	public void onCraft(ItemStack stack, World world, PlayerEntity player) {
 	}
 
@@ -221,6 +268,11 @@ public class Item implements ItemConvertible {
 		return new TranslatableText(this.getTranslationKey(stack));
 	}
 
+	/**
+	 * Checks if the glint effect should be applied when the item is rendered.
+	 * 
+	 * <p>By default, returns true if the item has enchantments.
+	 */
 	public boolean hasGlint(ItemStack stack) {
 		return stack.hasEnchantments();
 	}
@@ -261,6 +313,13 @@ public class Item implements ItemConvertible {
 		return world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
 	}
 
+	/**
+	 * Gets the enchantability of an item.
+	 * This specifies the ability of an item to receive enchantments when enchanted using an enchanting table.
+	 * As the value increases, the amount and level of enchantments applied increase.
+	 * 
+	 * <p>If the value of this method is 0, the item cannot be enchanted using an enchanting table.
+	 */
 	public int getEnchantability() {
 		return 0;
 	}
@@ -271,6 +330,11 @@ public class Item implements ItemConvertible {
 		}
 	}
 
+	/**
+	 * Checks whether this item should appear in a specified item group.
+	 * 
+	 * @return true if the item is in the specified item group or the item group is {@link net.minecraft.item.ItemGroup#SEARCH}.
+	 */
 	protected boolean isIn(ItemGroup group) {
 		ItemGroup itemGroup = this.getGroup();
 		return itemGroup != null && (group == ItemGroup.SEARCH || group == itemGroup);
@@ -293,7 +357,7 @@ public class Item implements ItemConvertible {
 		return stack.getItem() == Items.CROSSBOW;
 	}
 
-	public ItemStack getStackForRender() {
+	public ItemStack getDefaultStack() {
 		return new ItemStack(this);
 	}
 
@@ -301,6 +365,9 @@ public class Item implements ItemConvertible {
 		return tag.contains(this);
 	}
 
+	/**
+	 * Checks if this item is food and therefore is edible.
+	 */
 	public boolean isFood() {
 		return this.foodComponent != null;
 	}

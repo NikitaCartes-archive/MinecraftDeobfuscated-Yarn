@@ -12,7 +12,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityModel<T> {
-	private final ModelPart tail;
+	/**
+	 * The belly side of the turtle's shell.
+	 */
+	private final ModelPart plastron;
 
 	public TurtleEntityModel(float scale) {
 		super(12, scale, true, 120.0F, 0.0F, 9.0F, 6.0F, 120);
@@ -25,9 +28,9 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		this.torso.setTextureOffset(7, 37).addCuboid(-9.5F, 3.0F, -10.0F, 19.0F, 20.0F, 6.0F, 0.0F);
 		this.torso.setTextureOffset(31, 1).addCuboid(-5.5F, 3.0F, -13.0F, 11.0F, 18.0F, 3.0F, 0.0F);
 		this.torso.setPivot(0.0F, 11.0F, -10.0F);
-		this.tail = new ModelPart(this);
-		this.tail.setTextureOffset(70, 33).addCuboid(-4.5F, 3.0F, -14.0F, 9.0F, 18.0F, 1.0F, 0.0F);
-		this.tail.setPivot(0.0F, 11.0F, -10.0F);
+		this.plastron = new ModelPart(this);
+		this.plastron.setTextureOffset(70, 33).addCuboid(-4.5F, 3.0F, -14.0F, 9.0F, 18.0F, 1.0F, 0.0F);
+		this.plastron.setPivot(0.0F, 11.0F, -10.0F);
 		int i = 1;
 		this.backRightLeg = new ModelPart(this, 1, 23);
 		this.backRightLeg.addCuboid(-2.0F, 0.0F, 0.0F, 4.0F, 1.0F, 10.0F, 0.0F);
@@ -45,7 +48,7 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.tail));
+		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.plastron));
 	}
 
 	public void setAngles(T turtleEntity, float f, float g, float h, float i, float j) {
@@ -60,7 +63,7 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		this.frontLeftLeg.yaw = 0.0F;
 		this.backRightLeg.yaw = 0.0F;
 		this.backLeftLeg.yaw = 0.0F;
-		this.tail.pitch = (float) (Math.PI / 2);
+		this.plastron.pitch = (float) (Math.PI / 2);
 		if (!turtleEntity.isTouchingWater() && turtleEntity.isOnGround()) {
 			float k = turtleEntity.isDiggingSand() ? 4.0F : 1.0F;
 			float l = turtleEntity.isDiggingSand() ? 2.0F : 1.0F;
@@ -75,12 +78,12 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 			this.backLeftLeg.pitch = 0.0F;
 		}
 
-		this.tail.visible = !this.child && turtleEntity.hasEgg();
+		this.plastron.visible = !this.child && turtleEntity.hasEgg();
 	}
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		boolean bl = this.tail.visible;
+		boolean bl = this.plastron.visible;
 		if (bl) {
 			matrices.push();
 			matrices.translate(0.0, -0.08F, 0.0);

@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.FunctionArgumentType;
 import net.minecraft.command.argument.TimeArgumentType;
 import net.minecraft.server.MinecraftServer;

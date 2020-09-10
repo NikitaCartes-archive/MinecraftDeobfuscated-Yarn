@@ -18,8 +18,8 @@ import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -57,7 +57,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false).setMaxTimeWithoutVisibility(300));
+		this.targetSelector.add(3, new FollowTargetGoal(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, false));
 	}
 

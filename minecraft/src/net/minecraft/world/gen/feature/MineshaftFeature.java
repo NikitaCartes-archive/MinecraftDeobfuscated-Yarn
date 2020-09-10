@@ -61,7 +61,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 				0, this.random, (i << 4) + 2, (j << 4) + 2, mineshaftFeatureConfig.type
 			);
 			this.children.add(mineshaftRoom);
-			mineshaftRoom.placeJigsaw(mineshaftRoom, this.children, this.random);
+			mineshaftRoom.fillOpenings(mineshaftRoom, this.children, this.random);
 			this.setBoundingBoxFromChildren();
 			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
 				int k = -5;
@@ -72,7 +72,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 					structurePiece.translate(0, l, 0);
 				}
 			} else {
-				this.method_14978(chunkGenerator.getSeaLevel(), this.random, 10);
+				this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), this.random, 10);
 			}
 		}
 	}
@@ -86,8 +86,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			.collect(Collectors.toMap(MineshaftFeature.Type::getName, type -> type));
 		private final String name;
 
-		private Type(String string2) {
-			this.name = string2;
+		private Type(String name) {
+			this.name = name;
 		}
 
 		public String getName() {

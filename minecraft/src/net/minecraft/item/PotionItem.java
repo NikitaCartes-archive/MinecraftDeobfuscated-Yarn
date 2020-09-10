@@ -28,8 +28,8 @@ public class PotionItem extends Item {
 	}
 
 	@Override
-	public ItemStack getStackForRender() {
-		return PotionUtil.setPotion(super.getStackForRender(), Potions.WATER);
+	public ItemStack getDefaultStack() {
+		return PotionUtil.setPotion(super.getDefaultStack(), Potions.WATER);
 	}
 
 	@Override

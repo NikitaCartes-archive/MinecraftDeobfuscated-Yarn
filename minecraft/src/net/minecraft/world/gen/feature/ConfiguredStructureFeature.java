@@ -36,7 +36,7 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 	 * @see StructureFeature#tryPlaceStart
 	 */
 	public StructureStart<?> tryPlaceStart(
-		DynamicRegistryManager dynamicRegistryManager,
+		DynamicRegistryManager registryManager,
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		StructureManager structureManager,
@@ -48,7 +48,7 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 	) {
 		return this.feature
 			.tryPlaceStart(
-				dynamicRegistryManager,
+				registryManager,
 				chunkGenerator,
 				biomeSource,
 				structureManager,

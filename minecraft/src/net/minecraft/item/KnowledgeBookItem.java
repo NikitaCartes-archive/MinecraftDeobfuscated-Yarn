@@ -52,7 +52,7 @@ public class KnowledgeBookItem extends Item {
 				user.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
-			return TypedActionResult.method_29237(itemStack, world.isClient());
+			return TypedActionResult.success(itemStack, world.isClient());
 		} else {
 			LOGGER.error("Tag not valid: {}", compoundTag);
 			return TypedActionResult.fail(itemStack);

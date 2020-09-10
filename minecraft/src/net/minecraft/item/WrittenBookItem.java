@@ -96,7 +96,7 @@ public class WrittenBookItem extends Item {
 		ItemStack itemStack = user.getStackInHand(hand);
 		user.openEditBookScreen(itemStack, hand);
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
-		return TypedActionResult.method_29237(itemStack, world.isClient());
+		return TypedActionResult.success(itemStack, world.isClient());
 	}
 
 	public static boolean resolve(ItemStack book, @Nullable ServerCommandSource commandSource, @Nullable PlayerEntity player) {

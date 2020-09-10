@@ -44,6 +44,6 @@ public class ExperienceBottleItem extends Item {
 			itemStack.decrement(1);
 		}
 
-		return TypedActionResult.method_29237(itemStack, world.isClient());
+		return TypedActionResult.success(itemStack, world.isClient());
 	}
 }

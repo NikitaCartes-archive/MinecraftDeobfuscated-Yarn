@@ -6,11 +6,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 
 public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int syncId;
-	private TraderOfferList recipes;
+	private TradeOfferList recipes;
 	private int levelProgress;
 	private int experience;
 	private boolean leveled;
@@ -19,7 +19,7 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 	public SetTradeOffersS2CPacket() {
 	}
 
-	public SetTradeOffersS2CPacket(int syncId, TraderOfferList recipes, int levelProgress, int experience, boolean leveled, boolean refreshable) {
+	public SetTradeOffersS2CPacket(int syncId, TradeOfferList recipes, int levelProgress, int experience, boolean leveled, boolean refreshable) {
 		this.syncId = syncId;
 		this.recipes = recipes;
 		this.levelProgress = levelProgress;
@@ -31,7 +31,7 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		this.syncId = buf.readVarInt();
-		this.recipes = TraderOfferList.fromPacket(buf);
+		this.recipes = TradeOfferList.fromPacket(buf);
 		this.levelProgress = buf.readVarInt();
 		this.experience = buf.readVarInt();
 		this.leveled = buf.readBoolean();
@@ -58,7 +58,7 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TraderOfferList getOffers() {
+	public TradeOfferList getOffers() {
 		return this.recipes;
 	}
 

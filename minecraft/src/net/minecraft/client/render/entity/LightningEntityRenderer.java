@@ -111,6 +111,6 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 	}
 
 	public Identifier getTexture(LightningEntity lightningEntity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 }

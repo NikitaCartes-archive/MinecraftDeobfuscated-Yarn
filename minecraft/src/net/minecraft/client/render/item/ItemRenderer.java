@@ -133,16 +133,16 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 					}
 
 					if (bl2) {
-						vertexConsumer = getDirectGlintVertexConsumer(vertexConsumers, renderLayer, entry);
+						vertexConsumer = getDirectCompassGlintConsumer(vertexConsumers, renderLayer, entry);
 					} else {
-						vertexConsumer = getGlintVertexConsumer(vertexConsumers, renderLayer, entry);
+						vertexConsumer = getCompassGlintConsumer(vertexConsumers, renderLayer, entry);
 					}
 
 					matrices.pop();
 				} else if (bl2) {
-					vertexConsumer = getDirectGlintVertexConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
+					vertexConsumer = getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
 				} else {
-					vertexConsumer = getGlintVertexConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
+					vertexConsumer = getItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
 				}
 
 				this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
@@ -154,27 +154,25 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
+	public static VertexConsumer getArmorGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, boolean solid, boolean glint) {
 		return glint
-			? VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), vertexConsumers.getBuffer(layer))
-			: vertexConsumers.getBuffer(layer);
+			? VertexConsumers.dual(provider.getBuffer(solid ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), provider.getBuffer(layer))
+			: provider.getBuffer(layer);
 	}
 
-	public static VertexConsumer getGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
+	public static VertexConsumer getCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
 		return VertexConsumers.dual(
-			new OverlayVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()),
-			vertexConsumerProvider.getBuffer(renderLayer)
+			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()), provider.getBuffer(layer)
 		);
 	}
 
-	public static VertexConsumer getDirectGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
+	public static VertexConsumer getDirectCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
 		return VertexConsumers.dual(
-			new OverlayVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlintDirect()), entry.getModel(), entry.getNormal()),
-			vertexConsumerProvider.getBuffer(renderLayer)
+			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry.getModel(), entry.getNormal()), provider.getBuffer(layer)
 		);
 	}
 
-	public static VertexConsumer getGlintVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
+	public static VertexConsumer getItemGlintConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
 		if (glint) {
 			return MinecraftClient.isFabulousGraphicsOrBetter() && layer == TexturedRenderLayers.getItemEntityTranslucentCull()
 				? VertexConsumers.dual(vertexConsumers.getBuffer(RenderLayer.method_30676()), vertexConsumers.getBuffer(layer))
@@ -184,12 +182,10 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public static VertexConsumer getDirectGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer layer, boolean bl, boolean glint) {
+	public static VertexConsumer getDirectItemGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, boolean solid, boolean glint) {
 		return glint
-			? VertexConsumers.dual(
-				vertexConsumerProvider.getBuffer(bl ? RenderLayer.getGlintDirect() : RenderLayer.getEntityGlintDirect()), vertexConsumerProvider.getBuffer(layer)
-			)
-			: vertexConsumerProvider.getBuffer(layer);
+			? VertexConsumers.dual(provider.getBuffer(solid ? RenderLayer.getDirectGlint() : RenderLayer.getDirectEntityGlint()), provider.getBuffer(layer))
+			: provider.getBuffer(layer);
 	}
 
 	private void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {
@@ -252,8 +248,8 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 	protected void renderGuiItemModel(ItemStack stack, int x, int y, BakedModel model) {
 		RenderSystem.pushMatrix();
-		this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).setFilter(false, false);
+		this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+		this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
 		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableAlphaTest();
 		RenderSystem.defaultAlphaFunc();

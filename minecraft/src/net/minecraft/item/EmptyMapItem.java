@@ -24,13 +24,13 @@ public class EmptyMapItem extends NetworkSyncedItem {
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		user.playSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1.0F, 1.0F);
 		if (itemStack2.isEmpty()) {
-			return TypedActionResult.method_29237(itemStack, world.isClient());
+			return TypedActionResult.success(itemStack, world.isClient());
 		} else {
 			if (!user.inventory.insertStack(itemStack.copy())) {
 				user.dropItem(itemStack, false);
 			}
 
-			return TypedActionResult.method_29237(itemStack2, world.isClient());
+			return TypedActionResult.success(itemStack2, world.isClient());
 		}
 	}
 }

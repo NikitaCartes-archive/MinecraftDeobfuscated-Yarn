@@ -442,6 +442,9 @@ public abstract class AbstractBlock {
 			return this.hasSidedTransparency;
 		}
 
+		/**
+		 * Returns the light level emitted by this block state.
+		 */
 		public int getLuminance() {
 			return this.luminance;
 		}
@@ -910,8 +913,13 @@ public abstract class AbstractBlock {
 			return this;
 		}
 
-		public AbstractBlock.Settings lightLevel(ToIntFunction<BlockState> levelFunction) {
-			this.luminance = levelFunction;
+		/**
+		 * Specifies the light level emitted by a block.
+		 * 
+		 * @param luminance a per block state light level, with values between 0 and 15
+		 */
+		public AbstractBlock.Settings luminance(ToIntFunction<BlockState> luminance) {
+			this.luminance = luminance;
 			return this;
 		}
 

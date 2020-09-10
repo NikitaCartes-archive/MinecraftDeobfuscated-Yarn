@@ -35,8 +35,8 @@ public class GameOptionsScreen extends Screen {
 	}
 
 	@Nullable
-	public static List<OrderedText> method_31048(ButtonListWidget buttonListWidget, int i, int j) {
-		Optional<AbstractButtonWidget> optional = buttonListWidget.getHoveredButton((double)i, (double)j);
+	public static List<OrderedText> getHoveredButtonTooltip(ButtonListWidget buttonListWidget, int mouseX, int mouseY) {
+		Optional<AbstractButtonWidget> optional = buttonListWidget.getHoveredButton((double)mouseX, (double)mouseY);
 		if (optional.isPresent() && optional.get() instanceof OrderableTooltip) {
 			Optional<List<OrderedText>> optional2 = ((OrderableTooltip)optional.get()).getOrderedTooltip();
 			return (List<OrderedText>)optional2.orElse(null);

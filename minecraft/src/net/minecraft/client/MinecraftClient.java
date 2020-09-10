@@ -1587,7 +1587,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public static DataPackSettings method_29598(LevelStorage.Session session) {
 		MinecraftServer.convertLevel(session);
-		DataPackSettings dataPackSettings = session.method_29585();
+		DataPackSettings dataPackSettings = session.getDatapackSettings();
 		if (dataPackSettings == null) {
 			throw new IllegalStateException("Failed to load data pack config");
 		} else {
@@ -1683,7 +1683,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.worldGenProgressTracker.set(null);
 
 			try {
-				session.method_27425(registryTracker, saveProperties);
+				session.backupLevelDataFile(registryTracker, saveProperties);
 				integratedResourceManager.getServerResourceManager().loadRegistryTags();
 				YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
 				MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();

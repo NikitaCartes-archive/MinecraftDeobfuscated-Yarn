@@ -36,8 +36,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.CommandSource;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -61,7 +61,7 @@ public class CommandSuggestor {
 	private final Screen owner;
 	private final TextFieldWidget textField;
 	private final TextRenderer textRenderer;
-	private final boolean slashRequired;
+	private final boolean slashOptional;
 	private final boolean suggestingWhenEmpty;
 	private final int inWindowIndexOffset;
 	private final int maxSuggestionSize;
@@ -92,7 +92,7 @@ public class CommandSuggestor {
 		this.owner = owner;
 		this.textField = textField;
 		this.textRenderer = textRenderer;
-		this.slashRequired = slashRequired;
+		this.slashOptional = slashRequired;
 		this.suggestingWhenEmpty = suggestingWhenEmpty;
 		this.inWindowIndexOffset = inWindowIndexOffset;
 		this.maxSuggestionSize = maxSuggestionSize;
@@ -183,7 +183,7 @@ public class CommandSuggestor {
 			stringReader.skip();
 		}
 
-		boolean bl2 = this.slashRequired || bl;
+		boolean bl2 = this.slashOptional || bl;
 		int i = this.textField.getCursor();
 		if (bl2) {
 			CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();

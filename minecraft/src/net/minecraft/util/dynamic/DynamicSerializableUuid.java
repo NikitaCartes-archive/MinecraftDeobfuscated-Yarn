@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 import net.minecraft.util.Util;
 
 public final class DynamicSerializableUuid {
-	public static final Codec<UUID> field_25122 = Codec.INT_STREAM
+	public static final Codec<UUID> CODEC = Codec.INT_STREAM
 		.comapFlatMap(intStream -> Util.toIntArray(intStream, 4).map(DynamicSerializableUuid::toUuid), uUID -> Arrays.stream(toIntArray(uUID)));
 
 	public static UUID toUuid(int[] array) {

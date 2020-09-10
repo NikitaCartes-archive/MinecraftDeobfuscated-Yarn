@@ -37,8 +37,8 @@ public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 			.collect(Collectors.toMap(OceanRuinFeature.BiomeType::getName, biomeType -> biomeType));
 		private final String name;
 
-		private BiomeType(String string2) {
-			this.name = string2;
+		private BiomeType(String name) {
+			this.name = name;
 		}
 
 		public String getName() {

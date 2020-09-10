@@ -19,7 +19,7 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 	private final ModelPart rightFrontLeg;
 	private final ModelPart leftFrontLeg;
 	private final ModelPart tail;
-	private float field_18025;
+	private float legPitchModifier;
 
 	public FoxEntityModel() {
 		super(true, 8.0F, 3.35F);
@@ -154,11 +154,11 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 
 		if (foxEntity.isWalking()) {
 			float k = 0.1F;
-			this.field_18025 += 0.67F;
-			this.rightBackLeg.pitch = MathHelper.cos(this.field_18025 * 0.4662F) * 0.1F;
-			this.leftBackLeg.pitch = MathHelper.cos(this.field_18025 * 0.4662F + (float) Math.PI) * 0.1F;
-			this.rightFrontLeg.pitch = MathHelper.cos(this.field_18025 * 0.4662F + (float) Math.PI) * 0.1F;
-			this.leftFrontLeg.pitch = MathHelper.cos(this.field_18025 * 0.4662F) * 0.1F;
+			this.legPitchModifier += 0.67F;
+			this.rightBackLeg.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F) * 0.1F;
+			this.leftBackLeg.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F + (float) Math.PI) * 0.1F;
+			this.rightFrontLeg.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F + (float) Math.PI) * 0.1F;
+			this.leftFrontLeg.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F) * 0.1F;
 		}
 	}
 }

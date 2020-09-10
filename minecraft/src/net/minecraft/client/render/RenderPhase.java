@@ -76,8 +76,8 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Alpha HALF_ALPHA = new RenderPhase.Alpha(0.5F);
 	protected static final RenderPhase.ShadeModel SHADE_MODEL = new RenderPhase.ShadeModel(false);
 	protected static final RenderPhase.ShadeModel SMOOTH_SHADE_MODEL = new RenderPhase.ShadeModel(true);
-	protected static final RenderPhase.Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEX, false, true);
-	protected static final RenderPhase.Texture BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEX, false, false);
+	protected static final RenderPhase.Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, true);
+	protected static final RenderPhase.Texture BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false);
 	protected static final RenderPhase.Texture NO_TEXTURE = new RenderPhase.Texture();
 	protected static final RenderPhase.Texturing DEFAULT_TEXTURING = new RenderPhase.Texturing("default_texturing", () -> {
 	}, () -> {

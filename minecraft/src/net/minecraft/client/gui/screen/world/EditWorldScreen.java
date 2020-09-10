@@ -180,7 +180,7 @@ public class EditWorldScreen extends Screen {
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, buttonWidgetx -> this.callback.accept(false)));
 		buttonWidget.active = this.field_23777.getIconFile().isFile();
-		LevelSummary levelSummary = this.field_23777.method_29584();
+		LevelSummary levelSummary = this.field_23777.getLevelSummary();
 		String string = levelSummary == null ? "" : levelSummary.getDisplayName();
 		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, new TranslatableText("selectWorld.enterName"));
 		this.levelNameTextField.setText(string);

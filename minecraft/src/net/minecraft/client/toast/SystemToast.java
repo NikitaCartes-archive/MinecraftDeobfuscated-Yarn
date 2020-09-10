@@ -57,7 +57,7 @@ public class SystemToast implements Toast {
 			this.justUpdated = false;
 		}
 
-		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+		manager.getGame().getTextureManager().bindTexture(TEXTURE);
 		RenderSystem.color3f(1.0F, 1.0F, 1.0F);
 		int i = this.getWidth();
 		int j = 12;

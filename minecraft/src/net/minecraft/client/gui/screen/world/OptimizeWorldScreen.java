@@ -50,7 +50,7 @@ public class OptimizeWorldScreen extends Screen {
 				impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session
 			)) {
 			SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
-			session.method_27425(impl, saveProperties);
+			session.backupLevelDataFile(impl, saveProperties);
 			ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
 			return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);
 		} catch (Exception var22) {

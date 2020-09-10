@@ -51,6 +51,6 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 
 	@Override
 	public Identifier getTexture(Entity entity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 }

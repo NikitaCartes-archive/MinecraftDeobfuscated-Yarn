@@ -2,14 +2,13 @@ package net.minecraft.client.gui.screen.options;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5500;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class AccessibilityOptionsScreen extends class_5500 {
+public class AccessibilityOptionsScreen extends NarratorOptionsScreen {
 	private static final Option[] OPTIONS = new Option[]{
 		Option.NARRATOR,
 		Option.SUBTITLES,

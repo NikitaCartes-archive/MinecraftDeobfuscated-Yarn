@@ -9,7 +9,7 @@ public class RuinedPortalFeatureConfig implements FeatureConfig {
 		.codec();
 	public final RuinedPortalFeature.Type portalType;
 
-	public RuinedPortalFeatureConfig(RuinedPortalFeature.Type type) {
-		this.portalType = type;
+	public RuinedPortalFeatureConfig(RuinedPortalFeature.Type portalType) {
+		this.portalType = portalType;
 	}
 }

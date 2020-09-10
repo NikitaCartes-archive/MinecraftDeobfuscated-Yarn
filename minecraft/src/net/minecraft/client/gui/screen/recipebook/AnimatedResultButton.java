@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AnimatedResultButton extends AbstractButtonWidget {
-	private static final Identifier BG_TEX = new Identifier("textures/gui/recipe_book.png");
+	private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
 	private static final Text field_26595 = new TranslatableText("gui.recipebook.moreRecipes");
 	private AbstractRecipeScreenHandler<?> craftingScreenHandler;
 	private RecipeBook recipeBook;
@@ -65,7 +65,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.getTextureManager().bindTexture(BG_TEX);
+		minecraftClient.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 		int i = 29;
 		if (!this.results.hasCraftableRecipes()) {
 			i += 25;

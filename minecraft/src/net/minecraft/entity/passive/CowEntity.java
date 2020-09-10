@@ -80,7 +80,7 @@ public class CowEntity extends AnimalEntity {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() == Items.BUCKET && !this.isBaby()) {
 			player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
-			ItemStack itemStack2 = ItemUsage.method_30012(itemStack, player, Items.MILK_BUCKET.getStackForRender());
+			ItemStack itemStack2 = ItemUsage.method_30012(itemStack, player, Items.MILK_BUCKET.getDefaultStack());
 			player.setStackInHand(hand, itemStack2);
 			return ActionResult.success(this.world.isClient);
 		} else {

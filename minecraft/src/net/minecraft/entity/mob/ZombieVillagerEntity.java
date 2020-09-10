@@ -37,7 +37,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
@@ -215,7 +215,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		if (this.offerData != null) {
-			villagerEntity.setOffers(new TraderOfferList(this.offerData));
+			villagerEntity.setOffers(new TradeOfferList(this.offerData));
 		}
 
 		villagerEntity.setExperience(this.xp);

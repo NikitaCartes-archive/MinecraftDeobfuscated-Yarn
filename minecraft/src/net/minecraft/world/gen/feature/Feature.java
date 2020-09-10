@@ -19,7 +19,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> NO_OP = register("no_op", new NoOpFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<TreeFeatureConfig> TREE = register("tree", new TreeFeature(TreeFeatureConfig.CODEC));
 	public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC));
-	public static final FlowerFeature<RandomPatchFeatureConfig> field_26361 = register(
+	public static final FlowerFeature<RandomPatchFeatureConfig> NO_BONEMEAL_FLOWER = register(
 		"no_bonemeal_flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC)
 	);
 	public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig.CODEC));
@@ -72,7 +72,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	);
 	public static final Feature<DeltaFeatureConfig> DELTA_FEATURE = register("delta_feature", new DeltaFeature(DeltaFeatureConfig.CODEC));
 	public static final Feature<NetherrackReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = register(
-		"netherrack_replace_blobs", new NetherrackReplaceBlobsFeature(NetherrackReplaceBlobsFeatureConfig.field_25848)
+		"netherrack_replace_blobs", new NetherrackReplaceBlobsFeature(NetherrackReplaceBlobsFeatureConfig.CODEC)
 	);
 	public static final Feature<FillLayerFeatureConfig> FILL_LAYER = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig.CODEC));
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
@@ -94,7 +94,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 
 	public Feature(Codec<FC> configCodec) {
 		this.codec = configCodec.fieldOf("config")
-			.<ConfiguredFeature<FC, Feature<FC>>>xmap(featureConfig -> new ConfiguredFeature<>(this, featureConfig), configuredFeature -> configuredFeature.config)
+			.<ConfiguredFeature<FC, Feature<FC>>>xmap(config -> new ConfiguredFeature<>(this, config), configuredFeature -> configuredFeature.config)
 			.codec();
 	}
 
@@ -110,7 +110,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		world.setBlockState(pos, state, 3);
 	}
 
-	public abstract boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, FC featureConfig);
+	public abstract boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos, FC config);
 
 	protected static boolean isStone(Block block) {
 		return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;

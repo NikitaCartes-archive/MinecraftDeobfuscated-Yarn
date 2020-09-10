@@ -96,6 +96,6 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 	}
 
 	public Identifier getTexture(ItemEntity itemEntity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 }

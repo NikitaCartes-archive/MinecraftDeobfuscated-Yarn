@@ -119,23 +119,23 @@ public class BuiltinModelItemRenderer {
 				SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
 				VertexConsumer vertexConsumer = spriteIdentifier.getSprite()
 					.getTextureSpecificVertexConsumer(
-						ItemRenderer.getDirectGlintVertexConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint())
+						ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint())
 					);
-				this.modelShield.method_23775().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
 					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListTag(stack));
 					BannerBlockEntityRenderer.renderCanvas(
-						matrices, vertexConsumers, light, overlay, this.modelShield.method_23774(), spriteIdentifier, false, list, stack.hasGlint()
+						matrices, vertexConsumers, light, overlay, this.modelShield.getPlate(), spriteIdentifier, false, list, stack.hasGlint()
 					);
 				} else {
-					this.modelShield.method_23774().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+					this.modelShield.getPlate().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				}
 
 				matrices.pop();
 			} else if (item == Items.TRIDENT) {
 				matrices.push();
 				matrices.scale(1.0F, -1.0F, -1.0F);
-				VertexConsumer vertexConsumer2 = ItemRenderer.getDirectGlintVertexConsumer(
+				VertexConsumer vertexConsumer2 = ItemRenderer.getDirectItemGlintConsumer(
 					vertexConsumers, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasGlint()
 				);
 				this.modelTrident.render(matrices, vertexConsumer2, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);

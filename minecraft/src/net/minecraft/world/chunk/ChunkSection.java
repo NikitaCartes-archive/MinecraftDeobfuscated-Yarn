@@ -12,7 +12,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
 
 public class ChunkSection {
-	private static final Palette<BlockState> palette = new IdListPalette<>(Block.STATE_IDS, Blocks.AIR.getDefaultState());
+	private static final Palette<BlockState> PALETTE = new IdListPalette<>(Block.STATE_IDS, Blocks.AIR.getDefaultState());
 	private final int yOffset;
 	private short nonEmptyBlockCount;
 	private short randomTickableBlockCount;
@@ -28,7 +28,7 @@ public class ChunkSection {
 		this.nonEmptyBlockCount = nonEmptyBlockCount;
 		this.randomTickableBlockCount = randomTickableBlockCount;
 		this.nonEmptyFluidCount = nonEmptyFluidCount;
-		this.container = new PalettedContainer<>(palette, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
+		this.container = new PalettedContainer<>(PALETTE, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
 	}
 
 	public BlockState getBlockState(int x, int y, int z) {

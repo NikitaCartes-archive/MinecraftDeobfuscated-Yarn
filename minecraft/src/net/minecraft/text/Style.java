@@ -222,10 +222,14 @@ public class Style {
 		);
 	}
 
+	/**
+	 * Returns a new style with the underline attribute provided and all other
+	 * attributes of this style.
+	 */
 	@Environment(EnvType.CLIENT)
-	public Style method_30938(@Nullable Boolean boolean_) {
+	public Style withUnderline(@Nullable Boolean underline) {
 		return new Style(
-			this.color, this.bold, this.italic, boolean_, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
+			this.color, this.bold, this.italic, underline, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
 		);
 	}
 

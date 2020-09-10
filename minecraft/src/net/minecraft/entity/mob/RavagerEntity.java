@@ -25,8 +25,8 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -66,7 +66,7 @@ public class RavagerEntity extends RaiderEntity {
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(2, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(4, new FollowTargetGoal(this, AbstractTraderEntity.class, true));
+		this.targetSelector.add(4, new FollowTargetGoal(this, MerchantEntity.class, true));
 		this.targetSelector.add(4, new FollowTargetGoal(this, IronGolemEntity.class, true));
 	}
 

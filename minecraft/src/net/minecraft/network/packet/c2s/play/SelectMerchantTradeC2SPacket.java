@@ -7,14 +7,14 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
-public class SelectVillagerTradeC2SPacket implements Packet<ServerPlayPacketListener> {
+public class SelectMerchantTradeC2SPacket implements Packet<ServerPlayPacketListener> {
 	private int tradeId;
 
-	public SelectVillagerTradeC2SPacket() {
+	public SelectMerchantTradeC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SelectVillagerTradeC2SPacket(int tradeId) {
+	public SelectMerchantTradeC2SPacket(int tradeId) {
 		this.tradeId = tradeId;
 	}
 
@@ -29,7 +29,7 @@ public class SelectVillagerTradeC2SPacket implements Packet<ServerPlayPacketList
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onVillagerTradeSelect(this);
+		serverPlayPacketListener.onMerchantTradeSelect(this);
 	}
 
 	public int getTradeId() {

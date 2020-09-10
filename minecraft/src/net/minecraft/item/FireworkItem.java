@@ -61,7 +61,7 @@ public class FireworkItem extends Item {
 				}
 			}
 
-			return TypedActionResult.method_29237(user.getStackInHand(hand), world.isClient());
+			return TypedActionResult.success(user.getStackInHand(hand), world.isClient());
 		} else {
 			return TypedActionResult.pass(user.getStackInHand(hand));
 		}

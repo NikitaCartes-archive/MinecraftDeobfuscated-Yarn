@@ -25,7 +25,7 @@ public enum Arm {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_27301() {
+	public Text getOptionName() {
 		return this.optionName;
 	}
 }

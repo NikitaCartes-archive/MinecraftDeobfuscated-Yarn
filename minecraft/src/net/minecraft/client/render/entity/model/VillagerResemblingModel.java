@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.AbstractTraderEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -71,8 +71,8 @@ public class VillagerResemblingModel<T extends Entity> extends CompositeEntityMo
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		boolean bl = false;
-		if (entity instanceof AbstractTraderEntity) {
-			bl = ((AbstractTraderEntity)entity).getHeadRollingTimeLeft() > 0;
+		if (entity instanceof MerchantEntity) {
+			bl = ((MerchantEntity)entity).getHeadRollingTimeLeft() > 0;
 		}
 
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);

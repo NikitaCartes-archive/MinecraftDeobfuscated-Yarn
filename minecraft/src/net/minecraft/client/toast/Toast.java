@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public interface Toast {
-	Identifier TOASTS_TEX = new Identifier("textures/gui/toasts.png");
+	Identifier TEXTURE = new Identifier("textures/gui/toasts.png");
 	Object TYPE = new Object();
 
 	Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime);

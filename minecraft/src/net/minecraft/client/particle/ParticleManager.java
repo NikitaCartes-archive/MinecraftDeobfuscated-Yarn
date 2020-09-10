@@ -74,7 +74,7 @@ public class ParticleManager implements ResourceReloadListener {
 	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
 	private final Map<Identifier, ParticleManager.SimpleSpriteProvider> spriteAwareFactories = Maps.<Identifier, ParticleManager.SimpleSpriteProvider>newHashMap();
-	private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
+	private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 
 	public ParticleManager(ClientWorld world, TextureManager textureManager) {
 		textureManager.registerTexture(this.particleAtlasTexture.getId(), this.particleAtlasTexture);

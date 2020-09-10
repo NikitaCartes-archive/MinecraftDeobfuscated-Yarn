@@ -39,6 +39,6 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 	}
 
 	public Identifier getTexture(TntEntity tntEntity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 }

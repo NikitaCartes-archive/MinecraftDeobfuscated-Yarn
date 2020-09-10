@@ -131,7 +131,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.texturing(GLINT_TEXTURING)
 			.build(false)
 	);
-	private static final RenderLayer GLINT_DIRECT = of(
+	private static final RenderLayer DIRECT_GLINT = of(
 		"glint_direct",
 		VertexFormats.POSITION_TEXTURE,
 		7,
@@ -160,7 +160,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
-	private static final RenderLayer ENTITY_GLINT_DIRECT = of(
+	private static final RenderLayer DIRECT_ENTITY_GLINT = of(
 		"entity_glint_direct",
 		VertexFormats.POSITION_TEXTURE,
 		7,
@@ -523,16 +523,16 @@ public abstract class RenderLayer extends RenderPhase {
 		return GLINT;
 	}
 
-	public static RenderLayer getGlintDirect() {
-		return GLINT_DIRECT;
+	public static RenderLayer getDirectGlint() {
+		return DIRECT_GLINT;
 	}
 
 	public static RenderLayer getEntityGlint() {
 		return ENTITY_GLINT;
 	}
 
-	public static RenderLayer getEntityGlintDirect() {
-		return ENTITY_GLINT_DIRECT;
+	public static RenderLayer getDirectEntityGlint() {
+		return DIRECT_ENTITY_GLINT;
 	}
 
 	public static RenderLayer getBlockBreaking(Identifier texture) {

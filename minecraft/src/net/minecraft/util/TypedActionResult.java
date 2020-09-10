@@ -33,7 +33,7 @@ public class TypedActionResult<T> {
 		return new TypedActionResult<>(ActionResult.FAIL, data);
 	}
 
-	public static <T> TypedActionResult<T> method_29237(T object, boolean bl) {
-		return bl ? success(object) : consume(object);
+	public static <T> TypedActionResult<T> success(T data, boolean swingHand) {
+		return swingHand ? success(data) : consume(data);
 	}
 }

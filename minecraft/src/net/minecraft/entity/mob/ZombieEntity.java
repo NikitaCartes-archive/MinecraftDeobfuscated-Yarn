@@ -38,9 +38,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -103,7 +103,7 @@ public class ZombieEntity extends HostileEntity {
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
 		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge(ZombifiedPiglinEntity.class));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
+		this.targetSelector.add(3, new FollowTargetGoal(this, MerchantEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
 		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}

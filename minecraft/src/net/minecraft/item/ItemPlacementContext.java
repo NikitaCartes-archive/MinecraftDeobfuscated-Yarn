@@ -18,7 +18,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 	}
 
 	public ItemPlacementContext(ItemUsageContext context) {
-		this(context.getWorld(), context.getPlayer(), context.getHand(), context.getStack(), context.method_30344());
+		this(context.getWorld(), context.getPlayer(), context.getHand(), context.getStack(), context.getHitResult());
 	}
 
 	protected ItemPlacementContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {

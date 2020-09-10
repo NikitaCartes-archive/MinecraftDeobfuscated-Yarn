@@ -123,7 +123,7 @@ public class Blocks {
 	);
 	public static final Block LAVA = register(
 		"lava",
-		new FluidBlock(Fluids.LAVA, AbstractBlock.Settings.of(Material.LAVA).noCollision().ticksRandomly().strength(100.0F).lightLevel(state -> 15).dropsNothing())
+		new FluidBlock(Fluids.LAVA, AbstractBlock.Settings.of(Material.LAVA).noCollision().ticksRandomly().strength(100.0F).luminance(state -> 15).dropsNothing())
 	);
 	public static final Block SAND = register(
 		"sand", new SandBlock(14406560, AbstractBlock.Settings.of(Material.AGGREGATE, MaterialColor.SAND).strength(0.5F).sounds(BlockSoundGroup.SAND))
@@ -396,7 +396,7 @@ public class Blocks {
 				.ticksRandomly()
 				.breakInstantly()
 				.sounds(BlockSoundGroup.GRASS)
-				.lightLevel(state -> 1)
+				.luminance(state -> 1)
 				.postProcess(Blocks::always)
 		)
 	);
@@ -431,26 +431,26 @@ public class Blocks {
 	public static final Block TORCH = register(
 		"torch",
 		new TorchBlock(
-			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().lightLevel(state -> 14).sounds(BlockSoundGroup.WOOD), ParticleTypes.FLAME
+			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().luminance(state -> 14).sounds(BlockSoundGroup.WOOD), ParticleTypes.FLAME
 		)
 	);
 	public static final Block WALL_TORCH = register(
 		"wall_torch",
 		new WallTorchBlock(
-			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().lightLevel(state -> 14).sounds(BlockSoundGroup.WOOD).dropsLike(TORCH),
+			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().luminance(state -> 14).sounds(BlockSoundGroup.WOOD).dropsLike(TORCH),
 			ParticleTypes.FLAME
 		)
 	);
 	public static final Block FIRE = register(
 		"fire",
 		new FireBlock(
-			AbstractBlock.Settings.of(Material.FIRE, MaterialColor.LAVA).noCollision().breakInstantly().lightLevel(state -> 15).sounds(BlockSoundGroup.WOOL)
+			AbstractBlock.Settings.of(Material.FIRE, MaterialColor.LAVA).noCollision().breakInstantly().luminance(state -> 15).sounds(BlockSoundGroup.WOOL)
 		)
 	);
 	public static final Block SOUL_FIRE = register(
 		"soul_fire",
 		new SoulFireBlock(
-			AbstractBlock.Settings.of(Material.FIRE, MaterialColor.LIGHT_BLUE).noCollision().breakInstantly().lightLevel(state -> 10).sounds(BlockSoundGroup.WOOL)
+			AbstractBlock.Settings.of(Material.FIRE, MaterialColor.LIGHT_BLUE).noCollision().breakInstantly().luminance(state -> 10).sounds(BlockSoundGroup.WOOL)
 		)
 	);
 	public static final Block SPAWNER = register(
@@ -486,7 +486,7 @@ public class Blocks {
 		)
 	);
 	public static final Block FURNACE = register(
-		"furnace", new FurnaceBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).lightLevel(createLightLevelFromBlockState(13)))
+		"furnace", new FurnaceBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).luminance(createLightLevelFromBlockState(13)))
 	);
 	public static final Block OAK_SIGN = register(
 		"oak_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD), SignType.OAK)
@@ -638,13 +638,13 @@ public class Blocks {
 	public static final Block REDSTONE_ORE = register(
 		"redstone_ore",
 		new RedstoneOreBlock(
-			AbstractBlock.Settings.of(Material.STONE).requiresTool().ticksRandomly().lightLevel(createLightLevelFromBlockState(9)).strength(3.0F, 3.0F)
+			AbstractBlock.Settings.of(Material.STONE).requiresTool().ticksRandomly().luminance(createLightLevelFromBlockState(9)).strength(3.0F, 3.0F)
 		)
 	);
 	public static final Block REDSTONE_TORCH = register(
 		"redstone_torch",
 		new RedstoneTorchBlock(
-			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().lightLevel(createLightLevelFromBlockState(7)).sounds(BlockSoundGroup.WOOD)
+			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().luminance(createLightLevelFromBlockState(7)).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block REDSTONE_WALL_TORCH = register(
@@ -653,7 +653,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.SUPPORTED)
 				.noCollision()
 				.breakInstantly()
-				.lightLevel(createLightLevelFromBlockState(7))
+				.luminance(createLightLevelFromBlockState(7))
 				.sounds(BlockSoundGroup.WOOD)
 				.dropsLike(REDSTONE_TORCH)
 		)
@@ -727,24 +727,24 @@ public class Blocks {
 	public static final Block SOUL_TORCH = register(
 		"soul_torch",
 		new TorchBlock(
-			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().lightLevel(state -> 10).sounds(BlockSoundGroup.WOOD),
+			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().luminance(state -> 10).sounds(BlockSoundGroup.WOOD),
 			ParticleTypes.SOUL_FIRE_FLAME
 		)
 	);
 	public static final Block SOUL_WALL_TORCH = register(
 		"soul_wall_torch",
 		new WallTorchBlock(
-			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().lightLevel(state -> 10).sounds(BlockSoundGroup.WOOD).dropsLike(SOUL_TORCH),
+			AbstractBlock.Settings.of(Material.SUPPORTED).noCollision().breakInstantly().luminance(state -> 10).sounds(BlockSoundGroup.WOOD).dropsLike(SOUL_TORCH),
 			ParticleTypes.SOUL_FIRE_FLAME
 		)
 	);
 	public static final Block GLOWSTONE = register(
-		"glowstone", new Block(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.SAND).strength(0.3F).sounds(BlockSoundGroup.GLASS).lightLevel(state -> 15))
+		"glowstone", new Block(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.SAND).strength(0.3F).sounds(BlockSoundGroup.GLASS).luminance(state -> 15))
 	);
 	public static final Block NETHER_PORTAL = register(
 		"nether_portal",
 		new NetherPortalBlock(
-			AbstractBlock.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0F).sounds(BlockSoundGroup.GLASS).lightLevel(state -> 11)
+			AbstractBlock.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0F).sounds(BlockSoundGroup.GLASS).luminance(state -> 11)
 		)
 	);
 	public static final Block CARVED_PUMPKIN = register(
@@ -759,7 +759,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.GOURD, MaterialColor.ORANGE)
 				.strength(1.0F)
 				.sounds(BlockSoundGroup.WOOD)
-				.lightLevel(state -> 15)
+				.luminance(state -> 15)
 				.allowsSpawning(Blocks::always)
 		)
 	);
@@ -923,7 +923,7 @@ public class Blocks {
 		"enchanting_table", new EnchantingTableBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.RED).requiresTool().strength(5.0F, 1200.0F))
 	);
 	public static final Block BREWING_STAND = register(
-		"brewing_stand", new BrewingStandBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(0.5F).lightLevel(state -> 1).nonOpaque())
+		"brewing_stand", new BrewingStandBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(0.5F).luminance(state -> 1).nonOpaque())
 	);
 	public static final Block CAULDRON = register(
 		"cauldron", new CauldronBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.STONE).requiresTool().strength(2.0F).nonOpaque())
@@ -931,7 +931,7 @@ public class Blocks {
 	public static final Block END_PORTAL = register(
 		"end_portal",
 		new EndPortalBlock(
-			AbstractBlock.Settings.of(Material.PORTAL, MaterialColor.BLACK).noCollision().lightLevel(state -> 15).strength(-1.0F, 3600000.0F).dropsNothing()
+			AbstractBlock.Settings.of(Material.PORTAL, MaterialColor.BLACK).noCollision().luminance(state -> 15).strength(-1.0F, 3600000.0F).dropsNothing()
 		)
 	);
 	public static final Block END_PORTAL_FRAME = register(
@@ -939,7 +939,7 @@ public class Blocks {
 		new EndPortalFrameBlock(
 			AbstractBlock.Settings.of(Material.STONE, MaterialColor.GREEN)
 				.sounds(BlockSoundGroup.GLASS)
-				.lightLevel(state -> 1)
+				.luminance(state -> 1)
 				.strength(-1.0F, 3600000.0F)
 				.dropsNothing()
 		)
@@ -948,13 +948,13 @@ public class Blocks {
 		"end_stone", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).requiresTool().strength(3.0F, 9.0F))
 	);
 	public static final Block DRAGON_EGG = register(
-		"dragon_egg", new DragonEggBlock(AbstractBlock.Settings.of(Material.EGG, MaterialColor.BLACK).strength(3.0F, 9.0F).lightLevel(state -> 1).nonOpaque())
+		"dragon_egg", new DragonEggBlock(AbstractBlock.Settings.of(Material.EGG, MaterialColor.BLACK).strength(3.0F, 9.0F).luminance(state -> 1).nonOpaque())
 	);
 	public static final Block REDSTONE_LAMP = register(
 		"redstone_lamp",
 		new RedstoneLampBlock(
 			AbstractBlock.Settings.of(Material.REDSTONE_LAMP)
-				.lightLevel(createLightLevelFromBlockState(15))
+				.luminance(createLightLevelFromBlockState(15))
 				.strength(0.3F)
 				.sounds(BlockSoundGroup.GLASS)
 				.allowsSpawning(Blocks::always)
@@ -968,7 +968,7 @@ public class Blocks {
 	);
 	public static final Block EMERALD_ORE = register("emerald_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F)));
 	public static final Block ENDER_CHEST = register(
-		"ender_chest", new EnderChestBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(22.5F, 600.0F).lightLevel(state -> 7))
+		"ender_chest", new EnderChestBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(22.5F, 600.0F).luminance(state -> 7))
 	);
 	public static final Block TRIPWIRE_HOOK = register("tripwire_hook", new TripwireHookBlock(AbstractBlock.Settings.of(Material.SUPPORTED).noCollision()));
 	public static final Block TRIPWIRE = register(
@@ -990,9 +990,7 @@ public class Blocks {
 	);
 	public static final Block BEACON = register(
 		"beacon",
-		new BeaconBlock(
-			AbstractBlock.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0F).lightLevel(state -> 15).nonOpaque().solidBlock(Blocks::never)
-		)
+		new BeaconBlock(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0F).luminance(state -> 15).nonOpaque().solidBlock(Blocks::never))
 	);
 	public static final Block COBBLESTONE_WALL = register("cobblestone_wall", new WallBlock(AbstractBlock.Settings.copy(COBBLESTONE)));
 	public static final Block MOSSY_COBBLESTONE_WALL = register("mossy_cobblestone_wall", new WallBlock(AbstractBlock.Settings.copy(COBBLESTONE)));
@@ -1351,7 +1349,7 @@ public class Blocks {
 	);
 	public static final Block SEA_LANTERN = register(
 		"sea_lantern",
-		new Block(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.QUARTZ).strength(0.3F).sounds(BlockSoundGroup.GLASS).lightLevel(state -> 15))
+		new Block(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.QUARTZ).strength(0.3F).sounds(BlockSoundGroup.GLASS).luminance(state -> 15))
 	);
 	public static final Block HAY_BLOCK = register(
 		"hay_block", new HayBlock(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MaterialColor.YELLOW).strength(0.5F).sounds(BlockSoundGroup.GRASS))
@@ -1714,7 +1712,7 @@ public class Blocks {
 		new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.getDefaultMaterialColor()).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque())
 	);
 	public static final Block END_ROD = register(
-		"end_rod", new EndRodBlock(AbstractBlock.Settings.of(Material.SUPPORTED).breakInstantly().lightLevel(state -> 14).sounds(BlockSoundGroup.WOOD).nonOpaque())
+		"end_rod", new EndRodBlock(AbstractBlock.Settings.of(Material.SUPPORTED).breakInstantly().luminance(state -> 14).sounds(BlockSoundGroup.WOOD).nonOpaque())
 	);
 	public static final Block CHORUS_PLANT = register(
 		"chorus_plant",
@@ -1751,7 +1749,7 @@ public class Blocks {
 	public static final Block END_GATEWAY = register(
 		"end_gateway",
 		new EndGatewayBlock(
-			AbstractBlock.Settings.of(Material.PORTAL, MaterialColor.BLACK).noCollision().lightLevel(state -> 15).strength(-1.0F, 3600000.0F).dropsNothing()
+			AbstractBlock.Settings.of(Material.PORTAL, MaterialColor.BLACK).noCollision().luminance(state -> 15).strength(-1.0F, 3600000.0F).dropsNothing()
 		)
 	);
 	public static final Block REPEATING_COMMAND_BLOCK = register(
@@ -1779,7 +1777,7 @@ public class Blocks {
 		new MagmaBlock(
 			AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER)
 				.requiresTool()
-				.lightLevel(state -> 3)
+				.luminance(state -> 3)
 				.ticksRandomly()
 				.strength(0.5F)
 				.allowsSpawning((state, world, pos, entityType) -> entityType.isFireImmune())
@@ -2256,7 +2254,7 @@ public class Blocks {
 		"sea_pickle",
 		new SeaPickleBlock(
 			AbstractBlock.Settings.of(Material.UNDERWATER_PLANT, MaterialColor.GREEN)
-				.lightLevel(state -> SeaPickleBlock.isDry(state) ? 0 : 3 + 3 * state.get(SeaPickleBlock.PICKLES))
+				.luminance(state -> SeaPickleBlock.isDry(state) ? 0 : 3 + 3 * state.get(SeaPickleBlock.PICKLES))
 				.sounds(BlockSoundGroup.SLIME)
 				.nonOpaque()
 		)
@@ -2265,7 +2263,7 @@ public class Blocks {
 		"blue_ice", new TransparentBlock(AbstractBlock.Settings.of(Material.DENSE_ICE).strength(2.8F).slipperiness(0.989F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block CONDUIT = register(
-		"conduit", new ConduitBlock(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0F).lightLevel(state -> 15).nonOpaque())
+		"conduit", new ConduitBlock(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0F).luminance(state -> 15).nonOpaque())
 	);
 	public static final Block BAMBOO_SAPLING = register(
 		"bamboo_sapling",
@@ -2358,11 +2356,11 @@ public class Blocks {
 	public static final Block LOOM = register("loom", new LoomBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block BARREL = register("barrel", new BarrelBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block SMOKER = register(
-		"smoker", new SmokerBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).lightLevel(createLightLevelFromBlockState(13)))
+		"smoker", new SmokerBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).luminance(createLightLevelFromBlockState(13)))
 	);
 	public static final Block BLAST_FURNACE = register(
 		"blast_furnace",
-		new BlastFurnaceBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).lightLevel(createLightLevelFromBlockState(13)))
+		new BlastFurnaceBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).luminance(createLightLevelFromBlockState(13)))
 	);
 	public static final Block CARTOGRAPHY_TABLE = register(
 		"cartography_table", new CartographyTableBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD))
@@ -2386,11 +2384,11 @@ public class Blocks {
 	);
 	public static final Block LANTERN = register(
 		"lantern",
-		new LanternBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(3.5F).sounds(BlockSoundGroup.LANTERN).lightLevel(state -> 15).nonOpaque())
+		new LanternBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(3.5F).sounds(BlockSoundGroup.LANTERN).luminance(state -> 15).nonOpaque())
 	);
 	public static final Block SOUL_LANTERN = register(
 		"soul_lantern",
-		new LanternBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(3.5F).sounds(BlockSoundGroup.LANTERN).lightLevel(state -> 10).nonOpaque())
+		new LanternBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(3.5F).sounds(BlockSoundGroup.LANTERN).luminance(state -> 10).nonOpaque())
 	);
 	public static final Block CAMPFIRE = register(
 		"campfire",
@@ -2400,7 +2398,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE)
 				.strength(2.0F)
 				.sounds(BlockSoundGroup.WOOD)
-				.lightLevel(createLightLevelFromBlockState(15))
+				.luminance(createLightLevelFromBlockState(15))
 				.nonOpaque()
 		)
 	);
@@ -2412,7 +2410,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE)
 				.strength(2.0F)
 				.sounds(BlockSoundGroup.WOOD)
-				.lightLevel(createLightLevelFromBlockState(10))
+				.luminance(createLightLevelFromBlockState(10))
 				.nonOpaque()
 		)
 	);
@@ -2449,11 +2447,11 @@ public class Blocks {
 	);
 	public static final Block WARPED_ROOTS = register(
 		"warped_roots",
-		new RootsBlock(AbstractBlock.Settings.of(Material.field_26708, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.ROOTS))
+		new RootsBlock(AbstractBlock.Settings.of(Material.NETHER_SHOOTS, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.ROOTS))
 	);
 	public static final Block NETHER_SPROUTS = register(
 		"nether_sprouts",
-		new SproutsBlock(AbstractBlock.Settings.of(Material.field_26708, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.NETHER_SPROUTS))
+		new SproutsBlock(AbstractBlock.Settings.of(Material.NETHER_SHOOTS, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.NETHER_SPROUTS))
 	);
 	public static final Block CRIMSON_STEM = register("crimson_stem", createNetherStemBlock(MaterialColor.field_25703));
 	public static final Block STRIPPED_CRIMSON_STEM = register("stripped_crimson_stem", createNetherStemBlock(MaterialColor.field_25703));
@@ -2480,7 +2478,7 @@ public class Blocks {
 	);
 	public static final Block SHROOMLIGHT = register(
 		"shroomlight",
-		new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MaterialColor.RED).strength(1.0F).sounds(BlockSoundGroup.SHROOMLIGHT).lightLevel(state -> 15))
+		new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MaterialColor.RED).strength(1.0F).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(state -> 15))
 	);
 	public static final Block WEEPING_VINES = register(
 		"weeping_vines",
@@ -2508,7 +2506,7 @@ public class Blocks {
 	);
 	public static final Block CRIMSON_ROOTS = register(
 		"crimson_roots",
-		new RootsBlock(AbstractBlock.Settings.of(Material.field_26708, MaterialColor.NETHER).noCollision().breakInstantly().sounds(BlockSoundGroup.ROOTS))
+		new RootsBlock(AbstractBlock.Settings.of(Material.NETHER_SHOOTS, MaterialColor.NETHER).noCollision().breakInstantly().sounds(BlockSoundGroup.ROOTS))
 	);
 	public static final Block CRIMSON_PLANKS = register(
 		"crimson_planks", new Block(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.field_25703).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
@@ -2680,7 +2678,7 @@ public class Blocks {
 	);
 	public static final Block CRYING_OBSIDIAN = register(
 		"crying_obsidian",
-		new CryingObsidianBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).requiresTool().strength(50.0F, 1200.0F).lightLevel(state -> 10))
+		new CryingObsidianBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).requiresTool().strength(50.0F, 1200.0F).luminance(state -> 10))
 	);
 	public static final Block RESPAWN_ANCHOR = register(
 		"respawn_anchor",
@@ -2688,7 +2686,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK)
 				.requiresTool()
 				.strength(50.0F, 1200.0F)
-				.lightLevel(state -> RespawnAnchorBlock.getLightLevel(state, 15))
+				.luminance(state -> RespawnAnchorBlock.getLightLevel(state, 15))
 		)
 	);
 	public static final Block POTTED_CRIMSON_FUNGUS = register(
