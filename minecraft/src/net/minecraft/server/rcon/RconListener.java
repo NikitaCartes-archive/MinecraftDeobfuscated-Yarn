@@ -54,9 +54,9 @@ public class RconListener extends RconBase {
 	}
 
 	@Nullable
-	public static RconListener method_30738(DedicatedServer dedicatedServer) {
-		ServerPropertiesHandler serverPropertiesHandler = dedicatedServer.getProperties();
-		String string = dedicatedServer.getHostname();
+	public static RconListener create(DedicatedServer server) {
+		ServerPropertiesHandler serverPropertiesHandler = server.getProperties();
+		String string = server.getHostname();
 		if (string.isEmpty()) {
 			string = "0.0.0.0";
 		}
@@ -71,7 +71,7 @@ public class RconListener extends RconBase {
 				try {
 					ServerSocket serverSocket = new ServerSocket(i, 0, InetAddress.getByName(string));
 					serverSocket.setSoTimeout(500);
-					RconListener rconListener = new RconListener(dedicatedServer, serverSocket, string2);
+					RconListener rconListener = new RconListener(server, serverSocket, string2);
 					if (!rconListener.start()) {
 						return null;
 					} else {

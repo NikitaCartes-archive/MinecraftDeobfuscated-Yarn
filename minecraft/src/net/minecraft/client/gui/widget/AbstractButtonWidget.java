@@ -228,7 +228,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	}
 
 	public void setMessage(Text text) {
-		if (!Objects.equals(text, this.message)) {
+		if (!Objects.equals(text.getString(), this.message.getString())) {
 			this.queueNarration(250);
 		}
 

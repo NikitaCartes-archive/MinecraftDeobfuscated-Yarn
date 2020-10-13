@@ -932,8 +932,8 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void populateCrashReport(CrashReportSection crashReportSection) {
-			MutableWorldProperties.super.populateCrashReport(crashReportSection);
+		public void populateCrashReport(CrashReportSection reportSection) {
+			MutableWorldProperties.super.populateCrashReport(reportSection);
 		}
 
 		public void setDifficulty(Difficulty difficulty) {

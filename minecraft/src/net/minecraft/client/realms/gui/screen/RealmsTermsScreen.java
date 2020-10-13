@@ -28,7 +28,7 @@ public class RealmsTermsScreen extends RealmsScreen {
 	private final RealmsMainScreen mainScreen;
 	private final RealmsServer realmsServer;
 	private boolean onLink;
-	private final String realmsToSUrl = "https://minecraft.net/realms/terms";
+	private final String realmsToSUrl = "https://aka.ms/MinecraftRealmsTerms";
 
 	public RealmsTermsScreen(Screen parent, RealmsMainScreen mainScreen, RealmsServer realmsServer) {
 		this.parent = parent;
@@ -78,8 +78,8 @@ public class RealmsTermsScreen extends RealmsScreen {
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.onLink) {
-			this.client.keyboard.setClipboard("https://minecraft.net/realms/terms");
-			Util.getOperatingSystem().open("https://minecraft.net/realms/terms");
+			this.client.keyboard.setClipboard("https://aka.ms/MinecraftRealmsTerms");
+			Util.getOperatingSystem().open("https://aka.ms/MinecraftRealmsTerms");
 			return true;
 		} else {
 			return super.mouseClicked(mouseX, mouseY, button);

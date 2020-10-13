@@ -136,7 +136,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 
 	static {
 		Registry.register(Registry.BIOME_SOURCE, "fixed", FixedBiomeSource.CODEC);
-		Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.INSTANCE_CODEC);
+		Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.CODEC);
 		Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.CODEC);
 		Registry.register(Registry.BIOME_SOURCE, "vanilla_layered", VanillaLayeredBiomeSource.CODEC);
 		Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);

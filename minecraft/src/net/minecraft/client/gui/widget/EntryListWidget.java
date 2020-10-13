@@ -40,6 +40,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected int headerHeight;
 	private boolean scrolling;
 	private E selected;
+	private boolean field_26846 = true;
+	private boolean field_26847 = true;
 
 	public EntryListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
 		this.client = client;
@@ -75,6 +77,14 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	public void setSelected(@Nullable E entry) {
 		this.selected = entry;
+	}
+
+	public void method_31322(boolean bl) {
+		this.field_26846 = bl;
+	}
+
+	public void method_31323(boolean bl) {
+		this.field_26847 = bl;
 	}
 
 	@Nullable
@@ -163,27 +173,30 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		int j = i + 6;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		float f = 32.0F;
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0)
-			.texture((float)this.left / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F)
-			.color(32, 32, 32, 255)
-			.next();
-		bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0)
-			.texture((float)this.right / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F)
-			.color(32, 32, 32, 255)
-			.next();
-		bufferBuilder.vertex((double)this.right, (double)this.top, 0.0)
-			.texture((float)this.right / 32.0F, (float)(this.top + (int)this.getScrollAmount()) / 32.0F)
-			.color(32, 32, 32, 255)
-			.next();
-		bufferBuilder.vertex((double)this.left, (double)this.top, 0.0)
-			.texture((float)this.left / 32.0F, (float)(this.top + (int)this.getScrollAmount()) / 32.0F)
-			.color(32, 32, 32, 255)
-			.next();
-		tessellator.draw();
+		if (this.field_26846) {
+			this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			float f = 32.0F;
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+			bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0)
+				.texture((float)this.left / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F)
+				.color(32, 32, 32, 255)
+				.next();
+			bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0)
+				.texture((float)this.right / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F)
+				.color(32, 32, 32, 255)
+				.next();
+			bufferBuilder.vertex((double)this.right, (double)this.top, 0.0)
+				.texture((float)this.right / 32.0F, (float)(this.top + (int)this.getScrollAmount()) / 32.0F)
+				.color(32, 32, 32, 255)
+				.next();
+			bufferBuilder.vertex((double)this.left, (double)this.top, 0.0)
+				.texture((float)this.left / 32.0F, (float)(this.top + (int)this.getScrollAmount()) / 32.0F)
+				.color(32, 32, 32, 255)
+				.next();
+			tessellator.draw();
+		}
+
 		int k = this.getRowLeft();
 		int l = this.top + 4 - (int)this.getScrollAmount();
 		if (this.renderHeader) {
@@ -191,57 +204,60 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 
 		this.renderList(matrices, k, l, mouseX, mouseY, delta);
-		this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
-		RenderSystem.enableDepthTest();
-		RenderSystem.depthFunc(519);
-		float g = 32.0F;
-		int m = -100;
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex((double)this.left, (double)this.top, -100.0).texture(0.0F, (float)this.top / 32.0F).color(64, 64, 64, 255).next();
-		bufferBuilder.vertex((double)(this.left + this.width), (double)this.top, -100.0)
-			.texture((float)this.width / 32.0F, (float)this.top / 32.0F)
-			.color(64, 64, 64, 255)
-			.next();
-		bufferBuilder.vertex((double)(this.left + this.width), 0.0, -100.0).texture((float)this.width / 32.0F, 0.0F).color(64, 64, 64, 255).next();
-		bufferBuilder.vertex((double)this.left, 0.0, -100.0).texture(0.0F, 0.0F).color(64, 64, 64, 255).next();
-		bufferBuilder.vertex((double)this.left, (double)this.height, -100.0).texture(0.0F, (float)this.height / 32.0F).color(64, 64, 64, 255).next();
-		bufferBuilder.vertex((double)(this.left + this.width), (double)this.height, -100.0)
-			.texture((float)this.width / 32.0F, (float)this.height / 32.0F)
-			.color(64, 64, 64, 255)
-			.next();
-		bufferBuilder.vertex((double)(this.left + this.width), (double)this.bottom, -100.0)
-			.texture((float)this.width / 32.0F, (float)this.bottom / 32.0F)
-			.color(64, 64, 64, 255)
-			.next();
-		bufferBuilder.vertex((double)this.left, (double)this.bottom, -100.0).texture(0.0F, (float)this.bottom / 32.0F).color(64, 64, 64, 255).next();
-		tessellator.draw();
-		RenderSystem.depthFunc(515);
-		RenderSystem.disableDepthTest();
-		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE
-		);
-		RenderSystem.disableAlphaTest();
-		RenderSystem.shadeModel(7425);
-		RenderSystem.disableTexture();
-		int n = 4;
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex((double)this.left, (double)(this.top + 4), 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 0).next();
-		bufferBuilder.vertex((double)this.right, (double)(this.top + 4), 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 0).next();
-		bufferBuilder.vertex((double)this.right, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
-		bufferBuilder.vertex((double)this.left, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
-		bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
-		bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
-		bufferBuilder.vertex((double)this.right, (double)(this.bottom - 4), 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 0).next();
-		bufferBuilder.vertex((double)this.left, (double)(this.bottom - 4), 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 0).next();
-		tessellator.draw();
+		if (this.field_26847) {
+			this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
+			RenderSystem.enableDepthTest();
+			RenderSystem.depthFunc(519);
+			float g = 32.0F;
+			int m = -100;
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+			bufferBuilder.vertex((double)this.left, (double)this.top, -100.0).texture(0.0F, (float)this.top / 32.0F).color(64, 64, 64, 255).next();
+			bufferBuilder.vertex((double)(this.left + this.width), (double)this.top, -100.0)
+				.texture((float)this.width / 32.0F, (float)this.top / 32.0F)
+				.color(64, 64, 64, 255)
+				.next();
+			bufferBuilder.vertex((double)(this.left + this.width), 0.0, -100.0).texture((float)this.width / 32.0F, 0.0F).color(64, 64, 64, 255).next();
+			bufferBuilder.vertex((double)this.left, 0.0, -100.0).texture(0.0F, 0.0F).color(64, 64, 64, 255).next();
+			bufferBuilder.vertex((double)this.left, (double)this.height, -100.0).texture(0.0F, (float)this.height / 32.0F).color(64, 64, 64, 255).next();
+			bufferBuilder.vertex((double)(this.left + this.width), (double)this.height, -100.0)
+				.texture((float)this.width / 32.0F, (float)this.height / 32.0F)
+				.color(64, 64, 64, 255)
+				.next();
+			bufferBuilder.vertex((double)(this.left + this.width), (double)this.bottom, -100.0)
+				.texture((float)this.width / 32.0F, (float)this.bottom / 32.0F)
+				.color(64, 64, 64, 255)
+				.next();
+			bufferBuilder.vertex((double)this.left, (double)this.bottom, -100.0).texture(0.0F, (float)this.bottom / 32.0F).color(64, 64, 64, 255).next();
+			tessellator.draw();
+			RenderSystem.depthFunc(515);
+			RenderSystem.disableDepthTest();
+			RenderSystem.enableBlend();
+			RenderSystem.blendFuncSeparate(
+				GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE
+			);
+			RenderSystem.disableAlphaTest();
+			RenderSystem.shadeModel(7425);
+			RenderSystem.disableTexture();
+			int n = 4;
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+			bufferBuilder.vertex((double)this.left, (double)(this.top + 4), 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.right, (double)(this.top + 4), 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.right, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.left, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.right, (double)(this.bottom - 4), 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.left, (double)(this.bottom - 4), 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 0).next();
+			tessellator.draw();
+		}
+
 		int o = this.getMaxScroll();
 		if (o > 0) {
-			int p = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
-			p = MathHelper.clamp(p, 32, this.bottom - this.top - 8);
-			int q = (int)this.getScrollAmount() * (this.bottom - this.top - p) / o + this.top;
-			if (q < this.top) {
-				q = this.top;
+			int m = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
+			m = MathHelper.clamp(m, 32, this.bottom - this.top - 8);
+			int n = (int)this.getScrollAmount() * (this.bottom - this.top - m) / o + this.top;
+			if (n < this.top) {
+				n = this.top;
 			}
 
 			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -249,14 +265,14 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			bufferBuilder.vertex((double)j, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)j, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)i, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)i, (double)(q + p), 0.0).texture(0.0F, 1.0F).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)j, (double)(q + p), 0.0).texture(1.0F, 1.0F).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)j, (double)q, 0.0).texture(1.0F, 0.0F).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)i, (double)q, 0.0).texture(0.0F, 0.0F).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)i, (double)(q + p - 1), 0.0).texture(0.0F, 1.0F).color(192, 192, 192, 255).next();
-			bufferBuilder.vertex((double)(j - 1), (double)(q + p - 1), 0.0).texture(1.0F, 1.0F).color(192, 192, 192, 255).next();
-			bufferBuilder.vertex((double)(j - 1), (double)q, 0.0).texture(1.0F, 0.0F).color(192, 192, 192, 255).next();
-			bufferBuilder.vertex((double)i, (double)q, 0.0).texture(0.0F, 0.0F).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)i, (double)(n + m), 0.0).texture(0.0F, 1.0F).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)j, (double)(n + m), 0.0).texture(1.0F, 1.0F).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)j, (double)n, 0.0).texture(1.0F, 0.0F).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)i, (double)n, 0.0).texture(0.0F, 0.0F).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)i, (double)(n + m - 1), 0.0).texture(0.0F, 1.0F).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)(j - 1), (double)(n + m - 1), 0.0).texture(1.0F, 1.0F).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)(j - 1), (double)n, 0.0).texture(1.0F, 0.0F).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)i, (double)n, 0.0).texture(0.0F, 0.0F).color(192, 192, 192, 255).next();
 			tessellator.draw();
 		}
 
@@ -296,7 +312,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.scrollAmount = MathHelper.clamp(amount, 0.0, (double)this.getMaxScroll());
 	}
 
-	private int getMaxScroll() {
+	public int getMaxScroll() {
 		return Math.max(0, this.getMaxPosition() - (this.bottom - this.top - 4));
 	}
 
@@ -482,7 +498,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 	}
 
-	protected int getRowLeft() {
+	public int getRowLeft() {
 		return this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
 	}
 

@@ -54,6 +54,7 @@ import javax.imageio.ImageIO;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5513;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
@@ -1152,6 +1153,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.flightEnabled = flightEnabled;
 	}
 
+	/**
+	 * Specifies whether command blocks can execute commands on the server.
+	 */
 	public abstract boolean areCommandBlocksEnabled();
 
 	public String getServerMotd() {
@@ -1202,8 +1206,21 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return false;
 	}
 
+	/**
+	 * Opens a server for LAN connections.
+	 * This is only supported on an integrated server, a dedicated server will always fail to open to LAN.
+	 * 
+	 * @return whether the server was successfully opened to LAN
+	 * 
+	 * @param gameMode the game mode connecting players will have set by default
+	 * @param cheatsAllowed whether players on the server have operator permissions
+	 * @param port the port to open up to LAN connections
+	 */
 	public abstract boolean openToLan(GameMode gameMode, boolean cheatsAllowed, int port);
 
+	/**
+	 * Gets the amount of ticks the server has been running for.
+	 */
 	public int getTicks() {
 		return this.ticks;
 	}
@@ -1221,10 +1238,16 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return false;
 	}
 
+	/**
+	 * Sets whether a player's current game mode should be set to the server's current game mode when a player has connected.
+	 */
 	public void setForceGameMode(boolean forceGameMode) {
 		this.forceGameMode = forceGameMode;
 	}
 
+	/**
+	 * Checks whether a player's current game mode should be set to the server's current game mode when a player has connected.
+	 */
 	public boolean shouldForceGameMode() {
 		return this.forceGameMode;
 	}
@@ -1299,9 +1322,18 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.commandFunctionManager;
 	}
 
-	public CompletableFuture<Void> reloadResources(Collection<String> collection) {
+	/**
+	 * Reloads this server's datapacks.
+	 * 
+	 * @return a completable future which specifies whether the reload was successful
+	 * A reload has failed when the future is exceptionally completed.
+	 * @see CompletableFuture
+	 * 
+	 * @param datapacks a collection of datapacks to reload with
+	 */
+	public CompletableFuture<Void> reloadResources(Collection<String> datapacks) {
 		CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(
-				() -> (ImmutableList)collection.stream()
+				() -> (ImmutableList)datapacks.stream()
 						.map(this.dataPackManager::getProfile)
 						.filter(Objects::nonNull)
 						.map(ResourcePackProfile::createResourcePack)
@@ -1320,7 +1352,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			.thenAcceptAsync(serverResourceManager -> {
 				this.serverResourceManager.close();
 				this.serverResourceManager = serverResourceManager;
-				this.dataPackManager.setEnabledProfiles(collection);
+				this.dataPackManager.setEnabledProfiles(datapacks);
 				this.saveProperties.updateLevelInfo(method_29735(this.dataPackManager));
 				serverResourceManager.loadRegistryTags();
 				this.getPlayerManager().saveAllPlayerData();
@@ -1396,10 +1428,17 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.dataPackManager;
 	}
 
+	/**
+	 * Gets the server's command manager.
+	 * The command manager is responsible for parsing and dispatching commands.
+	 */
 	public CommandManager getCommandManager() {
 		return this.serverResourceManager.getCommandManager();
 	}
 
+	/**
+	 * Creates a command source which represents this Minecraft server instance.
+	 */
 	public ServerCommandSource getCommandSource() {
 		ServerWorld serverWorld = this.getOverworld();
 		return new ServerCommandSource(
@@ -1707,5 +1746,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public DynamicRegistryManager getRegistryManager() {
 		return this.registryManager;
+	}
+
+	@Nullable
+	public class_5513 method_31371(ServerPlayerEntity serverPlayerEntity) {
+		return null;
 	}
 }

@@ -83,6 +83,7 @@ public class GameOptions {
 	public boolean useNativeTransport = true;
 	public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
 	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
+	public boolean joinedFirstServer = false;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
 	public boolean rawMouseInput = true;
@@ -124,6 +125,7 @@ public class GameOptions {
 	public final KeyBinding keyChat = new KeyBinding("key.chat", 84, "key.categories.multiplayer");
 	public final KeyBinding keyPlayerList = new KeyBinding("key.playerlist", 258, "key.categories.multiplayer");
 	public final KeyBinding keyCommand = new KeyBinding("key.command", 47, "key.categories.multiplayer");
+	public final KeyBinding keySocialInteractions = new KeyBinding("key.socialInteractions", 80, "key.categories.multiplayer");
 	public final KeyBinding keyScreenshot = new KeyBinding("key.screenshot", 291, "key.categories.misc");
 	public final KeyBinding keyTogglePerspective = new KeyBinding("key.togglePerspective", 294, "key.categories.misc");
 	public final KeyBinding keySmoothCamera = new KeyBinding("key.smoothCamera", InputUtil.UNKNOWN_KEY.getCode(), "key.categories.misc");
@@ -160,6 +162,7 @@ public class GameOptions {
 			this.keyPlayerList,
 			this.keyPickItem,
 			this.keyCommand,
+			this.keySocialInteractions,
 			this.keyScreenshot,
 			this.keyTogglePerspective,
 			this.keySmoothCamera,
@@ -176,7 +179,7 @@ public class GameOptions {
 	private final File optionsFile;
 	public Difficulty difficulty = Difficulty.NORMAL;
 	public boolean hudHidden;
-	private Perspective field_26677 = Perspective.FIRST_PERSON;
+	private Perspective perspective = Perspective.FIRST_PERSON;
 	public boolean debugEnabled;
 	public boolean debugProfilerEnabled;
 	public boolean debugTpsEnabled;
@@ -554,6 +557,10 @@ public class GameOptions {
 						this.skipMultiplayerWarning = "true".equals(string2);
 					}
 
+					if ("joinedFirstServer".equals(string)) {
+						this.joinedFirstServer = "true".equals(string2);
+					}
+
 					if ("syncChunkWrites".equals(string)) {
 						this.syncChunkWrites = "true".equals(string2);
 					}
@@ -690,6 +697,7 @@ public class GameOptions {
 				printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
 				printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
 				printWriter.println("skipMultiplayerWarning:" + this.skipMultiplayerWarning);
+				printWriter.println("joinedFirstServer:" + this.joinedFirstServer);
 				printWriter.println("syncChunkWrites:" + this.syncChunkWrites);
 
 				for (KeyBinding keyBinding : this.keysAll) {
@@ -811,10 +819,10 @@ public class GameOptions {
 	}
 
 	public Perspective getPerspective() {
-		return this.field_26677;
+		return this.perspective;
 	}
 
-	public void method_31043(Perspective perspective) {
-		this.field_26677 = perspective;
+	public void setPerspective(Perspective perspective) {
+		this.perspective = perspective;
 	}
 }

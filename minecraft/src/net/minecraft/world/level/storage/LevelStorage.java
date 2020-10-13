@@ -226,7 +226,7 @@ public class LevelStorage {
 				Pair<GeneratorOptions, Lifecycle> pair = readGeneratorProperties(dynamic, dataFixer, i);
 				SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
 				LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
-				return LevelProperties.method_29029(dynamic, dataFixer, i, compoundTag3, levelInfo, saveVersionInfo, pair.getFirst(), pair.getSecond());
+				return LevelProperties.readProperties(dynamic, dataFixer, i, compoundTag3, levelInfo, saveVersionInfo, pair.getFirst(), pair.getSecond());
 			} catch (Exception var12) {
 				LOGGER.error("Exception reading {}", file, var12);
 				return null;
@@ -354,7 +354,7 @@ public class LevelStorage {
 		}
 
 		@Nullable
-		public DataPackSettings getDatapackSettings() {
+		public DataPackSettings getDataPackSettings() {
 			this.checkValid();
 			return LevelStorage.this.readLevelProperties(this.directory.toFile(), (file, dataFixer) -> LevelStorage.readDataPackSettings(file, dataFixer));
 		}

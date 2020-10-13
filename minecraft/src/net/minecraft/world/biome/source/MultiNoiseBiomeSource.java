@@ -31,7 +31,10 @@ import net.minecraft.world.gen.ChunkRandom;
 
 public class MultiNoiseBiomeSource extends BiomeSource {
 	private static final MultiNoiseBiomeSource.NoiseParameters DEFAULT_NOISE_PARAMETERS = new MultiNoiseBiomeSource.NoiseParameters(-7, ImmutableList.of(1.0, 1.0));
-	public static final MapCodec<MultiNoiseBiomeSource> CODEC = RecordCodecBuilder.mapCodec(
+	/**
+	 * Used to parse a custom biome source, when a preset hasn't been provided.
+	 */
+	public static final MapCodec<MultiNoiseBiomeSource> CUSTOM_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.LONG.fieldOf("seed").forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.seed),
 					RecordCodecBuilder.create(
@@ -52,7 +55,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 				)
 				.apply(instance, MultiNoiseBiomeSource::new)
 	);
-	public static final Codec<MultiNoiseBiomeSource> INSTANCE_CODEC = Codec.mapEither(MultiNoiseBiomeSource.Instance.CODEC, CODEC)
+	public static final Codec<MultiNoiseBiomeSource> CODEC = Codec.mapEither(MultiNoiseBiomeSource.Instance.CODEC, CUSTOM_CODEC)
 		.<MultiNoiseBiomeSource>xmap(
 			either -> either.map(MultiNoiseBiomeSource.Instance::getBiomeSource, Function.identity()),
 			multiNoiseBiomeSource -> (Either)multiNoiseBiomeSource.getInstance().map(Either::left).orElseGet(() -> Either.right(multiNoiseBiomeSource))
@@ -122,7 +125,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 
 	@Override
 	protected Codec<? extends BiomeSource> getCodec() {
-		return INSTANCE_CODEC;
+		return CODEC;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -161,8 +164,8 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			.orElse(BuiltinBiomes.THE_VOID);
 	}
 
-	public boolean method_28462(long l) {
-		return this.seed == l && this.instance.isPresent() && Objects.equals(((Pair)this.instance.get()).getSecond(), MultiNoiseBiomeSource.Preset.NETHER);
+	public boolean matchesInstance(long seed) {
+		return this.seed == seed && this.instance.isPresent() && Objects.equals(((Pair)this.instance.get()).getSecond(), MultiNoiseBiomeSource.Preset.NETHER);
 	}
 
 	static final class Instance {

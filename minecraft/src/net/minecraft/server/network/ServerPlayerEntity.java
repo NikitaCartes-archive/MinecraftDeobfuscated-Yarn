@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.class_5459;
+import net.minecraft.class_5513;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -165,6 +166,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private BlockPos spawnPointPosition;
 	private boolean spawnPointSet;
 	private float spawnAngle;
+	@Nullable
+	private final class_5513 field_26821;
 	private int screenHandlerSyncId;
 	public boolean skipPacketSlotUpdates;
 	public int pingMilliseconds;
@@ -179,6 +182,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
 		this.stepHeight = 1.0F;
 		this.moveToSpawn(world);
+		this.field_26821 = server.method_31371(this);
 	}
 
 	private void moveToSpawn(ServerWorld world) {
@@ -1476,5 +1480,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 			return itemEntity;
 		}
+	}
+
+	@Nullable
+	public class_5513 method_31273() {
+		return this.field_26821;
 	}
 }

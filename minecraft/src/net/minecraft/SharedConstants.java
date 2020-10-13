@@ -42,6 +42,10 @@ public class SharedConstants {
 		return gameVersion;
 	}
 
+	public static int method_31372() {
+		return 1073741825;
+	}
+
 	static {
 		ResourceLeakDetector.setLevel(RESOURCE_LEAK_DETECTOR_DISABLED);
 		CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES = false;

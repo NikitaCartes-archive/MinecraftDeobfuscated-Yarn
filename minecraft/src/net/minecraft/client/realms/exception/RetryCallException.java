@@ -7,8 +7,8 @@ import net.fabricmc.api.Environment;
 public class RetryCallException extends RealmsServiceException {
 	public final int delaySeconds;
 
-	public RetryCallException(int delaySeconds) {
-		super(503, "Retry operation", -1, "");
+	public RetryCallException(int delaySeconds, int i) {
+		super(i, "Retry operation", -1, "");
 		if (delaySeconds >= 0 && delaySeconds <= 120) {
 			this.delaySeconds = delaySeconds;
 		} else {

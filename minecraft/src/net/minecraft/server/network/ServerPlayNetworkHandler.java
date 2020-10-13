@@ -1,5 +1,6 @@
 package net.minecraft.server.network;
 
+import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 import com.mojang.brigadier.ParseResults;
@@ -9,11 +10,17 @@ import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ShortMap;
 import it.unimi.dsi.fastutil.ints.Int2ShortOpenHashMap;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5513;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -45,7 +52,6 @@ import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
@@ -138,6 +144,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -188,6 +195,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		connection.setPacketListener(this);
 		this.player = player;
 		player.networkHandler = this;
+		class_5513 lv = player.method_31273();
+		if (lv != null) {
+			lv.method_31287();
+		}
 	}
 
 	public void tick() {
@@ -285,6 +296,31 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.connection.send(new DisconnectS2CPacket(reason), future -> this.connection.disconnect(reason));
 		this.connection.disableAutoRead();
 		this.server.submitAndJoin(this.connection::handleDisconnection);
+	}
+
+	private <T> void method_31275(T object, Consumer<T> consumer, BiFunction<class_5513, T, CompletableFuture<Optional<T>>> biFunction) {
+		ThreadExecutor<?> threadExecutor = this.player.getServerWorld().getServer();
+		Consumer<T> consumer2 = objectx -> {
+			if (this.getConnection().isOpen()) {
+				consumer.accept(objectx);
+			} else {
+				LOGGER.debug("Ignoring packet due to disconnection");
+			}
+		};
+		class_5513 lv = this.player.method_31273();
+		if (lv != null) {
+			((CompletableFuture)biFunction.apply(lv, object)).thenAcceptAsync(optional -> optional.ifPresent(consumer2), threadExecutor);
+		} else {
+			threadExecutor.execute(() -> consumer2.accept(object));
+		}
+	}
+
+	private void method_31277(String string, Consumer<String> consumer) {
+		this.method_31275(string, consumer, class_5513::method_31288);
+	}
+
+	private void method_31279(List<String> list, Consumer<List<String>> consumer) {
+		this.method_31275(list, consumer, class_5513::method_31289);
 	}
 
 	@Override
@@ -658,37 +694,60 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 	@Override
 	public void onBookUpdate(BookUpdateC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		ItemStack itemStack = packet.getBook();
-		if (!itemStack.isEmpty()) {
-			if (WritableBookItem.isValid(itemStack.getTag())) {
-				ItemStack itemStack2 = this.player.getStackInHand(packet.getHand());
-				if (itemStack.getItem() == Items.WRITABLE_BOOK && itemStack2.getItem() == Items.WRITABLE_BOOK) {
-					if (packet.wasSigned()) {
-						ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK);
-						CompoundTag compoundTag = itemStack2.getTag();
-						if (compoundTag != null) {
-							itemStack3.setTag(compoundTag.copy());
-						}
+		if (itemStack.getItem() == Items.WRITABLE_BOOK) {
+			CompoundTag compoundTag = itemStack.getTag();
+			if (WritableBookItem.isValid(compoundTag)) {
+				List<String> list = Lists.<String>newArrayList();
+				boolean bl = packet.wasSigned();
+				if (bl) {
+					list.add(compoundTag.getString("title"));
+				}
 
-						itemStack3.putSubTag("author", StringTag.of(this.player.getName().getString()));
-						itemStack3.putSubTag("title", StringTag.of(itemStack.getTag().getString("title")));
-						ListTag listTag = itemStack.getTag().getList("pages", 8);
+				ListTag listTag = compoundTag.getList("pages", 8);
 
-						for (int i = 0; i < listTag.size(); i++) {
-							String string = listTag.getString(i);
-							Text text = new LiteralText(string);
-							string = Text.Serializer.toJson(text);
-							listTag.set(i, (Tag)StringTag.of(string));
-						}
+				for (int i = 0; i < listTag.size(); i++) {
+					list.add(listTag.getString(i));
+				}
 
-						itemStack3.putSubTag("pages", listTag);
-						this.player.setStackInHand(packet.getHand(), itemStack3);
-					} else {
-						itemStack2.putSubTag("pages", itemStack.getTag().getList("pages", 8));
-					}
+				int i = packet.method_12235();
+				if (PlayerInventory.isValidHotbarIndex(i) || i == 40) {
+					this.method_31279(list, bl ? listx -> this.method_31276((String)listx.get(0), listx.subList(1, listx.size()), i) : listx -> this.method_31278(listx, i));
 				}
 			}
+		}
+	}
+
+	private void method_31278(List<String> list, int i) {
+		ItemStack itemStack = this.player.inventory.getStack(i);
+		if (itemStack.getItem() == Items.WRITABLE_BOOK) {
+			ListTag listTag = new ListTag();
+			list.stream().map(StringTag::of).forEach(listTag::add);
+			itemStack.putSubTag("pages", listTag);
+		}
+	}
+
+	private void method_31276(String string, List<String> list, int i) {
+		ItemStack itemStack = this.player.inventory.getStack(i);
+		if (itemStack.getItem() == Items.WRITABLE_BOOK) {
+			ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
+			CompoundTag compoundTag = itemStack.getTag();
+			if (compoundTag != null) {
+				itemStack2.setTag(compoundTag.copy());
+			}
+
+			itemStack2.putSubTag("author", StringTag.of(this.player.getName().getString()));
+			itemStack2.putSubTag("title", StringTag.of(string));
+			ListTag listTag = new ListTag();
+
+			for (String string2 : list) {
+				Text text = new LiteralText(string2);
+				String string3 = Text.Serializer.toJson(text);
+				listTag.add(StringTag.of(string3));
+			}
+
+			itemStack2.putSubTag("pages", listTag);
+			this.player.inventory.setStack(i, itemStack2);
 		}
 	}
 
@@ -999,6 +1058,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			);
 		this.player.onDisconnect();
 		this.server.getPlayerManager().remove(this.player);
+		class_5513 lv = this.player.method_31273();
+		if (lv != null) {
+			lv.method_31290();
+		}
+
 		if (this.isHost()) {
 			LOGGER.info("Stopping singleplayer server as player logged out");
 			this.server.stop(false);
@@ -1049,12 +1113,20 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 	@Override
 	public void onGameMessage(ChatMessageC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		String string = StringUtils.normalizeSpace(packet.getChatMessage());
+		if (string.startsWith("/")) {
+			NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+			this.method_31286(string);
+		} else {
+			this.method_31277(string, this::method_31286);
+		}
+	}
+
+	private void method_31286(String string) {
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
 			this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.cannotSend").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
 		} else {
 			this.player.updateLastActionTime();
-			String string = StringUtils.normalizeSpace(packet.getChatMessage());
 
 			for (int i = 0; i < string.length(); i++) {
 				if (!SharedConstants.isValidChar(string.charAt(i))) {
@@ -1328,10 +1400,14 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 	@Override
 	public void onSignUpdate(UpdateSignC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		List<String> list = (List<String>)Stream.of(packet.getText()).map(Formatting::strip).collect(Collectors.toList());
+		this.method_31279(list, listx -> this.method_31282(packet, listx));
+	}
+
+	private void method_31282(UpdateSignC2SPacket updateSignC2SPacket, List<String> list) {
 		this.player.updateLastActionTime();
 		ServerWorld serverWorld = this.player.getServerWorld();
-		BlockPos blockPos = packet.getPos();
+		BlockPos blockPos = updateSignC2SPacket.getPos();
 		if (serverWorld.isChunkLoaded(blockPos)) {
 			BlockState blockState = serverWorld.getBlockState(blockPos);
 			BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
@@ -1345,10 +1421,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				return;
 			}
 
-			String[] strings = packet.getText();
-
-			for (int i = 0; i < strings.length; i++) {
-				signBlockEntity.setTextOnRow(i, new LiteralText(Formatting.strip(strings[i])));
+			for (int i = 0; i < list.size(); i++) {
+				signBlockEntity.setTextOnRow(i, new LiteralText((String)list.get(i)));
 			}
 
 			signBlockEntity.markDirty();

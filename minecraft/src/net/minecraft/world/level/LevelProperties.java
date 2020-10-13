@@ -173,25 +173,25 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		);
 	}
 
-	public static LevelProperties method_29029(
+	public static LevelProperties readProperties(
 		Dynamic<Tag> dynamic,
 		DataFixer dataFixer,
-		int i,
-		@Nullable CompoundTag compoundTag,
+		int dataVersion,
+		@Nullable CompoundTag playerData,
 		LevelInfo levelInfo,
 		SaveVersionInfo saveVersionInfo,
 		GeneratorOptions generatorOptions,
 		Lifecycle lifecycle
 	) {
 		long l = dynamic.get("Time").asLong(0L);
-		CompoundTag compoundTag2 = (CompoundTag)dynamic.get("DragonFight")
+		CompoundTag compoundTag = (CompoundTag)dynamic.get("DragonFight")
 			.result()
 			.map(Dynamic::getValue)
 			.orElseGet(() -> dynamic.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap().getValue());
 		return new LevelProperties(
 			dataFixer,
-			i,
-			compoundTag,
+			dataVersion,
+			playerData,
 			dynamic.get("WasModded").asBoolean(false),
 			dynamic.get("SpawnX").asInt(0),
 			dynamic.get("SpawnY").asInt(0),
@@ -217,7 +217,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 				.collect(Collectors.toCollection(Sets::newLinkedHashSet)),
 			new Timer<>(TimerCallbackSerializer.INSTANCE, dynamic.get("ScheduledEvents").asStream()),
 			(CompoundTag)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(),
-			compoundTag2,
+			compoundTag,
 			levelInfo,
 			generatorOptions,
 			lifecycle
@@ -511,9 +511,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection crashReportSection) {
-		ServerWorldProperties.super.populateCrashReport(crashReportSection);
-		SaveProperties.super.populateCrashReport(crashReportSection);
+	public void populateCrashReport(CrashReportSection reportSection) {
+		ServerWorldProperties.super.populateCrashReport(reportSection);
+		SaveProperties.super.populateCrashReport(reportSection);
 	}
 
 	@Override

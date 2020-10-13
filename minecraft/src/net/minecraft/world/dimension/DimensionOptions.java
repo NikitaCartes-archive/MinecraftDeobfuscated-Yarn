@@ -95,21 +95,21 @@ public final class DimensionOptions {
 				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator) {
 				NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)((DimensionOptions)entry2.getValue()).getChunkGenerator();
 				NoiseChunkGenerator noiseChunkGenerator2 = (NoiseChunkGenerator)((DimensionOptions)entry3.getValue()).getChunkGenerator();
-				if (!noiseChunkGenerator.method_28548(seed, ChunkGeneratorSettings.NETHER)) {
+				if (!noiseChunkGenerator.matchesSettings(seed, ChunkGeneratorSettings.NETHER)) {
 					return false;
-				} else if (!noiseChunkGenerator2.method_28548(seed, ChunkGeneratorSettings.END)) {
+				} else if (!noiseChunkGenerator2.matchesSettings(seed, ChunkGeneratorSettings.END)) {
 					return false;
 				} else if (!(noiseChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource)) {
 					return false;
 				} else {
 					MultiNoiseBiomeSource multiNoiseBiomeSource = (MultiNoiseBiomeSource)noiseChunkGenerator.getBiomeSource();
-					if (!multiNoiseBiomeSource.method_28462(seed)) {
+					if (!multiNoiseBiomeSource.matchesInstance(seed)) {
 						return false;
 					} else if (!(noiseChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {
 						return false;
 					} else {
 						TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)noiseChunkGenerator2.getBiomeSource();
-						return theEndBiomeSource.isSeedEqual(seed);
+						return theEndBiomeSource.matches(seed);
 					}
 				}
 			} else {

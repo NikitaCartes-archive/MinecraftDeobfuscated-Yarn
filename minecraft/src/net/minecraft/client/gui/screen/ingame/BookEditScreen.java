@@ -215,7 +215,8 @@ public class BookEditScreen extends Screen {
 				this.itemStack.putSubTag("title", StringTag.of(this.title.trim()));
 			}
 
-			this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, signBook, this.hand));
+			int i = this.hand == Hand.MAIN_HAND ? this.player.inventory.selectedSlot : 40;
+			this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, signBook, i));
 		}
 	}
 

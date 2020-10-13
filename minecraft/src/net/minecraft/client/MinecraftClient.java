@@ -77,6 +77,7 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.item.TooltipContext;
@@ -85,6 +86,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.options.AoMode;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.options.CloudRenderMode;
@@ -135,6 +137,7 @@ import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
+import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Session;
@@ -244,6 +247,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static final Identifier UNICODE_FONT_ID = new Identifier("uniform");
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
+	private static final Text field_26841 = new TranslatableText("multiplayer.socialInteractions.not_available");
 	private final File resourcePackDir;
 	private final PropertyMap sessionPropertyMap;
 	private final TextureManager textureManager;
@@ -300,6 +304,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final ToastManager toastManager;
 	private final MinecraftClientGame game = new MinecraftClientGame(this);
 	private final TutorialManager tutorialManager;
+	private final SocialInteractionsManager socialInteractionsManager;
 	public static byte[] memoryReservedForCrash = new byte[10485760];
 	@Nullable
 	public ClientPlayerInteractionManager interactionManager;
@@ -354,6 +359,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final Queue<Runnable> renderTaskQueue = Queues.<Runnable>newConcurrentLinkedQueue();
 	@Nullable
 	private CompletableFuture<Void> resourceReloadFuture;
+	@Nullable
+	private TutorialToast field_26843;
 	private Profiler profiler = DummyProfiler.INSTANCE;
 	private int trackingTick;
 	private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, () -> this.trackingTick);
@@ -470,6 +477,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.bufferBuilders = new BufferBuilderStorage();
 		this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
 		this.resourceManager.registerListener(this.gameRenderer);
+		this.socialInteractionsManager = new SocialInteractionsManager(this);
 		this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), this.blockColors);
 		this.resourceManager.registerListener(this.blockRenderManager);
 		this.worldRenderer = new WorldRenderer(this, this.bufferBuilders);
@@ -1450,6 +1458,15 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.soundManager.tick(this.paused);
 		if (this.world != null) {
 			if (!this.paused) {
+				if (!this.options.joinedFirstServer && this.method_31321()) {
+					Text text = new TranslatableText("tutorial.socialInteractions.title");
+					Text text2 = new TranslatableText("tutorial.socialInteractions.description", TutorialManager.getKeybindName("socialInteractions"));
+					this.field_26843 = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
+					this.tutorialManager.method_31365(this.field_26843, 160);
+					this.options.joinedFirstServer = true;
+					this.options.write();
+				}
+
 				this.tutorialManager.tick();
 
 				try {
@@ -1486,10 +1503,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.pop();
 	}
 
+	private boolean method_31321() {
+		return !this.integratedServerRunning || this.server != null && this.server.isRemote();
+	}
+
 	private void handleInputEvents() {
 		while (this.options.keyTogglePerspective.wasPressed()) {
 			Perspective perspective = this.options.getPerspective();
-			this.options.method_31043(this.options.getPerspective().next());
+			this.options.setPerspective(this.options.getPerspective().next());
 			if (perspective.isFirstPerson() != this.options.getPerspective().isFirstPerson()) {
 				this.gameRenderer.onCameraEntitySet(this.options.getPerspective().isFirstPerson() ? this.getCameraEntity() : null);
 			}
@@ -1512,6 +1533,20 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				} else {
 					CreativeInventoryScreen.onHotbarKeyPress(this, i, bl2, bl);
 				}
+			}
+		}
+
+		while (this.options.keySocialInteractions.wasPressed()) {
+			if (!this.method_31321()) {
+				this.player.sendMessage(field_26841, true);
+				NarratorManager.INSTANCE.narrate(field_26841.getString());
+			} else {
+				if (this.field_26843 != null) {
+					this.tutorialManager.method_31364(this.field_26843);
+					this.field_26843 = null;
+				}
+
+				this.openScreen(new SocialInteractionsScreen());
 			}
 		}
 
@@ -1587,7 +1622,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public static DataPackSettings method_29598(LevelStorage.Session session) {
 		MinecraftServer.convertLevel(session);
-		DataPackSettings dataPackSettings = session.getDatapackSettings();
+		DataPackSettings dataPackSettings = session.getDataPackSettings();
 		if (dataPackSettings == null) {
 			throw new IllegalStateException("Failed to load data pack config");
 		} else {
@@ -1933,7 +1968,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 * them.
 	 */
 	public boolean shouldBlockMessages(UUID sender) {
-		return this.isOnlineChatEnabled() ? false : (this.player == null || !sender.equals(this.player.getUuid())) && !sender.equals(Util.NIL_UUID);
+		return this.isOnlineChatEnabled()
+			? this.socialInteractionsManager.isPlayerHidden(sender)
+			: (this.player == null || !sender.equals(this.player.getUuid())) && !sender.equals(Util.NIL_UUID);
 	}
 
 	public boolean isOnlineChatEnabled() {
@@ -2456,6 +2493,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	public Overlay getOverlay() {
 		return this.overlay;
+	}
+
+	public SocialInteractionsManager getSocialInteractionsManager() {
+		return this.socialInteractionsManager;
 	}
 
 	public boolean shouldRenderAsync() {

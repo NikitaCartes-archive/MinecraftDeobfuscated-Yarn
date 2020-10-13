@@ -156,7 +156,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	}
 
 	private Text daysLeftPresentation(int daysLeft) {
-		if (daysLeft == -1 && this.serverData.expired) {
+		if (daysLeft < 0 && this.serverData.expired) {
 			return field_26517;
 		} else if (daysLeft <= 1) {
 			return field_26518;

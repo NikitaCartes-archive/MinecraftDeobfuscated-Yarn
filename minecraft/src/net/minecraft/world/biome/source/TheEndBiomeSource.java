@@ -87,7 +87,7 @@ public class TheEndBiomeSource extends BiomeSource {
 		}
 	}
 
-	public boolean isSeedEqual(long seed) {
+	public boolean matches(long seed) {
 		return this.seed == seed;
 	}
 

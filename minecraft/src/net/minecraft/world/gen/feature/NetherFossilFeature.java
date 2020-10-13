@@ -43,7 +43,7 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 			int k = chunkPos.getStartX() + this.random.nextInt(16);
 			int l = chunkPos.getStartZ() + this.random.nextInt(16);
 			int m = chunkGenerator.getSeaLevel();
-			int n = m + this.random.nextInt(chunkGenerator.getMaxY() - 2 - m);
+			int n = m + this.random.nextInt(chunkGenerator.getWorldHeight() - 2 - m);
 			BlockView blockView = chunkGenerator.getColumnSample(k, l);
 
 			for (BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l); n > m; n--) {
