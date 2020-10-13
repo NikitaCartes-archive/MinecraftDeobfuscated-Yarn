@@ -37,8 +37,11 @@ import net.minecraft.world.gen.ChunkRandom;
 public class MultiNoiseBiomeSource
 extends BiomeSource {
     private static final NoiseParameters DEFAULT_NOISE_PARAMETERS = new NoiseParameters(-7, ImmutableList.of(Double.valueOf(1.0), Double.valueOf(1.0)));
-    public static final MapCodec<MultiNoiseBiomeSource> CODEC = RecordCodecBuilder.mapCodec(instance2 -> instance2.group(((MapCodec)Codec.LONG.fieldOf("seed")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.seed), ((MapCodec)RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Biome.MixedNoisePoint.CODEC.fieldOf("parameters")).forGetter(Pair::getFirst), ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of)).listOf().fieldOf("biomes")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.biomePoints), ((MapCodec)NoiseParameters.CODEC.fieldOf("temperature_noise")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.temperatureNoiseParameters), ((MapCodec)NoiseParameters.CODEC.fieldOf("humidity_noise")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.humidityNoiseParameters), ((MapCodec)NoiseParameters.CODEC.fieldOf("altitude_noise")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.altitudeNoiseParameters), ((MapCodec)NoiseParameters.CODEC.fieldOf("weirdness_noise")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.weirdnessNoiseParameters)).apply((Applicative<MultiNoiseBiomeSource, ?>)instance2, MultiNoiseBiomeSource::new));
-    public static final Codec<MultiNoiseBiomeSource> INSTANCE_CODEC = Codec.mapEither(Instance.CODEC, CODEC).xmap(either -> either.map(Instance::getBiomeSource, Function.identity()), multiNoiseBiomeSource -> multiNoiseBiomeSource.getInstance().map(Either::left).orElseGet(() -> Either.right(multiNoiseBiomeSource))).codec();
+    /**
+     * Used to parse a custom biome source, when a preset hasn't been provided.
+     */
+    public static final MapCodec<MultiNoiseBiomeSource> CUSTOM_CODEC = RecordCodecBuilder.mapCodec(instance2 -> instance2.group(((MapCodec)Codec.LONG.fieldOf("seed")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.seed), ((MapCodec)RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Biome.MixedNoisePoint.CODEC.fieldOf("parameters")).forGetter(Pair::getFirst), ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of)).listOf().fieldOf("biomes")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.biomePoints), ((MapCodec)NoiseParameters.CODEC.fieldOf("temperature_noise")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.temperatureNoiseParameters), ((MapCodec)NoiseParameters.CODEC.fieldOf("humidity_noise")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.humidityNoiseParameters), ((MapCodec)NoiseParameters.CODEC.fieldOf("altitude_noise")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.altitudeNoiseParameters), ((MapCodec)NoiseParameters.CODEC.fieldOf("weirdness_noise")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.weirdnessNoiseParameters)).apply((Applicative<MultiNoiseBiomeSource, ?>)instance2, MultiNoiseBiomeSource::new));
+    public static final Codec<MultiNoiseBiomeSource> CODEC = Codec.mapEither(Instance.CODEC, CUSTOM_CODEC).xmap(either -> either.map(Instance::getBiomeSource, Function.identity()), multiNoiseBiomeSource -> multiNoiseBiomeSource.getInstance().map(Either::left).orElseGet(() -> Either.right(multiNoiseBiomeSource))).codec();
     private final NoiseParameters temperatureNoiseParameters;
     private final NoiseParameters humidityNoiseParameters;
     private final NoiseParameters altitudeNoiseParameters;
@@ -78,7 +81,7 @@ extends BiomeSource {
 
     @Override
     protected Codec<? extends BiomeSource> getCodec() {
-        return INSTANCE_CODEC;
+        return CODEC;
     }
 
     @Override
@@ -98,8 +101,8 @@ extends BiomeSource {
         return this.biomePoints.stream().min(Comparator.comparing(pair -> Float.valueOf(((Biome.MixedNoisePoint)pair.getFirst()).calculateDistanceTo(mixedNoisePoint)))).map(Pair::getSecond).map(Supplier::get).orElse(BuiltinBiomes.THE_VOID);
     }
 
-    public boolean method_28462(long l) {
-        return this.seed == l && this.instance.isPresent() && Objects.equals(this.instance.get().getSecond(), Preset.NETHER);
+    public boolean matchesInstance(long seed) {
+        return this.seed == seed && this.instance.isPresent() && Objects.equals(this.instance.get().getSecond(), Preset.NETHER);
     }
 
     public static class Preset {

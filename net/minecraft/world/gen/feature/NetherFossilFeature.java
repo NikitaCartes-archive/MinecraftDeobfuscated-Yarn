@@ -46,7 +46,7 @@ extends StructureFeature<DefaultFeatureConfig> {
             int m = chunkGenerator.getSeaLevel();
             BlockView blockView = chunkGenerator.getColumnSample(k, l);
             BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l);
-            for (n = m + this.random.nextInt(chunkGenerator.getMaxY() - 2 - m); n > m; --n) {
+            for (n = m + this.random.nextInt(chunkGenerator.getWorldHeight() - 2 - m); n > m; --n) {
                 BlockState blockState = blockView.getBlockState(mutable);
                 mutable.move(Direction.DOWN);
                 BlockState blockState2 = blockView.getBlockState(mutable);

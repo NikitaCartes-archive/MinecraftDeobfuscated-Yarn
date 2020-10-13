@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,6 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -94,6 +98,7 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
@@ -1298,6 +1303,24 @@ implements StructureWorldAccess {
     @Override
     public ServerWorld toServerWorld() {
         return this;
+    }
+
+    @VisibleForTesting
+    public String method_31268() {
+        return String.format("players: %s, entities: %d [%s], block_entities: %d [%s], block_ticks: %d, fluid_ticks: %d, chunk_source: %s", this.players.size(), this.entitiesById.size(), ServerWorld.method_31270(this.entitiesById.values(), entity -> Registry.ENTITY_TYPE.getId(entity.getType())), this.tickingBlockEntities.size(), ServerWorld.method_31270(this.tickingBlockEntities, blockEntity -> Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType())), ((ServerTickScheduler)this.getBlockTickScheduler()).getTicks(), ((ServerTickScheduler)this.getFluidTickScheduler()).getTicks(), this.getDebugString());
+    }
+
+    private static <T> String method_31270(Collection<T> collection, Function<T, Identifier> function) {
+        try {
+            Object2IntOpenHashMap<Identifier> object2IntOpenHashMap = new Object2IntOpenHashMap<Identifier>();
+            for (T object : collection) {
+                Identifier identifier = function.apply(object);
+                object2IntOpenHashMap.addTo(identifier, 1);
+            }
+            return object2IntOpenHashMap.object2IntEntrySet().stream().sorted(Comparator.comparing(Object2IntMap.Entry::getIntValue).reversed()).limit(5L).map(entry -> entry.getKey() + ":" + entry.getIntValue()).collect(Collectors.joining(","));
+        } catch (Exception exception) {
+            return "";
+        }
     }
 
     public static void createEndSpawnPlatform(ServerWorld world) {

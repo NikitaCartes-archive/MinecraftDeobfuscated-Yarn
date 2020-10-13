@@ -41,6 +41,10 @@ public class SharedConstants {
         return gameVersion;
     }
 
+    public static int method_31372() {
+        return 0x40000001;
+    }
+
     static {
         INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':'};
         ResourceLeakDetector.setLevel(RESOURCE_LEAK_DETECTOR_DISABLED);

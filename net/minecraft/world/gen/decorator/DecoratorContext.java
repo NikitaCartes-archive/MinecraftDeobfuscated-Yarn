@@ -27,7 +27,7 @@ public class DecoratorContext {
     }
 
     public int getMaxY() {
-        return this.generator.getMaxY();
+        return this.generator.getWorldHeight();
     }
 
     public int getSeaLevel() {

@@ -23,6 +23,8 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_5513;
+import net.minecraft.class_5514;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
@@ -42,6 +44,7 @@ import net.minecraft.server.dedicated.ServerMBean;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
@@ -77,11 +80,14 @@ implements DedicatedServer {
     private final ServerPropertiesLoader propertiesLoader;
     @Nullable
     private DedicatedServerGui gui;
+    @Nullable
+    private final class_5514 field_26898;
 
     public MinecraftDedicatedServer(Thread thread, DynamicRegistryManager.Impl impl, LevelStorage.Session session, ResourcePackManager resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super(thread, impl, session, saveProperties, resourcePackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = serverPropertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
+        this.field_26898 = class_5514.method_31302(serverPropertiesLoader.getPropertiesHandler().field_26899);
     }
 
     @Override
@@ -172,11 +178,11 @@ implements DedicatedServer {
         }
         if (serverPropertiesHandler.enableQuery) {
             LOGGER.info("Starting GS4 status listener");
-            this.queryResponseHandler = QueryResponseHandler.method_30737(this);
+            this.queryResponseHandler = QueryResponseHandler.create(this);
         }
         if (serverPropertiesHandler.enableRcon) {
             LOGGER.info("Starting remote control listener");
-            this.rconServer = RconListener.method_30738(this);
+            this.rconServer = RconListener.create(this);
         }
         if (this.getMaxTickTime() > 0L) {
             Thread thread2 = new Thread(new DedicatedServerWatchdog(this));
@@ -264,6 +270,9 @@ implements DedicatedServer {
 
     @Override
     public void exit() {
+        if (this.field_26898 != null) {
+            this.field_26898.close();
+        }
         if (this.gui != null) {
             this.gui.stop();
         }
@@ -293,8 +302,8 @@ implements DedicatedServer {
         super.addSnooperInfo(snooper);
     }
 
-    public void enqueueCommand(String string, ServerCommandSource serverCommandSource) {
-        this.commandQueue.add(new PendingServerCommand(string, serverCommandSource));
+    public void enqueueCommand(String command, ServerCommandSource commandSource) {
+        this.commandQueue.add(new PendingServerCommand(command, commandSource));
     }
 
     public void executeQueuedCommands() {
@@ -529,6 +538,15 @@ implements DedicatedServer {
     @Override
     public boolean syncChunkWrites() {
         return this.propertiesLoader.getPropertiesHandler().syncChunkWrites;
+    }
+
+    @Override
+    @Nullable
+    public class_5513 method_31371(ServerPlayerEntity serverPlayerEntity) {
+        if (this.field_26898 != null) {
+            return this.field_26898.method_31297(serverPlayerEntity.getGameProfile());
+        }
+        return null;
     }
 
     @Override

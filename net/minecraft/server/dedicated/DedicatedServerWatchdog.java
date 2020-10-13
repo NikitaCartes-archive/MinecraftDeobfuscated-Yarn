@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.dedicated;
 
+import com.google.common.collect.Streams;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
@@ -12,10 +13,13 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
+import net.minecraft.Bootstrap;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.world.GameRules;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +46,7 @@ implements Runnable {
                 ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
                 ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true);
                 StringBuilder stringBuilder = new StringBuilder();
-                Error error = new Error();
+                Error error = new Error("Watchdog");
                 for (ThreadInfo threadInfo : threadInfos) {
                     if (threadInfo.getThreadId() == this.server.getThread().getId()) {
                         error.setStackTrace(threadInfo.getStackTrace());
@@ -54,6 +58,10 @@ implements Runnable {
                 this.server.populateCrashReport(crashReport);
                 CrashReportSection crashReportSection = crashReport.addElement("Thread Dump");
                 crashReportSection.add("Threads", stringBuilder);
+                CrashReportSection crashReportSection2 = crashReport.addElement("Performance stats");
+                crashReportSection2.add("Random tick rate", () -> this.server.getSaveProperties().getGameRules().get(GameRules.RANDOM_TICK_SPEED).toString());
+                crashReportSection2.add("Level stats", () -> Streams.stream(this.server.getWorlds()).map(serverWorld -> serverWorld.getRegistryKey() + ": " + serverWorld.method_31268()).collect(Collectors.joining(",\n")));
+                Bootstrap.println("Crash report:\n" + crashReport.asString());
                 File file = new File(new File(this.server.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt");
                 if (crashReport.writeToFile(file)) {
                     LOGGER.error("This crash report has been saved to: {}", (Object)file.getAbsolutePath());

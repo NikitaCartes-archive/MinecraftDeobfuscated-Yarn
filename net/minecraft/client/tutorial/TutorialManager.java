@@ -3,11 +3,14 @@
  */
 package net.minecraft.client.tutorial;
 
+import com.google.common.collect.Lists;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;
+import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.tutorial.TutorialStepHandler;
 import net.minecraft.client.world.ClientWorld;
@@ -25,6 +28,7 @@ public class TutorialManager {
     private final MinecraftClient client;
     @Nullable
     private TutorialStepHandler currentHandler;
+    private List<class_5524> field_26893 = Lists.newArrayList();
 
     public TutorialManager(MinecraftClient client) {
         this.client = client;
@@ -81,7 +85,18 @@ public class TutorialManager {
         this.currentHandler = this.client.options.tutorialStep.createHandler(this);
     }
 
+    public void method_31365(TutorialToast tutorialToast, int i) {
+        this.field_26893.add(new class_5524(tutorialToast, i));
+        this.client.getToastManager().add(tutorialToast);
+    }
+
+    public void method_31364(TutorialToast tutorialToast) {
+        this.field_26893.removeIf(arg -> ((class_5524)arg).field_26894 == tutorialToast);
+        tutorialToast.hide();
+    }
+
     public void tick() {
+        this.field_26893.removeIf(object -> ((class_5524)object).method_31368());
         if (this.currentHandler != null) {
             if (this.client.world != null) {
                 this.currentHandler.tick();
@@ -115,6 +130,27 @@ public class TutorialManager {
 
     public static Text getKeybindName(String string) {
         return new KeybindText("key." + string).formatted(Formatting.BOLD);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static final class class_5524 {
+        private final TutorialToast field_26894;
+        private final int field_26895;
+        private int field_26896;
+
+        private class_5524(TutorialToast tutorialToast, int i) {
+            this.field_26894 = tutorialToast;
+            this.field_26895 = i;
+        }
+
+        private boolean method_31368() {
+            this.field_26894.setProgress(Math.min((float)(++this.field_26896) / (float)this.field_26895, 1.0f));
+            if (this.field_26896 > this.field_26895) {
+                this.field_26894.hide();
+                return true;
+            }
+            return false;
+        }
     }
 }
 

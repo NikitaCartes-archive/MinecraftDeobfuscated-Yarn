@@ -54,35 +54,56 @@ public class TextRenderer {
         return this.fontStorageAccessor.apply(id);
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int drawWithShadow(MatrixStack matrices, String text, float x, float y, int color) {
         return this.draw(text, x, y, color, matrices.peek().getModel(), true, this.isRightToLeft());
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int drawWithShadow(MatrixStack matrices, String text, float x, float y, int color, boolean rightToLeft) {
         RenderSystem.enableAlphaTest();
         return this.draw(text, x, y, color, matrices.peek().getModel(), true, rightToLeft);
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int draw(MatrixStack matrices, String text, float x, float y, int color) {
         RenderSystem.enableAlphaTest();
         return this.draw(text, x, y, color, matrices.peek().getModel(), false, this.isRightToLeft());
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int drawWithShadow(MatrixStack matrices, OrderedText text, float x, float y, int color) {
         RenderSystem.enableAlphaTest();
         return this.draw(text, x, y, color, matrices.peek().getModel(), true);
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int drawWithShadow(MatrixStack matrices, Text text, float x, float y, int color) {
         RenderSystem.enableAlphaTest();
         return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getModel(), true);
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int draw(MatrixStack matrices, OrderedText text, float x, float y, int color) {
         RenderSystem.enableAlphaTest();
         return this.draw(text, x, y, color, matrices.peek().getModel(), false);
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int draw(MatrixStack matrices, Text text, float x, float y, int color) {
         RenderSystem.enableAlphaTest();
         return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getModel(), false);
@@ -115,18 +136,30 @@ public class TextRenderer {
         return i;
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int draw(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light) {
         return this.draw(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light, this.isRightToLeft());
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int draw(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light, boolean rightToLeft) {
         return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light, rightToLeft);
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int draw(Text text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light) {
         return this.draw(text.asOrderedText(), x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public int draw(OrderedText text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light) {
         return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
     }
@@ -206,6 +239,9 @@ public class TextRenderer {
         return this.handler.trimToWidth(text, width, Style.EMPTY);
     }
 
+    /**
+     * @param color the text color in the 0xAARRGGBB format
+     */
     public void drawTrimmed(StringVisitable text, int x, int y, int maxWidth, int color) {
         Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
         for (OrderedText orderedText : this.wrapLines(text, maxWidth)) {

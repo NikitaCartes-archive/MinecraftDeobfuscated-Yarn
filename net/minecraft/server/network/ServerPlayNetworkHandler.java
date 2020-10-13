@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.network;
 
+import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 import com.mojang.brigadier.ParseResults;
@@ -12,9 +13,16 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ShortMap;
 import it.unimi.dsi.fastutil.ints.Int2ShortOpenHashMap;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancement.Advancement;
@@ -28,6 +36,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.class_5513;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -193,6 +202,10 @@ implements ServerPlayPacketListener {
         connection.setPacketListener(this);
         this.player = player;
         player.networkHandler = this;
+        class_5513 lv = player.method_31273();
+        if (lv != null) {
+            lv.method_31287();
+        }
     }
 
     public void tick() {
@@ -283,6 +296,31 @@ implements ServerPlayPacketListener {
         this.connection.send(new DisconnectS2CPacket(reason), future -> this.connection.disconnect(reason));
         this.connection.disableAutoRead();
         this.server.submitAndJoin(this.connection::handleDisconnection);
+    }
+
+    private <T> void method_31275(T object2, Consumer<T> consumer, BiFunction<class_5513, T, CompletableFuture<Optional<T>>> biFunction) {
+        MinecraftServer threadExecutor = this.player.getServerWorld().getServer();
+        Consumer<Object> consumer2 = object -> {
+            if (this.getConnection().isOpen()) {
+                consumer.accept(object);
+            } else {
+                LOGGER.debug("Ignoring packet due to disconnection");
+            }
+        };
+        class_5513 lv = this.player.method_31273();
+        if (lv != null) {
+            biFunction.apply(lv, (class_5513)object2).thenAcceptAsync(optional -> optional.ifPresent(consumer2), (Executor)threadExecutor);
+        } else {
+            threadExecutor.execute(() -> consumer2.accept(object2));
+        }
+    }
+
+    private void method_31277(String string, Consumer<String> consumer) {
+        this.method_31275(string, consumer, class_5513::method_31288);
+    }
+
+    private void method_31279(List<String> list, Consumer<List<String>> consumer) {
+        this.method_31275(list, consumer, class_5513::method_31289);
     }
 
     @Override
@@ -631,37 +669,61 @@ implements ServerPlayPacketListener {
 
     @Override
     public void onBookUpdate(BookUpdateC2SPacket packet) {
-        NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+        int i;
         ItemStack itemStack = packet.getBook();
-        if (itemStack.isEmpty()) {
+        if (itemStack.getItem() != Items.WRITABLE_BOOK) {
             return;
         }
-        if (!WritableBookItem.isValid(itemStack.getTag())) {
+        CompoundTag compoundTag = itemStack.getTag();
+        if (!WritableBookItem.isValid(compoundTag)) {
             return;
         }
-        ItemStack itemStack2 = this.player.getStackInHand(packet.getHand());
-        if (itemStack.getItem() == Items.WRITABLE_BOOK && itemStack2.getItem() == Items.WRITABLE_BOOK) {
-            if (packet.wasSigned()) {
-                ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK);
-                CompoundTag compoundTag = itemStack2.getTag();
-                if (compoundTag != null) {
-                    itemStack3.setTag(compoundTag.copy());
-                }
-                itemStack3.putSubTag("author", StringTag.of(this.player.getName().getString()));
-                itemStack3.putSubTag("title", StringTag.of(itemStack.getTag().getString("title")));
-                ListTag listTag = itemStack.getTag().getList("pages", 8);
-                for (int i = 0; i < listTag.size(); ++i) {
-                    String string = listTag.getString(i);
-                    LiteralText text = new LiteralText(string);
-                    string = Text.Serializer.toJson(text);
-                    listTag.set(i, StringTag.of(string));
-                }
-                itemStack3.putSubTag("pages", listTag);
-                this.player.setStackInHand(packet.getHand(), itemStack3);
-            } else {
-                itemStack2.putSubTag("pages", itemStack.getTag().getList("pages", 8));
-            }
+        ArrayList<String> list2 = Lists.newArrayList();
+        boolean bl = packet.wasSigned();
+        if (bl) {
+            list2.add(compoundTag.getString("title"));
         }
+        ListTag listTag = compoundTag.getList("pages", 8);
+        for (i = 0; i < listTag.size(); ++i) {
+            list2.add(listTag.getString(i));
+        }
+        i = packet.method_12235();
+        if (!PlayerInventory.isValidHotbarIndex(i) && i != 40) {
+            return;
+        }
+        this.method_31279(list2, bl ? list -> this.method_31276((String)list.get(0), list.subList(1, list.size()), i) : list -> this.method_31278((List<String>)list, i));
+    }
+
+    private void method_31278(List<String> list, int i) {
+        ItemStack itemStack = this.player.inventory.getStack(i);
+        if (itemStack.getItem() != Items.WRITABLE_BOOK) {
+            return;
+        }
+        ListTag listTag = new ListTag();
+        list.stream().map(StringTag::of).forEach(listTag::add);
+        itemStack.putSubTag("pages", listTag);
+    }
+
+    private void method_31276(String string, List<String> list, int i) {
+        ItemStack itemStack = this.player.inventory.getStack(i);
+        if (itemStack.getItem() != Items.WRITABLE_BOOK) {
+            return;
+        }
+        ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
+        CompoundTag compoundTag = itemStack.getTag();
+        if (compoundTag != null) {
+            itemStack2.setTag(compoundTag.copy());
+        }
+        itemStack2.putSubTag("author", StringTag.of(this.player.getName().getString()));
+        itemStack2.putSubTag("title", StringTag.of(string));
+        ListTag listTag = new ListTag();
+        for (String string2 : list) {
+            LiteralText text = new LiteralText(string2);
+            String string3 = Text.Serializer.toJson(text);
+            listTag.add(StringTag.of(string3));
+        }
+        itemStack2.putSubTag("pages", listTag);
+        this.player.inventory.setStack(i, itemStack2);
     }
 
     @Override
@@ -948,6 +1010,10 @@ implements ServerPlayPacketListener {
         this.server.getPlayerManager().broadcastChatMessage(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
         this.player.onDisconnect();
         this.server.getPlayerManager().remove(this.player);
+        class_5513 lv = this.player.method_31273();
+        if (lv != null) {
+            lv.method_31290();
+        }
         if (this.isHost()) {
             LOGGER.info("Stopping singleplayer server as player logged out");
             this.server.stop(false);
@@ -995,13 +1061,21 @@ implements ServerPlayPacketListener {
 
     @Override
     public void onGameMessage(ChatMessageC2SPacket packet) {
-        NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+        String string = StringUtils.normalizeSpace(packet.getChatMessage());
+        if (string.startsWith("/")) {
+            NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+            this.method_31286(string);
+        } else {
+            this.method_31277(string, this::method_31286);
+        }
+    }
+
+    private void method_31286(String string) {
         if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
             this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.cannotSend").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
             return;
         }
         this.player.updateLastActionTime();
-        String string = StringUtils.normalizeSpace(packet.getChatMessage());
         for (int i = 0; i < string.length(); ++i) {
             if (SharedConstants.isValidChar(string.charAt(i))) continue;
             this.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
@@ -1255,10 +1329,14 @@ implements ServerPlayPacketListener {
 
     @Override
     public void onSignUpdate(UpdateSignC2SPacket packet) {
-        NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+        List<String> list2 = Stream.of(packet.getText()).map(Formatting::strip).collect(Collectors.toList());
+        this.method_31279(list2, list -> this.method_31282(packet, (List<String>)list));
+    }
+
+    private void method_31282(UpdateSignC2SPacket updateSignC2SPacket, List<String> list) {
         this.player.updateLastActionTime();
         ServerWorld serverWorld = this.player.getServerWorld();
-        BlockPos blockPos = packet.getPos();
+        BlockPos blockPos = updateSignC2SPacket.getPos();
         if (serverWorld.isChunkLoaded(blockPos)) {
             BlockState blockState = serverWorld.getBlockState(blockPos);
             BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
@@ -1270,9 +1348,8 @@ implements ServerPlayPacketListener {
                 LOGGER.warn("Player {} just tried to change non-editable sign", (Object)this.player.getName().getString());
                 return;
             }
-            String[] strings = packet.getText();
-            for (int i = 0; i < strings.length; ++i) {
-                signBlockEntity.setTextOnRow(i, new LiteralText(Formatting.strip(strings[i])));
+            for (int i = 0; i < list.size(); ++i) {
+                signBlockEntity.setTextOnRow(i, new LiteralText(list.get(i)));
             }
             signBlockEntity.markDirty();
             serverWorld.updateListeners(blockPos, blockState, blockState, 3);

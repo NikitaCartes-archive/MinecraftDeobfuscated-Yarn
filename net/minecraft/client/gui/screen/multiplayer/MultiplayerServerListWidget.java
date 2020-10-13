@@ -52,8 +52,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     private static final Text field_26581 = new TranslatableText("lanServer.scanning");
     private static final Text field_26582 = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
     private static final Text field_26583 = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
-    private static final Text field_26584 = new TranslatableText("multiplayer.status.client_out_of_date");
-    private static final Text field_26585 = new TranslatableText("multiplayer.status.server_out_of_date");
+    private static final Text field_26849 = new TranslatableText("multiplayer.status.incompatible");
     private static final Text field_26586 = new TranslatableText("multiplayer.status.no_connection");
     private static final Text field_26587 = new TranslatableText("multiplayer.status.pinging");
     private final MultiplayerScreen screen;
@@ -165,21 +164,19 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     }
                 });
             }
-            boolean bl = this.server.protocolVersion > SharedConstants.getGameVersion().getProtocolVersion();
-            boolean bl2 = this.server.protocolVersion < SharedConstants.getGameVersion().getProtocolVersion();
-            boolean bl3 = bl || bl2;
+            boolean bl = this.server.protocolVersion != SharedConstants.getGameVersion().getProtocolVersion();
             this.client.textRenderer.draw(matrices, this.server.name, (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
             List<OrderedText> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
             for (int i = 0; i < Math.min(list.size(), 2); ++i) {
                 this.client.textRenderer.draw(matrices, list.get(i), (float)(x + 32 + 3), (float)(y + 12 + this.client.textRenderer.fontHeight * i), 0x808080);
             }
-            Text text = bl3 ? this.server.version.shallowCopy().formatted(Formatting.DARK_RED) : this.server.playerCountLabel;
+            Text text = bl ? this.server.version.shallowCopy().formatted(Formatting.DARK_RED) : this.server.playerCountLabel;
             int j = this.client.textRenderer.getWidth(text);
             this.client.textRenderer.draw(matrices, text, (float)(x + entryWidth - j - 15 - 2), (float)(y + 1), 0x808080);
             int k = 0;
-            if (bl3) {
+            if (bl) {
                 l = 5;
-                text2 = bl ? field_26584 : field_26585;
+                text2 = field_26849;
                 list2 = this.server.playerListSummary;
             } else if (this.server.online && this.server.ping != -2L) {
                 l = this.server.ping < 0L ? 5 : (this.server.ping < 150L ? 0 : (this.server.ping < 300L ? 1 : (this.server.ping < 600L ? 2 : (this.server.ping < 1000L ? 3 : 4))));

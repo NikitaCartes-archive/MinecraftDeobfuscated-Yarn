@@ -10,36 +10,35 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.util.Hand;
 
 public class BookUpdateC2SPacket
 implements Packet<ServerPlayPacketListener> {
     private ItemStack book;
     private boolean signed;
-    private Hand hand;
+    private int field_26897;
 
     public BookUpdateC2SPacket() {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public BookUpdateC2SPacket(ItemStack book, boolean signed, Hand hand) {
+    public BookUpdateC2SPacket(ItemStack book, boolean signed, int i) {
         this.book = book.copy();
         this.signed = signed;
-        this.hand = hand;
+        this.field_26897 = i;
     }
 
     @Override
     public void read(PacketByteBuf buf) throws IOException {
         this.book = buf.readItemStack();
         this.signed = buf.readBoolean();
-        this.hand = buf.readEnumConstant(Hand.class);
+        this.field_26897 = buf.readVarInt();
     }
 
     @Override
     public void write(PacketByteBuf buf) throws IOException {
         buf.writeItemStack(this.book);
         buf.writeBoolean(this.signed);
-        buf.writeEnumConstant(this.hand);
+        buf.writeVarInt(this.field_26897);
     }
 
     @Override
@@ -55,8 +54,8 @@ implements Packet<ServerPlayPacketListener> {
         return this.signed;
     }
 
-    public Hand getHand() {
-        return this.hand;
+    public int method_12235() {
+        return this.field_26897;
     }
 }
 

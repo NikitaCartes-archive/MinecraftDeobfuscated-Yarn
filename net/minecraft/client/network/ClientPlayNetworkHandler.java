@@ -1426,6 +1426,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         for (PlayerListS2CPacket.Entry entry : packet.getEntries()) {
             if (packet.getAction() == PlayerListS2CPacket.Action.REMOVE_PLAYER) {
+                this.client.getSocialInteractionsManager().method_31341(entry.getProfile().getId());
                 this.playerListEntries.remove(entry.getProfile().getId());
                 continue;
             }
@@ -1433,6 +1434,7 @@ implements ClientPlayPacketListener {
             if (packet.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
                 playerListEntry = new PlayerListEntry(entry);
                 this.playerListEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
+                this.client.getSocialInteractionsManager().method_31337(playerListEntry);
             }
             if (playerListEntry == null) continue;
             switch (packet.getAction()) {
@@ -2031,6 +2033,10 @@ implements ClientPlayPacketListener {
 
     public Collection<PlayerListEntry> getPlayerList() {
         return this.playerListEntries.values();
+    }
+
+    public Collection<UUID> getPlayerUuids() {
+        return this.playerListEntries.keySet();
     }
 
     @Nullable

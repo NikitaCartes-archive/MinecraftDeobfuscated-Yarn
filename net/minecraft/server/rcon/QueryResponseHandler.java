@@ -43,10 +43,10 @@ extends RconBase {
     private long lastResponseTime;
     private final DedicatedServer field_23964;
 
-    private QueryResponseHandler(DedicatedServer server, int i) {
+    private QueryResponseHandler(DedicatedServer server, int queryPort) {
         super("Query Listener");
         this.field_23964 = server;
-        this.queryPort = i;
+        this.queryPort = queryPort;
         this.hostname = server.getHostname();
         this.port = server.getPort();
         this.motd = server.getMotd();
@@ -70,13 +70,13 @@ extends RconBase {
     }
 
     @Nullable
-    public static QueryResponseHandler method_30737(DedicatedServer dedicatedServer) {
-        int i = dedicatedServer.getProperties().queryPort;
+    public static QueryResponseHandler create(DedicatedServer server) {
+        int i = server.getProperties().queryPort;
         if (0 >= i || 65535 < i) {
             field_23963.warn("Invalid query port {} found in server.properties (queries disabled)", (Object)i);
             return null;
         }
-        QueryResponseHandler queryResponseHandler = new QueryResponseHandler(dedicatedServer, i);
+        QueryResponseHandler queryResponseHandler = new QueryResponseHandler(server, i);
         if (!queryResponseHandler.start()) {
             return null;
         }

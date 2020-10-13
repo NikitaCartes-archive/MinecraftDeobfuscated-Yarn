@@ -32,14 +32,8 @@ implements ServerHandshakePacketListener {
         switch (packet.getIntendedState()) {
             case LOGIN: {
                 this.connection.setState(NetworkState.LOGIN);
-                if (packet.getProtocolVersion() > SharedConstants.getGameVersion().getProtocolVersion()) {
-                    TranslatableText text = new TranslatableText("multiplayer.disconnect.outdated_server", SharedConstants.getGameVersion().getName());
-                    this.connection.send(new LoginDisconnectS2CPacket(text));
-                    this.connection.disconnect(text);
-                    break;
-                }
-                if (packet.getProtocolVersion() < SharedConstants.getGameVersion().getProtocolVersion()) {
-                    TranslatableText text = new TranslatableText("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
+                if (packet.getProtocolVersion() != SharedConstants.getGameVersion().getProtocolVersion()) {
+                    TranslatableText text = new TranslatableText("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
                     this.connection.send(new LoginDisconnectS2CPacket(text));
                     this.connection.disconnect(text);
                     break;

@@ -58,7 +58,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class NoiseChunkGenerator
 extends ChunkGenerator {
-    public static final Codec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BiomeSource.CODEC.fieldOf("biome_source")).forGetter(noiseChunkGenerator -> noiseChunkGenerator.biomeSource), ((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(noiseChunkGenerator -> noiseChunkGenerator.worldSeed), ((MapCodec)ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings")).forGetter(noiseChunkGenerator -> noiseChunkGenerator.settings)).apply((Applicative<NoiseChunkGenerator, ?>)instance, instance.stable(NoiseChunkGenerator::new)));
+    public static final Codec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BiomeSource.CODEC.fieldOf("biome_source")).forGetter(noiseChunkGenerator -> noiseChunkGenerator.populationSource), ((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(noiseChunkGenerator -> noiseChunkGenerator.seed), ((MapCodec)ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings")).forGetter(noiseChunkGenerator -> noiseChunkGenerator.settings)).apply((Applicative<NoiseChunkGenerator, ?>)instance, instance.stable(NoiseChunkGenerator::new)));
     private static final float[] NOISE_WEIGHT_TABLE = Util.make(new float[13824], array -> {
         for (int i = 0; i < 24; ++i) {
             for (int j = 0; j < 24; ++j) {
@@ -92,19 +92,19 @@ extends ChunkGenerator {
     private final SimplexNoiseSampler islandNoise;
     protected final BlockState defaultBlock;
     protected final BlockState defaultFluid;
-    private final long worldSeed;
+    private final long seed;
     protected final Supplier<ChunkGeneratorSettings> settings;
     private final int worldHeight;
 
-    public NoiseChunkGenerator(BiomeSource biomeSource, long worldSeed, Supplier<ChunkGeneratorSettings> supplier) {
-        this(biomeSource, biomeSource, worldSeed, supplier);
+    public NoiseChunkGenerator(BiomeSource biomeSource, long seed, Supplier<ChunkGeneratorSettings> settings) {
+        this(biomeSource, biomeSource, seed, settings);
     }
 
-    private NoiseChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, long worldSeed, Supplier<ChunkGeneratorSettings> supplier) {
-        super(biomeSource, biomeSource2, supplier.get().getStructuresConfig(), worldSeed);
-        this.worldSeed = worldSeed;
-        ChunkGeneratorSettings chunkGeneratorSettings = supplier.get();
-        this.settings = supplier;
+    private NoiseChunkGenerator(BiomeSource populationSource, BiomeSource biomeSource, long seed, Supplier<ChunkGeneratorSettings> settings) {
+        super(populationSource, biomeSource, settings.get().getStructuresConfig(), seed);
+        this.seed = seed;
+        ChunkGeneratorSettings chunkGeneratorSettings = settings.get();
+        this.settings = settings;
         GenerationShapeConfig generationShapeConfig = chunkGeneratorSettings.getGenerationShapeConfig();
         this.worldHeight = generationShapeConfig.getHeight();
         this.verticalNoiseResolution = generationShapeConfig.getSizeVertical() * 4;
@@ -114,7 +114,7 @@ extends ChunkGenerator {
         this.noiseSizeX = 16 / this.horizontalNoiseResolution;
         this.noiseSizeY = generationShapeConfig.getHeight() / this.verticalNoiseResolution;
         this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
-        this.random = new ChunkRandom(worldSeed);
+        this.random = new ChunkRandom(seed);
         this.lowerInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
         this.upperInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
         this.interpolationNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-7, 0));
@@ -122,7 +122,7 @@ extends ChunkGenerator {
         this.random.consume(2620);
         this.densityNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
         if (generationShapeConfig.hasIslandNoiseOverride()) {
-            ChunkRandom chunkRandom = new ChunkRandom(worldSeed);
+            ChunkRandom chunkRandom = new ChunkRandom(seed);
             chunkRandom.consume(17292);
             this.islandNoise = new SimplexNoiseSampler(chunkRandom);
         } else {
@@ -138,11 +138,11 @@ extends ChunkGenerator {
     @Override
     @Environment(value=EnvType.CLIENT)
     public ChunkGenerator withSeed(long seed) {
-        return new NoiseChunkGenerator(this.biomeSource.withSeed(seed), seed, this.settings);
+        return new NoiseChunkGenerator(this.populationSource.withSeed(seed), seed, this.settings);
     }
 
-    public boolean method_28548(long l, RegistryKey<ChunkGeneratorSettings> registryKey) {
-        return this.worldSeed == l && this.settings.get().equals(registryKey);
+    public boolean matchesSettings(long seed, RegistryKey<ChunkGeneratorSettings> settingsKey) {
+        return this.seed == seed && this.settings.get().equals(settingsKey);
     }
 
     private double sampleNoise(int x, int y, int z, double horizontalScale, double verticalScale, double horizontalStretch, double verticalStretch) {
@@ -194,12 +194,12 @@ extends ChunkGenerator {
             float h = 0.0f;
             int i = 2;
             int j = this.getSeaLevel();
-            float k = this.biomeSource.getBiomeForNoiseGen(x, j, z).getDepth();
+            float k = this.populationSource.getBiomeForNoiseGen(x, j, z).getDepth();
             for (int l = -2; l <= 2; ++l) {
                 for (int m = -2; m <= 2; ++m) {
                     float q;
                     float p;
-                    Biome biome = this.biomeSource.getBiomeForNoiseGen(x + l, j, z + m);
+                    Biome biome = this.populationSource.getBiomeForNoiseGen(x + l, j, z + m);
                     float n = biome.getDepth();
                     float o = biome.getScale();
                     if (generationShapeConfig.isAmplified() && n > 0.0f) {
@@ -521,7 +521,7 @@ extends ChunkGenerator {
     }
 
     @Override
-    public int getMaxY() {
+    public int getWorldHeight() {
         return this.worldHeight;
     }
 

@@ -24,6 +24,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.class_5459;
+import net.minecraft.class_5513;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -178,6 +179,8 @@ implements ScreenHandlerListener {
     private BlockPos spawnPointPosition;
     private boolean spawnPointSet;
     private float spawnAngle;
+    @Nullable
+    private final class_5513 field_26821;
     private int screenHandlerSyncId;
     public boolean skipPacketSlotUpdates;
     public int pingMilliseconds;
@@ -192,6 +195,7 @@ implements ScreenHandlerListener {
         this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
         this.stepHeight = 1.0f;
         this.moveToSpawn(world);
+        this.field_26821 = server.method_31371(this);
     }
 
     private void moveToSpawn(ServerWorld world) {
@@ -1368,6 +1372,11 @@ implements ScreenHandlerListener {
             this.incrementStat(Stats.DROP);
         }
         return itemEntity;
+    }
+
+    @Nullable
+    public class_5513 method_31273() {
+        return this.field_26821;
     }
 }
 

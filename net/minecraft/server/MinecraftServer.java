@@ -62,6 +62,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
+import net.minecraft.class_5513;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -1052,6 +1053,9 @@ AutoCloseable {
         this.flightEnabled = flightEnabled;
     }
 
+    /**
+     * Specifies whether command blocks can execute commands on the server.
+     */
     public abstract boolean areCommandBlocksEnabled();
 
     public String getServerMotd() {
@@ -1102,8 +1106,21 @@ AutoCloseable {
         return false;
     }
 
+    /**
+     * Opens a server for LAN connections.
+     * This is only supported on an integrated server, a dedicated server will always fail to open to LAN.
+     * 
+     * @return whether the server was successfully opened to LAN
+     * 
+     * @param gameMode the game mode connecting players will have set by default
+     * @param cheatsAllowed whether players on the server have operator permissions
+     * @param port the port to open up to LAN connections
+     */
     public abstract boolean openToLan(GameMode var1, boolean var2, int var3);
 
+    /**
+     * Gets the amount of ticks the server has been running for.
+     */
     public int getTicks() {
         return this.ticks;
     }
@@ -1121,10 +1138,16 @@ AutoCloseable {
         return false;
     }
 
+    /**
+     * Sets whether a player's current game mode should be set to the server's current game mode when a player has connected.
+     */
     public void setForceGameMode(boolean forceGameMode) {
         this.forceGameMode = forceGameMode;
     }
 
+    /**
+     * Checks whether a player's current game mode should be set to the server's current game mode when a player has connected.
+     */
     public boolean shouldForceGameMode() {
         return this.forceGameMode;
     }
@@ -1202,11 +1225,20 @@ AutoCloseable {
         return this.commandFunctionManager;
     }
 
-    public CompletableFuture<Void> reloadResources(Collection<String> collection) {
-        CompletionStage completableFuture = ((CompletableFuture)CompletableFuture.supplyAsync(() -> collection.stream().map(this.dataPackManager::getProfile).filter(Objects::nonNull).map(ResourcePackProfile::createResourcePack).collect(ImmutableList.toImmutableList()), this).thenCompose(immutableList -> ServerResourceManager.reload(immutableList, this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED, this.getFunctionPermissionLevel(), this.workerExecutor, this))).thenAcceptAsync(serverResourceManager -> {
+    /**
+     * Reloads this server's datapacks.
+     * 
+     * @return a completable future which specifies whether the reload was successful
+     * A reload has failed when the future is exceptionally completed.
+     * @see CompletableFuture
+     * 
+     * @param datapacks a collection of datapacks to reload with
+     */
+    public CompletableFuture<Void> reloadResources(Collection<String> datapacks) {
+        CompletionStage completableFuture = ((CompletableFuture)CompletableFuture.supplyAsync(() -> datapacks.stream().map(this.dataPackManager::getProfile).filter(Objects::nonNull).map(ResourcePackProfile::createResourcePack).collect(ImmutableList.toImmutableList()), this).thenCompose(immutableList -> ServerResourceManager.reload(immutableList, this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED, this.getFunctionPermissionLevel(), this.workerExecutor, this))).thenAcceptAsync(serverResourceManager -> {
             this.serverResourceManager.close();
             this.serverResourceManager = serverResourceManager;
-            this.dataPackManager.setEnabledProfiles(collection);
+            this.dataPackManager.setEnabledProfiles(datapacks);
             this.saveProperties.updateLevelInfo(MinecraftServer.method_29735(this.dataPackManager));
             serverResourceManager.loadRegistryTags();
             this.getPlayerManager().saveAllPlayerData();
@@ -1272,10 +1304,17 @@ AutoCloseable {
         return this.dataPackManager;
     }
 
+    /**
+     * Gets the server's command manager.
+     * The command manager is responsible for parsing and dispatching commands.
+     */
     public CommandManager getCommandManager() {
         return this.serverResourceManager.getCommandManager();
     }
 
+    /**
+     * Creates a command source which represents this Minecraft server instance.
+     */
     public ServerCommandSource getCommandSource() {
         ServerWorld serverWorld = this.getOverworld();
         return new ServerCommandSource(this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", new LiteralText("Server"), this, null);
@@ -1485,6 +1524,11 @@ AutoCloseable {
 
     public DynamicRegistryManager getRegistryManager() {
         return this.registryManager;
+    }
+
+    @Nullable
+    public class_5513 method_31371(ServerPlayerEntity serverPlayerEntity) {
+        return null;
     }
 
     @Override

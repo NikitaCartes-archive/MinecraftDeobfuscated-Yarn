@@ -97,6 +97,7 @@ public class GameOptions {
     public boolean useNativeTransport = true;
     public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
     public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
+    public boolean joinedFirstServer = false;
     public int biomeBlendRadius = 2;
     public double mouseWheelSensitivity = 1.0;
     public boolean rawMouseInput = true;
@@ -138,6 +139,7 @@ public class GameOptions {
     public final KeyBinding keyChat = new KeyBinding("key.chat", 84, "key.categories.multiplayer");
     public final KeyBinding keyPlayerList = new KeyBinding("key.playerlist", 258, "key.categories.multiplayer");
     public final KeyBinding keyCommand = new KeyBinding("key.command", 47, "key.categories.multiplayer");
+    public final KeyBinding keySocialInteractions = new KeyBinding("key.socialInteractions", 80, "key.categories.multiplayer");
     public final KeyBinding keyScreenshot = new KeyBinding("key.screenshot", 291, "key.categories.misc");
     public final KeyBinding keyTogglePerspective = new KeyBinding("key.togglePerspective", 294, "key.categories.misc");
     public final KeyBinding keySmoothCamera = new KeyBinding("key.smoothCamera", InputUtil.UNKNOWN_KEY.getCode(), "key.categories.misc");
@@ -147,12 +149,12 @@ public class GameOptions {
     public final KeyBinding[] keysHotbar = new KeyBinding[]{new KeyBinding("key.hotbar.1", 49, "key.categories.inventory"), new KeyBinding("key.hotbar.2", 50, "key.categories.inventory"), new KeyBinding("key.hotbar.3", 51, "key.categories.inventory"), new KeyBinding("key.hotbar.4", 52, "key.categories.inventory"), new KeyBinding("key.hotbar.5", 53, "key.categories.inventory"), new KeyBinding("key.hotbar.6", 54, "key.categories.inventory"), new KeyBinding("key.hotbar.7", 55, "key.categories.inventory"), new KeyBinding("key.hotbar.8", 56, "key.categories.inventory"), new KeyBinding("key.hotbar.9", 57, "key.categories.inventory")};
     public final KeyBinding keySaveToolbarActivator = new KeyBinding("key.saveToolbarActivator", 67, "key.categories.creative");
     public final KeyBinding keyLoadToolbarActivator = new KeyBinding("key.loadToolbarActivator", 88, "key.categories.creative");
-    public final KeyBinding[] keysAll = ArrayUtils.addAll(new KeyBinding[]{this.keyAttack, this.keyUse, this.keyForward, this.keyLeft, this.keyBack, this.keyRight, this.keyJump, this.keySneak, this.keySprint, this.keyDrop, this.keyInventory, this.keyChat, this.keyPlayerList, this.keyPickItem, this.keyCommand, this.keyScreenshot, this.keyTogglePerspective, this.keySmoothCamera, this.keyFullscreen, this.keySpectatorOutlines, this.keySwapHands, this.keySaveToolbarActivator, this.keyLoadToolbarActivator, this.keyAdvancements}, this.keysHotbar);
+    public final KeyBinding[] keysAll = ArrayUtils.addAll(new KeyBinding[]{this.keyAttack, this.keyUse, this.keyForward, this.keyLeft, this.keyBack, this.keyRight, this.keyJump, this.keySneak, this.keySprint, this.keyDrop, this.keyInventory, this.keyChat, this.keyPlayerList, this.keyPickItem, this.keyCommand, this.keySocialInteractions, this.keyScreenshot, this.keyTogglePerspective, this.keySmoothCamera, this.keyFullscreen, this.keySpectatorOutlines, this.keySwapHands, this.keySaveToolbarActivator, this.keyLoadToolbarActivator, this.keyAdvancements}, this.keysHotbar);
     protected MinecraftClient client;
     private final File optionsFile;
     public Difficulty difficulty = Difficulty.NORMAL;
     public boolean hudHidden;
-    private Perspective field_26677 = Perspective.FIRST_PERSON;
+    private Perspective perspective = Perspective.FIRST_PERSON;
     public boolean debugEnabled;
     public boolean debugProfilerEnabled;
     public boolean debugTpsEnabled;
@@ -449,6 +451,9 @@ public class GameOptions {
                     if ("skipMultiplayerWarning".equals(string2)) {
                         this.skipMultiplayerWarning = "true".equals(string22);
                     }
+                    if ("joinedFirstServer".equals(string2)) {
+                        this.joinedFirstServer = "true".equals(string22);
+                    }
                     if ("syncChunkWrites".equals(string2)) {
                         this.syncChunkWrites = "true".equals(string22);
                     }
@@ -576,6 +581,7 @@ public class GameOptions {
             printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
             printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
             printWriter.println("skipMultiplayerWarning:" + this.skipMultiplayerWarning);
+            printWriter.println("joinedFirstServer:" + this.joinedFirstServer);
             printWriter.println("syncChunkWrites:" + this.syncChunkWrites);
             for (KeyBinding keyBinding : this.keysAll) {
                 printWriter.println("key_" + keyBinding.getTranslationKey() + ":" + keyBinding.getBoundKeyTranslationKey());
@@ -677,11 +683,11 @@ public class GameOptions {
     }
 
     public Perspective getPerspective() {
-        return this.field_26677;
+        return this.perspective;
     }
 
-    public void method_31043(Perspective perspective) {
-        this.field_26677 = perspective;
+    public void setPerspective(Perspective perspective) {
+        this.perspective = perspective;
     }
 }
 

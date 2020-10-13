@@ -45,6 +45,7 @@ public class GlStateManager {
     private static final LogicOpState COLOR_LOGIC = new LogicOpState();
     private static final TexGenState TEX_GEN = new TexGenState();
     private static final StencilState STENCIL = new StencilState();
+    private static final class_5518 field_26839 = new class_5518();
     private static final FloatBuffer colorBuffer = GlAllocationUtils.allocateFloatBuffer(4);
     private static int activeTexture;
     private static final Texture2DState[] TEXTURES;
@@ -151,6 +152,21 @@ public class GlStateManager {
     public static void normal3f(float nx, float ny, float nz) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GL11.glNormal3f(nx, ny, nz);
+    }
+
+    public static void method_31318() {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        GlStateManager.field_26839.field_26840.disable();
+    }
+
+    public static void method_31319() {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        GlStateManager.field_26839.field_26840.enable();
+    }
+
+    public static void method_31317(int i, int j, int k, int l) {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        GL20.glScissor(i, j, k, l);
     }
 
     public static void disableDepthTest() {
@@ -1413,6 +1429,14 @@ public class GlStateManager {
         public final TexGenCoordState q = new TexGenCoordState(8195, 3171);
 
         private TexGenState() {
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class class_5518 {
+        public final CapabilityTracker field_26840 = new CapabilityTracker(3089);
+
+        private class_5518() {
         }
     }
 

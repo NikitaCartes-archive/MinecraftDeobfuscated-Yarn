@@ -41,7 +41,7 @@ extends Feature<HugeFungusFeatureConfig> {
             i *= 2;
         }
         if (!hugeFungusFeatureConfig.planted) {
-            int j = chunkGenerator.getMaxY();
+            int j = chunkGenerator.getWorldHeight();
             if (blockPos2.getY() + i + 1 >= j) {
                 return false;
             }

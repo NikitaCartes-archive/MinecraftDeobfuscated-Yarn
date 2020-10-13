@@ -35,8 +35,8 @@ extends RealmsScreen {
         int i = Math.max(this.textRenderer.getWidth(text), this.textRenderer.getWidth(text2)) + 30;
         TranslatableText text3 = new TranslatableText("mco.account.privacy.info");
         int j = (int)((double)this.textRenderer.getWidth(text3) * 1.2);
-        this.addButton(new ButtonWidget(this.width / 2 - j / 2, RealmsParentalConsentScreen.row(11), j, 20, text3, buttonWidget -> Util.getOperatingSystem().open("https://minecraft.net/privacy/gdpr/")));
-        this.addButton(new ButtonWidget(this.width / 2 - (i + 5), RealmsParentalConsentScreen.row(13), i, 20, text, buttonWidget -> Util.getOperatingSystem().open("https://minecraft.net/update-account")));
+        this.addButton(new ButtonWidget(this.width / 2 - j / 2, RealmsParentalConsentScreen.row(11), j, 20, text3, buttonWidget -> Util.getOperatingSystem().open("https://aka.ms/MinecraftGDPR")));
+        this.addButton(new ButtonWidget(this.width / 2 - (i + 5), RealmsParentalConsentScreen.row(13), i, 20, text, buttonWidget -> Util.getOperatingSystem().open("https://aka.ms/UpdateMojangAccount")));
         this.addButton(new ButtonWidget(this.width / 2 + 5, RealmsParentalConsentScreen.row(13), i, 20, text2, buttonWidget -> this.client.openScreen(this.parent)));
         this.field_26492 = class_5489.method_30890(this.textRenderer, field_26491, (int)Math.round((double)this.width * 0.9));
     }

@@ -211,7 +211,7 @@ Element {
     }
 
     public void setMessage(Text text) {
-        if (!Objects.equals(text, this.message)) {
+        if (!Objects.equals(text.getString(), this.message.getString())) {
             this.queueNarration(250);
         }
         this.message = text;

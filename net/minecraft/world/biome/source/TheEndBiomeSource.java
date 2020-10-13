@@ -80,7 +80,7 @@ extends BiomeSource {
         return this.barrensBiome;
     }
 
-    public boolean isSeedEqual(long seed) {
+    public boolean matches(long seed) {
         return this.seed == seed;
     }
 
