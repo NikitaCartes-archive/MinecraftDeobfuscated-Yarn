@@ -197,6 +197,17 @@ public class RenderSystem {
 		GlStateManager.enableDepthTest();
 	}
 
+	public static void enableScissor(int i, int j, int k, int l) {
+		assertThread(RenderSystem::isOnGameThreadOrInit);
+		GlStateManager.method_31319();
+		GlStateManager.method_31317(i, j, k, l);
+	}
+
+	public static void disableScissor() {
+		assertThread(RenderSystem::isOnGameThreadOrInit);
+		GlStateManager.method_31318();
+	}
+
 	public static void depthFunc(int func) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.depthFunc(func);

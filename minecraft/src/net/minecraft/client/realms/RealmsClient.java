@@ -321,10 +321,7 @@ public class RealmsClient {
 
 		try {
 			int i = r.responseCode();
-			if (i == 503) {
-				int j = r.getRetryAfterHeader();
-				throw new RetryCallException(j);
-			} else {
+			if (i != 503 && i != 277) {
 				String string = r.text();
 				if (i >= 200 && i < 300) {
 					return string;
@@ -342,6 +339,9 @@ public class RealmsClient {
 					LOGGER.error("Realms error code: " + i + " message: " + string);
 					throw new RealmsServiceException(i, string, i, "");
 				}
+			} else {
+				int j = r.getRetryAfterHeader();
+				throw new RetryCallException(j, i);
 			}
 		} catch (RealmsHttpException var5) {
 			throw new RealmsServiceException(500, "Could not connect to Realms: " + var5.getMessage(), -1, "");

@@ -40,6 +40,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +61,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final BiomeAccess biomeAccess;
 	private final ChunkPos lowerCorner;
 	private final ChunkPos upperCorner;
+	private final StructureAccessor field_26822;
 
 	public ChunkRegion(ServerWorld world, List<Chunk> chunks) {
 		int i = MathHelper.floor(Math.sqrt((double)chunks.size()));
@@ -79,6 +81,7 @@ public class ChunkRegion implements StructureWorldAccess {
 			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.getDimension().getBiomeAccessType());
 			this.lowerCorner = ((Chunk)chunks.get(0)).getPos();
 			this.upperCorner = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
+			this.field_26822 = world.getStructureAccessor().forRegion(this);
 		}
 	}
 
@@ -380,6 +383,6 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-		return this.world.getStructures(pos, feature);
+		return this.field_26822.getStructuresWithChildren(pos, feature);
 	}
 }

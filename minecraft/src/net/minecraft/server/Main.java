@@ -110,7 +110,7 @@ public class Main {
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
 			MinecraftServer.convertLevel(session);
-			DataPackSettings dataPackSettings = session.getDatapackSettings();
+			DataPackSettings dataPackSettings = session.getDataPackSettings();
 			boolean bl = optionSet.has(optionSpec7);
 			if (bl) {
 				LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");

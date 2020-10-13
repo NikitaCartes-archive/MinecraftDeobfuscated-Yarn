@@ -561,7 +561,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return explosion;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public String getDebugString() {
 		return this.getChunkManager().getDebugString();
 	}

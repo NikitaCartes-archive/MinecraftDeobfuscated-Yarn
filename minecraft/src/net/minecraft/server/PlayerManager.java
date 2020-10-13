@@ -752,6 +752,11 @@ public abstract class PlayerManager {
 		return this.server;
 	}
 
+	/**
+	 * Gets the user data of the player hosting the Minecraft server.
+	 * 
+	 * @return the user data of the host of the server if the server is an integrated server, otherwise {@code null}
+	 */
 	public CompoundTag getUserData() {
 		return null;
 	}
@@ -832,6 +837,10 @@ public abstract class PlayerManager {
 		}
 	}
 
+	/**
+	 * Gets a list of all players on a Minecraft server.
+	 * This list should not be modified!
+	 */
 	public List<ServerPlayerEntity> getPlayerList() {
 		return this.players;
 	}
