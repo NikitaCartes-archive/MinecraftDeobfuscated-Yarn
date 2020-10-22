@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public enum ResourcePackCompatibility {
 	TOO_OLD("old"),
@@ -15,7 +16,7 @@ public enum ResourcePackCompatibility {
 	private final Text confirmMessage;
 
 	private ResourcePackCompatibility(String translationSuffix) {
-		this.notification = new TranslatableText("pack.incompatible." + translationSuffix);
+		this.notification = new TranslatableText("pack.incompatible." + translationSuffix).formatted(Formatting.GRAY);
 		this.confirmMessage = new TranslatableText("pack.incompatible.confirm." + translationSuffix);
 	}
 

@@ -14,7 +14,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.LanServerPinger;
@@ -82,8 +81,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.setOnlineMode(true);
 		this.setPvpEnabled(true);
 		this.setFlightEnabled(true);
-		LOGGER.info("Generating keypair");
-		this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
+		this.method_31400();
 		this.loadWorld();
 		this.setMotd(this.getUserName() + " - " + this.getSaveProperties().getLevelName());
 		return true;

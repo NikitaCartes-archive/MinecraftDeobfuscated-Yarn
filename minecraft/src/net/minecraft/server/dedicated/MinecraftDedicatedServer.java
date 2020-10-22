@@ -26,7 +26,6 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
-import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.MinecraftServer;
@@ -156,8 +155,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			this.setServerPort(serverPropertiesHandler.serverPort);
 		}
 
-		LOGGER.info("Generating keypair");
-		this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
+		this.method_31400();
 		LOGGER.info("Starting Minecraft server on {}:{}", this.getServerIp().isEmpty() ? "*" : this.getServerIp(), this.getServerPort());
 
 		try {

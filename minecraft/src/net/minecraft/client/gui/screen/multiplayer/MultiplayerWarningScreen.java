@@ -32,7 +32,7 @@ public class MultiplayerWarningScreen extends Screen {
 	protected void init() {
 		super.init();
 		this.lines = class_5489.method_30890(this.textRenderer, MESSAGE, this.width - 50);
-		int i = (this.lines.method_30887() + 1) * 9;
+		int i = (this.lines.method_30887() + 1) * 9 * 2;
 		this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, ScreenTexts.PROCEED, buttonWidget -> {
 			if (this.checkbox.isChecked()) {
 				this.client.options.skipMultiplayerWarning = true;
@@ -55,7 +55,7 @@ public class MultiplayerWarningScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackgroundTexture(0);
 		drawCenteredText(matrices, this.textRenderer, HEADER, this.width / 2, 30, 16777215);
-		this.lines.method_30888(matrices, this.width / 2, 70);
+		this.lines.method_30893(matrices, 25, 70, 9 * 2, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

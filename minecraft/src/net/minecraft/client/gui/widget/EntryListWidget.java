@@ -253,6 +253,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 		int o = this.getMaxScroll();
 		if (o > 0) {
+			RenderSystem.disableTexture();
 			int m = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
 			m = MathHelper.clamp(m, 32, this.bottom - this.top - 8);
 			int n = (int)this.getScrollAmount() * (this.bottom - this.top - m) / o + this.top;
@@ -500,6 +501,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	public int getRowLeft() {
 		return this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
+	}
+
+	public int method_31383() {
+		return this.getRowLeft() + this.getRowWidth();
 	}
 
 	protected int getRowTop(int index) {

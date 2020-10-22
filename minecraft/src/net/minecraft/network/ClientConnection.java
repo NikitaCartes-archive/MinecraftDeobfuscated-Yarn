@@ -30,7 +30,7 @@ import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.util.Queue;
 import javax.annotation.Nullable;
-import javax.crypto.SecretKey;
+import javax.crypto.Cipher;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.encryption.PacketDecryptor;
@@ -305,10 +305,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return clientConnection;
 	}
 
-	public void setupEncryption(SecretKey secretKey) {
+	public void setupEncryption(Cipher cipher, Cipher cipher2) {
 		this.encrypted = true;
-		this.channel.pipeline().addBefore("splitter", "decrypt", new PacketDecryptor(NetworkEncryptionUtils.cipherFromKey(2, secretKey)));
-		this.channel.pipeline().addBefore("prepender", "encrypt", new PacketEncryptor(NetworkEncryptionUtils.cipherFromKey(1, secretKey)));
+		this.channel.pipeline().addBefore("splitter", "decrypt", new PacketDecryptor(cipher));
+		this.channel.pipeline().addBefore("prepender", "encrypt", new PacketEncryptor(cipher2));
 	}
 
 	@Environment(EnvType.CLIENT)
