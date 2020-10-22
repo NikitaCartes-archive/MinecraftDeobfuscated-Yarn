@@ -33,6 +33,12 @@ extends ForgingScreen<AnvilScreenHandler> {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        this.nameField.tick();
+    }
+
+    @Override
     protected void setup() {
         this.client.keyboard.setRepeatEvents(true);
         int i = (this.width - this.backgroundWidth) / 2;

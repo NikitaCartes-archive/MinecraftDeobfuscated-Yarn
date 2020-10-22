@@ -3,141 +3,111 @@
  */
 package net.minecraft.network;
 
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.class_5525;
 
 public class NetworkEncryptionUtils {
-    private static final Logger LOGGER = LogManager.getLogger();
-
     @Environment(value=EnvType.CLIENT)
-    public static SecretKey generateKey() {
+    public static SecretKey generateKey() throws class_5525 {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
             keyGenerator.init(128);
             return keyGenerator.generateKey();
-        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-            throw new Error(noSuchAlgorithmException);
+        } catch (Exception exception) {
+            throw new class_5525(exception);
         }
     }
 
-    public static KeyPair generateServerKeyPair() {
+    public static KeyPair generateServerKeyPair() throws class_5525 {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(1024);
             return keyPairGenerator.generateKeyPair();
-        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-            noSuchAlgorithmException.printStackTrace();
-            LOGGER.error("Key pair generation failed!");
-            return null;
+        } catch (Exception exception) {
+            throw new class_5525(exception);
         }
     }
 
-    public static byte[] generateServerId(String baseServerId, PublicKey publicKey, SecretKey secretKey) {
+    public static byte[] generateServerId(String baseServerId, PublicKey publicKey, SecretKey secretKey) throws class_5525 {
         try {
-            return NetworkEncryptionUtils.hash("SHA-1", baseServerId.getBytes("ISO_8859_1"), secretKey.getEncoded(), publicKey.getEncoded());
-        } catch (UnsupportedEncodingException unsupportedEncodingException) {
-            unsupportedEncodingException.printStackTrace();
-            return null;
+            return NetworkEncryptionUtils.hash(baseServerId.getBytes("ISO_8859_1"), secretKey.getEncoded(), publicKey.getEncoded());
+        } catch (Exception exception) {
+            throw new class_5525(exception);
         }
     }
 
-    private static byte[] hash(String algorithm, byte[] ... data) {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
-            for (byte[] bs : data) {
-                messageDigest.update(bs);
-            }
-            return messageDigest.digest();
-        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-            noSuchAlgorithmException.printStackTrace();
-            return null;
+    private static byte[] hash(byte[] ... bs) throws Exception {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+        for (byte[] cs : bs) {
+            messageDigest.update(cs);
         }
+        return messageDigest.digest();
     }
 
-    public static PublicKey readEncodedPublicKey(byte[] bs) {
+    @Environment(value=EnvType.CLIENT)
+    public static PublicKey readEncodedPublicKey(byte[] bs) throws class_5525 {
         try {
             X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(bs);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(encodedKeySpec);
-        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-        } catch (InvalidKeySpecException invalidKeySpecException) {
-            // empty catch block
+        } catch (Exception exception) {
+            throw new class_5525(exception);
         }
-        LOGGER.error("Public key reconstitute failed!");
-        return null;
     }
 
-    public static SecretKey decryptSecretKey(PrivateKey privateKey, byte[] encryptedSecretKey) {
-        return new SecretKeySpec(NetworkEncryptionUtils.decrypt(privateKey, encryptedSecretKey), "AES");
+    public static SecretKey decryptSecretKey(PrivateKey privateKey, byte[] encryptedSecretKey) throws class_5525 {
+        byte[] bs = NetworkEncryptionUtils.decrypt(privateKey, encryptedSecretKey);
+        try {
+            return new SecretKeySpec(bs, "AES");
+        } catch (Exception exception) {
+            throw new class_5525(exception);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static byte[] encrypt(Key key, byte[] data) {
+    public static byte[] encrypt(Key key, byte[] data) throws class_5525 {
         return NetworkEncryptionUtils.crypt(1, key, data);
     }
 
-    public static byte[] decrypt(Key key, byte[] data) {
+    public static byte[] decrypt(Key key, byte[] data) throws class_5525 {
         return NetworkEncryptionUtils.crypt(2, key, data);
     }
 
-    private static byte[] crypt(int opMode, Key key, byte[] data) {
+    private static byte[] crypt(int opMode, Key key, byte[] data) throws class_5525 {
         try {
             return NetworkEncryptionUtils.crypt(opMode, key.getAlgorithm(), key).doFinal(data);
-        } catch (IllegalBlockSizeException illegalBlockSizeException) {
-            illegalBlockSizeException.printStackTrace();
-        } catch (BadPaddingException badPaddingException) {
-            badPaddingException.printStackTrace();
+        } catch (Exception exception) {
+            throw new class_5525(exception);
         }
-        LOGGER.error("Cipher data failed!");
-        return null;
     }
 
-    private static Cipher crypt(int opMode, String algorithm, Key key) {
-        try {
-            Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(opMode, key);
-            return cipher;
-        } catch (InvalidKeyException invalidKeyException) {
-            invalidKeyException.printStackTrace();
-        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-            noSuchAlgorithmException.printStackTrace();
-        } catch (NoSuchPaddingException noSuchPaddingException) {
-            noSuchPaddingException.printStackTrace();
-        }
-        LOGGER.error("Cipher creation failed!");
-        return null;
+    private static Cipher crypt(int opMode, String algorithm, Key key) throws Exception {
+        Cipher cipher = Cipher.getInstance(algorithm);
+        cipher.init(opMode, key);
+        return cipher;
     }
 
-    public static Cipher cipherFromKey(int opMode, Key key) {
+    public static Cipher cipherFromKey(int opMode, Key key) throws class_5525 {
         try {
             Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
             cipher.init(opMode, key, new IvParameterSpec(key.getEncoded()));
             return cipher;
-        } catch (GeneralSecurityException generalSecurityException) {
-            throw new RuntimeException(generalSecurityException);
+        } catch (Exception exception) {
+            throw new class_5525(exception);
         }
     }
 }

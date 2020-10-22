@@ -361,7 +361,7 @@ implements Monster {
             if (!(entity instanceof LivingEntity)) continue;
             double f = entity.getX() - d;
             double g = entity.getZ() - e;
-            double h = f * f + g * g;
+            double h = Math.max(f * f + g * g, 0.1);
             entity.addVelocity(f / h * 4.0, 0.2f, g / h * 4.0);
             if (this.phaseManager.getCurrent().isSittingOrHovering() || ((LivingEntity)entity).getLastAttackedTime() >= entity.age - 2) continue;
             entity.damage(DamageSource.mob(this), 5.0f);

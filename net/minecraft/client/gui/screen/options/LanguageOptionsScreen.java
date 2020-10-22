@@ -21,12 +21,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class LanguageOptionsScreen
 extends GameOptionsScreen {
-    private static final Text field_26543 = new LiteralText("(").append(new TranslatableText("options.languageWarning")).append(")");
+    private static final Text field_26543 = new LiteralText("(").append(new TranslatableText("options.languageWarning")).append(")").formatted(Formatting.GRAY);
     private LanguageSelectionListWidget languageSelectionList;
     private final LanguageManager languageManager;
     private OptionButtonWidget forceUnicodeButton;

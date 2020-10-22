@@ -28,7 +28,6 @@ import net.minecraft.class_5514;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
-import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.MinecraftServer;
@@ -139,8 +138,7 @@ implements DedicatedServer {
         if (this.getServerPort() < 0) {
             this.setServerPort(serverPropertiesHandler.serverPort);
         }
-        LOGGER.info("Generating keypair");
-        this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
+        this.method_31400();
         LOGGER.info("Starting Minecraft server on {}:{}", (Object)(this.getServerIp().isEmpty() ? "*" : this.getServerIp()), (Object)this.getServerPort());
         try {
             this.getNetworkIo().bind(inetAddress, this.getServerPort());

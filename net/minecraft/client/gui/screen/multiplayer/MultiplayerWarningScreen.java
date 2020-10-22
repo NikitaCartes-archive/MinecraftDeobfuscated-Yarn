@@ -37,7 +37,7 @@ extends Screen {
     protected void init() {
         super.init();
         this.lines = class_5489.method_30890(this.textRenderer, MESSAGE, this.width - 50);
-        int i = (this.lines.method_30887() + 1) * this.textRenderer.fontHeight;
+        int i = (this.lines.method_30887() + 1) * this.textRenderer.fontHeight * 2;
         this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, ScreenTexts.PROCEED, buttonWidget -> {
             if (this.checkbox.isChecked()) {
                 this.client.options.skipMultiplayerWarning = true;
@@ -59,7 +59,7 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackgroundTexture(0);
         MultiplayerWarningScreen.drawCenteredText(matrices, this.textRenderer, HEADER, this.width / 2, 30, 0xFFFFFF);
-        this.lines.method_30888(matrices, this.width / 2, 70);
+        this.lines.method_30893(matrices, 25, 70, this.textRenderer.fontHeight * 2, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

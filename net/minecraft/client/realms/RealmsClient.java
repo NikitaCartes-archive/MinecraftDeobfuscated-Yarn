@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.realms;
 
-import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -15,6 +15,7 @@ import net.minecraft.client.realms.RealmsError;
 import net.minecraft.client.realms.Request;
 import net.minecraft.client.realms.dto.BackupList;
 import net.minecraft.client.realms.dto.Ops;
+import net.minecraft.client.realms.dto.PendingInvite;
 import net.minecraft.client.realms.dto.PendingInvitesList;
 import net.minecraft.client.realms.dto.PingResult;
 import net.minecraft.client.realms.dto.PlayerInfo;
@@ -44,6 +45,7 @@ public class RealmsClient {
     private static final Logger LOGGER;
     private final String sessionId;
     private final String username;
+    private final MinecraftClient field_26901;
     private static final CheckedGson JSON;
 
     public static RealmsClient createRealmsClient() {
@@ -64,7 +66,7 @@ public class RealmsClient {
                 }
             }
         }
-        return new RealmsClient(string2, string, minecraftClient.getNetworkProxy());
+        return new RealmsClient(string2, string, minecraftClient);
     }
 
     public static void switchToStage() {
@@ -79,10 +81,11 @@ public class RealmsClient {
         currentEnvironment = Environment.LOCAL;
     }
 
-    public RealmsClient(String sessionId, String username, Proxy proxy) {
+    public RealmsClient(String sessionId, String username, MinecraftClient minecraftClient) {
         this.sessionId = sessionId;
         this.username = username;
-        RealmsClientConfig.setProxy(proxy);
+        this.field_26901 = minecraftClient;
+        RealmsClientConfig.setProxy(minecraftClient.getNetworkProxy());
     }
 
     public RealmsServerList listWorlds() throws RealmsServiceException {
@@ -244,15 +247,24 @@ public class RealmsClient {
     }
 
     public int pendingInvitesCount() throws RealmsServiceException {
-        String string = this.url("invites/count/pending");
-        String string2 = this.execute(Request.get(string));
-        return Integer.parseInt(string2);
+        return this.pendingInvites().pendingInvites.size();
     }
 
     public PendingInvitesList pendingInvites() throws RealmsServiceException {
         String string = this.url("invites/pending");
         String string2 = this.execute(Request.get(string));
-        return PendingInvitesList.parse(string2);
+        PendingInvitesList pendingInvitesList = PendingInvitesList.parse(string2);
+        pendingInvitesList.pendingInvites.removeIf(this::method_31381);
+        return pendingInvitesList;
+    }
+
+    private boolean method_31381(PendingInvite pendingInvite) {
+        try {
+            UUID uUID = UUID.fromString(pendingInvite.worldOwnerUuid);
+            return this.field_26901.getSocialInteractionsManager().method_31392(uUID);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            return false;
+        }
     }
 
     public void acceptInvitation(String invitationId) throws RealmsServiceException {

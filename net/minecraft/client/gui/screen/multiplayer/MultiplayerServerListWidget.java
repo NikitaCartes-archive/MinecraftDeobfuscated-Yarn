@@ -170,7 +170,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             for (int i = 0; i < Math.min(list.size(), 2); ++i) {
                 this.client.textRenderer.draw(matrices, list.get(i), (float)(x + 32 + 3), (float)(y + 12 + this.client.textRenderer.fontHeight * i), 0x808080);
             }
-            Text text = bl ? this.server.version.shallowCopy().formatted(Formatting.DARK_RED) : this.server.playerCountLabel;
+            Text text = bl ? this.server.version.shallowCopy().formatted(Formatting.RED) : this.server.playerCountLabel;
             int j = this.client.textRenderer.getWidth(text);
             this.client.textRenderer.draw(matrices, text, (float)(x + entryWidth - j - 15 - 2), (float)(y + 1), 0x808080);
             int k = 0;

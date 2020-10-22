@@ -8,7 +8,10 @@ import com.google.common.collect.Queues;
 import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
+import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.minecraft.OfflineSocialInteractions;
+import com.mojang.authlib.minecraft.SocialInteractionsService;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlDebugInfo;
@@ -307,6 +310,7 @@ WindowEventHandler {
     private final SplashTextResourceSupplier splashTextLoader;
     private final VideoWarningManager videoWarningManager;
     private final MinecraftSessionService sessionService;
+    private final SocialInteractionsService field_26902;
     private final PlayerSkinProvider skinProvider;
     private final BakedModelManager bakedModelManager;
     private final BlockRenderManager blockRenderManager;
@@ -393,7 +397,9 @@ WindowEventHandler {
         this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
         this.resourcePackManager = new ResourcePackManager(MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir, ResourcePackSource.field_25347));
         this.netProxy = args.network.netProxy;
-        this.sessionService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString()).createMinecraftSessionService();
+        YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
+        this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
+        this.field_26902 = this.method_31382(yggdrasilAuthenticationService, args);
         this.session = args.network.session;
         LOGGER.info("Setting user: {}", (Object)this.session.getUsername());
         LOGGER.debug("(Session ID is {})", (Object)this.session.getSessionId());
@@ -402,7 +408,7 @@ WindowEventHandler {
         this.onlineChatEnabled = !args.game.onlineChatDisabled;
         this.is64Bit = MinecraftClient.checkIs64Bit();
         this.server = null;
-        if (this.multiplayerEnabled && args.autoConnect.serverAddress != null) {
+        if (this.isMultiplayerEnabled() && args.autoConnect.serverAddress != null) {
             string = args.autoConnect.serverAddress;
             i = args.autoConnect.serverPort;
         } else {
@@ -471,7 +477,7 @@ WindowEventHandler {
         this.bufferBuilders = new BufferBuilderStorage();
         this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
         this.resourceManager.registerListener(this.gameRenderer);
-        this.socialInteractionsManager = new SocialInteractionsManager(this);
+        this.socialInteractionsManager = new SocialInteractionsManager(this, this.field_26902);
         this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), this.blockColors);
         this.resourceManager.registerListener(this.blockRenderManager);
         this.worldRenderer = new WorldRenderer(this, this.bufferBuilders);
@@ -536,6 +542,15 @@ WindowEventHandler {
             }
         }
         return stringBuilder.toString();
+    }
+
+    private SocialInteractionsService method_31382(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
+        try {
+            return yggdrasilAuthenticationService.createSocialInteractionsService(runArgs.network.session.getAccessToken());
+        } catch (AuthenticationException authenticationException) {
+            LOGGER.error("Failed to verify authentication", (Throwable)authenticationException);
+            return new OfflineSocialInteractions();
+        }
     }
 
     /**
@@ -1532,7 +1547,7 @@ WindowEventHandler {
         try {
             session.backupLevelDataFile(registryTracker, saveProperties);
             integratedResourceManager.getServerResourceManager().loadRegistryTags();
-            YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
+            YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
             MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
@@ -1637,7 +1652,7 @@ WindowEventHandler {
         this.world = world;
         this.setWorld(world);
         if (!this.integratedServerRunning) {
-            YggdrasilAuthenticationService authenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
+            YggdrasilAuthenticationService authenticationService = new YggdrasilAuthenticationService(this.netProxy);
             MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
@@ -1707,7 +1722,7 @@ WindowEventHandler {
     }
 
     public boolean isMultiplayerEnabled() {
-        return this.multiplayerEnabled;
+        return this.multiplayerEnabled && this.field_26902.serversAllowed();
     }
 
     /**
@@ -1720,11 +1735,11 @@ WindowEventHandler {
         if (!this.isOnlineChatEnabled()) {
             return (this.player == null || !sender.equals(this.player.getUuid())) && !sender.equals(Util.NIL_UUID);
         }
-        return this.socialInteractionsManager.isPlayerHidden(sender);
+        return this.socialInteractionsManager.method_31391(sender);
     }
 
     public boolean isOnlineChatEnabled() {
-        return this.onlineChatEnabled;
+        return this.onlineChatEnabled && this.field_26902.chatAllowed();
     }
 
     public final boolean isDemo() {

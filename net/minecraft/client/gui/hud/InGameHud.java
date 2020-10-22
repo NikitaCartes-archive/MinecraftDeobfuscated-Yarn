@@ -790,13 +790,13 @@ extends DrawableHelper {
             t -= 10;
         }
         this.client.getProfiler().swap("air");
-        z = playerEntity.getAir();
-        aa = playerEntity.getMaxAir();
-        if (playerEntity.isSubmergedIn(FluidTags.WATER) || z < aa) {
+        z = playerEntity.getMaxAir();
+        aa = Math.min(playerEntity.getAir(), z);
+        if (playerEntity.isSubmergedIn(FluidTags.WATER) || aa < z) {
             ab = this.getHeartRows(y) - 1;
             t -= ab * 10;
-            ac = MathHelper.ceil((double)(z - 2) * 10.0 / (double)aa);
-            ad = MathHelper.ceil((double)z * 10.0 / (double)aa) - ac;
+            ac = MathHelper.ceil((double)(aa - 2) * 10.0 / (double)z);
+            ad = MathHelper.ceil((double)aa * 10.0 / (double)z) - ac;
             for (int ae = 0; ae < ac + ad; ++ae) {
                 if (ae < ac) {
                     this.drawTexture(matrices, n - ae * 8 - 9, t, 16, 18, 9, 9);

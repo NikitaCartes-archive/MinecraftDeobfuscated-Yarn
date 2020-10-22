@@ -14,7 +14,9 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import net.minecraft.class_5525;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
@@ -127,7 +129,7 @@ implements ServerLoginPacketListener {
         this.profile = packet.getProfile();
         if (this.server.isOnlineMode() && !this.connection.isLocal()) {
             this.state = State.KEY;
-            this.connection.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic(), this.nonce));
+            this.connection.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
         } else {
             this.state = State.READY_TO_ACCEPT;
         }
@@ -135,21 +137,28 @@ implements ServerLoginPacketListener {
 
     @Override
     public void onKey(LoginKeyC2SPacket packet) {
+        String string;
         Validate.validState(this.state == State.KEY, "Unexpected key packet", new Object[0]);
         PrivateKey privateKey = this.server.getKeyPair().getPrivate();
-        if (!Arrays.equals(this.nonce, packet.decryptNonce(privateKey))) {
-            throw new IllegalStateException("Invalid nonce!");
+        try {
+            if (!Arrays.equals(this.nonce, packet.decryptNonce(privateKey))) {
+                throw new IllegalStateException("Protocol error");
+            }
+            this.secretKey = packet.decryptSecretKey(privateKey);
+            Cipher cipher = NetworkEncryptionUtils.cipherFromKey(2, this.secretKey);
+            Cipher cipher2 = NetworkEncryptionUtils.cipherFromKey(1, this.secretKey);
+            string = new BigInteger(NetworkEncryptionUtils.generateServerId("", this.server.getKeyPair().getPublic(), this.secretKey)).toString(16);
+            this.state = State.AUTHENTICATING;
+            this.connection.setupEncryption(cipher, cipher2);
+        } catch (class_5525 lv) {
+            throw new IllegalStateException("Protocol error", lv);
         }
-        this.secretKey = packet.decryptSecretKey(privateKey);
-        this.state = State.AUTHENTICATING;
-        this.connection.setupEncryption(this.secretKey);
         Thread thread = new Thread("User Authenticator #" + authenticatorThreadId.incrementAndGet()){
 
             @Override
             public void run() {
                 GameProfile gameProfile = ServerLoginNetworkHandler.this.profile;
                 try {
-                    String string = new BigInteger(NetworkEncryptionUtils.generateServerId("", ServerLoginNetworkHandler.this.server.getKeyPair().getPublic(), ServerLoginNetworkHandler.this.secretKey)).toString(16);
                     ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.server.getSessionService().hasJoinedServer(new GameProfile(null, gameProfile.getName()), string, this.getClientAddress());
                     if (ServerLoginNetworkHandler.this.profile != null) {
                         LOGGER.info("UUID of player {} is {}", (Object)ServerLoginNetworkHandler.this.profile.getName(), (Object)ServerLoginNetworkHandler.this.profile.getId());

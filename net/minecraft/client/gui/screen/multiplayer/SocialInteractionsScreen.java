@@ -7,21 +7,26 @@ import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlayerListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -30,20 +35,26 @@ extends Screen {
     protected static final Identifier SOCIAL_INTERACTIONS_TEXTURE = new Identifier("textures/gui/social_interactions.png");
     private static final Text ALL_TAB_TITLE = new TranslatableText("gui.socialInteractions.tab_all");
     private static final Text HIDDEN_TAB_TITLE = new TranslatableText("gui.socialInteractions.tab_hidden");
-    private static final Text SELECTED_ALL_TAB_TITLE = ALL_TAB_TITLE.copy().formatted(Formatting.GRAY);
-    private static final Text SELECTED_HIDDEN_TAB_TITLE = HIDDEN_TAB_TITLE.copy().formatted(Formatting.GRAY);
+    private static final Text field_26915 = new TranslatableText("gui.socialInteractions.tab_blocked");
+    private static final Text SELECTED_ALL_TAB_TITLE = ALL_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
+    private static final Text SELECTED_HIDDEN_TAB_TITLE = HIDDEN_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
+    private static final Text field_26916 = field_26915.copy().formatted(Formatting.UNDERLINE);
     private static final Text SEARCH_TEXT = new TranslatableText("gui.socialInteractions.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
+    private static final Text field_26917 = new TranslatableText("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
     private static final Text EMPTY_HIDDEN_TEXT = new TranslatableText("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
+    private static final Text field_26918 = new TranslatableText("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
+    private static final Text field_26919 = new TranslatableText("gui.socialInteractions.blocking_hint");
     private SocialInteractionsPlayerListWidget playerList;
     private TextFieldWidget searchBox;
     private String currentSearch = "";
     private Tab currentTab = Tab.ALL;
     private ButtonWidget allTabButton;
     private ButtonWidget hiddenTabButton;
+    private ButtonWidget field_26913;
+    private ButtonWidget field_26914;
     @Nullable
     private Text serverLabel;
     private int playerCount;
-    private boolean field_26872;
     private boolean field_26873;
     @Nullable
     private Runnable field_26874;
@@ -54,7 +65,7 @@ extends Screen {
     }
 
     private int method_31359() {
-        return Math.max(0, this.height - 128 - 16);
+        return Math.max(52, this.height - 128 - 16);
     }
 
     private int method_31360() {
@@ -75,6 +86,12 @@ extends Screen {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        this.searchBox.tick();
+    }
+
+    @Override
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
         if (this.field_26873) {
@@ -82,11 +99,33 @@ extends Screen {
         } else {
             this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.height, 88, this.method_31361(), 36);
         }
-        this.allTabButton = this.addButton(new ButtonWidget(this.playerList.getRowLeft() + this.playerList.getRowWidth() / 4 - 30, 45, 60, 20, ALL_TAB_TITLE, buttonWidget -> this.setCurrentTab(Tab.ALL)));
-        this.hiddenTabButton = this.addButton(new ButtonWidget(this.playerList.getRowLeft() + this.playerList.getRowWidth() / 4 * 3 - 30, 45, 60, 20, HIDDEN_TAB_TITLE, buttonWidget -> this.setCurrentTab(Tab.HIDDEN)));
+        int i = this.playerList.getRowWidth() / 3;
+        int j = this.playerList.getRowLeft();
+        int k = this.playerList.method_31383();
+        int l = this.textRenderer.getWidth(field_26919) + 40;
+        int m = 64 + 16 * this.method_31360();
+        int n = (this.width - l) / 2;
+        this.allTabButton = this.addButton(new ButtonWidget(j, 45, i, 20, ALL_TAB_TITLE, buttonWidget -> this.setCurrentTab(Tab.ALL)));
+        this.hiddenTabButton = this.addButton(new ButtonWidget((j + k - i) / 2 + 1, 45, i, 20, HIDDEN_TAB_TITLE, buttonWidget -> this.setCurrentTab(Tab.HIDDEN)));
+        this.field_26913 = this.addButton(new ButtonWidget(k - i + 1, 45, i, 20, field_26915, buttonWidget -> this.setCurrentTab(Tab.BLOCKED)));
+        this.field_26914 = this.addButton(new ButtonWidget(n, m, l, 20, field_26919, buttonWidget -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
+            if (bl) {
+                Util.getOperatingSystem().open("https://aka.ms/javablocking");
+            }
+            this.client.openScreen(this);
+        }, "https://aka.ms/javablocking", true))));
         String string = this.searchBox != null ? this.searchBox.getText() : "";
-        this.searchBox = new TextFieldWidget(this.textRenderer, this.method_31362() + 28, 78, 220, 16, SEARCH_TEXT);
-        this.searchBox.setMaxLength(50);
+        this.searchBox = new TextFieldWidget(this.textRenderer, this.method_31362() + 28, 78, 196, 16, SEARCH_TEXT){
+
+            @Override
+            protected MutableText getNarrationMessage() {
+                if (!SocialInteractionsScreen.this.searchBox.getText().isEmpty() && SocialInteractionsScreen.this.playerList.isEmpty()) {
+                    return super.getNarrationMessage().append(", ").append(field_26917);
+                }
+                return super.getNarrationMessage();
+            }
+        };
+        this.searchBox.setMaxLength(16);
         this.searchBox.setHasBorder(false);
         this.searchBox.setVisible(true);
         this.searchBox.setEditableColor(0xFFFFFF);
@@ -99,10 +138,11 @@ extends Screen {
     }
 
     private void setCurrentTab(Tab currentTab) {
-        Collection<Object> collection;
+        Collection<UUID> collection;
         this.currentTab = currentTab;
         this.allTabButton.setMessage(ALL_TAB_TITLE);
         this.hiddenTabButton.setMessage(HIDDEN_TAB_TITLE);
+        this.field_26913.setMessage(field_26915);
         switch (currentTab) {
             case ALL: {
                 this.allTabButton.setMessage(SELECTED_ALL_TAB_TITLE);
@@ -112,9 +152,12 @@ extends Screen {
             case HIDDEN: {
                 this.hiddenTabButton.setMessage(SELECTED_HIDDEN_TAB_TITLE);
                 collection = this.client.getSocialInteractionsManager().getHiddenPlayers();
-                this.field_26872 = false;
-                if (!collection.isEmpty()) break;
-                NarratorManager.INSTANCE.narrate(EMPTY_HIDDEN_TEXT.getString());
+                break;
+            }
+            case BLOCKED: {
+                this.field_26913.setMessage(field_26916);
+                SocialInteractionsManager socialInteractionsManager = this.client.getSocialInteractionsManager();
+                collection = this.client.player.networkHandler.getPlayerUuids().stream().filter(socialInteractionsManager::method_31392).collect(Collectors.toSet());
                 break;
             }
             default: {
@@ -122,7 +165,16 @@ extends Screen {
             }
         }
         this.currentTab = currentTab;
-        this.playerList.method_31344(currentTab, collection, this.playerList.getScrollAmount());
+        this.playerList.method_31393(collection, this.playerList.getScrollAmount());
+        if (!this.searchBox.getText().isEmpty() && this.playerList.isEmpty() && !this.searchBox.isFocused()) {
+            NarratorManager.INSTANCE.narrate(field_26917.getString());
+        } else if (collection.isEmpty()) {
+            if (currentTab == Tab.HIDDEN) {
+                NarratorManager.INSTANCE.narrate(EMPTY_HIDDEN_TEXT.getString());
+            } else if (currentTab == Tab.BLOCKED) {
+                NarratorManager.INSTANCE.narrate(field_26918.getString());
+            }
+        }
     }
 
     @Override
@@ -153,19 +205,26 @@ extends Screen {
         }
         if (!this.playerList.isEmpty()) {
             this.playerList.render(matrices, mouseX, mouseY, delta);
-        } else if (this.currentTab == Tab.HIDDEN) {
-            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
+        } else if (!this.searchBox.getText().isEmpty()) {
+            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, field_26917, this.width / 2, (78 + this.method_31361()) / 2, -1);
+        } else {
+            switch (this.currentTab) {
+                case HIDDEN: {
+                    SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
+                    break;
+                }
+                case BLOCKED: {
+                    SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, field_26918, this.width / 2, (78 + this.method_31361()) / 2, -1);
+                }
+            }
         }
         if (!this.searchBox.isFocused() && this.searchBox.getText().isEmpty()) {
             SocialInteractionsScreen.drawTextWithShadow(matrices, this.client.textRenderer, SEARCH_TEXT, this.searchBox.x, this.searchBox.y, -1);
         } else {
             this.searchBox.render(matrices, mouseX, mouseY, delta);
         }
+        this.field_26914.visible = this.currentTab == Tab.BLOCKED;
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.field_26872) {
-            this.client.getTextureManager().bindTexture(SOCIAL_INTERACTIONS_TEXTURE);
-            this.drawTexture(matrices, this.hiddenTabButton.x + this.hiddenTabButton.getWidth() - 8, 44, 249, 14, 6, 22);
-        }
         if (this.field_26874 != null) {
             this.field_26874.run();
         }
@@ -173,6 +232,9 @@ extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.searchBox.isFocused()) {
+            this.searchBox.mouseClicked(mouseX, mouseY, button);
+        }
         return super.mouseClicked(mouseX, mouseY, button) || this.playerList.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -203,18 +265,14 @@ extends Screen {
         if (this.playerCount != i) {
             String string = "";
             ServerInfo serverInfo = minecraftClient.getCurrentServerEntry();
-            if (serverInfo != null) {
-                string = serverInfo.name;
-            } else if (minecraftClient.isInSingleplayer()) {
+            if (minecraftClient.isInSingleplayer()) {
                 string = minecraftClient.getServer().getServerMotd();
+            } else if (serverInfo != null) {
+                string = serverInfo.name;
             }
-            this.serverLabel = new TranslatableText("gui.socialInteractions.server_label", string, i);
+            this.serverLabel = i > 1 ? new TranslatableText("gui.socialInteractions.server_label.multiple", string, i) : new TranslatableText("gui.socialInteractions.server_label.single", string, i);
             this.playerCount = i;
         }
-    }
-
-    public void method_31358() {
-        this.field_26872 = this.currentTab != Tab.HIDDEN && this.client.getSocialInteractionsManager().getHiddenPlayers().size() > 0;
     }
 
     public void method_31353(PlayerListEntry playerListEntry) {
@@ -232,7 +290,8 @@ extends Screen {
     @Environment(value=EnvType.CLIENT)
     public static enum Tab {
         ALL,
-        HIDDEN;
+        HIDDEN,
+        BLOCKED;
 
     }
 }

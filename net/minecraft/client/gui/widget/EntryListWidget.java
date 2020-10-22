@@ -234,6 +234,7 @@ implements Drawable {
             tessellator.draw();
         }
         if ((o = this.getMaxScroll()) > 0) {
+            RenderSystem.disableTexture();
             m = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
             m = MathHelper.clamp(m, 32, this.bottom - this.top - 8);
             n = (int)this.getScrollAmount() * (this.bottom - this.top - m) / o + this.top;
@@ -455,6 +456,10 @@ implements Drawable {
 
     public int getRowLeft() {
         return this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
+    }
+
+    public int method_31383() {
+        return this.getRowLeft() + this.getRowWidth();
     }
 
     protected int getRowTop(int index) {
