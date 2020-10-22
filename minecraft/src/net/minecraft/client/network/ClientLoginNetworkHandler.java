@@ -9,9 +9,11 @@ import java.math.BigInteger;
 import java.security.PublicKey;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5525;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -54,10 +56,21 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	@Override
 	public void onHello(LoginHelloS2CPacket packet) {
-		SecretKey secretKey = NetworkEncryptionUtils.generateKey();
-		PublicKey publicKey = packet.getPublicKey();
-		String string = new BigInteger(NetworkEncryptionUtils.generateServerId(packet.getServerId(), publicKey, secretKey)).toString(16);
-		LoginKeyC2SPacket loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, packet.getNonce());
+		Cipher cipher;
+		Cipher cipher2;
+		String string;
+		LoginKeyC2SPacket loginKeyC2SPacket;
+		try {
+			SecretKey secretKey = NetworkEncryptionUtils.generateKey();
+			PublicKey publicKey = packet.getPublicKey();
+			string = new BigInteger(NetworkEncryptionUtils.generateServerId(packet.getServerId(), publicKey, secretKey)).toString(16);
+			cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
+			cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
+			loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, packet.getNonce());
+		} catch (class_5525 var8) {
+			throw new IllegalStateException("Protocol error", var8);
+		}
+
 		this.statusConsumer.accept(new TranslatableText("connect.authorizing"));
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
 			Text text = this.joinServerSession(string);
@@ -71,7 +84,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			}
 
 			this.statusConsumer.accept(new TranslatableText("connect.encrypting"));
-			this.connection.send(loginKeyC2SPacket, future -> this.connection.setupEncryption(secretKey));
+			this.connection.send(loginKeyC2SPacket, future -> this.connection.setupEncryption(cipher, cipher2));
 		}));
 	}
 

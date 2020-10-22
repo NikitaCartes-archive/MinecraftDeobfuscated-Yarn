@@ -12,7 +12,6 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.util.UUIDTypeAdapter;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,9 +19,7 @@ import net.minecraft.client.MinecraftClient;
 
 @Environment(EnvType.CLIENT)
 public class RealmsUtil {
-	private static final YggdrasilAuthenticationService authenticationService = new YggdrasilAuthenticationService(
-		MinecraftClient.getInstance().getNetworkProxy(), UUID.randomUUID().toString()
-	);
+	private static final YggdrasilAuthenticationService authenticationService = new YggdrasilAuthenticationService(MinecraftClient.getInstance().getNetworkProxy());
 	private static final MinecraftSessionService sessionService = authenticationService.createMinecraftSessionService();
 	public static LoadingCache<String, GameProfile> gameProfileCache = CacheBuilder.newBuilder()
 		.expireAfterWrite(60L, TimeUnit.MINUTES)

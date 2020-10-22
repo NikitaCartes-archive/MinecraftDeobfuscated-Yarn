@@ -38,13 +38,13 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 			(int)((double)this.getRowLeft() * d),
 			(int)((double)(this.height - this.bottom) * d),
 			(int)((double)(this.getScrollbarPositionX() + 6) * d),
-			(int)((double)(this.height - (this.height - this.bottom) - this.top) * d)
+			(int)((double)(this.height - (this.height - this.bottom) - this.top - 4) * d)
 		);
 		super.render(matrices, mouseX, mouseY, delta);
 		RenderSystem.disableScissor();
 	}
 
-	public void method_31344(SocialInteractionsScreen.Tab tab, Collection<UUID> collection, double d) {
+	public void method_31393(Collection<UUID> collection, double d) {
 		this.players.clear();
 
 		for (UUID uUID : collection) {
@@ -53,7 +53,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 				this.players
 					.add(
 						new SocialInteractionsPlayerListEntry(
-							this.minecraftClient, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry.getSkinTexture(), tab
+							this.minecraftClient, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture
 						)
 					);
 			}
@@ -95,10 +95,10 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 			}
 		}
 
-		if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().isPlayerHidden(uUID))
+		if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().method_31391(uUID))
 			&& (Strings.isNullOrEmpty(this.currentSearch) || playerListEntry.getProfile().getName().toLowerCase(Locale.ROOT).startsWith(this.currentSearch))) {
 			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry2 = new SocialInteractionsPlayerListEntry(
-				this.minecraftClient, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry.getSkinTexture(), tab
+				this.minecraftClient, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture
 			);
 			this.addEntry(socialInteractionsPlayerListEntry2);
 			this.players.add(socialInteractionsPlayerListEntry2);

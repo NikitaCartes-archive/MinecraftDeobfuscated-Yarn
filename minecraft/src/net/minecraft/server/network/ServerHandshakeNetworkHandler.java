@@ -27,7 +27,13 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 			case LOGIN:
 				this.connection.setState(NetworkState.LOGIN);
 				if (packet.getProtocolVersion() != SharedConstants.getGameVersion().getProtocolVersion()) {
-					Text text = new TranslatableText("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
+					Text text;
+					if (packet.getProtocolVersion() < 754) {
+						text = new TranslatableText("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
+					} else {
+						text = new TranslatableText("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
+					}
+
 					this.connection.send(new LoginDisconnectS2CPacket(text));
 					this.connection.disconnect(text);
 				} else {

@@ -6,7 +6,10 @@ import com.google.gson.JsonElement;
 import com.mojang.authlib.AuthenticationService;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
+import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.minecraft.OfflineSocialInteractions;
+import com.mojang.authlib.minecraft.SocialInteractionsService;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlDebugInfo;
@@ -296,6 +299,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final SplashTextResourceSupplier splashTextLoader;
 	private final VideoWarningManager videoWarningManager;
 	private final MinecraftSessionService sessionService;
+	private final SocialInteractionsService field_26902;
 	private final PlayerSkinProvider skinProvider;
 	private final BakedModelManager bakedModelManager;
 	private final BlockRenderManager blockRenderManager;
@@ -382,7 +386,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir, ResourcePackSource.field_25347)
 		);
 		this.netProxy = args.network.netProxy;
-		this.sessionService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString()).createMinecraftSessionService();
+		YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
+		this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
+		this.field_26902 = this.method_31382(yggdrasilAuthenticationService, args);
 		this.session = args.network.session;
 		LOGGER.info("Setting user: {}", this.session.getUsername());
 		LOGGER.debug("(Session ID is {})", this.session.getSessionId());
@@ -393,7 +399,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.server = null;
 		String string;
 		int i;
-		if (this.multiplayerEnabled && args.autoConnect.serverAddress != null) {
+		if (this.isMultiplayerEnabled() && args.autoConnect.serverAddress != null) {
 			string = args.autoConnect.serverAddress;
 			i = args.autoConnect.serverPort;
 		} else {
@@ -431,8 +437,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			InputStream inputStream = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
 			InputStream inputStream2 = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
 			this.window.setIcon(inputStream, inputStream2);
-		} catch (IOException var8) {
-			LOGGER.error("Couldn't set icon", (Throwable)var8);
+		} catch (IOException var9) {
+			LOGGER.error("Couldn't set icon", (Throwable)var9);
 		}
 
 		this.window.setFramerateLimit(this.options.maxFps);
@@ -477,7 +483,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.bufferBuilders = new BufferBuilderStorage();
 		this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
 		this.resourceManager.registerListener(this.gameRenderer);
-		this.socialInteractionsManager = new SocialInteractionsManager(this);
+		this.socialInteractionsManager = new SocialInteractionsManager(this, this.field_26902);
 		this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), this.blockColors);
 		this.resourceManager.registerListener(this.blockRenderManager);
 		this.worldRenderer = new WorldRenderer(this, this.bufferBuilders);
@@ -553,6 +559,15 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		return stringBuilder.toString();
+	}
+
+	private SocialInteractionsService method_31382(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
+		try {
+			return yggdrasilAuthenticationService.createSocialInteractionsService(runArgs.network.session.getAccessToken());
+		} catch (AuthenticationException var4) {
+			LOGGER.error("Failed to verify authentication", (Throwable)var4);
+			return new OfflineSocialInteractions();
+		}
 	}
 
 	/**
@@ -1720,7 +1735,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			try {
 				session.backupLevelDataFile(registryTracker, saveProperties);
 				integratedResourceManager.getServerResourceManager().loadRegistryTags();
-				YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
+				YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
 				MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
 				GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
 				UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
@@ -1883,7 +1898,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.world = world;
 		this.setWorld(world);
 		if (!this.integratedServerRunning) {
-			AuthenticationService authenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
+			AuthenticationService authenticationService = new YggdrasilAuthenticationService(this.netProxy);
 			MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
 			GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
 			UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
@@ -1958,7 +1973,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public boolean isMultiplayerEnabled() {
-		return this.multiplayerEnabled;
+		return this.multiplayerEnabled && this.field_26902.serversAllowed();
 	}
 
 	/**
@@ -1969,12 +1984,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 */
 	public boolean shouldBlockMessages(UUID sender) {
 		return this.isOnlineChatEnabled()
-			? this.socialInteractionsManager.isPlayerHidden(sender)
+			? this.socialInteractionsManager.method_31391(sender)
 			: (this.player == null || !sender.equals(this.player.getUuid())) && !sender.equals(Util.NIL_UUID);
 	}
 
 	public boolean isOnlineChatEnabled() {
-		return this.onlineChatEnabled;
+		return this.onlineChatEnabled && this.field_26902.chatAllowed();
 	}
 
 	public final boolean isDemo() {

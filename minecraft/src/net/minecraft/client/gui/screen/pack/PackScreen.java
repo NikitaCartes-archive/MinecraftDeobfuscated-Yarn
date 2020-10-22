@@ -48,7 +48,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class PackScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.DARK_GRAY);
+	private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.GRAY);
 	private static final Text FOLDER_INFO = new TranslatableText("pack.folderInfo");
 	private static final Identifier UNKNOWN_PACK = new Identifier("textures/misc/unknown_pack.png");
 	private final ResourcePackOrganizer organizer;

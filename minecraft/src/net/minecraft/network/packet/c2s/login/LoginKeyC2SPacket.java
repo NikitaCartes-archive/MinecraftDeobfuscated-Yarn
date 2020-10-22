@@ -6,6 +6,7 @@ import java.security.PublicKey;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5525;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -19,7 +20,7 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public LoginKeyC2SPacket(SecretKey secretKey, PublicKey publicKey, byte[] nonce) {
+	public LoginKeyC2SPacket(SecretKey secretKey, PublicKey publicKey, byte[] nonce) throws class_5525 {
 		this.encryptedSecretKey = NetworkEncryptionUtils.encrypt(publicKey, secretKey.getEncoded());
 		this.encryptedNonce = NetworkEncryptionUtils.encrypt(publicKey, nonce);
 	}
@@ -40,11 +41,11 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 		serverLoginPacketListener.onKey(this);
 	}
 
-	public SecretKey decryptSecretKey(PrivateKey privateKey) {
+	public SecretKey decryptSecretKey(PrivateKey privateKey) throws class_5525 {
 		return NetworkEncryptionUtils.decryptSecretKey(privateKey, this.encryptedSecretKey);
 	}
 
-	public byte[] decryptNonce(PrivateKey privateKey) {
-		return privateKey == null ? this.encryptedNonce : NetworkEncryptionUtils.decrypt(privateKey, this.encryptedNonce);
+	public byte[] decryptNonce(PrivateKey privateKey) throws class_5525 {
+		return NetworkEncryptionUtils.decrypt(privateKey, this.encryptedNonce);
 	}
 }

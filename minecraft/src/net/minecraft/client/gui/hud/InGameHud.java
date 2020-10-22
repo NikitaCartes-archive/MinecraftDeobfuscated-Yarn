@@ -855,13 +855,13 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			this.client.getProfiler().swap("air");
-			int zx = playerEntity.getAir();
-			int aaxx = playerEntity.getMaxAir();
-			if (playerEntity.isSubmergedIn(FluidTags.WATER) || zx < aaxx) {
+			int zx = playerEntity.getMaxAir();
+			int aaxx = Math.min(playerEntity.getAir(), zx);
+			if (playerEntity.isSubmergedIn(FluidTags.WATER) || aaxx < zx) {
 				int abxx = this.getHeartRows(yxx) - 1;
 				t -= abxx * 10;
-				int acxx = MathHelper.ceil((double)(zx - 2) * 10.0 / (double)aaxx);
-				int adxx = MathHelper.ceil((double)zx * 10.0 / (double)aaxx) - acxx;
+				int acxx = MathHelper.ceil((double)(aaxx - 2) * 10.0 / (double)zx);
+				int adxx = MathHelper.ceil((double)aaxx * 10.0 / (double)zx) - acxx;
 
 				for (int ae = 0; ae < acxx + adxx; ae++) {
 					if (ae < acxx) {

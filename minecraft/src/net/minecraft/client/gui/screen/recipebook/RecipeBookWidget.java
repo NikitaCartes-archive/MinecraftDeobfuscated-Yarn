@@ -217,6 +217,8 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 				this.refreshInputs();
 				this.cachedInvChangeCount = this.client.player.inventory.getChangeCount();
 			}
+
+			this.searchField.tick();
 		}
 	}
 

@@ -229,6 +229,16 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	public void addButtons() {
+		this.leaveButton = this.addButton(
+			new ButtonWidget(
+				this.width / 2 - 202,
+				this.height - 32,
+				90,
+				20,
+				new TranslatableText("mco.selectServer.leave"),
+				buttonWidget -> this.leaveClicked(this.findServer(this.selectedServerId))
+			)
+		);
 		this.configureButton = this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 190,
@@ -254,16 +264,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		}));
 		this.renewButton = this.addButton(
 			new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.expiredRenew"), buttonWidget -> this.onRenew())
-		);
-		this.leaveButton = this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 202,
-				this.height - 32,
-				90,
-				20,
-				new TranslatableText("mco.selectServer.leave"),
-				buttonWidget -> this.leaveClicked(this.findServer(this.selectedServerId))
-			)
 		);
 		this.pendingInvitesButton = this.addButton(new RealmsMainScreen.PendingInvitesButton());
 		this.newsButton = this.addButton(new RealmsMainScreen.NewsButton());
@@ -1244,7 +1244,6 @@ public class RealmsMainScreen extends RealmsScreen {
 				RealmsServer realmsServer;
 				if (this.field_25723) {
 					if (index == 0) {
-						Realms.narrateNow(I18n.translate("mco.trial.message.line1"), I18n.translate("mco.trial.message.line2"));
 						realmsServer = null;
 					} else {
 						if (index - 1 >= RealmsMainScreen.this.realmsServers.size()) {
@@ -1267,15 +1266,12 @@ public class RealmsMainScreen extends RealmsScreen {
 				if (realmsServer == null) {
 					RealmsMainScreen.this.selectedServerId = -1L;
 				} else if (realmsServer.state == RealmsServer.State.UNINITIALIZED) {
-					Realms.narrateNow(I18n.translate("mco.selectServer.uninitialized") + I18n.translate("mco.gui.button"));
 					RealmsMainScreen.this.selectedServerId = -1L;
 				} else {
 					RealmsMainScreen.this.selectedServerId = realmsServer.id;
 					if (RealmsMainScreen.this.clicks >= 10 && RealmsMainScreen.this.playButton.active) {
 						RealmsMainScreen.this.play(RealmsMainScreen.this.findServer(RealmsMainScreen.this.selectedServerId), RealmsMainScreen.this);
 					}
-
-					Realms.narrateNow(I18n.translate("narrator.select", realmsServer.name));
 				}
 			}
 		}
@@ -1283,10 +1279,17 @@ public class RealmsMainScreen extends RealmsScreen {
 		public void setSelected(@Nullable RealmsMainScreen.Entry entry) {
 			super.setSelected(entry);
 			int i = this.children().indexOf(entry);
-			if (!this.field_25723 || i > 0) {
+			if (this.field_25723 && i == 0) {
+				Realms.narrateNow(I18n.translate("mco.trial.message.line1"), I18n.translate("mco.trial.message.line2"));
+			} else if (!this.field_25723 || i > 0) {
 				RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(i - (this.field_25723 ? 1 : 0));
 				RealmsMainScreen.this.selectedServerId = realmsServer.id;
 				RealmsMainScreen.this.updateButtonStates(realmsServer);
+				if (realmsServer.state == RealmsServer.State.UNINITIALIZED) {
+					Realms.narrateNow(I18n.translate("mco.selectServer.uninitialized") + I18n.translate("mco.gui.button"));
+				} else {
+					Realms.narrateNow(I18n.translate("narrator.select", realmsServer.name));
+				}
 			}
 		}
 

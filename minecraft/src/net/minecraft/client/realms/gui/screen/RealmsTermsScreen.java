@@ -87,6 +87,11 @@ public class RealmsTermsScreen extends RealmsScreen {
 	}
 
 	@Override
+	public String getNarrationMessage() {
+		return super.getNarrationMessage() + ". " + field_26524.getString() + " " + field_26525.getString();
+	}
+
+	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, field_26523, this.width / 2, 17, 16777215);

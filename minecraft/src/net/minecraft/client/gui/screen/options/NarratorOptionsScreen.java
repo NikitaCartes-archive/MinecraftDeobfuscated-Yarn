@@ -33,11 +33,15 @@ public abstract class NarratorOptionsScreen extends GameOptionsScreen {
 		this.buttonList = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
 		this.buttonList.addAll(this.options);
 		this.children.add(this.buttonList);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
+		this.method_31387();
 		this.narratorButton = this.buttonList.getButtonFor(Option.NARRATOR);
 		if (this.narratorButton != null) {
 			this.narratorButton.active = NarratorManager.INSTANCE.isActive();
 		}
+	}
+
+	protected void method_31387() {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
 	}
 
 	@Override
