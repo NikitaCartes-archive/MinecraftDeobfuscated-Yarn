@@ -11,30 +11,30 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
 	private ItemStack book;
 	private boolean signed;
-	private int field_26897;
+	private int slot;
 
 	public BookUpdateC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public BookUpdateC2SPacket(ItemStack book, boolean signed, int i) {
+	public BookUpdateC2SPacket(ItemStack book, boolean signed, int slot) {
 		this.book = book.copy();
 		this.signed = signed;
-		this.field_26897 = i;
+		this.slot = slot;
 	}
 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		this.book = buf.readItemStack();
 		this.signed = buf.readBoolean();
-		this.field_26897 = buf.readVarInt();
+		this.slot = buf.readVarInt();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeItemStack(this.book);
 		buf.writeBoolean(this.signed);
-		buf.writeVarInt(this.field_26897);
+		buf.writeVarInt(this.slot);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -49,7 +49,7 @@ public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
 		return this.signed;
 	}
 
-	public int method_12235() {
-		return this.field_26897;
+	public int getSlot() {
+		return this.slot;
 	}
 }

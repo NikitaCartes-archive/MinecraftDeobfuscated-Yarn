@@ -38,7 +38,7 @@ public class SoundSystem {
 	private final GameOptions settings;
 	private boolean started;
 	private final SoundEngine soundEngine = new SoundEngine();
-	private final Listener listener = this.soundEngine.getListener();
+	private final SoundListener listener = this.soundEngine.getListener();
 	private final SoundLoader soundLoader;
 	private final SoundExecutor taskQueue = new SoundExecutor();
 	private final Channel channel = new Channel(this.soundEngine, this.taskQueue);
@@ -284,7 +284,7 @@ public class SoundSystem {
 						} else {
 							Vec3d vec3d = new Vec3d(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ());
 							if (!this.listeners.isEmpty()) {
-								boolean bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.method_27268().squaredDistanceTo(vec3d) < (double)(g * g);
+								boolean bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.getPos().squaredDistanceTo(vec3d) < (double)(g * g);
 								if (bl2) {
 									for (SoundInstanceListener soundInstanceListener : this.listeners) {
 										soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);

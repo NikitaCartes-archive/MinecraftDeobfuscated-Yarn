@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.realms.util.JsonUtils;
 import net.minecraft.client.realms.util.RealmsUtil;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -283,6 +284,10 @@ public class RealmsServer extends ValueObject {
 
 	public String getWorldName(int slotId) {
 		return this.name + " (" + ((RealmsWorldOptions)this.slots.get(slotId)).getSlotName(slotId) + ")";
+	}
+
+	public ServerInfo method_31403(String string) {
+		return new ServerInfo(this.name, string, false);
 	}
 
 	@Environment(EnvType.CLIENT)

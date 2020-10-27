@@ -710,7 +710,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					list.add(listTag.getString(i));
 				}
 
-				int i = packet.method_12235();
+				int i = packet.getSlot();
 				if (PlayerInventory.isValidHotbarIndex(i) || i == 40) {
 					this.method_31279(list, bl ? listx -> this.method_31276((String)listx.get(0), listx.subList(1, listx.size()), i) : listx -> this.method_31278(listx, i));
 				}

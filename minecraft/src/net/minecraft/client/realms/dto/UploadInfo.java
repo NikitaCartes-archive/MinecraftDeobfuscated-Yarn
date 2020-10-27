@@ -23,10 +23,10 @@ public class UploadInfo extends ValueObject {
 	private final String token;
 	private final URI uploadEndpoint;
 
-	private UploadInfo(boolean bl, @Nullable String string, URI uRI) {
-		this.worldClosed = bl;
-		this.token = string;
-		this.uploadEndpoint = uRI;
+	private UploadInfo(boolean worldClosed, @Nullable String token, URI uploadEndpoint) {
+		this.worldClosed = worldClosed;
+		this.token = token;
+		this.uploadEndpoint = uploadEndpoint;
 	}
 
 	@Nullable
@@ -79,10 +79,10 @@ public class UploadInfo extends ValueObject {
 		return matcher.find() ? string : "http://" + string;
 	}
 
-	public static String method_30864(@Nullable String string) {
+	public static String createRequestContent(@Nullable String token) {
 		JsonObject jsonObject = new JsonObject();
-		if (string != null) {
-			jsonObject.addProperty("token", string);
+		if (token != null) {
+			jsonObject.addProperty("token", token);
 		}
 
 		return jsonObject.toString();

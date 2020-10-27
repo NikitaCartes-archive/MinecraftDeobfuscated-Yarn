@@ -9,5 +9,5 @@ public interface WindowEventHandler {
 
 	void onResolutionChanged();
 
-	void method_30133();
+	void onCursorEnterChanged();
 }

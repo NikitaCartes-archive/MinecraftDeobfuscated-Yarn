@@ -288,10 +288,10 @@ public class CommandManager {
 		}
 	}
 
-	public static void method_30852() {
+	public static void checkMissing() {
 		RootCommandNode<ServerCommandSource> rootCommandNode = new CommandManager(CommandManager.RegistrationEnvironment.ALL).getDispatcher().getRoot();
-		Set<ArgumentType<?>> set = ArgumentTypes.method_30924(rootCommandNode);
-		Set<ArgumentType<?>> set2 = (Set<ArgumentType<?>>)set.stream().filter(argumentType -> !ArgumentTypes.method_30923(argumentType)).collect(Collectors.toSet());
+		Set<ArgumentType<?>> set = ArgumentTypes.getAllArgumentTypes(rootCommandNode);
+		Set<ArgumentType<?>> set2 = (Set<ArgumentType<?>>)set.stream().filter(argumentType -> !ArgumentTypes.hasClass(argumentType)).collect(Collectors.toSet());
 		if (!set2.isEmpty()) {
 			LOGGER.warn(
 				"Missing type registration for following arguments:\n {}", set2.stream().map(argumentType -> "\t" + argumentType).collect(Collectors.joining(",\n"))

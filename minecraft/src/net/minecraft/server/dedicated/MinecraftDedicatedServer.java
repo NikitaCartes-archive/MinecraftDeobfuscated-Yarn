@@ -100,7 +100,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		);
 		this.propertiesLoader = serverPropertiesLoader;
 		this.rconCommandOutput = new RconCommandOutput(this);
-		this.field_26898 = class_5514.method_31302(serverPropertiesLoader.getPropertiesHandler().field_26899);
+		this.field_26898 = null;
 	}
 
 	@Override

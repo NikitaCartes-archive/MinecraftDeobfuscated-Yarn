@@ -14,10 +14,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import net.minecraft.class_5525;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
@@ -153,7 +153,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			string = new BigInteger(NetworkEncryptionUtils.generateServerId("", this.server.getKeyPair().getPublic(), this.secretKey)).toString(16);
 			this.state = ServerLoginNetworkHandler.State.AUTHENTICATING;
 			this.connection.setupEncryption(cipher, cipher2);
-		} catch (class_5525 var6) {
+		} catch (NetworkEncryptionException var6) {
 			throw new IllegalStateException("Protocol error", var6);
 		}
 

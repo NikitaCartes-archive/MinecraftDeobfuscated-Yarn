@@ -26,21 +26,19 @@ public class NarratorManager implements ClientChatListener {
 
 	@Override
 	public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
-		if (!MinecraftClient.getInstance().shouldBlockMessages(senderUuid)) {
-			NarratorMode narratorMode = getNarratorOption();
-			if (narratorMode != NarratorMode.OFF && this.narrator.active()) {
-				if (narratorMode == NarratorMode.ALL
-					|| narratorMode == NarratorMode.CHAT && messageType == MessageType.CHAT
-					|| narratorMode == NarratorMode.SYSTEM && messageType == MessageType.SYSTEM) {
-					Text text;
-					if (message instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)message).getKey())) {
-						text = new TranslatableText("chat.type.text.narrate", ((TranslatableText)message).getArgs());
-					} else {
-						text = message;
-					}
-
-					this.narrate(messageType.interruptsNarration(), text.getString());
+		NarratorMode narratorMode = getNarratorOption();
+		if (narratorMode != NarratorMode.OFF && this.narrator.active()) {
+			if (narratorMode == NarratorMode.ALL
+				|| narratorMode == NarratorMode.CHAT && messageType == MessageType.CHAT
+				|| narratorMode == NarratorMode.SYSTEM && messageType == MessageType.SYSTEM) {
+				Text text;
+				if (message instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)message).getKey())) {
+					text = new TranslatableText("chat.type.text.narrate", ((TranslatableText)message).getArgs());
+				} else {
+					text = message;
 				}
+
+				this.narrate(messageType.interruptsNarration(), text.getString());
 			}
 		}
 	}

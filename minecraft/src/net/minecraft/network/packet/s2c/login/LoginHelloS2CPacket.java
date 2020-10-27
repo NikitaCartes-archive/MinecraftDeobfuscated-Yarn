@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.security.PublicKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5525;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 
 public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
@@ -48,7 +48,7 @@ public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PublicKey getPublicKey() throws class_5525 {
+	public PublicKey getPublicKey() throws NetworkEncryptionException {
 		return NetworkEncryptionUtils.readEncodedPublicKey(this.publicKey);
 	}
 

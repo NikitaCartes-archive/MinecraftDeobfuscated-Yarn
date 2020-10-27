@@ -7,21 +7,21 @@ import net.minecraft.util.math.Vec3d;
 import org.lwjgl.openal.AL10;
 
 @Environment(EnvType.CLIENT)
-public class Listener {
+public class SoundListener {
 	private float volume = 1.0F;
-	private Vec3d field_24051 = Vec3d.ZERO;
+	private Vec3d pos = Vec3d.ZERO;
 
 	public void setPosition(Vec3d position) {
-		this.field_24051 = position;
+		this.pos = position;
 		AL10.alListener3f(4100, (float)position.x, (float)position.y, (float)position.z);
 	}
 
-	public Vec3d method_27268() {
-		return this.field_24051;
+	public Vec3d getPos() {
+		return this.pos;
 	}
 
-	public void setOrientation(Vector3f vector3f, Vector3f vector3f2) {
-		AL10.alListenerfv(4111, new float[]{vector3f.getX(), vector3f.getY(), vector3f.getZ(), vector3f2.getX(), vector3f2.getY(), vector3f2.getZ()});
+	public void setOrientation(Vector3f at, Vector3f up) {
+		AL10.alListenerfv(4111, new float[]{at.getX(), at.getY(), at.getZ(), up.getX(), up.getY(), up.getZ()});
 	}
 
 	public void setVolume(float volume) {

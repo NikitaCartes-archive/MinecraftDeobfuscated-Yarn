@@ -9,8 +9,15 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+/**
+ * A GUI interface which handles keyboard and mouse callbacks for child GUI elements.
+ * The implementation of a parent element can decide whether a child element receives keyboard and mouse callbacks.
+ */
 @Environment(EnvType.CLIENT)
 public interface ParentElement extends Element {
+	/**
+	 * Gets a list of all child GUI elements.
+	 */
 	List<? extends Element> children();
 
 	default Optional<Element> hoveredElement(double mouseX, double mouseY) {

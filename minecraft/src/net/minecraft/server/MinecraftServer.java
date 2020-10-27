@@ -55,7 +55,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_5513;
-import net.minecraft.class_5525;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
@@ -63,6 +62,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.network.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.recipe.RecipeManager;
@@ -1026,7 +1026,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		try {
 			this.keyPair = NetworkEncryptionUtils.generateServerKeyPair();
-		} catch (class_5525 var2) {
+		} catch (NetworkEncryptionException var2) {
 			throw new IllegalStateException("Failed to generate key pair", var2);
 		}
 	}

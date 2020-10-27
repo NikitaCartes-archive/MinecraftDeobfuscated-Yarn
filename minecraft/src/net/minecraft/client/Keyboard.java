@@ -412,9 +412,9 @@ public class Keyboard {
 	}
 
 	public String getClipboard() {
-		return this.clipboard.getClipboard(this.client.getWindow().getHandle(), (i, l) -> {
-			if (i != 65545) {
-				this.client.getWindow().logGlError(i, l);
+		return this.clipboard.getClipboard(this.client.getWindow().getHandle(), (error, description) -> {
+			if (error != 65545) {
+				this.client.getWindow().logGlError(error, description);
 			}
 		});
 	}

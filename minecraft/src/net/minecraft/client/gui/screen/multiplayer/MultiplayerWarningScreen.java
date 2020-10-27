@@ -54,7 +54,7 @@ public class MultiplayerWarningScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackgroundTexture(0);
-		drawCenteredText(matrices, this.textRenderer, HEADER, this.width / 2, 30, 16777215);
+		drawTextWithShadow(matrices, this.textRenderer, HEADER, 25, 30, 16777215);
 		this.lines.method_30893(matrices, 25, 70, 9 * 2, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

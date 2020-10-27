@@ -53,7 +53,7 @@ public class OptionsScreen extends Screen {
 			this.difficulty = this.client.world.getDifficulty();
 			this.difficultyButton = this.addButton(
 				new ButtonWidget(
-					this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.getDifficultyButtonText(this.difficulty), buttonWidget -> {
+					this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.getDifficultyButtonText(this.difficulty), button -> {
 						this.difficulty = Difficulty.byOrdinal(this.difficulty.getId() + 1);
 						this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(this.difficulty));
 						this.difficultyButton.setMessage(this.getDifficultyButtonText(this.difficulty));
@@ -66,7 +66,7 @@ public class OptionsScreen extends Screen {
 					new LockButtonWidget(
 						this.difficultyButton.x + this.difficultyButton.getWidth(),
 						this.difficultyButton.y,
-						buttonWidget -> this.client
+						button -> this.client
 								.openScreen(
 									new ConfirmScreen(
 										this::lockDifficulty,
@@ -93,10 +93,10 @@ public class OptionsScreen extends Screen {
 					20,
 					Option.REALMS_NOTIFICATIONS,
 					Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings),
-					buttonWidget -> {
+					button -> {
 						Option.REALMS_NOTIFICATIONS.toggle(this.settings);
 						this.settings.write();
-						buttonWidget.setMessage(Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings));
+						button.setMessage(Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings));
 					}
 				)
 			);
@@ -109,7 +109,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.skinCustomisation"),
-				buttonWidget -> this.client.openScreen(new SkinOptionsScreen(this, this.settings))
+				button -> this.client.openScreen(new SkinOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -119,7 +119,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.sounds"),
-				buttonWidget -> this.client.openScreen(new SoundOptionsScreen(this, this.settings))
+				button -> this.client.openScreen(new SoundOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -129,7 +129,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.video"),
-				buttonWidget -> this.client.openScreen(new VideoOptionsScreen(this, this.settings))
+				button -> this.client.openScreen(new VideoOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -139,7 +139,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.controls"),
-				buttonWidget -> this.client.openScreen(new ControlsOptionsScreen(this, this.settings))
+				button -> this.client.openScreen(new ControlsOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -149,7 +149,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.language"),
-				buttonWidget -> this.client.openScreen(new LanguageOptionsScreen(this, this.settings, this.client.getLanguageManager()))
+				button -> this.client.openScreen(new LanguageOptionsScreen(this, this.settings, this.client.getLanguageManager()))
 			)
 		);
 		this.addButton(
@@ -159,7 +159,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.chat.title"),
-				buttonWidget -> this.client.openScreen(new ChatOptionsScreen(this, this.settings))
+				button -> this.client.openScreen(new ChatOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -169,10 +169,10 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.resourcepack"),
-				buttonWidget -> this.client
+				button -> this.client
 						.openScreen(
 							new PackScreen(
-								this, this.client.getResourcePackManager(), this::method_29975, this.client.getResourcePackDir(), new TranslatableText("resourcePack.title")
+								this, this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), new TranslatableText("resourcePack.title")
 							)
 						)
 			)
@@ -184,13 +184,13 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.accessibility.title"),
-				buttonWidget -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.settings))
+				button -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.settings))
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
 	}
 
-	private void method_29975(ResourcePackManager resourcePackManager) {
+	private void refreshResourcePacks(ResourcePackManager resourcePackManager) {
 		List<String> list = ImmutableList.copyOf(this.settings.resourcePacks);
 		this.settings.resourcePacks.clear();
 		this.settings.incompatibleResourcePacks.clear();

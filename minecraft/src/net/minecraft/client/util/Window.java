@@ -103,7 +103,7 @@ public final class Window implements AutoCloseable {
 		GLFW.glfwSetWindowPosCallback(this.handle, this::onWindowPosChanged);
 		GLFW.glfwSetWindowSizeCallback(this.handle, this::onWindowSizeChanged);
 		GLFW.glfwSetWindowFocusCallback(this.handle, this::onWindowFocusChanged);
-		GLFW.glfwSetCursorEnterCallback(this.handle, this::method_30132);
+		GLFW.glfwSetCursorEnterCallback(this.handle, this::onCursorEnterChanged);
 	}
 
 	public int getRefreshRate() {
@@ -277,9 +277,9 @@ public final class Window implements AutoCloseable {
 		}
 	}
 
-	private void method_30132(long l, boolean bl) {
-		if (bl) {
-			this.eventHandler.method_30133();
+	private void onCursorEnterChanged(long window, boolean entered) {
+		if (entered) {
+			this.eventHandler.onCursorEnterChanged();
 		}
 	}
 
@@ -396,8 +396,8 @@ public final class Window implements AutoCloseable {
 		this.scaledHeight = (double)this.framebufferHeight / scaleFactor > (double)j ? j + 1 : j;
 	}
 
-	public void setTitle(String string) {
-		GLFW.glfwSetWindowTitle(this.handle, string);
+	public void setTitle(String title) {
+		GLFW.glfwSetWindowTitle(this.handle, title);
 	}
 
 	public long getHandle() {

@@ -19,6 +19,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
@@ -68,6 +69,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
+import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
 public class InGameHud extends DrawableHelper {
@@ -1103,9 +1105,19 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
+	public UUID method_31406(Text text) {
+		String string = TextVisitFactory.method_31402(text);
+		String string2 = StringUtils.substringBetween(string, "<", ">");
+		return string2 == null ? Util.NIL_UUID : this.client.getSocialInteractionsManager().method_31407(string2);
+	}
+
 	public void addChatMessage(MessageType type, Text text, UUID senderUuid) {
-		for (ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
-			clientChatListener.onChatMessage(type, text, senderUuid);
+		if (!this.client.shouldBlockMessages(senderUuid)) {
+			if (!this.client.options.field_26926 || !this.client.shouldBlockMessages(this.method_31406(text))) {
+				for (ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
+					clientChatListener.onChatMessage(type, text, senderUuid);
+				}
+			}
 		}
 	}
 

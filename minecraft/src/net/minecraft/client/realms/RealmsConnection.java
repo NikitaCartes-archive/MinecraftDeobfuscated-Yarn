@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
+import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
@@ -29,7 +30,7 @@ public class RealmsConnection {
 		this.onlineScreen = onlineScreen;
 	}
 
-	public void connect(String address, int port) {
+	public void connect(RealmsServer realmsServer, String string, int i) {
 		final MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.setConnectedToRealms(true);
 		Realms.narrateNow(I18n.translate("mco.connect.success"));
@@ -38,12 +39,12 @@ public class RealmsConnection {
 					InetAddress inetAddress = null;
 
 					try {
-						inetAddress = InetAddress.getByName(address);
+						inetAddress = InetAddress.getByName(string);
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
-						RealmsConnection.this.connection = ClientConnection.connect(inetAddress, port, minecraftClient.options.shouldUseNativeTransport());
+						RealmsConnection.this.connection = ClientConnection.connect(inetAddress, i, minecraftClient.options.shouldUseNativeTransport());
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
@@ -55,12 +56,13 @@ public class RealmsConnection {
 							return;
 						}
 
-						RealmsConnection.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
+						RealmsConnection.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
 						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getProfile()));
+						minecraftClient.setCurrentServerEntry(realmsServer.method_31403(string));
 					} catch (UnknownHostException var5) {
 						minecraftClient.getResourcePackDownloader().clear();
 						if (RealmsConnection.this.aborted) {
@@ -69,7 +71,7 @@ public class RealmsConnection {
 
 						RealmsConnection.LOGGER.error("Couldn't connect to world", (Throwable)var5);
 						DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(
-							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'")
+							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", "Unknown host '" + string + "'")
 						);
 						minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
 					} catch (Exception var6) {
@@ -81,7 +83,7 @@ public class RealmsConnection {
 						RealmsConnection.LOGGER.error("Couldn't connect to world", (Throwable)var6);
 						String string = var6.toString();
 						if (inetAddress != null) {
-							String string2 = inetAddress + ":" + port;
+							String string2 = inetAddress + ":" + i;
 							string = string.replaceAll(string2, "");
 						}
 

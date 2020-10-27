@@ -711,7 +711,7 @@ public abstract class PlayerManager {
 	}
 
 	public void sendPlayerStatus(ServerPlayerEntity player) {
-		player.openHandledScreen(player.playerScreenHandler);
+		player.refreshScreenHandler(player.playerScreenHandler);
 		player.markHealthDirty();
 		player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(player.inventory.selectedSlot));
 	}

@@ -113,14 +113,14 @@ public class ArgumentTypes {
 	}
 
 	@Nullable
-	public static ArgumentType<?> fromPacket(PacketByteBuf packetByteBuf) {
-		Identifier identifier = packetByteBuf.readIdentifier();
+	public static ArgumentType<?> fromPacket(PacketByteBuf buf) {
+		Identifier identifier = buf.readIdentifier();
 		ArgumentTypes.Entry<?> entry = byId(identifier);
 		if (entry == null) {
 			LOGGER.error("Could not deserialize {}", identifier);
 			return null;
 		} else {
-			return entry.serializer.fromPacket(packetByteBuf);
+			return entry.serializer.fromPacket(buf);
 		}
 	}
 
@@ -183,27 +183,27 @@ public class ArgumentTypes {
 		return jsonObject;
 	}
 
-	public static boolean method_30923(ArgumentType<?> argumentType) {
+	public static boolean hasClass(ArgumentType<?> argumentType) {
 		return byClass(argumentType) != null;
 	}
 
-	public static <T> Set<ArgumentType<?>> method_30924(CommandNode<T> commandNode) {
+	public static <T> Set<ArgumentType<?>> getAllArgumentTypes(CommandNode<T> node) {
 		Set<CommandNode<T>> set = Sets.newIdentityHashSet();
 		Set<ArgumentType<?>> set2 = Sets.<ArgumentType<?>>newHashSet();
-		method_30925(commandNode, set2, set);
+		getAllArgumentTypes(node, set2, set);
 		return set2;
 	}
 
-	private static <T> void method_30925(CommandNode<T> commandNode, Set<ArgumentType<?>> set, Set<CommandNode<T>> set2) {
-		if (set2.add(commandNode)) {
-			if (commandNode instanceof ArgumentCommandNode) {
-				set.add(((ArgumentCommandNode)commandNode).getType());
+	private static <T> void getAllArgumentTypes(CommandNode<T> node, Set<ArgumentType<?>> argumentTypes, Set<CommandNode<T>> ignoredNodes) {
+		if (ignoredNodes.add(node)) {
+			if (node instanceof ArgumentCommandNode) {
+				argumentTypes.add(((ArgumentCommandNode)node).getType());
 			}
 
-			commandNode.getChildren().forEach(commandNodex -> method_30925(commandNodex, set, set2));
-			CommandNode<T> commandNode2 = commandNode.getRedirect();
-			if (commandNode2 != null) {
-				method_30925(commandNode2, set, set2);
+			node.getChildren().forEach(nodex -> getAllArgumentTypes(nodex, argumentTypes, ignoredNodes));
+			CommandNode<T> commandNode = node.getRedirect();
+			if (commandNode != null) {
+				getAllArgumentTypes(commandNode, argumentTypes, ignoredNodes);
 			}
 		}
 	}

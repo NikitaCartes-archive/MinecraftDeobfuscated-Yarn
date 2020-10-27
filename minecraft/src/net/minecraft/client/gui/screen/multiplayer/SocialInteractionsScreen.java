@@ -159,7 +159,7 @@ public class SocialInteractionsScreen extends Screen {
 					.networkHandler
 					.getPlayerUuids()
 					.stream()
-					.filter(socialInteractionsManager::method_31392)
+					.filter(socialInteractionsManager::isPlayerBlocked)
 					.collect(Collectors.toSet());
 				break;
 			default:

@@ -975,7 +975,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		}
 	}
 
-	public void openHandledScreen(ScreenHandler handler) {
+	/**
+	 * Sends packets to the client that refresh the current screen handler's items.
+	 */
+	public void refreshScreenHandler(ScreenHandler handler) {
 		this.onHandlerRegistered(handler, handler.getStacks());
 	}
 
