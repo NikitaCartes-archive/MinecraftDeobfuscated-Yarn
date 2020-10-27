@@ -343,11 +343,15 @@ public abstract class Option {
 				new TranslatableText(gameOptions.backgroundForChatOnly ? "options.accessibility.text_background.chat" : "options.accessibility.text_background.everywhere")
 			)
 	);
+	private static final Text field_26925 = new TranslatableText("options.hideMatchedNames.tooltip");
 	public static final BooleanOption AUTO_JUMP = new BooleanOption(
 		"options.autoJump", gameOptions -> gameOptions.autoJump, (gameOptions, autoJump) -> gameOptions.autoJump = autoJump
 	);
 	public static final BooleanOption AUTO_SUGGESTIONS = new BooleanOption(
 		"options.autoSuggestCommands", gameOptions -> gameOptions.autoSuggestions, (gameOptions, autoSuggestions) -> gameOptions.autoSuggestions = autoSuggestions
+	);
+	public static final BooleanOption field_26924 = new BooleanOption(
+		"options.hideMatchedNames", field_26925, gameOptions -> gameOptions.field_26926, (gameOptions, boolean_) -> gameOptions.field_26926 = boolean_
 	);
 	public static final BooleanOption CHAT_COLOR = new BooleanOption(
 		"options.chat.color", gameOptions -> gameOptions.chatColors, (gameOptions, chatColors) -> gameOptions.chatColors = chatColors

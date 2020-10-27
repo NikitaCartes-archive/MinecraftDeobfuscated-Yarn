@@ -117,7 +117,7 @@ public class CauldronBlock extends Block {
 						} else if (!player.inventory.insertStack(itemStack2)) {
 							player.dropItem(itemStack2, false);
 						} else if (player instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
+							((ServerPlayerEntity)player).refreshScreenHandler(player.playerScreenHandler);
 						}
 					}
 
@@ -133,7 +133,7 @@ public class CauldronBlock extends Block {
 						player.incrementStat(Stats.USE_CAULDRON);
 						player.setStackInHand(hand, itemStack2);
 						if (player instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
+							((ServerPlayerEntity)player).refreshScreenHandler(player.playerScreenHandler);
 						}
 					}
 
@@ -169,7 +169,7 @@ public class CauldronBlock extends Block {
 						} else if (!player.inventory.insertStack(itemStack2)) {
 							player.dropItem(itemStack2, false);
 						} else if (player instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
+							((ServerPlayerEntity)player).refreshScreenHandler(player.playerScreenHandler);
 						}
 					}
 

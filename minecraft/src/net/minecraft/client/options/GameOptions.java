@@ -109,6 +109,7 @@ public class GameOptions {
 	public boolean sneakToggled;
 	public boolean sprintToggled;
 	public boolean skipMultiplayerWarning;
+	public boolean field_26926 = true;
 	public final KeyBinding keyForward = new KeyBinding("key.forward", 87, "key.categories.movement");
 	public final KeyBinding keyLeft = new KeyBinding("key.left", 65, "key.categories.movement");
 	public final KeyBinding keyBack = new KeyBinding("key.back", 83, "key.categories.movement");
@@ -557,6 +558,10 @@ public class GameOptions {
 						this.skipMultiplayerWarning = "true".equals(string2);
 					}
 
+					if ("hideMatchedNames".equals(string)) {
+						this.field_26926 = "true".equals(string2);
+					}
+
 					if ("joinedFirstServer".equals(string)) {
 						this.joinedFirstServer = "true".equals(string2);
 					}
@@ -697,6 +702,7 @@ public class GameOptions {
 				printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
 				printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
 				printWriter.println("skipMultiplayerWarning:" + this.skipMultiplayerWarning);
+				printWriter.println("hideMatchedNames:" + this.field_26926);
 				printWriter.println("joinedFirstServer:" + this.joinedFirstServer);
 				printWriter.println("syncChunkWrites:" + this.syncChunkWrites);
 

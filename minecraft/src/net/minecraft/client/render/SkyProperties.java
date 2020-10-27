@@ -24,14 +24,14 @@ public abstract class SkyProperties {
 	private final float cloudsHeight;
 	private final boolean alternateSkyColor;
 	private final SkyProperties.SkyType skyType;
-	private final boolean shouldRenderSky;
+	private final boolean brightenLighting;
 	private final boolean darkened;
 
-	public SkyProperties(float cloudsHeight, boolean alternateSkyColor, SkyProperties.SkyType skyType, boolean shouldRenderSky, boolean darkened) {
+	public SkyProperties(float cloudsHeight, boolean alternateSkyColor, SkyProperties.SkyType skyType, boolean brightenLighting, boolean darkened) {
 		this.cloudsHeight = cloudsHeight;
 		this.alternateSkyColor = alternateSkyColor;
 		this.skyType = skyType;
-		this.shouldRenderSky = shouldRenderSky;
+		this.brightenLighting = brightenLighting;
 		this.darkened = darkened;
 	}
 
@@ -39,8 +39,14 @@ public abstract class SkyProperties {
 		return BY_IDENTIFIER.get(dimensionType.getSkyProperties());
 	}
 
+	/**
+	 * Returns a fog color override based on the current sky angle. This is used in vanilla to render sunset and
+	 * sunrise fog.
+	 * 
+	 * @return an RGBA array of four floats, or {@code null} if fog color should not be overridden
+	 */
 	@Nullable
-	public float[] getSkyColor(float skyAngle, float tickDelta) {
+	public float[] getFogColorOverride(float skyAngle, float tickDelta) {
 		float f = 0.4F;
 		float g = MathHelper.cos(skyAngle * (float) (Math.PI * 2)) - 0.0F;
 		float h = -0.0F;
@@ -66,7 +72,11 @@ public abstract class SkyProperties {
 		return this.alternateSkyColor;
 	}
 
-	public abstract Vec3d adjustSkyColor(Vec3d color, float sunHeight);
+	/**
+	 * Transforms the given fog color based on the current height of the sun. This is used in vanilla to darken
+	 * fog during night.
+	 */
+	public abstract Vec3d adjustFogColor(Vec3d color, float sunHeight);
 
 	public abstract boolean useThickFog(int camX, int camY);
 
@@ -74,8 +84,8 @@ public abstract class SkyProperties {
 		return this.skyType;
 	}
 
-	public boolean shouldRenderSky() {
-		return this.shouldRenderSky;
+	public boolean shouldBrightenLighting() {
+		return this.brightenLighting;
 	}
 
 	public boolean isDarkened() {
@@ -89,7 +99,7 @@ public abstract class SkyProperties {
 		}
 
 		@Override
-		public Vec3d adjustSkyColor(Vec3d color, float sunHeight) {
+		public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
 			return color.multiply(0.15F);
 		}
 
@@ -100,7 +110,7 @@ public abstract class SkyProperties {
 
 		@Nullable
 		@Override
-		public float[] getSkyColor(float skyAngle, float tickDelta) {
+		public float[] getFogColorOverride(float skyAngle, float tickDelta) {
 			return null;
 		}
 	}
@@ -112,7 +122,7 @@ public abstract class SkyProperties {
 		}
 
 		@Override
-		public Vec3d adjustSkyColor(Vec3d color, float sunHeight) {
+		public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
 			return color;
 		}
 
@@ -129,7 +139,7 @@ public abstract class SkyProperties {
 		}
 
 		@Override
-		public Vec3d adjustSkyColor(Vec3d color, float sunHeight) {
+		public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
 			return color.multiply((double)(sunHeight * 0.94F + 0.06F), (double)(sunHeight * 0.94F + 0.06F), (double)(sunHeight * 0.91F + 0.09F));
 		}
 
@@ -141,8 +151,17 @@ public abstract class SkyProperties {
 
 	@Environment(EnvType.CLIENT)
 	public static enum SkyType {
+		/**
+		 * Signals the renderer not to render a sky.
+		 */
 		NONE,
+		/**
+		 * Signals the renderer to render a normal sky (as in the vanilla Overworld).
+		 */
 		NORMAL,
+		/**
+		 * Signals the renderer to draw the end sky box over the sky (as in the vanilla End).
+		 */
 		END;
 	}
 }

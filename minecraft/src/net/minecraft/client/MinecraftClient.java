@@ -1095,7 +1095,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	@Override
-	public void method_30133() {
+	public void onCursorEnterChanged() {
 		this.mouse.method_30134();
 	}
 

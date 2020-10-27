@@ -96,6 +96,9 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 		}
 	}
 
+	/**
+	 * Checks whether this screen should be closed when the escape key is pressed.
+	 */
 	public boolean shouldCloseOnEsc() {
 		return true;
 	}
@@ -104,11 +107,22 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 		this.client.openScreen(null);
 	}
 
+	/**
+	 * Adds a button to this screen.
+	 * This method should be preferred over {@link Screen#addChild(Element)} since buttons are automatically rendered when added to a screen.
+	 */
 	protected <T extends AbstractButtonWidget> T addButton(T button) {
 		this.buttons.add(button);
 		return this.addChild(button);
 	}
 
+	/**
+	 * Adds a child element to this screen.
+	 * If the child element is an {@link net.minecraft.client.gui.widget.AbstractButtonWidget}, you should use {@link Screen#addButton(AbstractButtonWidget)} instead.
+	 * 
+	 * <p>Adding a child element to a screen does not guarantee the widget is rendered or ticked.
+	 * @see net.minecraft.client.gui.screen.Screen#addButton(AbstractButtonWidget)
+	 */
 	protected <T extends Element> T addChild(T child) {
 		this.children.add(child);
 		return child;
@@ -314,6 +328,11 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 		return this.children;
 	}
 
+	/**
+	 * Called when a screen should be initialized.
+	 * 
+	 * <p>This method is called when this screen is {@link MinecraftClient#openScreen(Screen) opened} or resized.
+	 */
 	protected void init() {
 	}
 

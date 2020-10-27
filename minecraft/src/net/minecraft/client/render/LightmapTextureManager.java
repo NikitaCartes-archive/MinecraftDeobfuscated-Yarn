@@ -108,7 +108,7 @@ public class LightmapTextureManager implements AutoCloseable {
 						float p = n * ((n * 0.6F + 0.4F) * 0.6F + 0.4F);
 						float q = n * (n * n * 0.6F + 0.4F);
 						vector3f2.set(n, p, q);
-						if (clientWorld.getSkyProperties().shouldRenderSky()) {
+						if (clientWorld.getSkyProperties().shouldBrightenLighting()) {
 							vector3f2.lerp(new Vector3f(0.99F, 1.12F, 1.0F), 0.25F);
 						} else {
 							Vector3f vector3f3 = vector3f.copy();

@@ -72,7 +72,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 	private void method_31349() {
 		if (this.currentSearch != null) {
 			this.players
-				.removeIf(socialInteractionsPlayerListEntry -> !socialInteractionsPlayerListEntry.getName().toLowerCase(Locale.ROOT).startsWith(this.currentSearch));
+				.removeIf(socialInteractionsPlayerListEntry -> !socialInteractionsPlayerListEntry.getName().toLowerCase(Locale.ROOT).contains(this.currentSearch));
 			this.replaceEntries(this.players);
 		}
 	}
@@ -96,7 +96,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 		}
 
 		if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().method_31391(uUID))
-			&& (Strings.isNullOrEmpty(this.currentSearch) || playerListEntry.getProfile().getName().toLowerCase(Locale.ROOT).startsWith(this.currentSearch))) {
+			&& (Strings.isNullOrEmpty(this.currentSearch) || playerListEntry.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
 			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry2 = new SocialInteractionsPlayerListEntry(
 				this.minecraftClient, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture
 			);

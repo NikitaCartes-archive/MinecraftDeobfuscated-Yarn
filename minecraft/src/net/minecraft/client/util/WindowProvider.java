@@ -11,13 +11,13 @@ public final class WindowProvider implements AutoCloseable {
 	private final MinecraftClient client;
 	private final MonitorTracker monitorTracker;
 
-	public WindowProvider(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public WindowProvider(MinecraftClient client) {
+		this.client = client;
 		this.monitorTracker = new MonitorTracker(Monitor::new);
 	}
 
-	public Window createWindow(WindowSettings windowSettings, @Nullable String string, String string2) {
-		return new Window(this.client, this.monitorTracker, windowSettings, string, string2);
+	public Window createWindow(WindowSettings settings, @Nullable String videoMode, String title) {
+		return new Window(this.client, this.monitorTracker, settings, videoMode, title);
 	}
 
 	public void close() {

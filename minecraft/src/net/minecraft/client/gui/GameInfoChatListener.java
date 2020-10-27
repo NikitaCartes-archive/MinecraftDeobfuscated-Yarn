@@ -17,8 +17,6 @@ public class GameInfoChatListener implements ClientChatListener {
 
 	@Override
 	public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
-		if (!this.client.shouldBlockMessages(senderUuid)) {
-			this.client.inGameHud.setOverlayMessage(message, false);
-		}
+		this.client.inGameHud.setOverlayMessage(message, false);
 	}
 }

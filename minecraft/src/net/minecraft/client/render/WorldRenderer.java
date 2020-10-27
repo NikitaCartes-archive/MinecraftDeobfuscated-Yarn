@@ -1591,7 +1591,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			RenderSystem.disableAlphaTest();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			float[] fs = this.world.getSkyProperties().getSkyColor(this.world.getSkyAngle(tickDelta), tickDelta);
+			float[] fs = this.world.getSkyProperties().getFogColorOverride(this.world.getSkyAngle(tickDelta), tickDelta);
 			if (fs != null) {
 				RenderSystem.disableTexture();
 				RenderSystem.shadeModel(7425);
