@@ -318,10 +318,10 @@ public class CommandManager {
         return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
     }
 
-    public static void method_30852() {
+    public static void checkMissing() {
         RootCommandNode<ServerCommandSource> rootCommandNode = new CommandManager(RegistrationEnvironment.ALL).getDispatcher().getRoot();
-        Set<ArgumentType<?>> set = ArgumentTypes.method_30924(rootCommandNode);
-        Set set2 = set.stream().filter(argumentType -> !ArgumentTypes.method_30923(argumentType)).collect(Collectors.toSet());
+        Set<ArgumentType<?>> set = ArgumentTypes.getAllArgumentTypes(rootCommandNode);
+        Set set2 = set.stream().filter(argumentType -> !ArgumentTypes.hasClass(argumentType)).collect(Collectors.toSet());
         if (!set2.isEmpty()) {
             LOGGER.warn("Missing type registration for following arguments:\n {}", (Object)set2.stream().map(argumentType -> "\t" + argumentType).collect(Collectors.joining(",\n")));
             throw new IllegalStateException("Unregistered argument types");

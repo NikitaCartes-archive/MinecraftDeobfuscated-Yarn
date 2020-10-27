@@ -16,10 +16,10 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import net.minecraft.class_5525;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
@@ -150,8 +150,8 @@ implements ServerLoginPacketListener {
             string = new BigInteger(NetworkEncryptionUtils.generateServerId("", this.server.getKeyPair().getPublic(), this.secretKey)).toString(16);
             this.state = State.AUTHENTICATING;
             this.connection.setupEncryption(cipher, cipher2);
-        } catch (class_5525 lv) {
-            throw new IllegalStateException("Protocol error", lv);
+        } catch (NetworkEncryptionException networkEncryptionException) {
+            throw new IllegalStateException("Protocol error", networkEncryptionException);
         }
         Thread thread = new Thread("User Authenticator #" + authenticatorThreadId.incrementAndGet()){
 

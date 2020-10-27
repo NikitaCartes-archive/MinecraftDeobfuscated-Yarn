@@ -45,7 +45,7 @@ public class RealmsClient {
     private static final Logger LOGGER;
     private final String sessionId;
     private final String username;
-    private final MinecraftClient field_26901;
+    private final MinecraftClient client;
     private static final CheckedGson JSON;
 
     public static RealmsClient createRealmsClient() {
@@ -81,11 +81,11 @@ public class RealmsClient {
         currentEnvironment = Environment.LOCAL;
     }
 
-    public RealmsClient(String sessionId, String username, MinecraftClient minecraftClient) {
+    public RealmsClient(String sessionId, String username, MinecraftClient client) {
         this.sessionId = sessionId;
         this.username = username;
-        this.field_26901 = minecraftClient;
-        RealmsClientConfig.setProxy(minecraftClient.getNetworkProxy());
+        this.client = client;
+        RealmsClientConfig.setProxy(client.getNetworkProxy());
     }
 
     public RealmsServerList listWorlds() throws RealmsServiceException {
@@ -254,14 +254,14 @@ public class RealmsClient {
         String string = this.url("invites/pending");
         String string2 = this.execute(Request.get(string));
         PendingInvitesList pendingInvitesList = PendingInvitesList.parse(string2);
-        pendingInvitesList.pendingInvites.removeIf(this::method_31381);
+        pendingInvitesList.pendingInvites.removeIf(this::isOwnerBlocked);
         return pendingInvitesList;
     }
 
-    private boolean method_31381(PendingInvite pendingInvite) {
+    private boolean isOwnerBlocked(PendingInvite pendingInvite) {
         try {
             UUID uUID = UUID.fromString(pendingInvite.worldOwnerUuid);
-            return this.field_26901.getSocialInteractionsManager().method_31392(uUID);
+            return this.client.getSocialInteractionsManager().isPlayerBlocked(uUID);
         } catch (IllegalArgumentException illegalArgumentException) {
             return false;
         }
@@ -279,9 +279,9 @@ public class RealmsClient {
     }
 
     @Nullable
-    public UploadInfo upload(long worldId, @Nullable String string) throws RealmsServiceException {
-        String string2 = this.url("worlds" + "/$WORLD_ID/backups/upload".replace("$WORLD_ID", String.valueOf(worldId)));
-        return UploadInfo.parse(this.execute(Request.put(string2, UploadInfo.method_30864(string))));
+    public UploadInfo upload(long worldId, @Nullable String token) throws RealmsServiceException {
+        String string = this.url("worlds" + "/$WORLD_ID/backups/upload".replace("$WORLD_ID", String.valueOf(worldId)));
+        return UploadInfo.parse(this.execute(Request.put(string, UploadInfo.createRequestContent(token))));
     }
 
     public void rejectInvitation(String invitationId) throws RealmsServiceException {
@@ -352,7 +352,7 @@ public class RealmsClient {
                     LOGGER.error("Realms error code: " + i + " message: " + string);
                     throw new RealmsServiceException(i, string, i, "");
                 }
-                RealmsError realmsError = RealmsError.method_30162(string);
+                RealmsError realmsError = RealmsError.create(string);
                 LOGGER.error("Realms http code: " + i + " -  error code: " + realmsError.getErrorCode() + " -  message: " + realmsError.getErrorMessage() + " - raw body: " + string);
                 throw new RealmsServiceException(i, string, realmsError);
             }

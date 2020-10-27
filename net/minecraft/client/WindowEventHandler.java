@@ -12,6 +12,6 @@ public interface WindowEventHandler {
 
     public void onResolutionChanged();
 
-    public void method_30133();
+    public void onCursorEnterChanged();
 }
 

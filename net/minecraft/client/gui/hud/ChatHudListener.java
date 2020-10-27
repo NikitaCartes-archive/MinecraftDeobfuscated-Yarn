@@ -22,9 +22,6 @@ implements ClientChatListener {
 
     @Override
     public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
-        if (this.client.shouldBlockMessages(senderUuid)) {
-            return;
-        }
         if (messageType != MessageType.CHAT) {
             this.client.inGameHud.getChatHud().addMessage(message);
         } else {

@@ -687,7 +687,7 @@ implements ServerPlayPacketListener {
         for (i = 0; i < listTag.size(); ++i) {
             list2.add(listTag.getString(i));
         }
-        i = packet.method_12235();
+        i = packet.getSlot();
         if (!PlayerInventory.isValidHotbarIndex(i) && i != 40) {
             return;
         }

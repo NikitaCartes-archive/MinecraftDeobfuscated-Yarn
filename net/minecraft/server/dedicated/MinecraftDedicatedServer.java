@@ -86,7 +86,7 @@ implements DedicatedServer {
         super(thread, impl, session, saveProperties, resourcePackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = serverPropertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
-        this.field_26898 = class_5514.method_31302(serverPropertiesLoader.getPropertiesHandler().field_26899);
+        this.field_26898 = null;
     }
 
     @Override

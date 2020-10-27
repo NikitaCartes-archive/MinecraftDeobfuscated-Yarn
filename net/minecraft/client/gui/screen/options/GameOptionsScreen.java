@@ -39,8 +39,8 @@ extends Screen {
     }
 
     @Nullable
-    public static List<OrderedText> getHoveredButtonTooltip(ButtonListWidget buttonListWidget, int mouseX, int mouseY) {
-        Optional<AbstractButtonWidget> optional = buttonListWidget.getHoveredButton(mouseX, mouseY);
+    public static List<OrderedText> getHoveredButtonTooltip(ButtonListWidget buttonList, int mouseX, int mouseY) {
+        Optional<AbstractButtonWidget> optional = buttonList.getHoveredButton(mouseX, mouseY);
         if (optional.isPresent() && optional.get() instanceof OrderableTooltip) {
             Optional<List<OrderedText>> optional2 = ((OrderableTooltip)((Object)optional.get())).getOrderedTooltip();
             return optional2.orElse(null);

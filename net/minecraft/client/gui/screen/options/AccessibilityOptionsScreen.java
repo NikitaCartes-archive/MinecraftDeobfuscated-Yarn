@@ -25,14 +25,14 @@ extends NarratorOptionsScreen {
     }
 
     @Override
-    protected void method_31387() {
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableText("options.accessibility.link"), buttonWidget -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
-            if (bl) {
+    protected void initFooter() {
+        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableText("options.accessibility.link"), button -> this.client.openScreen(new ConfirmChatLinkScreen(openInBrowser -> {
+            if (openInBrowser) {
                 Util.getOperatingSystem().open("https://aka.ms/MinecraftJavaAccessibility");
             }
             this.client.openScreen(this);
         }, "https://aka.ms/MinecraftJavaAccessibility", true))));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
     }
 }
 

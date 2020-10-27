@@ -19,12 +19,12 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.sound.AudioStream;
 import net.minecraft.client.sound.Channel;
-import net.minecraft.client.sound.Listener;
 import net.minecraft.client.sound.Sound;
 import net.minecraft.client.sound.SoundEngine;
 import net.minecraft.client.sound.SoundExecutor;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundInstanceListener;
+import net.minecraft.client.sound.SoundListener;
 import net.minecraft.client.sound.SoundLoader;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.Source;
@@ -54,7 +54,7 @@ public class SoundSystem {
     private final GameOptions settings;
     private boolean started;
     private final SoundEngine soundEngine = new SoundEngine();
-    private final Listener listener = this.soundEngine.getListener();
+    private final SoundListener listener = this.soundEngine.getListener();
     private final SoundLoader soundLoader;
     private final SoundExecutor taskQueue = new SoundExecutor();
     private final Channel channel = new Channel(this.soundEngine, this.taskQueue);
@@ -296,7 +296,7 @@ public class SoundSystem {
         }
         Vec3d vec3d = new Vec3d(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ());
         if (!this.listeners.isEmpty()) {
-            boolean bl3 = bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.method_27268().squaredDistanceTo(vec3d) < (double)(g * g);
+            boolean bl3 = bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.getPos().squaredDistanceTo(vec3d) < (double)(g * g);
             if (bl2) {
                 for (SoundInstanceListener soundInstanceListener : this.listeners) {
                     soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);

@@ -17,21 +17,21 @@ public class RealmsError {
     private final String errorMessage;
     private final int errorCode;
 
-    private RealmsError(String string, int i) {
-        this.errorMessage = string;
-        this.errorCode = i;
+    private RealmsError(String errorMessage, int errorCode) {
+        this.errorMessage = errorMessage;
+        this.errorCode = errorCode;
     }
 
-    public static RealmsError method_30162(String string) {
+    public static RealmsError create(String error) {
         try {
             JsonParser jsonParser = new JsonParser();
-            JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
-            String string2 = JsonUtils.getStringOr("errorMsg", jsonObject, "");
+            JsonObject jsonObject = jsonParser.parse(error).getAsJsonObject();
+            String string = JsonUtils.getStringOr("errorMsg", jsonObject, "");
             int i = JsonUtils.getIntOr("errorCode", jsonObject, -1);
-            return new RealmsError(string2, i);
+            return new RealmsError(string, i);
         } catch (Exception exception) {
             LOGGER.error("Could not parse RealmsError: " + exception.getMessage());
-            LOGGER.error("The error was: " + string);
+            LOGGER.error("The error was: " + error);
             return new RealmsError("Failed to parse response from server", -1);
         }
     }

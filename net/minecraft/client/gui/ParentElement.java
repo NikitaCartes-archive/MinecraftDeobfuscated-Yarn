@@ -13,9 +13,16 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Element;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A GUI interface which handles keyboard and mouse callbacks for child GUI elements.
+ * The implementation of a parent element can decide whether a child element receives keyboard and mouse callbacks.
+ */
 @Environment(value=EnvType.CLIENT)
 public interface ParentElement
 extends Element {
+    /**
+     * Gets a list of all child GUI elements.
+     */
     public List<? extends Element> children();
 
     default public Optional<Element> hoveredElement(double mouseX, double mouseY) {

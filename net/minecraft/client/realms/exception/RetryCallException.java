@@ -12,8 +12,8 @@ public class RetryCallException
 extends RealmsServiceException {
     public final int delaySeconds;
 
-    public RetryCallException(int delaySeconds, int i) {
-        super(i, "Retry operation", -1, "");
+    public RetryCallException(int delaySeconds, int httpResultCode) {
+        super(httpResultCode, "Retry operation", -1, "");
         this.delaySeconds = delaySeconds < 0 || delaySeconds > 120 ? 5 : delaySeconds;
     }
 }

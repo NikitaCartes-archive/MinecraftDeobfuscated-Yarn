@@ -3,7 +3,6 @@
  */
 package net.minecraft;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.google.gson.internal.Streams;
@@ -15,8 +14,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -24,7 +21,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.SharedConstants;
@@ -32,10 +28,8 @@ import net.minecraft.class_5513;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.TaskExecutor;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 public class class_5514
 implements AutoCloseable {
@@ -54,41 +48,6 @@ implements AutoCloseable {
     private final String field_26831;
     private final class_5515 field_26832;
     private final ExecutorService field_26833;
-
-    private class_5514(URI uRI, String string, int i, String string2, class_5515 arg, int j) throws MalformedURLException {
-        this.field_26829 = string;
-        this.field_26830 = i;
-        this.field_26831 = string2;
-        this.field_26832 = arg;
-        this.field_26826 = uRI.resolve("/v1/chat").toURL();
-        this.field_26827 = uRI.resolve("/v1/join").toURL();
-        this.field_26828 = uRI.resolve("/v1/leave").toURL();
-        this.field_26833 = Executors.newFixedThreadPool(j, field_26825);
-    }
-
-    @Nullable
-    public static class_5514 method_31302(String string) {
-        if (Strings.isNullOrEmpty(string)) {
-            return null;
-        }
-        try {
-            JsonObject jsonObject = JsonHelper.deserialize(string);
-            URI uRI = new URI(JsonHelper.getString(jsonObject, "apiServer"));
-            String string2 = JsonHelper.getString(jsonObject, "apiKey");
-            if (string2.isEmpty()) {
-                throw new IllegalArgumentException("Missing API key");
-            }
-            int i = JsonHelper.getInt(jsonObject, "ruleId", 1);
-            String string3 = JsonHelper.getString(jsonObject, "serverId", "");
-            int j = JsonHelper.getInt(jsonObject, "hashesToDrop", -1);
-            int k = JsonHelper.getInt(jsonObject, "maxConcurrentRequests", 7);
-            class_5515 lv = class_5515.method_31311(j);
-            return new class_5514(uRI, new Base64().encodeToString(string2.getBytes(StandardCharsets.US_ASCII)), i, string3, lv, k);
-        } catch (Exception exception) {
-            field_26823.warn("Failed to parse chat filter config {}", (Object)string, (Object)exception);
-            return null;
-        }
-    }
 
     private void method_31299(GameProfile gameProfile, URL uRL, Executor executor) {
         JsonObject jsonObject = new JsonObject();
@@ -213,22 +172,6 @@ implements AutoCloseable {
     public static interface class_5515 {
         public static final class_5515 field_26834 = (string, i) -> false;
         public static final class_5515 field_26835 = (string, i) -> string.length() == i;
-
-        public static class_5515 method_31308(int i) {
-            return (string, j) -> j >= i;
-        }
-
-        public static class_5515 method_31311(int i) {
-            switch (i) {
-                case -1: {
-                    return field_26834;
-                }
-                case 0: {
-                    return field_26835;
-                }
-            }
-            return class_5515.method_31308(i);
-        }
 
         public boolean shouldIgnore(String var1, int var2);
     }

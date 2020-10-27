@@ -33,17 +33,17 @@ extends GameOptionsScreen {
 
     @Override
     protected void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 155, 18, 150, 20, new TranslatableText("options.mouse_settings"), buttonWidget -> this.client.openScreen(new MouseOptionsScreen(this, this.gameOptions))));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, 18, 150, 20, new TranslatableText("options.mouse_settings"), button -> this.client.openScreen(new MouseOptionsScreen(this, this.gameOptions))));
         this.addButton(Option.AUTO_JUMP.createButton(this.gameOptions, this.width / 2 - 155 + 160, 18, 150));
         this.keyBindingListWidget = new ControlsListWidget(this, this.client);
         this.children.add(this.keyBindingListWidget);
-        this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, new TranslatableText("controls.resetAll"), buttonWidget -> {
+        this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, new TranslatableText("controls.resetAll"), button -> {
             for (KeyBinding keyBinding : this.gameOptions.keysAll) {
                 keyBinding.setBoundKey(keyBinding.getDefaultKey());
             }
             KeyBinding.updateKeysByCode();
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
     }
 
     @Override

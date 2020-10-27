@@ -37,7 +37,7 @@ extends GameOptionsScreen {
             this.buttonList.addAll(OPTIONS);
         }
         this.children.add(this.buttonList);
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, buttonWidget -> {
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
             this.gameOptions.write();
             this.client.openScreen(this.parent);
         }));

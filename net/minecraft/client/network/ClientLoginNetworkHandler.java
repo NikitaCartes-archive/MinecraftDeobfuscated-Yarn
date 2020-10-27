@@ -6,6 +6,7 @@ package net.minecraft.client.network;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
+import com.mojang.authlib.exceptions.InsufficientPrivilegesException;
 import com.mojang.authlib.exceptions.InvalidCredentialsException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import java.math.BigInteger;
@@ -15,7 +16,6 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5525;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -27,6 +27,7 @@ import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
@@ -72,8 +73,8 @@ implements ClientLoginPacketListener {
             cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
             cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
             loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, packet.getNonce());
-        } catch (class_5525 lv) {
-            throw new IllegalStateException("Protocol error", lv);
+        } catch (NetworkEncryptionException networkEncryptionException) {
+            throw new IllegalStateException("Protocol error", networkEncryptionException);
         }
         this.statusConsumer.accept(new TranslatableText("connect.authorizing"));
         NetworkUtils.downloadExecutor.submit(() -> {
@@ -99,6 +100,8 @@ implements ClientLoginPacketListener {
             return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.serversUnavailable"));
         } catch (InvalidCredentialsException invalidCredentialsException) {
             return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.invalidSession"));
+        } catch (InsufficientPrivilegesException insufficientPrivilegesException) {
+            return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.insufficientPrivileges"));
         } catch (AuthenticationException authenticationException) {
             return new TranslatableText("disconnect.loginFailedInfo", authenticationException.getMessage());
         }

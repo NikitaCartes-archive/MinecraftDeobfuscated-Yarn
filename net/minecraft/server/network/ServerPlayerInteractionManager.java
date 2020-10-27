@@ -268,7 +268,7 @@ public class ServerPlayerInteractionManager {
             player.setStackInHand(hand, ItemStack.EMPTY);
         }
         if (!player.isUsingItem()) {
-            player.openHandledScreen(player.playerScreenHandler);
+            player.refreshScreenHandler(player.playerScreenHandler);
         }
         return typedActionResult.getResult();
     }

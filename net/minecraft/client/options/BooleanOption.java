@@ -7,23 +7,32 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BooleanOption
 extends Option {
     private final Predicate<GameOptions> getter;
     private final BiConsumer<GameOptions, Boolean> setter;
+    @Nullable
+    private final Text field_26923;
 
     public BooleanOption(String key, Predicate<GameOptions> getter, BiConsumer<GameOptions, Boolean> setter) {
-        super(key);
-        this.getter = getter;
-        this.setter = setter;
+        this(key, null, getter, setter);
+    }
+
+    public BooleanOption(String string, @Nullable Text text, Predicate<GameOptions> predicate, BiConsumer<GameOptions, Boolean> biConsumer) {
+        super(string);
+        this.getter = predicate;
+        this.setter = biConsumer;
+        this.field_26923 = text;
     }
 
     public void set(GameOptions options, String value) {
@@ -45,6 +54,9 @@ extends Option {
 
     @Override
     public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
+        if (this.field_26923 != null) {
+            this.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(this.field_26923, 200));
+        }
         return new OptionButtonWidget(x, y, width, 20, this, this.getDisplayString(options), button -> {
             this.toggle(options);
             button.setMessage(this.getDisplayString(options));

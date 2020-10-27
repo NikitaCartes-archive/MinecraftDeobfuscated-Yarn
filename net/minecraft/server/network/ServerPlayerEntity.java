@@ -894,7 +894,10 @@ implements ScreenHandlerListener {
         this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slotId, stack));
     }
 
-    public void openHandledScreen(ScreenHandler handler) {
+    /**
+     * Sends packets to the client that refresh the current screen handler's items.
+     */
+    public void refreshScreenHandler(ScreenHandler handler) {
         this.onHandlerRegistered(handler, handler.getStacks());
     }
 

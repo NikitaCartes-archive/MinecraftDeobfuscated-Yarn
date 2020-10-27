@@ -157,7 +157,7 @@ extends Screen {
             case BLOCKED: {
                 this.field_26913.setMessage(field_26916);
                 SocialInteractionsManager socialInteractionsManager = this.client.getSocialInteractionsManager();
-                collection = this.client.player.networkHandler.getPlayerUuids().stream().filter(socialInteractionsManager::method_31392).collect(Collectors.toSet());
+                collection = this.client.player.networkHandler.getPlayerUuids().stream().filter(socialInteractionsManager::isPlayerBlocked).collect(Collectors.toSet());
                 break;
             }
             default: {

@@ -58,7 +58,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackgroundTexture(0);
-        MultiplayerWarningScreen.drawCenteredText(matrices, this.textRenderer, HEADER, this.width / 2, 30, 0xFFFFFF);
+        MultiplayerWarningScreen.drawTextWithShadow(matrices, this.textRenderer, HEADER, 25, 30, 0xFFFFFF);
         this.lines.method_30893(matrices, 25, 70, this.textRenderer.fontHeight * 2, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }

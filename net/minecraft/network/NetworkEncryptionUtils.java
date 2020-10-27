@@ -18,35 +18,35 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5525;
+import net.minecraft.network.encryption.NetworkEncryptionException;
 
 public class NetworkEncryptionUtils {
     @Environment(value=EnvType.CLIENT)
-    public static SecretKey generateKey() throws class_5525 {
+    public static SecretKey generateKey() throws NetworkEncryptionException {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
             keyGenerator.init(128);
             return keyGenerator.generateKey();
         } catch (Exception exception) {
-            throw new class_5525(exception);
+            throw new NetworkEncryptionException(exception);
         }
     }
 
-    public static KeyPair generateServerKeyPair() throws class_5525 {
+    public static KeyPair generateServerKeyPair() throws NetworkEncryptionException {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(1024);
             return keyPairGenerator.generateKeyPair();
         } catch (Exception exception) {
-            throw new class_5525(exception);
+            throw new NetworkEncryptionException(exception);
         }
     }
 
-    public static byte[] generateServerId(String baseServerId, PublicKey publicKey, SecretKey secretKey) throws class_5525 {
+    public static byte[] generateServerId(String baseServerId, PublicKey publicKey, SecretKey secretKey) throws NetworkEncryptionException {
         try {
             return NetworkEncryptionUtils.hash(baseServerId.getBytes("ISO_8859_1"), secretKey.getEncoded(), publicKey.getEncoded());
         } catch (Exception exception) {
-            throw new class_5525(exception);
+            throw new NetworkEncryptionException(exception);
         }
     }
 
@@ -59,39 +59,39 @@ public class NetworkEncryptionUtils {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static PublicKey readEncodedPublicKey(byte[] bs) throws class_5525 {
+    public static PublicKey readEncodedPublicKey(byte[] bs) throws NetworkEncryptionException {
         try {
             X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(bs);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(encodedKeySpec);
         } catch (Exception exception) {
-            throw new class_5525(exception);
+            throw new NetworkEncryptionException(exception);
         }
     }
 
-    public static SecretKey decryptSecretKey(PrivateKey privateKey, byte[] encryptedSecretKey) throws class_5525 {
+    public static SecretKey decryptSecretKey(PrivateKey privateKey, byte[] encryptedSecretKey) throws NetworkEncryptionException {
         byte[] bs = NetworkEncryptionUtils.decrypt(privateKey, encryptedSecretKey);
         try {
             return new SecretKeySpec(bs, "AES");
         } catch (Exception exception) {
-            throw new class_5525(exception);
+            throw new NetworkEncryptionException(exception);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static byte[] encrypt(Key key, byte[] data) throws class_5525 {
+    public static byte[] encrypt(Key key, byte[] data) throws NetworkEncryptionException {
         return NetworkEncryptionUtils.crypt(1, key, data);
     }
 
-    public static byte[] decrypt(Key key, byte[] data) throws class_5525 {
+    public static byte[] decrypt(Key key, byte[] data) throws NetworkEncryptionException {
         return NetworkEncryptionUtils.crypt(2, key, data);
     }
 
-    private static byte[] crypt(int opMode, Key key, byte[] data) throws class_5525 {
+    private static byte[] crypt(int opMode, Key key, byte[] data) throws NetworkEncryptionException {
         try {
             return NetworkEncryptionUtils.crypt(opMode, key.getAlgorithm(), key).doFinal(data);
         } catch (Exception exception) {
-            throw new class_5525(exception);
+            throw new NetworkEncryptionException(exception);
         }
     }
 
@@ -101,13 +101,13 @@ public class NetworkEncryptionUtils {
         return cipher;
     }
 
-    public static Cipher cipherFromKey(int opMode, Key key) throws class_5525 {
+    public static Cipher cipherFromKey(int opMode, Key key) throws NetworkEncryptionException {
         try {
             Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
             cipher.init(opMode, key, new IvParameterSpec(key.getEncoded()));
             return cipher;
         } catch (Exception exception) {
-            throw new class_5525(exception);
+            throw new NetworkEncryptionException(exception);
         }
     }
 }

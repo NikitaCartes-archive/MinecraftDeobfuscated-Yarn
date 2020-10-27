@@ -65,7 +65,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         this.hideTooltip = client.textRenderer.wrapLines(new TranslatableText("gui.socialInteractions.tooltip.hide", name), 150);
         this.showTooltip = client.textRenderer.wrapLines(new TranslatableText("gui.socialInteractions.tooltip.show", name), 150);
         SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
-        if (!client.player.getGameProfile().getId().equals(uuid) && !socialInteractionsManager.method_31392(uuid)) {
+        if (!client.player.getGameProfile().getId().equals(uuid) && !socialInteractionsManager.isPlayerBlocked(uuid)) {
             this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, buttonWidget -> {
                 socialInteractionsManager.hidePlayer(uuid);
                 this.method_31329(true, new TranslatableText("gui.socialInteractions.hidden_in_chat", name));
@@ -176,7 +176,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
 
     private Text method_31390() {
         boolean bl = this.client.getSocialInteractionsManager().isPlayerHidden(this.uuid);
-        boolean bl2 = this.client.getSocialInteractionsManager().method_31392(this.uuid);
+        boolean bl2 = this.client.getSocialInteractionsManager().isPlayerBlocked(this.uuid);
         if (bl2 && this.field_26859) {
             return field_26909;
         }

@@ -157,14 +157,14 @@ public class ArgumentTypes {
     }
 
     @Nullable
-    public static ArgumentType<?> fromPacket(PacketByteBuf packetByteBuf) {
-        Identifier identifier = packetByteBuf.readIdentifier();
+    public static ArgumentType<?> fromPacket(PacketByteBuf buf) {
+        Identifier identifier = buf.readIdentifier();
         Entry<?> entry = ArgumentTypes.byId(identifier);
         if (entry == null) {
             LOGGER.error("Could not deserialize {}", (Object)identifier);
             return null;
         }
-        return entry.serializer.fromPacket(packetByteBuf);
+        return entry.serializer.fromPacket(buf);
     }
 
     private static <T extends ArgumentType<?>> void toJson(JsonObject jsonObject, T argumentType) {
@@ -216,28 +216,28 @@ public class ArgumentTypes {
         return jsonObject;
     }
 
-    public static boolean method_30923(ArgumentType<?> argumentType) {
+    public static boolean hasClass(ArgumentType<?> argumentType) {
         return ArgumentTypes.byClass(argumentType) != null;
     }
 
-    public static <T> Set<ArgumentType<?>> method_30924(CommandNode<T> commandNode) {
+    public static <T> Set<ArgumentType<?>> getAllArgumentTypes(CommandNode<T> node) {
         Set<CommandNode<T>> set = Sets.newIdentityHashSet();
         HashSet<ArgumentType<?>> set2 = Sets.newHashSet();
-        ArgumentTypes.method_30925(commandNode, set2, set);
+        ArgumentTypes.getAllArgumentTypes(node, set2, set);
         return set2;
     }
 
-    private static <T> void method_30925(CommandNode<T> commandNode2, Set<ArgumentType<?>> set, Set<CommandNode<T>> set2) {
-        if (!set2.add(commandNode2)) {
+    private static <T> void getAllArgumentTypes(CommandNode<T> node2, Set<ArgumentType<?>> argumentTypes, Set<CommandNode<T>> ignoredNodes) {
+        if (!ignoredNodes.add(node2)) {
             return;
         }
-        if (commandNode2 instanceof ArgumentCommandNode) {
-            set.add(((ArgumentCommandNode)commandNode2).getType());
+        if (node2 instanceof ArgumentCommandNode) {
+            argumentTypes.add(((ArgumentCommandNode)node2).getType());
         }
-        commandNode2.getChildren().forEach(commandNode -> ArgumentTypes.method_30925(commandNode, set, set2));
-        CommandNode<T> commandNode22 = commandNode2.getRedirect();
-        if (commandNode22 != null) {
-            ArgumentTypes.method_30925(commandNode22, set, set2);
+        node2.getChildren().forEach(node -> ArgumentTypes.getAllArgumentTypes(node, argumentTypes, ignoredNodes));
+        CommandNode<T> commandNode = node2.getRedirect();
+        if (commandNode != null) {
+            ArgumentTypes.getAllArgumentTypes(commandNode, argumentTypes, ignoredNodes);
         }
     }
 

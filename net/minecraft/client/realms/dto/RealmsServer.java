@@ -21,6 +21,7 @@ import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.realms.dto.PlayerInfo;
 import net.minecraft.client.realms.dto.RealmsServerPing;
 import net.minecraft.client.realms.dto.RealmsServerPlayerList;
@@ -251,6 +252,10 @@ extends ValueObject {
 
     public String getWorldName(int slotId) {
         return this.name + " (" + this.slots.get(slotId).getSlotName(slotId) + ")";
+    }
+
+    public ServerInfo method_31403(String string) {
+        return new ServerInfo(this.name, string, false);
     }
 
     public /* synthetic */ Object clone() throws CloneNotSupportedException {

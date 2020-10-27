@@ -99,7 +99,7 @@ public class Bootstrap {
         }
         if (SharedConstants.isDevelopment) {
             Bootstrap.getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: " + string));
-            CommandManager.method_30852();
+            CommandManager.checkMissing();
         }
         DefaultAttributeRegistry.checkMissing();
     }

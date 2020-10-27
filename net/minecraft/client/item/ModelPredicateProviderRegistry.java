@@ -123,8 +123,8 @@ public class ModelPredicateProviderRegistry {
             }
         });
         ModelPredicateProviderRegistry.register(Items.COMPASS, new Identifier("angle"), new ModelPredicateProvider(){
-            private final AngleRandomizer value = new AngleRandomizer();
-            private final AngleRandomizer speed = new AngleRandomizer();
+            private final AngleInterpolator value = new AngleInterpolator();
+            private final AngleInterpolator speed = new AngleInterpolator();
 
             @Override
             public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity) {
@@ -226,12 +226,12 @@ public class ModelPredicateProviderRegistry {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class AngleRandomizer {
+    static class AngleInterpolator {
         private double value;
         private double speed;
         private long lastUpdateTime;
 
-        private AngleRandomizer() {
+        private AngleInterpolator() {
         }
 
         private boolean shouldUpdate(long time) {

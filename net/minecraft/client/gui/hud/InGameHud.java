@@ -22,6 +22,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
@@ -79,6 +80,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.border.WorldBorder;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -1020,7 +1022,22 @@ extends DrawableHelper {
         }
     }
 
+    public UUID method_31406(Text text) {
+        String string = TextVisitFactory.method_31402(text);
+        String string2 = StringUtils.substringBetween(string, "<", ">");
+        if (string2 == null) {
+            return Util.NIL_UUID;
+        }
+        return this.client.getSocialInteractionsManager().method_31407(string2);
+    }
+
     public void addChatMessage(MessageType type, Text text, UUID senderUuid) {
+        if (this.client.shouldBlockMessages(senderUuid)) {
+            return;
+        }
+        if (this.client.options.field_26926 && this.client.shouldBlockMessages(this.method_31406(text))) {
+            return;
+        }
         for (ClientChatListener clientChatListener : this.listeners.get((Object)type)) {
             clientChatListener.onChatMessage(type, text, senderUuid);
         }

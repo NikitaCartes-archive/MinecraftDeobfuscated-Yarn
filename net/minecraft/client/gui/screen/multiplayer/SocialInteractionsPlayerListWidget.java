@@ -60,7 +60,7 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
 
     private void method_31349() {
         if (this.currentSearch != null) {
-            this.players.removeIf(socialInteractionsPlayerListEntry -> !socialInteractionsPlayerListEntry.getName().toLowerCase(Locale.ROOT).startsWith(this.currentSearch));
+            this.players.removeIf(socialInteractionsPlayerListEntry -> !socialInteractionsPlayerListEntry.getName().toLowerCase(Locale.ROOT).contains(this.currentSearch));
             this.replaceEntries(this.players);
         }
     }
@@ -80,7 +80,7 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
             socialInteractionsPlayerListEntry.method_31335(false);
             return;
         }
-        if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().method_31391(uUID)) && (Strings.isNullOrEmpty(this.currentSearch) || playerListEntry.getProfile().getName().toLowerCase(Locale.ROOT).startsWith(this.currentSearch))) {
+        if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().method_31391(uUID)) && (Strings.isNullOrEmpty(this.currentSearch) || playerListEntry.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
             SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry2 = new SocialInteractionsPlayerListEntry(this.minecraftClient, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture);
             this.addEntry(socialInteractionsPlayerListEntry2);
             this.players.add(socialInteractionsPlayerListEntry2);

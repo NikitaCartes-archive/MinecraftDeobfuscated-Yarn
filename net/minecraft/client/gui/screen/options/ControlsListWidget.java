@@ -71,7 +71,7 @@ extends ElementListWidget<Entry> {
         private KeyBindingEntry(final KeyBinding binding, final Text text) {
             this.binding = binding;
             this.bindingName = text;
-            this.editButton = new ButtonWidget(0, 0, 75, 20, text, buttonWidget -> {
+            this.editButton = new ButtonWidget(0, 0, 75, 20, text, button -> {
                 ((ControlsListWidget)ControlsListWidget.this).parent.focusedBinding = binding;
             }){
 
@@ -83,7 +83,7 @@ extends ElementListWidget<Entry> {
                     return new TranslatableText("narrator.controls.bound", text, super.getNarrationMessage());
                 }
             };
-            this.resetButton = new ButtonWidget(0, 0, 50, 20, new TranslatableText("controls.reset"), buttonWidget -> {
+            this.resetButton = new ButtonWidget(0, 0, 50, 20, new TranslatableText("controls.reset"), button -> {
                 ((ControlsListWidget)ControlsListWidget.this).client.options.setKeyCode(binding, binding.getDefaultKey());
                 KeyBinding.updateKeysByCode();
             }){

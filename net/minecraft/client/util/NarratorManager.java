@@ -30,9 +30,6 @@ implements ClientChatListener {
 
     @Override
     public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
-        if (MinecraftClient.getInstance().shouldBlockMessages(senderUuid)) {
-            return;
-        }
         NarratorMode narratorMode = NarratorManager.getNarratorOption();
         if (narratorMode == NarratorMode.OFF || !this.narrator.active()) {
             return;

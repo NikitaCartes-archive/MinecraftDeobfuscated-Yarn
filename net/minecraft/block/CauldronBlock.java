@@ -117,7 +117,7 @@ extends Block {
                     } else if (!player.inventory.insertStack(itemStack2)) {
                         player.dropItem(itemStack2, false);
                     } else if (player instanceof ServerPlayerEntity) {
-                        ((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
+                        ((ServerPlayerEntity)player).refreshScreenHandler(player.playerScreenHandler);
                     }
                 }
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
@@ -132,7 +132,7 @@ extends Block {
                     player.incrementStat(Stats.USE_CAULDRON);
                     player.setStackInHand(hand, itemStack2);
                     if (player instanceof ServerPlayerEntity) {
-                        ((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
+                        ((ServerPlayerEntity)player).refreshScreenHandler(player.playerScreenHandler);
                     }
                 }
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
@@ -161,7 +161,7 @@ extends Block {
                 } else if (!player.inventory.insertStack(itemStack2)) {
                     player.dropItem(itemStack2, false);
                 } else if (player instanceof ServerPlayerEntity) {
-                    ((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
+                    ((ServerPlayerEntity)player).refreshScreenHandler(player.playerScreenHandler);
                 }
             }
             return ActionResult.success(world.isClient);
