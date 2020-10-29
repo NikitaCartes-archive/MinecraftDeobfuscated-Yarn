@@ -21,8 +21,8 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NetherCaveCarver
 extends CaveCarver {
-    public NetherCaveCarver(Codec<ProbabilityConfig> codec) {
-        super(codec, 128);
+    public NetherCaveCarver(Codec<ProbabilityConfig> configCodec) {
+        super(configCodec, 128);
         this.alwaysCarvableBlocks = ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, new Block[]{Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.NETHERRACK, Blocks.SOUL_SAND, Blocks.SOUL_SOIL, Blocks.CRIMSON_NYLIUM, Blocks.WARPED_NYLIUM, Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK, Blocks.BASALT, Blocks.BLACKSTONE});
         this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
     }

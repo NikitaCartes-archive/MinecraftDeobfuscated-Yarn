@@ -40,7 +40,7 @@ implements ArgumentType<PosArgument> {
             throw UNLOADED_EXCEPTION.create();
         }
         context.getSource().getWorld();
-        if (!ServerWorld.method_24794(blockPos)) {
+        if (!ServerWorld.isInBuildLimit(blockPos)) {
             throw OUT_OF_WORLD_EXCEPTION.create();
         }
         return blockPos;

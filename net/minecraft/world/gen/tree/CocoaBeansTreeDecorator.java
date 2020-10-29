@@ -34,18 +34,18 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+    public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> placedStates, BlockBox box) {
         if (random.nextFloat() >= this.probability) {
             return;
         }
         int i = logPositions.get(0).getY();
-        logPositions.stream().filter(blockPos -> blockPos.getY() - i <= 2).forEach(blockPos -> {
+        logPositions.stream().filter(pos -> pos.getY() - i <= 2).forEach(pos -> {
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 Direction direction2;
-                BlockPos blockPos2;
-                if (!(random.nextFloat() <= 0.25f) || !Feature.isAir(world, blockPos2 = blockPos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
+                BlockPos blockPos;
+                if (!(random.nextFloat() <= 0.25f) || !Feature.isAir(world, blockPos = pos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
                 BlockState blockState = (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, random.nextInt(3))).with(CocoaBlock.FACING, direction);
-                this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
+                this.setBlockStateAndEncompassPosition(world, blockPos, blockState, placedStates, box);
             }
         });
     }

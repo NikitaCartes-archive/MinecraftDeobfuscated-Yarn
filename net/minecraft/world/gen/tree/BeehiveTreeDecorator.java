@@ -27,7 +27,7 @@ import net.minecraft.world.gen.tree.TreeDecoratorType;
 
 public class BeehiveTreeDecorator
 extends TreeDecorator {
-    public static final Codec<BeehiveTreeDecorator> CODEC = ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("probability")).xmap(BeehiveTreeDecorator::new, beehiveTreeDecorator -> Float.valueOf(beehiveTreeDecorator.probability)).codec();
+    public static final Codec<BeehiveTreeDecorator> CODEC = ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("probability")).xmap(BeehiveTreeDecorator::new, decorator -> Float.valueOf(decorator.probability)).codec();
     private final float probability;
 
     public BeehiveTreeDecorator(float probability) {
@@ -40,24 +40,24 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+    public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> placedStates, BlockBox box) {
         if (random.nextFloat() >= this.probability) {
             return;
         }
         Direction direction = BeehiveBlock.getRandomGenerationDirection(random);
         int i = !leavesPositions.isEmpty() ? Math.max(leavesPositions.get(0).getY() - 1, logPositions.get(0).getY()) : Math.min(logPositions.get(0).getY() + 1 + random.nextInt(3), logPositions.get(logPositions.size() - 1).getY());
-        List list = logPositions.stream().filter(blockPos -> blockPos.getY() == i).collect(Collectors.toList());
+        List list = logPositions.stream().filter(pos -> pos.getY() == i).collect(Collectors.toList());
         if (list.isEmpty()) {
             return;
         }
-        BlockPos blockPos2 = (BlockPos)list.get(random.nextInt(list.size()));
-        BlockPos blockPos22 = blockPos2.offset(direction);
-        if (!Feature.isAir(world, blockPos22) || !Feature.isAir(world, blockPos22.offset(Direction.SOUTH))) {
+        BlockPos blockPos = (BlockPos)list.get(random.nextInt(list.size()));
+        BlockPos blockPos2 = blockPos.offset(direction);
+        if (!Feature.isAir(world, blockPos2) || !Feature.isAir(world, blockPos2.offset(Direction.SOUTH))) {
             return;
         }
         BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);
-        this.setBlockStateAndEncompassPosition(world, blockPos22, blockState, set, box);
-        BlockEntity blockEntity = world.getBlockEntity(blockPos22);
+        this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, placedStates, box);
+        BlockEntity blockEntity = world.getBlockEntity(blockPos2);
         if (blockEntity instanceof BeehiveBlockEntity) {
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
             int j = 2 + random.nextInt(2);

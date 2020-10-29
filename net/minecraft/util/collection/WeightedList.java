@@ -22,12 +22,12 @@ public class WeightedList<U> {
         this(Lists.newArrayList());
     }
 
-    private WeightedList(List<Entry<U>> list) {
-        this.entries = Lists.newArrayList(list);
+    private WeightedList(List<Entry<U>> entries) {
+        this.entries = Lists.newArrayList(entries);
     }
 
-    public static <U> Codec<WeightedList<U>> method_28338(Codec<U> codec) {
-        return Entry.method_28341(codec).listOf().xmap(WeightedList::new, weightedList -> weightedList.entries);
+    public static <U> Codec<WeightedList<U>> createCodec(Codec<U> codec) {
+        return Entry.createCodec(codec).listOf().xmap(WeightedList::new, list -> list.entries);
     }
 
     public WeightedList<U> add(U item, int weight) {
@@ -66,9 +66,9 @@ public class WeightedList<U> {
         private final int weight;
         private double shuffledOrder;
 
-        private Entry(T object, int i) {
-            this.weight = i;
-            this.item = object;
+        private Entry(T item, int weight) {
+            this.weight = weight;
+            this.item = item;
         }
 
         private double getShuffledOrder() {
@@ -87,13 +87,13 @@ public class WeightedList<U> {
             return "" + this.weight + ":" + this.item;
         }
 
-        public static <E> Codec<Entry<E>> method_28341(final Codec<E> codec) {
+        public static <E> Codec<Entry<E>> createCodec(final Codec<E> codec) {
             return new Codec<Entry<E>>(){
 
                 @Override
-                public <T> DataResult<Pair<Entry<E>, T>> decode(DynamicOps<T> dynamicOps, T object2) {
-                    Dynamic dynamic = new Dynamic(dynamicOps, object2);
-                    return dynamic.get("data").flatMap(codec::parse).map((? super R object) -> new Entry(object, dynamic.get("weight").asInt(1))).map((? super R entry) -> Pair.of(entry, dynamicOps.empty()));
+                public <T> DataResult<Pair<Entry<E>, T>> decode(DynamicOps<T> ops, T object2) {
+                    Dynamic dynamic = new Dynamic(ops, object2);
+                    return dynamic.get("data").flatMap(codec::parse).map((? super R object) -> new Entry(object, dynamic.get("weight").asInt(1))).map((? super R entry) -> Pair.of(entry, ops.empty()));
                 }
 
                 @Override
@@ -102,8 +102,8 @@ public class WeightedList<U> {
                 }
 
                 @Override
-                public /* synthetic */ DataResult encode(Object object, DynamicOps dynamicOps, Object object2) {
-                    return this.encode((Entry)object, dynamicOps, object2);
+                public /* synthetic */ DataResult encode(Object entry, DynamicOps ops, Object object) {
+                    return this.encode((Entry)entry, ops, object);
                 }
             };
         }

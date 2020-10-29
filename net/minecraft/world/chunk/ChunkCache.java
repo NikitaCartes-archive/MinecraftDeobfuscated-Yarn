@@ -92,7 +92,7 @@ CollisionView {
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        if (World.isHeightInvalid(pos)) {
+        if (World.isOutOfBuildLimitVertically(pos)) {
             return Blocks.AIR.getDefaultState();
         }
         Chunk chunk = this.method_22354(pos);
@@ -111,7 +111,7 @@ CollisionView {
 
     @Override
     public FluidState getFluidState(BlockPos pos) {
-        if (World.isHeightInvalid(pos)) {
+        if (World.isOutOfBuildLimitVertically(pos)) {
             return Fluids.EMPTY.getDefaultState();
         }
         Chunk chunk = this.method_22354(pos);

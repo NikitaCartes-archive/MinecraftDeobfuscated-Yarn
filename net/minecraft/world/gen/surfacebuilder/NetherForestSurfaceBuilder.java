@@ -20,7 +20,7 @@ public class NetherForestSurfaceBuilder
 extends SurfaceBuilder<TernarySurfaceConfig> {
     private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
     protected long seed;
-    private OctavePerlinNoiseSampler field_22203;
+    private OctavePerlinNoiseSampler surfaceNoise;
 
     public NetherForestSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
         super(codec);
@@ -31,9 +31,9 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         int n = l;
         int o = i & 0xF;
         int p = j & 0xF;
-        double e = this.field_22203.sample((double)i * 0.1, l, (double)j * 0.1);
+        double e = this.surfaceNoise.sample((double)i * 0.1, l, (double)j * 0.1);
         boolean bl = e > 0.15 + random.nextDouble() * 0.35;
-        double f = this.field_22203.sample((double)i * 0.1, 109.0, (double)j * 0.1);
+        double f = this.surfaceNoise.sample((double)i * 0.1, 109.0, (double)j * 0.1);
         boolean bl2 = f > 0.25 + random.nextDouble() * 0.9;
         int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -78,8 +78,8 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
 
     @Override
     public void initSeed(long seed) {
-        if (this.seed != seed || this.field_22203 == null) {
-            this.field_22203 = new OctavePerlinNoiseSampler(new ChunkRandom(seed), ImmutableList.of(Integer.valueOf(0)));
+        if (this.seed != seed || this.surfaceNoise == null) {
+            this.surfaceNoise = new OctavePerlinNoiseSampler(new ChunkRandom(seed), ImmutableList.of(Integer.valueOf(0)));
         }
         this.seed = seed;
     }

@@ -33,15 +33,15 @@ extends FoliagePlacer {
         BlockPos blockPos = treeNode.getCenter().up(offset);
         boolean bl = treeNode.isGiantTrunk();
         if (bl) {
-            this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
-            this.generate(world, random, config, blockPos, radius + 3, leaves, 0, bl, box);
-            this.generate(world, random, config, blockPos, radius + 2, leaves, 1, bl, box);
+            this.generateSquare(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
+            this.generateSquare(world, random, config, blockPos, radius + 3, leaves, 0, bl, box);
+            this.generateSquare(world, random, config, blockPos, radius + 2, leaves, 1, bl, box);
             if (random.nextBoolean()) {
-                this.generate(world, random, config, blockPos, radius, leaves, 2, bl, box);
+                this.generateSquare(world, random, config, blockPos, radius, leaves, 2, bl, box);
             }
         } else {
-            this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
-            this.generate(world, random, config, blockPos, radius + 1, leaves, 0, bl, box);
+            this.generateSquare(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
+            this.generateSquare(world, random, config, blockPos, radius + 1, leaves, 0, bl, box);
         }
     }
 
@@ -51,20 +51,20 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected boolean method_27387(Random random, int i, int j, int k, int l, boolean bl) {
-        if (!(j != 0 || !bl || i != -l && i < l || k != -l && k < l)) {
+    protected boolean isPositionInvalid(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+        if (!(y != 0 || !giantTrunk || dx != -radius && dx < radius || dz != -radius && dz < radius)) {
             return true;
         }
-        return super.method_27387(random, i, j, k, l, bl);
+        return super.isPositionInvalid(random, dx, y, dz, radius, giantTrunk);
     }
 
     @Override
-    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
+    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
         if (dx == -1 && !giantTrunk) {
-            return baseHeight == dz && dy == dz;
+            return baseHeight == dz && y == dz;
         }
         if (dx == 1) {
-            return baseHeight + dy > dz * 2 - 2;
+            return baseHeight + y > dz * 2 - 2;
         }
         return false;
     }

@@ -31,10 +31,10 @@ extends TrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.TreeNode> generate(ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
-        StraightTrunkPlacer.method_27400(world, pos.down());
+    public List<FoliagePlacer.TreeNode> generate(ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config) {
+        StraightTrunkPlacer.setToDirt(world, pos.down());
         for (int i = 0; i < trunkHeight; ++i) {
-            StraightTrunkPlacer.method_27402(world, random, pos.up(i), set, blockBox, treeFeatureConfig);
+            StraightTrunkPlacer.getAndSetState(world, random, pos.up(i), placedStates, box, config);
         }
         return ImmutableList.of(new FoliagePlacer.TreeNode(pos.up(trunkHeight), 0, false));
     }

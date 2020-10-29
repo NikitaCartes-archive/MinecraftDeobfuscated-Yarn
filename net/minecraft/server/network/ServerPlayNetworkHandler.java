@@ -36,7 +36,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.class_5513;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -67,15 +66,15 @@ import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.ConfirmGuiActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.c2s.play.ConfirmScreenActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
@@ -109,7 +108,7 @@ import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
-import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
@@ -126,6 +125,7 @@ import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
@@ -202,9 +202,9 @@ implements ServerPlayPacketListener {
         connection.setPacketListener(this);
         this.player = player;
         player.networkHandler = this;
-        class_5513 lv = player.method_31273();
-        if (lv != null) {
-            lv.method_31287();
+        TextStream textStream = player.getTextStream();
+        if (textStream != null) {
+            textStream.onConnect();
         }
     }
 
@@ -298,7 +298,7 @@ implements ServerPlayPacketListener {
         this.server.submitAndJoin(this.connection::handleDisconnection);
     }
 
-    private <T> void method_31275(T object2, Consumer<T> consumer, BiFunction<class_5513, T, CompletableFuture<Optional<T>>> biFunction) {
+    private <T> void filterText(T text, Consumer<T> consumer, BiFunction<TextStream, T, CompletableFuture<Optional<T>>> backingFilterer) {
         MinecraftServer threadExecutor = this.player.getServerWorld().getServer();
         Consumer<Object> consumer2 = object -> {
             if (this.getConnection().isOpen()) {
@@ -307,20 +307,20 @@ implements ServerPlayPacketListener {
                 LOGGER.debug("Ignoring packet due to disconnection");
             }
         };
-        class_5513 lv = this.player.method_31273();
-        if (lv != null) {
-            biFunction.apply(lv, (class_5513)object2).thenAcceptAsync(optional -> optional.ifPresent(consumer2), (Executor)threadExecutor);
+        TextStream textStream = this.player.getTextStream();
+        if (textStream != null) {
+            backingFilterer.apply(textStream, (TextStream)text).thenAcceptAsync(optional -> optional.ifPresent(consumer2), (Executor)threadExecutor);
         } else {
-            threadExecutor.execute(() -> consumer2.accept(object2));
+            threadExecutor.execute(() -> consumer2.accept(text));
         }
     }
 
-    private void method_31277(String string, Consumer<String> consumer) {
-        this.method_31275(string, consumer, class_5513::method_31288);
+    private void filterText(String text, Consumer<String> consumer) {
+        this.filterText(text, consumer, TextStream::filterText);
     }
 
-    private void method_31279(List<String> list, Consumer<List<String>> consumer) {
-        this.method_31275(list, consumer, class_5513::method_31289);
+    private void filterTexts(List<String> texts, Consumer<List<String>> consumer) {
+        this.filterText(texts, consumer, TextStream::filterTexts);
     }
 
     @Override
@@ -691,7 +691,7 @@ implements ServerPlayPacketListener {
         if (!PlayerInventory.isValidHotbarIndex(i) && i != 40) {
             return;
         }
-        this.method_31279(list2, bl ? list -> this.method_31276((String)list.get(0), list.subList(1, list.size()), i) : list -> this.method_31278((List<String>)list, i));
+        this.filterTexts(list2, bl ? list -> this.method_31276((String)list.get(0), list.subList(1, list.size()), i) : list -> this.method_31278((List<String>)list, i));
     }
 
     private void method_31278(List<String> list, int i) {
@@ -1010,9 +1010,9 @@ implements ServerPlayPacketListener {
         this.server.getPlayerManager().broadcastChatMessage(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
         this.player.onDisconnect();
         this.server.getPlayerManager().remove(this.player);
-        class_5513 lv = this.player.method_31273();
-        if (lv != null) {
-            lv.method_31290();
+        TextStream textStream = this.player.getTextStream();
+        if (textStream != null) {
+            textStream.onDisconnect();
         }
         if (this.isHost()) {
             LOGGER.info("Stopping singleplayer server as player logged out");
@@ -1066,7 +1066,7 @@ implements ServerPlayPacketListener {
             NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
             this.method_31286(string);
         } else {
-            this.method_31277(string, this::method_31286);
+            this.filterText(string, this::method_31286);
         }
     }
 
@@ -1225,13 +1225,13 @@ implements ServerPlayPacketListener {
     }
 
     @Override
-    public void onGuiClose(GuiCloseC2SPacket packet) {
+    public void onCloseHandledScreen(CloseHandledScreenC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-        this.player.closeCurrentScreen();
+        this.player.closeScreenHandler();
     }
 
     @Override
-    public void onClickWindow(ClickWindowC2SPacket packet) {
+    public void onClickSlot(ClickSlotC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         this.player.updateLastActionTime();
         if (this.player.currentScreenHandler.syncId == packet.getSyncId() && this.player.currentScreenHandler.isNotRestricted(this.player)) {
@@ -1244,14 +1244,14 @@ implements ServerPlayPacketListener {
             } else {
                 ItemStack itemStack = this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getClickData(), packet.getActionType(), this.player);
                 if (ItemStack.areEqual(packet.getStack(), itemStack)) {
-                    this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getActionId(), true));
+                    this.player.networkHandler.sendPacket(new ConfirmScreenActionS2CPacket(packet.getSyncId(), packet.getActionId(), true));
                     this.player.skipPacketSlotUpdates = true;
                     this.player.currentScreenHandler.sendContentUpdates();
                     this.player.updateCursorStack();
                     this.player.skipPacketSlotUpdates = false;
                 } else {
                     this.transactions.put(this.player.currentScreenHandler.syncId, packet.getActionId());
-                    this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getActionId(), false));
+                    this.player.networkHandler.sendPacket(new ConfirmScreenActionS2CPacket(packet.getSyncId(), packet.getActionId(), false));
                     this.player.currentScreenHandler.setPlayerRestriction(this.player, false);
                     DefaultedList<ItemStack> defaultedList2 = DefaultedList.of();
                     for (int j = 0; j < this.player.currentScreenHandler.slots.size(); ++j) {
@@ -1319,10 +1319,10 @@ implements ServerPlayPacketListener {
     }
 
     @Override
-    public void onConfirmTransaction(ConfirmGuiActionC2SPacket packet) {
+    public void onConfirmScreenAction(ConfirmScreenActionC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         int i = this.player.currentScreenHandler.syncId;
-        if (i == packet.getWindowId() && this.transactions.getOrDefault(i, (short)(packet.getSyncId() + 1)) == packet.getSyncId() && !this.player.currentScreenHandler.isNotRestricted(this.player) && !this.player.isSpectator()) {
+        if (i == packet.getSyncId() && this.transactions.getOrDefault(i, (short)(packet.getActionId() + 1)) == packet.getActionId() && !this.player.currentScreenHandler.isNotRestricted(this.player) && !this.player.isSpectator()) {
             this.player.currentScreenHandler.setPlayerRestriction(this.player, true);
         }
     }
@@ -1330,7 +1330,7 @@ implements ServerPlayPacketListener {
     @Override
     public void onSignUpdate(UpdateSignC2SPacket packet) {
         List<String> list2 = Stream.of(packet.getText()).map(Formatting::strip).collect(Collectors.toList());
-        this.method_31279(list2, list -> this.method_31282(packet, (List<String>)list));
+        this.filterTexts(list2, list -> this.method_31282(packet, (List<String>)list));
     }
 
     private void method_31282(UpdateSignC2SPacket updateSignC2SPacket, List<String> list) {

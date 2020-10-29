@@ -68,11 +68,11 @@ extends ChunkGenerator {
             }
         }
     });
-    private static final float[] BIOME_WEIGHT_TABLE = Util.make(new float[25], fs -> {
+    private static final float[] BIOME_WEIGHT_TABLE = Util.make(new float[25], array -> {
         for (int i = -2; i <= 2; ++i) {
             for (int j = -2; j <= 2; ++j) {
                 float f;
-                fs[i + 2 + (j + 2) * 5] = f = 10.0f / MathHelper.sqrt((float)(i * i + j * j) + 0.2f);
+                array[i + 2 + (j + 2) * 5] = f = 10.0f / MathHelper.sqrt((float)(i * i + j * j) + 0.2f);
             }
         }
     });

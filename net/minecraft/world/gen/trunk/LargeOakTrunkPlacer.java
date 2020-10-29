@@ -38,13 +38,13 @@ extends TrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.TreeNode> generate(ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
+    public List<FoliagePlacer.TreeNode> generate(ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config) {
         int n;
         int i = 5;
         int j = trunkHeight + 2;
         int k = MathHelper.floor((double)j * 0.618);
-        if (!treeFeatureConfig.skipFluidCheck) {
-            LargeOakTrunkPlacer.method_27400(world, pos.down());
+        if (!config.skipFluidCheck) {
+            LargeOakTrunkPlacer.setToDirt(world, pos.down());
         }
         double d = 1.0;
         int l = Math.min(1, MathHelper.floor(1.382 + Math.pow(1.0 * (double)j / 13.0, 2.0)));
@@ -52,7 +52,7 @@ extends TrunkPlacer {
         ArrayList<BranchPosition> list = Lists.newArrayList();
         list.add(new BranchPosition(pos.up(n), m));
         for (n = j - 5; n >= 0; --n) {
-            float f = this.method_27396(j, n);
+            float f = this.shouldGenerateBranch(j, n);
             if (f < 0.0f) continue;
             for (int o = 0; o < l; ++o) {
                 BlockPos blockPos2;
@@ -62,18 +62,18 @@ extends TrunkPlacer {
                 double g = 1.0 * (double)f * ((double)random.nextFloat() + 0.328);
                 double p = g * Math.sin(h = (double)(random.nextFloat() * 2.0f) * Math.PI) + 0.5;
                 BlockPos blockPos = pos.add(p, (double)(n - 1), q = g * Math.cos(h) + 0.5);
-                if (!this.makeOrCheckBranch(world, random, blockPos, blockPos2 = blockPos.up(5), false, set, blockBox, treeFeatureConfig)) continue;
+                if (!this.makeOrCheckBranch(world, random, blockPos, blockPos2 = blockPos.up(5), false, placedStates, box, config)) continue;
                 int r = pos.getX() - blockPos.getX();
                 int s = pos.getZ() - blockPos.getZ();
                 double t = (double)blockPos.getY() - Math.sqrt(r * r + s * s) * 0.381;
                 int u = t > (double)m ? m : (int)t;
                 BlockPos blockPos3 = new BlockPos(pos.getX(), u, pos.getZ());
-                if (!this.makeOrCheckBranch(world, random, blockPos3, blockPos, false, set, blockBox, treeFeatureConfig)) continue;
+                if (!this.makeOrCheckBranch(world, random, blockPos3, blockPos, false, placedStates, box, config)) continue;
                 list.add(new BranchPosition(blockPos, blockPos3.getY()));
             }
         }
-        this.makeOrCheckBranch(world, random, pos, pos.up(k), true, set, blockBox, treeFeatureConfig);
-        this.makeBranches(world, random, j, pos, list, set, blockBox, treeFeatureConfig);
+        this.makeOrCheckBranch(world, random, pos, pos.up(k), true, placedStates, box, config);
+        this.makeBranches(world, random, j, pos, list, placedStates, box, config);
         ArrayList<FoliagePlacer.TreeNode> list2 = Lists.newArrayList();
         for (BranchPosition branchPosition : list) {
             if (!this.isHighEnough(j, branchPosition.getEndY() - pos.getY())) continue;
@@ -82,7 +82,7 @@ extends TrunkPlacer {
         return list2;
     }
 
-    private boolean makeOrCheckBranch(ModifiableTestableWorld world, Random random, BlockPos start, BlockPos end, boolean make, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig config) {
+    private boolean makeOrCheckBranch(ModifiableTestableWorld world, Random random, BlockPos start, BlockPos end, boolean make, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config) {
         if (!make && Objects.equals(start, end)) {
             return true;
         }
@@ -94,8 +94,8 @@ extends TrunkPlacer {
         for (int j = 0; j <= i; ++j) {
             BlockPos blockPos2 = start.add(0.5f + (float)j * f, 0.5f + (float)j * g, 0.5f + (float)j * h);
             if (make) {
-                LargeOakTrunkPlacer.method_27404(world, blockPos2, (BlockState)config.trunkProvider.getBlockState(random, blockPos2).with(PillarBlock.AXIS, this.getLogAxis(start, blockPos2)), blockBox);
-                set.add(blockPos2.toImmutable());
+                LargeOakTrunkPlacer.setBlockState(world, blockPos2, (BlockState)config.trunkProvider.getBlockState(random, blockPos2).with(PillarBlock.AXIS, this.getLogAxis(start, blockPos2)), box);
+                placedStates.add(blockPos2.toImmutable());
                 continue;
             }
             if (TreeFeature.canTreeReplace(world, blockPos2)) continue;
@@ -126,21 +126,24 @@ extends TrunkPlacer {
         return (double)height >= (double)treeHeight * 0.2;
     }
 
-    private void makeBranches(ModifiableTestableWorld world, Random random, int treeHeight, BlockPos treePos, List<BranchPosition> branches, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig config) {
+    private void makeBranches(ModifiableTestableWorld world, Random random, int treeHeight, BlockPos treePos, List<BranchPosition> branches, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config) {
         for (BranchPosition branchPosition : branches) {
             int i = branchPosition.getEndY();
             BlockPos blockPos = new BlockPos(treePos.getX(), i, treePos.getZ());
             if (blockPos.equals(branchPosition.node.getCenter()) || !this.isHighEnough(treeHeight, i - treePos.getY())) continue;
-            this.makeOrCheckBranch(world, random, blockPos, branchPosition.node.getCenter(), true, set, blockBox, config);
+            this.makeOrCheckBranch(world, random, blockPos, branchPosition.node.getCenter(), true, placedStates, box, config);
         }
     }
 
-    private float method_27396(int i, int j) {
-        if ((float)j < (float)i * 0.3f) {
+    /**
+     * If the returned value is greater than or equal to 0, a branch will be generated.
+     */
+    private float shouldGenerateBranch(int trunkHeight, int y) {
+        if ((float)y < (float)trunkHeight * 0.3f) {
             return -1.0f;
         }
-        float f = (float)i / 2.0f;
-        float g = f - (float)j;
+        float f = (float)trunkHeight / 2.0f;
+        float g = f - (float)y;
         float h = MathHelper.sqrt(f * f - g * g);
         if (g == 0.0f) {
             h = f;

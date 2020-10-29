@@ -36,7 +36,7 @@ extends FoliagePlacer {
     protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int offset, BlockBox box) {
         int i = 0;
         for (int j = offset; j >= offset - foliageHeight; --j) {
-            this.generate(world, random, config, treeNode.getCenter(), i, leaves, j, treeNode.isGiantTrunk(), box);
+            this.generateSquare(world, random, config, treeNode.getCenter(), i, leaves, j, treeNode.isGiantTrunk(), box);
             if (i >= 1 && j == offset - foliageHeight + 1) {
                 --i;
                 continue;
@@ -57,8 +57,8 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-        return baseHeight == dz && dy == dz && dz > 0;
+    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+        return baseHeight == dz && y == dz && dz > 0;
     }
 }
 

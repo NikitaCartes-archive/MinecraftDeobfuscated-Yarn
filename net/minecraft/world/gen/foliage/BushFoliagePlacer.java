@@ -18,7 +18,7 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class BushFoliagePlacer
 extends BlobFoliagePlacer {
-    public static final Codec<BushFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> BushFoliagePlacer.method_28838(instance).apply(instance, BushFoliagePlacer::new));
+    public static final Codec<BushFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> BushFoliagePlacer.createCodec(instance).apply(instance, BushFoliagePlacer::new));
 
     public BushFoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2, int i) {
         super(uniformIntDistribution, uniformIntDistribution2, i);
@@ -33,13 +33,13 @@ extends BlobFoliagePlacer {
     protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int offset, BlockBox box) {
         for (int i = offset; i >= offset - foliageHeight; --i) {
             int j = radius + treeNode.getFoliageRadius() - 1 - i;
-            this.generate(world, random, config, treeNode.getCenter(), j, leaves, i, treeNode.isGiantTrunk(), box);
+            this.generateSquare(world, random, config, treeNode.getCenter(), j, leaves, i, treeNode.isGiantTrunk(), box);
         }
     }
 
     @Override
-    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-        return baseHeight == dz && dy == dz && random.nextInt(2) == 0;
+    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+        return baseHeight == dz && y == dz && random.nextInt(2) == 0;
     }
 }
 

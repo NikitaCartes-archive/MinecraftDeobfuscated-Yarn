@@ -24,7 +24,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.class_5459;
-import net.minecraft.class_5513;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -95,6 +94,7 @@ import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerItemCooldownManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
@@ -180,7 +180,7 @@ implements ScreenHandlerListener {
     private boolean spawnPointSet;
     private float spawnAngle;
     @Nullable
-    private final class_5513 field_26821;
+    private final TextStream textStream;
     private int screenHandlerSyncId;
     public boolean skipPacketSlotUpdates;
     public int pingMilliseconds;
@@ -195,7 +195,7 @@ implements ScreenHandlerListener {
         this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
         this.stepHeight = 1.0f;
         this.moveToSpawn(world);
-        this.field_26821 = server.method_31371(this);
+        this.textStream = server.createFilterer(this);
     }
 
     private void moveToSpawn(ServerWorld world) {
@@ -912,10 +912,13 @@ implements ScreenHandlerListener {
         this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, property, value));
     }
 
+    /**
+     * Closes the current handled screen and sends a screen closing packet to the client.
+     */
     @Override
     public void closeHandledScreen() {
         this.networkHandler.sendPacket(new CloseScreenS2CPacket(this.currentScreenHandler.syncId));
-        this.closeCurrentScreen();
+        this.closeScreenHandler();
     }
 
     public void updateCursorStack() {
@@ -925,7 +928,11 @@ implements ScreenHandlerListener {
         this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
     }
 
-    public void closeCurrentScreen() {
+    /**
+     * Runs closing tasks for the current screen handler and
+     * sets it to the {@code playerScreenHandler}.
+     */
+    public void closeScreenHandler() {
         this.currentScreenHandler.close(this);
         this.currentScreenHandler = this.playerScreenHandler;
     }
@@ -1378,8 +1385,8 @@ implements ScreenHandlerListener {
     }
 
     @Nullable
-    public class_5513 method_31273() {
-        return this.field_26821;
+    public TextStream getTextStream() {
+        return this.textStream;
     }
 }
 

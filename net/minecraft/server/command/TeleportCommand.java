@@ -99,7 +99,7 @@ public class TeleportCommand {
 
     private static void teleport(ServerCommandSource source, Entity target, ServerWorld world, double x, double y, double z, Set<PlayerPositionLookS2CPacket.Flag> movementFlags, float yaw, float pitch, @Nullable LookTarget facingLocation) throws CommandSyntaxException {
         BlockPos blockPos = new BlockPos(x, y, z);
-        if (!World.method_25953(blockPos)) {
+        if (!World.isValid(blockPos)) {
             throw INVALID_POSITION_EXCEPTION.create();
         }
         if (target instanceof ServerPlayerEntity) {

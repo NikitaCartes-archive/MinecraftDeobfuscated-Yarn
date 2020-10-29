@@ -28,30 +28,33 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
-        leavesPositions.forEach(blockPos -> {
-            BlockPos blockPos2;
-            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos2 = blockPos.west())) {
-                this.method_23467(world, blockPos2, VineBlock.EAST, set, box);
+    public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> placedStates, BlockBox box) {
+        leavesPositions.forEach(pos -> {
+            BlockPos blockPos;
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos = pos.west())) {
+                this.placeVines(world, blockPos, VineBlock.EAST, placedStates, box);
             }
-            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos2 = blockPos.east())) {
-                this.method_23467(world, blockPos2, VineBlock.WEST, set, box);
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos = pos.east())) {
+                this.placeVines(world, blockPos, VineBlock.WEST, placedStates, box);
             }
-            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos2 = blockPos.north())) {
-                this.method_23467(world, blockPos2, VineBlock.SOUTH, set, box);
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos = pos.north())) {
+                this.placeVines(world, blockPos, VineBlock.SOUTH, placedStates, box);
             }
-            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos2 = blockPos.south())) {
-                this.method_23467(world, blockPos2, VineBlock.NORTH, set, box);
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos = pos.south())) {
+                this.placeVines(world, blockPos, VineBlock.NORTH, placedStates, box);
             }
         });
     }
 
-    private void method_23467(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty, Set<BlockPos> set, BlockBox blockBox) {
-        this.placeVine(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
-        blockPos = blockPos.down();
-        for (int i = 4; Feature.isAir(modifiableTestableWorld, blockPos) && i > 0; --i) {
-            this.placeVine(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
-            blockPos = blockPos.down();
+    /**
+     * Places a vine at a given position and then up to 4 more vines going downwards.
+     */
+    private void placeVines(ModifiableTestableWorld world, BlockPos pos, BooleanProperty side, Set<BlockPos> placedStates, BlockBox box) {
+        this.placeVine(world, pos, side, placedStates, box);
+        pos = pos.down();
+        for (int i = 4; Feature.isAir(world, pos) && i > 0; --i) {
+            this.placeVine(world, pos, side, placedStates, box);
+            pos = pos.down();
         }
     }
 }

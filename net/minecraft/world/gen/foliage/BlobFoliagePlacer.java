@@ -20,11 +20,11 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class BlobFoliagePlacer
 extends FoliagePlacer {
-    public static final Codec<BlobFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> BlobFoliagePlacer.method_28838(instance).apply((Applicative)instance, BlobFoliagePlacer::new));
+    public static final Codec<BlobFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> BlobFoliagePlacer.createCodec(instance).apply((Applicative)instance, BlobFoliagePlacer::new));
     protected final int height;
 
-    protected static <P extends BlobFoliagePlacer> Products.P3<RecordCodecBuilder.Mu<P>, UniformIntDistribution, UniformIntDistribution, Integer> method_28838(RecordCodecBuilder.Instance<P> instance) {
-        return BlobFoliagePlacer.fillFoliagePlacerFields(instance).and(((MapCodec)Codec.intRange(0, 16).fieldOf("height")).forGetter(blobFoliagePlacer -> blobFoliagePlacer.height));
+    protected static <P extends BlobFoliagePlacer> Products.P3<RecordCodecBuilder.Mu<P>, UniformIntDistribution, UniformIntDistribution, Integer> createCodec(RecordCodecBuilder.Instance<P> builder) {
+        return BlobFoliagePlacer.fillFoliagePlacerFields(builder).and(((MapCodec)Codec.intRange(0, 16).fieldOf("height")).forGetter(blobFoliagePlacer -> blobFoliagePlacer.height));
     }
 
     public BlobFoliagePlacer(UniformIntDistribution radius, UniformIntDistribution offset, int height) {
@@ -41,7 +41,7 @@ extends FoliagePlacer {
     protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int offset, BlockBox box) {
         for (int i = offset; i >= offset - foliageHeight; --i) {
             int j = Math.max(radius + treeNode.getFoliageRadius() - 1 - i / 2, 0);
-            this.generate(world, random, config, treeNode.getCenter(), j, leaves, i, treeNode.isGiantTrunk(), box);
+            this.generateSquare(world, random, config, treeNode.getCenter(), j, leaves, i, treeNode.isGiantTrunk(), box);
         }
     }
 
@@ -51,8 +51,8 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-        return baseHeight == dz && dy == dz && (random.nextInt(2) == 0 || dx == 0);
+    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+        return baseHeight == dz && y == dz && (random.nextInt(2) == 0 || dx == 0);
     }
 }
 

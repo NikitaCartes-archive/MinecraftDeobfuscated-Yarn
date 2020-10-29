@@ -41,7 +41,7 @@ extends FoliagePlacer {
             int k = blockPos.getY() - j;
             int l = radius + treeNode.getFoliageRadius() + MathHelper.floor((float)k / (float)foliageHeight * 3.5f);
             int m = k > 0 && l == i && (j & 1) == 0 ? l + 1 : l;
-            this.generate(world, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, leaves, 0, treeNode.isGiantTrunk(), box);
+            this.generateSquare(world, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, leaves, 0, treeNode.isGiantTrunk(), box);
             i = l;
         }
     }
@@ -52,11 +52,11 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-        if (baseHeight + dy >= 7) {
+    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+        if (baseHeight + y >= 7) {
             return true;
         }
-        return baseHeight * baseHeight + dy * dy > dz * dz;
+        return baseHeight * baseHeight + y * y > dz * dz;
     }
 }
 

@@ -95,7 +95,7 @@ implements Chunk {
     @Override
     public BlockState getBlockState(BlockPos pos) {
         int i = pos.getY();
-        if (World.isHeightInvalid(i)) {
+        if (World.isOutOfBuildLimitVertically(i)) {
             return Blocks.VOID_AIR.getDefaultState();
         }
         ChunkSection chunkSection = this.getSectionArray()[i >> 4];
@@ -108,7 +108,7 @@ implements Chunk {
     @Override
     public FluidState getFluidState(BlockPos pos) {
         int i = pos.getY();
-        if (World.isHeightInvalid(i)) {
+        if (World.isOutOfBuildLimitVertically(i)) {
             return Fluids.EMPTY.getDefaultState();
         }
         ChunkSection chunkSection = this.getSectionArray()[i >> 4];
@@ -367,7 +367,7 @@ implements Chunk {
 
     @Override
     public void markBlockForPostProcessing(BlockPos pos) {
-        if (!World.isHeightInvalid(pos)) {
+        if (!World.isOutOfBuildLimitVertically(pos)) {
             Chunk.getList(this.postProcessingLists, pos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(pos));
         }
     }

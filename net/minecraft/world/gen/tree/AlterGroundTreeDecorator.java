@@ -32,7 +32,7 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+    public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> placedStates, BlockBox box) {
         int i = logPositions.get(0).getY();
         logPositions.stream().filter(blockPos -> blockPos.getY() == i).forEach(blockPos -> {
             this.method_23462(world, random, blockPos.west().north());

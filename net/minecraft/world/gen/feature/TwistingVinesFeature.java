@@ -58,7 +58,7 @@ extends Feature<DefaultFeatureConfig> {
     private static boolean method_27220(WorldAccess worldAccess, BlockPos.Mutable mutable) {
         do {
             mutable.move(0, -1, 0);
-            if (!World.isHeightInvalid(mutable)) continue;
+            if (!World.isOutOfBuildLimitVertically(mutable)) continue;
             return false;
         } while (worldAccess.getBlockState(mutable).isAir());
         mutable.move(0, 1, 0);

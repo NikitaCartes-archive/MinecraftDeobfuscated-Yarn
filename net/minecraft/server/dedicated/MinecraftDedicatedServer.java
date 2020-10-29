@@ -23,8 +23,6 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_5513;
-import net.minecraft.class_5514;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
@@ -43,6 +41,8 @@ import net.minecraft.server.dedicated.ServerMBean;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
+import net.minecraft.server.filter.TextFilterer;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconCommandOutput;
@@ -80,13 +80,13 @@ implements DedicatedServer {
     @Nullable
     private DedicatedServerGui gui;
     @Nullable
-    private final class_5514 field_26898;
+    private final TextFilterer filterer;
 
     public MinecraftDedicatedServer(Thread thread, DynamicRegistryManager.Impl impl, LevelStorage.Session session, ResourcePackManager resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super(thread, impl, session, saveProperties, resourcePackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = serverPropertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
-        this.field_26898 = null;
+        this.filterer = null;
     }
 
     @Override
@@ -268,8 +268,8 @@ implements DedicatedServer {
 
     @Override
     public void exit() {
-        if (this.field_26898 != null) {
-            this.field_26898.close();
+        if (this.filterer != null) {
+            this.filterer.close();
         }
         if (this.gui != null) {
             this.gui.stop();
@@ -540,9 +540,9 @@ implements DedicatedServer {
 
     @Override
     @Nullable
-    public class_5513 method_31371(ServerPlayerEntity serverPlayerEntity) {
-        if (this.field_26898 != null) {
-            return this.field_26898.method_31297(serverPlayerEntity.getGameProfile());
+    public TextStream createFilterer(ServerPlayerEntity player) {
+        if (this.filterer != null) {
+            return this.filterer.createFilterer(player.getGameProfile());
         }
         return null;
     }

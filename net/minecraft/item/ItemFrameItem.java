@@ -20,7 +20,7 @@ extends DecorationItem {
 
     @Override
     protected boolean canPlaceOn(PlayerEntity player, Direction side, ItemStack stack, BlockPos pos) {
-        return !World.isHeightInvalid(pos) && player.canPlaceOn(pos, side, stack);
+        return !World.isOutOfBuildLimitVertically(pos) && player.canPlaceOn(pos, side, stack);
     }
 }
 

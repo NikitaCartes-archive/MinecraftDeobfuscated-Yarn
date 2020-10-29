@@ -33,7 +33,7 @@ extends IdentifierSearchableContainer<T> {
     public void reload() {
         this.byText = new SuffixArray();
         super.reload();
-        this.byText.sort();
+        this.byText.build();
     }
 
     @Override

@@ -34,7 +34,7 @@ extends Feature<DefaultFeatureConfig> {
         boolean bl3 = true;
         boolean bl4 = true;
         while (structureWorldAccess.isAir(mutable)) {
-            if (World.isHeightInvalid(mutable)) {
+            if (World.isOutOfBuildLimitVertically(mutable)) {
                 return true;
             }
             structureWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);

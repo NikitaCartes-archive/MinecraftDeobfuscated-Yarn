@@ -9,15 +9,15 @@ import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.ConfirmGuiActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.c2s.play.ConfirmScreenActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
@@ -63,15 +63,15 @@ extends PacketListener {
 
     public void onClientSettings(ClientSettingsC2SPacket var1);
 
-    public void onConfirmTransaction(ConfirmGuiActionC2SPacket var1);
+    public void onConfirmScreenAction(ConfirmScreenActionC2SPacket var1);
 
     public void onButtonClick(ButtonClickC2SPacket var1);
 
-    public void onClickWindow(ClickWindowC2SPacket var1);
+    public void onClickSlot(ClickSlotC2SPacket var1);
 
     public void onCraftRequest(CraftRequestC2SPacket var1);
 
-    public void onGuiClose(GuiCloseC2SPacket var1);
+    public void onCloseHandledScreen(CloseHandledScreenC2SPacket var1);
 
     public void onCustomPayload(CustomPayloadC2SPacket var1);
 

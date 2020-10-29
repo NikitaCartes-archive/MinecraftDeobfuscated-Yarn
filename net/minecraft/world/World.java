@@ -139,27 +139,27 @@ AutoCloseable {
         return null;
     }
 
-    public static boolean method_24794(BlockPos blockPos) {
-        return !World.isHeightInvalid(blockPos) && World.isValid(blockPos);
+    public static boolean isInBuildLimit(BlockPos pos) {
+        return !World.isOutOfBuildLimitVertically(pos) && World.isValidHorizontally(pos);
     }
 
-    public static boolean method_25953(BlockPos blockPos) {
-        return !World.method_25952(blockPos.getY()) && World.isValid(blockPos);
+    public static boolean isValid(BlockPos pos) {
+        return !World.isInvalidVertically(pos.getY()) && World.isValidHorizontally(pos);
     }
 
-    private static boolean isValid(BlockPos pos) {
+    private static boolean isValidHorizontally(BlockPos pos) {
         return pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
     }
 
-    private static boolean method_25952(int i) {
-        return i < -20000000 || i >= 20000000;
+    private static boolean isInvalidVertically(int y) {
+        return y < -20000000 || y >= 20000000;
     }
 
-    public static boolean isHeightInvalid(BlockPos pos) {
-        return World.isHeightInvalid(pos.getY());
+    public static boolean isOutOfBuildLimitVertically(BlockPos pos) {
+        return World.isOutOfBuildLimitVertically(pos.getY());
     }
 
-    public static boolean isHeightInvalid(int y) {
+    public static boolean isOutOfBuildLimitVertically(int y) {
         return y < 0 || y >= 256;
     }
 
@@ -188,7 +188,7 @@ AutoCloseable {
 
     @Override
     public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-        if (World.isHeightInvalid(pos)) {
+        if (World.isOutOfBuildLimitVertically(pos)) {
             return false;
         }
         if (!this.isClient && this.isDebugWorld()) {
@@ -330,7 +330,7 @@ AutoCloseable {
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        if (World.isHeightInvalid(pos)) {
+        if (World.isOutOfBuildLimitVertically(pos)) {
             return Blocks.VOID_AIR.getDefaultState();
         }
         WorldChunk worldChunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
@@ -339,7 +339,7 @@ AutoCloseable {
 
     @Override
     public FluidState getFluidState(BlockPos pos) {
-        if (World.isHeightInvalid(pos)) {
+        if (World.isOutOfBuildLimitVertically(pos)) {
             return Fluids.EMPTY.getDefaultState();
         }
         WorldChunk worldChunk = this.getWorldChunk(pos);
@@ -504,7 +504,7 @@ AutoCloseable {
     @Override
     @Nullable
     public BlockEntity getBlockEntity(BlockPos pos) {
-        if (World.isHeightInvalid(pos)) {
+        if (World.isOutOfBuildLimitVertically(pos)) {
             return null;
         }
         if (!this.isClient && Thread.currentThread() != this.thread) {
@@ -534,7 +534,7 @@ AutoCloseable {
     }
 
     public void setBlockEntity(BlockPos pos, @Nullable BlockEntity blockEntity) {
-        if (World.isHeightInvalid(pos)) {
+        if (World.isOutOfBuildLimitVertically(pos)) {
             return;
         }
         if (blockEntity != null && !blockEntity.isRemoved()) {
@@ -571,14 +571,14 @@ AutoCloseable {
     }
 
     public boolean canSetBlock(BlockPos pos) {
-        if (World.isHeightInvalid(pos)) {
+        if (World.isOutOfBuildLimitVertically(pos)) {
             return false;
         }
         return this.getChunkManager().isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public boolean isDirectionSolid(BlockPos pos, Entity entity, Direction direction) {
-        if (World.isHeightInvalid(pos)) {
+        if (World.isOutOfBuildLimitVertically(pos)) {
             return false;
         }
         Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
