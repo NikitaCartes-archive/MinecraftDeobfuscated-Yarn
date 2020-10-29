@@ -150,6 +150,10 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		this.seed = seed;
 	}
 
+	/**
+	 * Seeds the layers by creating multiple bands of colored terracotta. The yellow and red terracotta bands are one block thick while the brown
+	 * terracotta band is 2 blocks thick. Then, a gradient band is created with white terracotta in the center and light gray terracotta on the top and bottom.
+	 */
 	protected void initLayerBlocks(long seed) {
 		this.layerBlocks = new BlockState[64];
 		Arrays.fill(this.layerBlocks, TERRACOTTA);

@@ -9,24 +9,24 @@ public class SoulSandValleySurfaceBuilder extends AbstractNetherSurfaceBuilder {
 	private static final BlockState SOUL_SAND = Blocks.SOUL_SAND.getDefaultState();
 	private static final BlockState SOUL_SOIL = Blocks.SOUL_SOIL.getDefaultState();
 	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
-	private static final ImmutableList<BlockState> field_23924 = ImmutableList.of(SOUL_SAND, SOUL_SOIL);
+	private static final ImmutableList<BlockState> SURFACE_STATES = ImmutableList.of(SOUL_SAND, SOUL_SOIL);
 
 	public SoulSandValleySurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
 		super(codec);
 	}
 
 	@Override
-	protected ImmutableList<BlockState> method_27129() {
-		return field_23924;
+	protected ImmutableList<BlockState> getSurfaceStates() {
+		return SURFACE_STATES;
 	}
 
 	@Override
-	protected ImmutableList<BlockState> method_27133() {
-		return field_23924;
+	protected ImmutableList<BlockState> getUnderLavaStates() {
+		return SURFACE_STATES;
 	}
 
 	@Override
-	protected BlockState method_27135() {
+	protected BlockState getLavaShoreState() {
 		return GRAVEL;
 	}
 }

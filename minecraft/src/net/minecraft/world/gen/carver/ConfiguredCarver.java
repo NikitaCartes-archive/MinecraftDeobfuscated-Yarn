@@ -32,7 +32,9 @@ public class ConfiguredCarver<WC extends CarverConfig> {
 		return this.carver.shouldCarve(random, chunkX, chunkZ, this.config);
 	}
 
-	public boolean carve(Chunk chunk, Function<BlockPos, Biome> function, Random random, int i, int j, int k, int l, int m, BitSet bitSet) {
-		return this.carver.carve(chunk, function, random, i, j, k, l, m, bitSet, this.config);
+	public boolean carve(
+		Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, int seaLevel, int chunkX, int chunkZ, int mainChunkX, int mainChunkZ, BitSet carvingMask
+	) {
+		return this.carver.carve(chunk, posToBiome, random, seaLevel, chunkX, chunkZ, mainChunkX, mainChunkZ, carvingMask, this.config);
 	}
 }

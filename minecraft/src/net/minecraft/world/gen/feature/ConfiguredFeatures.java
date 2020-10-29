@@ -106,7 +106,7 @@ public class ConfiguredFeatures {
 		"basalt_blobs",
 		Feature.NETHERRACK_REPLACE_BLOBS
 			.configure(new NetherrackReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BASALT, UniformIntDistribution.of(3, 4)))
-			.method_30377(128)
+			.rangeOf(128)
 			.spreadHorizontally()
 			.repeat(75)
 	);
@@ -116,7 +116,7 @@ public class ConfiguredFeatures {
 			.configure(
 				new NetherrackReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BLACKSTONE, UniformIntDistribution.of(3, 4))
 			)
-			.method_30377(128)
+			.rangeOf(128)
 			.spreadHorizontally()
 			.repeat(25)
 	);
@@ -124,7 +124,7 @@ public class ConfiguredFeatures {
 		"glowstone_extra", Feature.GLOWSTONE_BLOB.configure(FeatureConfig.DEFAULT).decorate(Decorator.GLOWSTONE.configure(new CountConfig(10)))
 	);
 	public static final ConfiguredFeature<?, ?> GLOWSTONE = register(
-		"glowstone", Feature.GLOWSTONE_BLOB.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
+		"glowstone", Feature.GLOWSTONE_BLOB.configure(FeatureConfig.DEFAULT).rangeOf(128).spreadHorizontally().repeat(10)
 	);
 	public static final ConfiguredFeature<?, ?> CRIMSON_FOREST_VEGETATION = register(
 		"crimson_forest_vegetation",
@@ -145,13 +145,13 @@ public class ConfiguredFeatures {
 			.decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(4)))
 	);
 	public static final ConfiguredFeature<?, ?> TWISTING_VINES = register(
-		"twisting_vines", Feature.TWISTING_VINES.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
+		"twisting_vines", Feature.TWISTING_VINES.configure(FeatureConfig.DEFAULT).rangeOf(128).spreadHorizontally().repeat(10)
 	);
 	public static final ConfiguredFeature<?, ?> WEEPING_VINES = register(
-		"weeping_vines", Feature.WEEPING_VINES.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
+		"weeping_vines", Feature.WEEPING_VINES.configure(FeatureConfig.DEFAULT).rangeOf(128).spreadHorizontally().repeat(10)
 	);
 	public static final ConfiguredFeature<?, ?> BASALT_PILLAR = register(
-		"basalt_pillar", Feature.BASALT_PILLAR.configure(FeatureConfig.DEFAULT).method_30377(128).spreadHorizontally().repeat(10)
+		"basalt_pillar", Feature.BASALT_PILLAR.configure(FeatureConfig.DEFAULT).rangeOf(128).spreadHorizontally().repeat(10)
 	);
 	public static final ConfiguredFeature<?, ?> SEAGRASS_COLD = register(
 		"seagrass_cold", Feature.SEAGRASS.configure(new ProbabilityConfig(0.3F)).repeat(32).decorate(ConfiguredFeatures.Decorators.SQUARE_TOP_SOLID_HEIGHTMAP)
@@ -330,7 +330,7 @@ public class ConfiguredFeatures {
 		"void_start_platform", Feature.VOID_START_PLATFORM.configure(FeatureConfig.DEFAULT)
 	);
 	public static final ConfiguredFeature<?, ?> MONSTER_ROOM = register(
-		"monster_room", Feature.MONSTER_ROOM.configure(FeatureConfig.DEFAULT).method_30377(256).spreadHorizontally().repeat(8)
+		"monster_room", Feature.MONSTER_ROOM.configure(FeatureConfig.DEFAULT).rangeOf(256).spreadHorizontally().repeat(8)
 	);
 	public static final ConfiguredFeature<?, ?> DESERT_WELL = register(
 		"desert_well", Feature.DESERT_WELL.configure(FeatureConfig.DEFAULT).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(1000)
@@ -482,7 +482,7 @@ public class ConfiguredFeatures {
 					.cannotProject()
 					.build()
 			)
-			.method_30377(128)
+			.rangeOf(128)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_SUNFLOWER = register(
 		"patch_sunflower",
@@ -674,8 +674,8 @@ public class ConfiguredFeatures {
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
 			.repeat(10)
 	);
-	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_NETHER = register("brown_mushroom_nether", PATCH_BROWN_MUSHROOM.method_30377(128).applyChance(2));
-	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_NETHER = register("red_mushroom_nether", PATCH_RED_MUSHROOM.method_30377(128).applyChance(2));
+	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_NETHER = register("brown_mushroom_nether", PATCH_BROWN_MUSHROOM.rangeOf(128).applyChance(2));
+	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_NETHER = register("red_mushroom_nether", PATCH_RED_MUSHROOM.rangeOf(128).applyChance(2));
 	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_NORMAL = register(
 		"brown_mushroom_normal", PATCH_BROWN_MUSHROOM.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(4)
 	);
@@ -704,7 +704,7 @@ public class ConfiguredFeatures {
 		"ore_soul_sand",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.NETHERRACK, ConfiguredFeatures.States.SOUL_SAND, 12))
-			.method_30377(32)
+			.rangeOf(32)
 			.spreadHorizontally()
 			.repeat(12)
 	);
@@ -760,7 +760,7 @@ public class ConfiguredFeatures {
 		"ore_dirt",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIRT, 33))
-			.method_30377(256)
+			.rangeOf(256)
 			.spreadHorizontally()
 			.repeat(10)
 	);
@@ -768,7 +768,7 @@ public class ConfiguredFeatures {
 		"ore_gravel",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GRAVEL, 33))
-			.method_30377(256)
+			.rangeOf(256)
 			.spreadHorizontally()
 			.repeat(8)
 	);
@@ -776,7 +776,7 @@ public class ConfiguredFeatures {
 		"ore_granite",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GRANITE, 33))
-			.method_30377(80)
+			.rangeOf(80)
 			.spreadHorizontally()
 			.repeat(10)
 	);
@@ -784,7 +784,7 @@ public class ConfiguredFeatures {
 		"ore_diorite",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIORITE, 33))
-			.method_30377(80)
+			.rangeOf(80)
 			.spreadHorizontally()
 			.repeat(10)
 	);
@@ -792,7 +792,7 @@ public class ConfiguredFeatures {
 		"ore_andesite",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.ANDESITE, 33))
-			.method_30377(80)
+			.rangeOf(80)
 			.spreadHorizontally()
 			.repeat(10)
 	);
@@ -800,7 +800,7 @@ public class ConfiguredFeatures {
 		"ore_coal",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COAL_ORE, 17))
-			.method_30377(128)
+			.rangeOf(128)
 			.spreadHorizontally()
 			.repeat(20)
 	);
@@ -808,7 +808,7 @@ public class ConfiguredFeatures {
 		"ore_iron",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.IRON_ORE, 9))
-			.method_30377(64)
+			.rangeOf(64)
 			.spreadHorizontally()
 			.repeat(20)
 	);
@@ -824,7 +824,7 @@ public class ConfiguredFeatures {
 		"ore_gold",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.GOLD_ORE, 9))
-			.method_30377(32)
+			.rangeOf(32)
 			.spreadHorizontally()
 			.repeat(2)
 	);
@@ -832,7 +832,7 @@ public class ConfiguredFeatures {
 		"ore_redstone",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.REDSTONE_ORE, 8))
-			.method_30377(16)
+			.rangeOf(16)
 			.spreadHorizontally()
 			.repeat(8)
 	);
@@ -840,7 +840,7 @@ public class ConfiguredFeatures {
 		"ore_diamond",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.DIAMOND_ORE, 8))
-			.method_30377(16)
+			.rangeOf(16)
 			.spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> ORE_LAPIS = register(
@@ -854,7 +854,7 @@ public class ConfiguredFeatures {
 		"ore_infested",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.INFESTED_STONE, 9))
-			.method_30377(64)
+			.rangeOf(64)
 			.spreadHorizontally()
 			.repeat(7)
 	);

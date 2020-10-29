@@ -43,7 +43,7 @@ public class SharedConstants {
 	}
 
 	public static int method_31372() {
-		return 1073741827;
+		return 754;
 	}
 
 	static {

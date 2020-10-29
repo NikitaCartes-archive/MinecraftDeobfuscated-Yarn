@@ -21,33 +21,35 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
-		logPositions.forEach(blockPos -> {
+	public void generate(
+		StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> placedStates, BlockBox box
+	) {
+		logPositions.forEach(pos -> {
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos2 = blockPos.west();
-				if (Feature.isAir(world, blockPos2)) {
-					this.placeVine(world, blockPos2, VineBlock.EAST, set, box);
+				BlockPos blockPos = pos.west();
+				if (Feature.isAir(world, blockPos)) {
+					this.placeVine(world, blockPos, VineBlock.EAST, placedStates, box);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos2 = blockPos.east();
-				if (Feature.isAir(world, blockPos2)) {
-					this.placeVine(world, blockPos2, VineBlock.WEST, set, box);
+				BlockPos blockPos = pos.east();
+				if (Feature.isAir(world, blockPos)) {
+					this.placeVine(world, blockPos, VineBlock.WEST, placedStates, box);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos2 = blockPos.north();
-				if (Feature.isAir(world, blockPos2)) {
-					this.placeVine(world, blockPos2, VineBlock.SOUTH, set, box);
+				BlockPos blockPos = pos.north();
+				if (Feature.isAir(world, blockPos)) {
+					this.placeVine(world, blockPos, VineBlock.SOUTH, placedStates, box);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
-				BlockPos blockPos2 = blockPos.south();
-				if (Feature.isAir(world, blockPos2)) {
-					this.placeVine(world, blockPos2, VineBlock.NORTH, set, box);
+				BlockPos blockPos = pos.south();
+				if (Feature.isAir(world, blockPos)) {
+					this.placeVine(world, blockPos, VineBlock.NORTH, placedStates, box);
 				}
 			}
 		});

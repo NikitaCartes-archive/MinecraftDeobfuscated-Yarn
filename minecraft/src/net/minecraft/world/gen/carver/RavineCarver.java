@@ -13,8 +13,8 @@ import net.minecraft.world.gen.ProbabilityConfig;
 public class RavineCarver extends Carver<ProbabilityConfig> {
 	private final float[] heightToHorizontalStretchFactor = new float[1024];
 
-	public RavineCarver(Codec<ProbabilityConfig> codec) {
-		super(codec, 256);
+	public RavineCarver(Codec<ProbabilityConfig> configCodec) {
+		super(configCodec, 256);
 	}
 
 	public boolean shouldCarve(Random random, int i, int j, ProbabilityConfig probabilityConfig) {

@@ -19,12 +19,12 @@ public class WeightedList<U> {
 		this(Lists.<WeightedList.Entry<U>>newArrayList());
 	}
 
-	private WeightedList(List<WeightedList.Entry<U>> list) {
-		this.entries = Lists.<WeightedList.Entry<U>>newArrayList(list);
+	private WeightedList(List<WeightedList.Entry<U>> entries) {
+		this.entries = Lists.<WeightedList.Entry<U>>newArrayList(entries);
 	}
 
-	public static <U> Codec<WeightedList<U>> method_28338(Codec<U> codec) {
-		return WeightedList.Entry.method_28341(codec).listOf().xmap(WeightedList::new, weightedList -> weightedList.entries);
+	public static <U> Codec<WeightedList<U>> createCodec(Codec<U> codec) {
+		return WeightedList.Entry.createCodec(codec).listOf().xmap(WeightedList::new, list -> list.entries);
 	}
 
 	public WeightedList<U> add(U item, int weight) {
@@ -63,9 +63,9 @@ public class WeightedList<U> {
 		private final int weight;
 		private double shuffledOrder;
 
-		private Entry(T object, int i) {
-			this.weight = i;
-			this.item = object;
+		private Entry(T item, int weight) {
+			this.weight = weight;
+			this.item = item;
 		}
 
 		private double getShuffledOrder() {
@@ -84,15 +84,15 @@ public class WeightedList<U> {
 			return "" + this.weight + ":" + this.item;
 		}
 
-		public static <E> Codec<WeightedList.Entry<E>> method_28341(Codec<E> codec) {
+		public static <E> Codec<WeightedList.Entry<E>> createCodec(Codec<E> codec) {
 			return new Codec<WeightedList.Entry<E>>() {
 				@Override
-				public <T> DataResult<Pair<WeightedList.Entry<E>, T>> decode(DynamicOps<T> dynamicOps, T object) {
-					Dynamic<T> dynamic = new Dynamic<>(dynamicOps, object);
+				public <T> DataResult<Pair<WeightedList.Entry<E>, T>> decode(DynamicOps<T> ops, T object) {
+					Dynamic<T> dynamic = new Dynamic<>(ops, object);
 					return dynamic.get("data")
 						.flatMap(codec::parse)
 						.map(objectx -> new WeightedList.Entry(objectx, dynamic.get("weight").asInt(1)))
-						.map(entry -> Pair.of(entry, dynamicOps.empty()));
+						.map(entry -> Pair.of(entry, ops.empty()));
 				}
 
 				public <T> DataResult<T> encode(WeightedList.Entry<E> entry, DynamicOps<T> dynamicOps, T object) {

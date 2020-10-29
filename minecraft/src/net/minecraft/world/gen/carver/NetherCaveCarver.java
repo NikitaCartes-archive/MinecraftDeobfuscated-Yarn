@@ -15,8 +15,8 @@ import net.minecraft.world.gen.ProbabilityConfig;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NetherCaveCarver extends CaveCarver {
-	public NetherCaveCarver(Codec<ProbabilityConfig> codec) {
-		super(codec, 128);
+	public NetherCaveCarver(Codec<ProbabilityConfig> configCodec) {
+		super(configCodec, 128);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.STONE,
 			Blocks.GRANITE,

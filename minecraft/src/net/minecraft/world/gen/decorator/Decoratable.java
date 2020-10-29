@@ -45,8 +45,12 @@ public interface Decoratable<R> {
 		return this.repeat(UniformIntDistribution.of(0, maxCount));
 	}
 
-	default R method_30377(int i) {
-		return this.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(0, 0, i)));
+	/**
+	 * Applies the {@code minecraft:range} decorator, which returns the input
+	 * position with a y value from zero to {@code max}.
+	 */
+	default R rangeOf(int max) {
+		return this.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(0, 0, max)));
 	}
 
 	/**

@@ -1,5 +1,5 @@
 package net.minecraft.world.gen.carver;
 
 public interface CarverConfig {
-	DefaultCarverConfig DEFAULT = DefaultCarverConfig.field_24830;
+	DefaultCarverConfig DEFAULT = DefaultCarverConfig.INSTANCE;
 }
