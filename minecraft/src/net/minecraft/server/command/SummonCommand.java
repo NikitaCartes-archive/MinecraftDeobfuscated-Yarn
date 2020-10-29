@@ -72,7 +72,7 @@ public class SummonCommand {
 
 	private static int execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(pos);
-		if (!World.method_25953(blockPos)) {
+		if (!World.isValid(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
 			CompoundTag compoundTag = nbt.copy();

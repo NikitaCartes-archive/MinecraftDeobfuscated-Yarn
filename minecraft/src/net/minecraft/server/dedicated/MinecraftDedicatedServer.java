@@ -20,8 +20,6 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5513;
-import net.minecraft.class_5514;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
@@ -33,6 +31,8 @@ import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
+import net.minecraft.server.filter.TextFilterer;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconCommandOutput;
@@ -68,7 +68,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Nullable
 	private DedicatedServerGui gui;
 	@Nullable
-	private final class_5514 field_26898;
+	private final TextFilterer filterer;
 
 	public MinecraftDedicatedServer(
 		Thread thread,
@@ -100,7 +100,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		);
 		this.propertiesLoader = serverPropertiesLoader;
 		this.rconCommandOutput = new RconCommandOutput(this);
-		this.field_26898 = null;
+		this.filterer = null;
 	}
 
 	@Override
@@ -297,8 +297,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public void exit() {
-		if (this.field_26898 != null) {
-			this.field_26898.close();
+		if (this.filterer != null) {
+			this.filterer.close();
 		}
 
 		if (this.gui != null) {
@@ -582,7 +582,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Nullable
 	@Override
-	public class_5513 method_31371(ServerPlayerEntity serverPlayerEntity) {
-		return this.field_26898 != null ? this.field_26898.method_31297(serverPlayerEntity.getGameProfile()) : null;
+	public TextStream createFilterer(ServerPlayerEntity player) {
+		return this.filterer != null ? this.filterer.createFilterer(player.getGameProfile()) : null;
 	}
 }

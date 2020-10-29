@@ -58,7 +58,7 @@ public class TwistingVinesFeature extends Feature<DefaultFeatureConfig> {
 	private static boolean method_27220(WorldAccess worldAccess, BlockPos.Mutable mutable) {
 		do {
 			mutable.move(0, -1, 0);
-			if (World.isHeightInvalid(mutable)) {
+			if (World.isOutOfBuildLimitVertically(mutable)) {
 				return false;
 			}
 		} while (worldAccess.getBlockState(mutable).isAir());

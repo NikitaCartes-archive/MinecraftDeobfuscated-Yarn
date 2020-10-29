@@ -28,7 +28,7 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 			boolean bl4 = true;
 
 			while (structureWorldAccess.isAir(mutable)) {
-				if (World.isHeightInvalid(mutable)) {
+				if (World.isOutOfBuildLimitVertically(mutable)) {
 					return true;
 				}
 

@@ -83,7 +83,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	protected boolean isPosInvalid(ChunkSectionPos pos) {
-		return World.isHeightInvalid(ChunkSectionPos.getBlockCoord(pos.getSectionY()));
+		return World.isOutOfBuildLimitVertically(ChunkSectionPos.getBlockCoord(pos.getSectionY()));
 	}
 
 	protected R getOrCreate(long pos) {

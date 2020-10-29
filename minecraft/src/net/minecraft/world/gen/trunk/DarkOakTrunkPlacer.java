@@ -28,14 +28,14 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
+		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
 	) {
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
 		BlockPos blockPos = pos.down();
-		method_27400(world, blockPos);
-		method_27400(world, blockPos.east());
-		method_27400(world, blockPos.south());
-		method_27400(world, blockPos.south().east());
+		setToDirt(world, blockPos);
+		setToDirt(world, blockPos.east());
+		setToDirt(world, blockPos.south());
+		setToDirt(world, blockPos.south().east());
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		int i = trunkHeight - random.nextInt(4);
 		int j = 2 - random.nextInt(3);
@@ -56,10 +56,10 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 			int r = l + q;
 			BlockPos blockPos2 = new BlockPos(n, r, o);
 			if (TreeFeature.isAirOrLeaves(world, blockPos2)) {
-				method_27402(world, random, blockPos2, set, blockBox, treeFeatureConfig);
-				method_27402(world, random, blockPos2.east(), set, blockBox, treeFeatureConfig);
-				method_27402(world, random, blockPos2.south(), set, blockBox, treeFeatureConfig);
-				method_27402(world, random, blockPos2.east().south(), set, blockBox, treeFeatureConfig);
+				getAndSetState(world, random, blockPos2, placedStates, box, config);
+				getAndSetState(world, random, blockPos2.east(), placedStates, box, config);
+				getAndSetState(world, random, blockPos2.south(), placedStates, box, config);
+				getAndSetState(world, random, blockPos2.east().south(), placedStates, box, config);
 			}
 		}
 
@@ -71,7 +71,7 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 					int s = random.nextInt(3) + 2;
 
 					for (int t = 0; t < s; t++) {
-						method_27402(world, random, new BlockPos(k + q, p - t - 1, m + r), set, blockBox, treeFeatureConfig);
+						getAndSetState(world, random, new BlockPos(k + q, p - t - 1, m + r), placedStates, box, config);
 					}
 
 					list.add(new FoliagePlacer.TreeNode(new BlockPos(n + q, p, o + r), 0, false));

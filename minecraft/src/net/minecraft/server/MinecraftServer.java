@@ -54,7 +54,6 @@ import javax.imageio.ImageIO;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5513;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
@@ -76,6 +75,7 @@ import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.SpawnLocating;
@@ -1757,7 +1757,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	@Nullable
-	public class_5513 method_31371(ServerPlayerEntity serverPlayerEntity) {
+	public TextStream createFilterer(ServerPlayerEntity player) {
 		return null;
 	}
 }

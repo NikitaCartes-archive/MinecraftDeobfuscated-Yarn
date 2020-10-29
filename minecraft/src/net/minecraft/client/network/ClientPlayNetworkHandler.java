@@ -159,7 +159,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.ConfirmGuiActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.ConfirmScreenActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
@@ -180,7 +180,7 @@ import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
-import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
@@ -1138,18 +1138,18 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onGuiActionConfirm(ConfirmGuiActionS2CPacket packet) {
+	public void onConfirmScreenAction(ConfirmScreenActionS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ScreenHandler screenHandler = null;
 		PlayerEntity playerEntity = this.client.player;
-		if (packet.getId() == 0) {
+		if (packet.getSyncId() == 0) {
 			screenHandler = playerEntity.playerScreenHandler;
-		} else if (packet.getId() == playerEntity.currentScreenHandler.syncId) {
+		} else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId) {
 			screenHandler = playerEntity.currentScreenHandler;
 		}
 
 		if (screenHandler != null && !packet.wasAccepted()) {
-			this.sendPacket(new ConfirmGuiActionC2SPacket(packet.getId(), packet.getActionId(), true));
+			this.sendPacket(new ConfirmScreenActionC2SPacket(packet.getSyncId(), packet.getActionId(), true));
 		}
 	}
 

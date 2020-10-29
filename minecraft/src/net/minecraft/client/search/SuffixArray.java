@@ -17,6 +17,9 @@ import net.fabricmc.api.Environment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Provides an efficient way to search for a text in multiple texts.
+ */
 @Environment(EnvType.CLIENT)
 public class SuffixArray<T> {
 	private static final boolean PRINT_COMPARISONS = Boolean.parseBoolean(System.getProperty("SuffixArray.printComparisons", "false"));
@@ -24,29 +27,44 @@ public class SuffixArray<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	protected final List<T> objects = Lists.<T>newArrayList();
 	private final IntList characters = new IntArrayList();
-	private final IntList suffixStarts = new IntArrayList();
+	private final IntList textStarts = new IntArrayList();
 	private IntList suffixIndexToObjectIndex = new IntArrayList();
-	private IntList suffixSplits = new IntArrayList();
+	private IntList offsetInText = new IntArrayList();
 	private int maxTextLength;
 
+	/**
+	 * Adds a text with the corresponding object.
+	 * 
+	 * <p>You are not allowed to call this method after calling {@link #build()} method.
+	 * 
+	 * <p>Takes O({@code text.length()}) time.
+	 */
 	public void add(T object, String text) {
 		this.maxTextLength = Math.max(this.maxTextLength, text.length());
 		int i = this.objects.size();
 		this.objects.add(object);
-		this.suffixStarts.add(this.characters.size());
+		this.textStarts.add(this.characters.size());
 
 		for (int j = 0; j < text.length(); j++) {
 			this.suffixIndexToObjectIndex.add(i);
-			this.suffixSplits.add(j);
+			this.offsetInText.add(j);
 			this.characters.add(text.charAt(j));
 		}
 
 		this.suffixIndexToObjectIndex.add(i);
-		this.suffixSplits.add(text.length());
+		this.offsetInText.add(text.length());
 		this.characters.add(-1);
 	}
 
-	public void sort() {
+	/**
+	 * Builds a suffix array with added texts.
+	 * 
+	 * <p>You are not allowed to call this method multiple times.
+	 * 
+	 * <p>Takes O(N * log N * log M) time on average where N is the sum of all text
+	 * length added, and M is the maximum text length added.
+	 */
+	public void build() {
 		int i = this.characters.size();
 		int[] is = new int[i];
 		final int[] js = new int[i];
@@ -101,14 +119,14 @@ public class SuffixArray<T> {
 		}
 
 		IntList intList = this.suffixIndexToObjectIndex;
-		IntList intList2 = this.suffixSplits;
+		IntList intList2 = this.offsetInText;
 		this.suffixIndexToObjectIndex = new IntArrayList(intList.size());
-		this.suffixSplits = new IntArrayList(intList2.size());
+		this.offsetInText = new IntArrayList(intList2.size());
 
 		for (int m = 0; m < i; m++) {
 			int n = ls[m];
 			this.suffixIndexToObjectIndex.add(intList.getInt(n));
-			this.suffixSplits.add(intList2.getInt(n));
+			this.offsetInText.add(intList2.getInt(n));
 		}
 
 		if (PRINT_ARRAY) {
@@ -125,8 +143,8 @@ public class SuffixArray<T> {
 	}
 
 	private String getDebugString(int suffixIndex) {
-		int i = this.suffixSplits.getInt(suffixIndex);
-		int j = this.suffixStarts.getInt(this.suffixIndexToObjectIndex.getInt(suffixIndex));
+		int i = this.offsetInText.getInt(suffixIndex);
+		int j = this.textStarts.getInt(this.suffixIndexToObjectIndex.getInt(suffixIndex));
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (int k = 0; j + k < this.characters.size(); k++) {
@@ -146,8 +164,8 @@ public class SuffixArray<T> {
 	}
 
 	private int compare(String string, int suffixIndex) {
-		int i = this.suffixStarts.getInt(this.suffixIndexToObjectIndex.getInt(suffixIndex));
-		int j = this.suffixSplits.getInt(suffixIndex);
+		int i = this.textStarts.getInt(this.suffixIndexToObjectIndex.getInt(suffixIndex));
+		int j = this.offsetInText.getInt(suffixIndex);
 
 		for (int k = 0; k < string.length(); k++) {
 			int l = this.characters.getInt(i + j + k);
@@ -169,6 +187,16 @@ public class SuffixArray<T> {
 		return 0;
 	}
 
+	/**
+	 * Retrieves all objects of which corresponding texts contain {@code text}.
+	 * 
+	 * <p>You have to call {@link #build()} method before calling this method.
+	 * 
+	 * <p>Takes O({@code text.length()} * log N) time to find objects where N is the
+	 * sum of all text length added. Takes O(X + Y * log Y) time to collect found
+	 * objects into a list where X is the number of occurrences of {@code text} in all
+	 * texts added, and Y is the number of found objects.
+	 */
 	public List<T> findAll(String text) {
 		int i = this.suffixIndexToObjectIndex.size();
 		int j = 0;

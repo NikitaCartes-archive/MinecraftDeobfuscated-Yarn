@@ -245,7 +245,7 @@ public class TeleportCommand {
 		@Nullable TeleportCommand.LookTarget facingLocation
 	) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(x, y, z);
-		if (!World.method_25953(blockPos)) {
+		if (!World.isValid(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
 			if (target instanceof ServerPlayerEntity) {

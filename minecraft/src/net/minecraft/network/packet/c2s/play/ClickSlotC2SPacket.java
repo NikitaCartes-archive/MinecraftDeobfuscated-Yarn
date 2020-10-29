@@ -9,7 +9,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.screen.slot.SlotActionType;
 
-public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
+public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	private int syncId;
 	private int slot;
 	private int clickData;
@@ -17,11 +17,11 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 	private ItemStack stack = ItemStack.EMPTY;
 	private SlotActionType actionType;
 
-	public ClickWindowC2SPacket() {
+	public ClickSlotC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ClickWindowC2SPacket(int syncId, int slot, int clickData, SlotActionType actionType, ItemStack stack, short actionId) {
+	public ClickSlotC2SPacket(int syncId, int slot, int clickData, SlotActionType actionType, ItemStack stack, short actionId) {
 		this.syncId = syncId;
 		this.slot = slot;
 		this.clickData = clickData;
@@ -31,7 +31,7 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onClickWindow(this);
+		serverPlayPacketListener.onClickSlot(this);
 	}
 
 	@Override

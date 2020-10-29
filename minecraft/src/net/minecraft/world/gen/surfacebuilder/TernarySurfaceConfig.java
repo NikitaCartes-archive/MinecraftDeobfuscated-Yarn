@@ -7,9 +7,9 @@ import net.minecraft.block.BlockState;
 public class TernarySurfaceConfig implements SurfaceConfig {
 	public static final Codec<TernarySurfaceConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.CODEC.fieldOf("top_material").forGetter(ternarySurfaceConfig -> ternarySurfaceConfig.topMaterial),
-					BlockState.CODEC.fieldOf("under_material").forGetter(ternarySurfaceConfig -> ternarySurfaceConfig.underMaterial),
-					BlockState.CODEC.fieldOf("underwater_material").forGetter(ternarySurfaceConfig -> ternarySurfaceConfig.underwaterMaterial)
+					BlockState.CODEC.fieldOf("top_material").forGetter(config -> config.topMaterial),
+					BlockState.CODEC.fieldOf("under_material").forGetter(config -> config.underMaterial),
+					BlockState.CODEC.fieldOf("underwater_material").forGetter(config -> config.underwaterMaterial)
 				)
 				.apply(instance, TernarySurfaceConfig::new)
 	);

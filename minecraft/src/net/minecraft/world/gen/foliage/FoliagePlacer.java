@@ -73,40 +73,49 @@ public abstract class FoliagePlacer {
 		return this.offset.getValue(random);
 	}
 
-	protected abstract boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk);
+	/**
+	 * Used to exclude certain positions such as corners when creating a square of leaves.
+	 */
+	protected abstract boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk);
 
-	protected boolean method_27387(Random random, int i, int j, int k, int l, boolean bl) {
-		int m;
-		int n;
-		if (bl) {
-			m = Math.min(Math.abs(i), Math.abs(i - 1));
-			n = Math.min(Math.abs(k), Math.abs(k - 1));
+	/**
+	 * Normalizes x and z coords before checking if they are invalid.
+	 */
+	protected boolean isPositionInvalid(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+		int i;
+		int j;
+		if (giantTrunk) {
+			i = Math.min(Math.abs(dx), Math.abs(dx - 1));
+			j = Math.min(Math.abs(dz), Math.abs(dz - 1));
 		} else {
-			m = Math.abs(i);
-			n = Math.abs(k);
+			i = Math.abs(dx);
+			j = Math.abs(dz);
 		}
 
-		return this.isInvalidForLeaves(random, m, j, n, l, bl);
+		return this.isInvalidForLeaves(random, i, y, j, radius, giantTrunk);
 	}
 
-	protected void generate(
+	/**
+	 * Generates a square of leaves with the given radius. Sub-classes can use the method {@code isInvalidForLeaves} to exclude certain positions, such as corners.
+	 */
+	protected void generateSquare(
 		ModifiableTestableWorld world,
 		Random random,
 		TreeFeatureConfig config,
 		BlockPos pos,
-		int baseHeight,
+		int radius,
 		Set<BlockPos> leaves,
-		int offset,
+		int y,
 		boolean giantTrunk,
 		BlockBox box
 	) {
 		int i = giantTrunk ? 1 : 0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int j = -baseHeight; j <= baseHeight + i; j++) {
-			for (int k = -baseHeight; k <= baseHeight + i; k++) {
-				if (!this.method_27387(random, j, offset, k, baseHeight, giantTrunk)) {
-					mutable.set(pos, j, offset, k);
+		for (int j = -radius; j <= radius + i; j++) {
+			for (int k = -radius; k <= radius + i; k++) {
+				if (!this.isPositionInvalid(random, j, y, k, radius, giantTrunk)) {
+					mutable.set(pos, j, y, k);
 					if (TreeFeature.canReplace(world, mutable)) {
 						world.setBlockState(mutable, config.leavesProvider.getBlockState(random, mutable), 19);
 						box.encompass(new BlockBox(mutable, mutable));

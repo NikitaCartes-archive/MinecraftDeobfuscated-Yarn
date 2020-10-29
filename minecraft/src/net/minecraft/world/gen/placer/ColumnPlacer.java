@@ -11,8 +11,7 @@ import net.minecraft.world.WorldAccess;
 public class ColumnPlacer extends BlockPlacer {
 	public static final Codec<ColumnPlacer> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.INT.fieldOf("min_size").forGetter(columnPlacer -> columnPlacer.minSize),
-					Codec.INT.fieldOf("extra_size").forGetter(columnPlacer -> columnPlacer.extraSize)
+					Codec.INT.fieldOf("min_size").forGetter(placer -> placer.minSize), Codec.INT.fieldOf("extra_size").forGetter(placer -> placer.extraSize)
 				)
 				.apply(instance, ColumnPlacer::new)
 	);

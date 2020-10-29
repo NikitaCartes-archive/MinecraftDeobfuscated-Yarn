@@ -20,7 +20,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
-import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
@@ -352,7 +352,7 @@ public class ClientPlayerInteractionManager {
 	public ItemStack clickSlot(int syncId, int slotId, int clickData, SlotActionType actionType, PlayerEntity player) {
 		short s = player.currentScreenHandler.getNextActionId(player.inventory);
 		ItemStack itemStack = player.currentScreenHandler.onSlotClick(slotId, clickData, actionType, player);
-		this.networkHandler.sendPacket(new ClickWindowC2SPacket(syncId, slotId, clickData, actionType, itemStack, s));
+		this.networkHandler.sendPacket(new ClickSlotC2SPacket(syncId, slotId, clickData, actionType, itemStack, s));
 		return itemStack;
 	}
 

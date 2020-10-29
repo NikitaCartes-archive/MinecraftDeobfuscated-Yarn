@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class LargeOakFoliagePlacer extends BlobFoliagePlacer {
 	public static final Codec<LargeOakFoliagePlacer> CODEC = RecordCodecBuilder.create(
-		instance -> method_28838(instance).apply(instance, LargeOakFoliagePlacer::new)
+		instance -> createCodec(instance).apply(instance, LargeOakFoliagePlacer::new)
 	);
 
 	public LargeOakFoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2, int i) {
@@ -40,12 +40,12 @@ public class LargeOakFoliagePlacer extends BlobFoliagePlacer {
 	) {
 		for (int i = offset; i >= offset - foliageHeight; i--) {
 			int j = radius + (i != offset && i != offset - foliageHeight ? 1 : 0);
-			this.generate(world, random, config, treeNode.getCenter(), j, leaves, i, treeNode.isGiantTrunk(), box);
+			this.generateSquare(world, random, config, treeNode.getCenter(), j, leaves, i, treeNode.isGiantTrunk(), box);
 		}
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-		return MathHelper.square((float)baseHeight + 0.5F) + MathHelper.square((float)dy + 0.5F) > (float)(dz * dz);
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+		return MathHelper.square((float)baseHeight + 0.5F) + MathHelper.square((float)y + 0.5F) > (float)(dz * dz);
 	}
 }

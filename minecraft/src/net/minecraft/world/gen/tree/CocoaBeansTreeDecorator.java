@@ -30,17 +30,19 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+	public void generate(
+		StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> placedStates, BlockBox box
+	) {
 		if (!(random.nextFloat() >= this.probability)) {
 			int i = ((BlockPos)logPositions.get(0)).getY();
-			logPositions.stream().filter(blockPos -> blockPos.getY() - i <= 2).forEach(blockPos -> {
+			logPositions.stream().filter(pos -> pos.getY() - i <= 2).forEach(pos -> {
 				for (Direction direction : Direction.Type.HORIZONTAL) {
 					if (random.nextFloat() <= 0.25F) {
 						Direction direction2 = direction.getOpposite();
-						BlockPos blockPos2 = blockPos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
-						if (Feature.isAir(world, blockPos2)) {
+						BlockPos blockPos = pos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
+						if (Feature.isAir(world, blockPos)) {
 							BlockState blockState = Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction);
-							this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
+							this.setBlockStateAndEncompassPosition(world, blockPos, blockState, placedStates, box);
 						}
 					}
 				}

@@ -87,11 +87,11 @@ public final class Biome {
 	);
 	public static final Codec<Supplier<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
 	public static final Codec<List<Supplier<Biome>>> field_26750 = RegistryElementCodec.method_31194(Registry.BIOME_KEY, CODEC);
-	private final Map<Integer, List<StructureFeature<?>>> field_26634 = (Map<Integer, List<StructureFeature<?>>>)Registry.STRUCTURE_FEATURE
+	private final Map<Integer, List<StructureFeature<?>>> structures = (Map<Integer, List<StructureFeature<?>>>)Registry.STRUCTURE_FEATURE
 		.stream()
 		.collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
 	private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(1234L), ImmutableList.of(0));
-	private static final OctaveSimplexNoiseSampler field_26392 = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), ImmutableList.of(-2, -1, 0));
+	private static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), ImmutableList.of(-2, -1, 0));
 	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(2345L), ImmutableList.of(0));
 	private final Biome.Weather weather;
 	private final GenerationSettings generationSettings;
@@ -227,7 +227,7 @@ public final class Biome {
 		for (int j = 0; j < i; j++) {
 			int k = 0;
 			if (structureAccessor.shouldGenerateStructures()) {
-				for (StructureFeature<?> structureFeature : (List)this.field_26634.getOrDefault(j, Collections.emptyList())) {
+				for (StructureFeature<?> structureFeature : (List)this.structures.getOrDefault(j, Collections.emptyList())) {
 					random.setDecoratorSeed(populationSeed, k, j);
 					int l = pos.getX() >> 4;
 					int m = pos.getZ() >> 4;
@@ -609,8 +609,8 @@ public final class Biome {
 		 * from a mathematical point of view, with a special parameter that
 		 * reduces the calculated distance.
 		 * 
-		 * <p>For most fields except rarity potential, smaller difference between
-		 * two points' fields will lead to smaller distance. For rarity potential,
+		 * <p>For most fields except weight, smaller difference between
+		 * two points' fields will lead to smaller distance. For weight,
 		 * larger differences lead to smaller distance.
 		 * 
 		 * <p>This distance is used by the mixed-noise biome layer source. The
@@ -666,7 +666,7 @@ public final class Biome {
 		FROZEN("frozen") {
 			@Override
 			public float getModifiedTemperature(BlockPos pos, float temperature) {
-				double d = Biome.field_26392.sample((double)pos.getX() * 0.05, (double)pos.getZ() * 0.05, false) * 7.0;
+				double d = Biome.FROZEN_OCEAN_NOISE.sample((double)pos.getX() * 0.05, (double)pos.getZ() * 0.05, false) * 7.0;
 				double e = Biome.FOLIAGE_NOISE.sample((double)pos.getX() * 0.2, (double)pos.getZ() * 0.2, false);
 				double f = d + e;
 				if (f < 0.3) {

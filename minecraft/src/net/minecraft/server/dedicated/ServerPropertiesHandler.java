@@ -55,7 +55,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean enableJmxMonitoring;
 	public final boolean enableStatus;
 	public final int entityBroadcastRangePercentage;
-	public final String field_26899;
+	public final String textFilteringConfig;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList;
 	public final GeneratorOptions generatorOptions;
@@ -83,7 +83,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		this.enableJmxMonitoring = this.parseBoolean("enable-jmx-monitoring", false);
 		this.enableStatus = this.parseBoolean("enable-status", true);
 		this.entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", integer -> MathHelper.clamp(integer, 10, 1000), 100);
-		this.field_26899 = this.getString("text-filtering-config", "");
+		this.textFilteringConfig = this.getString("text-filtering-config", "");
 		this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 		this.whiteList = this.booleanAccessor("white-list", false);
 		this.generatorOptions = GeneratorOptions.fromProperties(dynamicRegistryManager, properties);

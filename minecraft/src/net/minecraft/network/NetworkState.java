@@ -19,15 +19,15 @@ import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.ConfirmGuiActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.c2s.play.ConfirmScreenActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
@@ -80,7 +80,7 @@ import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
-import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
@@ -188,7 +188,7 @@ public enum NetworkState {
 					.register(GameMessageS2CPacket.class, GameMessageS2CPacket::new)
 					.register(CommandSuggestionsS2CPacket.class, CommandSuggestionsS2CPacket::new)
 					.register(CommandTreeS2CPacket.class, CommandTreeS2CPacket::new)
-					.register(ConfirmGuiActionS2CPacket.class, ConfirmGuiActionS2CPacket::new)
+					.register(ConfirmScreenActionS2CPacket.class, ConfirmScreenActionS2CPacket::new)
 					.register(CloseScreenS2CPacket.class, CloseScreenS2CPacket::new)
 					.register(InventoryS2CPacket.class, InventoryS2CPacket::new)
 					.register(ScreenHandlerPropertyUpdateS2CPacket.class, ScreenHandlerPropertyUpdateS2CPacket::new)
@@ -274,10 +274,10 @@ public enum NetworkState {
 					.register(ClientStatusC2SPacket.class, ClientStatusC2SPacket::new)
 					.register(ClientSettingsC2SPacket.class, ClientSettingsC2SPacket::new)
 					.register(RequestCommandCompletionsC2SPacket.class, RequestCommandCompletionsC2SPacket::new)
-					.register(ConfirmGuiActionC2SPacket.class, ConfirmGuiActionC2SPacket::new)
+					.register(ConfirmScreenActionC2SPacket.class, ConfirmScreenActionC2SPacket::new)
 					.register(ButtonClickC2SPacket.class, ButtonClickC2SPacket::new)
-					.register(ClickWindowC2SPacket.class, ClickWindowC2SPacket::new)
-					.register(GuiCloseC2SPacket.class, GuiCloseC2SPacket::new)
+					.register(ClickSlotC2SPacket.class, ClickSlotC2SPacket::new)
+					.register(CloseHandledScreenC2SPacket.class, CloseHandledScreenC2SPacket::new)
 					.register(CustomPayloadC2SPacket.class, CustomPayloadC2SPacket::new)
 					.register(BookUpdateC2SPacket.class, BookUpdateC2SPacket::new)
 					.register(QueryEntityNbtC2SPacket.class, QueryEntityNbtC2SPacket::new)

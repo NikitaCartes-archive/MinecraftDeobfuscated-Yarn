@@ -41,7 +41,7 @@ public class ScaffoldingItem extends BlockItem {
 			BlockPos.Mutable mutable = blockPos.mutableCopy().move(direction);
 
 			while (i < 7) {
-				if (!world.isClient && !World.method_24794(mutable)) {
+				if (!world.isClient && !World.isInBuildLimit(mutable)) {
 					PlayerEntity playerEntity = context.getPlayer();
 					int j = world.getHeight();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {

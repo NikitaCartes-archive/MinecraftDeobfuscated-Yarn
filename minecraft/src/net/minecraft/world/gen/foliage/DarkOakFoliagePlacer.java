@@ -40,15 +40,15 @@ public class DarkOakFoliagePlacer extends FoliagePlacer {
 		BlockPos blockPos = treeNode.getCenter().up(offset);
 		boolean bl = treeNode.isGiantTrunk();
 		if (bl) {
-			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
-			this.generate(world, random, config, blockPos, radius + 3, leaves, 0, bl, box);
-			this.generate(world, random, config, blockPos, radius + 2, leaves, 1, bl, box);
+			this.generateSquare(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
+			this.generateSquare(world, random, config, blockPos, radius + 3, leaves, 0, bl, box);
+			this.generateSquare(world, random, config, blockPos, radius + 2, leaves, 1, bl, box);
 			if (random.nextBoolean()) {
-				this.generate(world, random, config, blockPos, radius, leaves, 2, bl, box);
+				this.generateSquare(world, random, config, blockPos, radius, leaves, 2, bl, box);
 			}
 		} else {
-			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
-			this.generate(world, random, config, blockPos, radius + 1, leaves, 0, bl, box);
+			this.generateSquare(world, random, config, blockPos, radius + 2, leaves, -1, bl, box);
+			this.generateSquare(world, random, config, blockPos, radius + 1, leaves, 0, bl, box);
 		}
 	}
 
@@ -58,16 +58,18 @@ public class DarkOakFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean method_27387(Random random, int i, int j, int k, int l, boolean bl) {
-		return j != 0 || !bl || i != -l && i < l || k != -l && k < l ? super.method_27387(random, i, j, k, l, bl) : true;
+	protected boolean isPositionInvalid(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+		return y != 0 || !giantTrunk || dx != -radius && dx < radius || dz != -radius && dz < radius
+			? super.isPositionInvalid(random, dx, y, dz, radius, giantTrunk)
+			: true;
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
 		if (dx == -1 && !giantTrunk) {
-			return baseHeight == dz && dy == dz;
+			return baseHeight == dz && y == dz;
 		} else {
-			return dx == 1 ? baseHeight + dy > dz * 2 - 2 : false;
+			return dx == 1 ? baseHeight + y > dz * 2 - 2 : false;
 		}
 	}
 }

@@ -12,19 +12,19 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	public static final Codec<CheckerboardBiomeSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Biome.field_26750.fieldOf("biomes").forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray),
-					Codec.intRange(0, 62).fieldOf("scale").orElse(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)
+					Codec.intRange(0, 62).fieldOf("scale").orElse(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.scale)
 				)
 				.apply(instance, CheckerboardBiomeSource::new)
 	);
 	private final List<Supplier<Biome>> biomeArray;
 	private final int gridSize;
-	private final int field_24716;
+	private final int scale;
 
-	public CheckerboardBiomeSource(List<Supplier<Biome>> list, int size) {
-		super(list.stream());
-		this.biomeArray = list;
+	public CheckerboardBiomeSource(List<Supplier<Biome>> biomeArray, int size) {
+		super(biomeArray.stream());
+		this.biomeArray = biomeArray;
 		this.gridSize = size + 2;
-		this.field_24716 = size;
+		this.scale = size;
 	}
 
 	@Override

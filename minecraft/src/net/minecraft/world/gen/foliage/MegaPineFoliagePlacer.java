@@ -55,7 +55,7 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 				m = l;
 			}
 
-			this.generate(world, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, leaves, 0, treeNode.isGiantTrunk(), box);
+			this.generateSquare(world, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, leaves, 0, treeNode.isGiantTrunk(), box);
 			i = l;
 		}
 	}
@@ -66,7 +66,7 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-		return baseHeight + dy >= 7 ? true : baseHeight * baseHeight + dy * dy > dz * dz;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+		return baseHeight + y >= 7 ? true : baseHeight * baseHeight + y * y > dz * dz;
 	}
 }

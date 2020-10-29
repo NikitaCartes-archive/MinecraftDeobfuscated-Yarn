@@ -14,11 +14,11 @@ import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class BlobFoliagePlacer extends FoliagePlacer {
-	public static final Codec<BlobFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> method_28838(instance).apply(instance, BlobFoliagePlacer::new));
+	public static final Codec<BlobFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> createCodec(instance).apply(instance, BlobFoliagePlacer::new));
 	protected final int height;
 
-	protected static <P extends BlobFoliagePlacer> P3<Mu<P>, UniformIntDistribution, UniformIntDistribution, Integer> method_28838(Instance<P> instance) {
-		return fillFoliagePlacerFields(instance).and(Codec.intRange(0, 16).fieldOf("height").forGetter(blobFoliagePlacer -> blobFoliagePlacer.height));
+	protected static <P extends BlobFoliagePlacer> P3<Mu<P>, UniformIntDistribution, UniformIntDistribution, Integer> createCodec(Instance<P> builder) {
+		return fillFoliagePlacerFields(builder).and(Codec.intRange(0, 16).fieldOf("height").forGetter(blobFoliagePlacer -> blobFoliagePlacer.height));
 	}
 
 	public BlobFoliagePlacer(UniformIntDistribution radius, UniformIntDistribution offset, int height) {
@@ -46,7 +46,7 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 	) {
 		for (int i = offset; i >= offset - foliageHeight; i--) {
 			int j = Math.max(radius + treeNode.getFoliageRadius() - 1 - i / 2, 0);
-			this.generate(world, random, config, treeNode.getCenter(), j, leaves, i, treeNode.isGiantTrunk(), box);
+			this.generateSquare(world, random, config, treeNode.getCenter(), j, leaves, i, treeNode.isGiantTrunk(), box);
 		}
 	}
 
@@ -56,7 +56,7 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-		return baseHeight == dz && dy == dz && (random.nextInt(2) == 0 || dx == 0);
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+		return baseHeight == dz && y == dz && (random.nextInt(2) == 0 || dx == 0);
 	}
 }

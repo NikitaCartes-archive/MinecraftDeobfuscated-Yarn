@@ -14,7 +14,7 @@ import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
-import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
@@ -131,7 +131,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onMapUpdate(MapUpdateS2CPacket packet);
 
-	void onGuiActionConfirm(ConfirmGuiActionS2CPacket packet);
+	void onConfirmScreenAction(ConfirmScreenActionS2CPacket packet);
 
 	void onCloseScreen(CloseScreenS2CPacket packet);
 

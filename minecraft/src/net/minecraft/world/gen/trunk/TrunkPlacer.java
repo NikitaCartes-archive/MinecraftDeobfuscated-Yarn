@@ -47,53 +47,48 @@ public abstract class TrunkPlacer {
 	 * Generates the trunk blocks and return a list of tree nodes to place foliage around
 	 */
 	public abstract List<FoliagePlacer.TreeNode> generate(
-		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
+		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
 	);
 
 	public int getHeight(Random random) {
 		return this.baseHeight + random.nextInt(this.firstRandomHeight + 1) + random.nextInt(this.secondRandomHeight + 1);
 	}
 
-	protected static void method_27404(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, BlockBox blockBox) {
-		TreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
-		blockBox.encompass(new BlockBox(blockPos, blockPos));
+	protected static void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state, BlockBox box) {
+		TreeFeature.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
+		box.encompass(new BlockBox(pos, pos));
 	}
 
-	private static boolean method_27403(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.testBlockState(blockPos, blockState -> {
-			Block block = blockState.getBlock();
-			return Feature.isSoil(block) && !blockState.isOf(Blocks.GRASS_BLOCK) && !blockState.isOf(Blocks.MYCELIUM);
+	private static boolean canGenerate(TestableWorld world, BlockPos pos) {
+		return world.testBlockState(pos, state -> {
+			Block block = state.getBlock();
+			return Feature.isSoil(block) && !state.isOf(Blocks.GRASS_BLOCK) && !state.isOf(Blocks.MYCELIUM);
 		});
 	}
 
-	protected static void method_27400(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
-		if (!method_27403(modifiableTestableWorld, blockPos)) {
-			TreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableTestableWorld, blockPos, Blocks.DIRT.getDefaultState());
+	protected static void setToDirt(ModifiableTestableWorld world, BlockPos pos) {
+		if (!canGenerate(world, pos)) {
+			TreeFeature.setBlockStateWithoutUpdatingNeighbors(world, pos, Blocks.DIRT.getDefaultState());
 		}
 	}
 
-	protected static boolean method_27402(
-		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
+	protected static boolean getAndSetState(
+		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
 	) {
-		if (TreeFeature.canReplace(modifiableTestableWorld, blockPos)) {
-			method_27404(modifiableTestableWorld, blockPos, treeFeatureConfig.trunkProvider.getBlockState(random, blockPos), blockBox);
-			set.add(blockPos.toImmutable());
+		if (TreeFeature.canReplace(world, pos)) {
+			setBlockState(world, pos, config.trunkProvider.getBlockState(random, pos), box);
+			placedStates.add(pos.toImmutable());
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected static void method_27401(
-		ModifiableTestableWorld modifiableTestableWorld,
-		Random random,
-		BlockPos.Mutable mutable,
-		Set<BlockPos> set,
-		BlockBox blockBox,
-		TreeFeatureConfig treeFeatureConfig
+	protected static void trySetState(
+		ModifiableTestableWorld world, Random random, BlockPos.Mutable pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
 	) {
-		if (TreeFeature.canTreeReplace(modifiableTestableWorld, mutable)) {
-			method_27402(modifiableTestableWorld, random, mutable, set, blockBox, treeFeatureConfig);
+		if (TreeFeature.canTreeReplace(world, pos)) {
+			getAndSetState(world, random, pos, placedStates, box, config);
 		}
 	}
 }

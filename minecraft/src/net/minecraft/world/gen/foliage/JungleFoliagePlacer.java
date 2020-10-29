@@ -45,7 +45,7 @@ public class JungleFoliagePlacer extends FoliagePlacer {
 
 		for (int j = offset; j >= offset - i; j--) {
 			int k = radius + treeNode.getFoliageRadius() + 1 - j;
-			this.generate(world, random, config, treeNode.getCenter(), k, leaves, j, treeNode.isGiantTrunk(), box);
+			this.generateSquare(world, random, config, treeNode.getCenter(), k, leaves, j, treeNode.isGiantTrunk(), box);
 		}
 	}
 
@@ -55,7 +55,7 @@ public class JungleFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-		return baseHeight + dy >= 7 ? true : baseHeight * baseHeight + dy * dy > dz * dz;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+		return baseHeight + y >= 7 ? true : baseHeight * baseHeight + y * y > dz * dz;
 	}
 }

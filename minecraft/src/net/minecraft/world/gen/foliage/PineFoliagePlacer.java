@@ -44,7 +44,7 @@ public class PineFoliagePlacer extends FoliagePlacer {
 		int i = 0;
 
 		for (int j = offset; j >= offset - foliageHeight; j--) {
-			this.generate(world, random, config, treeNode.getCenter(), i, leaves, j, treeNode.isGiantTrunk(), box);
+			this.generateSquare(world, random, config, treeNode.getCenter(), i, leaves, j, treeNode.isGiantTrunk(), box);
 			if (i >= 1 && j == offset - foliageHeight + 1) {
 				i--;
 			} else if (i < radius + treeNode.getFoliageRadius()) {
@@ -64,7 +64,7 @@ public class PineFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-		return baseHeight == dz && dy == dz && dz > 0;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+		return baseHeight == dz && y == dz && dz > 0;
 	}
 }

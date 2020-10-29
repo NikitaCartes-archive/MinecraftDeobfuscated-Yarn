@@ -13,7 +13,7 @@ public class PillarBlockStateProvider extends BlockStateProvider {
 	public static final Codec<PillarBlockStateProvider> CODEC = BlockState.CODEC
 		.fieldOf("state")
 		.xmap(AbstractBlock.AbstractBlockState::getBlock, Block::getDefaultState)
-		.<PillarBlockStateProvider>xmap(PillarBlockStateProvider::new, pillarBlockStateProvider -> pillarBlockStateProvider.block)
+		.<PillarBlockStateProvider>xmap(PillarBlockStateProvider::new, provider -> provider.block)
 		.codec();
 	private final Block block;
 

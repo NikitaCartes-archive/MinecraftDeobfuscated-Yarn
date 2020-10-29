@@ -26,21 +26,21 @@ public class GiantTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
+		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
 	) {
 		BlockPos blockPos = pos.down();
-		method_27400(world, blockPos);
-		method_27400(world, blockPos.east());
-		method_27400(world, blockPos.south());
-		method_27400(world, blockPos.south().east());
+		setToDirt(world, blockPos);
+		setToDirt(world, blockPos.east());
+		setToDirt(world, blockPos.south());
+		setToDirt(world, blockPos.south().east());
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int i = 0; i < trunkHeight; i++) {
-			method_27399(world, random, mutable, set, blockBox, treeFeatureConfig, pos, 0, i, 0);
+			method_27399(world, random, mutable, placedStates, box, config, pos, 0, i, 0);
 			if (i < trunkHeight - 1) {
-				method_27399(world, random, mutable, set, blockBox, treeFeatureConfig, pos, 1, i, 0);
-				method_27399(world, random, mutable, set, blockBox, treeFeatureConfig, pos, 1, i, 1);
-				method_27399(world, random, mutable, set, blockBox, treeFeatureConfig, pos, 0, i, 1);
+				method_27399(world, random, mutable, placedStates, box, config, pos, 1, i, 0);
+				method_27399(world, random, mutable, placedStates, box, config, pos, 1, i, 1);
+				method_27399(world, random, mutable, placedStates, box, config, pos, 0, i, 1);
 			}
 		}
 
@@ -60,6 +60,6 @@ public class GiantTrunkPlacer extends TrunkPlacer {
 		int k
 	) {
 		mutable.set(blockPos, i, j, k);
-		method_27401(modifiableTestableWorld, random, mutable, set, blockBox, treeFeatureConfig);
+		trySetState(modifiableTestableWorld, random, mutable, set, blockBox, treeFeatureConfig);
 	}
 }

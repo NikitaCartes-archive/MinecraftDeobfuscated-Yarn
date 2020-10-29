@@ -139,27 +139,27 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return null;
 	}
 
-	public static boolean method_24794(BlockPos blockPos) {
-		return !isHeightInvalid(blockPos) && isValid(blockPos);
+	public static boolean isInBuildLimit(BlockPos pos) {
+		return !isOutOfBuildLimitVertically(pos) && isValidHorizontally(pos);
 	}
 
-	public static boolean method_25953(BlockPos blockPos) {
-		return !method_25952(blockPos.getY()) && isValid(blockPos);
+	public static boolean isValid(BlockPos pos) {
+		return !isInvalidVertically(pos.getY()) && isValidHorizontally(pos);
 	}
 
-	private static boolean isValid(BlockPos pos) {
+	private static boolean isValidHorizontally(BlockPos pos) {
 		return pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
 	}
 
-	private static boolean method_25952(int i) {
-		return i < -20000000 || i >= 20000000;
+	private static boolean isInvalidVertically(int y) {
+		return y < -20000000 || y >= 20000000;
 	}
 
-	public static boolean isHeightInvalid(BlockPos pos) {
-		return isHeightInvalid(pos.getY());
+	public static boolean isOutOfBuildLimitVertically(BlockPos pos) {
+		return isOutOfBuildLimitVertically(pos.getY());
 	}
 
-	public static boolean isHeightInvalid(int y) {
+	public static boolean isOutOfBuildLimitVertically(int y) {
 		return y < 0 || y >= 256;
 	}
 
@@ -188,7 +188,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	@Override
 	public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-		if (isHeightInvalid(pos)) {
+		if (isOutOfBuildLimitVertically(pos)) {
 			return false;
 		} else if (!this.isClient && this.isDebugWorld()) {
 			return false;
@@ -364,7 +364,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
-		if (isHeightInvalid(pos)) {
+		if (isOutOfBuildLimitVertically(pos)) {
 			return Blocks.VOID_AIR.getDefaultState();
 		} else {
 			WorldChunk worldChunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
@@ -374,7 +374,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
-		if (isHeightInvalid(pos)) {
+		if (isOutOfBuildLimitVertically(pos)) {
 			return Fluids.EMPTY.getDefaultState();
 		} else {
 			WorldChunk worldChunk = this.getWorldChunk(pos);
@@ -568,7 +568,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		if (isHeightInvalid(pos)) {
+		if (isOutOfBuildLimitVertically(pos)) {
 			return null;
 		} else if (!this.isClient && Thread.currentThread() != this.thread) {
 			return null;
@@ -603,7 +603,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public void setBlockEntity(BlockPos pos, @Nullable BlockEntity blockEntity) {
-		if (!isHeightInvalid(pos)) {
+		if (!isOutOfBuildLimitVertically(pos)) {
 			if (blockEntity != null && !blockEntity.isRemoved()) {
 				if (this.iteratingTickingBlockEntities) {
 					blockEntity.setLocation(this, pos);
@@ -643,11 +643,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public boolean canSetBlock(BlockPos pos) {
-		return isHeightInvalid(pos) ? false : this.getChunkManager().isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
+		return isOutOfBuildLimitVertically(pos) ? false : this.getChunkManager().isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
 	}
 
 	public boolean isDirectionSolid(BlockPos pos, Entity entity, Direction direction) {
-		if (isHeightInvalid(pos)) {
+		if (isOutOfBuildLimitVertically(pos)) {
 			return false;
 		} else {
 			Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);

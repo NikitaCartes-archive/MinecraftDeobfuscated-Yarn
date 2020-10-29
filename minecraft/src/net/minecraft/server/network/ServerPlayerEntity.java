@@ -12,7 +12,6 @@ import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.class_5459;
-import net.minecraft.class_5513;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -91,6 +90,7 @@ import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -167,7 +167,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private boolean spawnPointSet;
 	private float spawnAngle;
 	@Nullable
-	private final class_5513 field_26821;
+	private final TextStream textStream;
 	private int screenHandlerSyncId;
 	public boolean skipPacketSlotUpdates;
 	public int pingMilliseconds;
@@ -182,7 +182,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
 		this.stepHeight = 1.0F;
 		this.moveToSpawn(world);
-		this.field_26821 = server.method_31371(this);
+		this.textStream = server.createFilterer(this);
 	}
 
 	private void moveToSpawn(ServerWorld world) {
@@ -993,10 +993,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, property, value));
 	}
 
+	/**
+	 * Closes the current handled screen and sends a screen closing packet to the client.
+	 */
 	@Override
 	public void closeHandledScreen() {
 		this.networkHandler.sendPacket(new CloseScreenS2CPacket(this.currentScreenHandler.syncId));
-		this.closeCurrentScreen();
+		this.closeScreenHandler();
 	}
 
 	public void updateCursorStack() {
@@ -1005,7 +1008,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		}
 	}
 
-	public void closeCurrentScreen() {
+	/**
+	 * Runs closing tasks for the current screen handler and
+	 * sets it to the {@code playerScreenHandler}.
+	 */
+	public void closeScreenHandler() {
 		this.currentScreenHandler.close(this);
 		this.currentScreenHandler = this.playerScreenHandler;
 	}
@@ -1486,7 +1493,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Nullable
-	public class_5513 method_31273() {
-		return this.field_26821;
+	public TextStream getTextStream() {
+		return this.textStream;
 	}
 }

@@ -21,7 +21,7 @@ import net.minecraft.world.gen.feature.Feature;
 public class BeehiveTreeDecorator extends TreeDecorator {
 	public static final Codec<BeehiveTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
 		.fieldOf("probability")
-		.<BeehiveTreeDecorator>xmap(BeehiveTreeDecorator::new, beehiveTreeDecorator -> beehiveTreeDecorator.probability)
+		.<BeehiveTreeDecorator>xmap(BeehiveTreeDecorator::new, decorator -> decorator.probability)
 		.codec();
 	private final float probability;
 
@@ -35,19 +35,21 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+	public void generate(
+		StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> placedStates, BlockBox box
+	) {
 		if (!(random.nextFloat() >= this.probability)) {
 			Direction direction = BeehiveBlock.getRandomGenerationDirection(random);
 			int i = !leavesPositions.isEmpty()
 				? Math.max(((BlockPos)leavesPositions.get(0)).getY() - 1, ((BlockPos)logPositions.get(0)).getY())
 				: Math.min(((BlockPos)logPositions.get(0)).getY() + 1 + random.nextInt(3), ((BlockPos)logPositions.get(logPositions.size() - 1)).getY());
-			List<BlockPos> list = (List<BlockPos>)logPositions.stream().filter(blockPosx -> blockPosx.getY() == i).collect(Collectors.toList());
+			List<BlockPos> list = (List<BlockPos>)logPositions.stream().filter(pos -> pos.getY() == i).collect(Collectors.toList());
 			if (!list.isEmpty()) {
 				BlockPos blockPos = (BlockPos)list.get(random.nextInt(list.size()));
 				BlockPos blockPos2 = blockPos.offset(direction);
 				if (Feature.isAir(world, blockPos2) && Feature.isAir(world, blockPos2.offset(Direction.SOUTH))) {
 					BlockState blockState = Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);
-					this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
+					this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, placedStates, box);
 					BlockEntity blockEntity = world.getBlockEntity(blockPos2);
 					if (blockEntity instanceof BeehiveBlockEntity) {
 						BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;

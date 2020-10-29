@@ -16,10 +16,10 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 
 public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	private long field_23920;
-	private ImmutableMap<BlockState, OctavePerlinNoiseSampler> field_23921 = ImmutableMap.of();
-	private ImmutableMap<BlockState, OctavePerlinNoiseSampler> field_23922 = ImmutableMap.of();
-	private OctavePerlinNoiseSampler field_23923;
+	private long seed;
+	private ImmutableMap<BlockState, OctavePerlinNoiseSampler> surfaceNoises = ImmutableMap.of();
+	private ImmutableMap<BlockState, OctavePerlinNoiseSampler> underLavaNoises = ImmutableMap.of();
+	private OctavePerlinNoiseSampler shoreNoise;
 
 	public AbstractNetherSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
 		super(codec);
@@ -45,14 +45,14 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		int r = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		double e = 0.03125;
-		boolean bl = this.field_23923.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) * 75.0 + random.nextDouble() > 0.0;
-		BlockState blockState3 = (BlockState)((Entry)this.field_23922
+		boolean bl = this.shoreNoise.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) * 75.0 + random.nextDouble() > 0.0;
+		BlockState blockState3 = (BlockState)((Entry)this.underLavaNoises
 				.entrySet()
 				.stream()
 				.max(Comparator.comparing(entry -> ((OctavePerlinNoiseSampler)entry.getValue()).sample((double)i, (double)l, (double)j)))
 				.get())
 			.getKey();
-		BlockState blockState4 = (BlockState)((Entry)this.field_23921
+		BlockState blockState4 = (BlockState)((Entry)this.surfaceNoises
 				.entrySet()
 				.stream()
 				.max(Comparator.comparing(entry -> ((OctavePerlinNoiseSampler)entry.getValue()).sample((double)i, (double)l, (double)j)))
@@ -80,7 +80,7 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 			if ((blockState5.isAir() || blockState5 == blockState2) && blockState6.isOf(blockState.getBlock())) {
 				for (int t = 0; t < r && chunk.getBlockState(mutable).isOf(blockState.getBlock()); t++) {
 					if (bl && s >= n - 4 && s <= n + 1) {
-						chunk.setBlockState(mutable, this.method_27135(), false);
+						chunk.setBlockState(mutable, this.getLavaShoreState(), false);
 					} else {
 						chunk.setBlockState(mutable, blockState4, false);
 					}
@@ -95,29 +95,34 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 
 	@Override
 	public void initSeed(long seed) {
-		if (this.field_23920 != seed || this.field_23923 == null || this.field_23921.isEmpty() || this.field_23922.isEmpty()) {
-			this.field_23921 = method_27131(this.method_27129(), seed);
-			this.field_23922 = method_27131(this.method_27133(), seed + (long)this.field_23921.size());
-			this.field_23923 = new OctavePerlinNoiseSampler(new ChunkRandom(seed + (long)this.field_23921.size() + (long)this.field_23922.size()), ImmutableList.of(0));
+		if (this.seed != seed || this.shoreNoise == null || this.surfaceNoises.isEmpty() || this.underLavaNoises.isEmpty()) {
+			this.surfaceNoises = createNoisesForStates(this.getSurfaceStates(), seed);
+			this.underLavaNoises = createNoisesForStates(this.getUnderLavaStates(), seed + (long)this.surfaceNoises.size());
+			this.shoreNoise = new OctavePerlinNoiseSampler(
+				new ChunkRandom(seed + (long)this.surfaceNoises.size() + (long)this.underLavaNoises.size()), ImmutableList.of(0)
+			);
 		}
 
-		this.field_23920 = seed;
+		this.seed = seed;
 	}
 
-	private static ImmutableMap<BlockState, OctavePerlinNoiseSampler> method_27131(ImmutableList<BlockState> immutableList, long l) {
+	private static ImmutableMap<BlockState, OctavePerlinNoiseSampler> createNoisesForStates(ImmutableList<BlockState> states, long seed) {
 		Builder<BlockState, OctavePerlinNoiseSampler> builder = new Builder<>();
 
-		for (BlockState blockState : immutableList) {
-			builder.put(blockState, new OctavePerlinNoiseSampler(new ChunkRandom(l), ImmutableList.of(-4)));
-			l++;
+		for (BlockState blockState : states) {
+			builder.put(blockState, new OctavePerlinNoiseSampler(new ChunkRandom(seed), ImmutableList.of(-4)));
+			seed++;
 		}
 
 		return builder.build();
 	}
 
-	protected abstract ImmutableList<BlockState> method_27129();
+	protected abstract ImmutableList<BlockState> getSurfaceStates();
 
-	protected abstract ImmutableList<BlockState> method_27133();
+	protected abstract ImmutableList<BlockState> getUnderLavaStates();
 
-	protected abstract BlockState method_27135();
+	/**
+	 * Returns the state that will make up the boundary between the land and the lava ocean.
+	 */
+	protected abstract BlockState getLavaShoreState();
 }

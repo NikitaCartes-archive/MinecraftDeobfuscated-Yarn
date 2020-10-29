@@ -29,10 +29,10 @@ public class MegaJungleTrunkPlacer extends GiantTrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
+		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
 	) {
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
-		list.addAll(super.generate(world, random, trunkHeight, pos, set, blockBox, treeFeatureConfig));
+		list.addAll(super.generate(world, random, trunkHeight, pos, placedStates, box, config));
 
 		for (int i = trunkHeight - 2 - random.nextInt(4); i > trunkHeight / 2; i -= 2 + random.nextInt(4)) {
 			float f = random.nextFloat() * (float) (Math.PI * 2);
@@ -43,7 +43,7 @@ public class MegaJungleTrunkPlacer extends GiantTrunkPlacer {
 				j = (int)(1.5F + MathHelper.cos(f) * (float)l);
 				k = (int)(1.5F + MathHelper.sin(f) * (float)l);
 				BlockPos blockPos = pos.add(j, i - 3 + l / 2, k);
-				method_27402(world, random, blockPos, set, blockBox, treeFeatureConfig);
+				getAndSetState(world, random, blockPos, placedStates, box, config);
 			}
 
 			list.add(new FoliagePlacer.TreeNode(pos.add(j, i, k), -2, false));

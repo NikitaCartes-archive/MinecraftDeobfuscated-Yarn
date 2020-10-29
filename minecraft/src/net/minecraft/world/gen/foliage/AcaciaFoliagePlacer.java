@@ -39,9 +39,9 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 	) {
 		boolean bl = treeNode.isGiantTrunk();
 		BlockPos blockPos = treeNode.getCenter().up(offset);
-		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius(), leaves, -1 - foliageHeight, bl, box);
-		this.generate(world, random, config, blockPos, radius - 1, leaves, -foliageHeight, bl, box);
-		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, leaves, 0, bl, box);
+		this.generateSquare(world, random, config, blockPos, radius + treeNode.getFoliageRadius(), leaves, -1 - foliageHeight, bl, box);
+		this.generateSquare(world, random, config, blockPos, radius - 1, leaves, -foliageHeight, bl, box);
+		this.generateSquare(world, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, leaves, 0, bl, box);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean giantTrunk) {
-		return dx == 0 ? (baseHeight > 1 || dy > 1) && baseHeight != 0 && dy != 0 : baseHeight == dz && dy == dz && dz > 0;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+		return dx == 0 ? (baseHeight > 1 || y > 1) && baseHeight != 0 && y != 0 : baseHeight == dz && y == dz && dz > 0;
 	}
 }

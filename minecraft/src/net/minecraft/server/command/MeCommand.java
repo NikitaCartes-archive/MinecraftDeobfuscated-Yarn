@@ -3,10 +3,10 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.class_5513;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -25,9 +25,9 @@ public class MeCommand {
 								MinecraftServer minecraftServer = commandContext.getSource().getMinecraftServer();
 								if (entity != null) {
 									if (entity instanceof ServerPlayerEntity) {
-										class_5513 lv = ((ServerPlayerEntity)entity).method_31273();
-										if (lv != null) {
-											lv.method_31288(string)
+										TextStream textStream = ((ServerPlayerEntity)entity).getTextStream();
+										if (textStream != null) {
+											textStream.filterText(string)
 												.thenAcceptAsync(
 													optional -> optional.ifPresent(
 															stringx -> minecraftServer.getPlayerManager().broadcastChatMessage(method_31373(commandContext, stringx), MessageType.CHAT, entity.getUuid())

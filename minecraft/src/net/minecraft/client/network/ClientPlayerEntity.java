@@ -51,7 +51,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
+import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
@@ -311,7 +311,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void closeHandledScreen() {
-		this.networkHandler.sendPacket(new GuiCloseC2SPacket(this.currentScreenHandler.syncId));
+		this.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(this.currentScreenHandler.syncId));
 		this.closeScreen();
 	}
 

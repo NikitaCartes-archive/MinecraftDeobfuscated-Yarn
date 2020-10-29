@@ -7,44 +7,44 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
-public class ConfirmGuiActionC2SPacket implements Packet<ServerPlayPacketListener> {
-	private int windowId;
+public class ConfirmScreenActionC2SPacket implements Packet<ServerPlayPacketListener> {
+	private int syncId;
 	private short actionId;
 	private boolean accepted;
 
-	public ConfirmGuiActionC2SPacket() {
+	public ConfirmScreenActionC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ConfirmGuiActionC2SPacket(int windowId, short actionId, boolean accepted) {
-		this.windowId = windowId;
+	public ConfirmScreenActionC2SPacket(int syncId, short actionId, boolean accepted) {
+		this.syncId = syncId;
 		this.actionId = actionId;
 		this.accepted = accepted;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onConfirmTransaction(this);
+		serverPlayPacketListener.onConfirmScreenAction(this);
 	}
 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
-		this.windowId = buf.readByte();
+		this.syncId = buf.readByte();
 		this.actionId = buf.readShort();
 		this.accepted = buf.readByte() != 0;
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
-		buf.writeByte(this.windowId);
+		buf.writeByte(this.syncId);
 		buf.writeShort(this.actionId);
 		buf.writeByte(this.accepted ? 1 : 0);
 	}
 
-	public int getWindowId() {
-		return this.windowId;
+	public int getSyncId() {
+		return this.syncId;
 	}
 
-	public short getSyncId() {
+	public short getActionId() {
 		return this.actionId;
 	}
 }
