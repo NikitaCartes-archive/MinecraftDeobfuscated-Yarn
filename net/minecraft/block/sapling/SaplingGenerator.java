@@ -19,17 +19,17 @@ public abstract class SaplingGenerator {
     @Nullable
     protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random var1, boolean var2);
 
-    public boolean generate(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random) {
-        ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createTreeFeature(random, this.method_24282(world, pos));
+    public boolean generate(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
+        ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createTreeFeature(random, this.method_24282(serverWorld, blockPos));
         if (configuredFeature == null) {
             return false;
         }
-        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
+        serverWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
         ((TreeFeatureConfig)configuredFeature.config).ignoreFluidCheck();
-        if (configuredFeature.generate(world, chunkGenerator, random, pos)) {
+        if (configuredFeature.generate(serverWorld, chunkGenerator, random, blockPos)) {
             return true;
         }
-        world.setBlockState(pos, state, 4);
+        serverWorld.setBlockState(blockPos, blockState, 4);
         return false;
     }
 

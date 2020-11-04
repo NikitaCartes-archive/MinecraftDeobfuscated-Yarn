@@ -55,7 +55,7 @@ extends AbstractClientPlayerEntity {
             this.yaw = (float)((double)this.yaw + MathHelper.wrapDegrees(this.serverYaw - (double)this.yaw) / (double)this.bodyTrackingIncrements);
             this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
             --this.bodyTrackingIncrements;
-            this.setPosition(d, e, f);
+            this.updatePosition(d, e, f);
             this.setRotation(this.yaw, this.pitch);
         }
         if (this.headTrackingIncrements > 0) {
@@ -65,11 +65,6 @@ extends AbstractClientPlayerEntity {
         this.prevStrideDistance = this.strideDistance;
         this.tickHandSwing();
         float g = !this.onGround || this.isDead() ? 0.0f : Math.min(0.1f, MathHelper.sqrt(OtherClientPlayerEntity.squaredHorizontalLength(this.getVelocity())));
-        if (this.onGround || this.isDead()) {
-            float h = 0.0f;
-        } else {
-            float h = (float)Math.atan(-this.getVelocity().y * (double)0.2f) * 15.0f;
-        }
         this.strideDistance += (g - this.strideDistance) * 0.4f;
         this.world.getProfiler().push("push");
         this.tickCramming();
@@ -77,13 +72,13 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    protected void updatePose() {
+    protected void updateSize() {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID sender) {
+    public void sendSystemMessage(Text message, UUID senderUuid) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        if (!minecraftClient.shouldBlockMessages(sender)) {
+        if (!minecraftClient.shouldBlockMessages(senderUuid)) {
             minecraftClient.inGameHud.getChatHud().addMessage(message);
         }
     }

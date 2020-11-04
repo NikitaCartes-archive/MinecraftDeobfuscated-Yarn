@@ -46,8 +46,8 @@ extends MinecraftServer {
     private LanServerPinger lanPinger;
     private UUID localPlayerUuid;
 
-    public IntegratedServer(Thread serverThread, MinecraftClient client, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, ResourcePackManager dataPackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(serverThread, registryManager, session, saveProperties, dataPackManager, client.getNetworkProxy(), client.getDataFixer(), serverResourceManager, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
+    public IntegratedServer(Thread serverThread, MinecraftClient client, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, ResourcePackManager resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(serverThread, registryManager, session, saveProperties, resourcePackManager, client.getNetworkProxy(), client.getDataFixer(), serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.setServerName(client.getSession().getUsername());
         this.setDemo(client.isDemo());
         this.setWorldHeight(256);
@@ -57,7 +57,7 @@ extends MinecraftServer {
 
     @Override
     public boolean setupServer() {
-        LOGGER.info("Starting integrated minecraft server version " + SharedConstants.getGameVersion().getName());
+        LOGGER.info("Starting integrated minecraft server version {}", (Object)SharedConstants.getGameVersion().getName());
         this.setOnlineMode(true);
         this.setPvpEnabled(true);
         this.setFlightEnabled(true);

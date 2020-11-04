@@ -25,7 +25,7 @@ import net.minecraft.world.GameMode;
 public class PunchTreeTutorialStepHandler
 implements TutorialStepHandler {
     private static final Text TITLE = new TranslatableText("tutorial.punch_tree.title");
-    private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.keyToText("attack"));
+    private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
     private final TutorialManager manager;
     private TutorialToast toast;
     private int ticks;
@@ -44,7 +44,7 @@ implements TutorialStepHandler {
             return;
         }
         if (this.ticks == 1 && (clientPlayerEntity = this.manager.getClient().player) != null) {
-            if (clientPlayerEntity.inventory.contains(ItemTags.LOGS)) {
+            if (clientPlayerEntity.getInventory().contains(ItemTags.LOGS)) {
                 this.manager.setStep(TutorialStep.CRAFT_PLANKS);
                 return;
             }
@@ -68,13 +68,13 @@ implements TutorialStepHandler {
     }
 
     @Override
-    public void onBlockBreaking(ClientWorld client, BlockPos pos, BlockState state, float progress) {
+    public void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
         boolean bl = state.isIn(BlockTags.LOGS);
-        if (bl && progress > 0.0f) {
+        if (bl && f > 0.0f) {
             if (this.toast != null) {
-                this.toast.setProgress(progress);
+                this.toast.setProgress(f);
             }
-            if (progress >= 1.0f) {
+            if (f >= 1.0f) {
                 this.manager.setStep(TutorialStep.OPEN_INVENTORY);
             }
         } else if (this.toast != null) {
@@ -86,7 +86,7 @@ implements TutorialStepHandler {
 
     @Override
     public void onSlotUpdate(ItemStack stack) {
-        if (ItemTags.LOGS.contains(stack.getItem())) {
+        if (stack.isIn(ItemTags.LOGS)) {
             this.manager.setStep(TutorialStep.CRAFT_PLANKS);
             return;
         }

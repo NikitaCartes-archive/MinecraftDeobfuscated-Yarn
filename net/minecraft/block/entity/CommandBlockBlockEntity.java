@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -58,27 +58,27 @@ extends BlockEntity {
         }
     };
 
-    public CommandBlockBlockEntity() {
-        super(BlockEntityType.COMMAND_BLOCK);
+    public CommandBlockBlockEntity(BlockPos blockPos, BlockState blockState) {
+        super(BlockEntityType.COMMAND_BLOCK, blockPos, blockState);
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        this.commandExecutor.writeNbt(nbt);
-        nbt.putBoolean("powered", this.isPowered());
-        nbt.putBoolean("conditionMet", this.isConditionMet());
-        nbt.putBoolean("auto", this.isAuto());
-        return nbt;
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        this.commandExecutor.serialize(tag);
+        tag.putBoolean("powered", this.isPowered());
+        tag.putBoolean("conditionMet", this.isConditionMet());
+        tag.putBoolean("auto", this.isAuto());
+        return tag;
     }
 
     @Override
-    public void fromTag(BlockState state, NbtCompound tag) {
-        super.fromTag(state, tag);
-        this.commandExecutor.readNbt(tag);
-        this.powered = tag.getBoolean("powered");
-        this.conditionMet = tag.getBoolean("conditionMet");
-        this.setAuto(tag.getBoolean("auto"));
+    public void fromTag(CompoundTag compoundTag) {
+        super.fromTag(compoundTag);
+        this.commandExecutor.deserialize(compoundTag);
+        this.powered = compoundTag.getBoolean("powered");
+        this.conditionMet = compoundTag.getBoolean("conditionMet");
+        this.setAuto(compoundTag.getBoolean("auto"));
     }
 
     @Override
@@ -86,8 +86,8 @@ extends BlockEntity {
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
         if (this.needsUpdatePacket()) {
             this.setNeedsUpdatePacket(false);
-            NbtCompound nbtCompound = this.writeNbt(new NbtCompound());
-            return new BlockEntityUpdateS2CPacket(this.pos, 2, nbtCompound);
+            CompoundTag compoundTag = this.toTag(new CompoundTag());
+            return new BlockEntityUpdateS2CPacket(this.pos, 2, compoundTag);
         }
         return null;
     }
@@ -178,12 +178,6 @@ extends BlockEntity {
             return blockState.get(CommandBlock.CONDITIONAL);
         }
         return false;
-    }
-
-    @Override
-    public void cancelRemoval() {
-        this.resetBlock();
-        super.cancelRemoval();
     }
 
     public static enum Type {

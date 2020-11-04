@@ -5,8 +5,8 @@ package net.minecraft.util.math;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
 
 public final class Quaternion {
     public static final Quaternion IDENTITY = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
@@ -22,7 +22,7 @@ public final class Quaternion {
         this.w = w;
     }
 
-    public Quaternion(Vec3f axis, float rotationAngle, boolean degrees) {
+    public Quaternion(Vector3f axis, float rotationAngle, boolean degrees) {
         if (degrees) {
             rotationAngle *= (float)Math.PI / 180;
         }

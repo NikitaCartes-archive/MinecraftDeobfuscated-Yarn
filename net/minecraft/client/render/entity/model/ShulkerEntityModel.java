@@ -6,6 +6,11 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.CompositeEntityModel;
@@ -15,20 +20,24 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ShulkerEntityModel<T extends ShulkerEntity>
 extends CompositeEntityModel<T> {
-    private final ModelPart base;
-    private final ModelPart lid = new ModelPart(64, 64, 0, 0);
+    private final ModelPart bottomShell;
+    private final ModelPart topShell;
     private final ModelPart head;
 
-    public ShulkerEntityModel() {
+    public ShulkerEntityModel(ModelPart modelPart) {
         super(RenderLayer::getEntityCutoutNoCullZOffset);
-        this.base = new ModelPart(64, 64, 0, 28);
-        this.head = new ModelPart(64, 64, 0, 52);
-        this.lid.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 12.0f, 16.0f);
-        this.lid.setPivot(0.0f, 24.0f, 0.0f);
-        this.base.addCuboid(-8.0f, -8.0f, -8.0f, 16.0f, 8.0f, 16.0f);
-        this.base.setPivot(0.0f, 24.0f, 0.0f);
-        this.head.addCuboid(-3.0f, 0.0f, -3.0f, 6.0f, 6.0f, 6.0f);
-        this.head.setPivot(0.0f, 12.0f, 0.0f);
+        this.topShell = modelPart.method_32086("lid");
+        this.bottomShell = modelPart.method_32086("base");
+        this.head = modelPart.method_32086("head");
+    }
+
+    public static class_5607 method_32041() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        lv2.method_32117("lid", class_5606.method_32108().method_32101(0, 0).method_32097(-8.0f, -16.0f, -8.0f, 16.0f, 12.0f, 16.0f), class_5603.method_32090(0.0f, 24.0f, 0.0f));
+        lv2.method_32117("base", class_5606.method_32108().method_32101(0, 28).method_32097(-8.0f, -8.0f, -8.0f, 16.0f, 8.0f, 16.0f), class_5603.method_32090(0.0f, 24.0f, 0.0f));
+        lv2.method_32117("head", class_5606.method_32108().method_32101(0, 52).method_32097(-3.0f, 0.0f, -3.0f, 6.0f, 6.0f, 6.0f), class_5603.method_32090(0.0f, 12.0f, 0.0f));
+        return class_5607.method_32110(lv, 64, 64);
     }
 
     @Override
@@ -40,23 +49,23 @@ extends CompositeEntityModel<T> {
         if (l > (float)Math.PI) {
             n = MathHelper.sin(h * 0.1f) * 0.7f;
         }
-        this.lid.setPivot(0.0f, 16.0f + MathHelper.sin(l) * 8.0f + n, 0.0f);
-        this.lid.yaw = ((ShulkerEntity)shulkerEntity).getOpenProgress(k) > 0.3f ? m * m * m * m * (float)Math.PI * 0.125f : 0.0f;
+        this.topShell.setPivot(0.0f, 16.0f + MathHelper.sin(l) * 8.0f + n, 0.0f);
+        this.topShell.yaw = ((ShulkerEntity)shulkerEntity).getOpenProgress(k) > 0.3f ? m * m * m * m * (float)Math.PI * 0.125f : 0.0f;
         this.head.pitch = j * ((float)Math.PI / 180);
         this.head.yaw = (((ShulkerEntity)shulkerEntity).headYaw - 180.0f - ((ShulkerEntity)shulkerEntity).bodyYaw) * ((float)Math.PI / 180);
     }
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.base, this.lid);
+        return ImmutableList.of(this.bottomShell, this.topShell);
     }
 
     public ModelPart getBottomShell() {
-        return this.base;
+        return this.bottomShell;
     }
 
     public ModelPart getTopShell() {
-        return this.lid;
+        return this.topShell;
     }
 
     public ModelPart getHead() {

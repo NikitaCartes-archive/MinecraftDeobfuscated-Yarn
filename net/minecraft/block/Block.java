@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -38,7 +39,6 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -126,22 +126,14 @@ implements ItemConvertible {
         return to;
     }
 
-    public static VoxelShape createCuboidShape(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
-        return VoxelShapes.cuboid(minX / 16.0, minY / 16.0, minZ / 16.0, maxX / 16.0, maxY / 16.0, maxZ / 16.0);
-    }
-
-    public boolean isIn(Tag<Block> tag) {
-        return tag.contains(this);
-    }
-
-    public boolean is(Block block) {
-        return this == block;
+    public static VoxelShape createCuboidShape(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+        return VoxelShapes.cuboid(xMin / 16.0, yMin / 16.0, zMin / 16.0, xMax / 16.0, yMax / 16.0, zMax / 16.0);
     }
 
     public static BlockState postProcessState(BlockState state, WorldAccess world, BlockPos pos) {
         BlockState blockState = state;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (Direction direction : DIRECTIONS) {
+        for (Direction direction : FACINGS) {
             mutable.set(pos, direction);
             blockState = blockState.getStateForNeighborUpdate(direction, world.getBlockState(mutable), world, pos, mutable);
         }
@@ -195,14 +187,18 @@ implements ItemConvertible {
 
     public Block(AbstractBlock.Settings settings) {
         super(settings);
+        String string;
         StateManager.Builder<Block, BlockState> builder = new StateManager.Builder<Block, BlockState>(this);
         this.appendProperties(builder);
         this.stateManager = builder.build(Block::getDefaultState, BlockState::new);
         this.setDefaultState(this.stateManager.getDefaultState());
+        if (SharedConstants.isDevelopment && !(string = this.getClass().getSimpleName()).endsWith("Block")) {
+            LOGGER.error("Block classes should end with Block and {} doesn't.", (Object)string);
+        }
     }
 
-    public static boolean cannotConnect(Block block) {
-        return block instanceof LeavesBlock || block == Blocks.BARRIER || block == Blocks.CARVED_PUMPKIN || block == Blocks.JACK_O_LANTERN || block == Blocks.MELON || block == Blocks.PUMPKIN || block.isIn(BlockTags.SHULKER_BOXES);
+    public static boolean cannotConnect(BlockState blockState) {
+        return blockState.getBlock() instanceof LeavesBlock || blockState.isOf(Blocks.BARRIER) || blockState.isOf(Blocks.CARVED_PUMPKIN) || blockState.isOf(Blocks.JACK_O_LANTERN) || blockState.isOf(Blocks.MELON) || blockState.isOf(Blocks.PUMPKIN) || blockState.isIn(BlockTags.SHULKER_BOXES);
     }
 
     public boolean hasRandomTicks(BlockState state) {
@@ -210,21 +206,20 @@ implements ItemConvertible {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction facing) {
-        BlockPos blockPos = pos.offset(facing);
+    public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction direction, BlockPos blockPos) {
         BlockState blockState = world.getBlockState(blockPos);
-        if (state.isSideInvisible(blockState, facing)) {
+        if (state.isSideInvisible(blockState, direction)) {
             return false;
         }
         if (blockState.isOpaque()) {
-            NeighborGroup neighborGroup = new NeighborGroup(state, blockState, facing);
+            NeighborGroup neighborGroup = new NeighborGroup(state, blockState, direction);
             Object2ByteLinkedOpenHashMap<NeighborGroup> object2ByteLinkedOpenHashMap = FACE_CULL_MAP.get();
             byte b = object2ByteLinkedOpenHashMap.getAndMoveToFirst(neighborGroup);
             if (b != 127) {
                 return b != 0;
             }
-            VoxelShape voxelShape = state.getCullingFace(world, pos, facing);
-            VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, facing.getOpposite());
+            VoxelShape voxelShape = state.getCullingFace(world, pos, direction);
+            VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, direction.getOpposite());
             boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
             if (object2ByteLinkedOpenHashMap.size() == 2048) {
                 object2ByteLinkedOpenHashMap.removeLastByte();
@@ -313,11 +308,7 @@ implements ItemConvertible {
 
     protected void dropExperience(ServerWorld world, BlockPos pos, int size) {
         if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
-            while (size > 0) {
-                int i = ExperienceOrbEntity.roundToOrbSize(size);
-                size -= i;
-                world.spawnEntity(new ExperienceOrbEntity(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, i));
-            }
+            ExperienceOrbEntity.method_31493(world, Vec3d.ofCenter(pos), size);
         }
     }
 
@@ -398,12 +389,12 @@ implements ItemConvertible {
 
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         world.syncWorldEvent(player, 2001, pos, Block.getRawIdFromState(state));
-        if (this.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
+        if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
             PiglinBrain.onGuardedBlockInteracted(player, false);
         }
     }
 
-    public void rainTick(World world, BlockPos pos) {
+    public void rainTick(BlockState state, World world, BlockPos pos) {
     }
 
     public boolean shouldDropItemsOnExplosion(Explosion explosion) {

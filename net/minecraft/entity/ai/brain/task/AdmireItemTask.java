@@ -24,7 +24,7 @@ extends Task<E> {
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
         ItemEntity itemEntity = ((PiglinEntity)piglinEntity).getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM).get();
-        return PiglinBrain.isGoldenItem(itemEntity.getStack().getItem());
+        return PiglinBrain.isGoldenItem(itemEntity.getStack());
     }
 
     @Override

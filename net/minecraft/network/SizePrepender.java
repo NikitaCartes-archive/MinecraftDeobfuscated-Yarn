@@ -13,9 +13,9 @@ import net.minecraft.network.PacketByteBuf;
 public class SizePrepender
 extends MessageToByteEncoder<ByteBuf> {
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) {
         int i = byteBuf.readableBytes();
-        int j = PacketByteBuf.getVarIntLength(i);
+        int j = PacketByteBuf.getVarIntSizeBytes(i);
         if (j > 3) {
             throw new IllegalArgumentException("unable to fit " + i + " into " + 3);
         }

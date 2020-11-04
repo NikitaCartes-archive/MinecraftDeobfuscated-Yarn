@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 public class AnvilScreen
 extends ForgingScreen<AnvilScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/anvil.png");
-    private static final Text TOO_EXPENSIVE_TEXT = new TranslatableText("container.repair.expensive");
+    private static final Text field_26559 = new TranslatableText("container.repair.expensive");
     private TextFieldWidget nameField;
 
     public AnvilScreen(AnvilScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -47,7 +47,7 @@ extends ForgingScreen<AnvilScreenHandler> {
         this.nameField.setFocusUnlocked(false);
         this.nameField.setEditableColor(-1);
         this.nameField.setUneditableColor(-1);
-        this.nameField.setDrawsBackground(false);
+        this.nameField.setHasBorder(false);
         this.nameField.setMaxLength(35);
         this.nameField.setChangedListener(this::onRenamed);
         this.children.add(this.nameField);
@@ -99,8 +99,8 @@ extends ForgingScreen<AnvilScreenHandler> {
         if (i > 0) {
             Text text;
             int j = 8453920;
-            if (i >= 40 && !this.client.player.abilities.creativeMode) {
-                text = TOO_EXPENSIVE_TEXT;
+            if (i >= 40 && !this.client.player.getAbilities().creativeMode) {
+                text = field_26559;
                 j = 0xFF6060;
             } else if (!((AnvilScreenHandler)this.handler).getSlot(2).hasStack()) {
                 text = null;
@@ -120,8 +120,8 @@ extends ForgingScreen<AnvilScreenHandler> {
     }
 
     @Override
-    public void renderForeground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.nameField.render(matrices, mouseX, mouseY, delta);
+    public void renderForeground(MatrixStack matrixStack, int mouseY, int i, float f) {
+        this.nameField.render(matrixStack, mouseY, i, f);
     }
 
     @Override

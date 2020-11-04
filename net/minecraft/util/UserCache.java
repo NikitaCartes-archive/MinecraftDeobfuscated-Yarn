@@ -104,12 +104,12 @@ public class UserCache {
         return useRemote;
     }
 
-    public void add(GameProfile profile) {
+    public void add(GameProfile gameProfile) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(2, 1);
         Date date = calendar.getTime();
-        Entry entry = new Entry(profile, date);
+        Entry entry = new Entry(gameProfile, date);
         this.method_30164(entry);
         this.save();
     }
@@ -119,10 +119,10 @@ public class UserCache {
     }
 
     @Nullable
-    public GameProfile findByName(String name) {
+    public GameProfile findByName(String string) {
         GameProfile gameProfile;
-        String string = name.toLowerCase(Locale.ROOT);
-        Entry entry = this.byName.get(string);
+        String string2 = string.toLowerCase(Locale.ROOT);
+        Entry entry = this.byName.get(string2);
         boolean bl = false;
         if (entry != null && new Date().getTime() >= entry.expirationDate.getTime()) {
             this.byUuid.remove(entry.getProfile().getId());
@@ -134,7 +134,7 @@ public class UserCache {
             entry.method_30171(this.method_30169());
             gameProfile = entry.getProfile();
         } else {
-            gameProfile = UserCache.findProfileByName(this.profileRepository, string);
+            gameProfile = UserCache.findProfileByName(this.profileRepository, string2);
             if (gameProfile != null) {
                 this.add(gameProfile);
                 bl = false;
@@ -147,8 +147,8 @@ public class UserCache {
     }
 
     @Nullable
-    public GameProfile getByUuid(UUID uuid) {
-        Entry entry = this.byUuid.get(uuid);
+    public GameProfile getByUuid(UUID uUID) {
+        Entry entry = this.byUuid.get(uUID);
         if (entry == null) {
             return null;
         }
@@ -201,8 +201,8 @@ public class UserCache {
         }
     }
 
-    private Stream<Entry> getLastAccessedEntries(int limit) {
-        return ImmutableList.copyOf(this.byUuid.values()).stream().sorted(Comparator.comparing(Entry::method_30172).reversed()).limit(limit);
+    private Stream<Entry> getLastAccessedEntries(int i) {
+        return ImmutableList.copyOf(this.byUuid.values()).stream().sorted(Comparator.comparing(Entry::method_30172).reversed()).limit(i);
     }
 
     private static JsonElement method_30165(Entry entry, DateFormat dateFormat) {

@@ -10,59 +10,50 @@ import net.fabricmc.api.Environment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * Represents a singular field within a larger vertex format.
- * <p>
- * This element comprises a data type, a field length,
- * and the corresponding GL element type to which this field corresponds.
- */
 @Environment(value=EnvType.CLIENT)
 public class VertexFormatElement {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Format dataType;
+    private final Format format;
     private final Type type;
-    private final int textureIndex;
-    private final int length;
-    /**
-     * The total length of this element (in bytes).
-     */
-    private final int byteLength;
+    private final int index;
+    private final int count;
+    private final int size;
 
-    public VertexFormatElement(int textureIndex, Format dataType, Type type, int length) {
-        if (this.isValidType(textureIndex, type)) {
+    public VertexFormatElement(int index, Format format, Type type, int count) {
+        if (this.isValidType(index, type)) {
             this.type = type;
         } else {
             LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
             this.type = Type.UV;
         }
-        this.dataType = dataType;
-        this.textureIndex = textureIndex;
-        this.length = length;
-        this.byteLength = dataType.getSize() * this.length;
+        this.format = format;
+        this.index = index;
+        this.count = count;
+        this.size = format.getSize() * this.count;
     }
 
     private boolean isValidType(int index, Type type) {
         return index == 0 || type == Type.UV;
     }
 
-    public final Format getDataType() {
-        return this.dataType;
+    public final Format getFormat() {
+        return this.format;
     }
 
     public final Type getType() {
         return this.type;
     }
 
-    public final int getTextureIndex() {
-        return this.textureIndex;
+    public final int getIndex() {
+        return this.index;
     }
 
     public String toString() {
-        return this.length + "," + this.type.getName() + "," + this.dataType.getName();
+        return this.count + "," + this.type.getName() + "," + this.format.getName();
     }
 
-    public final int getByteLength() {
-        return this.byteLength;
+    public final int getSize() {
+        return this.size;
     }
 
     public boolean equals(Object o) {
@@ -73,32 +64,32 @@ public class VertexFormatElement {
             return false;
         }
         VertexFormatElement vertexFormatElement = (VertexFormatElement)o;
-        if (this.length != vertexFormatElement.length) {
+        if (this.count != vertexFormatElement.count) {
             return false;
         }
-        if (this.textureIndex != vertexFormatElement.textureIndex) {
+        if (this.index != vertexFormatElement.index) {
             return false;
         }
-        if (this.dataType != vertexFormatElement.dataType) {
+        if (this.format != vertexFormatElement.format) {
             return false;
         }
         return this.type == vertexFormatElement.type;
     }
 
     public int hashCode() {
-        int i = this.dataType.hashCode();
+        int i = this.format.hashCode();
         i = 31 * i + this.type.hashCode();
-        i = 31 * i + this.textureIndex;
-        i = 31 * i + this.length;
+        i = 31 * i + this.index;
+        i = 31 * i + this.count;
         return i;
     }
 
     public void startDrawing(long pointer, int stride) {
-        this.type.startDrawing(this.length, this.dataType.getGlId(), stride, pointer, this.textureIndex);
+        this.type.startDrawing(this.count, this.format.getGlId(), stride, pointer, this.index);
     }
 
     public void endDrawing() {
-        this.type.endDrawing(this.textureIndex);
+        this.type.endDrawing(this.index);
     }
 
     @Environment(value=EnvType.CLIENT)

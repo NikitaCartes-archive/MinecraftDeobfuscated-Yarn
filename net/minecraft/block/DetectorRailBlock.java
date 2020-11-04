@@ -31,7 +31,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class DetectorRailBlock
 extends AbstractRailBlock {
@@ -40,7 +39,7 @@ extends AbstractRailBlock {
 
     public DetectorRailBlock(AbstractBlock.Settings settings) {
         super(true, settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false)).with(SHAPE, RailShape.NORTH_SOUTH));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false)).with(SHAPE, RailShape.NORTH_SOUTH)).with(field_27096, false));
     }
 
     @Override
@@ -87,7 +86,7 @@ extends AbstractRailBlock {
         }
         boolean bl = state.get(POWERED);
         boolean bl2 = false;
-        List<AbstractMinecartEntity> list = this.getCarts(world, pos, AbstractMinecartEntity.class, null);
+        List<AbstractMinecartEntity> list = this.getCarts(world, pos, AbstractMinecartEntity.class, entity -> true);
         if (!list.isEmpty()) {
             bl2 = true;
         }
@@ -127,7 +126,8 @@ extends AbstractRailBlock {
         if (oldState.isOf(state.getBlock())) {
             return;
         }
-        this.updatePoweredStatus(world, pos, this.updateCurves(state, world, pos, notify));
+        BlockState blockState = this.updateCurves(state, world, pos, notify);
+        this.updatePoweredStatus(world, pos, blockState);
     }
 
     @Override
@@ -143,7 +143,7 @@ extends AbstractRailBlock {
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         if (state.get(POWERED).booleanValue()) {
-            List<CommandBlockMinecartEntity> list = this.getCarts(world, pos, CommandBlockMinecartEntity.class, null);
+            List<CommandBlockMinecartEntity> list = this.getCarts(world, pos, CommandBlockMinecartEntity.class, entity -> true);
             if (!list.isEmpty()) {
                 return list.get(0).getCommandExecutor().getSuccessCount();
             }
@@ -155,7 +155,7 @@ extends AbstractRailBlock {
         return 0;
     }
 
-    protected <T extends AbstractMinecartEntity> List<T> getCarts(World world, BlockPos pos, Class<T> entityClass, @Nullable Predicate<Entity> entityPredicate) {
+    private <T extends AbstractMinecartEntity> List<T> getCarts(World world, BlockPos pos, Class<T> entityClass, Predicate<Entity> entityPredicate) {
         return world.getEntitiesByClass(entityClass, this.getCartDetectionBox(pos), entityPredicate);
     }
 
@@ -323,7 +323,7 @@ extends AbstractRailBlock {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(SHAPE, POWERED);
+        builder.add(SHAPE, POWERED, field_27096);
     }
 }
 

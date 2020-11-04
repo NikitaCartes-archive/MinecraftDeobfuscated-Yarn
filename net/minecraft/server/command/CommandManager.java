@@ -241,7 +241,7 @@ public class CommandManager {
             commandSource.sendError(new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2))));
             if (SharedConstants.isDevelopment) {
                 commandSource.sendError(new LiteralText(Util.getInnermostMessage(exception)));
-                LOGGER.error("'" + command + "' threw an exception", (Throwable)exception);
+                LOGGER.error("'{}' threw an exception", (Object)command, (Object)exception);
             }
             int n = 0;
             return n;

@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
@@ -72,7 +71,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 5, 41, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onQuickTransfer(itemStack2, itemStack);
+                slot.onStackChanged(itemStack2, itemStack);
             } else if (FuelSlot.matches(itemStack) ? this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false) : (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (PotionSlot.matches(itemStack) && itemStack.getCount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (index >= 5 && index < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (index >= 32 && index < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
                 return ItemStack.EMPTY;
             }
@@ -111,7 +110,7 @@ extends ScreenHandler {
         }
 
         public static boolean matches(ItemStack stack) {
-            return stack.getItem() == Items.BLAZE_POWDER;
+            return stack.isOf(Items.BLAZE_POWDER);
         }
 
         @Override
@@ -164,8 +163,7 @@ extends ScreenHandler {
         }
 
         public static boolean matches(ItemStack stack) {
-            Item item = stack.getItem();
-            return item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE;
+            return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE);
         }
     }
 }

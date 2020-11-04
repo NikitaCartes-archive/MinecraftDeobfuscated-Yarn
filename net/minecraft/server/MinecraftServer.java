@@ -67,8 +67,8 @@ import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
+import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.NetworkEncryptionException;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.recipe.RecipeManager;
@@ -294,10 +294,10 @@ AutoCloseable {
                 }
 
                 @Override
-                public void progressStagePercentage(int percentage) {
+                public void progressStagePercentage(int i) {
                     if (Util.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
                         this.lastProgressUpdate = Util.getMeasuringTimeMs();
-                        LOGGER.info("Converting... {}%", (Object)percentage);
+                        LOGGER.info("Converting... {}%", (Object)i);
                     }
                 }
 
@@ -370,12 +370,12 @@ AutoCloseable {
         }
         this.getPlayerManager().setMainWorld(serverWorld);
         if (this.saveProperties.getCustomBossEvents() != null) {
-            this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
+            this.getBossBarManager().fromTag(this.saveProperties.getCustomBossEvents());
         }
         for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
             RegistryKey<DimensionOptions> registryKey = entry.getKey();
             if (registryKey == DimensionOptions.OVERWORLD) continue;
-            RegistryKey<World> registryKey2 = RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());
+            RegistryKey<World> registryKey2 = RegistryKey.of(Registry.DIMENSION, registryKey.getValue());
             DimensionType dimensionType2 = entry.getValue().getDimensionType();
             ChunkGenerator chunkGenerator2 = entry.getValue().getChunkGenerator();
             UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
@@ -516,7 +516,7 @@ AutoCloseable {
         ServerWorld serverWorld2 = this.getOverworld();
         ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
         serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
-        this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt());
+        this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
         this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
         return bl3;
     }
@@ -896,7 +896,7 @@ AutoCloseable {
     public abstract Optional<String> getModdedStatusMessage();
 
     @Override
-    public void sendSystemMessage(Text message, UUID sender) {
+    public void sendSystemMessage(Text message, UUID senderUuid) {
         LOGGER.info(message.getString());
     }
 
@@ -1452,7 +1452,7 @@ AutoCloseable {
 
                 @Override
                 public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
-                    list.add(String.format("%s=%s\n", key.getName(), ((GameRules.Rule)gameRules.get(key)).toString()));
+                    list.add(String.format("%s=%s\n", key.getName(), gameRules.get(key)));
                 }
             });
             for (String string : list) {
@@ -1536,6 +1536,10 @@ AutoCloseable {
     @Nullable
     public TextStream createFilterer(ServerPlayerEntity player) {
         return null;
+    }
+
+    public boolean requireResourcePack() {
+        return false;
     }
 
     @Override

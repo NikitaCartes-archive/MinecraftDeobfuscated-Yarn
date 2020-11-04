@@ -60,16 +60,16 @@ extends AbstractTeam {
         return mutableText;
     }
 
-    public void setDisplayName(Text displayName) {
-        if (displayName == null) {
+    public void setDisplayName(Text text) {
+        if (text == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        this.displayName = displayName;
+        this.displayName = text;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
-    public void setPrefix(@Nullable Text prefix) {
-        this.prefix = prefix == null ? LiteralText.EMPTY : prefix;
+    public void setPrefix(@Nullable Text text) {
+        this.prefix = text == null ? LiteralText.EMPTY : text;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
@@ -77,8 +77,8 @@ extends AbstractTeam {
         return this.prefix;
     }
 
-    public void setSuffix(@Nullable Text suffix) {
-        this.suffix = suffix == null ? LiteralText.EMPTY : suffix;
+    public void setSuffix(@Nullable Text text) {
+        this.suffix = text == null ? LiteralText.EMPTY : text;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
@@ -92,8 +92,8 @@ extends AbstractTeam {
     }
 
     @Override
-    public MutableText decorateName(Text name) {
-        MutableText mutableText = new LiteralText("").append(this.prefix).append(name).append(this.suffix);
+    public MutableText modifyText(Text text) {
+        MutableText mutableText = new LiteralText("").append(this.prefix).append(text).append(this.suffix);
         Formatting formatting = this.getColor();
         if (formatting != Formatting.RESET) {
             mutableText.formatted(formatting);
@@ -101,18 +101,11 @@ extends AbstractTeam {
         return mutableText;
     }
 
-    /**
-     * Decorates the name of an entity with the prefix, suffix and color of the team.
-     * If the team is null, returns a copy of the name.
-     * 
-     * @param team the team, can be null
-     * @param name the name to be decorated
-     */
-    public static MutableText decorateName(@Nullable AbstractTeam team, Text name) {
-        if (team == null) {
-            return name.shallowCopy();
+    public static MutableText modifyText(@Nullable AbstractTeam abstractTeam, Text text) {
+        if (abstractTeam == null) {
+            return text.shallowCopy();
         }
-        return team.decorateName(name);
+        return abstractTeam.modifyText(text);
     }
 
     @Override
@@ -145,13 +138,13 @@ extends AbstractTeam {
         return this.deathMessageVisibilityRule;
     }
 
-    public void setNameTagVisibilityRule(AbstractTeam.VisibilityRule nameTagVisibilityRule) {
-        this.nameTagVisibilityRule = nameTagVisibilityRule;
+    public void setNameTagVisibilityRule(AbstractTeam.VisibilityRule visibilityRule) {
+        this.nameTagVisibilityRule = visibilityRule;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
-    public void setDeathMessageVisibilityRule(AbstractTeam.VisibilityRule deathMessageVisibilityRule) {
-        this.deathMessageVisibilityRule = deathMessageVisibilityRule;
+    public void setDeathMessageVisibilityRule(AbstractTeam.VisibilityRule visibilityRule) {
+        this.deathMessageVisibilityRule = visibilityRule;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
@@ -177,9 +170,9 @@ extends AbstractTeam {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setFriendlyFlagsBitwise(int flags) {
-        this.setFriendlyFireAllowed((flags & 1) > 0);
-        this.setShowFriendlyInvisibles((flags & 2) > 0);
+    public void setFriendlyFlagsBitwise(int i) {
+        this.setFriendlyFireAllowed((i & 1) > 0);
+        this.setShowFriendlyInvisibles((i & 2) > 0);
     }
 
     public void setColor(Formatting color) {

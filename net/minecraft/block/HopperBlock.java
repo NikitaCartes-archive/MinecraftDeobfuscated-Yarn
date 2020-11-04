@@ -10,6 +10,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.entity.Entity;
@@ -38,6 +40,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class HopperBlock
 extends BlockWithEntity {
@@ -52,11 +55,11 @@ extends BlockWithEntity {
     private static final VoxelShape NORTH_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(6.0, 4.0, 0.0, 10.0, 8.0, 4.0));
     private static final VoxelShape SOUTH_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(6.0, 4.0, 12.0, 10.0, 8.0, 16.0));
     private static final VoxelShape WEST_SHAPE = VoxelShapes.union(DEFAULT_SHAPE, Block.createCuboidShape(0.0, 4.0, 6.0, 4.0, 8.0, 10.0));
-    private static final VoxelShape DOWN_RAYCAST_SHAPE = Hopper.INSIDE_SHAPE;
-    private static final VoxelShape EAST_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(12.0, 8.0, 6.0, 16.0, 10.0, 10.0));
-    private static final VoxelShape NORTH_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 0.0, 10.0, 10.0, 4.0));
-    private static final VoxelShape SOUTH_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
-    private static final VoxelShape WEST_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
+    private static final VoxelShape DOWN_RAY_TRACE_SHAPE = Hopper.INSIDE_SHAPE;
+    private static final VoxelShape EAST_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(12.0, 8.0, 6.0, 16.0, 10.0, 10.0));
+    private static final VoxelShape NORTH_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 0.0, 10.0, 10.0, 4.0));
+    private static final VoxelShape SOUTH_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
+    private static final VoxelShape WEST_RAY_TRACE_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
 
     public HopperBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -89,19 +92,19 @@ extends BlockWithEntity {
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         switch (state.get(FACING)) {
             case DOWN: {
-                return DOWN_RAYCAST_SHAPE;
+                return DOWN_RAY_TRACE_SHAPE;
             }
             case NORTH: {
-                return NORTH_RAYCAST_SHAPE;
+                return NORTH_RAY_TRACE_SHAPE;
             }
             case SOUTH: {
-                return SOUTH_RAYCAST_SHAPE;
+                return SOUTH_RAY_TRACE_SHAPE;
             }
             case WEST: {
-                return WEST_RAYCAST_SHAPE;
+                return WEST_RAY_TRACE_SHAPE;
             }
             case EAST: {
-                return EAST_RAYCAST_SHAPE;
+                return EAST_RAY_TRACE_SHAPE;
             }
         }
         return Hopper.INSIDE_SHAPE;
@@ -114,8 +117,14 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new HopperBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new HopperBlockEntity(pos, state);
+    }
+
+    @Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return world.isClient ? null : HopperBlock.checkType(type, BlockEntityType.HOPPER, HopperBlockEntity::serverTick);
     }
 
     @Override
@@ -207,7 +216,7 @@ extends BlockWithEntity {
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof HopperBlockEntity) {
-            ((HopperBlockEntity)blockEntity).onEntityCollided(entity);
+            HopperBlockEntity.onEntityCollided(world, pos, state, entity, (HopperBlockEntity)blockEntity);
         }
     }
 

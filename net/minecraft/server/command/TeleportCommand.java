@@ -102,6 +102,8 @@ public class TeleportCommand {
         if (!World.isValid(blockPos)) {
             throw INVALID_POSITION_EXCEPTION.create();
         }
+        float f = MathHelper.wrapDegrees(yaw);
+        float g = MathHelper.wrapDegrees(pitch);
         if (target instanceof ServerPlayerEntity) {
             ChunkPos chunkPos = new ChunkPos(new BlockPos(x, y, z));
             world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, target.getEntityId());
@@ -110,17 +112,15 @@ public class TeleportCommand {
                 ((ServerPlayerEntity)target).wakeUp(true, true);
             }
             if (world == target.world) {
-                ((ServerPlayerEntity)target).networkHandler.requestTeleport(x, y, z, yaw, pitch, movementFlags);
+                ((ServerPlayerEntity)target).networkHandler.teleportRequest(x, y, z, f, g, movementFlags);
             } else {
-                ((ServerPlayerEntity)target).teleport(world, x, y, z, yaw, pitch);
+                ((ServerPlayerEntity)target).teleport(world, x, y, z, f, g);
             }
-            target.setHeadYaw(yaw);
+            target.setHeadYaw(f);
         } else {
-            float f = MathHelper.wrapDegrees(yaw);
-            float g = MathHelper.wrapDegrees(pitch);
-            g = MathHelper.clamp(g, -90.0f, 90.0f);
+            float h = MathHelper.clamp(g, -90.0f, 90.0f);
             if (world == target.world) {
-                target.refreshPositionAndAngles(x, y, z, f, g);
+                target.refreshPositionAndAngles(x, y, z, f, h);
                 target.setHeadYaw(f);
             } else {
                 target.detach();
@@ -128,10 +128,10 @@ public class TeleportCommand {
                 target = entity.getType().create(world);
                 if (target != null) {
                     target.copyFrom(entity);
-                    target.refreshPositionAndAngles(x, y, z, f, g);
+                    target.refreshPositionAndAngles(x, y, z, f, h);
                     target.setHeadYaw(f);
                     world.onDimensionChanged(target);
-                    entity.removed = true;
+                    entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
                 } else {
                     return;
                 }

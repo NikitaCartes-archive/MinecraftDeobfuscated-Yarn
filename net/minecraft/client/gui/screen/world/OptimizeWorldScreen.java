@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class OptimizeWorldScreen
 extends Screen {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger field_25482 = LogManager.getLogger();
     private static final Object2IntMap<RegistryKey<World>> DIMENSION_COLORS = Util.make(new Object2IntOpenCustomHashMap(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
         object2IntOpenCustomHashMap.put(World.OVERWORLD, -13408734);
         object2IntOpenCustomHashMap.put(World.NETHER, -10075085);
@@ -48,24 +48,24 @@ extends Screen {
      * Enabled aggressive exception aggregation
      */
     @Nullable
-    public static OptimizeWorldScreen create(MinecraftClient client, BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, boolean eraseCache) {
+    public static OptimizeWorldScreen method_27031(MinecraftClient minecraftClient, BooleanConsumer booleanConsumer, DataFixer dataFixer, LevelStorage.Session session, boolean bl) {
         DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-        try (MinecraftClient.IntegratedResourceManager integratedResourceManager = client.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, storageSession);){
+        try (MinecraftClient.IntegratedResourceManager integratedResourceManager = minecraftClient.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);){
             SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
-            storageSession.backupLevelDataFile(impl, saveProperties);
+            session.backupLevelDataFile(impl, saveProperties);
             ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
-            OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutableSet);
+            OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);
             return optimizeWorldScreen;
         } catch (Exception exception) {
-            LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)exception);
+            field_25482.warn("Failed to load datapacks, can't optimize world", (Throwable)exception);
             return null;
         }
     }
 
-    private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, LevelInfo levelInfo, boolean eraseCache, ImmutableSet<RegistryKey<World>> worlds) {
+    private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session session, LevelInfo levelInfo, boolean bl, ImmutableSet<RegistryKey<World>> immutableSet) {
         super(new TranslatableText("optimizeWorld.title", levelInfo.getLevelName()));
         this.callback = callback;
-        this.updater = new WorldUpdater(storageSession, dataFixer, worlds, eraseCache);
+        this.updater = new WorldUpdater(session, dataFixer, immutableSet, bl);
     }
 
     @Override
@@ -109,14 +109,14 @@ extends Screen {
             OptimizeWorldScreen.drawTextWithShadow(matrices, this.textRenderer, new TranslatableText("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + this.textRenderer.fontHeight + 3, 0xA0A0A0);
             OptimizeWorldScreen.drawTextWithShadow(matrices, this.textRenderer, new TranslatableText("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (this.textRenderer.fontHeight + 3) * 2, 0xA0A0A0);
             int m = 0;
-            for (RegistryKey registryKey : this.updater.method_28304()) {
+            for (RegistryKey registryKey : this.updater.getWorlds()) {
                 int n = MathHelper.floor(this.updater.getProgress(registryKey) * (float)(j - i));
                 OptimizeWorldScreen.fill(matrices, i + m, k, i + m + n, l, DIMENSION_COLORS.getInt(registryKey));
                 m += n;
             }
             int o = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-            OptimizeWorldScreen.drawCenteredText(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * this.textRenderer.fontHeight + 2, 0xA0A0A0);
-            OptimizeWorldScreen.drawCenteredText(matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0f) + "%", this.width / 2, k + (l - k) / 2 - this.textRenderer.fontHeight / 2, 0xA0A0A0);
+            OptimizeWorldScreen.drawCenteredString(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * this.textRenderer.fontHeight + 2, 0xA0A0A0);
+            OptimizeWorldScreen.drawCenteredString(matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0f) + "%", this.width / 2, k + (l - k) / 2 - this.textRenderer.fontHeight / 2, 0xA0A0A0);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

@@ -52,7 +52,7 @@ extends BossBar {
             }
             case UPDATE_STYLE: {
                 this.setColor(packet.getColor());
-                this.setStyle(packet.getOverlay());
+                this.setOverlay(packet.getOverlay());
                 break;
             }
             case UPDATE_PROPERTIES: {

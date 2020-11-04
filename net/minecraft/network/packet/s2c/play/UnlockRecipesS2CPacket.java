@@ -26,10 +26,10 @@ implements Packet<ClientPlayPacketListener> {
     public UnlockRecipesS2CPacket() {
     }
 
-    public UnlockRecipesS2CPacket(Action action, Collection<Identifier> recipeIdsToChange, Collection<Identifier> recipeIdsToInit, RecipeBookOptions options) {
+    public UnlockRecipesS2CPacket(Action action, Collection<Identifier> collection, Collection<Identifier> collection2, RecipeBookOptions options) {
         this.action = action;
-        this.recipeIdsToChange = ImmutableList.copyOf(recipeIdsToChange);
-        this.recipeIdsToInit = ImmutableList.copyOf(recipeIdsToInit);
+        this.recipeIdsToChange = ImmutableList.copyOf(collection);
+        this.recipeIdsToInit = ImmutableList.copyOf(collection2);
         this.options = options;
     }
 

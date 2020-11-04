@@ -5,11 +5,17 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.WitherSkullEntity;
@@ -22,10 +28,18 @@ public class WitherSkullEntityRenderer
 extends EntityRenderer<WitherSkullEntity> {
     private static final Identifier INVULNERABLE_TEXTURE = new Identifier("textures/entity/wither/wither_invulnerable.png");
     private static final Identifier TEXTURE = new Identifier("textures/entity/wither/wither.png");
-    private final SkullEntityModel model = new SkullEntityModel();
+    private final SkullEntityModel model;
 
-    public WitherSkullEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher);
+    public WitherSkullEntityRenderer(class_5617.class_5618 arg) {
+        super(arg);
+        this.model = new SkullEntityModel(arg.method_32167(EntityModelLayers.WITHER_SKULL));
+    }
+
+    public static class_5607 method_32199() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        lv2.method_32117("head", class_5606.method_32108().method_32101(0, 35).method_32097(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f), class_5603.field_27701);
+        return class_5607.method_32110(lv, 64, 64);
     }
 
     @Override

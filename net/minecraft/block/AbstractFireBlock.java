@@ -46,7 +46,7 @@ extends Block {
     public static BlockState getState(BlockView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        if (SoulFireBlock.isSoulBase(blockState.getBlock())) {
+        if (SoulFireBlock.isSoulBase(blockState)) {
             return Blocks.SOUL_FIRE.getDefaultState();
         }
         return ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
@@ -181,11 +181,7 @@ extends Block {
             bl = true;
             break;
         }
-        if (!bl) {
-            return false;
-        }
-        Direction.Axis axis = direction.getAxis().isHorizontal() ? direction.rotateYCounterclockwise().getAxis() : Direction.Type.HORIZONTAL.randomAxis(world.random);
-        return AreaHelper.method_30485(world, blockPos, axis).isPresent();
+        return bl && AreaHelper.method_30485(world, blockPos, direction.rotateYCounterclockwise().getAxis()).isPresent();
     }
 }
 

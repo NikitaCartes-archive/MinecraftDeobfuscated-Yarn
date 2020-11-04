@@ -221,7 +221,7 @@ public class EntityPredicate {
 
         private static Extended fromJson(String key, AdvancementEntityPredicateDeserializer predicateDeserializer, @Nullable JsonElement json) {
             if (json != null && json.isJsonArray()) {
-                LootCondition[] lootConditions = predicateDeserializer.loadConditions(json.getAsJsonArray(), predicateDeserializer.getAdvancementId().toString() + "/" + key, LootContextTypes.ADVANCEMENT_ENTITY);
+                LootCondition[] lootConditions = predicateDeserializer.loadConditions(json.getAsJsonArray(), predicateDeserializer.getAdvancementId() + "/" + key, LootContextTypes.ADVANCEMENT_ENTITY);
                 return new Extended(lootConditions);
             }
             EntityPredicate entityPredicate = EntityPredicate.fromJson(json);

@@ -10,7 +10,7 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.server.world.ServerWorld;
@@ -47,17 +47,16 @@ public class BlockPredicate {
             return false;
         }
         BlockState blockState = world.getBlockState(pos);
-        Block block = blockState.getBlock();
-        if (this.tag != null && !this.tag.contains(block)) {
+        if (this.tag != null && !blockState.isIn(this.tag)) {
             return false;
         }
-        if (this.block != null && block != this.block) {
+        if (this.block != null && !blockState.isOf(this.block)) {
             return false;
         }
         if (!this.state.test(blockState)) {
             return false;
         }
-        return this.nbt == NbtPredicate.ANY || (blockEntity = world.getBlockEntity(pos)) != null && this.nbt.test(blockEntity.writeNbt(new NbtCompound()));
+        return this.nbt == NbtPredicate.ANY || (blockEntity = world.getBlockEntity(pos)) != null && this.nbt.test(blockEntity.toTag(new CompoundTag()));
     }
 
     public static BlockPredicate fromJson(@Nullable JsonElement json) {

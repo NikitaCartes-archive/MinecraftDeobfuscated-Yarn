@@ -23,7 +23,7 @@ import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
@@ -52,9 +52,9 @@ extends AbstractDecorationEntity {
         super((EntityType<? extends AbstractDecorationEntity>)entityType, world);
     }
 
-    public ItemFrameEntity(World world, BlockPos pos, Direction facing) {
+    public ItemFrameEntity(World world, BlockPos pos, Direction direction) {
         super(EntityType.ITEM_FRAME, world, pos);
-        this.setFacing(facing);
+        this.setFacing(direction);
     }
 
     @Override
@@ -130,9 +130,9 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void move(MovementType movementType, Vec3d movement) {
+    public void move(MovementType type, Vec3d movement) {
         if (!this.fixed) {
-            super.move(movementType, movement);
+            super.move(type, movement);
         }
     }
 
@@ -217,7 +217,7 @@ extends AbstractDecorationEntity {
         }
         if (entity instanceof PlayerEntity) {
             PlayerEntity playerEntity = (PlayerEntity)entity;
-            if (playerEntity.abilities.creativeMode) {
+            if (playerEntity.getAbilities().creativeMode) {
                 this.removeFromFrame(itemStack);
                 return;
             }
@@ -235,7 +235,7 @@ extends AbstractDecorationEntity {
     }
 
     private void removeFromFrame(ItemStack map) {
-        if (map.getItem() == Items.FILLED_MAP) {
+        if (map.isOf(Items.FILLED_MAP)) {
             MapState mapState = FilledMapItem.getOrCreateMapState(map, this.world);
             mapState.removeFrame(this.attachmentPos, this.getEntityId());
             mapState.setDirty(true);
@@ -291,48 +291,48 @@ extends AbstractDecorationEntity {
         this.setRotation(value, true);
     }
 
-    private void setRotation(int value, boolean updateComparators) {
+    private void setRotation(int value, boolean bl) {
         this.getDataTracker().set(ROTATION, value % 8);
-        if (updateComparators && this.attachmentPos != null) {
+        if (bl && this.attachmentPos != null) {
             this.world.updateComparators(this.attachmentPos, Blocks.AIR);
         }
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         if (!this.getHeldItemStack().isEmpty()) {
-            nbt.put("Item", this.getHeldItemStack().writeNbt(new NbtCompound()));
-            nbt.putByte("ItemRotation", (byte)this.getRotation());
-            nbt.putFloat("ItemDropChance", this.itemDropChance);
+            tag.put("Item", this.getHeldItemStack().toTag(new CompoundTag()));
+            tag.putByte("ItemRotation", (byte)this.getRotation());
+            tag.putFloat("ItemDropChance", this.itemDropChance);
         }
-        nbt.putByte("Facing", (byte)this.facing.getId());
-        nbt.putBoolean("Invisible", this.isInvisible());
-        nbt.putBoolean("Fixed", this.fixed);
+        tag.putByte("Facing", (byte)this.facing.getId());
+        tag.putBoolean("Invisible", this.isInvisible());
+        tag.putBoolean("Fixed", this.fixed);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        NbtCompound nbtCompound = nbt.getCompound("Item");
-        if (nbtCompound != null && !nbtCompound.isEmpty()) {
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        CompoundTag compoundTag = tag.getCompound("Item");
+        if (compoundTag != null && !compoundTag.isEmpty()) {
             ItemStack itemStack2;
-            ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
+            ItemStack itemStack = ItemStack.fromTag(compoundTag);
             if (itemStack.isEmpty()) {
-                ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", (Object)nbtCompound);
+                ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", (Object)compoundTag);
             }
             if (!(itemStack2 = this.getHeldItemStack()).isEmpty() && !ItemStack.areEqual(itemStack, itemStack2)) {
                 this.removeFromFrame(itemStack2);
             }
             this.setHeldItemStack(itemStack, false);
-            this.setRotation(nbt.getByte("ItemRotation"), false);
-            if (nbt.contains("ItemDropChance", 99)) {
-                this.itemDropChance = nbt.getFloat("ItemDropChance");
+            this.setRotation(tag.getByte("ItemRotation"), false);
+            if (tag.contains("ItemDropChance", 99)) {
+                this.itemDropChance = tag.getFloat("ItemDropChance");
             }
         }
-        this.setFacing(Direction.byId(nbt.getByte("Facing")));
-        this.setInvisible(nbt.getBoolean("Invisible"));
-        this.fixed = nbt.getBoolean("Fixed");
+        this.setFacing(Direction.byId(tag.getByte("Facing")));
+        this.setInvisible(tag.getBoolean("Invisible"));
+        this.fixed = tag.getBoolean("Fixed");
     }
 
     @Override
@@ -348,9 +348,9 @@ extends AbstractDecorationEntity {
             return bl || bl2 ? ActionResult.SUCCESS : ActionResult.PASS;
         }
         if (!bl) {
-            if (bl2 && !this.removed) {
+            if (bl2 && !this.isRemoved()) {
                 this.setHeldItemStack(itemStack);
-                if (!player.abilities.creativeMode) {
+                if (!player.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
             }
@@ -371,6 +371,23 @@ extends AbstractDecorationEntity {
     @Override
     public Packet<?> createSpawnPacket() {
         return new EntitySpawnS2CPacket(this, this.getType(), this.facing.getId(), this.getDecorationBlockPos());
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+        super.onSpawnPacket(packet);
+        this.setFacing(Direction.byId(packet.getEntityData()));
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public ItemStack getPickBlockStack() {
+        ItemStack itemStack = this.getHeldItemStack();
+        if (itemStack.isEmpty()) {
+            return new ItemStack(Items.ITEM_FRAME);
+        }
+        return itemStack.copy();
     }
 }
 

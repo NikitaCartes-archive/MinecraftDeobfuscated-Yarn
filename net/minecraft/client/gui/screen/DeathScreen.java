@@ -10,8 +10,8 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
@@ -27,7 +27,7 @@ extends Screen {
     private int ticksSinceDeath;
     private final Text message;
     private final boolean isHardcore;
-    private Text scoreText;
+    private Text field_26537;
 
     public DeathScreen(@Nullable Text message, boolean isHardcore) {
         super(new TranslatableText(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
@@ -54,10 +54,10 @@ extends Screen {
         if (!this.isHardcore && this.client.getSession() == null) {
             buttonWidget2.active = false;
         }
-        for (ClickableWidget clickableWidget : this.buttons) {
-            clickableWidget.active = false;
+        for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+            abstractButtonWidget.active = false;
         }
-        this.scoreText = new TranslatableText("deathScreen.score").append(": ").append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
+        this.field_26537 = new TranslatableText("deathScreen.score").append(": ").append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
     }
 
     @Override
@@ -92,7 +92,7 @@ extends Screen {
         if (this.message != null) {
             DeathScreen.drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 85, 0xFFFFFF);
         }
-        DeathScreen.drawCenteredText(matrices, this.textRenderer, this.scoreText, this.width / 2, 100, 0xFFFFFF);
+        DeathScreen.drawCenteredText(matrices, this.textRenderer, this.field_26537, this.width / 2, 100, 0xFFFFFF);
         if (this.message != null && mouseY > 85 && mouseY < 85 + this.textRenderer.fontHeight) {
             Style style = this.getTextComponentUnderMouse(mouseX);
             this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
@@ -134,8 +134,8 @@ extends Screen {
         super.tick();
         ++this.ticksSinceDeath;
         if (this.ticksSinceDeath == 20) {
-            for (ClickableWidget clickableWidget : this.buttons) {
-                clickableWidget.active = true;
+            for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+                abstractButtonWidget.active = true;
             }
         }
     }

@@ -54,9 +54,12 @@ public final class ItemTags {
     public static final Tag.Identified<Item> FLOWERS = ItemTags.register("flowers");
     public static final Tag.Identified<Item> PIGLIN_REPELLENTS = ItemTags.register("piglin_repellents");
     public static final Tag.Identified<Item> PIGLIN_LOVED = ItemTags.register("piglin_loved");
+    public static final Tag.Identified<Item> IGNORED_BY_PIGLIN_BABIES = ItemTags.register("ignored_by_piglin_babies");
+    public static final Tag.Identified<Item> PIGLIN_FOOD = ItemTags.register("piglin_food");
     public static final Tag.Identified<Item> GOLD_ORES = ItemTags.register("gold_ores");
     public static final Tag.Identified<Item> NON_FLAMMABLE_WOOD = ItemTags.register("non_flammable_wood");
     public static final Tag.Identified<Item> SOUL_FIRE_BASE_BLOCKS = ItemTags.register("soul_fire_base_blocks");
+    public static final Tag.Identified<Item> CANDLES = ItemTags.register("candles");
     public static final Tag.Identified<Item> BOATS = ItemTags.register("boats");
     public static final Tag.Identified<Item> FISHES = ItemTags.register("fishes");
     public static final Tag.Identified<Item> SIGNS = ItemTags.register("signs");

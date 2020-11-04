@@ -85,7 +85,7 @@ extends ValueObject {
             try {
                 string2 = RealmsUtil.uuidToName(string);
             } catch (Exception exception) {
-                LOGGER.error("Could not get name for " + string, (Throwable)exception);
+                LOGGER.error("Could not get name for {}", (Object)string, (Object)exception);
                 continue;
             }
             list.add(string2);
@@ -121,13 +121,13 @@ extends ValueObject {
             realmsServer.minigameId = JsonUtils.getIntOr("minigameId", node, -1);
             realmsServer.minigameImage = JsonUtils.getStringOr("minigameImage", node, null);
         } catch (Exception exception) {
-            LOGGER.error("Could not parse McoServer: " + exception.getMessage());
+            LOGGER.error("Could not parse McoServer: {}", (Object)exception.getMessage());
         }
         return realmsServer;
     }
 
     private static void sortInvited(RealmsServer server) {
-        server.players.sort((playerInfo, playerInfo2) -> ComparisonChain.start().compareFalseFirst(playerInfo2.isAccepted(), playerInfo.isAccepted()).compare((Comparable<?>)((Object)playerInfo.getName().toLowerCase(Locale.ROOT)), (Comparable<?>)((Object)playerInfo2.getName().toLowerCase(Locale.ROOT))).result());
+        server.players.sort((playerInfo, playerInfo2) -> ComparisonChain.start().compareFalseFirst(playerInfo2.getAccepted(), playerInfo.getAccepted()).compare((Comparable<?>)((Object)playerInfo.getName().toLowerCase(Locale.ROOT)), (Comparable<?>)((Object)playerInfo2.getName().toLowerCase(Locale.ROOT))).result());
     }
 
     private static List<PlayerInfo> parseInvited(JsonArray jsonArray) {
@@ -178,7 +178,7 @@ extends ValueObject {
         try {
             return RealmsServer.parse(new JsonParser().parse(json).getAsJsonObject());
         } catch (Exception exception) {
-            LOGGER.error("Could not parse McoServer: " + exception.getMessage());
+            LOGGER.error("Could not parse McoServer: {}", (Object)exception.getMessage());
             return new RealmsServer();
         }
     }
@@ -203,17 +203,17 @@ extends ValueObject {
         return Objects.hash(new Object[]{this.id, this.name, this.motd, this.state, this.owner, this.expired});
     }
 
-    public boolean equals(Object o) {
-        if (o == null) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        if (o == this) {
+        if (obj == this) {
             return true;
         }
-        if (o.getClass() != this.getClass()) {
+        if (obj.getClass() != this.getClass()) {
             return false;
         }
-        RealmsServer realmsServer = (RealmsServer)o;
+        RealmsServer realmsServer = (RealmsServer)obj;
         return new EqualsBuilder().append(this.id, realmsServer.id).append(this.name, realmsServer.name).append(this.motd, realmsServer.motd).append((Object)this.state, (Object)realmsServer.state).append(this.owner, realmsServer.owner).append(this.expired, realmsServer.expired).append((Object)this.worldType, (Object)this.worldType).isEquals();
     }
 

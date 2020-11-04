@@ -13,9 +13,8 @@ import java.nio.file.attribute.FileAttribute;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -50,19 +49,20 @@ implements DataProvider {
     @Nullable
     public static Path convertNbtToSnbt(Path inputPath, String location, Path outputPath) {
         try {
-            NbtCompound nbtCompound = NbtIo.readCompressed(Files.newInputStream(inputPath, new OpenOption[0]));
-            Text text = nbtCompound.toText("    ", 0);
-            String string = text.getString() + "\n";
-            Path path = outputPath.resolve(location + ".snbt");
-            Files.createDirectories(path.getParent(), new FileAttribute[0]);
-            try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, new OpenOption[0]);){
-                bufferedWriter.write(string);
-            }
+            NbtProvider.method_32234(outputPath.resolve(location + ".snbt"), NbtHelper.method_32271(NbtIo.readCompressed(Files.newInputStream(inputPath, new OpenOption[0]))));
             LOGGER.info("Converted {} from NBT to SNBT", (Object)location);
-            return path;
+            return outputPath.resolve(location + ".snbt");
         } catch (IOException iOException) {
             LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", (Object)location, (Object)inputPath, (Object)iOException);
             return null;
+        }
+    }
+
+    public static void method_32234(Path path, String string) throws IOException {
+        Files.createDirectories(path.getParent(), new FileAttribute[0]);
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, new OpenOption[0]);){
+            bufferedWriter.write(string);
+            bufferedWriter.write(10);
         }
     }
 }

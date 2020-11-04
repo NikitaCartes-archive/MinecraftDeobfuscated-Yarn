@@ -191,7 +191,7 @@ public abstract class Particle {
         this.z = (box.minZ + box.maxZ) / 2.0;
     }
 
-    protected int getBrightness(float tint) {
+    protected int getColorMultiplier(float tint) {
         BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
         if (this.world.isChunkLoaded(blockPos)) {
             return WorldRenderer.getLightmapCoordinates(this.world, blockPos);
@@ -207,8 +207,8 @@ public abstract class Particle {
         return this.boundingBox;
     }
 
-    public void setBoundingBox(Box boundingBox) {
-        this.boundingBox = boundingBox;
+    public void setBoundingBox(Box box) {
+        this.boundingBox = box;
     }
 }
 

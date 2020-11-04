@@ -36,10 +36,6 @@ public class BlazeEntity
 extends HostileEntity {
     private float eyeOffset = 0.5f;
     private int eyeOffsetCooldown;
-    /**
-     * The tracked flags of blazes. Only has the {@code 1} bit for {@linkplain
-     * #isFireActive() fire activation}.
-     */
     private static final TrackedData<Byte> BLAZE_FLAGS = DataTracker.registerData(BlazeEntity.class, TrackedDataHandlerRegistry.BYTE);
 
     public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
@@ -220,7 +216,7 @@ extends HostileEntity {
                         }
                         for (int i = 0; i < 1; ++i) {
                             SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h);
-                            smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
+                            smallFireballEntity.updatePosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
                             this.blaze.world.spawnEntity(smallFireballEntity);
                         }
                     }

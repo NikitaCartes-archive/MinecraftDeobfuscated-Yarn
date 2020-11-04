@@ -3,9 +3,6 @@
  */
 package net.minecraft.util.math;
 
-/**
- * An immutable vector composed of 2 floats.
- */
 public class Vec2f {
     public static final Vec2f ZERO = new Vec2f(0.0f, 0.0f);
     public static final Vec2f SOUTH_EAST_UNIT = new Vec2f(1.0f, 1.0f);

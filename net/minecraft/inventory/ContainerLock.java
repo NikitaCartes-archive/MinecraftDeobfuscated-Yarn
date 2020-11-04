@@ -4,7 +4,7 @@
 package net.minecraft.inventory;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Unmodifiable;
 
 @Unmodifiable
@@ -32,22 +32,22 @@ public class ContainerLock {
     }
 
     /**
-     * Inserts the key string of this lock into the {@code Lock} key of the NBT compound.
+     * Inserts the key string of this lock into the {@code Lock} key of the compound tag.
      */
-    public void writeNbt(NbtCompound nbt) {
+    public void toTag(CompoundTag tag) {
         if (!this.key.isEmpty()) {
-            nbt.putString("Lock", this.key);
+            tag.putString("Lock", this.key);
         }
     }
 
     /**
-     * Creates a new {@code ContainerLock} from the {@code Lock} key of the NBT compound.
+     * Creates a new {@code ContainerLock} from the {@code Lock} key of the compound tag.
      * <p>
      * If the {@code Lock} key is not present, returns an empty lock.
      */
-    public static ContainerLock fromNbt(NbtCompound nbt) {
-        if (nbt.contains("Lock", 8)) {
-            return new ContainerLock(nbt.getString("Lock"));
+    public static ContainerLock fromTag(CompoundTag tag) {
+        if (tag.contains("Lock", 8)) {
+            return new ContainerLock(tag.getString("Lock"));
         }
         return EMPTY;
     }

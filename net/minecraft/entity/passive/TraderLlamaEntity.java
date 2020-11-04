@@ -19,7 +19,7 @@ import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -45,16 +45,16 @@ extends LlamaEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("DespawnDelay", this.despawnDelay);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("DespawnDelay", this.despawnDelay);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("DespawnDelay", 99)) {
-            this.despawnDelay = nbt.getInt("DespawnDelay");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("DespawnDelay", 99)) {
+            this.despawnDelay = tag.getInt("DespawnDelay");
         }
     }
 
@@ -89,7 +89,7 @@ extends LlamaEntity {
         int n = this.despawnDelay = this.heldByTrader() ? ((WanderingTraderEntity)this.getHoldingEntity()).getDespawnDelay() - 1 : this.despawnDelay - 1;
         if (this.despawnDelay <= 0) {
             this.detachLeash(true, false);
-            this.remove();
+            this.discard();
         }
     }
 
@@ -107,14 +107,14 @@ extends LlamaEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (spawnReason == SpawnReason.EVENT) {
             this.setBreedingAge(0);
         }
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(false);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     public class DefendTraderGoal

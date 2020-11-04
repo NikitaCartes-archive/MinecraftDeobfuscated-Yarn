@@ -5,7 +5,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -25,7 +24,7 @@ extends Feature<DefaultFeatureConfig> {
     public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         int l;
         int k;
-        while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
+        while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomHeightLimit() + 2) {
             blockPos = blockPos.down();
         }
         if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
@@ -46,14 +45,10 @@ extends Feature<DefaultFeatureConfig> {
                     float h = (float)MathHelper.abs(n) - 0.25f;
                     if ((m != 0 || n != 0) && g * g + h * h > f * f || (m == -l || m == l || n == -l || n == l) && random.nextFloat() > 0.75f) continue;
                     BlockState blockState = structureWorldAccess.getBlockState(blockPos.add(m, k, n));
-                    Block block = blockState.getBlock();
-                    if (blockState.isAir() || IceSpikeFeature.isSoil(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+                    if (blockState.isAir() || IceSpikeFeature.isSoil(blockState) || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.ICE)) {
                         this.setBlockState(structureWorldAccess, blockPos.add(m, k, n), Blocks.PACKED_ICE.getDefaultState());
                     }
-                    if (k == 0 || l <= 1) continue;
-                    blockState = structureWorldAccess.getBlockState(blockPos.add(m, -k, n));
-                    block = blockState.getBlock();
-                    if (!blockState.isAir() && !IceSpikeFeature.isSoil(block) && block != Blocks.SNOW_BLOCK && block != Blocks.ICE) continue;
+                    if (k == 0 || l <= 1 || !(blockState = structureWorldAccess.getBlockState(blockPos.add(m, -k, n))).isAir() && !IceSpikeFeature.isSoil(blockState) && !blockState.isOf(Blocks.SNOW_BLOCK) && !blockState.isOf(Blocks.ICE)) continue;
                     this.setBlockState(structureWorldAccess, blockPos.add(m, -k, n), Blocks.PACKED_ICE.getDefaultState());
                 }
             }
@@ -65,16 +60,14 @@ extends Feature<DefaultFeatureConfig> {
             k = 1;
         }
         for (int o = -k; o <= k; ++o) {
-            block5: for (l = -k; l <= k; ++l) {
+            for (l = -k; l <= k; ++l) {
+                BlockState blockState2;
                 BlockPos blockPos2 = blockPos.add(o, -1, l);
                 int p = 50;
                 if (Math.abs(o) == 1 && Math.abs(l) == 1) {
                     p = random.nextInt(5);
                 }
-                while (blockPos2.getY() > 50) {
-                    BlockState blockState2 = structureWorldAccess.getBlockState(blockPos2);
-                    Block block2 = blockState2.getBlock();
-                    if (!blockState2.isAir() && !IceSpikeFeature.isSoil(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) continue block5;
+                while (blockPos2.getY() > 50 && ((blockState2 = structureWorldAccess.getBlockState(blockPos2)).isAir() || IceSpikeFeature.isSoil(blockState2) || blockState2.isOf(Blocks.SNOW_BLOCK) || blockState2.isOf(Blocks.ICE) || blockState2.isOf(Blocks.PACKED_ICE))) {
                     this.setBlockState(structureWorldAccess, blockPos2, Blocks.PACKED_ICE.getDefaultState());
                     blockPos2 = blockPos2.down();
                     if (--p > 0) continue;

@@ -62,7 +62,7 @@ extends IceBlock {
 
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        if (block == this && this.canMelt(world, pos, 2)) {
+        if (block.getDefaultState().isOf(this) && this.canMelt(world, pos, 2)) {
             this.melt(state, world, pos);
         }
         super.neighborUpdate(state, world, pos, block, fromPos, notify);

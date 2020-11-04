@@ -5,7 +5,7 @@ package net.minecraft.client.render.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.client.util.math.AffineTransformation;
 
 @Environment(value=EnvType.CLIENT)
 public interface ModelBakeSettings {
@@ -13,7 +13,7 @@ public interface ModelBakeSettings {
         return AffineTransformation.identity();
     }
 
-    default public boolean isUvLocked() {
+    default public boolean isShaded() {
         return false;
     }
 }

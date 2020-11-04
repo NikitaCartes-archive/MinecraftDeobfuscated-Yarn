@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MusicDiscItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -24,7 +24,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
@@ -40,10 +39,10 @@ extends BlockWithEntity {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        NbtCompound nbtCompound2;
+        CompoundTag compoundTag2;
         super.onPlaced(world, pos, state, placer, itemStack);
-        NbtCompound nbtCompound = itemStack.getOrCreateTag();
-        if (nbtCompound.contains("BlockEntityTag") && (nbtCompound2 = nbtCompound.getCompound("BlockEntityTag")).contains("RecordItem")) {
+        CompoundTag compoundTag = itemStack.getOrCreateTag();
+        if (compoundTag.contains("BlockEntityTag") && (compoundTag2 = compoundTag.getCompound("BlockEntityTag")).contains("RecordItem")) {
             world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), 2);
         }
     }
@@ -103,8 +102,8 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new JukeboxBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new JukeboxBlockEntity(pos, state);
     }
 
     @Override

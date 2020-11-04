@@ -25,6 +25,7 @@ import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -55,7 +56,7 @@ extends RealmsScreen {
     private volatile boolean extracting;
     private Long previousWrittenBytes;
     private Long previousTimeSnapshot;
-    private long bytesPerSecond;
+    private long bytesPersSecond;
     private int animTick;
     private static final String[] DOTS = new String[]{"", ".", ". .", ". . ."};
     private int dotIndex;
@@ -114,7 +115,7 @@ extends RealmsScreen {
             list.add(this.status);
             if (this.progress != null) {
                 list.add(new LiteralText(this.progress + "%"));
-                list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPerSecond) + "/s"));
+                list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPersSecond) + "/s"));
             }
             if (this.field_20494 != null) {
                 list.add(this.field_20494);
@@ -159,22 +160,22 @@ extends RealmsScreen {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private void drawDots(MatrixStack matrices) {
+    private void drawDots(MatrixStack matrixStack) {
         int i = this.textRenderer.getWidth(this.status);
         if (this.animTick % 10 == 0) {
             ++this.dotIndex;
         }
-        this.textRenderer.draw(matrices, DOTS[this.dotIndex % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0f, 0xFFFFFF);
+        this.textRenderer.draw(matrixStack, DOTS[this.dotIndex % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0f, 0xFFFFFF);
     }
 
-    private void drawProgressBar(MatrixStack matrices) {
+    private void drawProgressBar(MatrixStack matrixStack) {
         double d = Math.min((double)this.downloadStatus.bytesWritten / (double)this.downloadStatus.totalBytes, 1.0);
         this.progress = String.format(Locale.ROOT, "%.1f", d * 100.0);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableTexture();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         double e = this.width / 2 - 100;
         double f = 0.5;
         bufferBuilder.vertex(e - 0.5, 95.5, 0.0).color(217, 210, 210, 255).next();
@@ -187,31 +188,31 @@ extends RealmsScreen {
         bufferBuilder.vertex(e, 80.0, 0.0).color(128, 128, 128, 255).next();
         tessellator.draw();
         RenderSystem.enableTexture();
-        RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
+        RealmsDownloadLatestWorldScreen.drawCenteredString(matrixStack, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
     }
 
-    private void drawDownloadSpeed(MatrixStack matrices) {
+    private void drawDownloadSpeed(MatrixStack matrixStack) {
         if (this.animTick % 20 == 0) {
             if (this.previousWrittenBytes != null) {
                 long l = Util.getMeasuringTimeMs() - this.previousTimeSnapshot;
                 if (l == 0L) {
                     l = 1L;
                 }
-                this.bytesPerSecond = 1000L * (this.downloadStatus.bytesWritten - this.previousWrittenBytes) / l;
-                this.drawDownloadSpeed0(matrices, this.bytesPerSecond);
+                this.bytesPersSecond = 1000L * (this.downloadStatus.bytesWritten - this.previousWrittenBytes) / l;
+                this.drawDownloadSpeed0(matrixStack, this.bytesPersSecond);
             }
             this.previousWrittenBytes = this.downloadStatus.bytesWritten;
             this.previousTimeSnapshot = Util.getMeasuringTimeMs();
         } else {
-            this.drawDownloadSpeed0(matrices, this.bytesPerSecond);
+            this.drawDownloadSpeed0(matrixStack, this.bytesPersSecond);
         }
     }
 
-    private void drawDownloadSpeed0(MatrixStack matrices, long l) {
+    private void drawDownloadSpeed0(MatrixStack matrixStack, long l) {
         if (l > 0L) {
             int i = this.textRenderer.getWidth(this.progress);
             String string = "(" + SizeUnit.getUserFriendlyString(l) + "/s)";
-            this.textRenderer.draw(matrices, string, (float)(this.width / 2 + i / 2 + 15), 84.0f, 0xFFFFFF);
+            this.textRenderer.draw(matrixStack, string, (float)(this.width / 2 + i / 2 + 15), 84.0f, 0xFFFFFF);
         }
     }
 

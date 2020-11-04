@@ -23,6 +23,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final boolean pvp = this.parseBoolean("pvp", true);
     public final boolean allowFlight = this.parseBoolean("allow-flight", false);
     public final String resourcePack = this.getString("resource-pack", "");
+    public final boolean requireResourcePack = this.parseBoolean("require-resource-pack", false);
     public final String motd = this.getString("motd", "A Minecraft Server");
     public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
     public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
@@ -65,7 +66,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList;
     public final GeneratorOptions generatorOptions;
 
-    public ServerPropertiesHandler(Properties properties, DynamicRegistryManager dynamicRegistryManager) {
+    public ServerPropertiesHandler(Properties properties, DynamicRegistryManager registryManager) {
         super(properties);
         if (this.parseBoolean("snooper-enabled", true)) {
             // empty if block
@@ -91,11 +92,11 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         this.textFilteringConfig = this.getString("text-filtering-config", "");
         this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
         this.whiteList = this.booleanAccessor("white-list", false);
-        this.generatorOptions = GeneratorOptions.fromProperties(dynamicRegistryManager, properties);
+        this.generatorOptions = GeneratorOptions.fromProperties(registryManager, properties);
     }
 
-    public static ServerPropertiesHandler load(DynamicRegistryManager registryManager, Path path) {
-        return new ServerPropertiesHandler(ServerPropertiesHandler.loadProperties(path), registryManager);
+    public static ServerPropertiesHandler load(DynamicRegistryManager dynamicRegistryManager, Path path) {
+        return new ServerPropertiesHandler(ServerPropertiesHandler.loadProperties(path), dynamicRegistryManager);
     }
 
     @Override
@@ -104,8 +105,8 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     }
 
     @Override
-    protected /* synthetic */ AbstractPropertiesHandler create(DynamicRegistryManager registryManager, Properties properties) {
-        return this.create(registryManager, properties);
+    protected /* synthetic */ AbstractPropertiesHandler create(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
+        return this.create(dynamicRegistryManager, properties);
     }
 }
 

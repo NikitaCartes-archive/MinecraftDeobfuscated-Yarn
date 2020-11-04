@@ -30,7 +30,7 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
         int i = BlockPos.unpackLongX(blockPos);
         int j = BlockPos.unpackLongY(blockPos);
         int k = BlockPos.unpackLongZ(blockPos);
-        BlockView blockView = this.chunkProvider.getChunk(i >> 4, k >> 4);
+        BlockView blockView = this.chunkProvider.getChunk(ChunkSectionPos.getSectionCoord(i), ChunkSectionPos.getSectionCoord(k));
         if (blockView != null) {
             return blockView.getLuminance(this.mutablePos.set(i, j, k));
         }

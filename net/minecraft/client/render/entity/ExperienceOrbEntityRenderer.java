@@ -5,20 +5,20 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer
@@ -26,8 +26,8 @@ extends EntityRenderer<ExperienceOrbEntity> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/experience_orb.png");
     private static final RenderLayer LAYER = RenderLayer.getItemEntityTranslucentCull(TEXTURE);
 
-    public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher);
+    public ExperienceOrbEntityRenderer(class_5617.class_5618 arg) {
+        super(arg);
         this.shadowRadius = 0.15f;
         this.shadowOpacity = 0.75f;
     }
@@ -49,13 +49,13 @@ extends EntityRenderer<ExperienceOrbEntity> {
         float o = 0.5f;
         float p = 0.25f;
         float q = 255.0f;
-        float r = ((float)experienceOrbEntity.renderTicks + g) / 2.0f;
+        float r = ((float)experienceOrbEntity.age + g) / 2.0f;
         int s = (int)((MathHelper.sin(r + 0.0f) + 1.0f) * 0.5f * 255.0f);
         int t = 255;
         int u = (int)((MathHelper.sin(r + 4.1887903f) + 1.0f) * 0.1f * 255.0f);
         matrixStack.translate(0.0, 0.1f, 0.0);
         matrixStack.multiply(this.dispatcher.getRotation());
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         float v = 0.3f;
         matrixStack.scale(0.3f, 0.3f, 0.3f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);

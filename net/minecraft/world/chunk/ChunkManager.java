@@ -4,7 +4,6 @@
 package net.minecraft.world.chunk;
 
 import java.io.IOException;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
@@ -53,10 +52,6 @@ AutoCloseable {
     }
 
     public void setChunkForced(ChunkPos pos, boolean forced) {
-    }
-
-    public boolean shouldTickEntity(Entity entity) {
-        return true;
     }
 
     public boolean shouldTickChunk(ChunkPos pos) {

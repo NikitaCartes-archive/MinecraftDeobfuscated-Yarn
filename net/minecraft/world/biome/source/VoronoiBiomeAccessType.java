@@ -15,10 +15,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType
 
     @Override
     public Biome getBiome(long seed, int x, int y, int z, BiomeAccess.Storage storage) {
-        int u;
-        int q;
         int p;
-        int o;
         int i = x - 2;
         int j = y - 2;
         int k = z - 2;
@@ -28,30 +25,27 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType
         double d = (double)(i & 3) / 4.0;
         double e = (double)(j & 3) / 4.0;
         double f = (double)(k & 3) / 4.0;
-        double[] ds = new double[8];
-        for (o = 0; o < 8; ++o) {
-            boolean bl = (o & 4) == 0;
-            boolean bl2 = (o & 2) == 0;
-            boolean bl3 = (o & 1) == 0;
-            p = bl ? l : l + 1;
-            q = bl2 ? m : m + 1;
-            int r = bl3 ? n : n + 1;
-            double g = bl ? d : d - 1.0;
-            double h = bl2 ? e : e - 1.0;
-            double s = bl3 ? f : f - 1.0;
-            ds[o] = VoronoiBiomeAccessType.calcSquaredDistance(seed, p, q, r, g, h, s);
+        int o = 0;
+        double g = Double.POSITIVE_INFINITY;
+        for (p = 0; p < 8; ++p) {
+            double u;
+            double t;
+            double h;
+            boolean bl3;
+            int s;
+            boolean bl2;
+            int r;
+            boolean bl = (p & 4) == 0;
+            int q = bl ? l : l + 1;
+            double v = VoronoiBiomeAccessType.calcSquaredDistance(seed, q, r = (bl2 = (p & 2) == 0) ? m : m + 1, s = (bl3 = (p & 1) == 0) ? n : n + 1, h = bl ? d : d - 1.0, t = bl2 ? e : e - 1.0, u = bl3 ? f : f - 1.0);
+            if (!(g > v)) continue;
+            o = p;
+            g = v;
         }
-        o = 0;
-        double t = ds[0];
-        for (u = 1; u < 8; ++u) {
-            if (!(t > ds[u])) continue;
-            o = u;
-            t = ds[u];
-        }
-        u = (o & 4) == 0 ? l : l + 1;
-        p = (o & 2) == 0 ? m : m + 1;
-        q = (o & 1) == 0 ? n : n + 1;
-        return storage.getBiomeForNoiseGen(u, p, q);
+        p = (o & 4) == 0 ? l : l + 1;
+        int w = (o & 2) == 0 ? m : m + 1;
+        int aa = (o & 1) == 0 ? n : n + 1;
+        return storage.getBiomeForNoiseGen(p, w, aa);
     }
 
     private static double calcSquaredDistance(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {

@@ -40,11 +40,11 @@ import org.jetbrains.annotations.Nullable;
  * 
  * <p>Each minecraft server has a dynamic registry manager for file-loaded
  * registries, while each client play network handler has a dynamic registry
- * manager for server-sent dynamic registries.
+ * manager for server-sent dynamic registries.</p>
  * 
  * <p>The {@link DynamicRegistryManager.Impl}
  * class serves as an immutable implementation of any particular collection
- * or configuration of dynamic registries.
+ * or configuration of dynamic registries.</p>
  */
 public abstract class DynamicRegistryManager {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -71,7 +71,7 @@ public abstract class DynamicRegistryManager {
     /**
      * Retrieves a registry optionally from this manager.
      */
-    public abstract <E> Optional<MutableRegistry<E>> getOptionalMutable(RegistryKey<? extends Registry<E>> var1);
+    public abstract <E> Optional<MutableRegistry<E>> getOptional(RegistryKey<? extends Registry<E>> var1);
 
     /**
      * Retrieves a registry from this manager, or throws an exception when the
@@ -80,7 +80,7 @@ public abstract class DynamicRegistryManager {
      * @throws IllegalStateException if the registry does not exist
      */
     public <E> MutableRegistry<E> get(RegistryKey<? extends Registry<E>> key) {
-        return this.getOptionalMutable(key).orElseThrow(() -> new IllegalStateException("Missing registry: " + key));
+        return this.getOptional(key).orElseThrow(() -> new IllegalStateException("Missing registry: " + key));
     }
 
     public Registry<DimensionType> getDimensionTypes() {
@@ -141,7 +141,7 @@ public abstract class DynamicRegistryManager {
      * within this manager.
      */
     private static <E> void addBuiltinEntries(Impl manager, Registry<E> registry) {
-        MutableRegistry<E> mutableRegistry = manager.getOptionalMutable(registry.getKey()).orElseThrow(() -> new IllegalStateException("Missing registry: " + registry.getKey()));
+        MutableRegistry<E> mutableRegistry = manager.getOptional(registry.getKey()).orElseThrow(() -> new IllegalStateException("Missing registry: " + registry.getKey()));
         for (Map.Entry<RegistryKey<E>, E> entry : registry.getEntries()) {
             E object = entry.getValue();
             mutableRegistry.set(registry.getRawId(object), entry.getKey(), object, registry.getEntryLifecycle(object));
@@ -202,7 +202,7 @@ public abstract class DynamicRegistryManager {
         }
 
         @Override
-        public <E> Optional<MutableRegistry<E>> getOptionalMutable(RegistryKey<? extends Registry<E>> key) {
+        public <E> Optional<MutableRegistry<E>> getOptional(RegistryKey<? extends Registry<E>> key) {
             return Optional.ofNullable(this.registries.get(key)).map(simpleRegistry -> simpleRegistry);
         }
     }

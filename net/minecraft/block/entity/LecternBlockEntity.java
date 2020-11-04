@@ -10,11 +10,10 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
@@ -26,6 +25,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -132,8 +132,8 @@ NamedScreenHandlerFactory {
     private int currentPage;
     private int pageCount;
 
-    public LecternBlockEntity() {
-        super(BlockEntityType.LECTERN);
+    public LecternBlockEntity(BlockPos blockPos, BlockState blockState) {
+        super(BlockEntityType.LECTERN, blockPos, blockState);
     }
 
     public ItemStack getBook() {
@@ -141,8 +141,7 @@ NamedScreenHandlerFactory {
     }
 
     public boolean hasBook() {
-        Item item = this.book.getItem();
-        return item == Items.WRITABLE_BOOK || item == Items.WRITTEN_BOOK;
+        return this.book.isOf(Items.WRITABLE_BOOK) || this.book.isOf(Items.WRITTEN_BOOK);
     }
 
     public void setBook(ItemStack book) {
@@ -181,7 +180,7 @@ NamedScreenHandlerFactory {
     }
 
     private ItemStack resolveBook(ItemStack book, @Nullable PlayerEntity player) {
-        if (this.world instanceof ServerWorld && book.getItem() == Items.WRITTEN_BOOK) {
+        if (this.world instanceof ServerWorld && book.isOf(Items.WRITTEN_BOOK)) {
             WrittenBookItem.resolve(book, this.getCommandSource(player), player);
         }
         return book;
@@ -207,21 +206,21 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public void fromTag(BlockState state, NbtCompound tag) {
-        super.fromTag(state, tag);
-        this.book = tag.contains("Book", 10) ? this.resolveBook(ItemStack.fromNbt(tag.getCompound("Book")), null) : ItemStack.EMPTY;
+    public void fromTag(CompoundTag compoundTag) {
+        super.fromTag(compoundTag);
+        this.book = compoundTag.contains("Book", 10) ? this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null) : ItemStack.EMPTY;
         this.pageCount = WrittenBookItem.getPageCount(this.book);
-        this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
+        this.currentPage = MathHelper.clamp(compoundTag.getInt("Page"), 0, this.pageCount - 1);
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
         if (!this.getBook().isEmpty()) {
-            nbt.put("Book", this.getBook().writeNbt(new NbtCompound()));
-            nbt.putInt("Page", this.currentPage);
+            tag.put("Book", this.getBook().toTag(new CompoundTag()));
+            tag.putInt("Page", this.currentPage);
         }
-        return nbt;
+        return tag;
     }
 
     @Override

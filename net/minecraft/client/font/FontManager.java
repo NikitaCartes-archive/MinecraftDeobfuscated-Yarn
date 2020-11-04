@@ -31,8 +31,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
-import net.minecraft.resource.SinglePreparationResourceReloader;
+import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -49,7 +49,7 @@ implements AutoCloseable {
     private final Map<Identifier, FontStorage> fontStorages = Maps.newHashMap();
     private final TextureManager textureManager;
     private Map<Identifier, Identifier> idOverrides = ImmutableMap.of();
-    private final ResourceReloader resourceReloadListener = new SinglePreparationResourceReloader<Map<Identifier, List<Font>>>(){
+    private final ResourceReloadListener resourceReloadListener = new SinglePreparationResourceReloadListener<Map<Identifier, List<Font>>>(){
 
         @Override
         protected Map<Identifier, List<Font>> prepare(ResourceManager resourceManager, Profiler profiler) {
@@ -82,17 +82,17 @@ implements AutoCloseable {
                                     profiler.pop();
                                     continue;
                                 } catch (RuntimeException runtimeException) {
-                                    LOGGER.warn("Unable to read definition '{}' in fonts.json in resourcepack: '{}': {}", (Object)identifier22, (Object)resource.getResourcePackName(), (Object)runtimeException.getMessage());
+                                    LOGGER.warn("Unable to read definition '{}' in {} in resourcepack: '{}': {}", (Object)identifier22, (Object)"fonts.json", (Object)resource.getResourcePackName(), (Object)runtimeException.getMessage());
                                 }
                             }
                             profiler.pop();
                         } catch (RuntimeException runtimeException2) {
-                            LOGGER.warn("Unable to load font '{}' in fonts.json in resourcepack: '{}': {}", (Object)identifier22, (Object)resource.getResourcePackName(), (Object)runtimeException2.getMessage());
+                            LOGGER.warn("Unable to load font '{}' in {} in resourcepack: '{}': {}", (Object)identifier22, (Object)"fonts.json", (Object)resource.getResourcePackName(), (Object)runtimeException2.getMessage());
                         }
                         profiler.pop();
                     }
                 } catch (IOException iOException) {
-                    LOGGER.warn("Unable to load font '{}' in fonts.json: {}", (Object)identifier22, (Object)iOException.getMessage());
+                    LOGGER.warn("Unable to load font '{}' in {}: {}", (Object)identifier22, (Object)"fonts.json", (Object)iOException.getMessage());
                 }
                 profiler.push("caching");
                 IntOpenHashSet intSet = new IntOpenHashSet();
@@ -155,7 +155,7 @@ implements AutoCloseable {
         return new TextRenderer(identifier -> this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(identifier, (Identifier)identifier), this.missingStorage));
     }
 
-    public ResourceReloader getResourceReloadListener() {
+    public ResourceReloadListener getResourceReloadListener() {
         return this.resourceReloadListener;
     }
 

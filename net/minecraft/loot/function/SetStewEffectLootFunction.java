@@ -47,7 +47,7 @@ extends ConditionalLootFunction {
 
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
-        if (stack.getItem() != Items.SUSPICIOUS_STEW || this.effects.isEmpty()) {
+        if (!stack.isOf(Items.SUSPICIOUS_STEW) || this.effects.isEmpty()) {
             return stack;
         }
         Random random = context.getRandom();

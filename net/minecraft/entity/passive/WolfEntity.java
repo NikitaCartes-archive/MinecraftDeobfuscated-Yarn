@@ -54,7 +54,7 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -134,19 +134,19 @@ implements Angerable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
-        this.writeAngerToNbt(nbt);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
+        this.angerToTag(tag);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("CollarColor", 99)) {
-            this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("CollarColor", 99)) {
+            this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
         }
-        this.angerFromTag((ServerWorld)this.world, nbt);
+        this.angerFromTag(this.world, tag);
     }
 
     @Override
@@ -261,10 +261,9 @@ implements Angerable {
      * <p>
      * The brightness multiplier represents how much darker the wolf gets while its fur is wet. The multiplier changes (from 0.75 to 1.0 incrementally) when a wolf shakes.
      * 
+     * @param tickDelta Progress for linearly interpolating between the previous and current game state.
      * @return Brightness as a float value between 0.75 and 1.0.
      * @see net.minecraft.client.render.entity.model.TintableAnimalModel#setColorMultiplier(float, float, float)
-     * 
-     * @param tickDelta progress for linearly interpolating between the previous and current game state
      */
     @Environment(value=EnvType.CLIENT)
     public float getFurWetBrightnessMultiplier(float tickDelta) {
@@ -343,12 +342,12 @@ implements Angerable {
         ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
         if (this.world.isClient) {
-            boolean bl = this.isOwner(player) || this.isTamed() || item == Items.BONE && !this.isTamed() && !this.hasAngerTime();
+            boolean bl = this.isOwner(player) || this.isTamed() || itemStack.isOf(Items.BONE) && !this.isTamed() && !this.hasAngerTime();
             return bl ? ActionResult.CONSUME : ActionResult.PASS;
         }
         if (this.isTamed()) {
             if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
-                if (!player.abilities.creativeMode) {
+                if (!player.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
                 this.heal(item.getFoodComponent().getHunger());
@@ -358,7 +357,7 @@ implements Angerable {
                 DyeColor dyeColor = ((DyeItem)item).getColor();
                 if (dyeColor == this.getCollarColor()) return super.interactMob(player, hand);
                 this.setCollarColor(dyeColor);
-                if (player.abilities.creativeMode) return ActionResult.SUCCESS;
+                if (player.getAbilities().creativeMode) return ActionResult.SUCCESS;
                 itemStack.decrement(1);
                 return ActionResult.SUCCESS;
             }
@@ -370,8 +369,8 @@ implements Angerable {
             this.setTarget(null);
             return ActionResult.SUCCESS;
         }
-        if (item != Items.BONE || this.hasAngerTime()) return super.interactMob(player, hand);
-        if (!player.abilities.creativeMode) {
+        if (!itemStack.isOf(Items.BONE) || this.hasAngerTime()) return super.interactMob(player, hand);
+        if (!player.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }
         if (this.random.nextInt(3) == 0) {

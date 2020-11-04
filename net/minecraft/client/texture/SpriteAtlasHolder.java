@@ -10,13 +10,13 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloader;
+import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class SpriteAtlasHolder
-extends SinglePreparationResourceReloader<SpriteAtlasTexture.Data>
+extends SinglePreparationResourceReloadListener<SpriteAtlasTexture.Data>
 implements AutoCloseable {
     private final SpriteAtlasTexture atlas;
     private final String pathPrefix;

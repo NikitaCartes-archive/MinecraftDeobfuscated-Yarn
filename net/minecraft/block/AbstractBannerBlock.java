@@ -33,8 +33,8 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new BannerBlockEntity(this.color);
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new BannerBlockEntity(pos, state, this.color);
     }
 
     @Override
@@ -50,7 +50,7 @@ extends BlockWithEntity {
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof BannerBlockEntity) {
-            return ((BannerBlockEntity)blockEntity).getPickStack(state);
+            return ((BannerBlockEntity)blockEntity).getPickStack();
         }
         return super.getPickStack(world, pos, state);
     }

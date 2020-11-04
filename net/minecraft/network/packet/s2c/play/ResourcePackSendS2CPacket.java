@@ -14,28 +14,32 @@ public class ResourcePackSendS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private String url;
     private String hash;
+    private boolean required;
 
     public ResourcePackSendS2CPacket() {
     }
 
-    public ResourcePackSendS2CPacket(String url, String hash) {
-        this.url = url;
-        this.hash = hash;
+    public ResourcePackSendS2CPacket(String url, String hash, boolean required) {
         if (hash.length() > 40) {
             throw new IllegalArgumentException("Hash is too long (max 40, was " + hash.length() + ")");
         }
+        this.url = url;
+        this.hash = hash;
+        this.required = required;
     }
 
     @Override
     public void read(PacketByteBuf buf) throws IOException {
         this.url = buf.readString(Short.MAX_VALUE);
         this.hash = buf.readString(40);
+        this.required = buf.readBoolean();
     }
 
     @Override
     public void write(PacketByteBuf buf) throws IOException {
         buf.writeString(this.url);
         buf.writeString(this.hash);
+        buf.writeBoolean(this.required);
     }
 
     @Override
@@ -51,6 +55,11 @@ implements Packet<ClientPlayPacketListener> {
     @Environment(value=EnvType.CLIENT)
     public String getSHA1() {
         return this.hash;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public boolean isRequired() {
+        return this.required;
     }
 }
 

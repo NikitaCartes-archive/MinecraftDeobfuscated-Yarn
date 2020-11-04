@@ -55,12 +55,12 @@ extends Screen {
     private ButtonWidget saveButton;
     private final BooleanConsumer callback;
     private TextFieldWidget levelNameTextField;
-    private final LevelStorage.Session storageSession;
+    private final LevelStorage.Session field_23777;
 
-    public EditWorldScreen(BooleanConsumer callback, LevelStorage.Session storageSession) {
+    public EditWorldScreen(BooleanConsumer callback, LevelStorage.Session session) {
         super(new TranslatableText("selectWorld.edit.title"));
         this.callback = callback;
-        this.storageSession = storageSession;
+        this.field_23777 = session;
     }
 
     @Override
@@ -72,12 +72,12 @@ extends Screen {
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
         ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20, new TranslatableText("selectWorld.edit.resetIcon"), buttonWidget -> {
-            FileUtils.deleteQuietly(this.storageSession.getIconFile());
+            FileUtils.deleteQuietly(this.field_23777.getIconFile());
             buttonWidget.active = false;
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 24 + 5, 200, 20, new TranslatableText("selectWorld.edit.openFolder"), buttonWidget -> Util.getOperatingSystem().open(this.storageSession.getDirectory(WorldSavePath.ROOT).toFile())));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 24 + 5, 200, 20, new TranslatableText("selectWorld.edit.openFolder"), buttonWidget -> Util.getOperatingSystem().open(this.field_23777.getDirectory(WorldSavePath.ROOT).toFile())));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20, new TranslatableText("selectWorld.edit.backup"), buttonWidget -> {
-            boolean bl = EditWorldScreen.backupLevel(this.storageSession);
+            boolean bl = EditWorldScreen.backupLevel(this.field_23777);
             this.callback.accept(!bl);
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20, new TranslatableText("selectWorld.edit.backupFolder"), buttonWidget -> {
@@ -92,18 +92,18 @@ extends Screen {
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20, new TranslatableText("selectWorld.edit.optimize"), buttonWidget -> this.client.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
             if (bl) {
-                EditWorldScreen.backupLevel(this.storageSession);
+                EditWorldScreen.backupLevel(this.field_23777);
             }
-            this.client.openScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, bl2));
+            this.client.openScreen(OptimizeWorldScreen.method_27031(this.client, this.callback, this.client.getDataFixer(), this.field_23777, bl2));
         }, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20, new TranslatableText("selectWorld.edit.export_worldgen_settings"), buttonWidget -> {
             DataResult<Object> dataResult2;
             DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-            try (MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, this.storageSession);){
+            try (MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, this.field_23777);){
                 RegistryReadingOps<JsonElement> dynamicOps = RegistryReadingOps.of(JsonOps.INSTANCE, impl);
                 DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, integratedResourceManager.getSaveProperties().getGeneratorOptions());
                 dataResult2 = dataResult.flatMap(jsonElement -> {
-                    Path path = this.storageSession.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
+                    Path path = this.field_23777.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
                     try (JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8, new OpenOption[0]));){
                         GSON.toJson((JsonElement)jsonElement, jsonWriter);
                     } catch (JsonIOException | IOException exception) {
@@ -121,8 +121,8 @@ extends Screen {
         }));
         this.saveButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), buttonWidget -> this.commit()));
         this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
-        buttonWidget2.active = this.storageSession.getIconFile().isFile();
-        LevelSummary levelSummary = this.storageSession.getLevelSummary();
+        buttonWidget2.active = this.field_23777.getIconFile().isFile();
+        LevelSummary levelSummary = this.field_23777.getLevelSummary();
         String string2 = levelSummary == null ? "" : levelSummary.getDisplayName();
         this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, new TranslatableText("selectWorld.enterName"));
         this.levelNameTextField.setText(string2);
@@ -152,33 +152,33 @@ extends Screen {
 
     private void commit() {
         try {
-            this.storageSession.save(this.levelNameTextField.getText().trim());
+            this.field_23777.save(this.levelNameTextField.getText().trim());
             this.callback.accept(true);
         } catch (IOException iOException) {
-            LOGGER.error("Failed to access world '{}'", (Object)this.storageSession.getDirectoryName(), (Object)iOException);
-            SystemToast.addWorldAccessFailureToast(this.client, this.storageSession.getDirectoryName());
+            LOGGER.error("Failed to access world '{}'", (Object)this.field_23777.getDirectoryName(), (Object)iOException);
+            SystemToast.addWorldAccessFailureToast(this.client, this.field_23777.getDirectoryName());
             this.callback.accept(true);
         }
     }
 
-    public static void onBackupConfirm(LevelStorage storage, String levelName) {
+    public static void method_29784(LevelStorage levelStorage, String string) {
         boolean bl = false;
-        try (LevelStorage.Session session = storage.createSession(levelName);){
+        try (LevelStorage.Session session = levelStorage.createSession(string);){
             bl = true;
             EditWorldScreen.backupLevel(session);
         } catch (IOException iOException) {
             if (!bl) {
-                SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), levelName);
+                SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), string);
             }
-            LOGGER.warn("Failed to create backup of level {}", (Object)levelName, (Object)iOException);
+            LOGGER.warn("Failed to create backup of level {}", (Object)string, (Object)iOException);
         }
     }
 
-    public static boolean backupLevel(LevelStorage.Session storageSession) {
+    public static boolean backupLevel(LevelStorage.Session session) {
         long l = 0L;
         IOException iOException = null;
         try {
-            l = storageSession.createBackup();
+            l = session.createBackup();
         } catch (IOException iOException2) {
             iOException = iOException2;
         }
@@ -188,7 +188,7 @@ extends Screen {
             MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
             return false;
         }
-        TranslatableText text = new TranslatableText("selectWorld.edit.backupCreated", storageSession.getDirectoryName());
+        TranslatableText text = new TranslatableText("selectWorld.edit.backupCreated", session.getDirectoryName());
         TranslatableText text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
         MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
         return true;

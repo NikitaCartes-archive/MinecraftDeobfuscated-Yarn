@@ -122,7 +122,7 @@ public abstract class GeneratorType {
         return options.getChunkGenerator().getBiomeSource().getBiomes().stream().findFirst().orElse(registryManager.get(Registry.BIOME_KEY).getOrThrow(BiomeKeys.PLAINS));
     }
 
-    public static Optional<GeneratorType> method_29078(GeneratorOptions generatorOptions) {
+    public static Optional<GeneratorType> fromGeneratorOptions(GeneratorOptions generatorOptions) {
         ChunkGenerator chunkGenerator = generatorOptions.getChunkGenerator();
         if (chunkGenerator instanceof FlatChunkGenerator) {
             return Optional.of(FLAT);

@@ -3,7 +3,7 @@
  */
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.class_5532;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -37,7 +37,7 @@ extends WanderAroundGoal {
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
         ChunkSectionPos chunkSectionPos2 = LookTargetUtil.getPosClosestToOccupiedPointOfInterest(serverWorld, chunkSectionPos, 2);
         if (chunkSectionPos2 != chunkSectionPos) {
-            return TargetFinder.findTargetTowards(this.mob, 10, 7, Vec3d.ofBottomCenter(chunkSectionPos2.getCenterPos()));
+            return class_5532.method_31512(this.mob, 10, 7, Vec3d.ofBottomCenter(chunkSectionPos2.getCenterPos()), 1.5707963705062866);
         }
         return null;
     }

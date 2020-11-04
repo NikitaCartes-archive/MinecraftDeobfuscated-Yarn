@@ -18,11 +18,10 @@ public interface ItemSteerable {
     public float getSaddledSpeed();
 
     default public boolean travel(MobEntity entity, SaddledComponent saddledEntity, Vec3d movementInput) {
-        Entity entity2;
         if (!entity.isAlive()) {
             return false;
         }
-        Entity entity3 = entity2 = entity.getPassengerList().isEmpty() ? null : entity.getPassengerList().get(0);
+        Entity entity2 = entity.getFirstPassenger();
         if (!(entity.hasPassengers() && entity.canBeControlledByRider() && entity2 instanceof PlayerEntity)) {
             entity.stepHeight = 0.5f;
             entity.flyingSpeed = 0.02f;

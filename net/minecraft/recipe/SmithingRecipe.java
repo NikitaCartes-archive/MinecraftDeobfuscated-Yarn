@@ -4,12 +4,13 @@
 package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
@@ -35,16 +36,16 @@ implements Recipe<Inventory> {
     }
 
     @Override
-    public boolean matches(Inventory inventory, World world) {
-        return this.base.test(inventory.getStack(0)) && this.addition.test(inventory.getStack(1));
+    public boolean matches(Inventory inv, World world) {
+        return this.base.test(inv.getStack(0)) && this.addition.test(inv.getStack(1));
     }
 
     @Override
-    public ItemStack craft(Inventory inventory) {
+    public ItemStack craft(Inventory inv) {
         ItemStack itemStack = this.result.copy();
-        NbtCompound nbtCompound = inventory.getStack(0).getTag();
-        if (nbtCompound != null) {
-            itemStack.setTag(nbtCompound.copy());
+        CompoundTag compoundTag = inv.getStack(0).getTag();
+        if (compoundTag != null) {
+            itemStack.setTag(compoundTag.copy());
         }
         return itemStack;
     }
@@ -66,7 +67,7 @@ implements Recipe<Inventory> {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ItemStack createIcon() {
+    public ItemStack getRecipeKindIcon() {
         return new ItemStack(Blocks.SMITHING_TABLE);
     }
 
@@ -83,6 +84,12 @@ implements Recipe<Inventory> {
     @Override
     public RecipeType<?> getType() {
         return RecipeType.SMITHING;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public boolean method_31584() {
+        return Stream.of(this.base, this.addition).anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);
     }
 
     public static class Serializer

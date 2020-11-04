@@ -46,7 +46,7 @@ extends HorizontalConnectingBlock {
     }
 
     @Override
-    public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.getOutlineShape(state, world, pos, context);
     }
 
@@ -57,20 +57,20 @@ extends HorizontalConnectingBlock {
 
     public boolean canConnect(BlockState state, boolean neighborIsFullSquare, Direction dir) {
         Block block = state.getBlock();
-        boolean bl = this.isFence(block);
+        boolean bl = this.isFence(state);
         boolean bl2 = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, dir);
-        return !FenceBlock.cannotConnect(block) && neighborIsFullSquare || bl || bl2;
+        return !FenceBlock.cannotConnect(state) && neighborIsFullSquare || bl || bl2;
     }
 
-    private boolean isFence(Block block) {
-        return block.isIn(BlockTags.FENCES) && block.isIn(BlockTags.WOODEN_FENCES) == this.getDefaultState().isIn(BlockTags.WOODEN_FENCES);
+    private boolean isFence(BlockState blockState) {
+        return blockState.isIn(BlockTags.FENCES) && blockState.isIn(BlockTags.WOODEN_FENCES) == this.getDefaultState().isIn(BlockTags.WOODEN_FENCES);
     }
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) {
             ItemStack itemStack = player.getStackInHand(hand);
-            if (itemStack.getItem() == Items.LEAD) {
+            if (itemStack.isOf(Items.LEAD)) {
                 return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
@@ -95,14 +95,14 @@ extends HorizontalConnectingBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction.getAxis().getType() == Direction.Type.HORIZONTAL) {
-            return (BlockState)state.with((Property)FACING_PROPERTIES.get(direction), this.canConnect(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction.getOpposite()), direction.getOpposite()));
+            return (BlockState)state.with((Property)FACING_PROPERTIES.get(direction), this.canConnect(newState, newState.isSideSolidFullSquare(world, posFrom, direction.getOpposite()), direction.getOpposite()));
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override

@@ -8,8 +8,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.server.command.CommandManager;
@@ -35,18 +35,11 @@ public class CommandFunction {
         return this.elements;
     }
 
-    /**
-     * Parses a function in the context of {@code source}.
-     * 
-     * <p>Any syntax errors, such as improper comment lines or unknown commands, will be thrown at this point.
-     * 
-     * @param lines the raw lines (including comments) read from a function file
-     */
-    public static CommandFunction create(Identifier id, CommandDispatcher<ServerCommandSource> dispatcher, ServerCommandSource source, List<String> lines) {
-        ArrayList<CommandElement> list = Lists.newArrayListWithCapacity(lines.size());
-        for (int i = 0; i < lines.size(); ++i) {
+    public static CommandFunction create(Identifier id, CommandDispatcher<ServerCommandSource> commandDispatcher, ServerCommandSource serverCommandSource, List<String> list) {
+        ArrayList<CommandElement> list2 = Lists.newArrayListWithCapacity(list.size());
+        for (int i = 0; i < list.size(); ++i) {
             int j = i + 1;
-            String string = lines.get(i).trim();
+            String string = list.get(i).trim();
             StringReader stringReader = new StringReader(string);
             if (!stringReader.canRead() || stringReader.peek() == '#') continue;
             if (stringReader.peek() == '/') {
@@ -58,17 +51,17 @@ public class CommandFunction {
                 throw new IllegalArgumentException("Unknown or invalid command '" + string + "' on line " + j + " (did you mean '" + string2 + "'? Do not use a preceding forwards slash.)");
             }
             try {
-                ParseResults<ServerCommandSource> parseResults = dispatcher.parse(stringReader, source);
+                ParseResults<ServerCommandSource> parseResults = commandDispatcher.parse(stringReader, serverCommandSource);
                 if (parseResults.getReader().canRead()) {
                     throw CommandManager.getException(parseResults);
                 }
-                list.add(new CommandElement(parseResults));
+                list2.add(new CommandElement(parseResults));
                 continue;
             } catch (CommandSyntaxException commandSyntaxException) {
                 throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + commandSyntaxException.getMessage());
             }
         }
-        return new CommandFunction(id, list.toArray(new Element[0]));
+        return new CommandFunction(id, list2.toArray(new Element[0]));
     }
 
     public static class LazyContainer {
@@ -113,13 +106,13 @@ public class CommandFunction {
         }
 
         @Override
-        public void execute(CommandFunctionManager manager, ServerCommandSource source, ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) {
+        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> deque, int maxChainLength) {
             this.function.get(manager).ifPresent(commandFunction -> {
                 Element[] elements = commandFunction.getElements();
-                int j = maxChainLength - stack.size();
+                int j = maxChainLength - deque.size();
                 int k = Math.min(elements.length, j);
                 for (int l = k - 1; l >= 0; --l) {
-                    stack.addFirst(new CommandFunctionManager.Entry(manager, source, elements[l]));
+                    deque.addFirst(new CommandFunctionManager.Entry(manager, source, elements[l]));
                 }
             });
         }
@@ -138,7 +131,7 @@ public class CommandFunction {
         }
 
         @Override
-        public void execute(CommandFunctionManager manager, ServerCommandSource source, ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) throws CommandSyntaxException {
+        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> deque, int maxChainLength) throws CommandSyntaxException {
             manager.getDispatcher().execute(new ParseResults<ServerCommandSource>(this.parsed.getContext().withSource(source), this.parsed.getReader(), this.parsed.getExceptions()));
         }
 
@@ -148,7 +141,7 @@ public class CommandFunction {
     }
 
     public static interface Element {
-        public void execute(CommandFunctionManager var1, ServerCommandSource var2, ArrayDeque<CommandFunctionManager.Entry> var3, int var4) throws CommandSyntaxException;
+        public void execute(CommandFunctionManager var1, ServerCommandSource var2, Deque<CommandFunctionManager.Entry> var3, int var4) throws CommandSyntaxException;
     }
 }
 

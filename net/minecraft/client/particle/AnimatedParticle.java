@@ -77,7 +77,7 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getBrightness(float tint) {
+    public int getColorMultiplier(float tint) {
         return 0xF000F0;
     }
 

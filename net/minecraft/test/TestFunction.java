@@ -4,7 +4,7 @@
 package net.minecraft.test;
 
 import java.util.function.Consumer;
-import net.minecraft.test.TestContext;
+import net.minecraft.test.StartupParameter;
 import net.minecraft.util.BlockRotation;
 
 public class TestFunction {
@@ -12,13 +12,15 @@ public class TestFunction {
     private final String structurePath;
     private final String structureName;
     private final boolean required;
-    private final Consumer<TestContext> starter;
+    private final int field_27814;
+    private final int field_27815;
+    private final Consumer<StartupParameter> starter;
     private final int tickLimit;
     private final long duration;
     private final BlockRotation field_25306;
 
-    public void start(TestContext parameter) {
-        this.starter.accept(parameter);
+    public void start(StartupParameter startupParameter) {
+        this.starter.accept(startupParameter);
     }
 
     public String getStructurePath() {
@@ -51,6 +53,18 @@ public class TestFunction {
 
     public BlockRotation method_29424() {
         return this.field_25306;
+    }
+
+    public boolean method_32257() {
+        return this.field_27814 > 1;
+    }
+
+    public int method_32258() {
+        return this.field_27814;
+    }
+
+    public int method_32259() {
+        return this.field_27815;
     }
 }
 

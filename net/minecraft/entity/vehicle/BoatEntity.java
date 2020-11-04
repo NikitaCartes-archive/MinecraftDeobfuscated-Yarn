@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
+import net.minecraft.class_5459;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -26,8 +27,9 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -47,7 +49,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,8 +93,7 @@ extends Entity {
 
     public BoatEntity(World world, double x, double y, double z) {
         this((EntityType<? extends BoatEntity>)EntityType.BOAT, world);
-        this.setPosition(x, y, z);
-        this.setVelocity(Vec3d.ZERO);
+        this.updatePosition(x, y, z);
         this.prevX = x;
         this.prevY = y;
         this.prevZ = z;
@@ -140,8 +140,8 @@ extends Entity {
     }
 
     @Override
-    protected Vec3d method_30633(Direction.Axis axis, PortalUtil.Rectangle rectangle) {
-        return LivingEntity.method_31079(super.method_30633(axis, rectangle));
+    protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
+        return LivingEntity.method_31079(super.method_30633(axis, arg));
     }
 
     @Override
@@ -155,19 +155,19 @@ extends Entity {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (this.world.isClient || this.removed) {
+        if (this.world.isClient || this.isRemoved()) {
             return true;
         }
         this.setDamageWobbleSide(-this.getDamageWobbleSide());
         this.setDamageWobbleTicks(10);
         this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0f);
         this.scheduleVelocityUpdate();
-        boolean bl2 = bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).abilities.creativeMode;
+        boolean bl2 = bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
         if (bl || this.getDamageWobbleStrength() > 40.0f) {
             if (!bl && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                 this.dropItem(this.asItem());
             }
-            this.remove();
+            this.discard();
         }
         return true;
     }
@@ -230,7 +230,7 @@ extends Entity {
 
     @Override
     public boolean collides() {
-        return !this.removed;
+        return !this.isRemoved();
     }
 
     @Override
@@ -266,7 +266,7 @@ extends Entity {
         super.tick();
         this.method_7555();
         if (this.isLogicalSideForUpdatingMovement()) {
-            if (this.getPassengerList().isEmpty() || !(this.getPassengerList().get(0) instanceof PlayerEntity)) {
+            if (!(this.getFirstPassenger() instanceof PlayerEntity)) {
                 this.setPaddleMovings(false, false);
             }
             this.updateVelocity();
@@ -332,7 +332,7 @@ extends Entity {
                         this.setVelocity(vec3d.add(0.0, -0.7, 0.0));
                         this.removeAllPassengers();
                     } else {
-                        this.setVelocity(vec3d.x, this.hasPassengerType(PlayerEntity.class) ? 2.7 : 0.6, vec3d.z);
+                        this.setVelocity(vec3d.x, this.hasPassengerType(entity -> entity instanceof PlayerEntity) ? 2.7 : 0.6, vec3d.z);
                     }
                 }
                 this.onBubbleColumnSurface = false;
@@ -370,7 +370,7 @@ extends Entity {
         this.yaw = (float)((double)this.yaw + g / (double)this.field_7708);
         this.pitch = (float)((double)this.pitch + (this.boatPitch - (double)this.pitch) / (double)this.field_7708);
         --this.field_7708;
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
         this.setRotation(this.yaw, this.pitch);
     }
 
@@ -523,7 +523,7 @@ extends Entity {
         this.velocityDecay = 0.05f;
         if (this.lastLocation == Location.IN_AIR && this.location != Location.IN_AIR && this.location != Location.ON_LAND) {
             this.waterLevel = this.getBodyY(1.0);
-            this.setPosition(this.getX(), (double)(this.method_7544() - this.getHeight()) + 0.101, this.getZ());
+            this.updatePosition(this.getX(), (double)(this.method_7544() - this.getHeight()) + 0.101, this.getZ());
             this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
             this.fallVelocity = 0.0;
             this.location = Location.IN_WATER;
@@ -586,7 +586,7 @@ extends Entity {
             return;
         }
         float f = 0.0f;
-        float g = (float)((this.removed ? (double)0.01f : this.getMountedHeightOffset()) + passenger.getHeightOffset());
+        float g = (float)((this.isRemoved() ? (double)0.01f : this.getMountedHeightOffset()) + passenger.getHeightOffset());
         if (this.getPassengerList().size() > 1) {
             int i = this.getPassengerList().indexOf(passenger);
             f = i == 0 ? 0.2f : -0.6f;
@@ -595,13 +595,13 @@ extends Entity {
             }
         }
         Vec3d vec3d = new Vec3d(f, 0.0, 0.0).rotateY(-this.yaw * ((float)Math.PI / 180) - 1.5707964f);
-        passenger.setPosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
+        passenger.updatePosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
         passenger.yaw += this.yawVelocity;
         passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
         this.copyEntityData(passenger);
         if (passenger instanceof AnimalEntity && this.getPassengerList().size() > 1) {
             int j = passenger.getEntityId() % 2 == 0 ? 90 : 270;
-            passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
+            passenger.setYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
             passenger.setHeadYaw(passenger.getHeadYaw() + (float)j);
         }
     }
@@ -632,7 +632,7 @@ extends Entity {
     }
 
     protected void copyEntityData(Entity entity) {
-        entity.setBodyYaw(this.yaw);
+        entity.setYaw(this.yaw);
         float f = MathHelper.wrapDegrees(entity.yaw - this.yaw);
         float g = MathHelper.clamp(f, -105.0f, 105.0f);
         entity.prevYaw += g - f;
@@ -647,14 +647,14 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putString("Type", this.getBoatType().getName());
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        tag.putString("Type", this.getBoatType().getName());
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        if (nbt.contains("Type", 8)) {
-            this.setBoatType(Type.getType(nbt.getString("Type")));
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        if (tag.contains("Type", 8)) {
+            this.setBoatType(Type.getType(tag.getString("Type")));
         }
     }
 
@@ -685,8 +685,8 @@ extends Entity {
                     return;
                 }
                 this.handleFallDamage(this.fallDistance, 1.0f);
-                if (!this.world.isClient && !this.removed) {
-                    this.remove();
+                if (!this.world.isClient && !this.isRemoved()) {
+                    this.kill();
                     if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                         int i;
                         for (i = 0; i < 3; ++i) {
@@ -761,8 +761,7 @@ extends Entity {
     @Override
     @Nullable
     public Entity getPrimaryPassenger() {
-        List<Entity> list = this.getPassengerList();
-        return list.isEmpty() ? null : list.get(0);
+        return this.getFirstPassenger();
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -781,6 +780,12 @@ extends Entity {
     @Override
     public boolean isSubmergedInWater() {
         return this.location == Location.UNDER_WATER || this.location == Location.UNDER_FLOWING_WATER;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public ItemStack getPickBlockStack() {
+        return new ItemStack(this.asItem());
     }
 
     public static enum Type {

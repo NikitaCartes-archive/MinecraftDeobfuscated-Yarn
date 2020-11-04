@@ -35,7 +35,7 @@ public class GiveCommand {
                 int j = Math.min(item.getItem().getMaxCount(), i);
                 i -= j;
                 ItemStack itemStack = item.createStack(j, false);
-                boolean bl = serverPlayerEntity.inventory.insertStack(itemStack);
+                boolean bl = serverPlayerEntity.getInventory().insertStack(itemStack);
                 if (!bl || !itemStack.isEmpty()) {
                     itemEntity = serverPlayerEntity.dropItem(itemStack, false);
                     if (itemEntity == null) continue;

@@ -29,7 +29,7 @@ extends Slot {
     }
 
     public static boolean isBucket(ItemStack stack) {
-        return stack.getItem() == Items.BUCKET;
+        return stack.isOf(Items.BUCKET);
     }
 }
 

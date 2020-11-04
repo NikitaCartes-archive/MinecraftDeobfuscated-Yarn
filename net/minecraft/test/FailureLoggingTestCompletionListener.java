@@ -3,7 +3,7 @@
  */
 package net.minecraft.test;
 
-import net.minecraft.test.GameTestState;
+import net.minecraft.test.GameTest;
 import net.minecraft.test.TestCompletionListener;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
@@ -14,11 +14,11 @@ implements TestCompletionListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
-    public void onTestFailed(GameTestState test) {
-        if (test.isRequired()) {
-            LOGGER.error(test.getStructurePath() + " failed! " + Util.getInnermostMessage(test.getThrowable()));
+    public void onTestFailed(GameTest gameTest) {
+        if (gameTest.isRequired()) {
+            LOGGER.error("{} failed! {}", (Object)gameTest.getStructurePath(), (Object)Util.getInnermostMessage(gameTest.getThrowable()));
         } else {
-            LOGGER.warn("(optional) " + test.getStructurePath() + " failed. " + Util.getInnermostMessage(test.getThrowable()));
+            LOGGER.warn("(optional) {} failed. {}", (Object)gameTest.getStructurePath(), (Object)Util.getInnermostMessage(gameTest.getThrowable()));
         }
     }
 }

@@ -60,7 +60,7 @@ extends AbstractPhase {
 
     @Override
     @Nullable
-    public Vec3d getPathTarget() {
+    public Vec3d getTarget() {
         return this.target;
     }
 

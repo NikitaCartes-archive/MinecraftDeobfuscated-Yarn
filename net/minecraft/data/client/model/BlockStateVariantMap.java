@@ -54,20 +54,20 @@ public abstract class BlockStateVariantMap {
         return new SingleProperty(property);
     }
 
-    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>> DoubleProperty<T1, T2> create(Property<T1> first, Property<T2> second) {
-        return new DoubleProperty(first, second);
+    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>> DoubleProperty<T1, T2> create(Property<T1> property, Property<T2> property2) {
+        return new DoubleProperty(property, property2);
     }
 
-    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>> TripleProperty<T1, T2, T3> create(Property<T1> first, Property<T2> second, Property<T3> third) {
-        return new TripleProperty(first, second, third);
+    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>> TripleProperty<T1, T2, T3> create(Property<T1> property, Property<T2> property2, Property<T3> property3) {
+        return new TripleProperty(property, property2, property3);
     }
 
-    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>> QuadrupleProperty<T1, T2, T3, T4> create(Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth) {
-        return new QuadrupleProperty(first, second, third, fourth);
+    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>> QuadrupleProperty<T1, T2, T3, T4> create(Property<T1> property, Property<T2> property2, Property<T3> property3, Property<T4> property4) {
+        return new QuadrupleProperty(property, property2, property3, property4);
     }
 
-    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>, T5 extends Comparable<T5>> QuintupleProperty<T1, T2, T3, T4, T5> create(Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth, Property<T5> fifth) {
-        return new QuintupleProperty(first, second, third, fourth, fifth);
+    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>, T5 extends Comparable<T5>> QuintupleProperty<T1, T2, T3, T4, T5> create(Property<T1> property, Property<T2> property2, Property<T3> property3, Property<T4> property4, Property<T5> property5) {
+        return new QuintupleProperty(property, property2, property3, property4, property5);
     }
 
     @FunctionalInterface

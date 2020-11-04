@@ -42,7 +42,7 @@ public class FluidPredicate {
         }
         FluidState fluidState = world.getFluidState(pos);
         Fluid fluid = fluidState.getFluid();
-        if (this.tag != null && !this.tag.contains(fluid)) {
+        if (this.tag != null && !fluid.isIn(this.tag)) {
             return false;
         }
         if (this.fluid != null && fluid != this.fluid) {

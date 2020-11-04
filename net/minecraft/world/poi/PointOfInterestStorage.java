@@ -27,6 +27,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.SectionDistanceLevelPropagator;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.ChunkSection;
@@ -41,8 +42,8 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     private final PointOfInterestDistanceTracker pointOfInterestDistanceTracker;
     private final LongSet preloadedChunks = new LongOpenHashSet();
 
-    public PointOfInterestStorage(File file, DataFixer dataFixer, boolean bl) {
-        super(file, PointOfInterestSet::createCodec, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK, bl);
+    public PointOfInterestStorage(File file, DataFixer dataFixer, boolean bl, HeightLimitView heightLimitView) {
+        super(file, PointOfInterestSet::createCodec, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK, bl, heightLimitView);
         this.pointOfInterestDistanceTracker = new PointOfInterestDistanceTracker();
     }
 
@@ -77,7 +78,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     }
 
     public Stream<PointOfInterest> getInChunk(Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, OccupationStatus occupationStatus) {
-        return IntStream.range(0, 16).boxed().map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong())).filter(Optional::isPresent).flatMap(optional -> ((PointOfInterestSet)optional.get()).get(predicate, occupationStatus));
+        return IntStream.range(this.field_27240.getBottomSectionLimit(), this.field_27240.getTopSectionLimit()).boxed().map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong())).filter(Optional::isPresent).flatMap(optional -> ((PointOfInterestSet)optional.get()).get(predicate, occupationStatus));
     }
 
     public Stream<BlockPos> getPositions(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> posPredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
@@ -92,8 +93,8 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.getPositions(typePredicate, posPredicate, pos, radius, occupationStatus).findFirst();
     }
 
-    public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
-        return this.getInCircle(typePredicate, pos, radius, occupationStatus).map(PointOfInterest::getPos).min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)));
+    public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> typePredicate, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
+        return this.getInCircle(typePredicate, blockPos, i, occupationStatus).map(PointOfInterest::getPos).min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)));
     }
 
     public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> positionPredicate, BlockPos pos, int radius) {
@@ -153,7 +154,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     }
 
     public void initForPalette(ChunkPos chunkPos, ChunkSection chunkSection) {
-        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, chunkSection.getYOffset() >> 4);
+        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, ChunkSectionPos.getSectionCoord(chunkSection.getYOffset()));
         Util.ifPresentOrElse(this.get(chunkSectionPos.asLong()), pointOfInterestSet -> pointOfInterestSet.updatePointsOfInterest(biConsumer -> {
             if (PointOfInterestStorage.shouldScan(chunkSection)) {
                 this.scanAndPopulate(chunkSection, chunkSectionPos, (BiConsumer<BlockPos, PointOfInterestType>)biConsumer);
@@ -180,10 +181,10 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     /**
      * Preloads chunks in a square area with the given radius. Loads the chunks with {@code ChunkStatus.EMPTY}.
      * 
-     * @param radius the radius in blocks
+     * @param radius The radius in blocks
      */
     public void preloadChunks(WorldView world, BlockPos pos, int radius) {
-        ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16)).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong())).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
+        ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.field_27240.getBottomSectionLimit(), this.field_27240.getTopSectionLimit()).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong())).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
     }
 
     final class PointOfInterestDistanceTracker

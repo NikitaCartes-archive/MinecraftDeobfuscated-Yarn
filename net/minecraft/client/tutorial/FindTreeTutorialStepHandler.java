@@ -48,7 +48,7 @@ implements TutorialStepHandler {
         }
         if (this.ticks == 1 && (clientPlayerEntity = this.manager.getClient().player) != null) {
             for (Block block : TREE_BLOCKS) {
-                if (!clientPlayerEntity.inventory.contains(new ItemStack(block))) continue;
+                if (!clientPlayerEntity.getInventory().contains(new ItemStack(block))) continue;
                 this.manager.setStep(TutorialStep.CRAFT_PLANKS);
                 return;
             }
@@ -82,7 +82,7 @@ implements TutorialStepHandler {
     @Override
     public void onSlotUpdate(ItemStack stack) {
         for (Block block : TREE_BLOCKS) {
-            if (stack.getItem() != block.asItem()) continue;
+            if (!stack.isOf(block.asItem())) continue;
             this.manager.setStep(TutorialStep.CRAFT_PLANKS);
             return;
         }

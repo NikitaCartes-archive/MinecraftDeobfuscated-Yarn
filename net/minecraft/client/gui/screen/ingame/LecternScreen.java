@@ -22,7 +22,7 @@ import net.minecraft.util.collection.DefaultedList;
 public class LecternScreen
 extends BookScreen
 implements ScreenHandlerProvider<LecternScreenHandler> {
-    private final LecternScreenHandler handler;
+    private final LecternScreenHandler container;
     private final ScreenHandlerListener listener = new ScreenHandlerListener(){
 
         @Override
@@ -43,19 +43,19 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
         }
     };
 
-    public LecternScreen(LecternScreenHandler handler, PlayerInventory inventory, Text title) {
-        this.handler = handler;
+    public LecternScreen(LecternScreenHandler container, PlayerInventory inventory, Text title) {
+        this.container = container;
     }
 
     @Override
     public LecternScreenHandler getScreenHandler() {
-        return this.handler;
+        return this.container;
     }
 
     @Override
     protected void init() {
         super.init();
-        this.handler.addListener(this.listener);
+        this.container.addListener(this.listener);
     }
 
     @Override
@@ -67,7 +67,7 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
     @Override
     public void removed() {
         super.removed();
-        this.handler.removeListener(this.listener);
+        this.container.removeListener(this.listener);
     }
 
     @Override
@@ -92,7 +92,7 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
 
     @Override
     protected boolean jumpToPage(int page) {
-        if (page != this.handler.getPage()) {
+        if (page != this.container.getPage()) {
             this.sendButtonPressPacket(100 + page);
             return true;
         }
@@ -100,7 +100,7 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
     }
 
     private void sendButtonPressPacket(int id) {
-        this.client.interactionManager.clickButton(this.handler.syncId, id);
+        this.client.interactionManager.clickButton(this.container.syncId, id);
     }
 
     @Override
@@ -109,12 +109,12 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
     }
 
     private void updatePageProvider() {
-        ItemStack itemStack = this.handler.getBookItem();
+        ItemStack itemStack = this.container.getBookItem();
         this.setPageProvider(BookScreen.Contents.create(itemStack));
     }
 
     private void updatePage() {
-        this.setPage(this.handler.getPage());
+        this.setPage(this.container.getPage());
     }
 
     @Override

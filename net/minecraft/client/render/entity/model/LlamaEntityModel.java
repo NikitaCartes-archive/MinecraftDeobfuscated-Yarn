@@ -6,6 +6,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5605;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -17,71 +23,54 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class LlamaEntityModel<T extends AbstractDonkeyEntity>
 extends EntityModel<T> {
-    private final ModelPart head;
-    private final ModelPart torso;
-    private final ModelPart rightBackLeg;
-    private final ModelPart leftBackLeg;
-    private final ModelPart rightFrontLeg;
-    private final ModelPart leftFrontLeg;
-    private final ModelPart rightChest;
-    private final ModelPart leftChest;
+    private final ModelPart field_27443;
+    private final ModelPart field_27444;
+    private final ModelPart field_27445;
+    private final ModelPart field_27446;
+    private final ModelPart field_27447;
+    private final ModelPart field_27448;
+    private final ModelPart field_27449;
+    private final ModelPart field_27450;
 
-    public LlamaEntityModel(float scale) {
-        this.textureWidth = 128;
-        this.textureHeight = 64;
-        this.head = new ModelPart(this, 0, 0);
-        this.head.addCuboid(-2.0f, -14.0f, -10.0f, 4.0f, 4.0f, 9.0f, scale);
-        this.head.setPivot(0.0f, 7.0f, -6.0f);
-        this.head.setTextureOffset(0, 14).addCuboid(-4.0f, -16.0f, -6.0f, 8.0f, 18.0f, 6.0f, scale);
-        this.head.setTextureOffset(17, 0).addCuboid(-4.0f, -19.0f, -4.0f, 3.0f, 3.0f, 2.0f, scale);
-        this.head.setTextureOffset(17, 0).addCuboid(1.0f, -19.0f, -4.0f, 3.0f, 3.0f, 2.0f, scale);
-        this.torso = new ModelPart(this, 29, 0);
-        this.torso.addCuboid(-6.0f, -10.0f, -7.0f, 12.0f, 18.0f, 10.0f, scale);
-        this.torso.setPivot(0.0f, 5.0f, 2.0f);
-        this.rightChest = new ModelPart(this, 45, 28);
-        this.rightChest.addCuboid(-3.0f, 0.0f, 0.0f, 8.0f, 8.0f, 3.0f, scale);
-        this.rightChest.setPivot(-8.5f, 3.0f, 3.0f);
-        this.rightChest.yaw = 1.5707964f;
-        this.leftChest = new ModelPart(this, 45, 41);
-        this.leftChest.addCuboid(-3.0f, 0.0f, 0.0f, 8.0f, 8.0f, 3.0f, scale);
-        this.leftChest.setPivot(5.5f, 3.0f, 3.0f);
-        this.leftChest.yaw = 1.5707964f;
+    public LlamaEntityModel(ModelPart modelPart) {
+        this.field_27443 = modelPart.method_32086("head");
+        this.field_27444 = modelPart.method_32086("body");
+        this.field_27449 = modelPart.method_32086("right_chest");
+        this.field_27450 = modelPart.method_32086("left_chest");
+        this.field_27445 = modelPart.method_32086("right_hind_leg");
+        this.field_27446 = modelPart.method_32086("left_hind_leg");
+        this.field_27447 = modelPart.method_32086("right_front_leg");
+        this.field_27448 = modelPart.method_32086("left_front_leg");
+    }
+
+    public static class_5607 method_32018(class_5605 arg) {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32098(-2.0f, -14.0f, -10.0f, 4.0f, 4.0f, 9.0f, arg).method_32101(0, 14).method_32103("neck", -4.0f, -16.0f, -6.0f, 8.0f, 18.0f, 6.0f, arg).method_32101(17, 0).method_32103("ear", -4.0f, -19.0f, -4.0f, 3.0f, 3.0f, 2.0f, arg).method_32101(17, 0).method_32103("ear", 1.0f, -19.0f, -4.0f, 3.0f, 3.0f, 2.0f, arg), class_5603.method_32090(0.0f, 7.0f, -6.0f));
+        lv2.method_32117("body", class_5606.method_32108().method_32101(29, 0).method_32098(-6.0f, -10.0f, -7.0f, 12.0f, 18.0f, 10.0f, arg), class_5603.method_32091(0.0f, 5.0f, 2.0f, 1.5707964f, 0.0f, 0.0f));
+        lv2.method_32117("right_chest", class_5606.method_32108().method_32101(45, 28).method_32098(-3.0f, 0.0f, 0.0f, 8.0f, 8.0f, 3.0f, arg), class_5603.method_32091(-8.5f, 3.0f, 3.0f, 0.0f, 1.5707964f, 0.0f));
+        lv2.method_32117("left_chest", class_5606.method_32108().method_32101(45, 41).method_32098(-3.0f, 0.0f, 0.0f, 8.0f, 8.0f, 3.0f, arg), class_5603.method_32091(5.5f, 3.0f, 3.0f, 0.0f, 1.5707964f, 0.0f));
         int i = 4;
         int j = 14;
-        this.rightBackLeg = new ModelPart(this, 29, 29);
-        this.rightBackLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 14.0f, 4.0f, scale);
-        this.rightBackLeg.setPivot(-2.5f, 10.0f, 6.0f);
-        this.leftBackLeg = new ModelPart(this, 29, 29);
-        this.leftBackLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 14.0f, 4.0f, scale);
-        this.leftBackLeg.setPivot(2.5f, 10.0f, 6.0f);
-        this.rightFrontLeg = new ModelPart(this, 29, 29);
-        this.rightFrontLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 14.0f, 4.0f, scale);
-        this.rightFrontLeg.setPivot(-2.5f, 10.0f, -4.0f);
-        this.leftFrontLeg = new ModelPart(this, 29, 29);
-        this.leftFrontLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 14.0f, 4.0f, scale);
-        this.leftFrontLeg.setPivot(2.5f, 10.0f, -4.0f);
-        this.rightBackLeg.pivotX -= 1.0f;
-        this.leftBackLeg.pivotX += 1.0f;
-        this.rightBackLeg.pivotZ += 0.0f;
-        this.leftBackLeg.pivotZ += 0.0f;
-        this.rightFrontLeg.pivotX -= 1.0f;
-        this.leftFrontLeg.pivotX += 1.0f;
-        this.rightFrontLeg.pivotZ -= 1.0f;
-        this.leftFrontLeg.pivotZ -= 1.0f;
+        class_5606 lv3 = class_5606.method_32108().method_32101(29, 29).method_32098(-2.0f, 0.0f, -2.0f, 4.0f, 14.0f, 4.0f, arg);
+        lv2.method_32117("right_hind_leg", lv3, class_5603.method_32090(-3.5f, 10.0f, 6.0f));
+        lv2.method_32117("left_hind_leg", lv3, class_5603.method_32090(3.5f, 10.0f, 6.0f));
+        lv2.method_32117("right_front_leg", lv3, class_5603.method_32090(-3.5f, 10.0f, -5.0f));
+        lv2.method_32117("left_front_leg", lv3, class_5603.method_32090(3.5f, 10.0f, -5.0f));
+        return class_5607.method_32110(lv, 128, 64);
     }
 
     @Override
     public void setAngles(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
         boolean bl;
-        this.head.pitch = j * ((float)Math.PI / 180);
-        this.head.yaw = i * ((float)Math.PI / 180);
-        this.torso.pitch = 1.5707964f;
-        this.rightBackLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
-        this.leftBackLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
-        this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
-        this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
-        this.rightChest.visible = bl = !((PassiveEntity)abstractDonkeyEntity).isBaby() && ((AbstractDonkeyEntity)abstractDonkeyEntity).hasChest();
-        this.leftChest.visible = bl;
+        this.field_27443.pitch = j * ((float)Math.PI / 180);
+        this.field_27443.yaw = i * ((float)Math.PI / 180);
+        this.field_27445.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
+        this.field_27446.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
+        this.field_27447.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
+        this.field_27448.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
+        this.field_27449.visible = bl = !((PassiveEntity)abstractDonkeyEntity).isBaby() && ((AbstractDonkeyEntity)abstractDonkeyEntity).hasChest();
+        this.field_27450.visible = bl;
     }
 
     @Override
@@ -92,21 +81,21 @@ extends EntityModel<T> {
             float g = 0.7f;
             matrices.scale(0.71428573f, 0.64935064f, 0.7936508f);
             matrices.translate(0.0, 1.3125, 0.22f);
-            this.head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.field_27443.render(matrices, vertices, light, overlay, red, green, blue, alpha);
             matrices.pop();
             matrices.push();
             float h = 1.1f;
             matrices.scale(0.625f, 0.45454544f, 0.45454544f);
             matrices.translate(0.0, 2.0625, 0.0);
-            this.torso.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.field_27444.render(matrices, vertices, light, overlay, red, green, blue, alpha);
             matrices.pop();
             matrices.push();
             matrices.scale(0.45454544f, 0.41322312f, 0.45454544f);
             matrices.translate(0.0, 2.0625, 0.0);
-            ImmutableList.of(this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.field_27445, this.field_27446, this.field_27447, this.field_27448, this.field_27449, this.field_27450).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         } else {
-            ImmutableList.of(this.head, this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.field_27443, this.field_27444, this.field_27445, this.field_27446, this.field_27447, this.field_27448, this.field_27449, this.field_27450).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
         }
     }
 }

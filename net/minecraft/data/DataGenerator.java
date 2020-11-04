@@ -22,9 +22,9 @@ public class DataGenerator {
     private final Path output;
     private final List<DataProvider> providers = Lists.newArrayList();
 
-    public DataGenerator(Path output, Collection<Path> inputs) {
+    public DataGenerator(Path output, Collection<Path> collection) {
         this.output = output;
-        this.inputs = inputs;
+        this.inputs = collection;
     }
 
     public Collection<Path> getInputs() {
@@ -52,8 +52,8 @@ public class DataGenerator {
         dataCache.write();
     }
 
-    public void install(DataProvider provider) {
-        this.providers.add(provider);
+    public void install(DataProvider dataProvider) {
+        this.providers.add(dataProvider);
     }
 
     static {

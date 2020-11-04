@@ -27,7 +27,8 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -131,7 +132,7 @@ implements Angerable {
     private void method_29942() {
         double d = this.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
         Box box = Box.method_29968(this.getPos()).expand(d, 10.0, d);
-        this.world.getEntitiesIncludingUngeneratedChunks(ZombifiedPiglinEntity.class, box).stream().filter(zombifiedPiglinEntity -> zombifiedPiglinEntity != this).filter(zombifiedPiglinEntity -> zombifiedPiglinEntity.getTarget() == null).filter(zombifiedPiglinEntity -> !zombifiedPiglinEntity.isTeammate(this.getTarget())).forEach(zombifiedPiglinEntity -> zombifiedPiglinEntity.setTarget(this.getTarget()));
+        this.world.getEntitiesByClass(ZombifiedPiglinEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR).stream().filter(zombifiedPiglinEntity -> zombifiedPiglinEntity != this).filter(zombifiedPiglinEntity -> zombifiedPiglinEntity.getTarget() == null).filter(zombifiedPiglinEntity -> !zombifiedPiglinEntity.isTeammate(this.getTarget())).forEach(zombifiedPiglinEntity -> zombifiedPiglinEntity.setTarget(this.getTarget()));
     }
 
     private void method_29533() {
@@ -156,7 +157,7 @@ implements Angerable {
     }
 
     public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return world.getDifficulty() != Difficulty.PEACEFUL && world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
+        return world.getDifficulty() != Difficulty.PEACEFUL && !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
     }
 
     @Override
@@ -165,15 +166,15 @@ implements Angerable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        this.writeAngerToNbt(nbt);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        this.angerToTag(tag);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.angerFromTag((ServerWorld)this.world, nbt);
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.angerFromTag(this.world, tag);
     }
 
     @Override

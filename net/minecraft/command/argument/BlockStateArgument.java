@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
@@ -21,9 +21,9 @@ implements Predicate<CachedBlockPosition> {
     private final BlockState state;
     private final Set<Property<?>> properties;
     @Nullable
-    private final NbtCompound data;
+    private final CompoundTag data;
 
-    public BlockStateArgument(BlockState state, Set<Property<?>> properties, @Nullable NbtCompound data) {
+    public BlockStateArgument(BlockState state, Set<Property<?>> properties, @Nullable CompoundTag data) {
         this.state = state;
         this.properties = properties;
         this.data = data;
@@ -45,26 +45,26 @@ implements Predicate<CachedBlockPosition> {
         }
         if (this.data != null) {
             BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-            return blockEntity != null && NbtHelper.matches(this.data, blockEntity.writeNbt(new NbtCompound()), true);
+            return blockEntity != null && NbtHelper.matches(this.data, blockEntity.toTag(new CompoundTag()), true);
         }
         return true;
     }
 
-    public boolean setBlockState(ServerWorld world, BlockPos pos, int flags) {
+    public boolean setBlockState(ServerWorld serverWorld, BlockPos blockPos, int i) {
         BlockEntity blockEntity;
-        BlockState blockState = Block.postProcessState(this.state, world, pos);
+        BlockState blockState = Block.postProcessState(this.state, serverWorld, blockPos);
         if (blockState.isAir()) {
             blockState = this.state;
         }
-        if (!world.setBlockState(pos, blockState, flags)) {
+        if (!serverWorld.setBlockState(blockPos, blockState, i)) {
             return false;
         }
-        if (this.data != null && (blockEntity = world.getBlockEntity(pos)) != null) {
-            NbtCompound nbtCompound = this.data.copy();
-            nbtCompound.putInt("x", pos.getX());
-            nbtCompound.putInt("y", pos.getY());
-            nbtCompound.putInt("z", pos.getZ());
-            blockEntity.fromTag(blockState, nbtCompound);
+        if (this.data != null && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
+            CompoundTag compoundTag = this.data.copy();
+            compoundTag.putInt("x", blockPos.getX());
+            compoundTag.putInt("y", blockPos.getY());
+            compoundTag.putInt("z", blockPos.getZ());
+            blockEntity.fromTag(compoundTag);
         }
         return true;
     }

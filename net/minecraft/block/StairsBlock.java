@@ -186,14 +186,14 @@ implements Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction.getAxis().isHorizontal()) {
             return (BlockState)state.with(SHAPE, StairsBlock.getStairShape(state, world, pos));
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     private static StairShape getStairShape(BlockState state, BlockView world, BlockPos pos) {
@@ -201,14 +201,14 @@ implements Waterloggable {
         Direction direction2;
         Direction direction = state.get(FACING);
         BlockState blockState = world.getBlockState(pos.offset(direction));
-        if (StairsBlock.isStairs(blockState) && state.get(HALF) == blockState.get(HALF) && (direction2 = blockState.get(FACING)).getAxis() != state.get(FACING).getAxis() && StairsBlock.isDifferentOrientation(state, world, pos, direction2.getOpposite())) {
+        if (StairsBlock.isStairs(blockState) && state.get(HALF) == blockState.get(HALF) && (direction2 = blockState.get(FACING)).getAxis() != state.get(FACING).getAxis() && StairsBlock.method_10678(state, world, pos, direction2.getOpposite())) {
             if (direction2 == direction.rotateYCounterclockwise()) {
                 return StairShape.OUTER_LEFT;
             }
             return StairShape.OUTER_RIGHT;
         }
         BlockState blockState2 = world.getBlockState(pos.offset(direction.getOpposite()));
-        if (StairsBlock.isStairs(blockState2) && state.get(HALF) == blockState2.get(HALF) && (direction3 = blockState2.get(FACING)).getAxis() != state.get(FACING).getAxis() && StairsBlock.isDifferentOrientation(state, world, pos, direction3)) {
+        if (StairsBlock.isStairs(blockState2) && state.get(HALF) == blockState2.get(HALF) && (direction3 = blockState2.get(FACING)).getAxis() != state.get(FACING).getAxis() && StairsBlock.method_10678(state, world, pos, direction3)) {
             if (direction3 == direction.rotateYCounterclockwise()) {
                 return StairShape.INNER_LEFT;
             }
@@ -217,7 +217,7 @@ implements Waterloggable {
         return StairShape.STRAIGHT;
     }
 
-    private static boolean isDifferentOrientation(BlockState state, BlockView world, BlockPos pos, Direction dir) {
+    private static boolean method_10678(BlockState state, BlockView world, BlockPos pos, Direction dir) {
         BlockState blockState = world.getBlockState(pos.offset(dir));
         return !StairsBlock.isStairs(blockState) || blockState.get(FACING) != state.get(FACING) || blockState.get(HALF) != state.get(HALF);
     }

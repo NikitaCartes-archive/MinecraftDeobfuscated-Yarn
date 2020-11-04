@@ -60,7 +60,7 @@ public interface WorldBorderListener {
 
         @Override
         public void onSafeZoneChanged(WorldBorder border, double safeZoneRadius) {
-            this.border.setSafeZone(safeZoneRadius);
+            this.border.setBuffer(safeZoneRadius);
         }
     }
 }

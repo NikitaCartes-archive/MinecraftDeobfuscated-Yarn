@@ -82,7 +82,7 @@ extends HorseBaseEntity {
             return super.interactMob(player, hand);
         }
         if (!itemStack.isEmpty()) {
-            if (itemStack.getItem() == Items.SADDLE && !this.isSaddled()) {
+            if (itemStack.isOf(Items.SADDLE) && !this.isSaddled()) {
                 this.openInventory(player);
                 return ActionResult.success(this.world.isClient);
             }

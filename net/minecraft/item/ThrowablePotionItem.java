@@ -29,7 +29,7 @@ extends PotionItem {
             world.spawnEntity(potionEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
-        if (!user.abilities.creativeMode) {
+        if (!user.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }
         return TypedActionResult.success(itemStack, world.isClient());

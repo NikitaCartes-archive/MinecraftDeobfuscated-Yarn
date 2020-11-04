@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Represents an RGB color of a {@link Text}.
  * 
- * <p>This is immutable, and part of a {@link Style}.
+ * <p>This is immutable, and part of a {@link Style}.</p>
  * 
  * @see Style
  */
@@ -41,7 +41,7 @@ public final class TextColor {
      * Gets the RGB value of this color.
      * 
      * <p>The red bits can be obtained by {@code (rgb >> 16) & 0xFF}, green bits
-     * by {@code (rgb >> 8) & 0xFF}, blue bits by {@code rgb & 0xFF}.
+     * by {@code (rgb >> 8) & 0xFF}, blue bits by {@code rgb & 0xFF}.</p>
      */
     @Environment(value=EnvType.CLIENT)
     public int getRgb() {

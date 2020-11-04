@@ -80,18 +80,18 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         DoubleBlockHalf doubleBlockHalf = state.get(HALF);
         if (direction.getAxis() == Direction.Axis.Y && doubleBlockHalf == DoubleBlockHalf.LOWER == (direction == Direction.UP)) {
-            if (neighborState.isOf(this) && neighborState.get(HALF) != doubleBlockHalf) {
-                return (BlockState)((BlockState)((BlockState)((BlockState)state.with(FACING, neighborState.get(FACING))).with(OPEN, neighborState.get(OPEN))).with(HINGE, neighborState.get(HINGE))).with(POWERED, neighborState.get(POWERED));
+            if (newState.isOf(this) && newState.get(HALF) != doubleBlockHalf) {
+                return (BlockState)((BlockState)((BlockState)((BlockState)state.with(FACING, newState.get(FACING))).with(OPEN, newState.get(OPEN))).with(HINGE, newState.get(HINGE))).with(POWERED, newState.get(POWERED));
             }
             return Blocks.AIR.getDefaultState();
         }
         if (doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
@@ -130,8 +130,8 @@ extends Block {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockPos blockPos = ctx.getBlockPos();
-        if (blockPos.getY() < 255 && ctx.getWorld().getBlockState(blockPos.up()).canReplace(ctx)) {
-            World world = ctx.getWorld();
+        World world = ctx.getWorld();
+        if (blockPos.getY() < world.getTopHeightLimit() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx)) {
             boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
             return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(FACING, ctx.getPlayerFacing())).with(HINGE, this.getHinge(ctx))).with(POWERED, bl)).with(OPEN, bl)).with(HALF, DoubleBlockHalf.LOWER);
         }
@@ -203,7 +203,7 @@ extends Block {
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
         boolean bl;
         boolean bl2 = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.offset(state.get(HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN)) ? true : (bl = false);
-        if (block != this && bl != state.get(POWERED)) {
+        if (!this.getDefaultState().isOf(block) && bl != state.get(POWERED)) {
             if (bl != state.get(OPEN)) {
                 this.playOpenCloseSound(world, pos, bl);
             }

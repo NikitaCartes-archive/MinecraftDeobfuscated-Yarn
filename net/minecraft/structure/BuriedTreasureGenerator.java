@@ -7,7 +7,7 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -29,37 +29,37 @@ public class BuriedTreasureGenerator {
             this.boundingBox = new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
         }
 
-        public Piece(StructureManager manager, NbtCompound tag) {
+        public Piece(StructureManager manager, CompoundTag tag) {
             super(StructurePieceType.BURIED_TREASURE, tag);
         }
 
         @Override
-        protected void toNbt(NbtCompound tag) {
+        protected void toNbt(CompoundTag tag) {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
+        public boolean generate(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
+            int i = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
             BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
-            while (mutable.getY() > 0) {
-                BlockState blockState = world.getBlockState(mutable);
-                BlockState blockState2 = world.getBlockState((BlockPos)mutable.down());
+            while (mutable.getY() > structureWorldAccess.getBottomHeightLimit()) {
+                BlockState blockState = structureWorldAccess.getBlockState(mutable);
+                BlockState blockState2 = structureWorldAccess.getBlockState((BlockPos)mutable.down());
                 if (blockState2 == Blocks.SANDSTONE.getDefaultState() || blockState2 == Blocks.STONE.getDefaultState() || blockState2 == Blocks.ANDESITE.getDefaultState() || blockState2 == Blocks.GRANITE.getDefaultState() || blockState2 == Blocks.DIORITE.getDefaultState()) {
                     BlockState blockState3 = blockState.isAir() || this.isLiquid(blockState) ? Blocks.SAND.getDefaultState() : blockState;
                     for (Direction direction : Direction.values()) {
-                        BlockPos blockPos = mutable.offset(direction);
-                        BlockState blockState4 = world.getBlockState(blockPos);
+                        BlockPos blockPos2 = mutable.offset(direction);
+                        BlockState blockState4 = structureWorldAccess.getBlockState(blockPos2);
                         if (!blockState4.isAir() && !this.isLiquid(blockState4)) continue;
-                        BlockPos blockPos2 = blockPos.down();
-                        BlockState blockState5 = world.getBlockState(blockPos2);
+                        BlockPos blockPos3 = blockPos2.down();
+                        BlockState blockState5 = structureWorldAccess.getBlockState(blockPos3);
                         if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.UP) {
-                            world.setBlockState(blockPos, blockState2, 3);
+                            structureWorldAccess.setBlockState(blockPos2, blockState2, 3);
                             continue;
                         }
-                        world.setBlockState(blockPos, blockState3, 3);
+                        structureWorldAccess.setBlockState(blockPos2, blockState3, 3);
                     }
                     this.boundingBox = new BlockBox(mutable.getX(), mutable.getY(), mutable.getZ(), mutable.getX(), mutable.getY(), mutable.getZ());
-                    return this.addChest(world, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
+                    return this.addChest(structureWorldAccess, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
                 }
                 mutable.move(0, -1, 0);
             }

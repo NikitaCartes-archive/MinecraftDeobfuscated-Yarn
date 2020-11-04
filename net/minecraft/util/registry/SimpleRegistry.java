@@ -61,8 +61,8 @@ extends MutableRegistry<T> {
         this.lifecycle = lifecycle;
     }
 
-    public static <T> MapCodec<RegistryManagerEntry<T>> createRegistryManagerEntryCodec(RegistryKey<? extends Registry<T>> key, MapCodec<T> entryCodec) {
-        return RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.xmap(RegistryKey.createKeyFactory(key), RegistryKey::getValue).fieldOf("name")).forGetter(registryManagerEntry -> registryManagerEntry.key), ((MapCodec)Codec.INT.fieldOf("id")).forGetter(registryManagerEntry -> registryManagerEntry.rawId), entryCodec.forGetter(registryManagerEntry -> registryManagerEntry.entry)).apply((Applicative<RegistryManagerEntry, ?>)instance, RegistryManagerEntry::new));
+    public static <T> MapCodec<RegistryManagerEntry<T>> createRegistryManagerEntryCodec(RegistryKey<? extends Registry<T>> registryKey, MapCodec<T> entryCodec) {
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("name")).forGetter(registryManagerEntry -> registryManagerEntry.key), ((MapCodec)Codec.INT.fieldOf("id")).forGetter(registryManagerEntry -> registryManagerEntry.rawId), entryCodec.forGetter(registryManagerEntry -> registryManagerEntry.entry)).apply((Applicative<RegistryManagerEntry, ?>)instance, RegistryManagerEntry::new));
     }
 
     @Override
@@ -149,8 +149,8 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public Lifecycle getEntryLifecycle(T entry) {
-        return this.entryToLifecycle.get(entry);
+    public Lifecycle getEntryLifecycle(T object) {
+        return this.entryToLifecycle.get(object);
     }
 
     @Override
@@ -197,9 +197,9 @@ extends MutableRegistry<T> {
         return this.idToEntry.containsKey(id);
     }
 
-    public static <T> Codec<SimpleRegistry<T>> createRegistryManagerCodec(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Codec<T> entryCodec) {
-        return SimpleRegistry.createRegistryManagerEntryCodec(key, entryCodec.fieldOf("element")).codec().listOf().xmap(list -> {
-            SimpleRegistry simpleRegistry = new SimpleRegistry(key, lifecycle);
+    public static <T> Codec<SimpleRegistry<T>> createRegistryManagerCodec(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> entryCodec) {
+        return SimpleRegistry.createRegistryManagerEntryCodec(registryKey, entryCodec.fieldOf("element")).codec().listOf().xmap(list -> {
+            SimpleRegistry simpleRegistry = new SimpleRegistry(registryKey, lifecycle);
             for (RegistryManagerEntry registryManagerEntry : list) {
                 simpleRegistry.set(registryManagerEntry.rawId, registryManagerEntry.key, registryManagerEntry.entry, lifecycle);
             }
@@ -217,9 +217,9 @@ extends MutableRegistry<T> {
         return RegistryCodec.of(registryRef, lifecycle, entryCodec);
     }
 
-    public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Codec<T> entryCodec) {
-        return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(key), RegistryKey::getValue), entryCodec).xmap(map -> {
-            SimpleRegistry simpleRegistry = new SimpleRegistry(key, lifecycle);
+    public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> entryCodec) {
+        return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue), entryCodec).xmap(map -> {
+            SimpleRegistry simpleRegistry = new SimpleRegistry(registryKey, lifecycle);
             map.forEach((? super K registryKey, ? super V object) -> simpleRegistry.add((RegistryKey)registryKey, (Object)object, lifecycle));
             return simpleRegistry;
         }, simpleRegistry -> ImmutableMap.copyOf(simpleRegistry.keyToEntry));

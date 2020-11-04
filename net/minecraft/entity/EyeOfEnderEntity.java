@@ -17,7 +17,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -45,12 +45,11 @@ implements FlyingItemEntity {
 
     public EyeOfEnderEntity(World world, double x, double y, double z) {
         this((EntityType<? extends EyeOfEnderEntity>)EntityType.EYE_OF_ENDER, world);
-        this.lifespan = 0;
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
     }
 
     public void setItem(ItemStack stack2) {
-        if (stack2.getItem() != Items.ENDER_EYE || stack2.hasTag()) {
+        if (!stack2.isOf(Items.ENDER_EYE) || stack2.hasTag()) {
             this.getDataTracker().set(ITEM, Util.make(stack2.copy(), stack -> stack.setCount(1)));
         }
     }
@@ -153,11 +152,11 @@ implements FlyingItemEntity {
             this.world.addParticle(ParticleTypes.PORTAL, d - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3, e - vec3d.y * 0.25 - 0.5, f - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3, vec3d.x, vec3d.y, vec3d.z);
         }
         if (!this.world.isClient) {
-            this.setPosition(d, e, f);
+            this.updatePosition(d, e, f);
             ++this.lifespan;
             if (this.lifespan > 80 && !this.world.isClient) {
                 this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0f, 1.0f);
-                this.remove();
+                this.discard();
                 if (this.dropsItem) {
                     this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));
                 } else {
@@ -170,16 +169,16 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
+    public void writeCustomDataToTag(CompoundTag tag) {
         ItemStack itemStack = this.getTrackedItem();
         if (!itemStack.isEmpty()) {
-            nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
+            tag.put("Item", itemStack.toTag(new CompoundTag()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Item"));
         this.setItem(itemStack);
     }
 

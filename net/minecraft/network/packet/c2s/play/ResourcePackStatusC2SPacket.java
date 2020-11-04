@@ -34,6 +34,10 @@ implements Packet<ServerPlayPacketListener> {
         serverPlayPacketListener.onResourcePackStatus(this);
     }
 
+    public Status getStatus() {
+        return this.status;
+    }
+
     public static enum Status {
         SUCCESSFULLY_LOADED,
         DECLINED,

@@ -24,7 +24,7 @@ public class NetworkThreadUtils {
                 if (listener.getConnection().isOpen()) {
                     packet.apply(listener);
                 } else {
-                    LOGGER.debug("Ignoring packet due to disconnection: " + packet);
+                    LOGGER.debug("Ignoring packet due to disconnection: {}", (Object)packet);
                 }
             });
             throw OffThreadException.INSTANCE;

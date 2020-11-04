@@ -36,7 +36,7 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -93,19 +93,19 @@ extends RaiderEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("AttackTick", this.attackTick);
-        nbt.putInt("StunTick", this.stunTick);
-        nbt.putInt("RoarTick", this.roarTick);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("AttackTick", this.attackTick);
+        tag.putInt("StunTick", this.stunTick);
+        tag.putInt("RoarTick", this.roarTick);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.attackTick = nbt.getInt("AttackTick");
-        this.stunTick = nbt.getInt("StunTick");
-        this.roarTick = nbt.getInt("RoarTick");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.attackTick = tag.getInt("AttackTick");
+        this.stunTick = tag.getInt("StunTick");
+        this.roarTick = tag.getInt("RoarTick");
     }
 
     @Override
@@ -136,10 +136,7 @@ extends RaiderEntity {
     @Override
     @Nullable
     public Entity getPrimaryPassenger() {
-        if (this.getPassengerList().isEmpty()) {
-            return null;
-        }
-        return this.getPassengerList().get(0);
+        return this.getFirstPassenger();
     }
 
     @Override
@@ -224,21 +221,27 @@ extends RaiderEntity {
         }
     }
 
+    /*
+     * WARNING - void declaration
+     */
     private void roar() {
         if (this.isAlive()) {
+            void var3_5;
             List<Entity> list = this.world.getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), IS_NOT_RAVAGER);
-            for (Entity entity : list) {
-                if (!(entity instanceof IllagerEntity)) {
-                    entity.damage(DamageSource.mob(this), 6.0f);
+            for (LivingEntity livingEntity : list) {
+                if (!(livingEntity instanceof IllagerEntity)) {
+                    livingEntity.damage(DamageSource.mob(this), 6.0f);
                 }
-                this.knockBack(entity);
+                this.knockBack(livingEntity);
             }
             Vec3d vec3d = this.getBoundingBox().getCenter();
-            for (int i = 0; i < 40; ++i) {
+            boolean bl = false;
+            while (var3_5 < 40) {
                 double d = this.random.nextGaussian() * 0.2;
                 double e = this.random.nextGaussian() * 0.2;
                 double f = this.random.nextGaussian() * 0.2;
                 this.world.addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
+                ++var3_5;
             }
         }
     }

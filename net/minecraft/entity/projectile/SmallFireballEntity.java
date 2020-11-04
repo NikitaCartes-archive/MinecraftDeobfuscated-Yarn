@@ -69,7 +69,7 @@ extends AbstractFireballEntity {
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
         if (!this.world.isClient) {
-            this.remove();
+            this.discard();
         }
     }
 

@@ -32,7 +32,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -75,16 +75,16 @@ RangedAttackMob {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putBoolean("Pumpkin", this.hasPumpkin());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putBoolean("Pumpkin", this.hasPumpkin());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("Pumpkin")) {
-            this.setHasPumpkin(nbt.getBoolean("Pumpkin"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("Pumpkin")) {
+            this.setHasPumpkin(tag.getBoolean("Pumpkin"));
         }
     }
 
@@ -139,7 +139,7 @@ RangedAttackMob {
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
+        if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
             this.sheared(SoundCategory.PLAYERS);
             if (!this.world.isClient) {
                 itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));

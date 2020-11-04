@@ -5,8 +5,9 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.MagmaCubeEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.MagmaCubeEntity;
@@ -19,8 +20,8 @@ public class MagmaCubeEntityRenderer
 extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/slime/magmacube.png");
 
-    public MagmaCubeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher, new MagmaCubeEntityModel(), 0.25f);
+    public MagmaCubeEntityRenderer(class_5617.class_5618 arg) {
+        super(arg, new MagmaCubeEntityModel(arg.method_32167(EntityModelLayers.MAGMA_CUBE)), 0.25f);
     }
 
     @Override

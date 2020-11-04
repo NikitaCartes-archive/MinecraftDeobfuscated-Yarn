@@ -14,18 +14,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackProvider;
+import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * A resource pack manager manages a list of {@link ResourcePackProfile}s and
- * builds {@linkplain #createResourcePacks() a list of resource packs} when the
- * resource manager reloads.
- */
 public class ResourcePackManager
 implements AutoCloseable {
     private final Set<ResourcePackProvider> providers;
@@ -38,8 +38,8 @@ implements AutoCloseable {
         this.providers = ImmutableSet.copyOf(providers);
     }
 
-    public ResourcePackManager(ResourcePackProvider ... resourcePackProviders) {
-        this(ResourcePackProfile::new, resourcePackProviders);
+    public ResourcePackManager(ResourceType type, ResourcePackProvider ... providers) {
+        this((String string, Text text, boolean bl, Supplier<ResourcePack> supplier, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) -> new ResourcePackProfile(string, text, bl, supplier, packResourceMetadata, type, insertionPosition, resourcePackSource), providers);
     }
 
     public void scanPacks() {

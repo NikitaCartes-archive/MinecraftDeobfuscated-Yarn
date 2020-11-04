@@ -12,7 +12,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class TrackTargetGoal
@@ -64,7 +63,7 @@ extends Goal {
                 return false;
             }
         }
-        if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.invulnerable) {
+        if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable) {
             return false;
         }
         this.mob.setTarget(livingEntity);
@@ -123,8 +122,8 @@ extends Goal {
         if (pathNode == null) {
             return false;
         }
-        int i = pathNode.x - MathHelper.floor(entity.getX());
-        return (double)(i * i + (j = pathNode.z - MathHelper.floor(entity.getZ())) * j) <= 2.25;
+        int i = pathNode.x - entity.getBlockX();
+        return (double)(i * i + (j = pathNode.z - entity.getBlockZ()) * j) <= 2.25;
     }
 
     public TrackTargetGoal setMaxTimeWithoutVisibility(int time) {

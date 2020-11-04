@@ -14,7 +14,7 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class DownloadingTerrainScreen
 extends Screen {
-    private static final Text TEXT = new TranslatableText("multiplayer.downloadingTerrain");
+    private static final Text field_26544 = new TranslatableText("multiplayer.downloadingTerrain");
 
     public DownloadingTerrainScreen() {
         super(NarratorManager.EMPTY);
@@ -28,7 +28,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackgroundTexture(0);
-        DownloadingTerrainScreen.drawCenteredText(matrices, this.textRenderer, TEXT, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
+        DownloadingTerrainScreen.drawCenteredText(matrices, this.textRenderer, field_26544, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

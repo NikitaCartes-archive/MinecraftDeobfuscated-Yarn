@@ -13,7 +13,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
@@ -47,17 +47,17 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.commandExecutor.readNbt(nbt);
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.commandExecutor.deserialize(tag);
         this.getDataTracker().set(COMMAND, this.getCommandExecutor().getCommand());
         this.getDataTracker().set(LAST_OUTPUT, this.getCommandExecutor().getLastOutput());
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        this.commandExecutor.writeNbt(nbt);
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        this.commandExecutor.serialize(tag);
     }
 
     @Override

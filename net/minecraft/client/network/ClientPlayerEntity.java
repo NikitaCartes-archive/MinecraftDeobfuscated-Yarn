@@ -49,7 +49,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ElytraItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -123,7 +122,7 @@ extends AbstractClientPlayerEntity {
     private boolean riding;
     private boolean autoJumpEnabled = true;
     private int ticksToNextAutojump;
-    private boolean field_3939;
+    private boolean falling;
     private int underwaterVisibilityTicks;
     private boolean showsDeathScreen = true;
 
@@ -155,7 +154,8 @@ extends AbstractClientPlayerEntity {
             return false;
         }
         if (entity instanceof AbstractMinecartEntity) {
-            this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity));
+            this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity, true));
+            this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity, false));
         }
         if (entity instanceof BoatEntity) {
             this.prevYaw = entity.yaw;
@@ -166,8 +166,8 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void method_29239() {
-        super.method_29239();
+    public void dismountVehicle() {
+        super.dismountVehicle();
         this.riding = false;
     }
 
@@ -272,7 +272,7 @@ extends AbstractClientPlayerEntity {
     public boolean dropSelectedItem(boolean dropEntireStack) {
         PlayerActionC2SPacket.Action action = dropEntireStack ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
         this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
-        return this.inventory.removeStack(this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1) != ItemStack.EMPTY;
+        return this.getInventory().removeStack(this.getInventory().selectedSlot, dropEntireStack && !this.getInventory().getMainHandStack().isEmpty() ? this.getInventory().getMainHandStack().getCount() : 1) != ItemStack.EMPTY;
     }
 
     public void sendChatMessage(String message) {
@@ -305,7 +305,7 @@ extends AbstractClientPlayerEntity {
     }
 
     public void closeScreen() {
-        this.inventory.setCursorStack(ItemStack.EMPTY);
+        this.getInventory().setCursorStack(ItemStack.EMPTY);
         super.closeHandledScreen();
         this.client.openScreen(null);
     }
@@ -333,7 +333,7 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void sendAbilitiesUpdate() {
-        this.networkHandler.sendPacket(new UpdatePlayerAbilitiesC2SPacket(this.abilities));
+        this.networkHandler.sendPacket(new UpdatePlayerAbilitiesC2SPacket(this.getAbilities()));
     }
 
     @Override
@@ -343,17 +343,17 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public boolean isHoldingOntoLadder() {
-        return !this.abilities.flying && super.isHoldingOntoLadder();
+        return !this.getAbilities().flying && super.isHoldingOntoLadder();
     }
 
     @Override
     public boolean shouldSpawnSprintingParticles() {
-        return !this.abilities.flying && super.shouldSpawnSprintingParticles();
+        return !this.getAbilities().flying && super.shouldSpawnSprintingParticles();
     }
 
     @Override
     public boolean shouldDisplaySoulSpeedEffects() {
-        return !this.abilities.flying && super.shouldDisplaySoulSpeedEffects();
+        return !this.getAbilities().flying && super.shouldDisplaySoulSpeedEffects();
     }
 
     protected void startRidingJump() {
@@ -452,7 +452,7 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID sender) {
+    public void sendSystemMessage(Text message, UUID senderUuid) {
         this.client.inGameHud.getChatHud().addMessage(message);
     }
 
@@ -528,7 +528,7 @@ extends AbstractClientPlayerEntity {
                 this.clearActiveItem();
             }
         }
-        if (FLAGS.equals(data) && this.isFallFlying() && !this.field_3939) {
+        if (FLAGS.equals(data) && this.isFallFlying() && !this.falling) {
             this.client.getSoundManager().play(new ElytraSoundInstance(this));
         }
     }
@@ -568,9 +568,8 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void useBook(ItemStack book, Hand hand) {
-        Item item = book.getItem();
-        if (item == Items.WRITABLE_BOOK) {
+    public void openEditBookScreen(ItemStack book, Hand hand) {
+        if (book.isOf(Items.WRITABLE_BOOK)) {
             this.client.openScreen(new BookEditScreen(this, book, hand));
         }
     }
@@ -631,7 +630,7 @@ extends AbstractClientPlayerEntity {
         boolean bl = this.input.jumping;
         boolean bl2 = this.input.sneaking;
         boolean bl3 = this.isWalking();
-        this.inSneakingPose = !this.abilities.flying && !this.isSwimming() && this.wouldPoseNotCollide(EntityPose.CROUCHING) && (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
+        this.inSneakingPose = !this.getAbilities().flying && !this.isSwimming() && this.wouldPoseNotCollide(EntityPose.CROUCHING) && (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
         this.input.tick(this.shouldSlowDown());
         this.client.getTutorialManager().onMovement(this.input);
         if (this.isUsingItem() && !this.hasVehicle()) {
@@ -654,7 +653,7 @@ extends AbstractClientPlayerEntity {
         if (bl2) {
             this.ticksLeftToDoubleTapSprint = 0;
         }
-        boolean bl7 = bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.abilities.allowFlying;
+        boolean bl7 = bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.getAbilities().allowFlying;
         if (!(!this.onGround && !this.isSubmergedInWater() || bl2 || bl3 || !this.isWalking() || this.isSprinting() || !bl5 || this.isUsingItem() || this.hasStatusEffect(StatusEffects.BLINDNESS))) {
             if (this.ticksLeftToDoubleTapSprint > 0 || this.client.options.keySprint.isPressed()) {
                 this.setSprinting(true);
@@ -678,10 +677,10 @@ extends AbstractClientPlayerEntity {
             }
         }
         bl6 = false;
-        if (this.abilities.allowFlying) {
+        if (this.getAbilities().allowFlying) {
             if (this.client.interactionManager.isFlyingLocked()) {
-                if (!this.abilities.flying) {
-                    this.abilities.flying = true;
+                if (!this.getAbilities().flying) {
+                    this.getAbilities().flying = true;
                     bl6 = true;
                     this.sendAbilitiesUpdate();
                 }
@@ -689,18 +688,18 @@ extends AbstractClientPlayerEntity {
                 if (this.abilityResyncCountdown == 0) {
                     this.abilityResyncCountdown = 7;
                 } else if (!this.isSwimming()) {
-                    this.abilities.flying = !this.abilities.flying;
+                    this.getAbilities().flying = !this.getAbilities().flying;
                     bl6 = true;
                     this.sendAbilitiesUpdate();
                     this.abilityResyncCountdown = 0;
                 }
             }
         }
-        if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && !this.hasVehicle() && !this.isClimbing() && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.checkFallFlying()) {
+        if (this.input.jumping && !bl6 && !bl && !this.getAbilities().flying && !this.hasVehicle() && !this.isClimbing() && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack) && this.checkFallFlying()) {
             this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
         }
-        this.field_3939 = this.isFallFlying();
-        if (this.isTouchingWater() && this.input.sneaking && this.method_29920()) {
+        this.falling = this.isFallFlying();
+        if (this.isTouchingWater() && this.input.sneaking && this.shouldSwimInFluids()) {
             this.knockDownwards();
         }
         if (this.isSubmergedIn(FluidTags.WATER)) {
@@ -710,7 +709,7 @@ extends AbstractClientPlayerEntity {
             this.isSubmergedIn(FluidTags.WATER);
             this.underwaterVisibilityTicks = MathHelper.clamp(this.underwaterVisibilityTicks - 10, 0, 600);
         }
-        if (this.abilities.flying && this.isCamera()) {
+        if (this.getAbilities().flying && this.isCamera()) {
             i = 0;
             if (this.input.sneaking) {
                 --i;
@@ -719,7 +718,7 @@ extends AbstractClientPlayerEntity {
                 ++i;
             }
             if (i != 0) {
-                this.setVelocity(this.getVelocity().add(0.0, (float)i * this.abilities.getFlySpeed() * 3.0f, 0.0));
+                this.setVelocity(this.getVelocity().add(0.0, (float)i * this.getAbilities().getFlySpeed() * 3.0f, 0.0));
             }
         }
         if (this.hasJumpingMount()) {
@@ -745,8 +744,8 @@ extends AbstractClientPlayerEntity {
             this.field_3922 = 0.0f;
         }
         super.tickMovement();
-        if (this.onGround && this.abilities.flying && !this.client.interactionManager.isFlyingLocked()) {
-            this.abilities.flying = false;
+        if (this.onGround && this.getAbilities().flying && !this.client.interactionManager.isFlyingLocked()) {
+            this.getAbilities().flying = false;
             this.sendAbilitiesUpdate();
         }
     }
@@ -810,10 +809,10 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void move(MovementType movementType, Vec3d movement) {
+    public void move(MovementType type, Vec3d movement) {
         double d = this.getX();
         double e = this.getZ();
-        super.move(movementType, movement);
+        super.move(type, movement);
         this.autoJump((float)(this.getX() - d), (float)(this.getZ() - e));
     }
 

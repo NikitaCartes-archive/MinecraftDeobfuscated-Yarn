@@ -8,10 +8,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
@@ -22,19 +22,20 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
@@ -48,14 +49,16 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class Item
 implements ItemConvertible {
+    private static final Logger field_27017 = LogManager.getLogger();
     public static final Map<Block, Item> BLOCK_ITEMS = Maps.newHashMap();
     protected static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
     protected static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
-    protected static final Random RANDOM = new Random();
     protected final ItemGroup group;
     private final Rarity rarity;
     private final int maxCount;
@@ -75,15 +78,13 @@ implements ItemConvertible {
         return Registry.ITEM.get(id);
     }
 
-    /**
-     * @deprecated Please use {@link Block#asItem}
-     */
     @Deprecated
     public static Item fromBlock(Block block) {
         return BLOCK_ITEMS.getOrDefault(block, Items.AIR);
     }
 
     public Item(Settings settings) {
+        String string;
         this.group = settings.group;
         this.rarity = settings.rarity;
         this.recipeRemainder = settings.recipeRemainder;
@@ -91,12 +92,15 @@ implements ItemConvertible {
         this.maxCount = settings.maxCount;
         this.foodComponent = settings.foodComponent;
         this.fireproof = settings.fireproof;
+        if (SharedConstants.isDevelopment && !(string = this.getClass().getSimpleName()).endsWith("Item")) {
+            field_27017.error("Item classes should end with Item and {} doesn't.", (Object)string);
+        }
     }
 
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
     }
 
-    public boolean postProcessNbt(NbtCompound nbt) {
+    public boolean postProcessTag(CompoundTag tag) {
         return false;
     }
 
@@ -175,6 +179,30 @@ implements ItemConvertible {
         return this.maxDamage > 0;
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public boolean isItemBarVisible(ItemStack itemStack) {
+        return itemStack.isDamaged();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public int getItemBarStep(ItemStack itemStack) {
+        return Math.round(13.0f - (float)itemStack.getDamage() * 13.0f / (float)this.maxDamage);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public int getItemBarColor(ItemStack itemStack) {
+        float f = Math.max(0.0f, ((float)this.maxDamage - (float)itemStack.getDamage()) / (float)this.maxDamage);
+        return MathHelper.hsvToRgb(f / 3.0f, 1.0f, 1.0f);
+    }
+
+    public boolean onStackClicked(ItemStack itemStack, ItemStack itemStack2, ClickType clickType, PlayerInventory playerInventory) {
+        return false;
+    }
+
+    public boolean onClicked(ItemStack itemStack, ItemStack itemStack2, ClickType clickType, PlayerInventory playerInventory) {
+        return false;
+    }
+
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         return false;
     }
@@ -183,16 +211,7 @@ implements ItemConvertible {
         return false;
     }
 
-    /**
-     * Determines whether this item can be used as a suitable tool for mining the specified block.
-     * Depending on block implementation, when combined together, the correct item and block may achieve a better mining speed and yield
-     * drops that would not be obtained when mining otherwise.
-     * <p>
-     * Note that this is not the <b>only</b> way to achieve "effectiveness" when mining.
-     * Other items, such as shears on string, may use their own logic
-     * and calls to this method might not return a value consistent to this rule for those items.
-     */
-    public boolean isSuitableFor(BlockState state) {
+    public boolean isEffectiveOn(BlockState state) {
         return false;
     }
 
@@ -231,7 +250,7 @@ implements ItemConvertible {
     }
 
     /**
-     * Checks if an item should have its NBT data stored in {@link ItemStack#tag} sent to the client.
+     * Checks if an item should have its NBT data stored in {@link #tag} sent to the client.
      * 
      * <p>If an item is damageable, this method is ignored and data is always synced to client.
      */
@@ -375,15 +394,11 @@ implements ItemConvertible {
     }
 
     public boolean isUsedOnRelease(ItemStack stack) {
-        return stack.getItem() == Items.CROSSBOW;
+        return false;
     }
 
     public ItemStack getDefaultStack() {
         return new ItemStack(this);
-    }
-
-    public boolean isIn(Tag<Item> tag) {
-        return tag.contains(this);
     }
 
     /**
@@ -412,6 +427,15 @@ implements ItemConvertible {
 
     public boolean damage(DamageSource source) {
         return !this.fireproof || !source.isFire();
+    }
+
+    @Nullable
+    public SoundEvent method_31570() {
+        return null;
+    }
+
+    public boolean hasStoredInventory() {
+        return true;
     }
 
     public static class Settings {

@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 public class BlockAgeStructureProcessor
 extends StructureProcessor {
     public static final Codec<BlockAgeStructureProcessor> CODEC = ((MapCodec)Codec.FLOAT.fieldOf("mossiness")).xmap(BlockAgeStructureProcessor::new, blockAgeStructureProcessor -> Float.valueOf(blockAgeStructureProcessor.mossiness)).codec();
+    private static final BlockState[] field_27338 = new BlockState[]{Blocks.STONE_SLAB.getDefaultState(), Blocks.STONE_BRICK_SLAB.getDefaultState()};
     private final float mossiness;
 
     public BlockAgeStructureProcessor(float mossiness) {
@@ -32,7 +33,7 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
+    public Structure.StructureBlockInfo process(WorldView worldView, BlockPos pos, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
         Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
         BlockState blockState = structureBlockInfo2.state;
         BlockPos blockPos2 = structureBlockInfo2.pos;
@@ -71,9 +72,8 @@ extends StructureProcessor {
         if (random.nextFloat() >= 0.5f) {
             return null;
         }
-        BlockState[] blockStates = new BlockState[]{Blocks.STONE_SLAB.getDefaultState(), Blocks.STONE_BRICK_SLAB.getDefaultState()};
-        BlockState[] blockStates2 = new BlockState[]{(BlockState)((BlockState)Blocks.MOSSY_STONE_BRICK_STAIRS.getDefaultState().with(StairsBlock.FACING, direction)).with(StairsBlock.HALF, blockHalf), Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState()};
-        return this.process(random, blockStates, blockStates2);
+        BlockState[] blockStates = new BlockState[]{(BlockState)((BlockState)Blocks.MOSSY_STONE_BRICK_STAIRS.getDefaultState().with(StairsBlock.FACING, direction)).with(StairsBlock.HALF, blockHalf), Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState()};
+        return this.process(random, field_27338, blockStates);
     }
 
     @Nullable

@@ -54,13 +54,13 @@ extends DrawableHelper {
     private void renderBossBar(MatrixStack matrices, int x, int y, BossBar bossBar) {
         int i;
         this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
-        if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
-            this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2, 182, 5);
+        if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
+            this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
         }
         if ((i = (int)(bossBar.getPercent() * 183.0f)) > 0) {
             this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, i, 5);
-            if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
-                this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2 + 5, i, 5);
+            if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
+                this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, i, 5);
             }
         }
     }
@@ -92,7 +92,7 @@ extends DrawableHelper {
     public boolean shouldDarkenSky() {
         if (!this.bossBars.isEmpty()) {
             for (BossBar bossBar : this.bossBars.values()) {
-                if (!bossBar.shouldDarkenSky()) continue;
+                if (!bossBar.getDarkenSky()) continue;
                 return true;
             }
         }
@@ -102,7 +102,7 @@ extends DrawableHelper {
     public boolean shouldThickenFog() {
         if (!this.bossBars.isEmpty()) {
             for (BossBar bossBar : this.bossBars.values()) {
-                if (!bossBar.shouldThickenFog()) continue;
+                if (!bossBar.getThickenFog()) continue;
                 return true;
             }
         }

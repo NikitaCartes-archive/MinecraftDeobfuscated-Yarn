@@ -75,7 +75,7 @@ extends HandledScreen<StonecutterScreenHandler> {
         }
     }
 
-    private void renderRecipeBackground(MatrixStack matrices, int i, int j, int k, int l, int m) {
+    private void renderRecipeBackground(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
         for (int n = this.scrollOffset; n < m && n < ((StonecutterScreenHandler)this.handler).getAvailableRecipeCount(); ++n) {
             int o = n - this.scrollOffset;
             int p = k + o % 4 * 16;
@@ -87,7 +87,7 @@ extends HandledScreen<StonecutterScreenHandler> {
             } else if (i >= p && j >= r && i < p + 16 && j < r + 18) {
                 s += 36;
             }
-            this.drawTexture(matrices, p, r - 1, 0, s, 16, 18);
+            this.drawTexture(matrixStack, p, r - 1, 0, s, 16, 18);
         }
     }
 

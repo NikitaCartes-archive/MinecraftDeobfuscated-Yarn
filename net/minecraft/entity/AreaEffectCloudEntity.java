@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.command.argument.ParticleEffectArgumentType;
+import net.minecraft.command.argument.ParticleArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -23,8 +23,8 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
@@ -68,7 +68,7 @@ extends Entity {
 
     public AreaEffectCloudEntity(World world, double x, double y, double z) {
         this((EntityType<? extends AreaEffectCloudEntity>)EntityType.AREA_EFFECT_CLOUD, world);
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
     }
 
     @Override
@@ -91,7 +91,7 @@ extends Entity {
         double e = this.getY();
         double f = this.getZ();
         super.calculateDimensions();
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     public float getRadius() {
@@ -207,7 +207,7 @@ extends Entity {
                 break block23;
             }
             if (this.age >= this.waitTime + this.duration) {
-                this.remove();
+                this.discard();
                 return;
             }
             boolean bl3 = bl2 = this.age < this.waitTime;
@@ -219,7 +219,7 @@ extends Entity {
             }
             if (this.radiusGrowth != 0.0f) {
                 if ((f += this.radiusGrowth) < 0.5f) {
-                    this.remove();
+                    this.discard();
                     return;
                 }
                 this.setRadius(f);
@@ -256,7 +256,7 @@ extends Entity {
                             }
                             if (this.radiusOnUse != 0.0f) {
                                 if ((f += this.radiusOnUse) < 0.5f) {
-                                    this.remove();
+                                    this.discard();
                                     return;
                                 }
                                 this.setRadius(f);
@@ -264,7 +264,7 @@ extends Entity {
                             if (this.durationOnUse == 0) continue;
                             this.duration += this.durationOnUse;
                             if (this.duration > 0) continue;
-                            this.remove();
+                            this.discard();
                             return;
                         }
                     }
@@ -300,36 +300,36 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.age = nbt.getInt("Age");
-        this.duration = nbt.getInt("Duration");
-        this.waitTime = nbt.getInt("WaitTime");
-        this.reapplicationDelay = nbt.getInt("ReapplicationDelay");
-        this.durationOnUse = nbt.getInt("DurationOnUse");
-        this.radiusOnUse = nbt.getFloat("RadiusOnUse");
-        this.radiusGrowth = nbt.getFloat("RadiusPerTick");
-        this.setRadius(nbt.getFloat("Radius"));
-        if (nbt.containsUuid("Owner")) {
-            this.ownerUuid = nbt.getUuid("Owner");
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        this.age = tag.getInt("Age");
+        this.duration = tag.getInt("Duration");
+        this.waitTime = tag.getInt("WaitTime");
+        this.reapplicationDelay = tag.getInt("ReapplicationDelay");
+        this.durationOnUse = tag.getInt("DurationOnUse");
+        this.radiusOnUse = tag.getFloat("RadiusOnUse");
+        this.radiusGrowth = tag.getFloat("RadiusPerTick");
+        this.setRadius(tag.getFloat("Radius"));
+        if (tag.containsUuid("Owner")) {
+            this.ownerUuid = tag.getUuid("Owner");
         }
-        if (nbt.contains("Particle", 8)) {
+        if (tag.contains("Particle", 8)) {
             try {
-                this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle"))));
+                this.setParticleType(ParticleArgumentType.readParameters(new StringReader(tag.getString("Particle"))));
             } catch (CommandSyntaxException commandSyntaxException) {
-                LOGGER.warn("Couldn't load custom particle {}", (Object)nbt.getString("Particle"), (Object)commandSyntaxException);
+                LOGGER.warn("Couldn't load custom particle {}", (Object)tag.getString("Particle"), (Object)commandSyntaxException);
             }
         }
-        if (nbt.contains("Color", 99)) {
-            this.setColor(nbt.getInt("Color"));
+        if (tag.contains("Color", 99)) {
+            this.setColor(tag.getInt("Color"));
         }
-        if (nbt.contains("Potion", 8)) {
-            this.setPotion(PotionUtil.getPotion(nbt));
+        if (tag.contains("Potion", 8)) {
+            this.setPotion(PotionUtil.getPotion(tag));
         }
-        if (nbt.contains("Effects", 9)) {
-            NbtList nbtList = nbt.getList("Effects", 10);
+        if (tag.contains("Effects", 9)) {
+            ListTag listTag = tag.getList("Effects", 10);
             this.effects.clear();
-            for (int i = 0; i < nbtList.size(); ++i) {
-                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtList.getCompound(i));
+            for (int i = 0; i < listTag.size(); ++i) {
+                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(listTag.getCompound(i));
                 if (statusEffectInstance == null) continue;
                 this.addEffect(statusEffectInstance);
             }
@@ -337,31 +337,31 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putInt("Age", this.age);
-        nbt.putInt("Duration", this.duration);
-        nbt.putInt("WaitTime", this.waitTime);
-        nbt.putInt("ReapplicationDelay", this.reapplicationDelay);
-        nbt.putInt("DurationOnUse", this.durationOnUse);
-        nbt.putFloat("RadiusOnUse", this.radiusOnUse);
-        nbt.putFloat("RadiusPerTick", this.radiusGrowth);
-        nbt.putFloat("Radius", this.getRadius());
-        nbt.putString("Particle", this.getParticleType().asString());
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        tag.putInt("Age", this.age);
+        tag.putInt("Duration", this.duration);
+        tag.putInt("WaitTime", this.waitTime);
+        tag.putInt("ReapplicationDelay", this.reapplicationDelay);
+        tag.putInt("DurationOnUse", this.durationOnUse);
+        tag.putFloat("RadiusOnUse", this.radiusOnUse);
+        tag.putFloat("RadiusPerTick", this.radiusGrowth);
+        tag.putFloat("Radius", this.getRadius());
+        tag.putString("Particle", this.getParticleType().asString());
         if (this.ownerUuid != null) {
-            nbt.putUuid("Owner", this.ownerUuid);
+            tag.putUuid("Owner", this.ownerUuid);
         }
         if (this.customColor) {
-            nbt.putInt("Color", this.getColor());
+            tag.putInt("Color", this.getColor());
         }
         if (this.potion != Potions.EMPTY && this.potion != null) {
-            nbt.putString("Potion", Registry.POTION.getId(this.potion).toString());
+            tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
         }
         if (!this.effects.isEmpty()) {
-            NbtList nbtList = new NbtList();
+            ListTag listTag = new ListTag();
             for (StatusEffectInstance statusEffectInstance : this.effects) {
-                nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
+                listTag.add(statusEffectInstance.toTag(new CompoundTag()));
             }
-            nbt.put("Effects", nbtList);
+            tag.put("Effects", listTag);
         }
     }
 

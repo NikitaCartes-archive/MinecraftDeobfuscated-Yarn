@@ -5,8 +5,8 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.function.Function;
+import net.minecraft.class_5534;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -51,17 +51,17 @@ extends Task<PathAwareEntity> {
         return this.posRetriever.apply(entity.getBrain().getOptionalMemory(this.entityMemory).get());
     }
 
-    private boolean isWalkTargetPresentAndFar(PathAwareEntity entity) {
+    private boolean isWalkTargetPresentAndFar(PathAwareEntity pathAwareEntity) {
         Vec3d vec3d2;
-        if (!entity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
+        if (!pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
             return false;
         }
-        WalkTarget walkTarget = entity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+        WalkTarget walkTarget = pathAwareEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
         if (walkTarget.getSpeed() != this.speed) {
             return false;
         }
-        Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(entity.getPos());
-        return vec3d.dotProduct(vec3d2 = this.getPos(entity).subtract(entity.getPos())) < 0.0;
+        Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(pathAwareEntity.getPos());
+        return vec3d.dotProduct(vec3d2 = this.getPos(pathAwareEntity).subtract(pathAwareEntity.getPos())) < 0.0;
     }
 
     @Override
@@ -71,7 +71,7 @@ extends Task<PathAwareEntity> {
 
     private static void setWalkTarget(PathAwareEntity entity, Vec3d pos, float speed) {
         for (int i = 0; i < 10; ++i) {
-            Vec3d vec3d = TargetFinder.findGroundTargetAwayFrom(entity, 16, 7, pos);
+            Vec3d vec3d = class_5534.method_31534(entity, 16, 7, pos);
             if (vec3d == null) continue;
             entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, speed, 0));
             return;

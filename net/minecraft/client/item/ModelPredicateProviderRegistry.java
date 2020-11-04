@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -15,6 +16,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BundleItem;
 import net.minecraft.item.CompassItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ElytraItem;
@@ -22,7 +24,7 @@ import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
@@ -87,6 +89,7 @@ public class ModelPredicateProviderRegistry {
             return (float)(itemStack.getMaxUseTime() - livingEntity.getItemUseTimeLeft()) / 20.0f;
         });
         ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pulling"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
+        ModelPredicateProviderRegistry.register(Items.BUNDLE, new Identifier("filled"), (itemStack, clientWorld, livingEntity) -> BundleItem.getAmountFilled(itemStack));
         ModelPredicateProviderRegistry.register(Items.CLOCK, new Identifier("time"), new ModelPredicateProvider(){
             private double time;
             private double step;
@@ -176,7 +179,7 @@ public class ModelPredicateProviderRegistry {
             }
 
             @Nullable
-            private BlockPos getLodestonePos(World world, NbtCompound tag) {
+            private BlockPos getLodestonePos(World world, CompoundTag tag) {
                 Optional<RegistryKey<World>> optional;
                 boolean bl = tag.contains("LodestonePos");
                 boolean bl2 = tag.contains("LodestoneDimension");
@@ -223,6 +226,7 @@ public class ModelPredicateProviderRegistry {
         });
         ModelPredicateProviderRegistry.register(Items.SHIELD, new Identifier("blocking"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
         ModelPredicateProviderRegistry.register(Items.TRIDENT, new Identifier("throwing"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
+        ModelPredicateProviderRegistry.register(Items.SPYGLASS, new Identifier("scoping"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack && livingEntity.getUuid().equals(MinecraftClient.getInstance().player.getUuid()) ? 1.0f : 0.0f);
     }
 
     @Environment(value=EnvType.CLIENT)

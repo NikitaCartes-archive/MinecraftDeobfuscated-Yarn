@@ -7,8 +7,6 @@ import net.minecraft.block.Block;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public interface Hopper
 extends Inventory {
@@ -19,9 +17,6 @@ extends Inventory {
     default public VoxelShape getInputAreaShape() {
         return INPUT_AREA_SHAPE;
     }
-
-    @Nullable
-    public World getWorld();
 
     public double getHopperX();
 

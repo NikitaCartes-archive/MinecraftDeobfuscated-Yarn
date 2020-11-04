@@ -21,6 +21,7 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootingEnchantLootFunction;
 import net.minecraft.loot.function.SetAttributesLootFunction;
+import net.minecraft.loot.function.SetBannerPatternFunction;
 import net.minecraft.loot.function.SetContentsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetDamageLootFunction;
@@ -57,6 +58,7 @@ public class LootFunctionTypes {
     public static final LootFunctionType FILL_PLAYER_HEAD = LootFunctionTypes.register("fill_player_head", new FillPlayerHeadLootFunction.Serializer());
     public static final LootFunctionType COPY_NBT = LootFunctionTypes.register("copy_nbt", new CopyNbtLootFunction.Serializer());
     public static final LootFunctionType COPY_STATE = LootFunctionTypes.register("copy_state", new CopyStateFunction.Serializer());
+    public static final LootFunctionType SET_BANNER_PATTERN = LootFunctionTypes.register("set_banner_pattern", new SetBannerPatternFunction.Serializer());
 
     private static LootFunctionType register(String id, JsonSerializer<? extends LootFunction> jsonSerializer) {
         return Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(jsonSerializer));

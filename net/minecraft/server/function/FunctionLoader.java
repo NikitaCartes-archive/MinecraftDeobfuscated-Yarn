@@ -19,7 +19,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
+import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
@@ -36,7 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class FunctionLoader
-implements ResourceReloader {
+implements ResourceReloadListener {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int PATH_PREFIX_LENGTH = "functions/".length();
     private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
@@ -68,7 +68,7 @@ implements ResourceReloader {
     }
 
     @Override
-    public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
+    public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = this.tagLoader.prepareReload(manager, prepareExecutor);
         CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", string -> string.endsWith(".mcfunction")), prepareExecutor).thenCompose(collection -> {
             HashMap<Identifier, CompletableFuture<CommandFunction>> map = Maps.newHashMap();
@@ -96,7 +96,7 @@ implements ResourceReloader {
                 return null;
             })).join());
             this.functions = builder.build();
-            this.tags = this.tagLoader.buildGroup((Map)pair.getFirst());
+            this.tags = this.tagLoader.applyReload((Map)pair.getFirst());
         }, applyExecutor);
     }
 

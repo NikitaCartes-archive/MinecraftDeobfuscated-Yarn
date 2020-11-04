@@ -3,12 +3,12 @@
  */
 package net.minecraft.test;
 
-import net.minecraft.test.GameTestException;
+import net.minecraft.test.TimeMismatchException;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class PositionedException
-extends GameTestException {
+extends TimeMismatchException {
     private final BlockPos pos;
     private final BlockPos relativePos;
     private final long field_21449;

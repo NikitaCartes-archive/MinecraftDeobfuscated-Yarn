@@ -15,7 +15,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -76,11 +76,6 @@ implements Hopper {
     }
 
     @Override
-    public World getWorld() {
-        return this.world;
-    }
-
-    @Override
     public double getHopperX() {
         return this.getX();
     }
@@ -116,7 +111,7 @@ implements Hopper {
     }
 
     public boolean canOperate() {
-        if (HopperBlockEntity.extract(this)) {
+        if (HopperBlockEntity.extract(this.world, this)) {
             return true;
         }
         List<Entity> list = this.world.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
@@ -135,17 +130,17 @@ implements Hopper {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("TransferCooldown", this.transferCooldown);
-        nbt.putBoolean("Enabled", this.enabled);
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("TransferCooldown", this.transferCooldown);
+        tag.putBoolean("Enabled", this.enabled);
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.transferCooldown = nbt.getInt("TransferCooldown");
-        this.enabled = nbt.contains("Enabled") ? nbt.getBoolean("Enabled") : true;
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.transferCooldown = tag.getInt("TransferCooldown");
+        this.enabled = tag.contains("Enabled") ? tag.getBoolean("Enabled") : true;
     }
 
     public void setTransferCooldown(int cooldown) {

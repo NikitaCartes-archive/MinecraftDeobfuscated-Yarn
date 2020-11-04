@@ -39,7 +39,7 @@ implements Vanishable {
             return;
         }
         PlayerEntity playerEntity = (PlayerEntity)user;
-        boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
+        boolean bl = playerEntity.getAbilities().creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
         ItemStack itemStack = playerEntity.getArrowType(stack);
         if (itemStack.isEmpty() && !bl) {
             return;
@@ -50,7 +50,7 @@ implements Vanishable {
         if ((double)(f = BowItem.getPullProgress(i = this.getMaxUseTime(stack) - remainingUseTicks)) < 0.1) {
             return;
         }
-        boolean bl3 = bl2 = bl && itemStack.getItem() == Items.ARROW;
+        boolean bl3 = bl2 = bl && itemStack.isOf(Items.ARROW);
         if (!world.isClient) {
             int k;
             int j;
@@ -70,16 +70,16 @@ implements Vanishable {
                 persistentProjectileEntity.setOnFireFor(100);
             }
             stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
-            if (bl2 || playerEntity.abilities.creativeMode && (itemStack.getItem() == Items.SPECTRAL_ARROW || itemStack.getItem() == Items.TIPPED_ARROW)) {
+            if (bl2 || playerEntity.getAbilities().creativeMode && (itemStack.isOf(Items.SPECTRAL_ARROW) || itemStack.isOf(Items.TIPPED_ARROW))) {
                 persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
             }
             world.spawnEntity(persistentProjectileEntity);
         }
-        world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (RANDOM.nextFloat() * 0.4f + 1.2f) + f * 0.5f);
-        if (!bl2 && !playerEntity.abilities.creativeMode) {
+        world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (world.getRandom().nextFloat() * 0.4f + 1.2f) + f * 0.5f);
+        if (!bl2 && !playerEntity.getAbilities().creativeMode) {
             itemStack.decrement(1);
             if (itemStack.isEmpty()) {
-                playerEntity.inventory.removeOne(itemStack);
+                playerEntity.getInventory().removeOne(itemStack);
             }
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
@@ -108,7 +108,7 @@ implements Vanishable {
         boolean bl;
         ItemStack itemStack = user.getStackInHand(hand);
         boolean bl2 = bl = !user.getArrowType(itemStack).isEmpty();
-        if (user.abilities.creativeMode || bl) {
+        if (user.getAbilities().creativeMode || bl) {
             user.setCurrentHand(hand);
             return TypedActionResult.consume(itemStack);
         }

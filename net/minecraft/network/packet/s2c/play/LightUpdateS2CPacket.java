@@ -21,10 +21,10 @@ public class LightUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private int chunkX;
     private int chunkZ;
-    private int skyLightMask;
-    private int blockLightMask;
-    private int filledSkyLightMask;
-    private int filledBlockLightMask;
+    private long skyLightMask;
+    private long blockLightMask;
+    private long filledSkyLightMask;
+    private long filledBlockLightMask;
     private List<byte[]> skyLightUpdates;
     private List<byte[]> blockLightUpdates;
     private boolean field_25659;
@@ -38,23 +38,23 @@ implements Packet<ClientPlayPacketListener> {
         this.field_25659 = bl;
         this.skyLightUpdates = Lists.newArrayList();
         this.blockLightUpdates = Lists.newArrayList();
-        for (int i = 0; i < 18; ++i) {
-            ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.SKY).getLightSection(ChunkSectionPos.from(chunkPos, -1 + i));
-            ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(chunkPos, -1 + i));
+        for (int i = 0; i < lightingProvider.method_31928(); ++i) {
+            ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.SKY).getLightSection(ChunkSectionPos.from(chunkPos, lightingProvider.method_31929() + i));
+            ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(chunkPos, lightingProvider.method_31929() + i));
             if (chunkNibbleArray != null) {
                 if (chunkNibbleArray.isUninitialized()) {
-                    this.filledSkyLightMask |= 1 << i;
+                    this.filledSkyLightMask |= 1L << i;
                 } else {
-                    this.skyLightMask |= 1 << i;
+                    this.skyLightMask |= 1L << i;
                     this.skyLightUpdates.add((byte[])chunkNibbleArray.asByteArray().clone());
                 }
             }
             if (chunkNibbleArray2 == null) continue;
             if (chunkNibbleArray2.isUninitialized()) {
-                this.filledBlockLightMask |= 1 << i;
+                this.filledBlockLightMask |= 1L << i;
                 continue;
             }
-            this.blockLightMask |= 1 << i;
+            this.blockLightMask |= 1L << i;
             this.blockLightUpdates.add((byte[])chunkNibbleArray2.asByteArray().clone());
         }
     }
@@ -67,25 +67,25 @@ implements Packet<ClientPlayPacketListener> {
         this.blockLightMask = blockLightMask;
         this.skyLightUpdates = Lists.newArrayList();
         this.blockLightUpdates = Lists.newArrayList();
-        for (int i = 0; i < 18; ++i) {
+        for (int i = 0; i < lightProvider.method_31928(); ++i) {
             ChunkNibbleArray chunkNibbleArray;
-            if ((this.skyLightMask & 1 << i) != 0) {
-                chunkNibbleArray = lightProvider.get(LightType.SKY).getLightSection(ChunkSectionPos.from(pos, -1 + i));
+            if ((this.skyLightMask & 1L << i) != 0L) {
+                chunkNibbleArray = lightProvider.get(LightType.SKY).getLightSection(ChunkSectionPos.from(pos, lightProvider.method_31929() + i));
                 if (chunkNibbleArray == null || chunkNibbleArray.isUninitialized()) {
-                    this.skyLightMask &= ~(1 << i);
+                    this.skyLightMask &= 1L << i ^ 0xFFFFFFFFFFFFFFFFL;
                     if (chunkNibbleArray != null) {
-                        this.filledSkyLightMask |= 1 << i;
+                        this.filledSkyLightMask |= 1L << i;
                     }
                 } else {
                     this.skyLightUpdates.add((byte[])chunkNibbleArray.asByteArray().clone());
                 }
             }
-            if ((this.blockLightMask & 1 << i) == 0) continue;
-            chunkNibbleArray = lightProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(pos, -1 + i));
+            if ((this.blockLightMask & 1L << i) == 0L) continue;
+            chunkNibbleArray = lightProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(pos, lightProvider.method_31929() + i));
             if (chunkNibbleArray == null || chunkNibbleArray.isUninitialized()) {
-                this.blockLightMask &= ~(1 << i);
+                this.blockLightMask &= 1L << i ^ 0xFFFFFFFFFFFFFFFFL;
                 if (chunkNibbleArray == null) continue;
-                this.filledBlockLightMask |= 1 << i;
+                this.filledBlockLightMask |= 1L << i;
                 continue;
             }
             this.blockLightUpdates.add((byte[])chunkNibbleArray.asByteArray().clone());
@@ -98,18 +98,18 @@ implements Packet<ClientPlayPacketListener> {
         this.chunkX = buf.readVarInt();
         this.chunkZ = buf.readVarInt();
         this.field_25659 = buf.readBoolean();
-        this.skyLightMask = buf.readVarInt();
-        this.blockLightMask = buf.readVarInt();
-        this.filledSkyLightMask = buf.readVarInt();
-        this.filledBlockLightMask = buf.readVarInt();
+        this.skyLightMask = buf.readVarLong();
+        this.blockLightMask = buf.readVarLong();
+        this.filledSkyLightMask = buf.readVarLong();
+        this.filledBlockLightMask = buf.readVarLong();
         this.skyLightUpdates = Lists.newArrayList();
-        for (i = 0; i < 18; ++i) {
-            if ((this.skyLightMask & 1 << i) == 0) continue;
+        for (i = 0; i < 64; ++i) {
+            if ((this.skyLightMask & 1L << i) == 0L) continue;
             this.skyLightUpdates.add(buf.readByteArray(2048));
         }
         this.blockLightUpdates = Lists.newArrayList();
-        for (i = 0; i < 18; ++i) {
-            if ((this.blockLightMask & 1 << i) == 0) continue;
+        for (i = 0; i < 64; ++i) {
+            if ((this.blockLightMask & 1L << i) == 0L) continue;
             this.blockLightUpdates.add(buf.readByteArray(2048));
         }
     }
@@ -119,10 +119,10 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.chunkX);
         buf.writeVarInt(this.chunkZ);
         buf.writeBoolean(this.field_25659);
-        buf.writeVarInt(this.skyLightMask);
-        buf.writeVarInt(this.blockLightMask);
-        buf.writeVarInt(this.filledSkyLightMask);
-        buf.writeVarInt(this.filledBlockLightMask);
+        buf.writeVarLong(this.skyLightMask);
+        buf.writeVarLong(this.blockLightMask);
+        buf.writeVarLong(this.filledSkyLightMask);
+        buf.writeVarLong(this.filledBlockLightMask);
         for (byte[] bs : this.skyLightUpdates) {
             buf.writeByteArray(bs);
         }
@@ -147,12 +147,12 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getSkyLightMask() {
+    public long getSkyLightMask() {
         return this.skyLightMask;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getFilledSkyLightMask() {
+    public long getFilledSkyLightMask() {
         return this.filledSkyLightMask;
     }
 
@@ -162,12 +162,12 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getBlockLightMask() {
+    public long getBlockLightMask() {
         return this.blockLightMask;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getFilledBlockLightMask() {
+    public long getFilledBlockLightMask() {
         return this.filledBlockLightMask;
     }
 

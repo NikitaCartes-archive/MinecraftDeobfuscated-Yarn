@@ -12,10 +12,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.JsonEffectGlShader;
+import net.minecraft.client.gl.JsonGlProgram;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.math.Matrix4f;
@@ -23,7 +24,7 @@ import net.minecraft.util.math.Matrix4f;
 @Environment(value=EnvType.CLIENT)
 public class PostProcessShader
 implements AutoCloseable {
-    private final JsonEffectGlShader program;
+    private final JsonGlProgram program;
     public final Framebuffer input;
     public final Framebuffer output;
     private final List<IntSupplier> samplerValues = Lists.newArrayList();
@@ -33,7 +34,7 @@ implements AutoCloseable {
     private Matrix4f projectionMatrix;
 
     public PostProcessShader(ResourceManager resourceManager, String programName, Framebuffer input, Framebuffer output) throws IOException {
-        this.program = new JsonEffectGlShader(resourceManager, programName);
+        this.program = new JsonGlProgram(resourceManager, programName);
         this.input = input;
         this.output = output;
     }
@@ -43,9 +44,9 @@ implements AutoCloseable {
         this.program.close();
     }
 
-    public void addAuxTarget(String name, IntSupplier valueSupplier, int width, int height) {
+    public void addAuxTarget(String name, IntSupplier intSupplier, int width, int height) {
         this.samplerNames.add(this.samplerNames.size(), name);
-        this.samplerValues.add(this.samplerValues.size(), valueSupplier);
+        this.samplerValues.add(this.samplerValues.size(), intSupplier);
         this.samplerWidths.add(this.samplerWidths.size(), width);
         this.samplerHeights.add(this.samplerHeights.size(), height);
     }
@@ -75,7 +76,7 @@ implements AutoCloseable {
         this.output.beginWrite(false);
         RenderSystem.depthFunc(519);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(0.0, 0.0, 500.0).color(255, 255, 255, 255).next();
         bufferBuilder.vertex(f, 0.0, 500.0).color(255, 255, 255, 255).next();
         bufferBuilder.vertex(f, g, 500.0).color(255, 255, 255, 255).next();
@@ -92,7 +93,7 @@ implements AutoCloseable {
         }
     }
 
-    public JsonEffectGlShader getProgram() {
+    public JsonGlProgram getProgram() {
         return this.program;
     }
 }

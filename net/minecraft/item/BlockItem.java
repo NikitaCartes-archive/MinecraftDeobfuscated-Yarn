@@ -11,6 +11,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,7 +20,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
@@ -73,18 +74,17 @@ extends Item {
         PlayerEntity playerEntity = itemPlacementContext.getPlayer();
         ItemStack itemStack = itemPlacementContext.getStack();
         BlockState blockState2 = world.getBlockState(blockPos);
-        Block block = blockState2.getBlock();
-        if (block == blockState.getBlock()) {
+        if (blockState2.isOf(blockState.getBlock())) {
             blockState2 = this.placeFromTag(blockPos, world, itemStack, blockState2);
             this.postPlacement(blockPos, world, playerEntity, itemStack, blockState2);
-            block.onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
+            blockState2.getBlock().onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
             if (playerEntity instanceof ServerPlayerEntity) {
                 Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
             }
         }
         BlockSoundGroup blockSoundGroup = blockState2.getSoundGroup();
         world.playSound(playerEntity, blockPos, this.getPlaceSound(blockState2), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0f) / 2.0f, blockSoundGroup.getPitch() * 0.8f);
-        if (playerEntity == null || !playerEntity.abilities.creativeMode) {
+        if (playerEntity == null || !playerEntity.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }
         return ActionResult.success(world.isClient);
@@ -111,14 +111,14 @@ extends Item {
 
     private BlockState placeFromTag(BlockPos pos, World world, ItemStack stack, BlockState state) {
         BlockState blockState = state;
-        NbtCompound nbtCompound = stack.getTag();
-        if (nbtCompound != null) {
-            NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
+        CompoundTag compoundTag = stack.getTag();
+        if (compoundTag != null) {
+            CompoundTag compoundTag2 = compoundTag.getCompound("BlockStateTag");
             StateManager<Block, BlockState> stateManager = blockState.getBlock().getStateManager();
-            for (String string : nbtCompound2.getKeys()) {
+            for (String string : compoundTag2.getKeys()) {
                 Property<?> property = stateManager.getProperty(string);
                 if (property == null) continue;
-                String string2 = nbtCompound2.get(string).asString();
+                String string2 = compoundTag2.get(string).asString();
                 blockState = BlockItem.with(blockState, property, string2);
             }
         }
@@ -152,19 +152,19 @@ extends Item {
         if (minecraftServer == null) {
             return false;
         }
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
-        if (nbtCompound != null && (blockEntity = world.getBlockEntity(pos)) != null) {
+        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
+        if (compoundTag != null && (blockEntity = world.getBlockEntity(pos)) != null) {
             if (!(world.isClient || !blockEntity.copyItemDataRequiresOperator() || player != null && player.isCreativeLevelTwoOp())) {
                 return false;
             }
-            NbtCompound nbtCompound2 = blockEntity.writeNbt(new NbtCompound());
-            NbtCompound nbtCompound3 = nbtCompound2.copy();
-            nbtCompound2.copyFrom(nbtCompound);
-            nbtCompound2.putInt("x", pos.getX());
-            nbtCompound2.putInt("y", pos.getY());
-            nbtCompound2.putInt("z", pos.getZ());
-            if (!nbtCompound2.equals(nbtCompound3)) {
-                blockEntity.fromTag(world.getBlockState(pos), nbtCompound2);
+            CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
+            CompoundTag compoundTag3 = compoundTag2.copy();
+            compoundTag2.copyFrom(compoundTag);
+            compoundTag2.putInt("x", pos.getX());
+            compoundTag2.putInt("y", pos.getY());
+            compoundTag2.putInt("z", pos.getZ());
+            if (!compoundTag2.equals(compoundTag3)) {
+                blockEntity.fromTag(compoundTag2);
                 blockEntity.markDirty();
                 return true;
             }
@@ -197,6 +197,11 @@ extends Item {
 
     public void appendBlocks(Map<Block, Item> map, Item item) {
         map.put(this.getBlock(), item);
+    }
+
+    @Override
+    public boolean hasStoredInventory() {
+        return !(this.block instanceof ShulkerBoxBlock);
     }
 }
 

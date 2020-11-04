@@ -41,6 +41,9 @@ public final class TextureKey {
     public static final TextureKey TORCH = TextureKey.method_27043("torch");
     public static final TextureKey LAYER0 = TextureKey.method_27043("layer0");
     public static final TextureKey LIT_LOG = TextureKey.method_27043("lit_log");
+    public static final TextureKey CANDLE = TextureKey.method_27043("candle");
+    public static final TextureKey INSIDE = TextureKey.method_27043("inside");
+    public static final TextureKey CONTENT = TextureKey.method_27043("content");
     private final String name;
     @Nullable
     private final TextureKey parent;

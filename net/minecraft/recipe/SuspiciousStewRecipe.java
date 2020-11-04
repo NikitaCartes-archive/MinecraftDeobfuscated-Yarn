@@ -34,19 +34,19 @@ extends SpecialCraftingRecipe {
         for (int i = 0; i < craftingInventory.size(); ++i) {
             ItemStack itemStack = craftingInventory.getStack(i);
             if (itemStack.isEmpty()) continue;
-            if (itemStack.getItem() == Blocks.BROWN_MUSHROOM.asItem() && !bl3) {
+            if (itemStack.isOf(Blocks.BROWN_MUSHROOM.asItem()) && !bl3) {
                 bl3 = true;
                 continue;
             }
-            if (itemStack.getItem() == Blocks.RED_MUSHROOM.asItem() && !bl2) {
+            if (itemStack.isOf(Blocks.RED_MUSHROOM.asItem()) && !bl2) {
                 bl2 = true;
                 continue;
             }
-            if (itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS) && !bl) {
+            if (itemStack.isIn(ItemTags.SMALL_FLOWERS) && !bl) {
                 bl = true;
                 continue;
             }
-            if (itemStack.getItem() == Items.BOWL && !bl4) {
+            if (itemStack.isOf(Items.BOWL) && !bl4) {
                 bl4 = true;
                 continue;
             }
@@ -60,7 +60,7 @@ extends SpecialCraftingRecipe {
         ItemStack itemStack = ItemStack.EMPTY;
         for (int i = 0; i < craftingInventory.size(); ++i) {
             ItemStack itemStack2 = craftingInventory.getStack(i);
-            if (itemStack2.isEmpty() || !itemStack2.getItem().isIn(ItemTags.SMALL_FLOWERS)) continue;
+            if (itemStack2.isEmpty() || !itemStack2.isIn(ItemTags.SMALL_FLOWERS)) continue;
             itemStack = itemStack2;
             break;
         }

@@ -72,13 +72,13 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
             }, (buttonWidget, matrixStack, i, j) -> {
                 this.timeCounter += client.getLastFrameDuration();
                 if (this.timeCounter >= 10.0f) {
-                    parent.setOnRendered(() -> SocialInteractionsPlayerListEntry.renderTooltip(parent, matrixStack, this.hideTooltip, i, j));
+                    parent.method_31354(() -> SocialInteractionsPlayerListEntry.method_31328(parent, matrixStack, this.hideTooltip, i, j));
                 }
             }, new TranslatableText("gui.socialInteractions.hide")){
 
                 @Override
                 protected MutableText getNarrationMessage() {
-                    return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
+                    return SocialInteractionsPlayerListEntry.this.method_31389(super.getNarrationMessage());
                 }
             };
             this.showButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, buttonWidget -> {
@@ -87,13 +87,13 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
             }, (buttonWidget, matrixStack, i, j) -> {
                 this.timeCounter += client.getLastFrameDuration();
                 if (this.timeCounter >= 10.0f) {
-                    parent.setOnRendered(() -> SocialInteractionsPlayerListEntry.renderTooltip(parent, matrixStack, this.showTooltip, i, j));
+                    parent.method_31354(() -> SocialInteractionsPlayerListEntry.method_31328(parent, matrixStack, this.showTooltip, i, j));
                 }
             }, new TranslatableText("gui.socialInteractions.show")){
 
                 @Override
                 protected MutableText getNarrationMessage() {
-                    return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
+                    return SocialInteractionsPlayerListEntry.this.method_31389(super.getNarrationMessage());
                 }
             };
             this.showButton.visible = socialInteractionsManager.isPlayerHidden(uuid);
@@ -166,12 +166,12 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         NarratorManager.INSTANCE.narrate(chatMessage.getString());
     }
 
-    private MutableText getNarrationMessage(MutableText text) {
-        Text text2 = this.getStatusText();
-        if (text2 == LiteralText.EMPTY) {
-            return new LiteralText(this.name).append(", ").append(text);
+    private MutableText method_31389(MutableText mutableText) {
+        Text text = this.getStatusText();
+        if (text == LiteralText.EMPTY) {
+            return new LiteralText(this.name).append(", ").append(mutableText);
         }
-        return new LiteralText(this.name).append(", ").append(text2).append(", ").append(text);
+        return new LiteralText(this.name).append(", ").append(text).append(", ").append(mutableText);
     }
 
     private Text getStatusText() {
@@ -195,9 +195,9 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         return LiteralText.EMPTY;
     }
 
-    private static void renderTooltip(SocialInteractionsScreen screen, MatrixStack matrices, List<OrderedText> tooltip, int mouseX, int mouseY) {
-        screen.renderOrderedTooltip(matrices, tooltip, mouseX, mouseY);
-        screen.setOnRendered(null);
+    private static void method_31328(SocialInteractionsScreen socialInteractionsScreen, MatrixStack matrixStack, List<OrderedText> list, int i, int j) {
+        socialInteractionsScreen.renderOrderedTooltip(matrixStack, list, i, j);
+        socialInteractionsScreen.method_31354(null);
     }
 }
 

@@ -10,38 +10,25 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Represents a resource pack in a {@link ResourcePackManager}.
- * 
- * <p>Compared to a single-use {@link ResourcePack}, a profile is persistent
- * and serves as {@linkplain #createResourcePack a factory} for the single-use
- * packs. It also contains user-friendly information about resource packs.
- * 
- * <p>The profiles are registered by {@link ResourcePackProvider}s.
- * 
- * <p>Closing the profile doesn't have any effect.
- */
 public class ResourcePackProfile
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(new TranslatableText("resourcePack.broken_assets").formatted(Formatting.RED, Formatting.ITALIC), SharedConstants.getGameVersion().getPackVersion());
     private final String name;
-    private final Supplier<ResourcePack> packFactory;
+    private final Supplier<ResourcePack> packGetter;
     private final Text displayName;
     private final Text description;
     private final ResourcePackCompatibility compatibility;
@@ -55,26 +42,12 @@ implements AutoCloseable {
      * Enabled unnecessary exception pruning
      * Enabled aggressive exception aggregation
      */
-    /**
-     * Creates a resource pack profile from the given parameters.
-     * 
-     * <p>Compared to calling the factory directly, this utility method obtains the
-     * pack's metadata information from the pack created by the {@code packFactory}.
-     * If the created pack doesn't have metadata information, this method returns
-     * {@code null}.
-     * 
-     * @return the created profile, or {@code null} if missing metadata
-     */
     @Nullable
-    public static ResourcePackProfile of(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Factory profileFactory, InsertionPosition insertionPosition, ResourcePackSource packSource) {
+    public static ResourcePackProfile of(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Factory containerFactory, InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) {
         try (ResourcePack resourcePack = packFactory.get();){
             PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
-            if (alwaysEnabled && packResourceMetadata == null) {
-                LOGGER.error("Broken/missing pack.mcmeta detected, fudging it into existance. Please check that your launcher has downloaded all assets for the game correctly!");
-                packResourceMetadata = BROKEN_PACK_META;
-            }
             if (packResourceMetadata != null) {
-                ResourcePackProfile resourcePackProfile = profileFactory.create(name, alwaysEnabled, packFactory, resourcePack, packResourceMetadata, insertionPosition, packSource);
+                ResourcePackProfile resourcePackProfile = containerFactory.create(name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, resourcePackSource);
                 return resourcePackProfile;
             }
             LOGGER.warn("Couldn't find pack meta for pack {}", (Object)name);
@@ -87,7 +60,7 @@ implements AutoCloseable {
 
     public ResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Text displayName, Text description, ResourcePackCompatibility compatibility, InsertionPosition direction, boolean pinned, ResourcePackSource source) {
         this.name = name;
-        this.packFactory = packFactory;
+        this.packGetter = packFactory;
         this.displayName = displayName;
         this.description = description;
         this.compatibility = compatibility;
@@ -97,8 +70,8 @@ implements AutoCloseable {
         this.source = source;
     }
 
-    public ResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, ResourcePack pack, PackResourceMetadata metadata, InsertionPosition direction, ResourcePackSource source) {
-        this(name, alwaysEnabled, packFactory, new LiteralText(pack.getName()), metadata.getDescription(), ResourcePackCompatibility.from(metadata.getPackFormat()), direction, false, source);
+    public ResourcePackProfile(String name, Text displayName, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, PackResourceMetadata metadata, ResourceType type, InsertionPosition direction, ResourcePackSource source) {
+        this(name, alwaysEnabled, packFactory, displayName, metadata.getDescription(), ResourcePackCompatibility.from(metadata, type), direction, false, source);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -120,7 +93,7 @@ implements AutoCloseable {
     }
 
     public ResourcePack createResourcePack() {
-        return this.packFactory.get();
+        return this.packGetter.get();
     }
 
     public String getName() {
@@ -195,7 +168,7 @@ implements AutoCloseable {
     @FunctionalInterface
     public static interface Factory {
         @Nullable
-        public ResourcePackProfile create(String var1, boolean var2, Supplier<ResourcePack> var3, ResourcePack var4, PackResourceMetadata var5, InsertionPosition var6, ResourcePackSource var7);
+        public ResourcePackProfile create(String var1, Text var2, boolean var3, Supplier<ResourcePack> var4, PackResourceMetadata var5, InsertionPosition var6, ResourcePackSource var7);
     }
 }
 

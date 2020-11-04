@@ -62,12 +62,12 @@ extends ScreenHandler {
 
     @Override
     public void onContentChanged(Inventory inventory) {
-        this.merchantInventory.updateOffers();
+        this.merchantInventory.updateRecipes();
         super.onContentChanged(inventory);
     }
 
     public void setRecipeIndex(int index) {
-        this.merchantInventory.setOfferIndex(index);
+        this.merchantInventory.setRecipeIndex(index);
     }
 
     @Override
@@ -126,7 +126,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onQuickTransfer(itemStack2, itemStack);
+                slot.onStackChanged(itemStack2, itemStack);
                 this.playYesSound();
             } else if (index == 0 || index == 1 ? !this.insertItem(itemStack2, 3, 39, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack2, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false))) {
                 return ItemStack.EMPTY;
@@ -166,9 +166,9 @@ extends ScreenHandler {
             if (!(itemStack = this.merchantInventory.removeStack(1)).isEmpty()) {
                 player.dropItem(itemStack, false);
             }
-        } else {
-            player.inventory.offerOrDrop(player.world, this.merchantInventory.removeStack(0));
-            player.inventory.offerOrDrop(player.world, this.merchantInventory.removeStack(1));
+        } else if (player instanceof ServerPlayerEntity) {
+            player.getInventory().offerOrDrop(this.merchantInventory.removeStack(0));
+            player.getInventory().offerOrDrop(this.merchantInventory.removeStack(1));
         }
     }
 
@@ -202,7 +202,7 @@ extends ScreenHandler {
         if (!stack.isEmpty()) {
             for (int i = 3; i < 39; ++i) {
                 ItemStack itemStack = ((Slot)this.slots.get(i)).getStack();
-                if (itemStack.isEmpty() || !this.equals(stack, itemStack)) continue;
+                if (itemStack.isEmpty() || !ItemStack.method_31577(stack, itemStack)) continue;
                 ItemStack itemStack2 = this.merchantInventory.getStack(slot);
                 int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
                 int k = Math.min(stack.getMaxCount() - j, itemStack.getCount());
@@ -214,10 +214,6 @@ extends ScreenHandler {
                 if (l >= stack.getMaxCount()) break;
             }
         }
-    }
-
-    private boolean equals(ItemStack itemStack, ItemStack otherItemStack) {
-        return itemStack.getItem() == otherItemStack.getItem() && ItemStack.areTagsEqual(itemStack, otherItemStack);
     }
 
     @Environment(value=EnvType.CLIENT)

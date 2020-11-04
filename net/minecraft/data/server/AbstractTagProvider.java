@@ -77,8 +77,8 @@ implements DataProvider {
 
     protected abstract Path getOutput(Identifier var1);
 
-    protected ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> tag) {
-        Tag.Builder builder = this.method_27169(tag);
+    protected ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> identified) {
+        Tag.Builder builder = this.method_27169(identified);
         return new ObjectBuilder(builder, this.registry, "vanilla");
     }
 

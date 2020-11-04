@@ -33,7 +33,7 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.predicate.NumberRange;
@@ -260,7 +260,7 @@ public class EntitySelectorOptions {
             }
             if (entitySelectorReader.readTagCharacter()) {
                 Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
-                entitySelectorReader.setPredicate(entity -> entity.getServer().getTagManager().getEntityTypes().getTagOrEmpty(identifier).contains(entity.getType()) != bl);
+                entitySelectorReader.setPredicate(entity -> entity.getType().isIn(entity.getServer().getTagManager().getEntityTypes().getTagOrEmpty(identifier)) != bl);
             } else {
                 Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
                 EntityType<?> entityType = Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
@@ -288,14 +288,14 @@ public class EntitySelectorOptions {
         }, entitySelectorReader -> true, new TranslatableText("argument.entity.options.tag.description"));
         EntitySelectorOptions.putOption("nbt", entitySelectorReader -> {
             boolean bl = entitySelectorReader.readNegationCharacter();
-            NbtCompound nbtCompound = new StringNbtReader(entitySelectorReader.getReader()).parseCompound();
+            CompoundTag compoundTag = new StringNbtReader(entitySelectorReader.getReader()).parseCompoundTag();
             entitySelectorReader.setPredicate(entity -> {
                 ItemStack itemStack;
-                NbtCompound nbtCompound2 = entity.writeNbt(new NbtCompound());
-                if (entity instanceof ServerPlayerEntity && !(itemStack = ((ServerPlayerEntity)entity).inventory.getMainHandStack()).isEmpty()) {
-                    nbtCompound2.put("SelectedItem", itemStack.writeNbt(new NbtCompound()));
+                CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
+                if (entity instanceof ServerPlayerEntity && !(itemStack = ((ServerPlayerEntity)entity).getInventory().getMainHandStack()).isEmpty()) {
+                    compoundTag2.put("SelectedItem", itemStack.toTag(new CompoundTag()));
                 }
-                return NbtHelper.matches(nbtCompound, nbtCompound2, true) != bl;
+                return NbtHelper.matches(compoundTag, compoundTag2, true) != bl;
             });
         }, entitySelectorReader -> true, new TranslatableText("argument.entity.options.nbt.description"));
         EntitySelectorOptions.putOption("scores", entitySelectorReader -> {

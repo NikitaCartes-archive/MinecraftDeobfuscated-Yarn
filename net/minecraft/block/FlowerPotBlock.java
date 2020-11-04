@@ -56,14 +56,13 @@ extends Block {
         boolean bl2;
         ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
-        Block block = item instanceof BlockItem ? CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR;
-        boolean bl = block == Blocks.AIR;
-        boolean bl3 = bl2 = this.content == Blocks.AIR;
-        if (bl != bl2) {
+        BlockState blockState = (item instanceof BlockItem ? CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR).getDefaultState();
+        boolean bl = blockState.isOf(Blocks.AIR);
+        if (bl != (bl2 = this.method_31646())) {
             if (bl2) {
-                world.setBlockState(pos, block.getDefaultState(), 3);
+                world.setBlockState(pos, blockState, 3);
                 player.incrementStat(Stats.POT_FLOWER);
-                if (!player.abilities.creativeMode) {
+                if (!player.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
             } else {
@@ -83,18 +82,22 @@ extends Block {
     @Override
     @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        if (this.content == Blocks.AIR) {
+        if (this.method_31646()) {
             return super.getPickStack(world, pos, state);
         }
         return new ItemStack(this.content);
     }
 
+    private boolean method_31646() {
+        return this.content == Blocks.AIR;
+    }
+
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     public Block getContent() {

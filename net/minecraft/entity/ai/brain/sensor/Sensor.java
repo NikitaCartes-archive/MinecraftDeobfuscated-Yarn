@@ -26,10 +26,10 @@ public abstract class Sensor<E extends LivingEntity> {
         this(20);
     }
 
-    public final void tick(ServerWorld world, E entity) {
+    public final void tick(ServerWorld serverWorld, E entity) {
         if (--this.lastSenseTime <= 0L) {
             this.lastSenseTime = this.senseInterval;
-            this.sense(world, entity);
+            this.sense(serverWorld, entity);
         }
     }
 

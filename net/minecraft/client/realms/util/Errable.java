@@ -12,8 +12,8 @@ import net.minecraft.text.Text;
 public interface Errable {
     public void error(Text var1);
 
-    default public void error(String errorMessage) {
-        this.error(new LiteralText(errorMessage));
+    default public void error(String string) {
+        this.error(new LiteralText(string));
     }
 }
 

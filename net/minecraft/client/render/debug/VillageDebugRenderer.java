@@ -55,18 +55,18 @@ implements DebugRenderer.Renderer {
         this.targetedEntity = null;
     }
 
-    public void addPointOfInterest(PointOfInterest poi) {
-        this.pointsOfInterest.put(poi.pos, poi);
+    public void addPointOfInterest(PointOfInterest pointOfInterest) {
+        this.pointsOfInterest.put(pointOfInterest.pos, pointOfInterest);
     }
 
-    public void removePointOfInterest(BlockPos pos) {
-        this.pointsOfInterest.remove(pos);
+    public void removePointOfInterest(BlockPos blockPos) {
+        this.pointsOfInterest.remove(blockPos);
     }
 
     public void setFreeTicketCount(BlockPos pos, int freeTicketCount) {
         PointOfInterest pointOfInterest = this.pointsOfInterest.get(pos);
         if (pointOfInterest == null) {
-            LOGGER.warn("Strange, setFreeTicketCount was called for an unknown POI: " + pos);
+            LOGGER.warn("Strange, setFreeTicketCount was called for an unknown POI: {}", (Object)pos);
             return;
         }
         pointOfInterest.freeTicketCount = freeTicketCount;
@@ -95,7 +95,7 @@ implements DebugRenderer.Renderer {
     private void method_24805() {
         this.brains.entrySet().removeIf(entry -> {
             Entity entity = this.client.world.getEntityById(((Brain)entry.getValue()).field_18924);
-            return entity == null || entity.removed;
+            return entity == null || entity.isRemoved();
         });
     }
 

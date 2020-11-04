@@ -32,19 +32,18 @@ implements Fertilizable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        Block block;
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
         AbstractPlantStemBlock abstractPlantStemBlock = this.getStem();
-        if (direction == this.growthDirection && (block = neighborState.getBlock()) != this && block != abstractPlantStemBlock) {
+        if (direction == this.growthDirection && !newState.isOf(this) && !newState.isOf(abstractPlantStemBlock)) {
             return abstractPlantStemBlock.getRandomGrowthState(world);
         }
         if (this.tickWater) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
@@ -74,11 +73,11 @@ implements Fertilizable {
     }
 
     private Optional<BlockPos> method_25960(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-        Block block;
+        BlockState blockState2;
         BlockPos blockPos2 = blockPos;
-        while ((block = blockView.getBlockState(blockPos2 = blockPos2.offset(this.growthDirection)).getBlock()) == blockState.getBlock()) {
+        while ((blockState2 = blockView.getBlockState(blockPos2 = blockPos2.offset(this.growthDirection))).isOf(blockState.getBlock())) {
         }
-        if (block == this.getStem()) {
+        if (blockState2.isOf(this.getStem())) {
             return Optional.of(blockPos2);
         }
         return Optional.empty();
@@ -87,7 +86,7 @@ implements Fertilizable {
     @Override
     public boolean canReplace(BlockState state, ItemPlacementContext context) {
         boolean bl = super.canReplace(state, context);
-        if (bl && context.getStack().getItem() == this.getStem().asItem()) {
+        if (bl && context.getStack().isOf(this.getStem().asItem())) {
             return false;
         }
         return bl;

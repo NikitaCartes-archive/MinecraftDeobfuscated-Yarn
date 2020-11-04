@@ -43,7 +43,7 @@ public class AnimationResourceMetadata {
     }
 
     public Pair<Integer, Integer> method_24141(int i, int j) {
-        Pair<Integer, Integer> pair = this.method_24143(i, j);
+        Pair<Integer, Integer> pair = this.getSize(i, j);
         int k = pair.getFirst();
         int l = pair.getSecond();
         if (!AnimationResourceMetadata.method_24142(i, k) || !AnimationResourceMetadata.method_24142(j, l)) {
@@ -52,18 +52,18 @@ public class AnimationResourceMetadata {
         return pair;
     }
 
-    private Pair<Integer, Integer> method_24143(int i, int j) {
+    private Pair<Integer, Integer> getSize(int defaultWidth, int defaultHeight) {
         if (this.width != -1) {
             if (this.height != -1) {
                 return Pair.of(this.width, this.height);
             }
-            return Pair.of(this.width, j);
+            return Pair.of(this.width, defaultHeight);
         }
         if (this.height != -1) {
-            return Pair.of(i, this.height);
+            return Pair.of(defaultWidth, this.height);
         }
-        int k = Math.min(i, j);
-        return Pair.of(k, k);
+        int i = Math.min(defaultWidth, defaultHeight);
+        return Pair.of(i, i);
     }
 
     public int getHeight(int defaultHeight) {

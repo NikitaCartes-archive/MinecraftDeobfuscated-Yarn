@@ -10,7 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityData;
@@ -29,9 +29,9 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -57,8 +57,8 @@ implements VillagerDataContainer {
     private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
     private int conversionTimer;
     private UUID converter;
-    private NbtElement gossipData;
-    private NbtCompound offerData;
+    private Tag gossipData;
+    private CompoundTag offerData;
     private int xp;
 
     public ZombieVillagerEntity(EntityType<? extends ZombieVillagerEntity> entityType, World world) {
@@ -74,40 +74,40 @@ implements VillagerDataContainer {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("VillagerData", (NbtElement)nbtElement));
+    public void writeCustomDataToTag(CompoundTag tag2) {
+        super.writeCustomDataToTag(tag2);
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("VillagerData", (Tag)tag));
         if (this.offerData != null) {
-            nbt.put("Offers", this.offerData);
+            tag2.put("Offers", this.offerData);
         }
         if (this.gossipData != null) {
-            nbt.put("Gossips", this.gossipData);
+            tag2.put("Gossips", this.gossipData);
         }
-        nbt.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
+        tag2.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
         if (this.converter != null) {
-            nbt.putUuid("ConversionPlayer", this.converter);
+            tag2.putUuid("ConversionPlayer", this.converter);
         }
-        nbt.putInt("Xp", this.xp);
+        tag2.putInt("Xp", this.xp);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("VillagerData", 10)) {
-            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("VillagerData")));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("VillagerData", 10)) {
+            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData")));
             dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
-        if (nbt.contains("Offers", 10)) {
-            this.offerData = nbt.getCompound("Offers");
+        if (tag.contains("Offers", 10)) {
+            this.offerData = tag.getCompound("Offers");
         }
-        if (nbt.contains("Gossips", 10)) {
-            this.gossipData = nbt.getList("Gossips", 10);
+        if (tag.contains("Gossips", 10)) {
+            this.gossipData = tag.getList("Gossips", 10);
         }
-        if (nbt.contains("ConversionTime", 99) && nbt.getInt("ConversionTime") > -1) {
-            this.setConverting(nbt.containsUuid("ConversionPlayer") ? nbt.getUuid("ConversionPlayer") : null, nbt.getInt("ConversionTime"));
+        if (tag.contains("ConversionTime", 99) && tag.getInt("ConversionTime") > -1) {
+            this.setConverting(tag.containsUuid("ConversionPlayer") ? tag.getUuid("ConversionPlayer") : null, tag.getInt("ConversionTime"));
         }
-        if (nbt.contains("Xp", 3)) {
-            this.xp = nbt.getInt("Xp");
+        if (tag.contains("Xp", 3)) {
+            this.xp = tag.getInt("Xp");
         }
     }
 
@@ -126,9 +126,9 @@ implements VillagerDataContainer {
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.getItem() == Items.GOLDEN_APPLE) {
+        if (itemStack.isOf(Items.GOLDEN_APPLE)) {
             if (this.hasStatusEffect(StatusEffects.WEAKNESS)) {
-                if (!player.abilities.creativeMode) {
+                if (!player.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
                 if (!this.world.isClient) {
@@ -192,7 +192,7 @@ implements VillagerDataContainer {
         }
         villagerEntity.setVillagerData(this.getVillagerData());
         if (this.gossipData != null) {
-            villagerEntity.readGossipDataNbt(this.gossipData);
+            villagerEntity.setGossipDataFromTag(this.gossipData);
         }
         if (this.offerData != null) {
             villagerEntity.setOffers(new TradeOfferList(this.offerData));
@@ -217,8 +217,8 @@ implements VillagerDataContainer {
             for (int k = (int)this.getX() - 4; k < (int)this.getX() + 4 && j < 14; ++k) {
                 for (int l = (int)this.getY() - 4; l < (int)this.getY() + 4 && j < 14; ++l) {
                     for (int m = (int)this.getZ() - 4; m < (int)this.getZ() + 4 && j < 14; ++m) {
-                        Block block = this.world.getBlockState(mutable.set(k, l, m)).getBlock();
-                        if (block != Blocks.IRON_BARS && !(block instanceof BedBlock)) continue;
+                        BlockState blockState = this.world.getBlockState(mutable.set(k, l, m));
+                        if (!blockState.isOf(Blocks.IRON_BARS) && !(blockState.getBlock() instanceof BedBlock)) continue;
                         if (this.random.nextFloat() < 0.3f) {
                             ++i;
                         }
@@ -263,19 +263,19 @@ implements VillagerDataContainer {
         return ItemStack.EMPTY;
     }
 
-    public void setOfferData(NbtCompound offerTag) {
+    public void setOfferData(CompoundTag offerTag) {
         this.offerData = offerTag;
     }
 
-    public void setGossipData(NbtElement gossipTag) {
+    public void setGossipData(Tag gossipTag) {
         this.gossipData = gossipTag;
     }
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiomeKey(this.getBlockPos()))));
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.method_31081(this.getBlockPos()))));
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     public void setVillagerData(VillagerData data) {

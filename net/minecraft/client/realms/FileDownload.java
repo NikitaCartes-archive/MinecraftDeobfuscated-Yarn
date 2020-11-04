@@ -26,7 +26,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.realms.exception.RealmsDefaultUncaughtExceptionHandler;
 import net.minecraft.client.realms.gui.screen.RealmsDownloadLatestWorldScreen;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -114,7 +114,7 @@ public class FileDownload {
                 IOUtils.copy(httpResponse.getEntity().getContent(), (OutputStream)downloadCountingOutputStream2);
                 return;
             } catch (Exception exception2) {
-                LOGGER.error("Caught exception while downloading: " + exception2.getMessage());
+                LOGGER.error("Caught exception while downloading: {}", (Object)exception2.getMessage());
                 this.error = true;
                 return;
             } finally {
@@ -138,7 +138,7 @@ public class FileDownload {
                                 return;
                             }
                         } catch (Exception exception2) {
-                            LOGGER.error("Caught exception while downloading: " + exception2.getMessage());
+                            LOGGER.error("Caught exception while downloading: {}", (Object)exception2.getMessage());
                             this.error = true;
                         }
                         FileOutputStream outputStream2 = new FileOutputStream(this.backupFile);
@@ -302,10 +302,10 @@ public class FileDownload {
     private static void readNbtFile(File file) {
         if (file.exists()) {
             try {
-                NbtCompound nbtCompound = NbtIo.readCompressed(file);
-                NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
-                nbtCompound2.remove("Player");
-                NbtIo.writeCompressed(nbtCompound, file);
+                CompoundTag compoundTag = NbtIo.readCompressed(file);
+                CompoundTag compoundTag2 = compoundTag.getCompound("Data");
+                compoundTag2.remove("Player");
+                NbtIo.writeCompressed(compoundTag, file);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -357,12 +357,12 @@ public class FileDownload {
                         FileUtils.copyFile(this.tempFile, FileDownload.this.resourcePackPath);
                         FileDownload.this.finished = true;
                     } else {
-                        LOGGER.error("Resourcepack had wrong hash (expected " + this.worldDownload.resourcePackHash + ", found " + string + "). Deleting it.");
+                        LOGGER.error("Resourcepack had wrong hash (expected {}, found {}). Deleting it.", (Object)this.worldDownload.resourcePackHash, (Object)string);
                         FileUtils.deleteQuietly(this.tempFile);
                         FileDownload.this.error = true;
                     }
                 } catch (IOException iOException) {
-                    LOGGER.error("Error copying resourcepack file", (Object)iOException.getMessage());
+                    LOGGER.error("Error copying resourcepack file: {}", (Object)iOException.getMessage());
                     FileDownload.this.error = true;
                 }
             }

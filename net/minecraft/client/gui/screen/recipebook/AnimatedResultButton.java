@@ -13,7 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
@@ -27,9 +27,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class AnimatedResultButton
-extends ClickableWidget {
+extends AbstractButtonWidget {
     private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
-    private static final Text MORE_RECIPES_TEXT = new TranslatableText("gui.recipebook.moreRecipes");
+    private static final Text field_26595 = new TranslatableText("gui.recipebook.moreRecipes");
     private AbstractRecipeScreenHandler<?> craftingScreenHandler;
     private RecipeBook recipeBook;
     private RecipeResultCollection results;
@@ -124,7 +124,7 @@ extends ClickableWidget {
         ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput();
         ArrayList<Text> list = Lists.newArrayList(screen.getTooltipFromItem(itemStack));
         if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
-            list.add(MORE_RECIPES_TEXT);
+            list.add(field_26595);
         }
         return list;
     }

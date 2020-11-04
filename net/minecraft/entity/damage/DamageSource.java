@@ -219,7 +219,7 @@ public class DamageSource {
         return this.scaleWithDifficulty;
     }
 
-    public boolean isMagic() {
+    public boolean getMagic() {
         return this.magic;
     }
 
@@ -230,7 +230,7 @@ public class DamageSource {
 
     public boolean isSourceCreativePlayer() {
         Entity entity = this.getAttacker();
-        return entity instanceof PlayerEntity && ((PlayerEntity)entity).abilities.creativeMode;
+        return entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode;
     }
 
     @Nullable

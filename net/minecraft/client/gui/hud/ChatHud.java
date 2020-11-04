@@ -14,7 +14,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.option.ChatVisibility;
+import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
@@ -37,7 +37,7 @@ extends DrawableHelper {
     private final Deque<Text> messageQueue = Queues.newArrayDeque();
     private int scrolledLines;
     private boolean hasUnreadNewMessages;
-    private long lastMessageAddedTime = 0L;
+    private long lastMessageAddedTime;
 
     public ChatHud(MinecraftClient client) {
         this.client = client;

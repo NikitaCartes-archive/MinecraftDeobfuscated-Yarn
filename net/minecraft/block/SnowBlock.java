@@ -67,7 +67,7 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return LAYERS_TO_SHAPE[state.get(LAYERS)];
     }
 
@@ -85,15 +85,15 @@ extends Block {
         if (blockState.isOf(Blocks.HONEY_BLOCK) || blockState.isOf(Blocks.SOUL_SAND)) {
             return true;
         }
-        return Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP) || blockState.getBlock() == this && blockState.get(LAYERS) == 8;
+        return Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP) || blockState.isOf(this) && blockState.get(LAYERS) == 8;
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (!state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
@@ -107,7 +107,7 @@ extends Block {
     @Override
     public boolean canReplace(BlockState state, ItemPlacementContext context) {
         int i = state.get(LAYERS);
-        if (context.getStack().getItem() == this.asItem() && i < 8) {
+        if (context.getStack().isOf(this.asItem()) && i < 8) {
             if (context.canReplaceExisting()) {
                 return context.getSide() == Direction.UP;
             }

@@ -4,8 +4,8 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import net.minecraft.class_5532;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.FluidTags;
@@ -45,7 +45,7 @@ extends Goal {
     }
 
     protected boolean findTarget() {
-        Vec3d vec3d = TargetFinder.findTarget(this.mob, 5, 4);
+        Vec3d vec3d = class_5532.method_31510(this.mob, 5, 4);
         if (vec3d == null) {
             return false;
         }

@@ -42,7 +42,7 @@ implements BiomeAccess.Storage {
             int j = is[i];
             Biome biome = indexedIterable.get(j);
             if (biome == null) {
-                LOGGER.warn("Received invalid biome id: " + j);
+                LOGGER.warn("Received invalid biome id: {}", (Object)j);
                 this.data[i] = indexedIterable.get(0);
                 continue;
             }

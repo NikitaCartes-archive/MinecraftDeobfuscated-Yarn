@@ -125,14 +125,14 @@ public class LootCommand {
     }
 
     private static boolean itemsMatch(ItemStack first, ItemStack second) {
-        return first.getItem() == second.getItem() && first.getDamage() == second.getDamage() && first.getCount() <= first.getMaxCount() && Objects.equals(first.getTag(), second.getTag());
+        return first.isOf(second.getItem()) && first.getDamage() == second.getDamage() && first.getCount() <= first.getMaxCount() && Objects.equals(first.getTag(), second.getTag());
     }
 
     private static int executeGive(Collection<ServerPlayerEntity> players, List<ItemStack> stacks, FeedbackMessage messageSender) throws CommandSyntaxException {
         ArrayList<ItemStack> list = Lists.newArrayListWithCapacity(stacks.size());
         for (ItemStack itemStack : stacks) {
             for (ServerPlayerEntity serverPlayerEntity : players) {
-                if (!serverPlayerEntity.inventory.insertStack(itemStack.copy())) continue;
+                if (!serverPlayerEntity.getInventory().insertStack(itemStack.copy())) continue;
                 list.add(itemStack);
             }
         }

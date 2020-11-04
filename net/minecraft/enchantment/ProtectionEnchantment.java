@@ -16,9 +16,9 @@ public class ProtectionEnchantment
 extends Enchantment {
     public final Type protectionType;
 
-    public ProtectionEnchantment(Enchantment.Rarity weight, Type protectionType, EquipmentSlot ... slotTypes) {
-        super(weight, protectionType == Type.FALL ? EnchantmentTarget.ARMOR_FEET : EnchantmentTarget.ARMOR, slotTypes);
-        this.protectionType = protectionType;
+    public ProtectionEnchantment(Enchantment.Rarity weight, Type type, EquipmentSlot ... equipmentSlots) {
+        super(weight, type == Type.FALL ? EnchantmentTarget.ARMOR_FEET : EnchantmentTarget.ARMOR, equipmentSlots);
+        this.protectionType = type;
     }
 
     @Override

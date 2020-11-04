@@ -5,6 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.AbstractZombieModel;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -12,12 +13,8 @@ import net.minecraft.entity.mob.ZombieEntity;
 @Environment(value=EnvType.CLIENT)
 public class ZombieEntityModel<T extends ZombieEntity>
 extends AbstractZombieModel<T> {
-    public ZombieEntityModel(float scale, boolean bl) {
-        this(scale, 0.0f, 64, bl ? 32 : 64);
-    }
-
-    protected ZombieEntityModel(float f, float g, int i, int j) {
-        super(f, g, i, j);
+    public ZombieEntityModel(ModelPart modelPart) {
+        super(modelPart);
     }
 
     @Override

@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * The style of a {@link Text}, representing cosmetic attributes. It includes
  * font, formatting, click/hover events (actions), color, etc.
  * 
- * <p>A style is immutable.
+ * <p>A style is immutable.</p>
  * 
  * @see Text
  */
@@ -157,7 +157,7 @@ public class Style {
      * Returns the insertion text of the style.
      * 
      * <p>An insertion is inserted when a piece of text clicked while shift key
-     * is down in the chat HUD.
+     * is down in the chat HUD.</p>
      */
     @Nullable
     public String getInsertion() {
@@ -311,7 +311,7 @@ public class Style {
      * 
      * <p>When a color formatting is passed for {@code formatting}, the other
      * formattings, including bold, italic, strikethrough, underlined, and
-     * obfuscated, are all removed.
+     * obfuscated, are all removed.</p>
      * 
      * @param formatting the new formatting
      */
@@ -425,12 +425,12 @@ public class Style {
         return "Style{ color=" + this.color + ", bold=" + this.bold + ", italic=" + this.italic + ", underlined=" + this.underlined + ", strikethrough=" + this.strikethrough + ", obfuscated=" + this.obfuscated + ", clickEvent=" + this.getClickEvent() + ", hoverEvent=" + this.getHoverEvent() + ", insertion=" + this.getInsertion() + ", font=" + this.getFont() + '}';
     }
 
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o instanceof Style) {
-            Style style = (Style)o;
+        if (obj instanceof Style) {
+            Style style = (Style)obj;
             return this.isBold() == style.isBold() && Objects.equals(this.getColor(), style.getColor()) && this.isItalic() == style.isItalic() && this.isObfuscated() == style.isObfuscated() && this.isStrikethrough() == style.isStrikethrough() && this.isUnderlined() == style.isUnderlined() && Objects.equals(this.getClickEvent(), style.getClickEvent()) && Objects.equals(this.getHoverEvent(), style.getHoverEvent()) && Objects.equals(this.getInsertion(), style.getInsertion()) && Objects.equals(this.getFont(), style.getFont());
         }
         return false;

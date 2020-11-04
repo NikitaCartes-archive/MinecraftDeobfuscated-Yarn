@@ -53,8 +53,8 @@ implements Decoratable<ConfiguredFeature<?, ?>> {
         return new RandomFeatureEntry(this, chance);
     }
 
-    public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos origin) {
-        return ((Feature)this.feature).generate(world, chunkGenerator, random, origin, this.config);
+    public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
+        return ((Feature)this.feature).generate(world, chunkGenerator, random, pos, this.config);
     }
 
     public Stream<ConfiguredFeature<?, ?>> method_30648() {

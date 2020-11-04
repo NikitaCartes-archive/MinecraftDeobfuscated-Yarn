@@ -12,6 +12,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.HeightLimitView;
 import org.jetbrains.annotations.Nullable;
 
 public class CrashReportSection {
@@ -26,74 +28,82 @@ public class CrashReportSection {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static String createPositionString(double x, double y, double z) {
-        return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", x, y, z, CrashReportSection.createPositionString(new BlockPos(x, y, z)));
+    public static String createPositionString(HeightLimitView heightLimitView, double d, double e, double f) {
+        return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", d, e, f, CrashReportSection.createPositionString(heightLimitView, new BlockPos(d, e, f)));
     }
 
-    public static String createPositionString(BlockPos pos) {
-        return CrashReportSection.createPositionString(pos.getX(), pos.getY(), pos.getZ());
+    public static String createPositionString(HeightLimitView heightLimitView, BlockPos blockPos) {
+        return CrashReportSection.createPositionString(heightLimitView, blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
-    public static String createPositionString(int x, int y, int z) {
+    public static String createPositionString(HeightLimitView heightLimitView, int i, int j, int k) {
+        int w;
+        int v;
+        int u;
+        int t;
+        int s;
+        int r;
         int q;
         int p;
         int o;
         int n;
         int m;
-        int l;
-        int k;
-        int j;
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            stringBuilder.append(String.format("World: (%d,%d,%d)", x, y, z));
+            stringBuilder.append(String.format("World: (%d,%d,%d)", i, j, k));
         } catch (Throwable throwable) {
             stringBuilder.append("(Error finding world loc)");
         }
         stringBuilder.append(", ");
         try {
-            int i = x >> 4;
-            j = z >> 4;
-            k = x & 0xF;
-            l = y >> 4;
-            m = z & 0xF;
-            n = i << 4;
-            o = j << 4;
-            p = (i + 1 << 4) - 1;
-            q = (j + 1 << 4) - 1;
-            stringBuilder.append(String.format("Chunk: (at %d,%d,%d in %d,%d; contains blocks %d,0,%d to %d,255,%d)", k, l, m, i, j, n, o, p, q));
+            int l = ChunkSectionPos.getSectionCoord(i);
+            m = ChunkSectionPos.getSectionCoord(j);
+            n = ChunkSectionPos.getSectionCoord(k);
+            o = i & 0xF;
+            p = j & 0xF;
+            q = k & 0xF;
+            r = ChunkSectionPos.getBlockCoord(l);
+            s = heightLimitView.getBottomHeightLimit();
+            t = ChunkSectionPos.getBlockCoord(n);
+            u = ChunkSectionPos.getBlockCoord(l + 1) - 1;
+            v = heightLimitView.getTopHeightLimit() - 1;
+            w = ChunkSectionPos.getBlockCoord(n + 1) - 1;
+            stringBuilder.append(String.format("Section: (at %d,%d,%d in %d,%d,%d; chunk contains blocks %d,%d,%d to %d,%d,%d)", o, p, q, l, m, n, r, s, t, u, v, w));
         } catch (Throwable throwable) {
             stringBuilder.append("(Error finding chunk loc)");
         }
         stringBuilder.append(", ");
         try {
-            int i = x >> 9;
-            j = z >> 9;
-            k = i << 5;
-            l = j << 5;
-            m = (i + 1 << 5) - 1;
-            n = (j + 1 << 5) - 1;
-            o = i << 9;
-            p = j << 9;
-            q = (i + 1 << 9) - 1;
-            int r = (j + 1 << 9) - 1;
-            stringBuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,0,%d to %d,255,%d)", i, j, k, l, m, n, o, p, q, r));
+            int l = i >> 9;
+            m = k >> 9;
+            n = l << 5;
+            o = m << 5;
+            p = (l + 1 << 5) - 1;
+            q = (m + 1 << 5) - 1;
+            r = l << 9;
+            s = heightLimitView.getBottomHeightLimit();
+            t = m << 9;
+            u = (l + 1 << 9) - 1;
+            v = heightLimitView.getTopHeightLimit() - 1;
+            w = (m + 1 << 9) - 1;
+            stringBuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,%d,%d to %d,%d,%d)", l, m, n, o, p, q, r, s, t, u, v, w));
         } catch (Throwable throwable) {
             stringBuilder.append("(Error finding world loc)");
         }
         return stringBuilder.toString();
     }
 
-    public CrashReportSection add(String name, CrashCallable<String> crashCallable) {
+    public CrashReportSection add(String string, CrashCallable<String> crashCallable) {
         try {
-            this.add(name, crashCallable.call());
+            this.add(string, crashCallable.call());
         } catch (Throwable throwable) {
-            this.add(name, throwable);
+            this.add(string, throwable);
         }
         return this;
     }
 
-    public CrashReportSection add(String name, Object detail) {
-        this.elements.add(new Element(name, detail));
+    public CrashReportSection add(String name, Object object) {
+        this.elements.add(new Element(name, object));
         return this;
     }
 
@@ -135,20 +145,20 @@ public class CrashReportSection {
         this.stackTrace = stackTraceElements;
     }
 
-    public void addStackTrace(StringBuilder crashReportBuilder) {
-        crashReportBuilder.append("-- ").append(this.title).append(" --\n");
-        crashReportBuilder.append("Details:");
+    public void addStackTrace(StringBuilder stringBuilder) {
+        stringBuilder.append("-- ").append(this.title).append(" --\n");
+        stringBuilder.append("Details:");
         for (Element element : this.elements) {
-            crashReportBuilder.append("\n\t");
-            crashReportBuilder.append(element.getName());
-            crashReportBuilder.append(": ");
-            crashReportBuilder.append(element.getDetail());
+            stringBuilder.append("\n\t");
+            stringBuilder.append(element.getName());
+            stringBuilder.append(": ");
+            stringBuilder.append(element.getDetail());
         }
         if (this.stackTrace != null && this.stackTrace.length > 0) {
-            crashReportBuilder.append("\nStacktrace:");
+            stringBuilder.append("\nStacktrace:");
             for (StackTraceElement stackTraceElement : this.stackTrace) {
-                crashReportBuilder.append("\n\tat ");
-                crashReportBuilder.append(stackTraceElement);
+                stringBuilder.append("\n\tat ");
+                stringBuilder.append(stackTraceElement);
             }
         }
     }
@@ -157,11 +167,11 @@ public class CrashReportSection {
         return this.stackTrace;
     }
 
-    public static void addBlockInfo(CrashReportSection element, BlockPos pos, @Nullable BlockState state) {
-        if (state != null) {
-            element.add("Block", state::toString);
+    public static void addBlockInfo(CrashReportSection element, HeightLimitView heightLimitView, BlockPos blockPos, @Nullable BlockState blockState) {
+        if (blockState != null) {
+            element.add("Block", blockState::toString);
         }
-        element.add("Block location", () -> CrashReportSection.createPositionString(pos));
+        element.add("Block location", () -> CrashReportSection.createPositionString(heightLimitView, blockPos));
     }
 
     static class Element {

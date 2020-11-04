@@ -12,7 +12,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -34,7 +34,7 @@ extends Entity {
 
     public TntEntity(World world, double x, double y, double z, @Nullable LivingEntity igniter) {
         this((EntityType<? extends TntEntity>)EntityType.TNT, world);
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
         double d = world.random.nextDouble() * 6.2831854820251465;
         this.setVelocity(-Math.sin(d) * 0.02, 0.2f, -Math.cos(d) * 0.02);
         this.setFuse(80);
@@ -56,7 +56,7 @@ extends Entity {
 
     @Override
     public boolean collides() {
-        return !this.removed;
+        return !this.isRemoved();
     }
 
     @Override
@@ -71,7 +71,7 @@ extends Entity {
         }
         --this.fuseTimer;
         if (this.fuseTimer <= 0) {
-            this.remove();
+            this.discard();
             if (!this.world.isClient) {
                 this.explode();
             }
@@ -89,13 +89,13 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putShort("Fuse", (short)this.getFuseTimer());
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        tag.putShort("Fuse", (short)this.getFuseTimer());
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.setFuse(nbt.getShort("Fuse"));
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        this.setFuse(tag.getShort("Fuse"));
     }
 
     @Nullable

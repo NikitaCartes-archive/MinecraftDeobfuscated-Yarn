@@ -37,7 +37,7 @@ implements CommandOutput {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID sender) {
+    public void sendSystemMessage(Text message, UUID senderUuid) {
         this.buffer.append(message.getString());
     }
 

@@ -12,7 +12,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -37,28 +36,28 @@ extends Feature<DefaultFeatureConfig> {
         return true;
     }
 
-    private static void generateVinesInArea(WorldAccess world, Random random, BlockPos pos, int horizontalSpread, int verticalSpread, int length) {
+    private static void generateVinesInArea(WorldAccess worldAccess, Random random, BlockPos blockPos, int i, int j, int k) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int i = 0; i < horizontalSpread * horizontalSpread; ++i) {
-            mutable.set(pos).move(MathHelper.nextInt(random, -horizontalSpread, horizontalSpread), MathHelper.nextInt(random, -verticalSpread, verticalSpread), MathHelper.nextInt(random, -horizontalSpread, horizontalSpread));
-            if (!TwistingVinesFeature.method_27220(world, mutable) || TwistingVinesFeature.isNotSuitable(world, mutable)) continue;
-            int j = MathHelper.nextInt(random, 1, length);
+        for (int l = 0; l < i * i; ++l) {
+            mutable.set(blockPos).move(MathHelper.nextInt(random, -i, i), MathHelper.nextInt(random, -j, j), MathHelper.nextInt(random, -i, i));
+            if (!TwistingVinesFeature.method_27220(worldAccess, mutable) || TwistingVinesFeature.isNotSuitable(worldAccess, mutable)) continue;
+            int m = MathHelper.nextInt(random, 1, k);
             if (random.nextInt(6) == 0) {
-                j *= 2;
+                m *= 2;
             }
             if (random.nextInt(5) == 0) {
-                j = 1;
+                m = 1;
             }
-            int k = 17;
-            int l = 25;
-            TwistingVinesFeature.generateVineColumn(world, random, mutable, j, 17, 25);
+            int n = 17;
+            int o = 25;
+            TwistingVinesFeature.generateVineColumn(worldAccess, random, mutable, m, 17, 25);
         }
     }
 
     private static boolean method_27220(WorldAccess worldAccess, BlockPos.Mutable mutable) {
         do {
             mutable.move(0, -1, 0);
-            if (!World.isOutOfBuildLimitVertically(mutable)) continue;
+            if (!worldAccess.isOutOfHeightLimit(mutable)) continue;
             return false;
         } while (worldAccess.getBlockState(mutable).isAir());
         mutable.move(0, 1, 0);
@@ -78,11 +77,11 @@ extends Feature<DefaultFeatureConfig> {
         }
     }
 
-    private static boolean isNotSuitable(WorldAccess world, BlockPos pos) {
-        if (!world.isAir(pos)) {
+    private static boolean isNotSuitable(WorldAccess worldAccess, BlockPos blockPos) {
+        if (!worldAccess.isAir(blockPos)) {
             return true;
         }
-        BlockState blockState = world.getBlockState(pos.down());
+        BlockState blockState = worldAccess.getBlockState(blockPos.down());
         return !blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.WARPED_NYLIUM) && !blockState.isOf(Blocks.WARPED_WART_BLOCK);
     }
 }

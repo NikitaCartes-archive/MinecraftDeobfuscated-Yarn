@@ -3,89 +3,72 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class RavagerEntityModel
-extends CompositeEntityModel<RavagerEntity> {
+extends class_5597<RavagerEntity> {
+    private final ModelPart field_27489;
     private final ModelPart head;
     private final ModelPart jaw;
-    private final ModelPart torso;
-    private final ModelPart rightBackLeg;
-    private final ModelPart leftBackLeg;
-    private final ModelPart rightFrontLeg;
-    private final ModelPart leftFrontLeg;
+    private final ModelPart field_27490;
+    private final ModelPart field_27491;
+    private final ModelPart field_27492;
+    private final ModelPart field_27493;
     private final ModelPart neck;
 
-    public RavagerEntityModel() {
-        this.textureWidth = 128;
-        this.textureHeight = 128;
+    public RavagerEntityModel(ModelPart modelPart) {
+        this.field_27489 = modelPart;
+        this.neck = modelPart.method_32086("neck");
+        this.head = this.neck.method_32086("head");
+        this.jaw = this.head.method_32086("mouth");
+        this.field_27490 = modelPart.method_32086("right_hind_leg");
+        this.field_27491 = modelPart.method_32086("left_hind_leg");
+        this.field_27492 = modelPart.method_32086("right_front_leg");
+        this.field_27493 = modelPart.method_32086("left_front_leg");
+    }
+
+    public static class_5607 method_32035() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
         int i = 16;
-        float f = 0.0f;
-        this.neck = new ModelPart(this);
-        this.neck.setPivot(0.0f, -7.0f, -1.5f);
-        this.neck.setTextureOffset(68, 73).addCuboid(-5.0f, -1.0f, -18.0f, 10.0f, 10.0f, 18.0f, 0.0f);
-        this.head = new ModelPart(this);
-        this.head.setPivot(0.0f, 16.0f, -17.0f);
-        this.head.setTextureOffset(0, 0).addCuboid(-8.0f, -20.0f, -14.0f, 16.0f, 20.0f, 16.0f, 0.0f);
-        this.head.setTextureOffset(0, 0).addCuboid(-2.0f, -6.0f, -18.0f, 4.0f, 8.0f, 4.0f, 0.0f);
-        ModelPart modelPart = new ModelPart(this);
-        modelPart.setPivot(-10.0f, -14.0f, -8.0f);
-        modelPart.setTextureOffset(74, 55).addCuboid(0.0f, -14.0f, -2.0f, 2.0f, 14.0f, 4.0f, 0.0f);
-        modelPart.pitch = 1.0995574f;
-        this.head.addChild(modelPart);
-        ModelPart modelPart2 = new ModelPart(this);
-        modelPart2.mirror = true;
-        modelPart2.setPivot(8.0f, -14.0f, -8.0f);
-        modelPart2.setTextureOffset(74, 55).addCuboid(0.0f, -14.0f, -2.0f, 2.0f, 14.0f, 4.0f, 0.0f);
-        modelPart2.pitch = 1.0995574f;
-        this.head.addChild(modelPart2);
-        this.jaw = new ModelPart(this);
-        this.jaw.setPivot(0.0f, -2.0f, 2.0f);
-        this.jaw.setTextureOffset(0, 36).addCuboid(-8.0f, 0.0f, -16.0f, 16.0f, 3.0f, 16.0f, 0.0f);
-        this.head.addChild(this.jaw);
-        this.neck.addChild(this.head);
-        this.torso = new ModelPart(this);
-        this.torso.setTextureOffset(0, 55).addCuboid(-7.0f, -10.0f, -7.0f, 14.0f, 16.0f, 20.0f, 0.0f);
-        this.torso.setTextureOffset(0, 91).addCuboid(-6.0f, 6.0f, -7.0f, 12.0f, 13.0f, 18.0f, 0.0f);
-        this.torso.setPivot(0.0f, 1.0f, 2.0f);
-        this.rightBackLeg = new ModelPart(this, 96, 0);
-        this.rightBackLeg.addCuboid(-4.0f, 0.0f, -4.0f, 8.0f, 37.0f, 8.0f, 0.0f);
-        this.rightBackLeg.setPivot(-8.0f, -13.0f, 18.0f);
-        this.leftBackLeg = new ModelPart(this, 96, 0);
-        this.leftBackLeg.mirror = true;
-        this.leftBackLeg.addCuboid(-4.0f, 0.0f, -4.0f, 8.0f, 37.0f, 8.0f, 0.0f);
-        this.leftBackLeg.setPivot(8.0f, -13.0f, 18.0f);
-        this.rightFrontLeg = new ModelPart(this, 64, 0);
-        this.rightFrontLeg.addCuboid(-4.0f, 0.0f, -4.0f, 8.0f, 37.0f, 8.0f, 0.0f);
-        this.rightFrontLeg.setPivot(-8.0f, -13.0f, -5.0f);
-        this.leftFrontLeg = new ModelPart(this, 64, 0);
-        this.leftFrontLeg.mirror = true;
-        this.leftFrontLeg.addCuboid(-4.0f, 0.0f, -4.0f, 8.0f, 37.0f, 8.0f, 0.0f);
-        this.leftFrontLeg.setPivot(8.0f, -13.0f, -5.0f);
+        class_5610 lv3 = lv2.method_32117("neck", class_5606.method_32108().method_32101(68, 73).method_32097(-5.0f, -1.0f, -18.0f, 10.0f, 10.0f, 18.0f), class_5603.method_32090(0.0f, -7.0f, 5.5f));
+        class_5610 lv4 = lv3.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32097(-8.0f, -20.0f, -14.0f, 16.0f, 20.0f, 16.0f).method_32101(0, 0).method_32097(-2.0f, -6.0f, -18.0f, 4.0f, 8.0f, 4.0f), class_5603.method_32090(0.0f, 16.0f, -17.0f));
+        lv4.method_32117("right_horn", class_5606.method_32108().method_32101(74, 55).method_32097(0.0f, -14.0f, -2.0f, 2.0f, 14.0f, 4.0f), class_5603.method_32091(-10.0f, -14.0f, -8.0f, 1.0995574f, 0.0f, 0.0f));
+        lv4.method_32117("left_horn", class_5606.method_32108().method_32101(74, 55).method_32096().method_32097(0.0f, -14.0f, -2.0f, 2.0f, 14.0f, 4.0f), class_5603.method_32091(8.0f, -14.0f, -8.0f, 1.0995574f, 0.0f, 0.0f));
+        lv4.method_32117("mouth", class_5606.method_32108().method_32101(0, 36).method_32097(-8.0f, 0.0f, -16.0f, 16.0f, 3.0f, 16.0f), class_5603.method_32090(0.0f, -2.0f, 2.0f));
+        lv2.method_32117("body", class_5606.method_32108().method_32101(0, 55).method_32097(-7.0f, -10.0f, -7.0f, 14.0f, 16.0f, 20.0f).method_32101(0, 91).method_32097(-6.0f, 6.0f, -7.0f, 12.0f, 13.0f, 18.0f), class_5603.method_32091(0.0f, 1.0f, 2.0f, 1.5707964f, 0.0f, 0.0f));
+        lv2.method_32117("right_hind_leg", class_5606.method_32108().method_32101(96, 0).method_32097(-4.0f, 0.0f, -4.0f, 8.0f, 37.0f, 8.0f), class_5603.method_32090(-8.0f, -13.0f, 18.0f));
+        lv2.method_32117("left_hind_leg", class_5606.method_32108().method_32101(96, 0).method_32096().method_32097(-4.0f, 0.0f, -4.0f, 8.0f, 37.0f, 8.0f), class_5603.method_32090(8.0f, -13.0f, 18.0f));
+        lv2.method_32117("right_front_leg", class_5606.method_32108().method_32101(64, 0).method_32097(-4.0f, 0.0f, -4.0f, 8.0f, 37.0f, 8.0f), class_5603.method_32090(-8.0f, -13.0f, -5.0f));
+        lv2.method_32117("left_front_leg", class_5606.method_32108().method_32101(64, 0).method_32096().method_32097(-4.0f, 0.0f, -4.0f, 8.0f, 37.0f, 8.0f), class_5603.method_32090(8.0f, -13.0f, -5.0f));
+        return class_5607.method_32110(lv, 128, 128);
     }
 
     @Override
-    public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.neck, this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg);
+    public ModelPart method_32008() {
+        return this.field_27489;
     }
 
     @Override
     public void setAngles(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j) {
         this.head.pitch = j * ((float)Math.PI / 180);
         this.head.yaw = i * ((float)Math.PI / 180);
-        this.torso.pitch = 1.5707964f;
         float k = 0.4f * g;
-        this.rightBackLeg.pitch = MathHelper.cos(f * 0.6662f) * k;
-        this.leftBackLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
-        this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
-        this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662f) * k;
+        this.field_27490.pitch = MathHelper.cos(f * 0.6662f) * k;
+        this.field_27491.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
+        this.field_27492.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
+        this.field_27493.pitch = MathHelper.cos(f * 0.6662f) * k;
     }
 
     @Override

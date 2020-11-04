@@ -32,7 +32,7 @@ public interface OrderedText {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static OrderedText styledForwardsVisitedString(String string, Style style) {
+    public static OrderedText styledString(String string, Style style) {
         if (string.isEmpty()) {
             return EMPTY;
         }
@@ -40,7 +40,7 @@ public interface OrderedText {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static OrderedText styledBackwardsVisitedString(String string, Style style, Int2IntFunction codePointMapper) {
+    public static OrderedText styledStringMapped(String string, Style style, Int2IntFunction codePointMapper) {
         if (string.isEmpty()) {
             return EMPTY;
         }

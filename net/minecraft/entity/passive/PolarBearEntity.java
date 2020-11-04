@@ -43,7 +43,7 @@ import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -106,7 +106,7 @@ implements Angerable {
     }
 
     public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
+        Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
         if (Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_OCEAN)) || Objects.equals(optional, Optional.of(BiomeKeys.DEEP_FROZEN_OCEAN))) {
             return world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.down()).isOf(Blocks.ICE);
         }
@@ -114,15 +114,15 @@ implements Angerable {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.angerFromTag((ServerWorld)this.world, nbt);
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.angerFromTag(this.world, tag);
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        this.writeAngerToNbt(nbt);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        this.angerToTag(tag);
     }
 
     @Override
@@ -242,11 +242,11 @@ implements Angerable {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(1.0f);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     class PolarBearEscapeDangerGoal

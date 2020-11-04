@@ -20,7 +20,7 @@ public class SimpleMerchant
 implements Merchant {
     private final MerchantInventory merchantInventory;
     private final PlayerEntity player;
-    private TradeOfferList offers = new TradeOfferList();
+    private TradeOfferList recipeList = new TradeOfferList();
     private int experience;
 
     public SimpleMerchant(PlayerEntity playerEntity) {
@@ -40,13 +40,13 @@ implements Merchant {
 
     @Override
     public TradeOfferList getOffers() {
-        return this.offers;
+        return this.recipeList;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
     public void setOffersFromServer(@Nullable TradeOfferList offers) {
-        this.offers = offers;
+        this.recipeList = offers;
     }
 
     @Override

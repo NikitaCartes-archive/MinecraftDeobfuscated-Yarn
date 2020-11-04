@@ -106,7 +106,7 @@ extends Task<VillagerEntity> {
         int i = simpleInventory.size();
         for (int j = 0; j < i; ++j) {
             ItemStack itemStack2 = simpleInventory.getStack(j);
-            if (itemStack2.getItem() != Items.BONE_MEAL) continue;
+            if (!itemStack2.isOf(Items.BONE_MEAL)) continue;
             itemStack = itemStack2;
             break;
         }

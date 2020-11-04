@@ -20,8 +20,10 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.SelectionManager;
@@ -31,16 +33,18 @@ import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.SignType;
 import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class SignEditScreen
 extends Screen {
-    private final SignBlockEntityRenderer.SignModel model = new SignBlockEntityRenderer.SignModel();
     private final SignBlockEntity sign;
     private int ticksSinceOpened;
     private int currentRow;
     private SelectionManager selectionManager;
+    private SignType field_27390;
+    private SignBlockEntityRenderer.SignModel model;
     private final String[] text = (String[])IntStream.range(0, 4).mapToObj(sign::getTextOnRow).map(Text::getString).toArray(String[]::new);
 
     public SignEditScreen(SignBlockEntity sign) {
@@ -57,6 +61,9 @@ extends Screen {
             this.text[this.currentRow] = string;
             this.sign.setTextOnRow(this.currentRow, new LiteralText((String)string));
         }, SelectionManager.makeClipboardGetter(this.client), SelectionManager.makeClipboardSetter(this.client), string -> this.client.textRenderer.getWidth((String)string) <= 90);
+        BlockState blockState = this.sign.getCachedState();
+        this.field_27390 = SignBlockEntityRenderer.method_32155(blockState.getBlock());
+        this.model = SignBlockEntityRenderer.method_32157(this.client.method_31974(), this.field_27390);
     }
 
     @Override
@@ -72,7 +79,7 @@ extends Screen {
     @Override
     public void tick() {
         ++this.ticksSinceOpened;
-        if (!this.sign.getType().supports(this.sign.getCachedState().getBlock())) {
+        if (!this.sign.getType().supports(this.sign.getCachedState())) {
             this.finishEditing();
         }
     }
@@ -83,7 +90,7 @@ extends Screen {
     }
 
     @Override
-    public boolean charTyped(char chr, int modifiers) {
+    public boolean charTyped(char chr, int keyCode) {
         this.selectionManager.insert(chr);
         return true;
     }
@@ -97,12 +104,12 @@ extends Screen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 265) {
             this.currentRow = this.currentRow - 1 & 3;
-            this.selectionManager.putCursorAtEnd();
+            this.selectionManager.moveCaretToEnd();
             return true;
         }
         if (keyCode == 264 || keyCode == 257 || keyCode == 335) {
             this.currentRow = this.currentRow + 1 & 3;
-            this.selectionManager.putCursorAtEnd();
+            this.selectionManager.moveCaretToEnd();
             return true;
         }
         if (this.selectionManager.handleSpecialKey(keyCode)) {
@@ -135,12 +142,10 @@ extends Screen {
         matrices.push();
         matrices.scale(0.6666667f, -0.6666667f, -0.6666667f);
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-        SpriteIdentifier spriteIdentifier = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
+        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.field_27390);
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.model::getLayer);
-        this.model.field.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
-        if (bl) {
-            this.model.foot.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
-        }
+        this.model.foot.visible = bl;
+        this.model.field_27756.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
         matrices.pop();
         float h = 0.010416667f;
         matrices.translate(0.0, 0.3333333432674408, 0.046666666865348816);
@@ -185,7 +190,7 @@ extends Screen {
             RenderSystem.disableTexture();
             RenderSystem.enableColorLogicOp();
             RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-            bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
             bufferBuilder.vertex(matrix4f, u, l + this.client.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.vertex(matrix4f, v, l + this.client.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.vertex(matrix4f, v, l, 0.0f).color(0, 0, 255, 255).next();

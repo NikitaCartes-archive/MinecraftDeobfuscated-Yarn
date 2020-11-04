@@ -9,7 +9,7 @@ import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -26,14 +26,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * A common logic for command-block behaviors shared by
- * {@linkplain net.minecraft.block.entity.CommandBlockBlockEntity
- * command blocks} and {@linkplain net.minecraft.entity.vehicle.CommandBlockMinecartEntity
- * command block minecarts}.
- * 
- * @see MobSpawnerLogic
- */
 public abstract class CommandBlockExecutor
 implements CommandOutput {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
@@ -59,43 +51,43 @@ implements CommandOutput {
         return this.lastOutput == null ? LiteralText.EMPTY : this.lastOutput;
     }
 
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        nbt.putString("Command", this.command);
-        nbt.putInt("SuccessCount", this.successCount);
-        nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
-        nbt.putBoolean("TrackOutput", this.trackOutput);
+    public CompoundTag serialize(CompoundTag tag) {
+        tag.putString("Command", this.command);
+        tag.putInt("SuccessCount", this.successCount);
+        tag.putString("CustomName", Text.Serializer.toJson(this.customName));
+        tag.putBoolean("TrackOutput", this.trackOutput);
         if (this.lastOutput != null && this.trackOutput) {
-            nbt.putString("LastOutput", Text.Serializer.toJson(this.lastOutput));
+            tag.putString("LastOutput", Text.Serializer.toJson(this.lastOutput));
         }
-        nbt.putBoolean("UpdateLastExecution", this.updateLastExecution);
+        tag.putBoolean("UpdateLastExecution", this.updateLastExecution);
         if (this.updateLastExecution && this.lastExecution > 0L) {
-            nbt.putLong("LastExecution", this.lastExecution);
+            tag.putLong("LastExecution", this.lastExecution);
         }
-        return nbt;
+        return tag;
     }
 
-    public void readNbt(NbtCompound nbt) {
-        this.command = nbt.getString("Command");
-        this.successCount = nbt.getInt("SuccessCount");
-        if (nbt.contains("CustomName", 8)) {
-            this.setCustomName(Text.Serializer.fromJson(nbt.getString("CustomName")));
+    public void deserialize(CompoundTag tag) {
+        this.command = tag.getString("Command");
+        this.successCount = tag.getInt("SuccessCount");
+        if (tag.contains("CustomName", 8)) {
+            this.setCustomName(Text.Serializer.fromJson(tag.getString("CustomName")));
         }
-        if (nbt.contains("TrackOutput", 1)) {
-            this.trackOutput = nbt.getBoolean("TrackOutput");
+        if (tag.contains("TrackOutput", 1)) {
+            this.trackOutput = tag.getBoolean("TrackOutput");
         }
-        if (nbt.contains("LastOutput", 8) && this.trackOutput) {
+        if (tag.contains("LastOutput", 8) && this.trackOutput) {
             try {
-                this.lastOutput = Text.Serializer.fromJson(nbt.getString("LastOutput"));
+                this.lastOutput = Text.Serializer.fromJson(tag.getString("LastOutput"));
             } catch (Throwable throwable) {
                 this.lastOutput = new LiteralText(throwable.getMessage());
             }
         } else {
             this.lastOutput = null;
         }
-        if (nbt.contains("UpdateLastExecution")) {
-            this.updateLastExecution = nbt.getBoolean("UpdateLastExecution");
+        if (tag.contains("UpdateLastExecution")) {
+            this.updateLastExecution = tag.getBoolean("UpdateLastExecution");
         }
-        this.lastExecution = this.updateLastExecution && nbt.contains("LastExecution") ? nbt.getLong("LastExecution") : -1L;
+        this.lastExecution = this.updateLastExecution && tag.contains("LastExecution") ? tag.getLong("LastExecution") : -1L;
     }
 
     public void setCommand(String command) {
@@ -148,7 +140,7 @@ implements CommandOutput {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID sender) {
+    public void sendSystemMessage(Text message, UUID senderUuid) {
         if (this.trackOutput) {
             this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
             this.markDirty();
@@ -163,7 +155,7 @@ implements CommandOutput {
         this.lastOutput = lastOutput;
     }
 
-    public void setTrackingOutput(boolean trackOutput) {
+    public void shouldTrackOutput(boolean trackOutput) {
         this.trackOutput = trackOutput;
     }
 

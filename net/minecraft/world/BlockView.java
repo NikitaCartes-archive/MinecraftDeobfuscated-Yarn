@@ -17,13 +17,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.RaycastContext;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a scoped, read-only view of block states, fluid states and block entities.
  */
-public interface BlockView {
+public interface BlockView
+extends HeightLimitView {
     @Nullable
     public BlockEntity getBlockEntity(BlockPos var1);
 
@@ -37,10 +39,6 @@ public interface BlockView {
 
     default public int getMaxLightLevel() {
         return 15;
-    }
-
-    default public int getHeight() {
-        return 256;
     }
 
     default public Stream<BlockState> method_29546(Box box) {

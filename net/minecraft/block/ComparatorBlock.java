@@ -56,11 +56,19 @@ implements BlockEntityProvider {
         return 0;
     }
 
-    private int calculateOutputSignal(World world, BlockPos pos, BlockState state) {
-        if (state.get(MODE) == ComparatorMode.SUBTRACT) {
-            return Math.max(this.getPower(world, pos, state) - this.getMaxInputLevelSides(world, pos, state), 0);
+    private int calculateOutputSignal(World world, BlockPos pos, BlockState blockState) {
+        int i = this.getPower(world, pos, blockState);
+        if (i == 0) {
+            return 0;
         }
-        return this.getPower(world, pos, state);
+        int j = this.getMaxInputLevelSides(world, pos, blockState);
+        if (j > i) {
+            return 0;
+        }
+        if (blockState.get(MODE) == ComparatorMode.SUBTRACT) {
+            return i - j;
+        }
+        return i;
     }
 
     @Override
@@ -107,7 +115,7 @@ implements BlockEntityProvider {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!player.abilities.allowModifyWorld) {
+        if (!player.getAbilities().allowModifyWorld) {
             return ActionResult.PASS;
         }
         float f = (state = (BlockState)state.cycle(MODE)).get(MODE) == ComparatorMode.SUBTRACT ? 0.55f : 0.5f;
@@ -166,8 +174,8 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new ComparatorBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new ComparatorBlockEntity(pos, state);
     }
 
     @Override

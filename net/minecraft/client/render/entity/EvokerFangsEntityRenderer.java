@@ -5,25 +5,27 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EvokerFangsEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class EvokerFangsEntityRenderer
 extends EntityRenderer<EvokerFangsEntity> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/illager/evoker_fangs.png");
-    private final EvokerFangsEntityModel<EvokerFangsEntity> model = new EvokerFangsEntityModel();
+    private final EvokerFangsEntityModel<EvokerFangsEntity> model;
 
-    public EvokerFangsEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher);
+    public EvokerFangsEntityRenderer(class_5617.class_5618 arg) {
+        super(arg);
+        this.model = new EvokerFangsEntityModel(arg.method_32167(EntityModelLayers.EVOKER_FANGS));
     }
 
     @Override
@@ -37,7 +39,7 @@ extends EntityRenderer<EvokerFangsEntity> {
             j = (float)((double)j * ((1.0 - (double)h) / (double)0.1f));
         }
         matrixStack.push();
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f - evokerFangsEntity.yaw));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0f - evokerFangsEntity.yaw));
         matrixStack.scale(-j, -j, j);
         float k = 0.03125f;
         matrixStack.translate(0.0, -0.626f, 0.0);

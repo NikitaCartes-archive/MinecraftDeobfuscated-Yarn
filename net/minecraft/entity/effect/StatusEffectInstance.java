@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -207,49 +207,49 @@ implements Comparable<StatusEffectInstance> {
         return i;
     }
 
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        nbt.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
-        this.writeTypelessNbt(nbt);
-        return nbt;
+    public CompoundTag toTag(CompoundTag tag) {
+        tag.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
+        this.typelessToTag(tag);
+        return tag;
     }
 
-    private void writeTypelessNbt(NbtCompound nbt) {
-        nbt.putByte("Amplifier", (byte)this.getAmplifier());
-        nbt.putInt("Duration", this.getDuration());
-        nbt.putBoolean("Ambient", this.isAmbient());
-        nbt.putBoolean("ShowParticles", this.shouldShowParticles());
-        nbt.putBoolean("ShowIcon", this.shouldShowIcon());
+    private void typelessToTag(CompoundTag tag) {
+        tag.putByte("Amplifier", (byte)this.getAmplifier());
+        tag.putInt("Duration", this.getDuration());
+        tag.putBoolean("Ambient", this.isAmbient());
+        tag.putBoolean("ShowParticles", this.shouldShowParticles());
+        tag.putBoolean("ShowIcon", this.shouldShowIcon());
         if (this.hiddenEffect != null) {
-            NbtCompound nbtCompound = new NbtCompound();
-            this.hiddenEffect.writeNbt(nbtCompound);
-            nbt.put("HiddenEffect", nbtCompound);
+            CompoundTag compoundTag = new CompoundTag();
+            this.hiddenEffect.toTag(compoundTag);
+            tag.put("HiddenEffect", compoundTag);
         }
     }
 
-    public static StatusEffectInstance fromNbt(NbtCompound nbt) {
-        byte i = nbt.getByte("Id");
+    public static StatusEffectInstance fromTag(CompoundTag tag) {
+        byte i = tag.getByte("Id");
         StatusEffect statusEffect = StatusEffect.byRawId(i);
         if (statusEffect == null) {
             return null;
         }
-        return StatusEffectInstance.fromNbt(statusEffect, nbt);
+        return StatusEffectInstance.fromTag(statusEffect, tag);
     }
 
-    private static StatusEffectInstance fromNbt(StatusEffect type, NbtCompound nbt) {
-        byte i = nbt.getByte("Amplifier");
-        int j = nbt.getInt("Duration");
-        boolean bl = nbt.getBoolean("Ambient");
+    private static StatusEffectInstance fromTag(StatusEffect type, CompoundTag tag) {
+        byte i = tag.getByte("Amplifier");
+        int j = tag.getInt("Duration");
+        boolean bl = tag.getBoolean("Ambient");
         boolean bl2 = true;
-        if (nbt.contains("ShowParticles", 1)) {
-            bl2 = nbt.getBoolean("ShowParticles");
+        if (tag.contains("ShowParticles", 1)) {
+            bl2 = tag.getBoolean("ShowParticles");
         }
         boolean bl3 = bl2;
-        if (nbt.contains("ShowIcon", 1)) {
-            bl3 = nbt.getBoolean("ShowIcon");
+        if (tag.contains("ShowIcon", 1)) {
+            bl3 = tag.getBoolean("ShowIcon");
         }
         StatusEffectInstance statusEffectInstance = null;
-        if (nbt.contains("HiddenEffect", 10)) {
-            statusEffectInstance = StatusEffectInstance.fromNbt(type, nbt.getCompound("HiddenEffect"));
+        if (tag.contains("HiddenEffect", 10)) {
+            statusEffectInstance = StatusEffectInstance.fromTag(type, tag.getCompound("HiddenEffect"));
         }
         return new StatusEffectInstance(type, j, i < 0 ? (byte)0 : i, bl, bl2, bl3, statusEffectInstance);
     }

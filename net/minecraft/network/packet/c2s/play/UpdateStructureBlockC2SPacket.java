@@ -146,7 +146,7 @@ implements Packet<ServerPlayPacketListener> {
         return this.metadata;
     }
 
-    public boolean shouldIgnoreEntities() {
+    public boolean getIgnoreEntities() {
         return this.ignoreEntities;
     }
 

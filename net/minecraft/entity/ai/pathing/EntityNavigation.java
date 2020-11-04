@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.Path;
@@ -18,6 +17,7 @@ import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.DebugInfoSender;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -126,7 +126,7 @@ public abstract class EntityNavigation {
         if (positions.isEmpty()) {
             return null;
         }
-        if (this.entity.getY() < 0.0) {
+        if (this.entity.getY() < (double)this.world.getBottomHeightLimit()) {
             return null;
         }
         if (!this.isAtValidPosition()) {
@@ -315,7 +315,7 @@ public abstract class EntityNavigation {
             PathNode pathNode = this.currentPath.getNode(i);
             PathNode pathNode2 = i + 1 < this.currentPath.getLength() ? this.currentPath.getNode(i + 1) : null;
             BlockState blockState = this.world.getBlockState(new BlockPos(pathNode.x, pathNode.y, pathNode.z));
-            if (!blockState.isOf(Blocks.CAULDRON)) continue;
+            if (!blockState.isIn(BlockTags.CAULDRONS)) continue;
             this.currentPath.setNode(i, pathNode.copyWithNewPosition(pathNode.x, pathNode.y + 1, pathNode.z));
             if (pathNode2 == null || pathNode.y < pathNode2.y) continue;
             this.currentPath.setNode(i + 1, pathNode.copyWithNewPosition(pathNode2.x, pathNode.y + 1, pathNode2.z));

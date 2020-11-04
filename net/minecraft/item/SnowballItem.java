@@ -23,7 +23,7 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
+        world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
         if (!world.isClient) {
             SnowballEntity snowballEntity = new SnowballEntity(world, user);
             snowballEntity.setItem(itemStack);
@@ -31,7 +31,7 @@ extends Item {
             world.spawnEntity(snowballEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
-        if (!user.abilities.creativeMode) {
+        if (!user.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }
         return TypedActionResult.success(itemStack, world.isClient());

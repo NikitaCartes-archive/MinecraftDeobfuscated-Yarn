@@ -142,7 +142,7 @@ public class DimensionType {
     }
 
     public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(Registry<DimensionType> dimensionRegistry, Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed) {
-        SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_KEY, Lifecycle.experimental());
+        SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
         simpleRegistry.add(DimensionOptions.NETHER, new DimensionOptions(() -> dimensionRegistry.getOrThrow(THE_NETHER_REGISTRY_KEY), DimensionType.createNetherGenerator(biomeRegistry, chunkGeneratorSettingsRegistry, seed)), Lifecycle.stable());
         simpleRegistry.add(DimensionOptions.END, new DimensionOptions(() -> dimensionRegistry.getOrThrow(THE_END_REGISTRY_KEY), DimensionType.createEndGenerator(biomeRegistry, chunkGeneratorSettingsRegistry, seed)), Lifecycle.stable());
         return simpleRegistry;

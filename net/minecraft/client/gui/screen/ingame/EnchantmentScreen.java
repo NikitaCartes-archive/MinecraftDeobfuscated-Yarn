@@ -17,7 +17,9 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BookModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -30,15 +32,14 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantmentScreen
 extends HandledScreen<EnchantmentScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
     private static final Identifier BOOK_TEXTURE = new Identifier("textures/entity/enchanting_table_book.png");
-    private static final BookModel BOOK_MODEL = new BookModel();
     private final Random random = new Random();
+    private BookModel BOOK_MODEL;
     public int ticks;
     public float nextPageAngle;
     public float pageAngle;
@@ -50,6 +51,12 @@ extends HandledScreen<EnchantmentScreenHandler> {
 
     public EnchantmentScreen(EnchantmentScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.BOOK_MODEL = new BookModel(this.client.method_31974().method_32072(EntityModelLayers.BOOK));
     }
 
     @Override
@@ -95,13 +102,13 @@ extends HandledScreen<EnchantmentScreenHandler> {
         matrices.translate(0.0, 3.3f, 1984.0);
         float f = 5.0f;
         matrices.scale(5.0f, 5.0f, 5.0f);
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(20.0f));
+        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(20.0f));
         float g = MathHelper.lerp(delta, this.pageTurningSpeed, this.nextPageTurningSpeed);
         matrices.translate((1.0f - g) * 0.2f, (1.0f - g) * 0.1f, (1.0f - g) * 0.25f);
         float h = -(1.0f - g) * 90.0f - 90.0f;
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f));
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0f));
         float l = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.25f;
         float m = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.75f;
         l = (l - (float)MathHelper.fastFloor(l)) * 1.6f - 0.3f;
@@ -119,10 +126,10 @@ extends HandledScreen<EnchantmentScreenHandler> {
             m = 1.0f;
         }
         RenderSystem.enableRescaleNormal();
-        BOOK_MODEL.setPageAngles(0.0f, l, m, g);
+        this.BOOK_MODEL.setPageAngles(0.0f, l, m, g);
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        VertexConsumer vertexConsumer = immediate.getBuffer(BOOK_MODEL.getLayer(BOOK_TEXTURE));
-        BOOK_MODEL.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer = immediate.getBuffer(this.BOOK_MODEL.getLayer(BOOK_TEXTURE));
+        this.BOOK_MODEL.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         immediate.draw();
         matrices.pop();
         RenderSystem.matrixMode(5889);
@@ -148,7 +155,7 @@ extends HandledScreen<EnchantmentScreenHandler> {
             int s = 86 - this.textRenderer.getWidth(string);
             StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, s);
             int t = 6839882;
-            if (!(n >= o + 1 && this.client.player.experienceLevel >= r || this.client.player.abilities.creativeMode)) {
+            if (!(n >= o + 1 && this.client.player.experienceLevel >= r || this.client.player.getAbilities().creativeMode)) {
                 this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
                 this.drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 239, 16, 16);
                 this.textRenderer.drawTrimmed(stringVisitable, q, j + 16 + 19 * o, s, (t & 0xFEFEFE) >> 1);
@@ -176,7 +183,7 @@ extends HandledScreen<EnchantmentScreenHandler> {
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-        boolean bl = this.client.player.abilities.creativeMode;
+        boolean bl = this.client.player.getAbilities().creativeMode;
         int i = ((EnchantmentScreenHandler)this.handler).getLapisCount();
         for (int j = 0; j < 3; ++j) {
             int k = ((EnchantmentScreenHandler)this.handler).enchantmentPower[j];

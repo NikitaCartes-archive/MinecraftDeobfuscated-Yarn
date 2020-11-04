@@ -5,13 +5,13 @@ package net.minecraft.client.gui.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class ButtonWidget
-extends PressableWidget {
+extends AbstractPressableButtonWidget {
     public static final TooltipSupplier EMPTY = (button, matrices, mouseX, mouseY) -> {};
     protected final PressAction onPress;
     protected final TooltipSupplier tooltipSupplier;

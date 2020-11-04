@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -23,7 +24,7 @@ public interface ParticleTextureSheet {
             RenderSystem.defaultBlendFunc();
             RenderSystem.depthMask(true);
             textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 
         @Override
@@ -42,7 +43,7 @@ public interface ParticleTextureSheet {
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
             textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 
         @Override
@@ -61,9 +62,9 @@ public interface ParticleTextureSheet {
             RenderSystem.depthMask(true);
             textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
             RenderSystem.alphaFunc(516, 0.003921569f);
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 
         @Override
@@ -82,7 +83,7 @@ public interface ParticleTextureSheet {
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
             textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 
         @Override

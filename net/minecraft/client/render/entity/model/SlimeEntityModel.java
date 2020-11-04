@@ -3,34 +3,41 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.Entity;
 
 @Environment(value=EnvType.CLIENT)
 public class SlimeEntityModel<T extends Entity>
-extends CompositeEntityModel<T> {
-    private final ModelPart innerCube;
-    private final ModelPart rightEye;
-    private final ModelPart leftEye;
-    private final ModelPart mouth;
+extends class_5597<T> {
+    private final ModelPart field_27499;
 
-    public SlimeEntityModel(int size) {
-        this.innerCube = new ModelPart(this, 0, size);
-        this.rightEye = new ModelPart(this, 32, 0);
-        this.leftEye = new ModelPart(this, 32, 4);
-        this.mouth = new ModelPart(this, 32, 8);
-        if (size > 0) {
-            this.innerCube.addCuboid(-3.0f, 17.0f, -3.0f, 6.0f, 6.0f, 6.0f);
-            this.rightEye.addCuboid(-3.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);
-            this.leftEye.addCuboid(1.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);
-            this.mouth.addCuboid(0.0f, 21.0f, -3.5f, 1.0f, 1.0f, 1.0f);
-        } else {
-            this.innerCube.addCuboid(-4.0f, 16.0f, -4.0f, 8.0f, 8.0f, 8.0f);
-        }
+    public SlimeEntityModel(ModelPart modelPart) {
+        this.field_27499 = modelPart;
+    }
+
+    public static class_5607 method_32051() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        lv2.method_32117("cube", class_5606.method_32108().method_32101(0, 0).method_32097(-4.0f, 16.0f, -4.0f, 8.0f, 8.0f, 8.0f), class_5603.field_27701);
+        return class_5607.method_32110(lv, 64, 32);
+    }
+
+    public static class_5607 method_32052() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        lv2.method_32117("cube", class_5606.method_32108().method_32101(0, 16).method_32097(-3.0f, 17.0f, -3.0f, 6.0f, 6.0f, 6.0f), class_5603.field_27701);
+        lv2.method_32117("right_eye", class_5606.method_32108().method_32101(32, 0).method_32097(-3.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f), class_5603.field_27701);
+        lv2.method_32117("left_eye", class_5606.method_32108().method_32101(32, 4).method_32097(1.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f), class_5603.field_27701);
+        lv2.method_32117("mouth", class_5606.method_32108().method_32101(32, 8).method_32097(0.0f, 21.0f, -3.5f, 1.0f, 1.0f, 1.0f), class_5603.field_27701);
+        return class_5607.method_32110(lv, 64, 32);
     }
 
     @Override
@@ -38,8 +45,8 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.innerCube, this.rightEye, this.leftEye, this.mouth);
+    public ModelPart method_32008() {
+        return this.field_27499;
     }
 }
 

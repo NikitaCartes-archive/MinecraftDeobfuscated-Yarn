@@ -28,8 +28,8 @@ extends Enchantment {
         return 3;
     }
 
-    public static float getMultiplier(int level) {
-        return 1.0f - 1.0f / (float)(level + 1);
+    public static float getMultiplier(int i) {
+        return 1.0f - 1.0f / (float)(i + 1);
     }
 }
 

@@ -5,17 +5,18 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingMotive;
 import net.minecraft.util.Identifier;
@@ -24,19 +25,18 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class PaintingEntityRenderer
 extends EntityRenderer<PaintingEntity> {
-    public PaintingEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher);
+    public PaintingEntityRenderer(class_5617.class_5618 arg) {
+        super(arg);
     }
 
     @Override
     public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
         PaintingMotive paintingMotive = paintingEntity.motive;
         float h = 0.0625f;
         matrixStack.scale(0.0625f, 0.0625f, 0.0625f);
@@ -81,9 +81,9 @@ extends EntityRenderer<PaintingEntity> {
                 float ab = f + (float)(y * 16);
                 float ac = g + (float)((z + 1) * 16);
                 float ad = g + (float)(z * 16);
-                int ae = MathHelper.floor(paintingEntity.getX());
+                int ae = paintingEntity.getBlockX();
                 int af = MathHelper.floor(paintingEntity.getY() + (double)((ac + ad) / 2.0f / 16.0f));
-                int ag = MathHelper.floor(paintingEntity.getZ());
+                int ag = paintingEntity.getBlockZ();
                 Direction direction = paintingEntity.getHorizontalFacing();
                 if (direction == Direction.NORTH) {
                     ae = MathHelper.floor(paintingEntity.getX() + (double)((aa + ab) / 2.0f / 16.0f));

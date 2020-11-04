@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.ItemTags;
@@ -39,7 +39,7 @@ implements ArgumentType<ItemPredicateArgument> {
     public ItemPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
         ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
         if (itemStringReader.getItem() != null) {
-            ItemPredicate itemPredicate = new ItemPredicate(itemStringReader.getItem(), itemStringReader.getNbt());
+            ItemPredicate itemPredicate = new ItemPredicate(itemStringReader.getItem(), itemStringReader.getTag());
             return commandContext -> itemPredicate;
         }
         Identifier identifier = itemStringReader.getId();
@@ -48,7 +48,7 @@ implements ArgumentType<ItemPredicateArgument> {
             if (tag == null) {
                 throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
             }
-            return new TagPredicate(tag, itemStringReader.getNbt());
+            return new TagPredicate(tag, itemStringReader.getTag());
         };
     }
 
@@ -83,16 +83,16 @@ implements ArgumentType<ItemPredicateArgument> {
     implements Predicate<ItemStack> {
         private final Tag<Item> tag;
         @Nullable
-        private final NbtCompound compound;
+        private final CompoundTag compound;
 
-        public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbtCompound) {
+        public TagPredicate(Tag<Item> tag, @Nullable CompoundTag compoundTag) {
             this.tag = tag;
-            this.compound = nbtCompound;
+            this.compound = compoundTag;
         }
 
         @Override
         public boolean test(ItemStack itemStack) {
-            return this.tag.contains(itemStack.getItem()) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+            return itemStack.isIn(this.tag) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
         }
 
         @Override
@@ -105,16 +105,16 @@ implements ArgumentType<ItemPredicateArgument> {
     implements Predicate<ItemStack> {
         private final Item item;
         @Nullable
-        private final NbtCompound compound;
+        private final CompoundTag compound;
 
-        public ItemPredicate(Item item, @Nullable NbtCompound nbtCompound) {
+        public ItemPredicate(Item item, @Nullable CompoundTag compoundTag) {
             this.item = item;
-            this.compound = nbtCompound;
+            this.compound = compoundTag;
         }
 
         @Override
         public boolean test(ItemStack itemStack) {
-            return itemStack.getItem() == this.item && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+            return itemStack.isOf(this.item) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
         }
 
         @Override

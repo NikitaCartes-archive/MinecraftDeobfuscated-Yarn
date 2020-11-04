@@ -7,7 +7,7 @@ import com.mojang.authlib.GameProfile;
 import java.net.SocketAddress;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -20,7 +20,7 @@ import net.minecraft.world.WorldSaveHandler;
 @Environment(value=EnvType.CLIENT)
 public class IntegratedPlayerManager
 extends PlayerManager {
-    private NbtCompound userData;
+    private CompoundTag userData;
 
     public IntegratedPlayerManager(IntegratedServer server, DynamicRegistryManager.Impl registryManager, WorldSaveHandler saveHandler) {
         super(server, registryManager, saveHandler, 8);
@@ -30,7 +30,7 @@ extends PlayerManager {
     @Override
     protected void savePlayerData(ServerPlayerEntity player) {
         if (player.getName().getString().equals(this.getServer().getUserName())) {
-            this.userData = player.writeNbt(new NbtCompound());
+            this.userData = player.toTag(new CompoundTag());
         }
         super.savePlayerData(player);
     }
@@ -49,7 +49,7 @@ extends PlayerManager {
     }
 
     @Override
-    public NbtCompound getUserData() {
+    public CompoundTag getUserData() {
         return this.userData;
     }
 

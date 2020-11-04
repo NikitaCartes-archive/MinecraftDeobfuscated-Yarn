@@ -39,16 +39,34 @@ extends AbstractSlowingParticle {
     }
 
     @Override
-    public int getBrightness(float tint) {
+    public int getColorMultiplier(float tint) {
         float f = ((float)this.age + tint) / (float)this.maxAge;
         f = MathHelper.clamp(f, 0.0f, 1.0f);
-        int i = super.getBrightness(tint);
+        int i = super.getColorMultiplier(tint);
         int j = i & 0xFF;
         int k = i >> 16 & 0xFF;
         if ((j += (int)(f * 15.0f * 16.0f)) > 240) {
             j = 240;
         }
         return j | k << 16;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class class_5613
+    implements ParticleFactory<DefaultParticleType> {
+        private final SpriteProvider field_27736;
+
+        public class_5613(SpriteProvider spriteProvider) {
+            this.field_27736 = spriteProvider;
+        }
+
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            FlameParticle flameParticle = new FlameParticle(clientWorld, d, e, f, g, h, i);
+            flameParticle.setSprite(this.field_27736);
+            flameParticle.scale(0.5f);
+            return flameParticle;
+        }
     }
 
     @Environment(value=EnvType.CLIENT)

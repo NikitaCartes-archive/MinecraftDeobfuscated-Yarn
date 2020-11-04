@@ -82,9 +82,9 @@ extends Item {
             if (user instanceof ServerPlayerEntity) {
                 Criteria.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);
             }
-            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
+            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
             world.syncWorldEvent(null, 1003, user.getBlockPos(), 0);
-            if (!user.abilities.creativeMode) {
+            if (!user.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
             user.incrementStat(Stats.USED.getOrCreateStat(this));

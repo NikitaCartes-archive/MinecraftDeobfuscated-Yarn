@@ -17,8 +17,8 @@ import net.minecraft.world.GameMode;
 @Environment(value=EnvType.CLIENT)
 public class MovementTutorialStepHandler
 implements TutorialStepHandler {
-    private static final Text MOVE_TITLE = new TranslatableText("tutorial.move.title", TutorialManager.keyToText("forward"), TutorialManager.keyToText("left"), TutorialManager.keyToText("back"), TutorialManager.keyToText("right"));
-    private static final Text MOVE_DESCRIPTION = new TranslatableText("tutorial.move.description", TutorialManager.keyToText("jump"));
+    private static final Text MOVE_TITLE = new TranslatableText("tutorial.move.title", TutorialManager.getKeybindName("forward"), TutorialManager.getKeybindName("left"), TutorialManager.getKeybindName("back"), TutorialManager.getKeybindName("right"));
+    private static final Text MOVE_DESCRIPTION = new TranslatableText("tutorial.move.description", TutorialManager.getKeybindName("jump"));
     private static final Text LOOK_TITLE = new TranslatableText("tutorial.look.title");
     private static final Text LOOK_DESCRIPTION = new TranslatableText("tutorial.look.description");
     private final TutorialManager manager;

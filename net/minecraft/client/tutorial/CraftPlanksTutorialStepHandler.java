@@ -41,7 +41,7 @@ implements TutorialStepHandler {
             return;
         }
         if (this.ticks == 1 && (clientPlayerEntity = this.manager.getClient().player) != null) {
-            if (clientPlayerEntity.inventory.contains(ItemTags.PLANKS)) {
+            if (clientPlayerEntity.getInventory().contains(ItemTags.PLANKS)) {
                 this.manager.setStep(TutorialStep.NONE);
                 return;
             }
@@ -66,8 +66,7 @@ implements TutorialStepHandler {
 
     @Override
     public void onSlotUpdate(ItemStack stack) {
-        Item item = stack.getItem();
-        if (ItemTags.PLANKS.contains(item)) {
+        if (stack.isIn(ItemTags.PLANKS)) {
             this.manager.setStep(TutorialStep.NONE);
         }
     }

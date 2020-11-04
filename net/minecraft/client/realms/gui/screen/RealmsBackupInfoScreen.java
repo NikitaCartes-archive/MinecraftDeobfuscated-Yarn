@@ -62,7 +62,7 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        RealmsBackupInfoScreen.drawCenteredText(matrices, this.textRenderer, "Changes from last backup", this.width / 2, 10, 0xFFFFFF);
+        RealmsBackupInfoScreen.drawCenteredString(matrices, this.textRenderer, "Changes from last backup", this.width / 2, 10, 0xFFFFFF);
         this.backupInfoList.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }

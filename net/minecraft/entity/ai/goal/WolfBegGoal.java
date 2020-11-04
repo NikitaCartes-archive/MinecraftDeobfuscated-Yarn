@@ -71,7 +71,7 @@ extends Goal {
     private boolean isAttractive(PlayerEntity player) {
         for (Hand hand : Hand.values()) {
             ItemStack itemStack = player.getStackInHand(hand);
-            if (this.wolf.isTamed() && itemStack.getItem() == Items.BONE) {
+            if (this.wolf.isTamed() && itemStack.isOf(Items.BONE)) {
                 return true;
             }
             if (!this.wolf.isBreedingItem(itemStack)) continue;

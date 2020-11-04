@@ -6,6 +6,8 @@ package net.minecraft.resource;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -27,14 +29,19 @@ public enum ResourcePackCompatibility {
         return this == COMPATIBLE;
     }
 
-    public static ResourcePackCompatibility from(int packVersion) {
-        if (packVersion < SharedConstants.getGameVersion().getPackVersion()) {
+    public static ResourcePackCompatibility from(int packVersion, ResourceType type) {
+        int i = type.getPackVersion(SharedConstants.getGameVersion());
+        if (packVersion < i) {
             return TOO_OLD;
         }
-        if (packVersion > SharedConstants.getGameVersion().getPackVersion()) {
+        if (packVersion > i) {
             return TOO_NEW;
         }
         return COMPATIBLE;
+    }
+
+    public static ResourcePackCompatibility from(PackResourceMetadata metadata, ResourceType type) {
+        return ResourcePackCompatibility.from(metadata.getPackFormat(), type);
     }
 
     @Environment(value=EnvType.CLIENT)

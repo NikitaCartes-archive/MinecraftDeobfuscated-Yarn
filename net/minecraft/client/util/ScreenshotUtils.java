@@ -24,9 +24,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * A utility class to save screenshots.
- */
 @Environment(value=EnvType.CLIENT)
 public class ScreenshotUtils {
     private static final Logger LOGGER = LogManager.getLogger();

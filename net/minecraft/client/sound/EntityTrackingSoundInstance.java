@@ -19,8 +19,8 @@ extends MovingSoundInstance {
         this(sound, soundCategory, 1.0f, 1.0f, entity);
     }
 
-    public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Entity entity) {
-        super(sound, category);
+    public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory soundCategory, float volume, float pitch, Entity entity) {
+        super(sound, soundCategory);
         this.volume = volume;
         this.pitch = pitch;
         this.entity = entity;
@@ -36,7 +36,7 @@ extends MovingSoundInstance {
 
     @Override
     public void tick() {
-        if (this.entity.removed) {
+        if (this.entity.isRemoved()) {
             this.setDone();
             return;
         }

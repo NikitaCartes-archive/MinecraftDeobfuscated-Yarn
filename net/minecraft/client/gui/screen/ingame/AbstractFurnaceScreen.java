@@ -41,11 +41,11 @@ implements RecipeBookProvider {
         this.narrow = this.width < 379;
         this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, (AbstractRecipeScreenHandler)this.handler);
         this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
-        this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
+        this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
             this.recipeBook.reset(this.narrow);
             this.recipeBook.toggleOpen();
             this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
-            ((TexturedButtonWidget)button).setPos(this.x + 20, this.height / 2 - 49);
+            ((TexturedButtonWidget)buttonWidget).setPos(this.x + 20, this.height / 2 - 49);
         }));
         this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
     }
@@ -99,8 +99,8 @@ implements RecipeBookProvider {
     }
 
     @Override
-    protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
-        super.onMouseClick(slot, slotId, button, actionType);
+    protected void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
+        super.onMouseClick(slot, invSlot, clickData, actionType);
         this.recipeBook.slotClicked(slot);
     }
 
@@ -119,11 +119,11 @@ implements RecipeBookProvider {
     }
 
     @Override
-    public boolean charTyped(char chr, int modifiers) {
-        if (this.recipeBook.charTyped(chr, modifiers)) {
+    public boolean charTyped(char chr, int keyCode) {
+        if (this.recipeBook.charTyped(chr, keyCode)) {
             return true;
         }
-        return super.charTyped(chr, modifiers);
+        return super.charTyped(chr, keyCode);
     }
 
     @Override

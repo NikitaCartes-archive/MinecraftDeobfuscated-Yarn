@@ -51,6 +51,7 @@ public class PointOfInterestType {
     public static final PointOfInterestType BEE_NEST = PointOfInterestType.register("bee_nest", PointOfInterestType.getAllStatesOf(Blocks.BEE_NEST), 0, 1);
     public static final PointOfInterestType NETHER_PORTAL = PointOfInterestType.register("nether_portal", PointOfInterestType.getAllStatesOf(Blocks.NETHER_PORTAL), 0, 1);
     public static final PointOfInterestType LODESTONE = PointOfInterestType.register("lodestone", PointOfInterestType.getAllStatesOf(Blocks.LODESTONE), 0, 1);
+    public static final PointOfInterestType LIGHTNING_ROD = PointOfInterestType.register("lightning_rod", PointOfInterestType.getAllStatesOf(Blocks.LIGHTNING_ROD), 0, 1);
     protected static final Set<BlockState> REGISTERED_STATES = new ObjectOpenHashSet<BlockState>(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.keySet());
     private final String id;
     private final Set<BlockState> blockStates;
@@ -102,14 +103,14 @@ public class PointOfInterestType {
         return PointOfInterestType.setup(Registry.register(Registry.POINT_OF_INTEREST_TYPE, new Identifier(id), new PointOfInterestType(id, workStationStates, ticketCount, completionCondition, searchDistance)));
     }
 
-    private static PointOfInterestType setup(PointOfInterestType poiType) {
-        poiType.blockStates.forEach(blockState -> {
-            PointOfInterestType pointOfInterestType2 = BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put((BlockState)blockState, poiType);
+    private static PointOfInterestType setup(PointOfInterestType pointOfInterestType) {
+        pointOfInterestType.blockStates.forEach(blockState -> {
+            PointOfInterestType pointOfInterestType2 = BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put((BlockState)blockState, pointOfInterestType);
             if (pointOfInterestType2 != null) {
                 throw Util.throwOrPause(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
             }
         });
-        return poiType;
+        return pointOfInterestType;
     }
 
     public static Optional<PointOfInterestType> from(BlockState state) {

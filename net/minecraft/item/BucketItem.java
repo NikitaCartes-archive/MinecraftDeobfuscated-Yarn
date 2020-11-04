@@ -90,7 +90,7 @@ extends Item {
     }
 
     protected ItemStack getEmptiedStack(ItemStack stack, PlayerEntity player) {
-        if (!player.abilities.creativeMode) {
+        if (!player.getAbilities().creativeMode) {
             return new ItemStack(Items.BUCKET);
         }
         return stack;

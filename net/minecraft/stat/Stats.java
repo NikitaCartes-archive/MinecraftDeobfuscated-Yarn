@@ -96,15 +96,15 @@ public class Stats {
     public static final Identifier TARGET_HIT = Stats.register("target_hit", StatFormatter.DEFAULT);
     public static final Identifier INTERACT_WITH_SMITHING_TABLE = Stats.register("interact_with_smithing_table", StatFormatter.DEFAULT);
 
-    private static Identifier register(String id, StatFormatter formatter) {
-        Identifier identifier = new Identifier(id);
-        Registry.register(Registry.CUSTOM_STAT, id, identifier);
-        CUSTOM.getOrCreateStat(identifier, formatter);
+    private static Identifier register(String string, StatFormatter statFormatter) {
+        Identifier identifier = new Identifier(string);
+        Registry.register(Registry.CUSTOM_STAT, string, identifier);
+        CUSTOM.getOrCreateStat(identifier, statFormatter);
         return identifier;
     }
 
-    private static <T> StatType<T> registerType(String id, Registry<T> registry) {
-        return Registry.register(Registry.STAT_TYPE, id, new StatType<T>(registry));
+    private static <T> StatType<T> registerType(String string, Registry<T> registry) {
+        return Registry.register(Registry.STAT_TYPE, string, new StatType<T>(registry));
     }
 }
 

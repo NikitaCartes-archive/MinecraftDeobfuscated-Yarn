@@ -24,8 +24,8 @@ extends CoralFeature {
     }
 
     @Override
-    protected boolean generateCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
-        if (!this.generateCoralPiece(world, random, pos, state)) {
+    protected boolean spawnCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
+        if (!this.spawnCoralPiece(world, random, pos, state)) {
             return false;
         }
         Direction direction = Direction.Type.HORIZONTAL.random(random);
@@ -49,14 +49,14 @@ extends CoralFeature {
                 direction3 = Util.getRandom(directions, random);
                 k = random.nextInt(3) + 3;
             }
-            for (l = 0; l < j && this.generateCoralPiece(world, random, mutable, state); ++l) {
+            for (l = 0; l < j && this.spawnCoralPiece(world, random, mutable, state); ++l) {
                 mutable.move(direction3);
             }
             mutable.move(direction3.getOpposite());
             mutable.move(Direction.UP);
             for (l = 0; l < k; ++l) {
                 mutable.move(direction);
-                if (!this.generateCoralPiece(world, random, mutable, state)) continue block0;
+                if (!this.spawnCoralPiece(world, random, mutable, state)) continue block0;
                 if (!(random.nextFloat() < 0.25f)) continue;
                 mutable.move(Direction.UP);
             }

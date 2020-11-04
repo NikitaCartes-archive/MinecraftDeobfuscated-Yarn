@@ -10,7 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
@@ -68,8 +68,8 @@ extends Item {
             DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".empty", string));
             return;
         }
-        NbtCompound nbtCompound = stack.getOrCreateSubTag("DebugProperty");
-        String string2 = nbtCompound.getString(string);
+        CompoundTag compoundTag = stack.getOrCreateSubTag("DebugProperty");
+        String string2 = compoundTag.getString(string);
         Property<?> property = stateManager.getProperty(string2);
         if (update) {
             if (property == null) {
@@ -81,7 +81,7 @@ extends Item {
         } else {
             property = DebugStickItem.cycle(collection, property, player.shouldCancelInteraction());
             String string3 = property.getName();
-            nbtCompound.putString(string, string3);
+            compoundTag.putString(string, string3);
             DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".select", string3, DebugStickItem.getValueString(state, property)));
         }
     }

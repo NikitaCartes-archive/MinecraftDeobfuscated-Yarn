@@ -101,16 +101,16 @@ implements Monster {
         return 0.5f - world.getBrightness(pos);
     }
 
-    public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
-        if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
+    public static boolean isSpawnDark(ServerWorldAccess serverWorldAccess, BlockPos pos, Random random) {
+        if (serverWorldAccess.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
             return false;
         }
-        int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
+        int i = serverWorldAccess.toServerWorld().isThundering() ? serverWorldAccess.getLightLevel(pos, 10) : serverWorldAccess.getLightLevel(pos);
         return i <= random.nextInt(8);
     }
 
-    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(world, pos, random) && HostileEntity.canMobSpawn(type, world, spawnReason, pos, random);
+    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return serverWorldAccess.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(serverWorldAccess, pos, random) && HostileEntity.canMobSpawn(type, serverWorldAccess, spawnReason, pos, random);
     }
 
     public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -122,7 +122,7 @@ implements Monster {
     }
 
     @Override
-    protected boolean shouldDropXp() {
+    protected boolean canDropLootAndXp() {
         return true;
     }
 

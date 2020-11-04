@@ -32,7 +32,7 @@ implements ClientPlayerTickable {
     private final SoundManager soundManager;
     private final BiomeAccess biomeAccess;
     private final Random random;
-    private Object2ObjectArrayMap<Biome, MusicLoop> soundLoops = new Object2ObjectArrayMap();
+    private final Object2ObjectArrayMap<Biome, MusicLoop> soundLoops = new Object2ObjectArrayMap();
     private Optional<BiomeMoodSound> moodSound = Optional.empty();
     private Optional<BiomeAdditionsSound> additionsSound = Optional.empty();
     private float moodPercentage;
@@ -52,7 +52,7 @@ implements ClientPlayerTickable {
     @Override
     public void tick() {
         this.soundLoops.values().removeIf(MovingSoundInstance::isDone);
-        Biome biome = this.biomeAccess.getBiomeForNoiseGen(this.player.getX(), this.player.getY(), this.player.getZ());
+        Biome biome = this.biomeAccess.getBiome(this.player.getX(), this.player.getY(), this.player.getZ());
         if (biome != this.activeBiome) {
             this.activeBiome = biome;
             this.moodSound = biome.getMoodSound();

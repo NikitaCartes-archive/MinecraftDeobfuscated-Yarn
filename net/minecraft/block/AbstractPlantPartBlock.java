@@ -42,7 +42,7 @@ extends Block {
         return this.getRandomGrowthState(ctx.getWorld());
     }
 
-    public BlockState getRandomGrowthState(WorldAccess world) {
+    public BlockState getRandomGrowthState(WorldAccess worldAccess) {
         return this.getDefaultState();
     }
 
@@ -50,11 +50,10 @@ extends Block {
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockPos blockPos = pos.offset(this.growthDirection.getOpposite());
         BlockState blockState = world.getBlockState(blockPos);
-        Block block = blockState.getBlock();
-        if (!this.canAttachTo(block)) {
+        if (!this.canAttachTo(blockState)) {
             return false;
         }
-        return block == this.getStem() || block == this.getPlant() || blockState.isSideSolidFullSquare(world, blockPos, this.growthDirection);
+        return blockState.isOf(this.getStem()) || blockState.isOf(this.getPlant()) || blockState.isSideSolidFullSquare(world, blockPos, this.growthDirection);
     }
 
     @Override
@@ -64,7 +63,7 @@ extends Block {
         }
     }
 
-    protected boolean canAttachTo(Block block) {
+    protected boolean canAttachTo(BlockState blockState) {
         return true;
     }
 

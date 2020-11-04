@@ -57,7 +57,7 @@ extends ConditionalLootFunction {
         Enchantment enchantment2;
         Random random = context.getRandom();
         if (this.enchantments.isEmpty()) {
-            boolean bl = stack.getItem() == Items.BOOK;
+            boolean bl = stack.isOf(Items.BOOK);
             List list = Registry.ENCHANTMENT.stream().filter(Enchantment::isAvailableForRandomSelection).filter(enchantment -> bl || enchantment.isAcceptableItem(stack)).collect(Collectors.toList());
             if (list.isEmpty()) {
                 LOGGER.warn("Couldn't find a compatible enchantment for {}", (Object)stack);
@@ -72,7 +72,7 @@ extends ConditionalLootFunction {
 
     private static ItemStack method_26266(ItemStack itemStack, Enchantment enchantment, Random random) {
         int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
-        if (itemStack.getItem() == Items.BOOK) {
+        if (itemStack.isOf(Items.BOOK)) {
             itemStack = new ItemStack(Items.ENCHANTED_BOOK);
             EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry(enchantment, i));
         } else {

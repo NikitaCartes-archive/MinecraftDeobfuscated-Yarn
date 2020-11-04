@@ -53,7 +53,7 @@ extends Task<LivingEntity> {
 
     private boolean isBedOccupiedByOthers(ServerWorld world, BlockPos pos, LivingEntity entity) {
         BlockState blockState = world.getBlockState(pos);
-        return blockState.getBlock().isIn(BlockTags.BEDS) && blockState.get(BedBlock.OCCUPIED) != false && !entity.isSleeping();
+        return blockState.isIn(BlockTags.BEDS) && blockState.get(BedBlock.OCCUPIED) != false && !entity.isSleeping();
     }
 
     private boolean hasCompletedPointOfInterest(ServerWorld world, BlockPos pos) {

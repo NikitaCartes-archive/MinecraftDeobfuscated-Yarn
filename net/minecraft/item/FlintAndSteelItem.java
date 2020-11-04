@@ -7,6 +7,8 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.block.CandleBlock;
+import net.minecraft.block.CandleCakeBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,8 +33,8 @@ extends Item {
         PlayerEntity playerEntity = context.getPlayer();
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
-        if (CampfireBlock.method_30035(blockState)) {
-            world.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
+        if (CampfireBlock.method_30035(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
+            world.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, world.getRandom().nextFloat() * 0.4f + 0.8f);
             world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
             if (playerEntity != null) {
                 context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
@@ -41,7 +43,7 @@ extends Item {
         }
         BlockPos blockPos2 = blockPos.offset(context.getSide());
         if (AbstractFireBlock.method_30032(world, blockPos2, context.getPlayerFacing())) {
-            world.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
+            world.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, world.getRandom().nextFloat() * 0.4f + 0.8f);
             BlockState blockState2 = AbstractFireBlock.getState(world, blockPos2);
             world.setBlockState(blockPos2, blockState2, 11);
             ItemStack itemStack = context.getStack();

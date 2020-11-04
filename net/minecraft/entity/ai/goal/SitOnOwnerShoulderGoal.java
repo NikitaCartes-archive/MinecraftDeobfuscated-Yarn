@@ -20,7 +20,7 @@ extends Goal {
     @Override
     public boolean canStart() {
         ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.tameable.getOwner();
-        boolean bl = serverPlayerEntity != null && !serverPlayerEntity.isSpectator() && !serverPlayerEntity.abilities.flying && !serverPlayerEntity.isTouchingWater();
+        boolean bl = serverPlayerEntity != null && !serverPlayerEntity.isSpectator() && !serverPlayerEntity.getAbilities().flying && !serverPlayerEntity.isTouchingWater();
         return !this.tameable.isSitting() && bl && this.tameable.isReadyToSitOnPlayer();
     }
 

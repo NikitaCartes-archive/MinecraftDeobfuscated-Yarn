@@ -32,8 +32,8 @@ extends EntityModel<E> {
         this(RenderLayer::getEntityCutoutNoCull, headScaled, childHeadYOffset, childHeadZOffset, invertedChildHeadScale, invertedChildBodyScale, childBodyYOffset);
     }
 
-    protected AnimalModel(Function<Identifier, RenderLayer> renderLayerFactory, boolean headScaled, float childHeadYOffset, float childHeadZOffset, float invertedChildHeadScale, float invertedChildBodyScale, float childBodyYOffset) {
-        super(renderLayerFactory);
+    protected AnimalModel(Function<Identifier, RenderLayer> function, boolean headScaled, float childHeadYOffset, float childHeadZOffset, float invertedChildHeadScale, float invertedChildBodyScale, float childBodyYOffset) {
+        super(function);
         this.headScaled = headScaled;
         this.childHeadYOffset = childHeadYOffset;
         this.childHeadZOffset = childHeadZOffset;

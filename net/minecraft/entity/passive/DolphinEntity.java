@@ -11,6 +11,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5532;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -20,9 +21,8 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.control.AquaticLookControl;
+import net.minecraft.entity.ai.control.DolphinLookControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.BreatheAirGoal;
 import net.minecraft.entity.ai.goal.ChaseBoatGoal;
@@ -51,7 +51,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -86,16 +86,16 @@ extends WaterCreatureEntity {
     public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
         super((EntityType<? extends WaterCreatureEntity>)entityType, world);
         this.moveControl = new DolphinMoveControl(this);
-        this.lookControl = new AquaticLookControl(this, 10);
+        this.lookControl = new DolphinLookControl(this, 10);
         this.setCanPickUpLoot(true);
     }
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setAir(this.getMaxAir());
         this.pitch = 0.0f;
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -140,24 +140,24 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("TreasurePosX", this.getTreasurePos().getX());
-        nbt.putInt("TreasurePosY", this.getTreasurePos().getY());
-        nbt.putInt("TreasurePosZ", this.getTreasurePos().getZ());
-        nbt.putBoolean("GotFish", this.hasFish());
-        nbt.putInt("Moistness", this.getMoistness());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("TreasurePosX", this.getTreasurePos().getX());
+        tag.putInt("TreasurePosY", this.getTreasurePos().getY());
+        tag.putInt("TreasurePosZ", this.getTreasurePos().getZ());
+        tag.putBoolean("GotFish", this.hasFish());
+        tag.putInt("Moistness", this.getMoistness());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        int i = nbt.getInt("TreasurePosX");
-        int j = nbt.getInt("TreasurePosY");
-        int k = nbt.getInt("TreasurePosZ");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        int i = tag.getInt("TreasurePosX");
+        int j = tag.getInt("TreasurePosY");
+        int k = tag.getInt("TreasurePosZ");
         this.setTreasurePos(new BlockPos(i, j, k));
-        super.readCustomDataFromNbt(nbt);
-        this.setHasFish(nbt.getBoolean("GotFish"));
-        this.setMoistness(nbt.getInt("Moistness"));
+        super.readCustomDataFromTag(tag);
+        this.setHasFish(tag.getBoolean("GotFish"));
+        this.setMoistness(tag.getInt("Moistness"));
     }
 
     @Override
@@ -239,11 +239,11 @@ extends WaterCreatureEntity {
     protected void loot(ItemEntity item) {
         ItemStack itemStack;
         if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && this.canPickupItem(itemStack = item.getStack())) {
-            this.method_29499(item);
+            this.triggerItemPickedUpByEntityCriteria(item);
             this.equipStack(EquipmentSlot.MAINHAND, itemStack);
             this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0f;
             this.sendPickup(item, itemStack.getCount());
-            item.remove();
+            item.discard();
         }
     }
 
@@ -303,12 +303,12 @@ extends WaterCreatureEntity {
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (!itemStack.isEmpty() && itemStack.getItem().isIn(ItemTags.FISHES)) {
+        if (!itemStack.isEmpty() && itemStack.isIn(ItemTags.FISHES)) {
             if (!this.world.isClient) {
                 this.playSound(SoundEvents.ENTITY_DOLPHIN_EAT, 1.0f, 1.0f);
             }
             this.setHasFish(true);
-            if (!player.abilities.creativeMode) {
+            if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
             return ActionResult.success(this.world.isClient);
@@ -320,7 +320,7 @@ extends WaterCreatureEntity {
         if (pos.getY() <= 45 || pos.getY() >= world.getSeaLevel()) {
             return false;
         }
-        Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
+        Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
         return (!Objects.equals(optional, Optional.of(BiomeKeys.OCEAN)) || !Objects.equals(optional, Optional.of(BiomeKeys.DEEP_OCEAN))) && world.getFluidState(pos).isIn(FluidTags.WATER);
     }
 
@@ -446,12 +446,12 @@ extends WaterCreatureEntity {
             if (this.dolphin.isNearTarget() || this.dolphin.getNavigation().isIdle()) {
                 BlockPos blockPos;
                 Vec3d vec3d = Vec3d.ofCenter(this.dolphin.getTreasurePos());
-                Vec3d vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 16, 1, vec3d, 0.3926991f);
+                Vec3d vec3d2 = class_5532.method_31512(this.dolphin, 16, 1, vec3d, 0.3926991f);
                 if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 8, 4, vec3d);
+                    vec3d2 = class_5532.method_31512(this.dolphin, 8, 4, vec3d, 1.5707963705062866);
                 }
                 if (!(vec3d2 == null || world.getFluidState(blockPos = new BlockPos(vec3d2)).isIn(FluidTags.WATER) && world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.WATER))) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 8, 5, vec3d);
+                    vec3d2 = class_5532.method_31512(this.dolphin, 8, 5, vec3d, 1.5707963705062866);
                 }
                 if (vec3d2 == null) {
                     this.noPathToStructure = true;
@@ -611,14 +611,14 @@ extends WaterCreatureEntity {
                 return;
             }
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-            this.dolphin.bodyYaw = this.dolphin.yaw = this.wrapDegrees(this.dolphin.yaw, h, 10.0f);
+            this.dolphin.bodyYaw = this.dolphin.yaw = this.changeAngle(this.dolphin.yaw, h, 10.0f);
             this.dolphin.headYaw = this.dolphin.yaw;
             float i = (float)(this.speed * this.dolphin.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             if (this.dolphin.isTouchingWater()) {
                 this.dolphin.setMovementSpeed(i * 0.02f);
                 float j = -((float)(MathHelper.atan2(e, MathHelper.sqrt(d * d + f * f)) * 57.2957763671875));
                 j = MathHelper.clamp(MathHelper.wrapDegrees(j), -85.0f, 85.0f);
-                this.dolphin.pitch = this.wrapDegrees(this.dolphin.pitch, j, 5.0f);
+                this.dolphin.pitch = this.changeAngle(this.dolphin.pitch, j, 5.0f);
                 float k = MathHelper.cos(this.dolphin.pitch * ((float)Math.PI / 180));
                 float l = MathHelper.sin(this.dolphin.pitch * ((float)Math.PI / 180));
                 this.dolphin.forwardSpeed = k * i;

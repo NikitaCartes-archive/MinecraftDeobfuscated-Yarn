@@ -24,22 +24,22 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
-import net.minecraft.nbt.AbstractNbtList;
-import net.minecraft.nbt.AbstractNbtNumber;
-import net.minecraft.nbt.NbtByte;
-import net.minecraft.nbt.NbtByteArray;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtFloat;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtIntArray;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtLong;
-import net.minecraft.nbt.NbtLongArray;
-import net.minecraft.nbt.NbtNull;
-import net.minecraft.nbt.NbtShort;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.AbstractListTag;
+import net.minecraft.nbt.AbstractNumberTag;
+import net.minecraft.nbt.ByteArrayTag;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.EndTag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.LongArrayTag;
+import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.ShortTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -52,19 +52,19 @@ import org.jetbrains.annotations.Nullable;
  * they will be transported in packets as NBT. DataFixerUpper allows
  * generalizing the dimension serialization logic to prevent duplicate code,
  * where the NBT ops allow the DataFixerUpper dimension serialization logic
- * to interact with Minecraft NBTs.
+ * to interact with Minecraft NBTs.</p>
  * 
  * @see NbtOps#INSTANCE
  */
 public class NbtOps
-implements DynamicOps<NbtElement> {
+implements DynamicOps<Tag> {
     /**
      * An singleton of the NBT dynamic ops.
      * 
      * <p>This ops does not compress maps (replace field name to value pairs
      * with an ordered list of values in serialization). In fact, since
      * Minecraft NBT lists can only contain elements of the same type, this op
-     * cannot compress maps.
+     * cannot compress maps.</p>
      */
     public static final NbtOps INSTANCE = new NbtOps();
 
@@ -72,257 +72,257 @@ implements DynamicOps<NbtElement> {
     }
 
     @Override
-    public NbtElement empty() {
-        return NbtNull.INSTANCE;
+    public Tag empty() {
+        return EndTag.INSTANCE;
     }
 
     @Override
-    public <U> U convertTo(DynamicOps<U> dynamicOps, NbtElement nbtElement) {
-        switch (nbtElement.getType()) {
+    public <U> U convertTo(DynamicOps<U> dynamicOps, Tag tag) {
+        switch (tag.getType()) {
             case 0: {
                 return dynamicOps.empty();
             }
             case 1: {
-                return dynamicOps.createByte(((AbstractNbtNumber)nbtElement).byteValue());
+                return dynamicOps.createByte(((AbstractNumberTag)tag).getByte());
             }
             case 2: {
-                return dynamicOps.createShort(((AbstractNbtNumber)nbtElement).shortValue());
+                return dynamicOps.createShort(((AbstractNumberTag)tag).getShort());
             }
             case 3: {
-                return dynamicOps.createInt(((AbstractNbtNumber)nbtElement).intValue());
+                return dynamicOps.createInt(((AbstractNumberTag)tag).getInt());
             }
             case 4: {
-                return dynamicOps.createLong(((AbstractNbtNumber)nbtElement).longValue());
+                return dynamicOps.createLong(((AbstractNumberTag)tag).getLong());
             }
             case 5: {
-                return dynamicOps.createFloat(((AbstractNbtNumber)nbtElement).floatValue());
+                return dynamicOps.createFloat(((AbstractNumberTag)tag).getFloat());
             }
             case 6: {
-                return dynamicOps.createDouble(((AbstractNbtNumber)nbtElement).doubleValue());
+                return dynamicOps.createDouble(((AbstractNumberTag)tag).getDouble());
             }
             case 7: {
-                return dynamicOps.createByteList(ByteBuffer.wrap(((NbtByteArray)nbtElement).getByteArray()));
+                return dynamicOps.createByteList(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray()));
             }
             case 8: {
-                return dynamicOps.createString(nbtElement.asString());
+                return dynamicOps.createString(tag.asString());
             }
             case 9: {
-                return this.convertList(dynamicOps, nbtElement);
+                return this.convertList(dynamicOps, tag);
             }
             case 10: {
-                return this.convertMap(dynamicOps, nbtElement);
+                return this.convertMap(dynamicOps, tag);
             }
             case 11: {
-                return dynamicOps.createIntList(Arrays.stream(((NbtIntArray)nbtElement).getIntArray()));
+                return dynamicOps.createIntList(Arrays.stream(((IntArrayTag)tag).getIntArray()));
             }
             case 12: {
-                return dynamicOps.createLongList(Arrays.stream(((NbtLongArray)nbtElement).getLongArray()));
+                return dynamicOps.createLongList(Arrays.stream(((LongArrayTag)tag).getLongArray()));
             }
         }
-        throw new IllegalStateException("Unknown tag type: " + nbtElement);
+        throw new IllegalStateException("Unknown tag type: " + tag);
     }
 
     @Override
-    public DataResult<Number> getNumberValue(NbtElement nbtElement) {
-        if (nbtElement instanceof AbstractNbtNumber) {
-            return DataResult.success(((AbstractNbtNumber)nbtElement).numberValue());
+    public DataResult<Number> getNumberValue(Tag tag) {
+        if (tag instanceof AbstractNumberTag) {
+            return DataResult.success(((AbstractNumberTag)tag).getNumber());
         }
         return DataResult.error("Not a number");
     }
 
     @Override
-    public NbtElement createNumeric(Number number) {
-        return NbtDouble.of(number.doubleValue());
+    public Tag createNumeric(Number number) {
+        return DoubleTag.of(number.doubleValue());
     }
 
     @Override
-    public NbtElement createByte(byte b) {
-        return NbtByte.of(b);
+    public Tag createByte(byte b) {
+        return ByteTag.of(b);
     }
 
     @Override
-    public NbtElement createShort(short s) {
-        return NbtShort.of(s);
+    public Tag createShort(short s) {
+        return ShortTag.of(s);
     }
 
     @Override
-    public NbtElement createInt(int i) {
-        return NbtInt.of(i);
+    public Tag createInt(int i) {
+        return IntTag.of(i);
     }
 
     @Override
-    public NbtElement createLong(long l) {
-        return NbtLong.of(l);
+    public Tag createLong(long l) {
+        return LongTag.of(l);
     }
 
     @Override
-    public NbtElement createFloat(float f) {
-        return NbtFloat.of(f);
+    public Tag createFloat(float f) {
+        return FloatTag.of(f);
     }
 
     @Override
-    public NbtElement createDouble(double d) {
-        return NbtDouble.of(d);
+    public Tag createDouble(double d) {
+        return DoubleTag.of(d);
     }
 
     @Override
-    public NbtElement createBoolean(boolean bl) {
-        return NbtByte.of(bl);
+    public Tag createBoolean(boolean bl) {
+        return ByteTag.of(bl);
     }
 
     @Override
-    public DataResult<String> getStringValue(NbtElement nbtElement) {
-        if (nbtElement instanceof NbtString) {
-            return DataResult.success(nbtElement.asString());
+    public DataResult<String> getStringValue(Tag tag) {
+        if (tag instanceof StringTag) {
+            return DataResult.success(tag.asString());
         }
         return DataResult.error("Not a string");
     }
 
     @Override
-    public NbtElement createString(String string) {
-        return NbtString.of(string);
+    public Tag createString(String string) {
+        return StringTag.of(string);
     }
 
-    private static AbstractNbtList<?> method_29144(byte b, byte c) {
+    private static AbstractListTag<?> method_29144(byte b, byte c) {
         if (NbtOps.method_29145(b, c, (byte)4)) {
-            return new NbtLongArray(new long[0]);
+            return new LongArrayTag(new long[0]);
         }
         if (NbtOps.method_29145(b, c, (byte)1)) {
-            return new NbtByteArray(new byte[0]);
+            return new ByteArrayTag(new byte[0]);
         }
         if (NbtOps.method_29145(b, c, (byte)3)) {
-            return new NbtIntArray(new int[0]);
+            return new IntArrayTag(new int[0]);
         }
-        return new NbtList();
+        return new ListTag();
     }
 
     private static boolean method_29145(byte b, byte c, byte d) {
         return b == d && (c == d || c == 0);
     }
 
-    private static <T extends NbtElement> void method_29151(AbstractNbtList<T> abstractNbtList, NbtElement nbtElement2, NbtElement nbtElement22) {
-        if (nbtElement2 instanceof AbstractNbtList) {
-            AbstractNbtList abstractNbtList2 = (AbstractNbtList)nbtElement2;
-            abstractNbtList2.forEach(nbtElement -> abstractNbtList.add(nbtElement));
+    private static <T extends Tag> void method_29151(AbstractListTag<T> abstractListTag, Tag tag2, Tag tag22) {
+        if (tag2 instanceof AbstractListTag) {
+            AbstractListTag abstractListTag2 = (AbstractListTag)tag2;
+            abstractListTag2.forEach(tag -> abstractListTag.add(tag));
         }
-        abstractNbtList.add(nbtElement22);
+        abstractListTag.add(tag22);
     }
 
-    private static <T extends NbtElement> void method_29150(AbstractNbtList<T> abstractNbtList, NbtElement nbtElement2, List<NbtElement> list) {
-        if (nbtElement2 instanceof AbstractNbtList) {
-            AbstractNbtList abstractNbtList2 = (AbstractNbtList)nbtElement2;
-            abstractNbtList2.forEach(nbtElement -> abstractNbtList.add(nbtElement));
+    private static <T extends Tag> void method_29150(AbstractListTag<T> abstractListTag, Tag tag2, List<Tag> list) {
+        if (tag2 instanceof AbstractListTag) {
+            AbstractListTag abstractListTag2 = (AbstractListTag)tag2;
+            abstractListTag2.forEach(tag -> abstractListTag.add(tag));
         }
-        list.forEach(nbtElement -> abstractNbtList.add(nbtElement));
-    }
-
-    @Override
-    public DataResult<NbtElement> mergeToList(NbtElement nbtElement, NbtElement nbtElement2) {
-        if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtNull)) {
-            return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
-        }
-        AbstractNbtList<?> abstractNbtList = NbtOps.method_29144(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, nbtElement2.getType());
-        NbtOps.method_29151(abstractNbtList, nbtElement, nbtElement2);
-        return DataResult.success(abstractNbtList);
+        list.forEach(tag -> abstractListTag.add(tag));
     }
 
     @Override
-    public DataResult<NbtElement> mergeToList(NbtElement nbtElement, List<NbtElement> list) {
-        if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtNull)) {
-            return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
+    public DataResult<Tag> mergeToList(Tag tag, Tag tag2) {
+        if (!(tag instanceof AbstractListTag) && !(tag instanceof EndTag)) {
+            return DataResult.error("mergeToList called with not a list: " + tag, tag);
         }
-        AbstractNbtList<?> abstractNbtList = NbtOps.method_29144(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, list.stream().findFirst().map(NbtElement::getType).orElse((byte)0));
-        NbtOps.method_29150(abstractNbtList, nbtElement, list);
-        return DataResult.success(abstractNbtList);
+        AbstractListTag<?> abstractListTag = NbtOps.method_29144(tag instanceof AbstractListTag ? ((AbstractListTag)tag).getElementType() : (byte)0, tag2.getType());
+        NbtOps.method_29151(abstractListTag, tag, tag2);
+        return DataResult.success(abstractListTag);
     }
 
     @Override
-    public DataResult<NbtElement> mergeToMap(NbtElement nbtElement, NbtElement nbtElement2, NbtElement nbtElement3) {
-        if (!(nbtElement instanceof NbtCompound) && !(nbtElement instanceof NbtNull)) {
-            return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
+    public DataResult<Tag> mergeToList(Tag tag, List<Tag> list) {
+        if (!(tag instanceof AbstractListTag) && !(tag instanceof EndTag)) {
+            return DataResult.error("mergeToList called with not a list: " + tag, tag);
         }
-        if (!(nbtElement2 instanceof NbtString)) {
-            return DataResult.error("key is not a string: " + nbtElement2, nbtElement);
-        }
-        NbtCompound nbtCompound = new NbtCompound();
-        if (nbtElement instanceof NbtCompound) {
-            NbtCompound nbtCompound2 = (NbtCompound)nbtElement;
-            nbtCompound2.getKeys().forEach(string -> nbtCompound.put((String)string, nbtCompound2.get((String)string)));
-        }
-        nbtCompound.put(nbtElement2.asString(), nbtElement3);
-        return DataResult.success(nbtCompound);
+        AbstractListTag<?> abstractListTag = NbtOps.method_29144(tag instanceof AbstractListTag ? ((AbstractListTag)tag).getElementType() : (byte)0, list.stream().findFirst().map(Tag::getType).orElse((byte)0));
+        NbtOps.method_29150(abstractListTag, tag, list);
+        return DataResult.success(abstractListTag);
     }
 
     @Override
-    public DataResult<NbtElement> mergeToMap(NbtElement nbtElement, MapLike<NbtElement> mapLike) {
-        if (!(nbtElement instanceof NbtCompound) && !(nbtElement instanceof NbtNull)) {
-            return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
+    public DataResult<Tag> mergeToMap(Tag tag, Tag tag2, Tag tag3) {
+        if (!(tag instanceof CompoundTag) && !(tag instanceof EndTag)) {
+            return DataResult.error("mergeToMap called with not a map: " + tag, tag);
         }
-        NbtCompound nbtCompound = new NbtCompound();
-        if (nbtElement instanceof NbtCompound) {
-            NbtCompound nbtCompound2 = (NbtCompound)nbtElement;
-            nbtCompound2.getKeys().forEach(string -> nbtCompound.put((String)string, nbtCompound2.get((String)string)));
+        if (!(tag2 instanceof StringTag)) {
+            return DataResult.error("key is not a string: " + tag2, tag);
+        }
+        CompoundTag compoundTag = new CompoundTag();
+        if (tag instanceof CompoundTag) {
+            CompoundTag compoundTag2 = (CompoundTag)tag;
+            compoundTag2.getKeys().forEach(string -> compoundTag.put((String)string, compoundTag2.get((String)string)));
+        }
+        compoundTag.put(tag2.asString(), tag3);
+        return DataResult.success(compoundTag);
+    }
+
+    @Override
+    public DataResult<Tag> mergeToMap(Tag tag, MapLike<Tag> mapLike) {
+        if (!(tag instanceof CompoundTag) && !(tag instanceof EndTag)) {
+            return DataResult.error("mergeToMap called with not a map: " + tag, tag);
+        }
+        CompoundTag compoundTag = new CompoundTag();
+        if (tag instanceof CompoundTag) {
+            CompoundTag compoundTag2 = (CompoundTag)tag;
+            compoundTag2.getKeys().forEach(string -> compoundTag.put((String)string, compoundTag2.get((String)string)));
         }
         ArrayList list = Lists.newArrayList();
         mapLike.entries().forEach(pair -> {
-            NbtElement nbtElement = (NbtElement)pair.getFirst();
-            if (!(nbtElement instanceof NbtString)) {
-                list.add(nbtElement);
+            Tag tag = (Tag)pair.getFirst();
+            if (!(tag instanceof StringTag)) {
+                list.add(tag);
                 return;
             }
-            nbtCompound.put(nbtElement.asString(), (NbtElement)pair.getSecond());
+            compoundTag.put(tag.asString(), (Tag)pair.getSecond());
         });
         if (!list.isEmpty()) {
-            return DataResult.error("some keys are not strings: " + list, nbtCompound);
+            return DataResult.error("some keys are not strings: " + list, compoundTag);
         }
-        return DataResult.success(nbtCompound);
+        return DataResult.success(compoundTag);
     }
 
     @Override
-    public DataResult<Stream<Pair<NbtElement, NbtElement>>> getMapValues(NbtElement nbtElement) {
-        if (!(nbtElement instanceof NbtCompound)) {
-            return DataResult.error("Not a map: " + nbtElement);
+    public DataResult<Stream<Pair<Tag, Tag>>> getMapValues(Tag tag) {
+        if (!(tag instanceof CompoundTag)) {
+            return DataResult.error("Not a map: " + tag);
         }
-        NbtCompound nbtCompound = (NbtCompound)nbtElement;
-        return DataResult.success(nbtCompound.getKeys().stream().map(string -> Pair.of(this.createString((String)string), nbtCompound.get((String)string))));
+        CompoundTag compoundTag = (CompoundTag)tag;
+        return DataResult.success(compoundTag.getKeys().stream().map(string -> Pair.of(this.createString((String)string), compoundTag.get((String)string))));
     }
 
     @Override
-    public DataResult<Consumer<BiConsumer<NbtElement, NbtElement>>> getMapEntries(NbtElement nbtElement) {
-        if (!(nbtElement instanceof NbtCompound)) {
-            return DataResult.error("Not a map: " + nbtElement);
+    public DataResult<Consumer<BiConsumer<Tag, Tag>>> getMapEntries(Tag tag) {
+        if (!(tag instanceof CompoundTag)) {
+            return DataResult.error("Not a map: " + tag);
         }
-        NbtCompound nbtCompound = (NbtCompound)nbtElement;
-        return DataResult.success(biConsumer -> nbtCompound.getKeys().forEach(string -> biConsumer.accept(this.createString((String)string), nbtCompound.get((String)string))));
+        CompoundTag compoundTag = (CompoundTag)tag;
+        return DataResult.success(biConsumer -> compoundTag.getKeys().forEach(string -> biConsumer.accept(this.createString((String)string), compoundTag.get((String)string))));
     }
 
     @Override
-    public DataResult<MapLike<NbtElement>> getMap(NbtElement nbtElement) {
-        if (!(nbtElement instanceof NbtCompound)) {
-            return DataResult.error("Not a map: " + nbtElement);
+    public DataResult<MapLike<Tag>> getMap(Tag tag) {
+        if (!(tag instanceof CompoundTag)) {
+            return DataResult.error("Not a map: " + tag);
         }
-        final NbtCompound nbtCompound = (NbtCompound)nbtElement;
-        return DataResult.success(new MapLike<NbtElement>(){
+        final CompoundTag compoundTag = (CompoundTag)tag;
+        return DataResult.success(new MapLike<Tag>(){
 
             @Override
             @Nullable
-            public NbtElement get(NbtElement nbtElement) {
-                return nbtCompound.get(nbtElement.asString());
+            public Tag get(Tag tag) {
+                return compoundTag.get(tag.asString());
             }
 
             @Override
             @Nullable
-            public NbtElement get(String string) {
-                return nbtCompound.get(string);
+            public Tag get(String string) {
+                return compoundTag.get(string);
             }
 
             @Override
-            public Stream<Pair<NbtElement, NbtElement>> entries() {
-                return nbtCompound.getKeys().stream().map(string -> Pair.of(NbtOps.this.createString((String)string), nbtCompound.get((String)string)));
+            public Stream<Pair<Tag, Tag>> entries() {
+                return compoundTag.getKeys().stream().map(string -> Pair.of(NbtOps.this.createString((String)string), compoundTag.get((String)string)));
             }
 
             public String toString() {
-                return "MapLike[" + nbtCompound + "]";
+                return "MapLike[" + compoundTag + "]";
             }
 
             @Override
@@ -334,111 +334,111 @@ implements DynamicOps<NbtElement> {
             @Override
             @Nullable
             public /* synthetic */ Object get(Object object) {
-                return this.get((NbtElement)object);
+                return this.get((Tag)object);
             }
         });
     }
 
     @Override
-    public NbtElement createMap(Stream<Pair<NbtElement, NbtElement>> stream) {
-        NbtCompound nbtCompound = new NbtCompound();
-        stream.forEach(pair -> nbtCompound.put(((NbtElement)pair.getFirst()).asString(), (NbtElement)pair.getSecond()));
-        return nbtCompound;
+    public Tag createMap(Stream<Pair<Tag, Tag>> stream) {
+        CompoundTag compoundTag = new CompoundTag();
+        stream.forEach(pair -> compoundTag.put(((Tag)pair.getFirst()).asString(), (Tag)pair.getSecond()));
+        return compoundTag;
     }
 
     @Override
-    public DataResult<Stream<NbtElement>> getStream(NbtElement nbtElement2) {
-        if (nbtElement2 instanceof AbstractNbtList) {
-            return DataResult.success(((AbstractNbtList)nbtElement2).stream().map(nbtElement -> nbtElement));
+    public DataResult<Stream<Tag>> getStream(Tag tag2) {
+        if (tag2 instanceof AbstractListTag) {
+            return DataResult.success(((AbstractListTag)tag2).stream().map(tag -> tag));
         }
         return DataResult.error("Not a list");
     }
 
     @Override
-    public DataResult<Consumer<Consumer<NbtElement>>> getList(NbtElement nbtElement) {
-        if (nbtElement instanceof AbstractNbtList) {
-            AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement;
-            return DataResult.success(abstractNbtList::forEach);
+    public DataResult<Consumer<Consumer<Tag>>> getList(Tag tag) {
+        if (tag instanceof AbstractListTag) {
+            AbstractListTag abstractListTag = (AbstractListTag)tag;
+            return DataResult.success(abstractListTag::forEach);
         }
-        return DataResult.error("Not a list: " + nbtElement);
+        return DataResult.error("Not a list: " + tag);
     }
 
     @Override
-    public DataResult<ByteBuffer> getByteBuffer(NbtElement nbtElement) {
-        if (nbtElement instanceof NbtByteArray) {
-            return DataResult.success(ByteBuffer.wrap(((NbtByteArray)nbtElement).getByteArray()));
+    public DataResult<ByteBuffer> getByteBuffer(Tag tag) {
+        if (tag instanceof ByteArrayTag) {
+            return DataResult.success(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray()));
         }
-        return DynamicOps.super.getByteBuffer(nbtElement);
+        return DynamicOps.super.getByteBuffer(tag);
     }
 
     @Override
-    public NbtElement createByteList(ByteBuffer byteBuffer) {
-        return new NbtByteArray(DataFixUtils.toArray(byteBuffer));
+    public Tag createByteList(ByteBuffer byteBuffer) {
+        return new ByteArrayTag(DataFixUtils.toArray(byteBuffer));
     }
 
     @Override
-    public DataResult<IntStream> getIntStream(NbtElement nbtElement) {
-        if (nbtElement instanceof NbtIntArray) {
-            return DataResult.success(Arrays.stream(((NbtIntArray)nbtElement).getIntArray()));
+    public DataResult<IntStream> getIntStream(Tag tag) {
+        if (tag instanceof IntArrayTag) {
+            return DataResult.success(Arrays.stream(((IntArrayTag)tag).getIntArray()));
         }
-        return DynamicOps.super.getIntStream(nbtElement);
+        return DynamicOps.super.getIntStream(tag);
     }
 
     @Override
-    public NbtElement createIntList(IntStream intStream) {
-        return new NbtIntArray(intStream.toArray());
+    public Tag createIntList(IntStream intStream) {
+        return new IntArrayTag(intStream.toArray());
     }
 
     @Override
-    public DataResult<LongStream> getLongStream(NbtElement nbtElement) {
-        if (nbtElement instanceof NbtLongArray) {
-            return DataResult.success(Arrays.stream(((NbtLongArray)nbtElement).getLongArray()));
+    public DataResult<LongStream> getLongStream(Tag tag) {
+        if (tag instanceof LongArrayTag) {
+            return DataResult.success(Arrays.stream(((LongArrayTag)tag).getLongArray()));
         }
-        return DynamicOps.super.getLongStream(nbtElement);
+        return DynamicOps.super.getLongStream(tag);
     }
 
     @Override
-    public NbtElement createLongList(LongStream longStream) {
-        return new NbtLongArray(longStream.toArray());
+    public Tag createLongList(LongStream longStream) {
+        return new LongArrayTag(longStream.toArray());
     }
 
     @Override
-    public NbtElement createList(Stream<NbtElement> stream) {
+    public Tag createList(Stream<Tag> stream) {
         PeekingIterator peekingIterator = Iterators.peekingIterator(stream.iterator());
         if (!peekingIterator.hasNext()) {
-            return new NbtList();
+            return new ListTag();
         }
-        NbtElement nbtElement2 = (NbtElement)peekingIterator.peek();
-        if (nbtElement2 instanceof NbtByte) {
-            ArrayList<Byte> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbtElement -> ((NbtByte)nbtElement).byteValue()));
-            return new NbtByteArray(list);
+        Tag tag2 = (Tag)peekingIterator.peek();
+        if (tag2 instanceof ByteTag) {
+            ArrayList<Byte> list = Lists.newArrayList(Iterators.transform(peekingIterator, tag -> ((ByteTag)tag).getByte()));
+            return new ByteArrayTag(list);
         }
-        if (nbtElement2 instanceof NbtInt) {
-            ArrayList<Integer> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbtElement -> ((NbtInt)nbtElement).intValue()));
-            return new NbtIntArray(list);
+        if (tag2 instanceof IntTag) {
+            ArrayList<Integer> list = Lists.newArrayList(Iterators.transform(peekingIterator, tag -> ((IntTag)tag).getInt()));
+            return new IntArrayTag(list);
         }
-        if (nbtElement2 instanceof NbtLong) {
-            ArrayList<Long> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbtElement -> ((NbtLong)nbtElement).longValue()));
-            return new NbtLongArray(list);
+        if (tag2 instanceof LongTag) {
+            ArrayList<Long> list = Lists.newArrayList(Iterators.transform(peekingIterator, tag -> ((LongTag)tag).getLong()));
+            return new LongArrayTag(list);
         }
-        NbtList nbtList = new NbtList();
+        ListTag listTag = new ListTag();
         while (peekingIterator.hasNext()) {
-            NbtElement nbtElement22 = (NbtElement)peekingIterator.next();
-            if (nbtElement22 instanceof NbtNull) continue;
-            nbtList.add(nbtElement22);
+            Tag tag22 = (Tag)peekingIterator.next();
+            if (tag22 instanceof EndTag) continue;
+            listTag.add(tag22);
         }
-        return nbtList;
+        return listTag;
     }
 
     @Override
-    public NbtElement remove(NbtElement nbtElement, String string3) {
-        if (nbtElement instanceof NbtCompound) {
-            NbtCompound nbtCompound = (NbtCompound)nbtElement;
-            NbtCompound nbtCompound2 = new NbtCompound();
-            nbtCompound.getKeys().stream().filter(string2 -> !Objects.equals(string2, string3)).forEach(string -> nbtCompound2.put((String)string, nbtCompound.get((String)string)));
-            return nbtCompound2;
+    public Tag remove(Tag tag, String string3) {
+        if (tag instanceof CompoundTag) {
+            CompoundTag compoundTag = (CompoundTag)tag;
+            CompoundTag compoundTag2 = new CompoundTag();
+            compoundTag.getKeys().stream().filter(string2 -> !Objects.equals(string2, string3)).forEach(string -> compoundTag2.put((String)string, compoundTag.get((String)string)));
+            return compoundTag2;
         }
-        return nbtElement;
+        return tag;
     }
 
     public String toString() {
@@ -446,13 +446,13 @@ implements DynamicOps<NbtElement> {
     }
 
     @Override
-    public RecordBuilder<NbtElement> mapBuilder() {
+    public RecordBuilder<Tag> mapBuilder() {
         return new MapBuilder();
     }
 
     @Override
     public /* synthetic */ Object remove(Object object, String string) {
-        return this.remove((NbtElement)object, string);
+        return this.remove((Tag)object, string);
     }
 
     @Override
@@ -462,7 +462,7 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public /* synthetic */ DataResult getLongStream(Object object) {
-        return this.getLongStream((NbtElement)object);
+        return this.getLongStream((Tag)object);
     }
 
     @Override
@@ -472,7 +472,7 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public /* synthetic */ DataResult getIntStream(Object object) {
-        return this.getIntStream((NbtElement)object);
+        return this.getIntStream((Tag)object);
     }
 
     @Override
@@ -482,7 +482,7 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public /* synthetic */ DataResult getByteBuffer(Object object) {
-        return this.getByteBuffer((NbtElement)object);
+        return this.getByteBuffer((Tag)object);
     }
 
     @Override
@@ -492,17 +492,17 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public /* synthetic */ DataResult getList(Object object) {
-        return this.getList((NbtElement)object);
+        return this.getList((Tag)object);
     }
 
     @Override
     public /* synthetic */ DataResult getStream(Object object) {
-        return this.getStream((NbtElement)object);
+        return this.getStream((Tag)object);
     }
 
     @Override
     public /* synthetic */ DataResult getMap(Object object) {
-        return this.getMap((NbtElement)object);
+        return this.getMap((Tag)object);
     }
 
     @Override
@@ -512,32 +512,32 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public /* synthetic */ DataResult getMapEntries(Object object) {
-        return this.getMapEntries((NbtElement)object);
+        return this.getMapEntries((Tag)object);
     }
 
     @Override
     public /* synthetic */ DataResult getMapValues(Object object) {
-        return this.getMapValues((NbtElement)object);
+        return this.getMapValues((Tag)object);
     }
 
     @Override
     public /* synthetic */ DataResult mergeToMap(Object object, MapLike mapLike) {
-        return this.mergeToMap((NbtElement)object, (MapLike<NbtElement>)mapLike);
+        return this.mergeToMap((Tag)object, (MapLike<Tag>)mapLike);
     }
 
     @Override
     public /* synthetic */ DataResult mergeToMap(Object object, Object object2, Object object3) {
-        return this.mergeToMap((NbtElement)object, (NbtElement)object2, (NbtElement)object3);
+        return this.mergeToMap((Tag)object, (Tag)object2, (Tag)object3);
     }
 
     @Override
     public /* synthetic */ DataResult mergeToList(Object object, List list) {
-        return this.mergeToList((NbtElement)object, (List<NbtElement>)list);
+        return this.mergeToList((Tag)object, (List<Tag>)list);
     }
 
     @Override
     public /* synthetic */ DataResult mergeToList(Object object, Object object2) {
-        return this.mergeToList((NbtElement)object, (NbtElement)object2);
+        return this.mergeToList((Tag)object, (Tag)object2);
     }
 
     @Override
@@ -547,7 +547,7 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public /* synthetic */ DataResult getStringValue(Object object) {
-        return this.getStringValue((NbtElement)object);
+        return this.getStringValue((Tag)object);
     }
 
     @Override
@@ -592,12 +592,12 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public /* synthetic */ DataResult getNumberValue(Object object) {
-        return this.getNumberValue((NbtElement)object);
+        return this.getNumberValue((Tag)object);
     }
 
     @Override
     public /* synthetic */ Object convertTo(DynamicOps dynamicOps, Object object) {
-        return this.convertTo(dynamicOps, (NbtElement)object);
+        return this.convertTo(dynamicOps, (Tag)object);
     }
 
     @Override
@@ -606,45 +606,45 @@ implements DynamicOps<NbtElement> {
     }
 
     class MapBuilder
-    extends RecordBuilder.AbstractStringBuilder<NbtElement, NbtCompound> {
+    extends RecordBuilder.AbstractStringBuilder<Tag, CompoundTag> {
         protected MapBuilder() {
             super(NbtOps.this);
         }
 
         @Override
-        protected NbtCompound initBuilder() {
-            return new NbtCompound();
+        protected CompoundTag initBuilder() {
+            return new CompoundTag();
         }
 
         @Override
-        protected NbtCompound append(String string, NbtElement nbtElement, NbtCompound nbtCompound) {
-            nbtCompound.put(string, nbtElement);
-            return nbtCompound;
+        protected CompoundTag append(String string, Tag tag, CompoundTag compoundTag) {
+            compoundTag.put(string, tag);
+            return compoundTag;
         }
 
         @Override
-        protected DataResult<NbtElement> build(NbtCompound nbtCompound, NbtElement nbtElement) {
-            if (nbtElement == null || nbtElement == NbtNull.INSTANCE) {
-                return DataResult.success(nbtCompound);
+        protected DataResult<Tag> build(CompoundTag compoundTag, Tag tag) {
+            if (tag == null || tag == EndTag.INSTANCE) {
+                return DataResult.success(compoundTag);
             }
-            if (nbtElement instanceof NbtCompound) {
-                NbtCompound nbtCompound2 = new NbtCompound(Maps.newHashMap(((NbtCompound)nbtElement).toMap()));
-                for (Map.Entry<String, NbtElement> entry : nbtCompound.toMap().entrySet()) {
-                    nbtCompound2.put(entry.getKey(), entry.getValue());
+            if (tag instanceof CompoundTag) {
+                CompoundTag compoundTag2 = new CompoundTag(Maps.newHashMap(((CompoundTag)tag).toMap()));
+                for (Map.Entry<String, Tag> entry : compoundTag.toMap().entrySet()) {
+                    compoundTag2.put(entry.getKey(), entry.getValue());
                 }
-                return DataResult.success(nbtCompound2);
+                return DataResult.success(compoundTag2);
             }
-            return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
+            return DataResult.error("mergeToMap called with not a map: " + tag, tag);
         }
 
         @Override
         protected /* synthetic */ Object append(String string, Object object, Object object2) {
-            return this.append(string, (NbtElement)object, (NbtCompound)object2);
+            return this.append(string, (Tag)object, (CompoundTag)object2);
         }
 
         @Override
         protected /* synthetic */ DataResult build(Object object, Object object2) {
-            return this.build((NbtCompound)object, (NbtElement)object2);
+            return this.build((CompoundTag)object, (Tag)object2);
         }
 
         @Override

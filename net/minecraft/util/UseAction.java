@@ -10,7 +10,8 @@ public enum UseAction {
     BLOCK,
     BOW,
     SPEAR,
-    CROSSBOW;
+    CROSSBOW,
+    SPYGLASS;
 
 }
 

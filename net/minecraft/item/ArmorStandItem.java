@@ -40,7 +40,7 @@ extends Item {
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         ItemStack itemStack = context.getStack();
         Vec3d vec3d = Vec3d.ofBottomCenter(blockPos);
-        Box box = EntityType.ARMOR_STAND.getDimensions().getBoxAt(vec3d.getX(), vec3d.getY(), vec3d.getZ());
+        Box box = EntityType.ARMOR_STAND.getDimensions().method_30231(vec3d.getX(), vec3d.getY(), vec3d.getZ());
         if (!world.isSpaceEmpty(null, box, entity -> true) || !world.getOtherEntities(null, box).isEmpty()) {
             return ActionResult.FAIL;
         }
@@ -50,11 +50,10 @@ extends Item {
             if (armorStandEntity == null) {
                 return ActionResult.FAIL;
             }
-            serverWorld.spawnEntityAndPassengers(armorStandEntity);
             float f = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0f) + 22.5f) / 45.0f) * 45.0f;
             armorStandEntity.refreshPositionAndAngles(armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), f, 0.0f);
             this.setRotations(armorStandEntity, world.random);
-            world.spawnEntity(armorStandEntity);
+            serverWorld.spawnEntityAndPassengers(armorStandEntity);
             world.playSound(null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75f, 0.8f);
         }
         itemStack.decrement(1);

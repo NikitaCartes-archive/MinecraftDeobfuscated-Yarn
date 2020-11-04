@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.GameRules;
 
@@ -44,10 +45,10 @@ extends Goal {
         super.start();
     }
 
-    private List<MobEntity> getOthersInRange() {
+    private List<? extends MobEntity> getOthersInRange() {
         double d = ((LivingEntity)this.mob).getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
         Box box = Box.method_29968(((Entity)this.mob).getPos()).expand(d, 10.0, d);
-        return ((MobEntity)this.mob).world.getEntitiesIncludingUngeneratedChunks(this.mob.getClass(), box);
+        return ((MobEntity)this.mob).world.getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 }
 

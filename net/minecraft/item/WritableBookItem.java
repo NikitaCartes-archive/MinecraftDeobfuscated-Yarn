@@ -10,8 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -40,21 +40,21 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        user.useBook(itemStack, hand);
+        user.openEditBookScreen(itemStack, hand);
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         return TypedActionResult.success(itemStack, world.isClient());
     }
 
-    public static boolean isValid(@Nullable NbtCompound nbt) {
-        if (nbt == null) {
+    public static boolean isValid(@Nullable CompoundTag tag) {
+        if (tag == null) {
             return false;
         }
-        if (!nbt.contains("pages", 9)) {
+        if (!tag.contains("pages", 9)) {
             return false;
         }
-        NbtList nbtList = nbt.getList("pages", 8);
-        for (int i = 0; i < nbtList.size(); ++i) {
-            String string = nbtList.getString(i);
+        ListTag listTag = tag.getList("pages", 8);
+        for (int i = 0; i < listTag.size(); ++i) {
+            String string = listTag.getString(i);
             if (string.length() <= Short.MAX_VALUE) continue;
             return false;
         }

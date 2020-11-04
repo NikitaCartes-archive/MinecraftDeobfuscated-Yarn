@@ -3,70 +3,68 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class SpiderEntityModel<T extends Entity>
-extends CompositeEntityModel<T> {
+extends class_5597<T> {
+    private final ModelPart field_27504;
     private final ModelPart head;
-    private final ModelPart thorax;
-    private final ModelPart abdomen;
-    private final ModelPart rightBackLeg;
-    private final ModelPart leftBackLeg;
-    private final ModelPart rightBackMiddleLeg;
-    private final ModelPart leftBackMiddleLeg;
-    private final ModelPart rightFrontMiddleLeg;
-    private final ModelPart leftFrontMiddleLeg;
-    private final ModelPart rightFrontLeg;
-    private final ModelPart leftFrontLeg;
+    private final ModelPart field_27505;
+    private final ModelPart field_27506;
+    private final ModelPart field_27507;
+    private final ModelPart field_27508;
+    private final ModelPart field_27509;
+    private final ModelPart field_27510;
+    private final ModelPart field_27511;
+    private final ModelPart field_27512;
 
-    public SpiderEntityModel() {
-        float f = 0.0f;
+    public SpiderEntityModel(ModelPart modelPart) {
+        this.field_27504 = modelPart;
+        this.head = modelPart.method_32086("head");
+        this.field_27505 = modelPart.method_32086("right_hind_leg");
+        this.field_27506 = modelPart.method_32086("left_hind_leg");
+        this.field_27507 = modelPart.method_32086("right_middle_hind_leg");
+        this.field_27508 = modelPart.method_32086("left_middle_hind_leg");
+        this.field_27509 = modelPart.method_32086("right_middle_front_leg");
+        this.field_27510 = modelPart.method_32086("left_middle_front_leg");
+        this.field_27511 = modelPart.method_32086("right_front_leg");
+        this.field_27512 = modelPart.method_32086("left_front_leg");
+    }
+
+    public static class_5607 method_32054() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
         int i = 15;
-        this.head = new ModelPart(this, 32, 4);
-        this.head.addCuboid(-4.0f, -4.0f, -8.0f, 8.0f, 8.0f, 8.0f, 0.0f);
-        this.head.setPivot(0.0f, 15.0f, -3.0f);
-        this.thorax = new ModelPart(this, 0, 0);
-        this.thorax.addCuboid(-3.0f, -3.0f, -3.0f, 6.0f, 6.0f, 6.0f, 0.0f);
-        this.thorax.setPivot(0.0f, 15.0f, 0.0f);
-        this.abdomen = new ModelPart(this, 0, 12);
-        this.abdomen.addCuboid(-5.0f, -4.0f, -6.0f, 10.0f, 8.0f, 12.0f, 0.0f);
-        this.abdomen.setPivot(0.0f, 15.0f, 9.0f);
-        this.rightBackLeg = new ModelPart(this, 18, 0);
-        this.rightBackLeg.addCuboid(-15.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f, 0.0f);
-        this.rightBackLeg.setPivot(-4.0f, 15.0f, 2.0f);
-        this.leftBackLeg = new ModelPart(this, 18, 0);
-        this.leftBackLeg.addCuboid(-1.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f, 0.0f);
-        this.leftBackLeg.setPivot(4.0f, 15.0f, 2.0f);
-        this.rightBackMiddleLeg = new ModelPart(this, 18, 0);
-        this.rightBackMiddleLeg.addCuboid(-15.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f, 0.0f);
-        this.rightBackMiddleLeg.setPivot(-4.0f, 15.0f, 1.0f);
-        this.leftBackMiddleLeg = new ModelPart(this, 18, 0);
-        this.leftBackMiddleLeg.addCuboid(-1.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f, 0.0f);
-        this.leftBackMiddleLeg.setPivot(4.0f, 15.0f, 1.0f);
-        this.rightFrontMiddleLeg = new ModelPart(this, 18, 0);
-        this.rightFrontMiddleLeg.addCuboid(-15.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f, 0.0f);
-        this.rightFrontMiddleLeg.setPivot(-4.0f, 15.0f, 0.0f);
-        this.leftFrontMiddleLeg = new ModelPart(this, 18, 0);
-        this.leftFrontMiddleLeg.addCuboid(-1.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f, 0.0f);
-        this.leftFrontMiddleLeg.setPivot(4.0f, 15.0f, 0.0f);
-        this.rightFrontLeg = new ModelPart(this, 18, 0);
-        this.rightFrontLeg.addCuboid(-15.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f, 0.0f);
-        this.rightFrontLeg.setPivot(-4.0f, 15.0f, -1.0f);
-        this.leftFrontLeg = new ModelPart(this, 18, 0);
-        this.leftFrontLeg.addCuboid(-1.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f, 0.0f);
-        this.leftFrontLeg.setPivot(4.0f, 15.0f, -1.0f);
+        lv2.method_32117("head", class_5606.method_32108().method_32101(32, 4).method_32097(-4.0f, -4.0f, -8.0f, 8.0f, 8.0f, 8.0f), class_5603.method_32090(0.0f, 15.0f, -3.0f));
+        lv2.method_32117("body0", class_5606.method_32108().method_32101(0, 0).method_32097(-3.0f, -3.0f, -3.0f, 6.0f, 6.0f, 6.0f), class_5603.method_32090(0.0f, 15.0f, 0.0f));
+        lv2.method_32117("body1", class_5606.method_32108().method_32101(0, 12).method_32097(-5.0f, -4.0f, -6.0f, 10.0f, 8.0f, 12.0f), class_5603.method_32090(0.0f, 15.0f, 9.0f));
+        class_5606 lv3 = class_5606.method_32108().method_32101(18, 0).method_32097(-15.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f);
+        class_5606 lv4 = class_5606.method_32108().method_32101(18, 0).method_32097(-1.0f, -1.0f, -1.0f, 16.0f, 2.0f, 2.0f);
+        lv2.method_32117("right_hind_leg", lv3, class_5603.method_32090(-4.0f, 15.0f, 2.0f));
+        lv2.method_32117("left_hind_leg", lv4, class_5603.method_32090(4.0f, 15.0f, 2.0f));
+        lv2.method_32117("right_middle_hind_leg", lv3, class_5603.method_32090(-4.0f, 15.0f, 1.0f));
+        lv2.method_32117("left_middle_hind_leg", lv4, class_5603.method_32090(4.0f, 15.0f, 1.0f));
+        lv2.method_32117("right_middle_front_leg", lv3, class_5603.method_32090(-4.0f, 15.0f, 0.0f));
+        lv2.method_32117("left_middle_front_leg", lv4, class_5603.method_32090(4.0f, 15.0f, 0.0f));
+        lv2.method_32117("right_front_leg", lv3, class_5603.method_32090(-4.0f, 15.0f, -1.0f));
+        lv2.method_32117("left_front_leg", lv4, class_5603.method_32090(4.0f, 15.0f, -1.0f));
+        return class_5607.method_32110(lv, 64, 32);
     }
 
     @Override
-    public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.head, this.thorax, this.abdomen, this.rightBackLeg, this.leftBackLeg, this.rightBackMiddleLeg, this.leftBackMiddleLeg, this.rightFrontMiddleLeg, this.leftFrontMiddleLeg, this.rightFrontLeg, this.leftFrontLeg);
+    public ModelPart method_32008() {
+        return this.field_27504;
     }
 
     @Override
@@ -74,24 +72,24 @@ extends CompositeEntityModel<T> {
         this.head.yaw = headYaw * ((float)Math.PI / 180);
         this.head.pitch = headPitch * ((float)Math.PI / 180);
         float f = 0.7853982f;
-        this.rightBackLeg.roll = -0.7853982f;
-        this.leftBackLeg.roll = 0.7853982f;
-        this.rightBackMiddleLeg.roll = -0.58119464f;
-        this.leftBackMiddleLeg.roll = 0.58119464f;
-        this.rightFrontMiddleLeg.roll = -0.58119464f;
-        this.leftFrontMiddleLeg.roll = 0.58119464f;
-        this.rightFrontLeg.roll = -0.7853982f;
-        this.leftFrontLeg.roll = 0.7853982f;
+        this.field_27505.roll = -0.7853982f;
+        this.field_27506.roll = 0.7853982f;
+        this.field_27507.roll = -0.58119464f;
+        this.field_27508.roll = 0.58119464f;
+        this.field_27509.roll = -0.58119464f;
+        this.field_27510.roll = 0.58119464f;
+        this.field_27511.roll = -0.7853982f;
+        this.field_27512.roll = 0.7853982f;
         float g = -0.0f;
         float h = 0.3926991f;
-        this.rightBackLeg.yaw = 0.7853982f;
-        this.leftBackLeg.yaw = -0.7853982f;
-        this.rightBackMiddleLeg.yaw = 0.3926991f;
-        this.leftBackMiddleLeg.yaw = -0.3926991f;
-        this.rightFrontMiddleLeg.yaw = -0.3926991f;
-        this.leftFrontMiddleLeg.yaw = 0.3926991f;
-        this.rightFrontLeg.yaw = -0.7853982f;
-        this.leftFrontLeg.yaw = 0.7853982f;
+        this.field_27505.yaw = 0.7853982f;
+        this.field_27506.yaw = -0.7853982f;
+        this.field_27507.yaw = 0.3926991f;
+        this.field_27508.yaw = -0.3926991f;
+        this.field_27509.yaw = -0.3926991f;
+        this.field_27510.yaw = 0.3926991f;
+        this.field_27511.yaw = -0.7853982f;
+        this.field_27512.yaw = 0.7853982f;
         float i = -(MathHelper.cos(limbAngle * 0.6662f * 2.0f + 0.0f) * 0.4f) * limbDistance;
         float j = -(MathHelper.cos(limbAngle * 0.6662f * 2.0f + (float)Math.PI) * 0.4f) * limbDistance;
         float k = -(MathHelper.cos(limbAngle * 0.6662f * 2.0f + 1.5707964f) * 0.4f) * limbDistance;
@@ -100,22 +98,22 @@ extends CompositeEntityModel<T> {
         float n = Math.abs(MathHelper.sin(limbAngle * 0.6662f + (float)Math.PI) * 0.4f) * limbDistance;
         float o = Math.abs(MathHelper.sin(limbAngle * 0.6662f + 1.5707964f) * 0.4f) * limbDistance;
         float p = Math.abs(MathHelper.sin(limbAngle * 0.6662f + 4.712389f) * 0.4f) * limbDistance;
-        this.rightBackLeg.yaw += i;
-        this.leftBackLeg.yaw += -i;
-        this.rightBackMiddleLeg.yaw += j;
-        this.leftBackMiddleLeg.yaw += -j;
-        this.rightFrontMiddleLeg.yaw += k;
-        this.leftFrontMiddleLeg.yaw += -k;
-        this.rightFrontLeg.yaw += l;
-        this.leftFrontLeg.yaw += -l;
-        this.rightBackLeg.roll += m;
-        this.leftBackLeg.roll += -m;
-        this.rightBackMiddleLeg.roll += n;
-        this.leftBackMiddleLeg.roll += -n;
-        this.rightFrontMiddleLeg.roll += o;
-        this.leftFrontMiddleLeg.roll += -o;
-        this.rightFrontLeg.roll += p;
-        this.leftFrontLeg.roll += -p;
+        this.field_27505.yaw += i;
+        this.field_27506.yaw += -i;
+        this.field_27507.yaw += j;
+        this.field_27508.yaw += -j;
+        this.field_27509.yaw += k;
+        this.field_27510.yaw += -k;
+        this.field_27511.yaw += l;
+        this.field_27512.yaw += -l;
+        this.field_27505.roll += m;
+        this.field_27506.roll += -m;
+        this.field_27507.roll += n;
+        this.field_27508.roll += -n;
+        this.field_27509.roll += o;
+        this.field_27510.roll += -o;
+        this.field_27511.roll += p;
+        this.field_27512.roll += -p;
     }
 }
 

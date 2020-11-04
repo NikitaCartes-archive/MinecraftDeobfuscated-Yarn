@@ -18,13 +18,6 @@ extends AutoCloseable {
     default public void close() {
     }
 
-    /**
-     * Asks a message provider for a message.
-     * 
-     * The {@link CompletableFuture} returned from this function will never complete exceptionally.
-     * 
-     * @return CompletableFuture future that completes with the received message
-     */
     default public <Source> CompletableFuture<Source> ask(Function<? super MessageListener<Source>, ? extends Msg> messageProvider) {
         CompletableFuture completableFuture = new CompletableFuture();
         Msg object = messageProvider.apply(MessageListener.create("ask future procesor handle", completableFuture::complete));

@@ -27,8 +27,8 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -83,7 +83,7 @@ extends LivingEntity {
 
     public ArmorStandEntity(World world, double x, double y, double z) {
         this((EntityType<? extends ArmorStandEntity>)EntityType.ARMOR_STAND, world);
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
     }
 
     @Override
@@ -92,7 +92,7 @@ extends LivingEntity {
         double e = this.getY();
         double f = this.getZ();
         super.calculateDimensions();
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     private boolean canClip() {
@@ -186,101 +186,101 @@ extends LivingEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        NbtList nbtList = new NbtList();
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        ListTag listTag = new ListTag();
         for (ItemStack itemStack : this.armorItems) {
-            NbtCompound nbtCompound = new NbtCompound();
+            CompoundTag compoundTag = new CompoundTag();
             if (!itemStack.isEmpty()) {
-                itemStack.writeNbt(nbtCompound);
+                itemStack.toTag(compoundTag);
             }
-            nbtList.add(nbtCompound);
+            listTag.add(compoundTag);
         }
-        nbt.put("ArmorItems", nbtList);
-        NbtList nbtList2 = new NbtList();
+        tag.put("ArmorItems", listTag);
+        ListTag listTag2 = new ListTag();
         for (ItemStack itemStack2 : this.heldItems) {
-            NbtCompound nbtCompound2 = new NbtCompound();
+            CompoundTag compoundTag2 = new CompoundTag();
             if (!itemStack2.isEmpty()) {
-                itemStack2.writeNbt(nbtCompound2);
+                itemStack2.toTag(compoundTag2);
             }
-            nbtList2.add(nbtCompound2);
+            listTag2.add(compoundTag2);
         }
-        nbt.put("HandItems", nbtList2);
-        nbt.putBoolean("Invisible", this.isInvisible());
-        nbt.putBoolean("Small", this.isSmall());
-        nbt.putBoolean("ShowArms", this.shouldShowArms());
-        nbt.putInt("DisabledSlots", this.disabledSlots);
-        nbt.putBoolean("NoBasePlate", this.shouldHideBasePlate());
+        tag.put("HandItems", listTag2);
+        tag.putBoolean("Invisible", this.isInvisible());
+        tag.putBoolean("Small", this.isSmall());
+        tag.putBoolean("ShowArms", this.shouldShowArms());
+        tag.putInt("DisabledSlots", this.disabledSlots);
+        tag.putBoolean("NoBasePlate", this.shouldHideBasePlate());
         if (this.isMarker()) {
-            nbt.putBoolean("Marker", this.isMarker());
+            tag.putBoolean("Marker", this.isMarker());
         }
-        nbt.put("Pose", this.poseToNbt());
+        tag.put("Pose", this.serializePose());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
+    public void readCustomDataFromTag(CompoundTag tag) {
         int i;
-        NbtList nbtList;
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("ArmorItems", 9)) {
-            nbtList = nbt.getList("ArmorItems", 10);
+        ListTag listTag;
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("ArmorItems", 9)) {
+            listTag = tag.getList("ArmorItems", 10);
             for (i = 0; i < this.armorItems.size(); ++i) {
-                this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
+                this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
             }
         }
-        if (nbt.contains("HandItems", 9)) {
-            nbtList = nbt.getList("HandItems", 10);
+        if (tag.contains("HandItems", 9)) {
+            listTag = tag.getList("HandItems", 10);
             for (i = 0; i < this.heldItems.size(); ++i) {
-                this.heldItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
+                this.heldItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
             }
         }
-        this.setInvisible(nbt.getBoolean("Invisible"));
-        this.setSmall(nbt.getBoolean("Small"));
-        this.setShowArms(nbt.getBoolean("ShowArms"));
-        this.disabledSlots = nbt.getInt("DisabledSlots");
-        this.setHideBasePlate(nbt.getBoolean("NoBasePlate"));
-        this.setMarker(nbt.getBoolean("Marker"));
+        this.setInvisible(tag.getBoolean("Invisible"));
+        this.setSmall(tag.getBoolean("Small"));
+        this.setShowArms(tag.getBoolean("ShowArms"));
+        this.disabledSlots = tag.getInt("DisabledSlots");
+        this.setHideBasePlate(tag.getBoolean("NoBasePlate"));
+        this.setMarker(tag.getBoolean("Marker"));
         this.noClip = !this.canClip();
-        NbtCompound nbtCompound = nbt.getCompound("Pose");
-        this.readPoseNbt(nbtCompound);
+        CompoundTag compoundTag = tag.getCompound("Pose");
+        this.deserializePose(compoundTag);
     }
 
-    private void readPoseNbt(NbtCompound nbt) {
-        NbtList nbtList = nbt.getList("Head", 5);
-        this.setHeadRotation(nbtList.isEmpty() ? DEFAULT_HEAD_ROTATION : new EulerAngle(nbtList));
-        NbtList nbtList2 = nbt.getList("Body", 5);
-        this.setBodyRotation(nbtList2.isEmpty() ? DEFAULT_BODY_ROTATION : new EulerAngle(nbtList2));
-        NbtList nbtList3 = nbt.getList("LeftArm", 5);
-        this.setLeftArmRotation(nbtList3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new EulerAngle(nbtList3));
-        NbtList nbtList4 = nbt.getList("RightArm", 5);
-        this.setRightArmRotation(nbtList4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new EulerAngle(nbtList4));
-        NbtList nbtList5 = nbt.getList("LeftLeg", 5);
-        this.setLeftLegRotation(nbtList5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new EulerAngle(nbtList5));
-        NbtList nbtList6 = nbt.getList("RightLeg", 5);
-        this.setRightLegRotation(nbtList6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerAngle(nbtList6));
+    private void deserializePose(CompoundTag compoundTag) {
+        ListTag listTag = compoundTag.getList("Head", 5);
+        this.setHeadRotation(listTag.isEmpty() ? DEFAULT_HEAD_ROTATION : new EulerAngle(listTag));
+        ListTag listTag2 = compoundTag.getList("Body", 5);
+        this.setBodyRotation(listTag2.isEmpty() ? DEFAULT_BODY_ROTATION : new EulerAngle(listTag2));
+        ListTag listTag3 = compoundTag.getList("LeftArm", 5);
+        this.setLeftArmRotation(listTag3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new EulerAngle(listTag3));
+        ListTag listTag4 = compoundTag.getList("RightArm", 5);
+        this.setRightArmRotation(listTag4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new EulerAngle(listTag4));
+        ListTag listTag5 = compoundTag.getList("LeftLeg", 5);
+        this.setLeftLegRotation(listTag5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new EulerAngle(listTag5));
+        ListTag listTag6 = compoundTag.getList("RightLeg", 5);
+        this.setRightLegRotation(listTag6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerAngle(listTag6));
     }
 
-    private NbtCompound poseToNbt() {
-        NbtCompound nbtCompound = new NbtCompound();
+    private CompoundTag serializePose() {
+        CompoundTag compoundTag = new CompoundTag();
         if (!DEFAULT_HEAD_ROTATION.equals(this.headRotation)) {
-            nbtCompound.put("Head", this.headRotation.toNbt());
+            compoundTag.put("Head", this.headRotation.serialize());
         }
         if (!DEFAULT_BODY_ROTATION.equals(this.bodyRotation)) {
-            nbtCompound.put("Body", this.bodyRotation.toNbt());
+            compoundTag.put("Body", this.bodyRotation.serialize());
         }
         if (!DEFAULT_LEFT_ARM_ROTATION.equals(this.leftArmRotation)) {
-            nbtCompound.put("LeftArm", this.leftArmRotation.toNbt());
+            compoundTag.put("LeftArm", this.leftArmRotation.serialize());
         }
         if (!DEFAULT_RIGHT_ARM_ROTATION.equals(this.rightArmRotation)) {
-            nbtCompound.put("RightArm", this.rightArmRotation.toNbt());
+            compoundTag.put("RightArm", this.rightArmRotation.serialize());
         }
         if (!DEFAULT_LEFT_LEG_ROTATION.equals(this.leftLegRotation)) {
-            nbtCompound.put("LeftLeg", this.leftLegRotation.toNbt());
+            compoundTag.put("LeftLeg", this.leftLegRotation.serialize());
         }
         if (!DEFAULT_RIGHT_LEG_ROTATION.equals(this.rightLegRotation)) {
-            nbtCompound.put("RightLeg", this.rightLegRotation.toNbt());
+            compoundTag.put("RightLeg", this.rightLegRotation.serialize());
         }
-        return nbtCompound;
+        return compoundTag;
     }
 
     @Override
@@ -305,7 +305,7 @@ extends LivingEntity {
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d hitPos, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (this.isMarker() || itemStack.getItem() == Items.NAME_TAG) {
+        if (this.isMarker() || itemStack.isOf(Items.NAME_TAG)) {
             return ActionResult.PASS;
         }
         if (player.isSpectator()) {
@@ -340,10 +340,10 @@ extends LivingEntity {
      * Enabled force condition propagation
      * Lifted jumps to return sites
      */
-    private EquipmentSlot slotFromPosition(Vec3d hitPos) {
+    private EquipmentSlot slotFromPosition(Vec3d vec3d) {
         EquipmentSlot equipmentSlot = EquipmentSlot.MAINHAND;
         boolean bl = this.isSmall();
-        double d = bl ? hitPos.y * 2.0 : hitPos.y;
+        double d = bl ? vec3d.y * 2.0 : vec3d.y;
         EquipmentSlot equipmentSlot2 = EquipmentSlot.FEET;
         if (d >= 0.1) {
             double d2 = bl ? 0.8 : 0.45;
@@ -384,7 +384,7 @@ extends LivingEntity {
         if (itemStack.isEmpty() && (this.disabledSlots & 1 << slot.getArmorStandSlotId() + 16) != 0) {
             return false;
         }
-        if (player.abilities.creativeMode && itemStack.isEmpty() && !stack.isEmpty()) {
+        if (player.getAbilities().creativeMode && itemStack.isEmpty() && !stack.isEmpty()) {
             ItemStack itemStack2 = stack.copy();
             itemStack2.setCount(1);
             this.equipStack(slot, itemStack2);
@@ -407,11 +407,11 @@ extends LivingEntity {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (this.world.isClient || this.removed) {
+        if (this.world.isClient || this.isRemoved()) {
             return false;
         }
         if (DamageSource.OUT_OF_WORLD.equals(source)) {
-            this.remove();
+            this.kill();
             return false;
         }
         if (this.isInvulnerableTo(source) || this.invisible || this.isMarker()) {
@@ -419,7 +419,7 @@ extends LivingEntity {
         }
         if (source.isExplosive()) {
             this.onBreak(source);
-            this.remove();
+            this.kill();
             return false;
         }
         if (DamageSource.IN_FIRE.equals(source)) {
@@ -440,20 +440,20 @@ extends LivingEntity {
         if (!bl3 && !bl) {
             return false;
         }
-        if (source.getAttacker() instanceof PlayerEntity && !((PlayerEntity)source.getAttacker()).abilities.allowModifyWorld) {
+        if (source.getAttacker() instanceof PlayerEntity && !((PlayerEntity)source.getAttacker()).getAbilities().allowModifyWorld) {
             return false;
         }
         if (source.isSourceCreativePlayer()) {
             this.playBreakSound();
             this.spawnBreakParticles();
-            this.remove();
+            this.kill();
             return bl2;
         }
         long l = this.world.getTime();
         if (l - this.lastHitTime <= 5L || bl) {
             this.breakAndDropItem(source);
             this.spawnBreakParticles();
-            this.remove();
+            this.kill();
         } else {
             this.world.sendEntityStatus(this, (byte)32);
             this.lastHitTime = l;
@@ -494,7 +494,7 @@ extends LivingEntity {
         float f = this.getHealth();
         if ((f -= amount) <= 0.5f) {
             this.onBreak(damageSource);
-            this.remove();
+            this.kill();
         } else {
             this.setHealth(f);
         }
@@ -554,9 +554,9 @@ extends LivingEntity {
     }
 
     @Override
-    public void setBodyYaw(float bodyYaw) {
-        this.prevBodyYaw = this.prevYaw = bodyYaw;
-        this.prevHeadYaw = this.headYaw = bodyYaw;
+    public void setYaw(float yaw) {
+        this.prevBodyYaw = this.prevYaw = yaw;
+        this.prevHeadYaw = this.headYaw = yaw;
     }
 
     @Override
@@ -612,7 +612,7 @@ extends LivingEntity {
 
     @Override
     public void kill() {
-        this.remove();
+        this.remove(Entity.RemovalReason.KILLED);
     }
 
     @Override
@@ -665,34 +665,34 @@ extends LivingEntity {
         return value;
     }
 
-    public void setHeadRotation(EulerAngle angle) {
-        this.headRotation = angle;
-        this.dataTracker.set(TRACKER_HEAD_ROTATION, angle);
+    public void setHeadRotation(EulerAngle eulerAngle) {
+        this.headRotation = eulerAngle;
+        this.dataTracker.set(TRACKER_HEAD_ROTATION, eulerAngle);
     }
 
-    public void setBodyRotation(EulerAngle angle) {
-        this.bodyRotation = angle;
-        this.dataTracker.set(TRACKER_BODY_ROTATION, angle);
+    public void setBodyRotation(EulerAngle eulerAngle) {
+        this.bodyRotation = eulerAngle;
+        this.dataTracker.set(TRACKER_BODY_ROTATION, eulerAngle);
     }
 
-    public void setLeftArmRotation(EulerAngle angle) {
-        this.leftArmRotation = angle;
-        this.dataTracker.set(TRACKER_LEFT_ARM_ROTATION, angle);
+    public void setLeftArmRotation(EulerAngle eulerAngle) {
+        this.leftArmRotation = eulerAngle;
+        this.dataTracker.set(TRACKER_LEFT_ARM_ROTATION, eulerAngle);
     }
 
-    public void setRightArmRotation(EulerAngle angle) {
-        this.rightArmRotation = angle;
-        this.dataTracker.set(TRACKER_RIGHT_ARM_ROTATION, angle);
+    public void setRightArmRotation(EulerAngle eulerAngle) {
+        this.rightArmRotation = eulerAngle;
+        this.dataTracker.set(TRACKER_RIGHT_ARM_ROTATION, eulerAngle);
     }
 
-    public void setLeftLegRotation(EulerAngle angle) {
-        this.leftLegRotation = angle;
-        this.dataTracker.set(TRACKER_LEFT_LEG_ROTATION, angle);
+    public void setLeftLegRotation(EulerAngle eulerAngle) {
+        this.leftLegRotation = eulerAngle;
+        this.dataTracker.set(TRACKER_LEFT_LEG_ROTATION, eulerAngle);
     }
 
-    public void setRightLegRotation(EulerAngle angle) {
-        this.rightLegRotation = angle;
-        this.dataTracker.set(TRACKER_RIGHT_LEG_ROTATION, angle);
+    public void setRightLegRotation(EulerAngle eulerAngle) {
+        this.rightLegRotation = eulerAngle;
+        this.dataTracker.set(TRACKER_RIGHT_LEG_ROTATION, eulerAngle);
     }
 
     public EulerAngle getHeadRotation() {
@@ -792,9 +792,9 @@ extends LivingEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public Vec3d getClientCameraPosVec(float tickDelta) {
+    public Vec3d method_31166(float tickDelta) {
         if (this.isMarker()) {
-            Box box = this.method_31168(false).getBoxAt(this.getPos());
+            Box box = this.method_31168(false).method_30757(this.getPos());
             BlockPos blockPos = this.getBlockPos();
             int i = Integer.MIN_VALUE;
             for (BlockPos blockPos2 : BlockPos.iterate(new BlockPos(box.minX, box.minY, box.minZ), new BlockPos(box.maxX, box.maxY, box.maxZ))) {
@@ -808,7 +808,13 @@ extends LivingEntity {
             }
             return Vec3d.ofCenter(blockPos);
         }
-        return super.getClientCameraPosVec(tickDelta);
+        return super.method_31166(tickDelta);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public ItemStack getPickBlockStack() {
+        return new ItemStack(Items.ARMOR_STAND);
     }
 }
 

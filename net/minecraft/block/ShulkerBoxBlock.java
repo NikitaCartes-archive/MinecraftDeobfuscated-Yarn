@@ -15,6 +15,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
@@ -30,7 +32,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -70,8 +72,14 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new ShulkerBoxBlockEntity(this.color);
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new ShulkerBoxBlockEntity(this.color, pos, state);
+    }
+
+    @Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return ShulkerBoxBlock.checkType(type, BlockEntityType.SHULKER_BOX, ShulkerBoxBlockEntity::tick);
     }
 
     @Override
@@ -124,9 +132,9 @@ extends BlockWithEntity {
             ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
             if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
                 ItemStack itemStack = ShulkerBoxBlock.getItemStack(this.getColor());
-                NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
-                if (!nbtCompound.isEmpty()) {
-                    itemStack.putSubTag("BlockEntityTag", nbtCompound);
+                CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
+                if (!compoundTag.isEmpty()) {
+                    itemStack.putSubTag("BlockEntityTag", compoundTag);
                 }
                 if (shulkerBoxBlockEntity.hasCustomName()) {
                     itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
@@ -179,14 +187,14 @@ extends BlockWithEntity {
     @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
         super.appendTooltip(stack, world, tooltip, options);
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
-        if (nbtCompound != null) {
-            if (nbtCompound.contains("LootTable", 8)) {
+        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
+        if (compoundTag != null) {
+            if (compoundTag.contains("LootTable", 8)) {
                 tooltip.add(new LiteralText("???????"));
             }
-            if (nbtCompound.contains("Items", 9)) {
+            if (compoundTag.contains("Items", 9)) {
                 DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
-                Inventories.readNbt(nbtCompound, defaultedList);
+                Inventories.fromTag(compoundTag, defaultedList);
                 int i = 0;
                 int j = 0;
                 for (ItemStack itemStack : defaultedList) {
@@ -234,9 +242,9 @@ extends BlockWithEntity {
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         ItemStack itemStack = super.getPickStack(world, pos, state);
         ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)world.getBlockEntity(pos);
-        NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
-        if (!nbtCompound.isEmpty()) {
-            itemStack.putSubTag("BlockEntityTag", nbtCompound);
+        CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
+        if (!compoundTag.isEmpty()) {
+            itemStack.putSubTag("BlockEntityTag", compoundTag);
         }
         return itemStack;
     }
@@ -248,7 +256,6 @@ extends BlockWithEntity {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public static DyeColor getColor(Block block) {
         if (block instanceof ShulkerBoxBlock) {
             return ((ShulkerBoxBlock)block).getColor();

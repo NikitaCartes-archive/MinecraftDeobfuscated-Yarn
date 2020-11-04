@@ -6,8 +6,8 @@ package net.minecraft.client.gui.screen.pack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -61,37 +61,37 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
     @Environment(value=EnvType.CLIENT)
     public static class ResourcePackEntry
     extends AlwaysSelectedEntryListWidget.Entry<ResourcePackEntry> {
-        private PackListWidget widget;
+        private final PackListWidget widget;
         protected final MinecraftClient client;
         protected final Screen screen;
         private final ResourcePackOrganizer.Pack pack;
-        private final OrderedText displayName;
-        private final MultilineText description;
-        private final OrderedText incompatibleText;
-        private final MultilineText compatibilityNotificationText;
+        private final OrderedText field_26590;
+        private final class_5489 field_26591;
+        private final OrderedText field_26784;
+        private final class_5489 field_26785;
 
-        public ResourcePackEntry(MinecraftClient client, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
-            this.client = client;
+        public ResourcePackEntry(MinecraftClient minecraftClient, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
+            this.client = minecraftClient;
             this.screen = screen;
             this.pack = pack;
             this.widget = widget;
-            this.displayName = ResourcePackEntry.trimTextToWidth(client, pack.getDisplayName());
-            this.description = ResourcePackEntry.method_31230(client, pack.getDecoratedDescription());
-            this.incompatibleText = ResourcePackEntry.trimTextToWidth(client, INCOMPATIBLE);
-            this.compatibilityNotificationText = ResourcePackEntry.method_31230(client, pack.getCompatibility().getNotification());
+            this.field_26590 = ResourcePackEntry.method_31229(minecraftClient, pack.getDisplayName());
+            this.field_26591 = ResourcePackEntry.method_31230(minecraftClient, pack.getDecoratedDescription());
+            this.field_26784 = ResourcePackEntry.method_31229(minecraftClient, INCOMPATIBLE);
+            this.field_26785 = ResourcePackEntry.method_31230(minecraftClient, pack.getCompatibility().getNotification());
         }
 
-        private static OrderedText trimTextToWidth(MinecraftClient client, Text text) {
-            int i = client.textRenderer.getWidth(text);
+        private static OrderedText method_31229(MinecraftClient minecraftClient, Text text) {
+            int i = minecraftClient.textRenderer.getWidth(text);
             if (i > 157) {
-                StringVisitable stringVisitable = StringVisitable.concat(client.textRenderer.trimToWidth(text, 157 - client.textRenderer.getWidth("...")), StringVisitable.plain("..."));
+                StringVisitable stringVisitable = StringVisitable.concat(minecraftClient.textRenderer.trimToWidth(text, 157 - minecraftClient.textRenderer.getWidth("...")), StringVisitable.plain("..."));
                 return Language.getInstance().reorder(stringVisitable);
             }
             return text.asOrderedText();
         }
 
-        private static MultilineText method_31230(MinecraftClient minecraftClient, Text text) {
-            return MultilineText.create(minecraftClient.textRenderer, (StringVisitable)text, 157, 2);
+        private static class_5489 method_31230(MinecraftClient minecraftClient, Text text) {
+            return class_5489.method_30891(minecraftClient.textRenderer, text, 157, 2);
         }
 
         @Override
@@ -104,8 +104,8 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             this.client.getTextureManager().bindTexture(this.pack.method_30286());
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
-            OrderedText orderedText = this.displayName;
-            MultilineText multilineText = this.description;
+            OrderedText orderedText = this.field_26590;
+            class_5489 lv = this.field_26591;
             if (this.isSelectable() && (this.client.options.touchscreen || hovered)) {
                 this.client.getTextureManager().bindTexture(RESOURCE_PACKS_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
@@ -113,8 +113,8 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 int i = mouseX - x;
                 int j = mouseY - y;
                 if (!this.pack.getCompatibility().isCompatible()) {
-                    orderedText = this.incompatibleText;
-                    multilineText = this.compatibilityNotificationText;
+                    orderedText = this.field_26784;
+                    lv = this.field_26785;
                 }
                 if (this.pack.canBeEnabled()) {
                     if (i < 32) {
@@ -147,7 +147,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 }
             }
             this.client.textRenderer.drawWithShadow(matrices, orderedText, (float)(x + 32 + 2), (float)(y + 1), 0xFFFFFF);
-            multilineText.drawWithShadow(matrices, x + 32 + 2, y + 12, 10, 0x808080);
+            lv.method_30893(matrices, x + 32 + 2, y + 12, 10, 0x808080);
         }
 
         private boolean isSelectable() {

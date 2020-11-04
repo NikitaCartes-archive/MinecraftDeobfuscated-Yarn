@@ -16,6 +16,7 @@ import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
@@ -33,7 +34,7 @@ extends PlayerEntity {
     public final ClientWorld clientWorld;
 
     public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile) {
-        super(world, world.getSpawnPos(), world.method_30671(), profile);
+        super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
         this.clientWorld = world;
     }
 
@@ -108,18 +109,23 @@ extends PlayerEntity {
 
     public float getSpeed() {
         float f = 1.0f;
-        if (this.abilities.flying) {
+        if (this.getAbilities().flying) {
             f *= 1.1f;
         }
-        f = (float)((double)f * ((this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) / (double)this.abilities.getWalkSpeed() + 1.0) / 2.0));
-        if (this.abilities.getWalkSpeed() == 0.0f || Float.isNaN(f) || Float.isInfinite(f)) {
+        f = (float)((double)f * ((this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) / (double)this.getAbilities().getWalkSpeed() + 1.0) / 2.0));
+        if (this.getAbilities().getWalkSpeed() == 0.0f || Float.isNaN(f) || Float.isInfinite(f)) {
             f = 1.0f;
         }
-        if (this.isUsingItem() && this.getActiveItem().getItem() == Items.BOW) {
-            int i = this.getItemUseTime();
-            float g = (float)i / 20.0f;
-            g = g > 1.0f ? 1.0f : (g *= g);
-            f *= 1.0f - g * 0.15f;
+        ItemStack itemStack = this.getActiveItem();
+        if (this.isUsingItem()) {
+            if (itemStack.isOf(Items.BOW)) {
+                int i = this.getItemUseTime();
+                float g = (float)i / 20.0f;
+                g = g > 1.0f ? 1.0f : (g *= g);
+                f *= 1.0f - g * 0.15f;
+            } else if (MinecraftClient.getInstance().options.getPerspective().isFirstPerson() && this.isUsingSpyglass()) {
+                return 0.1f;
+            }
         }
         return MathHelper.lerp(MinecraftClient.getInstance().options.fovEffectScale, 1.0f, f);
     }

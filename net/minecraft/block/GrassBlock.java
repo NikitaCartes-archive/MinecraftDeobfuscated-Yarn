@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.FlowerFeature;
 
 public class GrassBlock
@@ -52,15 +53,18 @@ implements Fertilizable {
             if (random.nextInt(8) == 0) {
                 List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).getGenerationSettings().getFlowerFeatures();
                 if (list.isEmpty()) continue;
-                ConfiguredFeature<?, ?> configuredFeature = list.get(0);
-                FlowerFeature flowerFeature = (FlowerFeature)configuredFeature.feature;
-                blockState3 = flowerFeature.getFlowerState(random, blockPos2, configuredFeature.getConfig());
+                blockState3 = GrassBlock.method_31647(random, blockPos2, list.get(0));
             } else {
                 blockState3 = blockState;
             }
             if (!blockState3.canPlaceAt(world, blockPos2)) continue;
             world.setBlockState(blockPos2, blockState3, 3);
         }
+    }
+
+    private static <U extends FeatureConfig> BlockState method_31647(Random random, BlockPos blockPos, ConfiguredFeature<U, ?> configuredFeature) {
+        FlowerFeature flowerFeature = (FlowerFeature)configuredFeature.feature;
+        return flowerFeature.getFlowerState(random, blockPos, configuredFeature.getConfig());
     }
 }
 

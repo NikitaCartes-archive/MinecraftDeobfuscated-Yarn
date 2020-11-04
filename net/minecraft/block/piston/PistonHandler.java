@@ -6,7 +6,6 @@ package net.minecraft.block.piston;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PistonBlock;
@@ -55,30 +54,29 @@ public class PistonHandler {
         }
         for (int i = 0; i < this.movedBlocks.size(); ++i) {
             BlockPos blockPos = this.movedBlocks.get(i);
-            if (!PistonHandler.isBlockSticky(this.world.getBlockState(blockPos).getBlock()) || this.tryMoveAdjacentBlock(blockPos)) continue;
+            if (!PistonHandler.isBlockSticky(this.world.getBlockState(blockPos)) || this.canMoveAdjacentBlock(blockPos)) continue;
             return false;
         }
         return true;
     }
 
-    private static boolean isBlockSticky(Block block) {
-        return block == Blocks.SLIME_BLOCK || block == Blocks.HONEY_BLOCK;
+    private static boolean isBlockSticky(BlockState blockState) {
+        return blockState.isOf(Blocks.SLIME_BLOCK) || blockState.isOf(Blocks.HONEY_BLOCK);
     }
 
-    private static boolean isAdjacentBlockStuck(Block block, Block block2) {
-        if (block == Blocks.HONEY_BLOCK && block2 == Blocks.SLIME_BLOCK) {
+    private static boolean isAdjacentBlockStuck(BlockState blockState, BlockState blockState2) {
+        if (blockState.isOf(Blocks.HONEY_BLOCK) && blockState2.isOf(Blocks.SLIME_BLOCK)) {
             return false;
         }
-        if (block == Blocks.SLIME_BLOCK && block2 == Blocks.HONEY_BLOCK) {
+        if (blockState.isOf(Blocks.SLIME_BLOCK) && blockState2.isOf(Blocks.HONEY_BLOCK)) {
             return false;
         }
-        return PistonHandler.isBlockSticky(block) || PistonHandler.isBlockSticky(block2);
+        return PistonHandler.isBlockSticky(blockState) || PistonHandler.isBlockSticky(blockState2);
     }
 
     private boolean tryMove(BlockPos pos, Direction dir) {
         int k;
         BlockState blockState = this.world.getBlockState(pos);
-        Block block = blockState.getBlock();
         if (blockState.isAir()) {
             return true;
         }
@@ -95,12 +93,11 @@ public class PistonHandler {
         if (i + this.movedBlocks.size() > 12) {
             return false;
         }
-        while (PistonHandler.isBlockSticky(block)) {
+        while (PistonHandler.isBlockSticky(blockState)) {
             BlockPos blockPos = pos.offset(this.motionDirection.getOpposite(), i);
-            Block block2 = block;
+            BlockState blockState2 = blockState;
             blockState = this.world.getBlockState(blockPos);
-            block = blockState.getBlock();
-            if (blockState.isAir() || !PistonHandler.isAdjacentBlockStuck(block2, block) || !PistonBlock.isMovable(blockState, this.world, blockPos, this.motionDirection, false, this.motionDirection.getOpposite()) || blockPos.equals(this.posFrom)) break;
+            if (blockState.isAir() || !PistonHandler.isAdjacentBlockStuck(blockState2, blockState) || !PistonBlock.isMovable(blockState, this.world, blockPos, this.motionDirection, false, this.motionDirection.getOpposite()) || blockPos.equals(this.posFrom)) break;
             if (++i + this.movedBlocks.size() <= 12) continue;
             return false;
         }
@@ -117,7 +114,7 @@ public class PistonHandler {
                 this.setMovedBlocks(j, l);
                 for (int m = 0; m <= l + j; ++m) {
                     BlockPos blockPos3 = this.movedBlocks.get(m);
-                    if (!PistonHandler.isBlockSticky(this.world.getBlockState(blockPos3).getBlock()) || this.tryMoveAdjacentBlock(blockPos3)) continue;
+                    if (!PistonHandler.isBlockSticky(this.world.getBlockState(blockPos3)) || this.canMoveAdjacentBlock(blockPos3)) continue;
                     return false;
                 }
                 return true;
@@ -155,12 +152,12 @@ public class PistonHandler {
         this.movedBlocks.addAll(list3);
     }
 
-    private boolean tryMoveAdjacentBlock(BlockPos pos) {
+    private boolean canMoveAdjacentBlock(BlockPos pos) {
         BlockState blockState = this.world.getBlockState(pos);
         for (Direction direction : Direction.values()) {
             BlockPos blockPos;
             BlockState blockState2;
-            if (direction.getAxis() == this.motionDirection.getAxis() || !PistonHandler.isAdjacentBlockStuck((blockState2 = this.world.getBlockState(blockPos = pos.offset(direction))).getBlock(), blockState.getBlock()) || this.tryMove(blockPos, direction)) continue;
+            if (direction.getAxis() == this.motionDirection.getAxis() || !PistonHandler.isAdjacentBlockStuck(blockState2 = this.world.getBlockState(blockPos = pos.offset(direction)), blockState) || this.tryMove(blockPos, direction)) continue;
             return false;
         }
         return true;

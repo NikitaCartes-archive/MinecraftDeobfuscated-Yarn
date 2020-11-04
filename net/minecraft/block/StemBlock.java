@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBlock;
@@ -18,7 +19,6 @@ import net.minecraft.block.PlantBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -29,7 +29,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class StemBlock
 extends PlantBlock
@@ -37,10 +36,12 @@ implements Fertilizable {
     public static final IntProperty AGE = Properties.AGE_7;
     protected static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 2.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 4.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 6.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 8.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 10.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 12.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 14.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0)};
     private final GourdBlock gourdBlock;
+    private final Supplier<Item> field_27205;
 
-    protected StemBlock(GourdBlock gourdBlock, AbstractBlock.Settings settings) {
+    protected StemBlock(GourdBlock gourdBlock, Supplier<Item> supplier, AbstractBlock.Settings settings) {
         super(settings);
         this.gourdBlock = gourdBlock;
+        this.field_27205 = supplier;
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
     }
 
@@ -77,23 +78,10 @@ implements Fertilizable {
         }
     }
 
-    @Nullable
-    @Environment(value=EnvType.CLIENT)
-    protected Item getPickItem() {
-        if (this.gourdBlock == Blocks.PUMPKIN) {
-            return Items.PUMPKIN_SEEDS;
-        }
-        if (this.gourdBlock == Blocks.MELON) {
-            return Items.MELON_SEEDS;
-        }
-        return null;
-    }
-
     @Override
     @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        Item item = this.getPickItem();
-        return item == null ? ItemStack.EMPTY : new ItemStack(item);
+        return new ItemStack(this.field_27205.get());
     }
 
     @Override

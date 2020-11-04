@@ -6,8 +6,8 @@ package net.minecraft.block.entity;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.types.Type;
 import java.util.Set;
-import java.util.function.Supplier;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BarrelBlockEntity;
@@ -88,36 +88,36 @@ public class BlockEntityType<T extends BlockEntity> {
     public static final BlockEntityType<JigsawBlockEntity> JIGSAW = BlockEntityType.create("jigsaw", Builder.create(JigsawBlockEntity::new, Blocks.JIGSAW));
     public static final BlockEntityType<CampfireBlockEntity> CAMPFIRE = BlockEntityType.create("campfire", Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE));
     public static final BlockEntityType<BeehiveBlockEntity> BEEHIVE = BlockEntityType.create("beehive", Builder.create(BeehiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE));
-    private final Supplier<? extends T> supplier;
+    private final BlockEntityFactory<? extends T> factory;
     private final Set<Block> blocks;
     private final Type<?> type;
 
     @Nullable
-    public static Identifier getId(BlockEntityType<?> type) {
-        return Registry.BLOCK_ENTITY_TYPE.getId(type);
+    public static Identifier getId(BlockEntityType<?> blockEntityType) {
+        return Registry.BLOCK_ENTITY_TYPE.getId(blockEntityType);
     }
 
-    private static <T extends BlockEntity> BlockEntityType<T> create(String id, Builder<T> builder) {
+    private static <T extends BlockEntity> BlockEntityType<T> create(String string, Builder<T> builder) {
         if (((Builder)builder).blocks.isEmpty()) {
-            LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", (Object)id);
+            LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", (Object)string);
         }
-        Type<?> type = Util.getChoiceType(TypeReferences.BLOCK_ENTITY, id);
-        return Registry.register(Registry.BLOCK_ENTITY_TYPE, id, builder.build(type));
+        Type<?> type = Util.getChoiceType(TypeReferences.BLOCK_ENTITY, string);
+        return Registry.register(Registry.BLOCK_ENTITY_TYPE, string, builder.build(type));
     }
 
-    public BlockEntityType(Supplier<? extends T> supplier, Set<Block> blocks, Type<?> type) {
-        this.supplier = supplier;
+    public BlockEntityType(BlockEntityFactory<? extends T> factory, Set<Block> blocks, Type<?> type) {
+        this.factory = factory;
         this.blocks = blocks;
         this.type = type;
     }
 
     @Nullable
-    public T instantiate() {
-        return (T)((BlockEntity)this.supplier.get());
+    public T instantiate(BlockPos blockPos, BlockState blockState) {
+        return this.factory.create(blockPos, blockState);
     }
 
-    public boolean supports(Block block) {
-        return this.blocks.contains(block);
+    public boolean supports(BlockState state) {
+        return this.blocks.contains(state.getBlock());
     }
 
     @Nullable
@@ -130,21 +130,26 @@ public class BlockEntityType<T extends BlockEntity> {
     }
 
     public static final class Builder<T extends BlockEntity> {
-        private final Supplier<? extends T> supplier;
+        private final BlockEntityFactory<? extends T> factory;
         private final Set<Block> blocks;
 
-        private Builder(Supplier<? extends T> supplier, Set<Block> blocks) {
-            this.supplier = supplier;
+        private Builder(BlockEntityFactory<? extends T> factory, Set<Block> blocks) {
+            this.factory = factory;
             this.blocks = blocks;
         }
 
-        public static <T extends BlockEntity> Builder<T> create(Supplier<? extends T> supplier, Block ... blocks) {
-            return new Builder<T>(supplier, ImmutableSet.copyOf(blocks));
+        public static <T extends BlockEntity> Builder<T> create(BlockEntityFactory<? extends T> factory, Block ... blocks) {
+            return new Builder<T>(factory, ImmutableSet.copyOf(blocks));
         }
 
         public BlockEntityType<T> build(Type<?> type) {
-            return new BlockEntityType<T>(this.supplier, this.blocks, type);
+            return new BlockEntityType<T>(this.factory, this.blocks, type);
         }
+    }
+
+    @FunctionalInterface
+    static interface BlockEntityFactory<T extends BlockEntity> {
+        public T create(BlockPos var1, BlockState var2);
     }
 }
 

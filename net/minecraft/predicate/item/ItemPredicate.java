@@ -18,7 +18,7 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.NbtPredicate;
@@ -72,10 +72,10 @@ public class ItemPredicate {
         if (this == ANY) {
             return true;
         }
-        if (this.tag != null && !this.tag.contains(stack.getItem())) {
+        if (this.tag != null && !stack.isIn(this.tag)) {
             return false;
         }
-        if (this.item != null && stack.getItem() != this.item) {
+        if (this.item != null && !stack.isOf(this.item)) {
             return false;
         }
         if (!this.count.test(stack.getCount())) {
@@ -91,14 +91,14 @@ public class ItemPredicate {
             return false;
         }
         if (this.enchantments.length > 0) {
-            map = EnchantmentHelper.fromNbt(stack.getEnchantments());
+            map = EnchantmentHelper.fromTag(stack.getEnchantments());
             for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
                 if (enchantmentPredicate.test(map)) continue;
                 return false;
             }
         }
         if (this.storedEnchantments.length > 0) {
-            map = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(stack));
+            map = EnchantmentHelper.fromTag(EnchantedBookItem.getEnchantmentTag(stack));
             for (EnchantmentPredicate enchantmentPredicate : this.storedEnchantments) {
                 if (enchantmentPredicate.test(map)) continue;
                 return false;
@@ -219,7 +219,7 @@ public class ItemPredicate {
             return this;
         }
 
-        public Builder nbt(NbtCompound nbt) {
+        public Builder nbt(CompoundTag nbt) {
             this.nbt = new NbtPredicate(nbt);
             return this;
         }

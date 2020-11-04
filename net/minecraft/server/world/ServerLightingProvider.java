@@ -63,7 +63,7 @@ implements AutoCloseable {
     @Override
     public void checkBlock(BlockPos pos) {
         BlockPos blockPos = pos.toImmutable();
-        this.enqueue(pos.getX() >> 4, pos.getZ() >> 4, Stage.POST_UPDATE, Util.debugRunnable(() -> super.checkBlock(blockPos), () -> "checkBlock " + blockPos));
+        this.enqueue(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()), Stage.POST_UPDATE, Util.debugRunnable(() -> super.checkBlock(blockPos), () -> "checkBlock " + blockPos));
     }
 
     protected void updateChunkStatus(ChunkPos pos) {
@@ -71,11 +71,11 @@ implements AutoCloseable {
             int i;
             super.setRetainData(pos, false);
             super.setColumnEnabled(pos, false);
-            for (i = -1; i < 17; ++i) {
+            for (i = this.method_31929(); i < this.method_31930(); ++i) {
                 super.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
                 super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
             }
-            for (i = 0; i < 16; ++i) {
+            for (i = this.field_27339.getBottomSectionLimit(); i < this.field_27339.getTopSectionLimit(); ++i) {
                 super.setSectionStatus(ChunkSectionPos.from(pos, i), true);
             }
         }, () -> "updateChunkStatus " + pos + " " + true));
@@ -119,10 +119,11 @@ implements AutoCloseable {
         chunk.setLightOn(false);
         this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> {
             ChunkSection[] chunkSections = chunk.getSectionArray();
-            for (int i = 0; i < 16; ++i) {
+            for (int i = 0; i < chunk.getSectionCount(); ++i) {
                 ChunkSection chunkSection = chunkSections[i];
                 if (ChunkSection.isEmpty(chunkSection)) continue;
-                super.setSectionStatus(ChunkSectionPos.from(chunkPos, i), false);
+                int j = this.field_27339.getSection(i);
+                super.setSectionStatus(ChunkSectionPos.from(chunkPos, j), false);
             }
             super.setColumnEnabled(chunkPos, true);
             if (!excludeBlocks) {

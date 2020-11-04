@@ -4,8 +4,8 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import net.minecraft.class_5532;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
@@ -36,7 +36,7 @@ extends Goal {
         if (this.target.squaredDistanceTo(this.mob) > (double)(this.maxDistance * this.maxDistance)) {
             return false;
         }
-        Vec3d vec3d = TargetFinder.findTargetTowards(this.mob, 16, 7, this.target.getPos());
+        Vec3d vec3d = class_5532.method_31512(this.mob, 16, 7, this.target.getPos(), 1.5707963705062866);
         if (vec3d == null) {
             return false;
         }

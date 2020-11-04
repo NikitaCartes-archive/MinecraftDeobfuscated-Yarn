@@ -191,7 +191,7 @@ public class LootTable {
                 if (identifier != null) {
                     jsonObject.addProperty("type", identifier.toString());
                 } else {
-                    LOGGER.warn("Failed to find id for param set " + lootTable.type);
+                    LOGGER.warn("Failed to find id for param set {}", (Object)lootTable.type);
                 }
             }
             if (lootTable.pools.length > 0) {

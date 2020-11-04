@@ -40,10 +40,9 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -63,10 +62,6 @@ import org.jetbrains.annotations.Nullable;
 public class IronGolemEntity
 extends GolemEntity
 implements Angerable {
-    /**
-     * The tracked flags of iron golems. Only has the {@code 1} bit for whether a
-     * golem is {@linkplain #isPlayerCreated() created by a player}.
-     */
     protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
     private int attackTicksLeft;
     private int lookingAtVillagerTicksLeft;
@@ -151,17 +146,17 @@ implements Angerable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putBoolean("PlayerCreated", this.isPlayerCreated());
-        this.writeAngerToNbt(nbt);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putBoolean("PlayerCreated", this.isPlayerCreated());
+        this.angerToTag(tag);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.setPlayerCreated(nbt.getBoolean("PlayerCreated"));
-        this.angerFromTag((ServerWorld)this.world, nbt);
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
+        this.angerFromTag(this.world, tag);
     }
 
     @Override
@@ -265,8 +260,7 @@ implements Angerable {
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        Item item = itemStack.getItem();
-        if (item != Items.IRON_INGOT) {
+        if (!itemStack.isOf(Items.IRON_INGOT)) {
             return ActionResult.PASS;
         }
         float f = this.getHealth();
@@ -276,7 +270,7 @@ implements Angerable {
         }
         float g = 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f;
         this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0f, g);
-        if (!player.abilities.creativeMode) {
+        if (!player.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }
         return ActionResult.success(this.world.isClient);

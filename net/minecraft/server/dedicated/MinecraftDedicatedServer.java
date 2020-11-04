@@ -109,7 +109,7 @@ implements DedicatedServer {
         thread.setDaemon(true);
         thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
         thread.start();
-        LOGGER.info("Starting minecraft server version " + SharedConstants.getGameVersion().getName());
+        LOGGER.info("Starting minecraft server version {}", (Object)SharedConstants.getGameVersion().getName());
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L) {
             LOGGER.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
         }
@@ -508,8 +508,8 @@ implements DedicatedServer {
         return this.rconCommandOutput.asString();
     }
 
-    public void setUseWhitelist(boolean useWhitelist) {
-        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.whiteList.set(this.getRegistryManager(), useWhitelist));
+    public void setUseWhitelist(boolean bl) {
+        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.whiteList.set(this.getRegistryManager(), bl));
     }
 
     @Override
@@ -545,6 +545,11 @@ implements DedicatedServer {
             return this.filterer.createFilterer(player.getGameProfile());
         }
         return null;
+    }
+
+    @Override
+    public boolean requireResourcePack() {
+        return this.propertiesLoader.getPropertiesHandler().requireResourcePack;
     }
 
     @Override

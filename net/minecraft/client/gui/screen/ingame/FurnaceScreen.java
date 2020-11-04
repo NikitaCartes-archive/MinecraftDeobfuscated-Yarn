@@ -17,8 +17,8 @@ public class FurnaceScreen
 extends AbstractFurnaceScreen<FurnaceScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/furnace.png");
 
-    public FurnaceScreen(FurnaceScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, new FurnaceRecipeBookScreen(), inventory, title, TEXTURE);
+    public FurnaceScreen(FurnaceScreenHandler container, PlayerInventory inventory, Text title) {
+        super(container, new FurnaceRecipeBookScreen(), inventory, title, TEXTURE);
     }
 }
 

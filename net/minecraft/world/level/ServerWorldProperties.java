@@ -7,6 +7,7 @@ import java.util.UUID;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.timer.Timer;
@@ -26,8 +27,8 @@ extends MutableWorldProperties {
     public int getThunderTime();
 
     @Override
-    default public void populateCrashReport(CrashReportSection reportSection) {
-        MutableWorldProperties.super.populateCrashReport(reportSection);
+    default public void populateCrashReport(CrashReportSection reportSection, HeightLimitView heightLimitView) {
+        MutableWorldProperties.super.populateCrashReport(reportSection, heightLimitView);
         reportSection.add("Level name", this::getLevelName);
         reportSection.add("Level game mode", () -> String.format("Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", this.getGameMode().getName(), this.getGameMode().getId(), this.isHardcore(), this.areCommandsAllowed()));
         reportSection.add("Level weather", () -> String.format("Rain time: %d (now: %b), thunder time: %d (now: %b)", this.getRainTime(), this.isRaining(), this.getThunderTime(), this.isThundering()));

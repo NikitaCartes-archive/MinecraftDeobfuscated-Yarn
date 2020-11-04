@@ -9,7 +9,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
@@ -29,14 +29,14 @@ extends SpecialCraftingRecipe {
         for (int j = 0; j < craftingInventory.size(); ++j) {
             ItemStack itemStack2 = craftingInventory.getStack(j);
             if (itemStack2.isEmpty()) continue;
-            if (itemStack2.getItem() == Items.WRITTEN_BOOK) {
+            if (itemStack2.isOf(Items.WRITTEN_BOOK)) {
                 if (!itemStack.isEmpty()) {
                     return false;
                 }
                 itemStack = itemStack2;
                 continue;
             }
-            if (itemStack2.getItem() == Items.WRITABLE_BOOK) {
+            if (itemStack2.isOf(Items.WRITABLE_BOOK)) {
                 ++i;
                 continue;
             }
@@ -52,14 +52,14 @@ extends SpecialCraftingRecipe {
         for (int j = 0; j < craftingInventory.size(); ++j) {
             ItemStack itemStack2 = craftingInventory.getStack(j);
             if (itemStack2.isEmpty()) continue;
-            if (itemStack2.getItem() == Items.WRITTEN_BOOK) {
+            if (itemStack2.isOf(Items.WRITTEN_BOOK)) {
                 if (!itemStack.isEmpty()) {
                     return ItemStack.EMPTY;
                 }
                 itemStack = itemStack2;
                 continue;
             }
-            if (itemStack2.getItem() == Items.WRITABLE_BOOK) {
+            if (itemStack2.isOf(Items.WRITABLE_BOOK)) {
                 ++i;
                 continue;
             }
@@ -69,14 +69,14 @@ extends SpecialCraftingRecipe {
             return ItemStack.EMPTY;
         }
         ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK, i);
-        NbtCompound nbtCompound = itemStack.getTag().copy();
-        nbtCompound.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
-        itemStack3.setTag(nbtCompound);
+        CompoundTag compoundTag = itemStack.getTag().copy();
+        compoundTag.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
+        itemStack3.setTag(compoundTag);
         return itemStack3;
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingInventory craftingInventory) {
+    public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
         for (int i = 0; i < defaultedList.size(); ++i) {
             ItemStack itemStack = craftingInventory.getStack(i);

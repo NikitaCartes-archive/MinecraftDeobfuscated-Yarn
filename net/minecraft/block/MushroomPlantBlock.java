@@ -4,10 +4,10 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.ShapeContext;
@@ -19,15 +19,16 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
 public class MushroomPlantBlock
 extends PlantBlock
 implements Fertilizable {
     protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
+    private final Supplier<ConfiguredFeature<?, ?>> field_27194;
 
-    public MushroomPlantBlock(AbstractBlock.Settings settings) {
+    public MushroomPlantBlock(AbstractBlock.Settings settings, Supplier<ConfiguredFeature<?, ?>> supplier) {
         super(settings);
+        this.field_27194 = supplier;
     }
 
     @Override
@@ -72,21 +73,12 @@ implements Fertilizable {
         return world.getBaseLightLevel(pos, 0) < 13 && this.canPlantOnTop(blockState, world, blockPos);
     }
 
-    public boolean trySpawningBigMushroom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
-        ConfiguredFeature<?, ?> configuredFeature;
-        world.removeBlock(pos, false);
-        if (this == Blocks.BROWN_MUSHROOM) {
-            configuredFeature = ConfiguredFeatures.HUGE_BROWN_MUSHROOM;
-        } else if (this == Blocks.RED_MUSHROOM) {
-            configuredFeature = ConfiguredFeatures.HUGE_RED_MUSHROOM;
-        } else {
-            world.setBlockState(pos, state, 3);
-            return false;
-        }
-        if (configuredFeature.generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
+    public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos pos, BlockState state, Random random) {
+        serverWorld.removeBlock(pos, false);
+        if (this.field_27194.get().generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
             return true;
         }
-        world.setBlockState(pos, state, 3);
+        serverWorld.setBlockState(pos, state, 3);
         return false;
     }
 

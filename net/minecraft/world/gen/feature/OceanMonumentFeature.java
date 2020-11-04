@@ -14,6 +14,7 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.StructureWorldAccess;
@@ -41,12 +42,12 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     @Override
     protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig) {
-        Set<Biome> set = biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 16);
+        Set<Biome> set = biomeSource.getBiomesInArea(ChunkSectionPos.method_32205(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.method_32205(j, 9), 16);
         for (Biome biome2 : set) {
             if (biome2.getGenerationSettings().hasStructureFeature(this)) continue;
             return false;
         }
-        Set<Biome> set2 = biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 29);
+        Set<Biome> set2 = biomeSource.getBiomesInArea(ChunkSectionPos.method_32205(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.method_32205(j, 9), 29);
         for (Biome biome3 : set2) {
             if (biome3.getCategory() == Biome.Category.OCEAN || biome3.getCategory() == Biome.Category.RIVER) continue;
             return false;
@@ -78,8 +79,8 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         private void method_16588(int chunkX, int chunkZ) {
-            int i = chunkX * 16 - 29;
-            int j = chunkZ * 16 - 29;
+            int i = ChunkSectionPos.getBlockCoord(chunkX) - 29;
+            int j = ChunkSectionPos.getBlockCoord(chunkZ) - 29;
             Direction direction = Direction.Type.HORIZONTAL.random(this.random);
             this.children.add(new OceanMonumentGenerator.Base(this.random, i, j, direction));
             this.setBoundingBoxFromChildren();

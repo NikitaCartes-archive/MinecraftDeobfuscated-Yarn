@@ -29,10 +29,9 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -97,7 +96,7 @@ extends MerchantEntity {
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
+        if (!itemStack.isOf(Items.VILLAGER_SPAWN_EGG) && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
             if (hand == Hand.MAIN_HAND) {
                 player.incrementStat(Stats.TALKED_TO_VILLAGER);
             }
@@ -131,22 +130,22 @@ extends MerchantEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("DespawnDelay", this.despawnDelay);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("DespawnDelay", this.despawnDelay);
         if (this.wanderTarget != null) {
-            nbt.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
+            tag.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("DespawnDelay", 99)) {
-            this.despawnDelay = nbt.getInt("DespawnDelay");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("DespawnDelay", 99)) {
+            this.despawnDelay = tag.getInt("DespawnDelay");
         }
-        if (nbt.contains("WanderTarget")) {
-            this.wanderTarget = NbtHelper.toBlockPos(nbt.getCompound("WanderTarget"));
+        if (tag.contains("WanderTarget")) {
+            this.wanderTarget = NbtHelper.toBlockPos(tag.getCompound("WanderTarget"));
         }
         this.setBreedingAge(Math.max(0, this.getBreedingAge()));
     }
@@ -184,8 +183,7 @@ extends MerchantEntity {
 
     @Override
     protected SoundEvent getDrinkSound(ItemStack stack) {
-        Item item = stack.getItem();
-        if (item == Items.MILK_BUCKET) {
+        if (stack.isOf(Items.MILK_BUCKET)) {
             return SoundEvents.ENTITY_WANDERING_TRADER_DRINK_MILK;
         }
         return SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION;
@@ -219,7 +217,7 @@ extends MerchantEntity {
 
     private void tickDespawnDelay() {
         if (this.despawnDelay > 0 && !this.hasCustomer() && --this.despawnDelay == 0) {
-            this.remove();
+            this.discard();
         }
     }
 

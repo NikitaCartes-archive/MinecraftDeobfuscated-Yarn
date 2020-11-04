@@ -33,7 +33,7 @@ extends ScreenHandler {
 
             @Override
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() == Items.SADDLE && !this.hasStack() && entity.canBeSaddled();
+                return stack.isOf(Items.SADDLE) && !this.hasStack() && entity.canBeSaddled();
             }
 
             @Override

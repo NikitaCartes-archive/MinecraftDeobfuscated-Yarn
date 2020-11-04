@@ -8,6 +8,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
@@ -21,19 +22,19 @@ public class SpawnLocating {
         Biome biome = world.getBiome(mutable);
         boolean bl = world.getDimension().hasCeiling();
         BlockState blockState = biome.getGenerationSettings().getSurfaceConfig().getTopMaterial();
-        if (validSpawnNeeded && !blockState.getBlock().isIn(BlockTags.VALID_SPAWN)) {
+        if (validSpawnNeeded && !blockState.isIn(BlockTags.VALID_SPAWN)) {
             return null;
         }
-        WorldChunk worldChunk = world.getChunk(x >> 4, z >> 4);
+        WorldChunk worldChunk = world.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z));
         int n = i = bl ? world.getChunkManager().getChunkGenerator().getSpawnHeight() : worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, x & 0xF, z & 0xF);
-        if (i < 0) {
+        if (i < world.getBottomHeightLimit()) {
             return null;
         }
         int j = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x & 0xF, z & 0xF);
         if (j <= i && j > worldChunk.sampleHeightmap(Heightmap.Type.OCEAN_FLOOR, x & 0xF, z & 0xF)) {
             return null;
         }
-        for (int k = i + 1; k >= 0; --k) {
+        for (int k = i + 1; k >= world.getBottomHeightLimit(); --k) {
             mutable.set(x, k, z);
             BlockState blockState2 = world.getBlockState(mutable);
             if (!blockState2.getFluidState().isEmpty()) break;

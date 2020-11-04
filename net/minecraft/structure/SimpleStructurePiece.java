@@ -11,7 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockArgumentParser;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -39,9 +39,9 @@ extends StructurePiece {
         super(structurePieceType, i);
     }
 
-    public SimpleStructurePiece(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
-        super(structurePieceType, nbtCompound);
-        this.pos = new BlockPos(nbtCompound.getInt("TPX"), nbtCompound.getInt("TPY"), nbtCompound.getInt("TPZ"));
+    public SimpleStructurePiece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
+        super(structurePieceType, compoundTag);
+        this.pos = new BlockPos(compoundTag.getInt("TPX"), compoundTag.getInt("TPY"), compoundTag.getInt("TPZ"));
     }
 
     protected void setStructureData(Structure structure, BlockPos pos, StructurePlacementData placementData) {
@@ -53,22 +53,22 @@ extends StructurePiece {
     }
 
     @Override
-    protected void toNbt(NbtCompound tag) {
+    protected void toNbt(CompoundTag tag) {
         tag.putInt("TPX", this.pos.getX());
         tag.putInt("TPY", this.pos.getY());
         tag.putInt("TPZ", this.pos.getZ());
     }
 
     @Override
-    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
         this.placementData.setBoundingBox(boundingBox);
         this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-        if (this.structure.place(world, this.pos, pos, this.placementData, random, 2)) {
+        if (this.structure.place(structureWorldAccess, this.pos, blockPos, this.placementData, random, 2)) {
             List<Structure.StructureBlockInfo> list = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 StructureBlockMode structureBlockMode;
                 if (structureBlockInfo.tag == null || (structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"))) != StructureBlockMode.DATA) continue;
-                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, world, random, boundingBox);
+                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, structureWorldAccess, random, boundingBox);
             }
             List<Structure.StructureBlockInfo> list2 = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW);
             for (Structure.StructureBlockInfo structureBlockInfo2 : list2) {
@@ -87,7 +87,7 @@ extends StructurePiece {
                 } catch (CommandSyntaxException commandSyntaxException) {
                     LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", (Object)string, (Object)structureBlockInfo2.pos);
                 }
-                world.setBlockState(structureBlockInfo2.pos, blockState, 3);
+                structureWorldAccess.setBlockState(structureBlockInfo2.pos, blockState, 3);
             }
         }
         return true;

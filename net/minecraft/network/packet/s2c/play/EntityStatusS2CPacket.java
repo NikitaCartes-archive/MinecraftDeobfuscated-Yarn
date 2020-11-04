@@ -11,6 +11,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityStatusS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -42,6 +43,7 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onEntityStatus(this);
     }
 
+    @Nullable
     @Environment(value=EnvType.CLIENT)
     public Entity getEntity(World world) {
         return world.getEntityById(this.id);

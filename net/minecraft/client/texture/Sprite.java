@@ -46,9 +46,9 @@ implements AutoCloseable {
      */
     private int frameTicks;
 
-    protected Sprite(SpriteAtlasTexture atlas, Info info, int maxLevel, int atlasWidth, int atlasHeight, int x, int y, NativeImage nativeImage) {
+    protected Sprite(SpriteAtlasTexture spriteAtlasTexture, Info info, int maxLevel, int atlasWidth, int atlasHeight, int x, int y, NativeImage nativeImage) {
         CrashReport crashReport;
-        this.atlas = atlas;
+        this.atlas = spriteAtlasTexture;
         AnimationResourceMetadata animationResourceMetadata = info.animationData;
         int i = info.width;
         int j = info.height;

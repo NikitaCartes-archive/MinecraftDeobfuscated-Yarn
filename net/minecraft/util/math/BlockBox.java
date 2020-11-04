@@ -4,21 +4,11 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
-import net.minecraft.nbt.NbtIntArray;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 
-/**
- * A mutable box with integer coordinates. The box is axis-aligned and the
- * coordinates are inclusive.
- * 
- * <p>This box, though mutable, has proper {@code hashCode} and {@code
- * equals} implementations and can be used as map keys if user can ensure
- * they are not modified.
- * 
- * @see Box
- */
 public class BlockBox {
     public int minX;
     public int minY;
@@ -41,9 +31,6 @@ public class BlockBox {
         }
     }
 
-    /**
-     * Creates an empty box.
-     */
     public static BlockBox empty() {
         return new BlockBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
     }
@@ -75,15 +62,6 @@ public class BlockBox {
         return new BlockBox(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2), Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2));
     }
 
-    public BlockBox(BlockBox source) {
-        this.minX = source.minX;
-        this.minY = source.minY;
-        this.minZ = source.minZ;
-        this.maxX = source.maxX;
-        this.maxY = source.maxY;
-        this.maxZ = source.maxZ;
-    }
-
     public BlockBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         this.minX = minX;
         this.minY = minY;
@@ -100,15 +78,6 @@ public class BlockBox {
         this.maxX = Math.max(v1.getX(), v2.getX());
         this.maxY = Math.max(v1.getY(), v2.getY());
         this.maxZ = Math.max(v1.getZ(), v2.getZ());
-    }
-
-    public BlockBox(int minX, int minZ, int maxX, int maxZ) {
-        this.minX = minX;
-        this.minZ = minZ;
-        this.maxX = maxX;
-        this.maxZ = maxZ;
-        this.minY = 1;
-        this.maxY = 512;
     }
 
     public boolean intersects(BlockBox other) {
@@ -137,13 +106,6 @@ public class BlockBox {
         this.maxZ += dz;
     }
 
-    /**
-     * Creates a new box that is translated by {@code x}, {@code y}, {@code z}
-     * on each axis from this box.
-     * 
-     * @return the new box created
-     * @see #move(int, int, int)
-     */
     public BlockBox offset(int x, int y, int z) {
         return new BlockBox(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
     }
@@ -183,8 +145,8 @@ public class BlockBox {
         return MoreObjects.toStringHelper(this).add("x0", this.minX).add("y0", this.minY).add("z0", this.minZ).add("x1", this.maxX).add("y1", this.maxY).add("z1", this.maxZ).toString();
     }
 
-    public NbtIntArray toNbt() {
-        return new NbtIntArray(new int[]{this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
+    public IntArrayTag toNbt() {
+        return new IntArrayTag(new int[]{this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
     }
 }
 

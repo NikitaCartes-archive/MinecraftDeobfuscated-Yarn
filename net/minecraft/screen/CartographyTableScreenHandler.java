@@ -10,7 +10,6 @@ import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
@@ -34,7 +33,7 @@ extends ScreenHandler {
             super.markDirty();
         }
     };
-    private final CraftingResultInventory resultInventory = new CraftingResultInventory(){
+    private final CraftingResultInventory resultSlot = new CraftingResultInventory(){
 
         @Override
         public void markDirty() {
@@ -55,18 +54,17 @@ extends ScreenHandler {
 
             @Override
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() == Items.FILLED_MAP;
+                return stack.isOf(Items.FILLED_MAP);
             }
         });
         this.addSlot(new Slot(this.inventory, 1, 15, 52){
 
             @Override
             public boolean canInsert(ItemStack stack) {
-                Item item = stack.getItem();
-                return item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE;
+                return stack.isOf(Items.PAPER) || stack.isOf(Items.MAP) || stack.isOf(Items.GLASS_PANE);
             }
         });
-        this.addSlot(new Slot(this.resultInventory, 2, 145, 39){
+        this.addSlot(new Slot(this.resultSlot, 2, 145, 39){
 
             @Override
             public boolean canInsert(ItemStack stack) {
@@ -107,43 +105,42 @@ extends ScreenHandler {
     public void onContentChanged(Inventory inventory) {
         ItemStack itemStack = this.inventory.getStack(0);
         ItemStack itemStack2 = this.inventory.getStack(1);
-        ItemStack itemStack3 = this.resultInventory.getStack(2);
+        ItemStack itemStack3 = this.resultSlot.getStack(2);
         if (!itemStack3.isEmpty() && (itemStack.isEmpty() || itemStack2.isEmpty())) {
-            this.resultInventory.removeStack(2);
+            this.resultSlot.removeStack(2);
         } else if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
             this.updateResult(itemStack, itemStack2, itemStack3);
         }
     }
 
-    private void updateResult(ItemStack map, ItemStack item, ItemStack oldResult) {
+    private void updateResult(ItemStack itemStack, ItemStack itemStack2, ItemStack oldResult) {
         this.context.run((world, blockPos) -> {
             ItemStack itemStack4;
-            Item item = item.getItem();
-            MapState mapState = FilledMapItem.getMapState(map, world);
+            MapState mapState = FilledMapItem.getMapState(itemStack, world);
             if (mapState == null) {
                 return;
             }
-            if (item == Items.PAPER && !mapState.locked && mapState.scale < 4) {
-                itemStack4 = map.copy();
+            if (itemStack2.isOf(Items.PAPER) && !mapState.locked && mapState.scale < 4) {
+                itemStack4 = itemStack.copy();
                 itemStack4.setCount(1);
                 itemStack4.getOrCreateTag().putInt("map_scale_direction", 1);
                 this.sendContentUpdates();
-            } else if (item == Items.GLASS_PANE && !mapState.locked) {
-                itemStack4 = map.copy();
+            } else if (itemStack2.isOf(Items.GLASS_PANE) && !mapState.locked) {
+                itemStack4 = itemStack.copy();
                 itemStack4.setCount(1);
                 itemStack4.getOrCreateTag().putBoolean("map_to_lock", true);
                 this.sendContentUpdates();
-            } else if (item == Items.MAP) {
-                itemStack4 = map.copy();
+            } else if (itemStack2.isOf(Items.MAP)) {
+                itemStack4 = itemStack.copy();
                 itemStack4.setCount(2);
                 this.sendContentUpdates();
             } else {
-                this.resultInventory.removeStack(2);
+                this.resultSlot.removeStack(2);
                 this.sendContentUpdates();
                 return;
             }
             if (!ItemStack.areEqual(itemStack4, oldResult)) {
-                this.resultInventory.setStack(2, itemStack4);
+                this.resultSlot.setStack(2, itemStack4);
                 this.sendContentUpdates();
             }
         });
@@ -151,7 +148,7 @@ extends ScreenHandler {
 
     @Override
     public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-        return slot.inventory != this.resultInventory && super.canInsertIntoSlot(stack, slot);
+        return slot.inventory != this.resultSlot && super.canInsertIntoSlot(stack, slot);
     }
 
     @Override
@@ -159,27 +156,25 @@ extends ScreenHandler {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
-            ItemStack itemStack2;
-            ItemStack itemStack3 = itemStack2 = slot.getStack();
-            Item item = itemStack3.getItem();
-            itemStack = itemStack3.copy();
+            ItemStack itemStack2 = slot.getStack();
+            itemStack = itemStack2.copy();
             if (index == 2) {
-                item.onCraft(itemStack3, player.world, player);
-                if (!this.insertItem(itemStack3, 3, 39, true)) {
+                itemStack2.getItem().onCraft(itemStack2, player.world, player);
+                if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onQuickTransfer(itemStack3, itemStack);
-            } else if (index == 1 || index == 0 ? !this.insertItem(itemStack3, 3, 39, false) : (item == Items.FILLED_MAP ? !this.insertItem(itemStack3, 0, 1, false) : (item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE ? !this.insertItem(itemStack3, 1, 2, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack3, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack3, 3, 30, false))))) {
+                slot.onStackChanged(itemStack2, itemStack);
+            } else if (index == 1 || index == 0 ? !this.insertItem(itemStack2, 3, 39, false) : (itemStack2.isOf(Items.FILLED_MAP) ? !this.insertItem(itemStack2, 0, 1, false) : (itemStack2.isOf(Items.PAPER) || itemStack2.isOf(Items.MAP) || itemStack2.isOf(Items.GLASS_PANE) ? !this.insertItem(itemStack2, 1, 2, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack2, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false))))) {
                 return ItemStack.EMPTY;
             }
-            if (itemStack3.isEmpty()) {
+            if (itemStack2.isEmpty()) {
                 slot.setStack(ItemStack.EMPTY);
             }
             slot.markDirty();
-            if (itemStack3.getCount() == itemStack.getCount()) {
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(player, itemStack3);
+            slot.onTakeItem(player, itemStack2);
             this.sendContentUpdates();
         }
         return itemStack;
@@ -188,8 +183,8 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.resultInventory.removeStack(2);
-        this.context.run((world, blockPos) -> this.dropInventory(player, playerEntity.world, this.inventory));
+        this.resultSlot.removeStack(2);
+        this.context.run((world, blockPos) -> this.dropInventory(player, this.inventory));
     }
 }
 

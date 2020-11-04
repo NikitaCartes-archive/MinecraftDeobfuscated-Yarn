@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureUtil;
 
@@ -241,7 +242,7 @@ public class Framebuffer {
         float i = (float)this.viewportHeight / (float)this.textureHeight;
         Tessellator tessellator = RenderSystem.renderThreadTesselator();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(0.0, g, 0.0).texture(0.0f, 0.0f).color(255, 255, 255, 255).next();
         bufferBuilder.vertex(f, g, 0.0).texture(h, 0.0f).color(255, 255, 255, 255).next();
         bufferBuilder.vertex(f, 0.0, 0.0).texture(h, i).color(255, 255, 255, 255).next();

@@ -38,5 +38,15 @@ implements BlockView {
     public FluidState getFluidState(BlockPos pos) {
         return this.getBlockState(pos).getFluidState();
     }
+
+    @Override
+    public int getSectionCount() {
+        return 16;
+    }
+
+    @Override
+    public int getBottomSectionLimit() {
+        return 0;
+    }
 }
 

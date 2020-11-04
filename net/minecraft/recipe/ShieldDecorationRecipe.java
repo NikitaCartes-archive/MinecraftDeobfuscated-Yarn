@@ -9,7 +9,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
@@ -35,7 +35,7 @@ extends SpecialCraftingRecipe {
                 itemStack2 = itemStack3;
                 continue;
             }
-            if (itemStack3.getItem() == Items.SHIELD) {
+            if (itemStack3.isOf(Items.SHIELD)) {
                 if (!itemStack.isEmpty()) {
                     return false;
                 }
@@ -61,16 +61,16 @@ extends SpecialCraftingRecipe {
                 itemStack = itemStack3;
                 continue;
             }
-            if (itemStack3.getItem() != Items.SHIELD) continue;
+            if (!itemStack3.isOf(Items.SHIELD)) continue;
             itemStack2 = itemStack3.copy();
         }
         if (itemStack2.isEmpty()) {
             return itemStack2;
         }
-        NbtCompound nbtCompound = itemStack.getSubTag("BlockEntityTag");
-        NbtCompound nbtCompound2 = nbtCompound == null ? new NbtCompound() : nbtCompound.copy();
-        nbtCompound2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
-        itemStack2.putSubTag("BlockEntityTag", nbtCompound2);
+        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
+        CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.copy();
+        compoundTag2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
+        itemStack2.putSubTag("BlockEntityTag", compoundTag2);
         return itemStack2;
     }
 

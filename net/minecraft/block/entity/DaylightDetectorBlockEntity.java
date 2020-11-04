@@ -3,27 +3,15 @@
  */
 package net.minecraft.block.entity;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.DaylightDetectorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.util.Tickable;
+import net.minecraft.util.math.BlockPos;
 
 public class DaylightDetectorBlockEntity
-extends BlockEntity
-implements Tickable {
-    public DaylightDetectorBlockEntity() {
-        super(BlockEntityType.DAYLIGHT_DETECTOR);
-    }
-
-    @Override
-    public void tick() {
-        BlockState blockState;
-        Block block;
-        if (this.world != null && !this.world.isClient && this.world.getTime() % 20L == 0L && (block = (blockState = this.getCachedState()).getBlock()) instanceof DaylightDetectorBlock) {
-            DaylightDetectorBlock.updateState(blockState, this.world, this.pos);
-        }
+extends BlockEntity {
+    public DaylightDetectorBlockEntity(BlockPos blockPos, BlockState blockState) {
+        super(BlockEntityType.DAYLIGHT_DETECTOR, blockPos, blockState);
     }
 }
 

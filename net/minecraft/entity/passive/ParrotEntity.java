@@ -51,7 +51,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -141,12 +141,12 @@ implements Flutterer {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setVariant(this.random.nextInt(5));
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(false);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -205,7 +205,7 @@ implements Flutterer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean isSongPlaying() {
+    public boolean getSongPlaying() {
         return this.songPlaying;
     }
 
@@ -243,7 +243,7 @@ implements Flutterer {
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
-            if (!player.abilities.creativeMode) {
+            if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
             if (!this.isSilent()) {
@@ -259,8 +259,8 @@ implements Flutterer {
             }
             return ActionResult.success(this.world.isClient);
         }
-        if (itemStack.getItem() == COOKIE) {
-            if (!player.abilities.creativeMode) {
+        if (itemStack.isOf(COOKIE)) {
+            if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
             this.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 900));
@@ -408,15 +408,15 @@ implements Flutterer {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("Variant", this.getVariant());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("Variant", this.getVariant());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.setVariant(nbt.getInt("Variant"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setVariant(tag.getInt("Variant"));
     }
 
     public boolean isInAir() {

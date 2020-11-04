@@ -85,7 +85,7 @@ extends HorizontalFacingBlock {
             this.updatePowered(world, pos, state);
             return;
         }
-        BlockEntity blockEntity = this.hasBlockEntity() ? world.getBlockEntity(pos) : null;
+        BlockEntity blockEntity = state.hasBlockEntity() ? world.getBlockEntity(pos) : null;
         AbstractRedstoneGateBlock.dropStacks(state, world, pos, blockEntity);
         world.removeBlock(pos, false);
         for (Direction direction : Direction.values()) {
@@ -110,7 +110,7 @@ extends HorizontalFacingBlock {
         }
     }
 
-    public boolean isLocked(WorldView world, BlockPos pos, BlockState state) {
+    public boolean isLocked(WorldView worldView, BlockPos pos, BlockState state) {
         return false;
     }
 

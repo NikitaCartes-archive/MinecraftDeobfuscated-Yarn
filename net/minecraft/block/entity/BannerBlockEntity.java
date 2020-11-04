@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBannerBlock;
@@ -17,13 +16,14 @@ import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class BannerBlockEntity
@@ -31,32 +31,32 @@ extends BlockEntity
 implements Nameable {
     @Nullable
     private Text customName;
+    private DyeColor baseColor;
     @Nullable
-    private DyeColor baseColor = DyeColor.WHITE;
-    @Nullable
-    private NbtList patternListTag;
+    private ListTag patternListTag;
     private boolean patternListTagRead;
     @Nullable
     private List<Pair<BannerPattern, DyeColor>> patterns;
 
-    public BannerBlockEntity() {
-        super(BlockEntityType.BANNER);
+    public BannerBlockEntity(BlockPos blockPos, BlockState blockState) {
+        super(BlockEntityType.BANNER, blockPos, blockState);
+        this.baseColor = ((AbstractBannerBlock)blockState.getBlock()).getColor();
     }
 
-    public BannerBlockEntity(DyeColor baseColor) {
-        this();
-        this.baseColor = baseColor;
+    public BannerBlockEntity(BlockPos blockPos, BlockState blockState, DyeColor dyeColor) {
+        this(blockPos, blockState);
+        this.baseColor = dyeColor;
     }
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public static NbtList getPatternListTag(ItemStack stack) {
-        NbtList nbtList = null;
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
-        if (nbtCompound != null && nbtCompound.contains("Patterns", 9)) {
-            nbtList = nbtCompound.getList("Patterns", 10).copy();
+    public static ListTag getPatternListTag(ItemStack stack) {
+        ListTag listTag = null;
+        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
+        if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
+            listTag = compoundTag.getList("Patterns", 10).copy();
         }
-        return nbtList;
+        return listTag;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -87,25 +87,24 @@ implements Nameable {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
         if (this.patternListTag != null) {
-            nbt.put("Patterns", this.patternListTag);
+            tag.put("Patterns", this.patternListTag);
         }
         if (this.customName != null) {
-            nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
+            tag.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        return nbt;
+        return tag;
     }
 
     @Override
-    public void fromTag(BlockState state, NbtCompound tag) {
-        super.fromTag(state, tag);
-        if (tag.contains("CustomName", 8)) {
-            this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+    public void fromTag(CompoundTag compoundTag) {
+        super.fromTag(compoundTag);
+        if (compoundTag.contains("CustomName", 8)) {
+            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
-        this.baseColor = this.hasWorld() ? ((AbstractBannerBlock)this.getCachedState().getBlock()).getColor() : null;
-        this.patternListTag = tag.getList("Patterns", 10);
+        this.patternListTag = compoundTag.getList("Patterns", 10);
         this.patterns = null;
         this.patternListTagRead = true;
     }
@@ -113,18 +112,18 @@ implements Nameable {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 6, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, 6, this.toInitialChunkDataTag());
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.writeNbt(new NbtCompound());
+    public CompoundTag toInitialChunkDataTag() {
+        return this.toTag(new CompoundTag());
     }
 
     public static int getPatternCount(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
-        if (nbtCompound != null && nbtCompound.contains("Patterns")) {
-            return nbtCompound.getList("Patterns", 10).size();
+        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
+        if (compoundTag != null && compoundTag.contains("Patterns")) {
+            return compoundTag.getList("Patterns", 10).size();
         }
         return 0;
     }
@@ -132,21 +131,21 @@ implements Nameable {
     @Environment(value=EnvType.CLIENT)
     public List<Pair<BannerPattern, DyeColor>> getPatterns() {
         if (this.patterns == null && this.patternListTagRead) {
-            this.patterns = BannerBlockEntity.method_24280(this.getColorForState(this::getCachedState), this.patternListTag);
+            this.patterns = BannerBlockEntity.method_24280(this.baseColor, this.patternListTag);
         }
         return this.patterns;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static List<Pair<BannerPattern, DyeColor>> method_24280(DyeColor dyeColor, @Nullable NbtList nbtList) {
+    public static List<Pair<BannerPattern, DyeColor>> method_24280(DyeColor dyeColor, @Nullable ListTag listTag) {
         ArrayList<Pair<BannerPattern, DyeColor>> list = Lists.newArrayList();
         list.add(Pair.of(BannerPattern.BASE, dyeColor));
-        if (nbtList != null) {
-            for (int i = 0; i < nbtList.size(); ++i) {
-                NbtCompound nbtCompound = nbtList.getCompound(i);
-                BannerPattern bannerPattern = BannerPattern.byId(nbtCompound.getString("Pattern"));
+        if (listTag != null) {
+            for (int i = 0; i < listTag.size(); ++i) {
+                CompoundTag compoundTag = listTag.getCompound(i);
+                BannerPattern bannerPattern = BannerPattern.byId(compoundTag.getString("Pattern"));
                 if (bannerPattern == null) continue;
-                int j = nbtCompound.getInt("Color");
+                int j = compoundTag.getInt("Color");
                 list.add(Pair.of(bannerPattern, DyeColor.byId(j)));
             }
         }
@@ -154,23 +153,23 @@ implements Nameable {
     }
 
     public static void loadFromItemStack(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
-        if (nbtCompound == null || !nbtCompound.contains("Patterns", 9)) {
+        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
+        if (compoundTag == null || !compoundTag.contains("Patterns", 9)) {
             return;
         }
-        NbtList nbtList = nbtCompound.getList("Patterns", 10);
-        if (nbtList.isEmpty()) {
+        ListTag listTag = compoundTag.getList("Patterns", 10);
+        if (listTag.isEmpty()) {
             return;
         }
-        nbtList.remove(nbtList.size() - 1);
-        if (nbtList.isEmpty()) {
+        listTag.remove(listTag.size() - 1);
+        if (listTag.isEmpty()) {
             stack.removeSubTag("BlockEntityTag");
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public ItemStack getPickStack(BlockState state) {
-        ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.getColorForState(() -> state)));
+    public ItemStack getPickStack() {
+        ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.baseColor));
         if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
             itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.copy());
         }
@@ -180,10 +179,7 @@ implements Nameable {
         return itemStack;
     }
 
-    public DyeColor getColorForState(Supplier<BlockState> supplier) {
-        if (this.baseColor == null) {
-            this.baseColor = ((AbstractBannerBlock)supplier.get().getBlock()).getColor();
-        }
+    public DyeColor getColorForState() {
         return this.baseColor;
     }
 }

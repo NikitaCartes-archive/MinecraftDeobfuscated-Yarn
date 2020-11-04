@@ -255,7 +255,7 @@ implements AutoCloseable {
         }
     }
 
-    private void uploadInternal(int level, int offsetX, int offsetY, int unpackSkipPixels, int unpackSkipRows, int width, int height, boolean blur, boolean clamp, boolean mipmap, boolean close) {
+    private void uploadInternal(int level, int xOffset, int yOffset, int unpackSkipPixels, int unpackSkipRows, int width, int height, boolean blur, boolean clamp, boolean mipmap, boolean close) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         this.checkAllocated();
         NativeImage.setTextureFilter(blur, mipmap);
@@ -268,7 +268,7 @@ implements AutoCloseable {
         GlStateManager.pixelStore(3316, unpackSkipPixels);
         GlStateManager.pixelStore(3315, unpackSkipRows);
         this.format.setUnpackAlignment();
-        GlStateManager.texSubImage2D(3553, level, offsetX, offsetY, width, height, this.format.getPixelDataFormat(), 5121, this.pointer);
+        GlStateManager.texSubImage2D(3553, level, xOffset, yOffset, width, height, this.format.getPixelDataFormat(), 5121, this.pointer);
         if (close) {
             this.close();
         }

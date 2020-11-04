@@ -45,11 +45,11 @@ implements Fertilizable {
         }
     }
 
-    public void generate(ServerWorld world, BlockPos pos, BlockState state, Random random) {
-        if (state.get(STAGE) == 0) {
-            world.setBlockState(pos, (BlockState)state.cycle(STAGE), 4);
+    public void generate(ServerWorld serverWorld, BlockPos blockPos, BlockState blockState, Random random) {
+        if (blockState.get(STAGE) == 0) {
+            serverWorld.setBlockState(blockPos, (BlockState)blockState.cycle(STAGE), 4);
         } else {
-            this.generator.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
+            this.generator.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), blockPos, blockState, random);
         }
     }
 

@@ -12,7 +12,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
@@ -90,12 +89,11 @@ extends Block {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack itemStack = player.getStackInHand(hand);
-        Item item = itemStack.getItem();
-        if (item == Items.FLINT_AND_STEEL || item == Items.FIRE_CHARGE) {
+        if (itemStack.isOf(Items.FLINT_AND_STEEL) || itemStack.isOf(Items.FIRE_CHARGE)) {
             TntBlock.primeTnt(world, pos, player);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
             if (!player.isCreative()) {
-                if (item == Items.FLINT_AND_STEEL) {
+                if (itemStack.isOf(Items.FLINT_AND_STEEL)) {
                     itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
                 } else {
                     itemStack.decrement(1);

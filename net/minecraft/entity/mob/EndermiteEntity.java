@@ -23,7 +23,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -87,17 +87,17 @@ extends HostileEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.lifeTime = nbt.getInt("Lifetime");
-        this.playerSpawned = nbt.getBoolean("PlayerSpawned");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.lifeTime = tag.getInt("Lifetime");
+        this.playerSpawned = tag.getBoolean("PlayerSpawned");
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("Lifetime", this.lifeTime);
-        nbt.putBoolean("PlayerSpawned", this.playerSpawned);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("Lifetime", this.lifeTime);
+        tag.putBoolean("PlayerSpawned", this.playerSpawned);
     }
 
     @Override
@@ -107,9 +107,9 @@ extends HostileEntity {
     }
 
     @Override
-    public void setBodyYaw(float bodyYaw) {
-        this.yaw = bodyYaw;
-        super.setBodyYaw(bodyYaw);
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+        super.setYaw(yaw);
     }
 
     @Override
@@ -140,7 +140,7 @@ extends HostileEntity {
                 ++this.lifeTime;
             }
             if (this.lifeTime >= 2400) {
-                this.remove();
+                this.discard();
             }
         }
     }

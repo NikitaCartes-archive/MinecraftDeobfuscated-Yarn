@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.projectile.thrown;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -33,11 +31,6 @@ extends ThrownItemEntity {
         super((EntityType<? extends ThrownItemEntity>)EntityType.ENDER_PEARL, owner, world);
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public EnderPearlEntity(World world, double x, double y, double z) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.ENDER_PEARL, x, y, z, world);
-    }
-
     @Override
     protected Item getDefaultItem() {
         return Items.ENDER_PEARL;
@@ -56,7 +49,7 @@ extends ThrownItemEntity {
         for (int i = 0; i < 32; ++i) {
             this.world.addParticle(ParticleTypes.PORTAL, this.getX(), this.getY() + this.random.nextDouble() * 2.0, this.getZ(), this.random.nextGaussian(), 0.0, this.random.nextGaussian());
         }
-        if (!this.world.isClient && !this.removed) {
+        if (!this.world.isClient && !this.isRemoved()) {
             if (entity instanceof ServerPlayerEntity) {
                 ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
                 if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
@@ -77,7 +70,7 @@ extends ThrownItemEntity {
                 entity.requestTeleport(this.getX(), this.getY(), this.getZ());
                 entity.fallDistance = 0.0f;
             }
-            this.remove();
+            this.discard();
         }
     }
 
@@ -85,7 +78,7 @@ extends ThrownItemEntity {
     public void tick() {
         Entity entity = this.getOwner();
         if (entity instanceof PlayerEntity && !entity.isAlive()) {
-            this.remove();
+            this.discard();
         } else {
             super.tick();
         }

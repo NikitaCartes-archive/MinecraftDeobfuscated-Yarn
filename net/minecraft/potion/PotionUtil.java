@@ -17,8 +17,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.text.LiteralText;
@@ -44,10 +44,10 @@ public class PotionUtil {
         return list;
     }
 
-    public static List<StatusEffectInstance> getPotionEffects(@Nullable NbtCompound nbt) {
+    public static List<StatusEffectInstance> getPotionEffects(@Nullable CompoundTag tag) {
         ArrayList<StatusEffectInstance> list = Lists.newArrayList();
-        list.addAll(PotionUtil.getPotion(nbt).getEffects());
-        PotionUtil.getCustomPotionEffects(nbt, list);
+        list.addAll(PotionUtil.getPotion(tag).getEffects());
+        PotionUtil.getCustomPotionEffects(tag, list);
         return list;
     }
 
@@ -55,18 +55,18 @@ public class PotionUtil {
         return PotionUtil.getCustomPotionEffects(stack.getTag());
     }
 
-    public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable NbtCompound nbt) {
+    public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable CompoundTag tag) {
         ArrayList<StatusEffectInstance> list = Lists.newArrayList();
-        PotionUtil.getCustomPotionEffects(nbt, list);
+        PotionUtil.getCustomPotionEffects(tag, list);
         return list;
     }
 
-    public static void getCustomPotionEffects(@Nullable NbtCompound nbt, List<StatusEffectInstance> list) {
-        if (nbt != null && nbt.contains("CustomPotionEffects", 9)) {
-            NbtList nbtList = nbt.getList("CustomPotionEffects", 10);
-            for (int i = 0; i < nbtList.size(); ++i) {
-                NbtCompound nbtCompound = nbtList.getCompound(i);
-                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtCompound);
+    public static void getCustomPotionEffects(@Nullable CompoundTag tag, List<StatusEffectInstance> list) {
+        if (tag != null && tag.contains("CustomPotionEffects", 9)) {
+            ListTag listTag = tag.getList("CustomPotionEffects", 10);
+            for (int i = 0; i < listTag.size(); ++i) {
+                CompoundTag compoundTag = listTag.getCompound(i);
+                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(compoundTag);
                 if (statusEffectInstance == null) continue;
                 list.add(statusEffectInstance);
             }
@@ -74,9 +74,9 @@ public class PotionUtil {
     }
 
     public static int getColor(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getTag();
-        if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", 99)) {
-            return nbtCompound.getInt("CustomPotionColor");
+        CompoundTag compoundTag = stack.getTag();
+        if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
+            return compoundTag.getInt("CustomPotionColor");
         }
         return PotionUtil.getPotion(stack) == Potions.EMPTY ? 0xF800F8 : PotionUtil.getColor(PotionUtil.getPotionEffects(stack));
     }
@@ -116,7 +116,7 @@ public class PotionUtil {
         return PotionUtil.getPotion(stack.getTag());
     }
 
-    public static Potion getPotion(@Nullable NbtCompound compound) {
+    public static Potion getPotion(@Nullable CompoundTag compound) {
         if (compound == null) {
             return Potions.EMPTY;
         }
@@ -137,12 +137,12 @@ public class PotionUtil {
         if (effects.isEmpty()) {
             return stack;
         }
-        NbtCompound nbtCompound = stack.getOrCreateTag();
-        NbtList nbtList = nbtCompound.getList("CustomPotionEffects", 9);
+        CompoundTag compoundTag = stack.getOrCreateTag();
+        ListTag listTag = compoundTag.getList("CustomPotionEffects", 9);
         for (StatusEffectInstance statusEffectInstance : effects) {
-            nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
+            listTag.add(statusEffectInstance.toTag(new CompoundTag()));
         }
-        nbtCompound.put("CustomPotionEffects", nbtList);
+        compoundTag.put("CustomPotionEffects", listTag);
         return stack;
     }
 

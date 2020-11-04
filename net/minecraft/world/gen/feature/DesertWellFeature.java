@@ -32,7 +32,7 @@ extends Feature<DefaultFeatureConfig> {
         int j;
         int i2;
         blockPos = blockPos.up();
-        while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
+        while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomHeightLimit() + 2) {
             blockPos = blockPos.down();
         }
         if (!CAN_GENERATE.test(structureWorldAccess.getBlockState(blockPos))) {

@@ -6,6 +6,11 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5605;
+import net.minecraft.class_5606;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.AnimalModel;
 import net.minecraft.entity.Entity;
@@ -16,108 +21,72 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class HorseEntityModel<T extends HorseBaseEntity>
 extends AnimalModel<T> {
-    protected final ModelPart body;
+    protected final ModelPart torso;
     protected final ModelPart head;
-    private final ModelPart leftBackLeg;
-    private final ModelPart rightBackLeg;
-    private final ModelPart leftFrontLeg;
-    private final ModelPart rightFrontLeg;
-    private final ModelPart field_20930;
-    private final ModelPart field_20931;
-    private final ModelPart field_20932;
-    private final ModelPart field_20933;
+    private final ModelPart field_27425;
+    private final ModelPart field_27426;
+    private final ModelPart field_27427;
+    private final ModelPart field_27428;
+    private final ModelPart field_27429;
+    private final ModelPart field_27430;
+    private final ModelPart field_27431;
+    private final ModelPart field_27432;
     private final ModelPart tail;
     private final ModelPart[] field_3304;
     private final ModelPart[] field_3301;
 
-    public HorseEntityModel(float scale) {
+    public HorseEntityModel(ModelPart modelPart) {
         super(true, 16.2f, 1.36f, 2.7272f, 2.0f, 20.0f);
-        this.textureWidth = 64;
-        this.textureHeight = 64;
-        this.body = new ModelPart(this, 0, 32);
-        this.body.addCuboid(-5.0f, -8.0f, -17.0f, 10.0f, 10.0f, 22.0f, 0.05f);
-        this.body.setPivot(0.0f, 11.0f, 5.0f);
-        this.head = new ModelPart(this, 0, 35);
-        this.head.addCuboid(-2.05f, -6.0f, -2.0f, 4.0f, 12.0f, 7.0f);
-        this.head.pitch = 0.5235988f;
-        ModelPart modelPart = new ModelPart(this, 0, 13);
-        modelPart.addCuboid(-3.0f, -11.0f, -2.0f, 6.0f, 5.0f, 7.0f, scale);
-        ModelPart modelPart2 = new ModelPart(this, 56, 36);
-        modelPart2.addCuboid(-1.0f, -11.0f, 5.01f, 2.0f, 16.0f, 2.0f, scale);
-        ModelPart modelPart3 = new ModelPart(this, 0, 25);
-        modelPart3.addCuboid(-2.0f, -11.0f, -7.0f, 4.0f, 5.0f, 5.0f, scale);
-        this.head.addChild(modelPart);
-        this.head.addChild(modelPart2);
-        this.head.addChild(modelPart3);
-        this.method_2789(this.head);
-        this.leftBackLeg = new ModelPart(this, 48, 21);
-        this.leftBackLeg.mirror = true;
-        this.leftBackLeg.addCuboid(-3.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, scale);
-        this.leftBackLeg.setPivot(4.0f, 14.0f, 7.0f);
-        this.rightBackLeg = new ModelPart(this, 48, 21);
-        this.rightBackLeg.addCuboid(-1.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, scale);
-        this.rightBackLeg.setPivot(-4.0f, 14.0f, 7.0f);
-        this.leftFrontLeg = new ModelPart(this, 48, 21);
-        this.leftFrontLeg.mirror = true;
-        this.leftFrontLeg.addCuboid(-3.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, scale);
-        this.leftFrontLeg.setPivot(4.0f, 6.0f, -12.0f);
-        this.rightFrontLeg = new ModelPart(this, 48, 21);
-        this.rightFrontLeg.addCuboid(-1.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, scale);
-        this.rightFrontLeg.setPivot(-4.0f, 6.0f, -12.0f);
-        float f = 5.5f;
-        this.field_20930 = new ModelPart(this, 48, 21);
-        this.field_20930.mirror = true;
-        this.field_20930.addCuboid(-3.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, scale, scale + 5.5f, scale);
-        this.field_20930.setPivot(4.0f, 14.0f, 7.0f);
-        this.field_20931 = new ModelPart(this, 48, 21);
-        this.field_20931.addCuboid(-1.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, scale, scale + 5.5f, scale);
-        this.field_20931.setPivot(-4.0f, 14.0f, 7.0f);
-        this.field_20932 = new ModelPart(this, 48, 21);
-        this.field_20932.mirror = true;
-        this.field_20932.addCuboid(-3.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, scale, scale + 5.5f, scale);
-        this.field_20932.setPivot(4.0f, 6.0f, -12.0f);
-        this.field_20933 = new ModelPart(this, 48, 21);
-        this.field_20933.addCuboid(-1.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, scale, scale + 5.5f, scale);
-        this.field_20933.setPivot(-4.0f, 6.0f, -12.0f);
-        this.tail = new ModelPart(this, 42, 36);
-        this.tail.addCuboid(-1.5f, 0.0f, 0.0f, 3.0f, 14.0f, 4.0f, scale);
-        this.tail.setPivot(0.0f, -5.0f, 2.0f);
-        this.tail.pitch = 0.5235988f;
-        this.body.addChild(this.tail);
-        ModelPart modelPart4 = new ModelPart(this, 26, 0);
-        modelPart4.addCuboid(-5.0f, -8.0f, -9.0f, 10.0f, 9.0f, 9.0f, 0.5f);
-        this.body.addChild(modelPart4);
-        ModelPart modelPart5 = new ModelPart(this, 29, 5);
-        modelPart5.addCuboid(2.0f, -9.0f, -6.0f, 1.0f, 2.0f, 2.0f, scale);
-        this.head.addChild(modelPart5);
-        ModelPart modelPart6 = new ModelPart(this, 29, 5);
-        modelPart6.addCuboid(-3.0f, -9.0f, -6.0f, 1.0f, 2.0f, 2.0f, scale);
-        this.head.addChild(modelPart6);
-        ModelPart modelPart7 = new ModelPart(this, 32, 2);
-        modelPart7.addCuboid(3.1f, -6.0f, -8.0f, 0.0f, 3.0f, 16.0f, scale);
-        modelPart7.pitch = -0.5235988f;
-        this.head.addChild(modelPart7);
-        ModelPart modelPart8 = new ModelPart(this, 32, 2);
-        modelPart8.addCuboid(-3.1f, -6.0f, -8.0f, 0.0f, 3.0f, 16.0f, scale);
-        modelPart8.pitch = -0.5235988f;
-        this.head.addChild(modelPart8);
-        ModelPart modelPart9 = new ModelPart(this, 1, 1);
-        modelPart9.addCuboid(-3.0f, -11.0f, -1.9f, 6.0f, 5.0f, 6.0f, 0.2f);
-        this.head.addChild(modelPart9);
-        ModelPart modelPart10 = new ModelPart(this, 19, 0);
-        modelPart10.addCuboid(-2.0f, -11.0f, -4.0f, 4.0f, 5.0f, 2.0f, 0.2f);
-        this.head.addChild(modelPart10);
-        this.field_3304 = new ModelPart[]{modelPart4, modelPart5, modelPart6, modelPart9, modelPart10};
-        this.field_3301 = new ModelPart[]{modelPart7, modelPart8};
+        this.torso = modelPart.method_32086("body");
+        this.head = modelPart.method_32086("head_parts");
+        this.field_27425 = modelPart.method_32086("right_hind_leg");
+        this.field_27426 = modelPart.method_32086("left_hind_leg");
+        this.field_27427 = modelPart.method_32086("right_front_leg");
+        this.field_27428 = modelPart.method_32086("left_front_leg");
+        this.field_27429 = modelPart.method_32086("right_hind_baby_leg");
+        this.field_27430 = modelPart.method_32086("left_hind_baby_leg");
+        this.field_27431 = modelPart.method_32086("right_front_baby_leg");
+        this.field_27432 = modelPart.method_32086("left_front_baby_leg");
+        this.tail = this.torso.method_32086("tail");
+        ModelPart modelPart2 = this.torso.method_32086("saddle");
+        ModelPart modelPart3 = this.head.method_32086("left_saddle_mouth");
+        ModelPart modelPart4 = this.head.method_32086("right_saddle_mouth");
+        ModelPart modelPart5 = this.head.method_32086("left_saddle_line");
+        ModelPart modelPart6 = this.head.method_32086("right_saddle_line");
+        ModelPart modelPart7 = this.head.method_32086("head_saddle");
+        ModelPart modelPart8 = this.head.method_32086("mouth_saddle_wrap");
+        this.field_3304 = new ModelPart[]{modelPart2, modelPart3, modelPart4, modelPart7, modelPart8};
+        this.field_3301 = new ModelPart[]{modelPart5, modelPart6};
     }
 
-    protected void method_2789(ModelPart modelPart) {
-        ModelPart modelPart2 = new ModelPart(this, 19, 16);
-        modelPart2.addCuboid(0.55f, -13.0f, 4.0f, 2.0f, 3.0f, 1.0f, -0.001f);
-        ModelPart modelPart3 = new ModelPart(this, 19, 16);
-        modelPart3.addCuboid(-2.55f, -13.0f, 4.0f, 2.0f, 3.0f, 1.0f, -0.001f);
-        modelPart.addChild(modelPart2);
-        modelPart.addChild(modelPart3);
+    public static class_5609 method_32010(class_5605 arg) {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        class_5610 lv3 = lv2.method_32117("body", class_5606.method_32108().method_32101(0, 32).method_32098(-5.0f, -8.0f, -17.0f, 10.0f, 10.0f, 22.0f, new class_5605(0.05f)), class_5603.method_32090(0.0f, 11.0f, 5.0f));
+        class_5610 lv4 = lv2.method_32117("head_parts", class_5606.method_32108().method_32101(0, 35).method_32097(-2.05f, -6.0f, -2.0f, 4.0f, 12.0f, 7.0f), class_5603.method_32091(0.0f, 4.0f, -12.0f, 0.5235988f, 0.0f, 0.0f));
+        class_5610 lv5 = lv4.method_32117("head", class_5606.method_32108().method_32101(0, 13).method_32098(-3.0f, -11.0f, -2.0f, 6.0f, 5.0f, 7.0f, arg), class_5603.field_27701);
+        lv4.method_32117("mane", class_5606.method_32108().method_32101(56, 36).method_32098(-1.0f, -11.0f, 5.01f, 2.0f, 16.0f, 2.0f, arg), class_5603.field_27701);
+        lv4.method_32117("upper_mouth", class_5606.method_32108().method_32101(0, 25).method_32098(-2.0f, -11.0f, -7.0f, 4.0f, 5.0f, 5.0f, arg), class_5603.field_27701);
+        lv2.method_32117("left_hind_leg", class_5606.method_32108().method_32101(48, 21).method_32096().method_32098(-3.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, arg), class_5603.method_32090(4.0f, 14.0f, 7.0f));
+        lv2.method_32117("right_hind_leg", class_5606.method_32108().method_32101(48, 21).method_32098(-1.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, arg), class_5603.method_32090(-4.0f, 14.0f, 7.0f));
+        lv2.method_32117("left_front_leg", class_5606.method_32108().method_32101(48, 21).method_32096().method_32098(-3.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, arg), class_5603.method_32090(4.0f, 14.0f, -12.0f));
+        lv2.method_32117("right_front_leg", class_5606.method_32108().method_32101(48, 21).method_32098(-1.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, arg), class_5603.method_32090(-4.0f, 14.0f, -12.0f));
+        class_5605 lv6 = arg.method_32095(0.0f, 5.5f, 0.0f);
+        lv2.method_32117("left_hind_baby_leg", class_5606.method_32108().method_32101(48, 21).method_32096().method_32098(-3.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, lv6), class_5603.method_32090(4.0f, 14.0f, 7.0f));
+        lv2.method_32117("right_hind_baby_leg", class_5606.method_32108().method_32101(48, 21).method_32098(-1.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, lv6), class_5603.method_32090(-4.0f, 14.0f, 7.0f));
+        lv2.method_32117("left_front_baby_leg", class_5606.method_32108().method_32101(48, 21).method_32096().method_32098(-3.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, lv6), class_5603.method_32090(4.0f, 14.0f, -12.0f));
+        lv2.method_32117("right_front_baby_leg", class_5606.method_32108().method_32101(48, 21).method_32098(-1.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, lv6), class_5603.method_32090(-4.0f, 14.0f, -12.0f));
+        lv3.method_32117("tail", class_5606.method_32108().method_32101(42, 36).method_32098(-1.5f, 0.0f, 0.0f, 3.0f, 14.0f, 4.0f, arg), class_5603.method_32091(0.0f, -5.0f, 2.0f, 0.5235988f, 0.0f, 0.0f));
+        lv3.method_32117("saddle", class_5606.method_32108().method_32101(26, 0).method_32098(-5.0f, -8.0f, -9.0f, 10.0f, 9.0f, 9.0f, new class_5605(0.5f)), class_5603.field_27701);
+        lv4.method_32117("left_saddle_mouth", class_5606.method_32108().method_32101(29, 5).method_32098(2.0f, -9.0f, -6.0f, 1.0f, 2.0f, 2.0f, arg), class_5603.field_27701);
+        lv4.method_32117("right_saddle_mouth", class_5606.method_32108().method_32101(29, 5).method_32098(-3.0f, -9.0f, -6.0f, 1.0f, 2.0f, 2.0f, arg), class_5603.field_27701);
+        lv4.method_32117("left_saddle_line", class_5606.method_32108().method_32101(32, 2).method_32098(3.1f, -6.0f, -8.0f, 0.0f, 3.0f, 16.0f, arg), class_5603.method_32092(-0.5235988f, 0.0f, 0.0f));
+        lv4.method_32117("right_saddle_line", class_5606.method_32108().method_32101(32, 2).method_32098(-3.1f, -6.0f, -8.0f, 0.0f, 3.0f, 16.0f, arg), class_5603.method_32092(-0.5235988f, 0.0f, 0.0f));
+        lv4.method_32117("head_saddle", class_5606.method_32108().method_32101(1, 1).method_32098(-3.0f, -11.0f, -1.9f, 6.0f, 5.0f, 6.0f, new class_5605(0.2f)), class_5603.field_27701);
+        lv4.method_32117("mouth_saddle_wrap", class_5606.method_32108().method_32101(19, 0).method_32098(-2.0f, -11.0f, -4.0f, 4.0f, 5.0f, 2.0f, new class_5605(0.2f)), class_5603.field_27701);
+        lv5.method_32117("left_ear", class_5606.method_32108().method_32101(19, 16).method_32098(0.55f, -13.0f, 4.0f, 2.0f, 3.0f, 1.0f, new class_5605(-0.001f)), class_5603.field_27701);
+        lv5.method_32117("right_ear", class_5606.method_32108().method_32101(19, 16).method_32098(-2.55f, -13.0f, 4.0f, 2.0f, 3.0f, 1.0f, new class_5605(-0.001f)), class_5603.field_27701);
+        return lv;
     }
 
     @Override
@@ -130,7 +99,7 @@ extends AnimalModel<T> {
         for (ModelPart modelPart : this.field_3301) {
             modelPart.visible = bl2 && bl;
         }
-        this.body.pivotY = 11.0f;
+        this.torso.pivotY = 11.0f;
     }
 
     @Override
@@ -140,7 +109,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.body, this.leftBackLeg, this.rightBackLeg, this.leftFrontLeg, this.rightFrontLeg, this.field_20930, this.field_20931, this.field_20932, this.field_20933);
+        return ImmutableList.of(this.torso, this.field_27425, this.field_27426, this.field_27427, this.field_27428, this.field_27429, this.field_27430, this.field_27431, this.field_27432);
     }
 
     @Override
@@ -168,7 +137,7 @@ extends AnimalModel<T> {
         float r = (float)((HorseBaseEntity)horseBaseEntity).age + h;
         this.head.pivotY = 4.0f;
         this.head.pivotZ = -12.0f;
-        this.body.pitch = 0.0f;
+        this.torso.pitch = 0.0f;
         this.head.pitch = 0.5235988f + m;
         this.head.yaw = l * ((float)Math.PI / 180);
         float s = ((Entity)horseBaseEntity).isTouchingWater() ? 0.2f : 1.0f;
@@ -179,45 +148,45 @@ extends AnimalModel<T> {
         this.head.yaw = o * l * ((float)Math.PI / 180) + (1.0f - Math.max(o, n)) * this.head.yaw;
         this.head.pivotY = o * -4.0f + n * 11.0f + (1.0f - Math.max(o, n)) * this.head.pivotY;
         this.head.pivotZ = o * -4.0f + n * -12.0f + (1.0f - Math.max(o, n)) * this.head.pivotZ;
-        this.body.pitch = o * -0.7853982f + p * this.body.pitch;
+        this.torso.pitch = o * -0.7853982f + p * this.torso.pitch;
         float w = 0.2617994f * o;
         float x = MathHelper.cos(r * 0.6f + (float)Math.PI);
-        this.leftFrontLeg.pivotY = 2.0f * o + 14.0f * p;
-        this.leftFrontLeg.pivotZ = -6.0f * o - 10.0f * p;
-        this.rightFrontLeg.pivotY = this.leftFrontLeg.pivotY;
-        this.rightFrontLeg.pivotZ = this.leftFrontLeg.pivotZ;
+        this.field_27428.pivotY = 2.0f * o + 14.0f * p;
+        this.field_27428.pivotZ = -6.0f * o - 10.0f * p;
+        this.field_27427.pivotY = this.field_27428.pivotY;
+        this.field_27427.pivotZ = this.field_27428.pivotZ;
         float y = (-1.0471976f + x) * o + u * p;
         float z = (-1.0471976f - x) * o - u * p;
-        this.leftBackLeg.pitch = w - t * 0.5f * g * p;
-        this.rightBackLeg.pitch = w + t * 0.5f * g * p;
-        this.leftFrontLeg.pitch = y;
-        this.rightFrontLeg.pitch = z;
+        this.field_27426.pitch = w - t * 0.5f * g * p;
+        this.field_27425.pitch = w + t * 0.5f * g * p;
+        this.field_27428.pitch = y;
+        this.field_27427.pitch = z;
         this.tail.pitch = 0.5235988f + g * 0.75f;
         this.tail.pivotY = -5.0f + g;
         this.tail.pivotZ = 2.0f + g * 2.0f;
         this.tail.yaw = bl ? MathHelper.cos(r * 0.7f) : 0.0f;
-        this.field_20930.pivotY = this.leftBackLeg.pivotY;
-        this.field_20930.pivotZ = this.leftBackLeg.pivotZ;
-        this.field_20930.pitch = this.leftBackLeg.pitch;
-        this.field_20931.pivotY = this.rightBackLeg.pivotY;
-        this.field_20931.pivotZ = this.rightBackLeg.pivotZ;
-        this.field_20931.pitch = this.rightBackLeg.pitch;
-        this.field_20932.pivotY = this.leftFrontLeg.pivotY;
-        this.field_20932.pivotZ = this.leftFrontLeg.pivotZ;
-        this.field_20932.pitch = this.leftFrontLeg.pitch;
-        this.field_20933.pivotY = this.rightFrontLeg.pivotY;
-        this.field_20933.pivotZ = this.rightFrontLeg.pivotZ;
-        this.field_20933.pitch = this.rightFrontLeg.pitch;
+        this.field_27429.pivotY = this.field_27425.pivotY;
+        this.field_27429.pivotZ = this.field_27425.pivotZ;
+        this.field_27429.pitch = this.field_27425.pitch;
+        this.field_27430.pivotY = this.field_27426.pivotY;
+        this.field_27430.pivotZ = this.field_27426.pivotZ;
+        this.field_27430.pitch = this.field_27426.pitch;
+        this.field_27431.pivotY = this.field_27427.pivotY;
+        this.field_27431.pivotZ = this.field_27427.pivotZ;
+        this.field_27431.pitch = this.field_27427.pitch;
+        this.field_27432.pivotY = this.field_27428.pivotY;
+        this.field_27432.pivotZ = this.field_27428.pivotZ;
+        this.field_27432.pitch = this.field_27428.pitch;
         boolean bl2 = ((PassiveEntity)horseBaseEntity).isBaby();
-        this.leftBackLeg.visible = !bl2;
-        this.rightBackLeg.visible = !bl2;
-        this.leftFrontLeg.visible = !bl2;
-        this.rightFrontLeg.visible = !bl2;
-        this.field_20930.visible = bl2;
-        this.field_20931.visible = bl2;
-        this.field_20932.visible = bl2;
-        this.field_20933.visible = bl2;
-        this.body.pivotY = bl2 ? 10.8f : 0.0f;
+        this.field_27425.visible = !bl2;
+        this.field_27426.visible = !bl2;
+        this.field_27427.visible = !bl2;
+        this.field_27428.visible = !bl2;
+        this.field_27429.visible = bl2;
+        this.field_27430.visible = bl2;
+        this.field_27431.visible = bl2;
+        this.field_27432.visible = bl2;
+        this.torso.pivotY = bl2 ? 10.8f : 0.0f;
     }
 }
 

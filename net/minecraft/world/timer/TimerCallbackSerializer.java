@@ -6,7 +6,7 @@ package net.minecraft.world.timer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import java.util.Map;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.timer.FunctionTagTimerCallback;
@@ -36,26 +36,26 @@ public class TimerCallbackSerializer<C> {
         return this.serializersByClass.get(class_);
     }
 
-    public <T extends TimerCallback<C>> NbtCompound serialize(T callback) {
+    public <T extends TimerCallback<C>> CompoundTag serialize(T callback) {
         TimerCallback.Serializer<T, T> serializer = this.getSerializer(callback.getClass());
-        NbtCompound nbtCompound = new NbtCompound();
-        serializer.serialize(nbtCompound, callback);
-        nbtCompound.putString("Type", serializer.getId().toString());
-        return nbtCompound;
+        CompoundTag compoundTag = new CompoundTag();
+        serializer.serialize(compoundTag, callback);
+        compoundTag.putString("Type", serializer.getId().toString());
+        return compoundTag;
     }
 
     @Nullable
-    public TimerCallback<C> deserialize(NbtCompound nbt) {
-        Identifier identifier = Identifier.tryParse(nbt.getString("Type"));
+    public TimerCallback<C> deserialize(CompoundTag tag) {
+        Identifier identifier = Identifier.tryParse(tag.getString("Type"));
         TimerCallback.Serializer<C, ?> serializer = this.serializersByType.get(identifier);
         if (serializer == null) {
-            LOGGER.error("Failed to deserialize timer callback: " + nbt);
+            LOGGER.error("Failed to deserialize timer callback: {}", (Object)tag);
             return null;
         }
         try {
-            return serializer.deserialize(nbt);
+            return serializer.deserialize(tag);
         } catch (Exception exception) {
-            LOGGER.error("Failed to deserialize timer callback: " + nbt, (Throwable)exception);
+            LOGGER.error("Failed to deserialize timer callback: {}", (Object)tag, (Object)exception);
             return null;
         }
     }

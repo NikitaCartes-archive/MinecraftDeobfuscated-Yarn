@@ -80,7 +80,7 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
             socialInteractionsPlayerListEntry.setOffline(false);
             return;
         }
-        if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().method_31391(uUID)) && (Strings.isNullOrEmpty(this.currentSearch) || player.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
+        if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().isPlayerMuted(uUID)) && (Strings.isNullOrEmpty(this.currentSearch) || player.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
             SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry2 = new SocialInteractionsPlayerListEntry(this.minecraftClient, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTexture);
             this.addEntry(socialInteractionsPlayerListEntry2);
             this.players.add(socialInteractionsPlayerListEntry2);

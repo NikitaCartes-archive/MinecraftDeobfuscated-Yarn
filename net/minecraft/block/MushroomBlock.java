@@ -37,15 +37,15 @@ extends Block {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         World blockView = ctx.getWorld();
         BlockPos blockPos = ctx.getBlockPos();
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(DOWN, this != blockView.getBlockState(blockPos.down()).getBlock())).with(UP, this != blockView.getBlockState(blockPos.up()).getBlock())).with(NORTH, this != blockView.getBlockState(blockPos.north()).getBlock())).with(EAST, this != blockView.getBlockState(blockPos.east()).getBlock())).with(SOUTH, this != blockView.getBlockState(blockPos.south()).getBlock())).with(WEST, this != blockView.getBlockState(blockPos.west()).getBlock());
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(DOWN, !blockView.getBlockState(blockPos.down()).isOf(this))).with(UP, !blockView.getBlockState(blockPos.up()).isOf(this))).with(NORTH, !blockView.getBlockState(blockPos.north()).isOf(this))).with(EAST, !blockView.getBlockState(blockPos.east()).isOf(this))).with(SOUTH, !blockView.getBlockState(blockPos.south()).isOf(this))).with(WEST, !blockView.getBlockState(blockPos.west()).isOf(this));
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (neighborState.isOf(this)) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+        if (newState.isOf(this)) {
             return (BlockState)state.with(FACING_PROPERTIES.get(direction), false);
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override

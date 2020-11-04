@@ -3,57 +3,46 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class CodEntityModel<T extends Entity>
-extends CompositeEntityModel<T> {
-    private final ModelPart body;
-    private final ModelPart topFin;
-    private final ModelPart head;
-    private final ModelPart face;
-    private final ModelPart rightFin;
-    private final ModelPart leftFin;
-    private final ModelPart tailFin;
+extends class_5597<T> {
+    private final ModelPart field_27405;
+    private final ModelPart tail;
 
-    public CodEntityModel() {
-        this.textureWidth = 32;
-        this.textureHeight = 32;
+    public CodEntityModel(ModelPart modelPart) {
+        this.field_27405 = modelPart;
+        this.tail = modelPart.method_32086("tail_fin");
+    }
+
+    public static class_5607 method_31989() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
         int i = 22;
-        this.body = new ModelPart(this, 0, 0);
-        this.body.addCuboid(-1.0f, -2.0f, 0.0f, 2.0f, 4.0f, 7.0f);
-        this.body.setPivot(0.0f, 22.0f, 0.0f);
-        this.head = new ModelPart(this, 11, 0);
-        this.head.addCuboid(-1.0f, -2.0f, -3.0f, 2.0f, 4.0f, 3.0f);
-        this.head.setPivot(0.0f, 22.0f, 0.0f);
-        this.face = new ModelPart(this, 0, 0);
-        this.face.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 3.0f, 1.0f);
-        this.face.setPivot(0.0f, 22.0f, -3.0f);
-        this.rightFin = new ModelPart(this, 22, 1);
-        this.rightFin.addCuboid(-2.0f, 0.0f, -1.0f, 2.0f, 0.0f, 2.0f);
-        this.rightFin.setPivot(-1.0f, 23.0f, 0.0f);
-        this.rightFin.roll = -0.7853982f;
-        this.leftFin = new ModelPart(this, 22, 4);
-        this.leftFin.addCuboid(0.0f, 0.0f, -1.0f, 2.0f, 0.0f, 2.0f);
-        this.leftFin.setPivot(1.0f, 23.0f, 0.0f);
-        this.leftFin.roll = 0.7853982f;
-        this.tailFin = new ModelPart(this, 22, 3);
-        this.tailFin.addCuboid(0.0f, -2.0f, 0.0f, 0.0f, 4.0f, 4.0f);
-        this.tailFin.setPivot(0.0f, 22.0f, 7.0f);
-        this.topFin = new ModelPart(this, 20, -6);
-        this.topFin.addCuboid(0.0f, -1.0f, -1.0f, 0.0f, 1.0f, 6.0f);
-        this.topFin.setPivot(0.0f, 20.0f, 0.0f);
+        lv2.method_32117("body", class_5606.method_32108().method_32101(0, 0).method_32097(-1.0f, -2.0f, 0.0f, 2.0f, 4.0f, 7.0f), class_5603.method_32090(0.0f, 22.0f, 0.0f));
+        lv2.method_32117("head", class_5606.method_32108().method_32101(11, 0).method_32097(-1.0f, -2.0f, -3.0f, 2.0f, 4.0f, 3.0f), class_5603.method_32090(0.0f, 22.0f, 0.0f));
+        lv2.method_32117("nose", class_5606.method_32108().method_32101(0, 0).method_32097(-1.0f, -2.0f, -1.0f, 2.0f, 3.0f, 1.0f), class_5603.method_32090(0.0f, 22.0f, -3.0f));
+        lv2.method_32117("right_fin", class_5606.method_32108().method_32101(22, 1).method_32097(-2.0f, 0.0f, -1.0f, 2.0f, 0.0f, 2.0f), class_5603.method_32091(-1.0f, 23.0f, 0.0f, 0.0f, 0.0f, -0.7853982f));
+        lv2.method_32117("left_fin", class_5606.method_32108().method_32101(22, 4).method_32097(0.0f, 0.0f, -1.0f, 2.0f, 0.0f, 2.0f), class_5603.method_32091(1.0f, 23.0f, 0.0f, 0.0f, 0.0f, 0.7853982f));
+        lv2.method_32117("tail_fin", class_5606.method_32108().method_32101(22, 3).method_32097(0.0f, -2.0f, 0.0f, 0.0f, 4.0f, 4.0f), class_5603.method_32090(0.0f, 22.0f, 7.0f));
+        lv2.method_32117("top_fin", class_5606.method_32108().method_32101(20, -6).method_32097(0.0f, -1.0f, -1.0f, 0.0f, 1.0f, 6.0f), class_5603.method_32090(0.0f, 20.0f, 0.0f));
+        return class_5607.method_32110(lv, 32, 32);
     }
 
     @Override
-    public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.body, this.head, this.face, this.rightFin, this.leftFin, this.tailFin, this.topFin);
+    public ModelPart method_32008() {
+        return this.field_27405;
     }
 
     @Override
@@ -62,7 +51,7 @@ extends CompositeEntityModel<T> {
         if (!((Entity)entity).isTouchingWater()) {
             f = 1.5f;
         }
-        this.tailFin.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
+        this.tail.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
     }
 }
 

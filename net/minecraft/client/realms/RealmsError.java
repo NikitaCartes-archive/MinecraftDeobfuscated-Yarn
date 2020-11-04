@@ -30,8 +30,8 @@ public class RealmsError {
             int i = JsonUtils.getIntOr("errorCode", jsonObject, -1);
             return new RealmsError(string, i);
         } catch (Exception exception) {
-            LOGGER.error("Could not parse RealmsError: " + exception.getMessage());
-            LOGGER.error("The error was: " + error);
+            LOGGER.error("Could not parse RealmsError: {}", (Object)exception.getMessage());
+            LOGGER.error("The error was: {}", (Object)error);
             return new RealmsError("Failed to parse response from server", -1);
         }
     }

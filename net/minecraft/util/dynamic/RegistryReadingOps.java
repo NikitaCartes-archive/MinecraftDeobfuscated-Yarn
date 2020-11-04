@@ -36,14 +36,14 @@ extends ForwardingDynamicOps<T> {
      * Encode an id for a registry element than a full object if possible.
      * 
      * <p>This method is called by casting an arbitrary dynamic ops to a registry
-     * reading ops.
+     * reading ops.</p>
      * 
-     * @see RegistryOps#decodeOrId(Object, RegistryKey, Codec, boolean)
+     * @see RegistryOps#decodeOrId(Object, RegistryKey, MapCodec)
      */
     protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<? extends Registry<E>> registryReference, Codec<E> codec) {
         MutableRegistry mutableRegistry;
         Optional<RegistryKey<E>> optional2;
-        Optional optional = this.manager.getOptionalMutable(registryReference);
+        Optional optional = this.manager.getOptional(registryReference);
         if (optional.isPresent() && (optional2 = (mutableRegistry = optional.get()).getKey(input)).isPresent()) {
             RegistryKey<E> registryKey = optional2.get();
             return Identifier.CODEC.encode(registryKey.getValue(), this.delegate, prefix);

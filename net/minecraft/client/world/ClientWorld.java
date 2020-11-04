@@ -5,10 +5,7 @@ package net.minecraft.client.world;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -19,6 +16,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5577;
+import net.minecraft.class_5582;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -37,7 +36,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -54,6 +53,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -64,8 +64,10 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.EntityList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.TickScheduler;
@@ -74,7 +76,6 @@ import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.chunk.ChunkManager;
-import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
@@ -83,7 +84,8 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ClientWorld
 extends World {
-    private final Int2ObjectMap<Entity> regularEntities = new Int2ObjectOpenHashMap<Entity>();
+    private final EntityList entityList = new EntityList();
+    private final class_5582<Entity> field_27734 = new class_5582<Entity>(Entity.class, new EntityLoader());
     private final ClientPlayNetworkHandler netHandler;
     private final WorldRenderer worldRenderer;
     private final Properties clientWorldProperties;
@@ -125,14 +127,14 @@ extends World {
     }
 
     private void tickTime() {
-        this.method_29089(this.properties.getTime() + 1L);
+        this.setTime(this.properties.getTime() + 1L);
         if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
             this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
         }
     }
 
-    public void method_29089(long l) {
-        this.clientWorldProperties.setTime(l);
+    public void setTime(long time) {
+        this.clientWorldProperties.setTime(time);
     }
 
     public void setTimeOfDay(long timeOfDay) {
@@ -146,112 +148,62 @@ extends World {
     }
 
     public Iterable<Entity> getEntities() {
-        return this.regularEntities.values();
+        return this.method_31592().method_31803();
     }
 
     public void tickEntities() {
         Profiler profiler = this.getProfiler();
         profiler.push("entities");
-        Iterator objectIterator = this.regularEntities.int2ObjectEntrySet().iterator();
-        while (objectIterator.hasNext()) {
-            Int2ObjectMap.Entry entry = (Int2ObjectMap.Entry)objectIterator.next();
-            Entity entity = (Entity)entry.getValue();
-            if (entity.hasVehicle()) continue;
-            profiler.push("tick");
-            if (!entity.removed) {
-                this.tickEntity(this::tickEntity, entity);
+        this.entityList.forEachEntity(entity -> {
+            if (entity.isRemoved() || entity.hasVehicle()) {
+                return;
             }
-            profiler.pop();
-            profiler.push("remove");
-            if (entity.removed) {
-                objectIterator.remove();
-                this.finishRemovingEntity(entity);
-            }
-            profiler.pop();
-        }
-        this.tickBlockEntities();
+            this.tickEntity(this::tickEntity, entity);
+        });
         profiler.pop();
+        this.tickBlockEntities();
     }
 
     public void tickEntity(Entity entity) {
-        if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
-            this.checkEntityChunkPos(entity);
-            return;
-        }
         entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
         entity.prevYaw = entity.yaw;
         entity.prevPitch = entity.pitch;
-        if (entity.updateNeeded || entity.isSpectator()) {
-            ++entity.age;
-            this.getProfiler().push(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString());
-            entity.tick();
-            this.getProfiler().pop();
-        }
-        this.checkEntityChunkPos(entity);
-        if (entity.updateNeeded) {
-            for (Entity entity2 : entity.getPassengerList()) {
-                this.tickPassenger(entity, entity2);
-            }
+        ++entity.age;
+        this.getProfiler().push(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString());
+        entity.tick();
+        this.getProfiler().pop();
+        for (Entity entity2 : entity.getPassengerList()) {
+            this.tickPassenger(entity, entity2);
         }
     }
 
-    public void tickPassenger(Entity entity, Entity passenger) {
-        if (passenger.removed || passenger.getVehicle() != entity) {
+    private void tickPassenger(Entity entity, Entity passenger) {
+        if (passenger.isRemoved() || passenger.getVehicle() != entity) {
             passenger.stopRiding();
             return;
         }
-        if (!(passenger instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(passenger)) {
+        if (!(passenger instanceof PlayerEntity) && !this.entityList.hasEntity(passenger)) {
             return;
         }
         passenger.resetPosition(passenger.getX(), passenger.getY(), passenger.getZ());
         passenger.prevYaw = passenger.yaw;
         passenger.prevPitch = passenger.pitch;
-        if (passenger.updateNeeded) {
-            ++passenger.age;
-            passenger.tickRiding();
+        ++passenger.age;
+        passenger.tickRiding();
+        for (Entity entity2 : passenger.getPassengerList()) {
+            this.tickPassenger(passenger, entity2);
         }
-        this.checkEntityChunkPos(passenger);
-        if (passenger.updateNeeded) {
-            for (Entity entity2 : passenger.getPassengerList()) {
-                this.tickPassenger(passenger, entity2);
-            }
-        }
-    }
-
-    /**
-     * Validates if an entity's current position matches its chunk position. If the entity's chunk position and actual position don't match, then the entity will be moved to its new chunk.
-     */
-    private void checkEntityChunkPos(Entity entity) {
-        if (!entity.isChunkPosUpdateRequested()) {
-            return;
-        }
-        this.getProfiler().push("chunkCheck");
-        int i = MathHelper.floor(entity.getX() / 16.0);
-        int j = MathHelper.floor(entity.getY() / 16.0);
-        int k = MathHelper.floor(entity.getZ() / 16.0);
-        if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
-            if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
-                this.getChunk(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
-            }
-            if (entity.teleportRequested() || this.isChunkLoaded(i, k)) {
-                this.getChunk(i, k).addEntity(entity);
-            } else {
-                if (entity.updateNeeded) {
-                    LOGGER.warn("Entity {} left loaded chunk area", (Object)entity);
-                }
-                entity.updateNeeded = false;
-            }
-        }
-        this.getProfiler().pop();
     }
 
     public void unloadBlockEntities(WorldChunk chunk) {
-        this.unloadedBlockEntities.addAll(chunk.getBlockEntities().values());
+        chunk.method_31712();
         this.chunkManager.getLightingProvider().setColumnEnabled(chunk.getPos(), false);
+        this.field_27734.method_31875(chunk.getPos());
     }
 
-    public void resetChunkColor(int i, int j) {
-        this.colorCache.forEach((colorResolver, biomeColorCache) -> biomeColorCache.reset(i, j));
+    public void resetChunkColor(ChunkPos chunkPos) {
+        this.colorCache.forEach((colorResolver, biomeColorCache) -> biomeColorCache.reset(chunkPos.x, chunkPos.z));
+        this.field_27734.method_31869(chunkPos);
     }
 
     public void reloadColor() {
@@ -264,12 +216,11 @@ extends World {
     }
 
     public int getRegularEntityCount() {
-        return this.regularEntities.size();
+        return this.field_27734.method_31874();
     }
 
     public void addPlayer(int id, AbstractClientPlayerEntity player) {
         this.addEntityPrivate(id, player);
-        this.players.add(player);
     }
 
     public void addEntity(int id, Entity entity) {
@@ -277,41 +228,21 @@ extends World {
     }
 
     private void addEntityPrivate(int id, Entity entity) {
-        this.removeEntity(id);
-        this.regularEntities.put(id, entity);
-        this.getChunkManager().getChunk(MathHelper.floor(entity.getX() / 16.0), MathHelper.floor(entity.getZ() / 16.0), ChunkStatus.FULL, true).addEntity(entity);
+        this.removeEntity(id, Entity.RemovalReason.DISCARDED);
+        this.field_27734.method_31870(entity);
     }
 
-    public void removeEntity(int entityId) {
-        Entity entity = (Entity)this.regularEntities.remove(entityId);
+    public void removeEntity(int entityId, Entity.RemovalReason removalReason) {
+        Entity entity = this.method_31592().method_31804(entityId);
         if (entity != null) {
-            entity.remove();
-            this.finishRemovingEntity(entity);
-        }
-    }
-
-    private void finishRemovingEntity(Entity entity) {
-        entity.detach();
-        if (entity.updateNeeded) {
-            this.getChunk(entity.chunkX, entity.chunkZ).remove(entity);
-        }
-        this.players.remove(entity);
-    }
-
-    public void addEntitiesToChunk(WorldChunk chunk) {
-        for (Int2ObjectMap.Entry entry : this.regularEntities.int2ObjectEntrySet()) {
-            Entity entity = (Entity)entry.getValue();
-            int i = MathHelper.floor(entity.getX() / 16.0);
-            int j = MathHelper.floor(entity.getZ() / 16.0);
-            if (i != chunk.getPos().x || j != chunk.getPos().z) continue;
-            chunk.addEntity(entity);
+            entity.setRemoved(removalReason);
         }
     }
 
     @Override
     @Nullable
     public Entity getEntityById(int id) {
-        return (Entity)this.regularEntities.get(id);
+        return this.method_31592().method_31804(id);
     }
 
     public void setBlockStateWithoutNeighborUpdates(BlockPos pos, BlockState state) {
@@ -323,21 +254,21 @@ extends World {
         this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
     }
 
-    public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {
+    public void doRandomBlockDisplayTicks(int xCenter, int yCenter, int zCenter) {
         int i = 32;
         Random random = new Random();
         boolean bl = false;
         if (this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE) {
             for (ItemStack itemStack : this.client.player.getItemsHand()) {
-                if (itemStack.getItem() != Blocks.BARRIER.asItem()) continue;
+                if (!itemStack.isOf(Blocks.BARRIER.asItem())) continue;
                 bl = true;
                 break;
             }
         }
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int j = 0; j < 667; ++j) {
-            this.randomBlockDisplayTick(centerX, centerY, centerZ, 16, random, bl, mutable);
-            this.randomBlockDisplayTick(centerX, centerY, centerZ, 32, random, bl, mutable);
+            this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 16, random, bl, mutable);
+            this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 32, random, bl, mutable);
         }
     }
 
@@ -404,17 +335,6 @@ extends World {
         this.addParticle(parameters, MathHelper.lerp(this.random.nextDouble(), minX, maxX), y, MathHelper.lerp(this.random.nextDouble(), minZ, maxZ), 0.0, 0.0, 0.0);
     }
 
-    public void finishRemovingEntities() {
-        Iterator objectIterator = this.regularEntities.int2ObjectEntrySet().iterator();
-        while (objectIterator.hasNext()) {
-            Int2ObjectMap.Entry entry = (Int2ObjectMap.Entry)objectIterator.next();
-            Entity entity = (Entity)entry.getValue();
-            if (!entity.removed) continue;
-            objectIterator.remove();
-            this.finishRemovingEntity(entity);
-        }
-    }
-
     @Override
     public CrashReportSection addDetailsToCrashReport(CrashReport report) {
         CrashReportSection crashReportSection = super.addDetailsToCrashReport(report);
@@ -442,10 +362,10 @@ extends World {
     }
 
     @Override
-    public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
+    public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean bl) {
         double d = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(x, y, z);
         PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, volume, pitch, x, y, z);
-        if (useDistance && d > 100.0) {
+        if (bl && d > 100.0) {
             double e = Math.sqrt(d) / 40.0;
             this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));
         } else {
@@ -454,8 +374,8 @@ extends World {
     }
 
     @Override
-    public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound nbt) {
-        this.client.particleManager.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, nbt));
+    public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable CompoundTag tag) {
+        this.client.particleManager.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, tag));
     }
 
     @Override
@@ -549,7 +469,7 @@ extends World {
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Playing level event");
             CrashReportSection crashReportSection = crashReport.addElement("Level event being played");
-            crashReportSection.add("Block coordinates", CrashReportSection.createPositionString(pos));
+            crashReportSection.add("Block coordinates", CrashReportSection.createPositionString(this, pos));
             crashReportSection.add("Event source", player);
             crashReportSection.add("Event type", eventId);
             crashReportSection.add("Event data", data);
@@ -744,7 +664,7 @@ extends World {
         return blockPos;
     }
 
-    public float method_30671() {
+    public float getSpawnAngle() {
         return this.properties.getSpawnAngle();
     }
 
@@ -762,6 +682,20 @@ extends World {
     }
 
     @Override
+    protected class_5577<Entity> method_31592() {
+        return this.field_27734.method_31866();
+    }
+
+    public String asString() {
+        return "Chunks[C] W: " + this.chunkManager.getDebugString() + " E: " + this.field_27734.method_31879();
+    }
+
+    @Override
+    public void addBlockBreakParticles(BlockPos pos, BlockState state) {
+        this.client.particleManager.addBlockBreakParticles(pos, state);
+    }
+
+    @Override
     public /* synthetic */ WorldProperties getLevelProperties() {
         return this.getLevelProperties();
     }
@@ -769,6 +703,74 @@ extends World {
     @Override
     public /* synthetic */ ChunkManager getChunkManager() {
         return this.getChunkManager();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    final class EntityLoader
+    implements net.minecraft.world.EntityLoader<Entity> {
+        private EntityLoader() {
+        }
+
+        @Override
+        public void method_31802(Entity entity) {
+        }
+
+        @Override
+        public void destroyEntity(Entity entity) {
+        }
+
+        @Override
+        public void addEntity(Entity entity) {
+            ClientWorld.this.entityList.addEntity(entity);
+        }
+
+        @Override
+        public void removeEntity(Entity entity) {
+            ClientWorld.this.entityList.removeEntity(entity);
+        }
+
+        @Override
+        public void onLoadEntity(Entity entity) {
+            if (entity instanceof AbstractClientPlayerEntity) {
+                ClientWorld.this.players.add((AbstractClientPlayerEntity)entity);
+            }
+        }
+
+        @Override
+        public void onUnloadEntity(Entity entity) {
+            entity.detach();
+            ClientWorld.this.players.remove(entity);
+        }
+
+        @Override
+        public /* synthetic */ void onUnloadEntity(Object entity) {
+            this.onUnloadEntity((Entity)entity);
+        }
+
+        @Override
+        public /* synthetic */ void onLoadEntity(Object entity) {
+            this.onLoadEntity((Entity)entity);
+        }
+
+        @Override
+        public /* synthetic */ void removeEntity(Object entity) {
+            this.removeEntity((Entity)entity);
+        }
+
+        @Override
+        public /* synthetic */ void addEntity(Object entity) {
+            this.addEntity((Entity)entity);
+        }
+
+        @Override
+        public /* synthetic */ void destroyEntity(Object entity) {
+            this.destroyEntity((Entity)entity);
+        }
+
+        @Override
+        public /* synthetic */ void method_31802(Object entity) {
+            this.method_31802((Entity)entity);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -896,8 +898,8 @@ extends World {
         }
 
         @Override
-        public void populateCrashReport(CrashReportSection reportSection) {
-            MutableWorldProperties.super.populateCrashReport(reportSection);
+        public void populateCrashReport(CrashReportSection reportSection, HeightLimitView heightLimitView) {
+            MutableWorldProperties.super.populateCrashReport(reportSection, heightLimitView);
         }
 
         public void setDifficulty(Difficulty difficulty) {

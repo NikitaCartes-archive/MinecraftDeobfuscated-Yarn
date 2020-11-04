@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.collection.DefaultedList;
 
 public class Inventories {
@@ -26,33 +26,33 @@ public class Inventories {
         return stacks.set(slot, ItemStack.EMPTY);
     }
 
-    public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks) {
-        return Inventories.writeNbt(nbt, stacks, true);
+    public static CompoundTag toTag(CompoundTag tag, DefaultedList<ItemStack> stacks) {
+        return Inventories.toTag(tag, stacks, true);
     }
 
-    public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, boolean setIfEmpty) {
-        NbtList nbtList = new NbtList();
+    public static CompoundTag toTag(CompoundTag tag, DefaultedList<ItemStack> stacks, boolean setIfEmpty) {
+        ListTag listTag = new ListTag();
         for (int i = 0; i < stacks.size(); ++i) {
             ItemStack itemStack = stacks.get(i);
             if (itemStack.isEmpty()) continue;
-            NbtCompound nbtCompound = new NbtCompound();
-            nbtCompound.putByte("Slot", (byte)i);
-            itemStack.writeNbt(nbtCompound);
-            nbtList.add(nbtCompound);
+            CompoundTag compoundTag = new CompoundTag();
+            compoundTag.putByte("Slot", (byte)i);
+            itemStack.toTag(compoundTag);
+            listTag.add(compoundTag);
         }
-        if (!nbtList.isEmpty() || setIfEmpty) {
-            nbt.put("Items", nbtList);
+        if (!listTag.isEmpty() || setIfEmpty) {
+            tag.put("Items", listTag);
         }
-        return nbt;
+        return tag;
     }
 
-    public static void readNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks) {
-        NbtList nbtList = nbt.getList("Items", 10);
-        for (int i = 0; i < nbtList.size(); ++i) {
-            NbtCompound nbtCompound = nbtList.getCompound(i);
-            int j = nbtCompound.getByte("Slot") & 0xFF;
+    public static void fromTag(CompoundTag tag, DefaultedList<ItemStack> stacks) {
+        ListTag listTag = tag.getList("Items", 10);
+        for (int i = 0; i < listTag.size(); ++i) {
+            CompoundTag compoundTag = listTag.getCompound(i);
+            int j = compoundTag.getByte("Slot") & 0xFF;
             if (j < 0 || j >= stacks.size()) continue;
-            stacks.set(j, ItemStack.fromNbt(nbtCompound));
+            stacks.set(j, ItemStack.fromTag(compoundTag));
         }
     }
 

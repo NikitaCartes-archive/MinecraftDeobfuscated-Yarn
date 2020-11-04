@@ -3,12 +3,21 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.world.BlockView;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public interface BlockEntityProvider {
     @Nullable
-    public BlockEntity createBlockEntity(BlockView var1);
+    public BlockEntity createBlockEntity(BlockPos var1, BlockState var2);
+
+    @Nullable
+    default public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return null;
+    }
 }
 

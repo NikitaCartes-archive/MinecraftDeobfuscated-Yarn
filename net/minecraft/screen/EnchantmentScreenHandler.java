@@ -18,7 +18,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.Property;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -72,7 +72,7 @@ extends ScreenHandler {
 
             @Override
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() == Items.LAPIS_LAZULI;
+                return stack.isOf(Items.LAPIS_LAZULI);
             }
         });
         for (i = 0; i < 3; ++i) {
@@ -158,22 +158,21 @@ extends ScreenHandler {
         ItemStack itemStack = this.inventory.getStack(0);
         ItemStack itemStack2 = this.inventory.getStack(1);
         int i = id + 1;
-        if ((itemStack2.isEmpty() || itemStack2.getCount() < i) && !player.abilities.creativeMode) {
+        if ((itemStack2.isEmpty() || itemStack2.getCount() < i) && !player.getAbilities().creativeMode) {
             return false;
         }
-        if (this.enchantmentPower[id] > 0 && !itemStack.isEmpty() && (player.experienceLevel >= i && player.experienceLevel >= this.enchantmentPower[id] || player.abilities.creativeMode)) {
+        if (this.enchantmentPower[id] > 0 && !itemStack.isEmpty() && (player.experienceLevel >= i && player.experienceLevel >= this.enchantmentPower[id] || player.getAbilities().creativeMode)) {
             this.context.run((world, blockPos) -> {
                 ItemStack itemStack3 = itemStack;
                 List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack3, id, this.enchantmentPower[id]);
                 if (!list.isEmpty()) {
-                    boolean bl;
                     player.applyEnchantmentCosts(itemStack3, i);
-                    boolean bl2 = bl = itemStack3.getItem() == Items.BOOK;
+                    boolean bl = itemStack3.isOf(Items.BOOK);
                     if (bl) {
                         itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
-                        NbtCompound nbtCompound = itemStack.getTag();
-                        if (nbtCompound != null) {
-                            itemStack3.setTag(nbtCompound.copy());
+                        CompoundTag compoundTag = itemStack.getTag();
+                        if (compoundTag != null) {
+                            itemStack3.setTag(compoundTag.copy());
                         }
                         this.inventory.setStack(0, itemStack3);
                     }
@@ -185,7 +184,7 @@ extends ScreenHandler {
                         }
                         itemStack3.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
                     }
-                    if (!playerEntity.abilities.creativeMode) {
+                    if (!playerEntity.getAbilities().creativeMode) {
                         itemStack2.decrement(i);
                         if (itemStack2.isEmpty()) {
                             this.inventory.setStack(1, ItemStack.EMPTY);
@@ -209,7 +208,7 @@ extends ScreenHandler {
     private List<EnchantmentLevelEntry> generateEnchantments(ItemStack stack, int slot, int level) {
         this.random.setSeed(this.seed.get() + slot);
         List<EnchantmentLevelEntry> list = EnchantmentHelper.generateEnchantments(this.random, stack, level, false);
-        if (stack.getItem() == Items.BOOK && list.size() > 1) {
+        if (stack.isOf(Items.BOOK) && list.size() > 1) {
             list.remove(this.random.nextInt(list.size()));
         }
         return list;
@@ -232,7 +231,7 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.context.run((world, blockPos) -> this.dropInventory(player, playerEntity.world, this.inventory));
+        this.context.run((world, blockPos) -> this.dropInventory(player, this.inventory));
     }
 
     @Override
@@ -255,7 +254,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (itemStack2.getItem() == Items.LAPIS_LAZULI) {
+            } else if (itemStack2.isOf(Items.LAPIS_LAZULI)) {
                 if (!this.insertItem(itemStack2, 1, 2, true)) {
                     return ItemStack.EMPTY;
                 }

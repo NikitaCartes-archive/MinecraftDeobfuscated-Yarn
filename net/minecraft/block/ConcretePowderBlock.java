@@ -69,17 +69,17 @@ extends FallingBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (ConcretePowderBlock.hardensOnAnySide(world, pos)) {
             return this.hardenedState;
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
     public int getColor(BlockState state, BlockView world, BlockPos pos) {
-        return state.getTopMaterialColor((BlockView)world, (BlockPos)pos).color;
+        return state.getMapColor((BlockView)world, (BlockPos)pos).color;
     }
 }
 

@@ -80,7 +80,7 @@ extends Slot {
                 this.input.setStack(i, itemStack2);
                 continue;
             }
-            if (this.player.inventory.insertStack(itemStack2)) continue;
+            if (this.player.getInventory().insertStack(itemStack2)) continue;
             this.player.dropItem(itemStack2, false);
         }
         return stack;

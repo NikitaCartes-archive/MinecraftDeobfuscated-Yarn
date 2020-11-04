@@ -22,11 +22,13 @@ public class MinecartInsideSoundInstance
 extends MovingSoundInstance {
     private final PlayerEntity player;
     private final AbstractMinecartEntity minecart;
+    private final boolean field_27773;
 
-    public MinecartInsideSoundInstance(PlayerEntity player, AbstractMinecartEntity minecart) {
-        super(SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.NEUTRAL);
+    public MinecartInsideSoundInstance(PlayerEntity player, AbstractMinecartEntity minecart, boolean bl) {
+        super(bl ? SoundEvents.ENTITY_MINECART_INSIDE_UNDERWATER : SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.NEUTRAL);
         this.player = player;
         this.minecart = minecart;
+        this.field_27773 = bl;
         this.attenuationType = SoundInstance.AttenuationType.NONE;
         this.repeat = true;
         this.repeatDelay = 0;
@@ -45,8 +47,12 @@ extends MovingSoundInstance {
 
     @Override
     public void tick() {
-        if (this.minecart.removed || !this.player.hasVehicle() || this.player.getVehicle() != this.minecart) {
+        if (this.minecart.isRemoved() || !this.player.hasVehicle() || this.player.getVehicle() != this.minecart) {
             this.setDone();
+            return;
+        }
+        if (this.field_27773 != this.player.isSubmergedInWater()) {
+            this.volume = 0.0f;
             return;
         }
         float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.minecart.getVelocity()));

@@ -13,15 +13,18 @@ public class GameTestBatch {
     private final String id;
     private final Collection<TestFunction> testFunctions;
     @Nullable
-    private final Consumer<ServerWorld> beforeBatchConsumer;
+    private final Consumer<ServerWorld> worldSetter;
+    @Nullable
+    private final Consumer<ServerWorld> field_27801;
 
-    public GameTestBatch(String id, Collection<TestFunction> testFunctions, @Nullable Consumer<ServerWorld> worldSetter) {
+    public GameTestBatch(String id, Collection<TestFunction> testFunctions, @Nullable Consumer<ServerWorld> worldSetter, @Nullable Consumer<ServerWorld> consumer) {
         if (testFunctions.isEmpty()) {
             throw new IllegalArgumentException("A GameTestBatch must include at least one TestFunction!");
         }
         this.id = id;
         this.testFunctions = testFunctions;
-        this.beforeBatchConsumer = worldSetter;
+        this.worldSetter = worldSetter;
+        this.field_27801 = consumer;
     }
 
     public String getId() {
@@ -32,9 +35,15 @@ public class GameTestBatch {
         return this.testFunctions;
     }
 
-    public void startBatch(ServerWorld world) {
-        if (this.beforeBatchConsumer != null) {
-            this.beforeBatchConsumer.accept(world);
+    public void setWorld(ServerWorld world) {
+        if (this.worldSetter != null) {
+            this.worldSetter.accept(world);
+        }
+    }
+
+    public void method_32237(ServerWorld serverWorld) {
+        if (this.field_27801 != null) {
+            this.field_27801.accept(serverWorld);
         }
     }
 }

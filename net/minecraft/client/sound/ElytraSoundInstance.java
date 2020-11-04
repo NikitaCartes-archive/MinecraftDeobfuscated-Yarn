@@ -28,7 +28,7 @@ extends MovingSoundInstance {
     @Override
     public void tick() {
         ++this.tickCount;
-        if (this.player.removed || this.tickCount > 20 && !this.player.isFallFlying()) {
+        if (this.player.isRemoved() || this.tickCount > 20 && !this.player.isFallFlying()) {
             this.setDone();
             return;
         }

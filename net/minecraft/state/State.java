@@ -96,7 +96,7 @@ public abstract class State<O, S> {
         return (T)((Comparable)property.getType().cast(comparable));
     }
 
-    public <T extends Comparable<T>> Optional<T> getOrEmpty(Property<T> property) {
+    public <T extends Comparable<T>> Optional<T> method_28500(Property<T> property) {
         Comparable<?> comparable = this.entries.get(property);
         if (comparable == null) {
             return Optional.empty();

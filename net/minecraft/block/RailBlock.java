@@ -24,7 +24,7 @@ extends AbstractRailBlock {
 
     protected RailBlock(AbstractBlock.Settings settings) {
         super(false, settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(SHAPE, RailShape.NORTH_SOUTH));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(SHAPE, RailShape.NORTH_SOUTH)).with(field_27096, false));
     }
 
     @Override
@@ -198,7 +198,7 @@ extends AbstractRailBlock {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(SHAPE);
+        builder.add(SHAPE, field_27096);
     }
 }
 

@@ -9,9 +9,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LightningRodBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -55,6 +57,14 @@ extends Entity {
         this.channeler = channeler;
     }
 
+    private void method_31499() {
+        BlockPos blockPos = this.getBlockPos().down();
+        BlockState blockState = this.world.getBlockState(blockPos);
+        if (blockState.isOf(Blocks.LIGHTNING_ROD)) {
+            ((LightningRodBlock)blockState.getBlock()).method_31648(blockState, this.world, blockPos);
+        }
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -63,13 +73,14 @@ extends Entity {
             if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
                 this.spawnFire(4);
             }
+            this.method_31499();
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0f, 0.8f + this.random.nextFloat() * 0.2f);
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0f, 0.5f + this.random.nextFloat() * 0.2f);
         }
         --this.ambientTick;
         if (this.ambientTick < 0) {
             if (this.remainingActions == 0) {
-                this.remove();
+                this.discard();
             } else if (this.ambientTick < -this.random.nextInt(10)) {
                 --this.remainingActions;
                 this.ambientTick = 1;
@@ -122,11 +133,11 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
+    protected void readCustomDataFromTag(CompoundTag tag) {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
+    protected void writeCustomDataToTag(CompoundTag tag) {
     }
 
     @Override

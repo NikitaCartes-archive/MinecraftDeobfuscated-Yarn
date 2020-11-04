@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.RegistryKey;
@@ -31,33 +31,33 @@ implements AutoCloseable {
         this.worker = new StorageIoWorker(file, bl, "chunk");
     }
 
-    public NbtCompound updateChunkNbt(RegistryKey<World> worldKey, Supplier<PersistentStateManager> persistentStateManagerFactory, NbtCompound nbt) {
-        int i = VersionedChunkStorage.getDataVersion(nbt);
+    public CompoundTag updateChunkTag(RegistryKey<World> registryKey, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {
+        int i = VersionedChunkStorage.getDataVersion(tag);
         int j = 1493;
-        if (i < 1493 && (nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, i, 1493)).getCompound("Level").getBoolean("hasLegacyStructureData")) {
+        if (i < 1493 && (tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, i, 1493)).getCompound("Level").getBoolean("hasLegacyStructureData")) {
             if (this.featureUpdater == null) {
-                this.featureUpdater = FeatureUpdater.create(worldKey, persistentStateManagerFactory.get());
+                this.featureUpdater = FeatureUpdater.create(registryKey, persistentStateManagerFactory.get());
             }
-            nbt = this.featureUpdater.getUpdatedReferences(nbt);
+            tag = this.featureUpdater.getUpdatedReferences(tag);
         }
-        nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, Math.max(1493, i));
+        tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, Math.max(1493, i));
         if (i < SharedConstants.getGameVersion().getWorldVersion()) {
-            nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+            tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
         }
-        return nbt;
+        return tag;
     }
 
-    public static int getDataVersion(NbtCompound nbt) {
-        return nbt.contains("DataVersion", 99) ? nbt.getInt("DataVersion") : -1;
+    public static int getDataVersion(CompoundTag tag) {
+        return tag.contains("DataVersion", 99) ? tag.getInt("DataVersion") : -1;
     }
 
     @Nullable
-    public NbtCompound getNbt(ChunkPos chunkPos) throws IOException {
+    public CompoundTag getNbt(ChunkPos chunkPos) throws IOException {
         return this.worker.getNbt(chunkPos);
     }
 
-    public void setNbt(ChunkPos chunkPos, NbtCompound nbt) {
-        this.worker.setResult(chunkPos, nbt);
+    public void setTagAt(ChunkPos chunkPos, CompoundTag compoundTag) {
+        this.worker.setResult(chunkPos, compoundTag);
         if (this.featureUpdater != null) {
             this.featureUpdater.markResolved(chunkPos.toLong());
         }

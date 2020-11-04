@@ -27,7 +27,7 @@ implements ArgumentType<ItemStackArgument> {
     @Override
     public ItemStackArgument parse(StringReader stringReader) throws CommandSyntaxException {
         ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
-        return new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getNbt());
+        return new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getTag());
     }
 
     public static <S> ItemStackArgument getItemStackArgument(CommandContext<S> context, String name) {

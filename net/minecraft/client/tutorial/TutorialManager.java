@@ -52,9 +52,9 @@ public class TutorialManager {
         }
     }
 
-    public void onBlockBreaking(ClientWorld world, BlockPos pos, BlockState state, float progress) {
+    public void onBlockAttacked(ClientWorld world, BlockPos pos, BlockState state, float f) {
         if (this.currentHandler != null) {
-            this.currentHandler.onBlockBreaking(world, pos, state, progress);
+            this.currentHandler.onBlockAttacked(world, pos, state, f);
         }
     }
 
@@ -128,8 +128,8 @@ public class TutorialManager {
         return this.client.interactionManager.getCurrentGameMode();
     }
 
-    public static Text keyToText(String name) {
-        return new KeybindText("key." + name).formatted(Formatting.BOLD);
+    public static Text getKeybindName(String string) {
+        return new KeybindText("key." + string).formatted(Formatting.BOLD);
     }
 
     @Environment(value=EnvType.CLIENT)

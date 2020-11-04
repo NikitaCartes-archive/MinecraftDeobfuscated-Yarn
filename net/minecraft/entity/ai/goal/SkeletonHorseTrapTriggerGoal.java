@@ -56,7 +56,7 @@ extends Goal {
     private HorseBaseEntity getHorse(LocalDifficulty localDifficulty) {
         SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
         skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
-        skeletonHorseEntity.setPosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
+        skeletonHorseEntity.updatePosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
         skeletonHorseEntity.timeUntilRegen = 60;
         skeletonHorseEntity.setPersistent();
         skeletonHorseEntity.setTame(true);
@@ -67,7 +67,7 @@ extends Goal {
     private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity vehicle) {
         SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.world);
         skeletonEntity.initialize((ServerWorld)vehicle.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
-        skeletonEntity.setPosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
+        skeletonEntity.updatePosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
         skeletonEntity.timeUntilRegen = 60;
         skeletonEntity.setPersistent();
         if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {

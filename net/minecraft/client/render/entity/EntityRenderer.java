@@ -5,6 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
@@ -24,15 +25,17 @@ import net.minecraft.world.LightType;
 @Environment(value=EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
     protected final EntityRenderDispatcher dispatcher;
+    private final TextRenderer field_27761;
     protected float shadowRadius;
     protected float shadowOpacity = 1.0f;
 
-    protected EntityRenderer(EntityRenderDispatcher dispatcher) {
-        this.dispatcher = dispatcher;
+    protected EntityRenderer(class_5617.class_5618 arg) {
+        this.dispatcher = arg.method_32166();
+        this.field_27761 = arg.method_32171();
     }
 
     public final int getLight(T entity, float tickDelta) {
-        BlockPos blockPos = new BlockPos(((Entity)entity).getClientCameraPosVec(tickDelta));
+        BlockPos blockPos = new BlockPos(((Entity)entity).method_31166(tickDelta));
         return LightmapTextureManager.pack(this.getBlockLight(entity, blockPos), this.method_27950(entity, blockPos));
     }
 
@@ -40,11 +43,11 @@ public abstract class EntityRenderer<T extends Entity> {
         return ((Entity)entity).world.getLightLevel(LightType.SKY, blockPos);
     }
 
-    protected int getBlockLight(T entity, BlockPos pos) {
+    protected int getBlockLight(T entity, BlockPos blockPos) {
         if (((Entity)entity).isOnFire()) {
             return 15;
         }
-        return ((Entity)entity).world.getLightLevel(LightType.BLOCK, pos);
+        return ((Entity)entity).world.getLightLevel(LightType.BLOCK, blockPos);
     }
 
     public boolean shouldRender(T entity, Frustum frustum, double x, double y, double z) {
@@ -75,7 +78,7 @@ public abstract class EntityRenderer<T extends Entity> {
     /**
      * Determines whether the passed entity should render with a nameplate above its head.
      * 
-     * <p>Checks for a custom nametag on living entities, and for teams/team visibilities for players.
+     * <p>Checks for a custom nametag on living entities, and for teams/team visibilities for players.</p>
      */
     protected boolean hasLabel(T entity) {
         return ((Entity)entity).shouldRenderName() && ((Entity)entity).hasCustomName();
@@ -84,7 +87,7 @@ public abstract class EntityRenderer<T extends Entity> {
     public abstract Identifier getTexture(T var1);
 
     public TextRenderer getFontRenderer() {
-        return this.dispatcher.getTextRenderer();
+        return this.field_27761;
     }
 
     protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
@@ -109,10 +112,6 @@ public abstract class EntityRenderer<T extends Entity> {
             textRenderer.draw(text, h, (float)i, -1, false, matrix4f, vertexConsumers, false, 0, light);
         }
         matrices.pop();
-    }
-
-    public EntityRenderDispatcher getRenderManager() {
-        return this.dispatcher;
     }
 }
 

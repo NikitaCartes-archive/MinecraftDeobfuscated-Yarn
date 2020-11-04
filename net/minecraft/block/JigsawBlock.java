@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.enums.JigsawOrientation;
+import net.minecraft.class_5552;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -23,13 +24,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class JigsawBlock
 extends Block
-implements BlockEntityProvider {
+implements BlockEntityProvider,
+class_5552 {
     public static final EnumProperty<JigsawOrientation> ORIENTATION = Properties.ORIENTATION;
 
     protected JigsawBlock(AbstractBlock.Settings settings) {
@@ -60,9 +60,8 @@ implements BlockEntityProvider {
     }
 
     @Override
-    @Nullable
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new JigsawBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new JigsawBlockEntity(pos, state);
     }
 
     @Override
@@ -85,12 +84,12 @@ implements BlockEntityProvider {
         return direction == direction2.getOpposite() && (bl || direction3 == direction4) && info1.tag.getString("target").equals(info2.tag.getString("name"));
     }
 
-    public static Direction getFacing(BlockState state) {
-        return state.get(ORIENTATION).getFacing();
+    public static Direction getFacing(BlockState blockState) {
+        return blockState.get(ORIENTATION).getFacing();
     }
 
-    public static Direction getRotation(BlockState state) {
-        return state.get(ORIENTATION).getRotation();
+    public static Direction getRotation(BlockState blockState) {
+        return blockState.get(ORIENTATION).getRotation();
     }
 }
 

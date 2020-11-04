@@ -28,7 +28,7 @@ extends LightingView {
         }
 
         @Override
-        public int getLightLevel(BlockPos pos) {
+        public int getLightLevel(BlockPos blockPos) {
             return 0;
         }
 

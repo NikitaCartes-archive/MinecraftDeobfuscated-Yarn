@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -39,7 +39,7 @@ StructureHolder {
     @Nullable
     public BlockState setBlockState(BlockPos var1, BlockState var2, boolean var3);
 
-    public void setBlockEntity(BlockPos var1, BlockEntity var2);
+    public void setBlockEntity(BlockEntity var1);
 
     public void addEntity(Entity var1);
 
@@ -56,7 +56,7 @@ StructureHolder {
 
     default public int getHighestNonEmptySectionYOffset() {
         ChunkSection chunkSection = this.getHighestNonEmptySection();
-        return chunkSection == null ? 0 : chunkSection.getYOffset();
+        return chunkSection == null ? this.getBottomHeightLimit() : chunkSection.getYOffset();
     }
 
     public Set<BlockPos> getBlockEntityPositions();
@@ -73,21 +73,19 @@ StructureHolder {
 
     public ChunkPos getPos();
 
-    public void setLastSaveTime(long var1);
-
     public Map<StructureFeature<?>, StructureStart<?>> getStructureStarts();
 
     public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> var1);
 
     default public boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
-        if (lowerHeight < 0) {
-            lowerHeight = 0;
+        if (lowerHeight < this.getBottomHeightLimit()) {
+            lowerHeight = this.getBottomHeightLimit();
         }
-        if (upperHeight >= 256) {
-            upperHeight = 255;
+        if (upperHeight >= this.getTopHeightLimit()) {
+            upperHeight = this.getTopHeightLimit() - 1;
         }
         for (int i = lowerHeight; i <= upperHeight; i += 16) {
-            if (ChunkSection.isEmpty(this.getSectionArray()[i >> 4])) continue;
+            if (ChunkSection.isEmpty(this.getSectionArray()[this.getSectionIndex(i)])) continue;
             return false;
         }
         return true;
@@ -110,19 +108,19 @@ StructureHolder {
 
     public ShortList[] getPostProcessingLists();
 
-    default public void markBlockForPostProcessing(short packedPos, int index) {
-        Chunk.getList(this.getPostProcessingLists(), index).add(packedPos);
+    default public void markBlockForPostProcessing(short s, int i) {
+        Chunk.getList(this.getPostProcessingLists(), i).add(s);
     }
 
-    default public void addPendingBlockEntityNbt(NbtCompound nbt) {
+    default public void addPendingBlockEntityTag(CompoundTag tag) {
         LogManager.getLogger().warn("Trying to set a BlockEntity, but this operation is not supported.");
     }
 
     @Nullable
-    public NbtCompound getBlockEntityNbt(BlockPos var1);
+    public CompoundTag getBlockEntityTag(BlockPos var1);
 
     @Nullable
-    public NbtCompound getPackedBlockEntityNbt(BlockPos var1);
+    public CompoundTag getPackedBlockEntityTag(BlockPos var1);
 
     public Stream<BlockPos> getLightSourcesStream();
 

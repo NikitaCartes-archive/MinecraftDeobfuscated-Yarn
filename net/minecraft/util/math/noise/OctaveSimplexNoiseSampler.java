@@ -64,13 +64,13 @@ implements NoiseSampler {
         this.field_20661 = 1.0 / (Math.pow(2.0, k) - 1.0);
     }
 
-    public double sample(double x, double y, boolean useOrigin) {
+    public double sample(double x, double y, boolean bl) {
         double d = 0.0;
         double e = this.field_20662;
         double f = this.field_20661;
         for (SimplexNoiseSampler simplexNoiseSampler : this.octaveSamplers) {
             if (simplexNoiseSampler != null) {
-                d += simplexNoiseSampler.sample(x * e + (useOrigin ? simplexNoiseSampler.originX : 0.0), y * e + (useOrigin ? simplexNoiseSampler.originY : 0.0)) * f;
+                d += simplexNoiseSampler.sample(x * e + (bl ? simplexNoiseSampler.originX : 0.0), y * e + (bl ? simplexNoiseSampler.originY : 0.0)) * f;
             }
             e /= 2.0;
             f *= 2.0;
@@ -79,7 +79,7 @@ implements NoiseSampler {
     }
 
     @Override
-    public double sample(double x, double y, double yScale, double yMax) {
+    public double sample(double x, double y, double d, double e) {
         return this.sample(x, y, true) * 0.55;
     }
 }

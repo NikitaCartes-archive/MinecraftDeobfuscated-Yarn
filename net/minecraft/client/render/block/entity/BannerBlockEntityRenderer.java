@@ -12,39 +12,48 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class BannerBlockEntityRenderer
-extends BlockEntityRenderer<BannerBlockEntity> {
-    private final ModelPart banner = BannerBlockEntityRenderer.createBanner();
-    private final ModelPart pillar = new ModelPart(64, 64, 44, 0);
+implements BlockEntityRenderer<BannerBlockEntity> {
+    private final ModelPart banner;
+    private final ModelPart pillar;
     private final ModelPart crossbar;
 
-    public BannerBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-        super(blockEntityRenderDispatcher);
-        this.pillar.addCuboid(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f, 0.0f);
-        this.crossbar = new ModelPart(64, 64, 0, 42);
-        this.crossbar.addCuboid(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f, 0.0f);
+    public BannerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+        ModelPart modelPart = context.getLayerModelPart(EntityModelLayers.BANNER);
+        this.banner = modelPart.method_32086("flag");
+        this.pillar = modelPart.method_32086("pole");
+        this.crossbar = modelPart.method_32086("bar");
     }
 
-    public static ModelPart createBanner() {
-        ModelPart modelPart = new ModelPart(64, 64, 0, 0);
-        modelPart.addCuboid(-10.0f, 0.0f, -2.0f, 20.0f, 40.0f, 1.0f, 0.0f);
-        return modelPart;
+    public static class_5607 method_32135() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        lv2.method_32117("flag", class_5606.method_32108().method_32101(0, 0).method_32097(-10.0f, 0.0f, -2.0f, 20.0f, 40.0f, 1.0f), class_5603.field_27701);
+        lv2.method_32117("pole", class_5606.method_32108().method_32101(44, 0).method_32097(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f), class_5603.field_27701);
+        lv2.method_32117("bar", class_5606.method_32108().method_32101(0, 42).method_32097(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f), class_5603.field_27701);
+        return class_5607.method_32110(lv, 64, 64);
     }
 
     @Override
@@ -68,12 +77,12 @@ extends BlockEntityRenderer<BannerBlockEntity> {
             if (blockState.getBlock() instanceof BannerBlock) {
                 matrixStack.translate(0.5, 0.5, 0.5);
                 h = (float)(-blockState.get(BannerBlock.ROTATION).intValue() * 360) / 16.0f;
-                matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+                matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
                 this.pillar.visible = true;
             } else {
                 matrixStack.translate(0.5, -0.1666666716337204, 0.5);
                 h = -blockState.get(WallBannerBlock.FACING).asRotation();
-                matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+                matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
                 matrixStack.translate(0.0, -0.3125, -0.4375);
                 this.pillar.visible = false;
             }
@@ -96,8 +105,8 @@ extends BlockEntityRenderer<BannerBlockEntity> {
         BannerBlockEntityRenderer.renderCanvas(matrixStack, vertexConsumerProvider, i, j, modelPart, spriteIdentifier, bl, list, false);
     }
 
-    public static void renderCanvas(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, ModelPart canvas, SpriteIdentifier baseSprite, boolean isBanner, List<Pair<BannerPattern, DyeColor>> patterns, boolean glint) {
-        canvas.render(matrices, baseSprite.method_30001(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
+    public static void renderCanvas(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, ModelPart canvas, SpriteIdentifier baseSprite, boolean isBanner, List<Pair<BannerPattern, DyeColor>> patterns, boolean bl) {
+        canvas.render(matrices, baseSprite.method_30001(vertexConsumers, RenderLayer::getEntitySolid, bl), light, overlay);
         for (int i = 0; i < 17 && i < patterns.size(); ++i) {
             Pair<BannerPattern, DyeColor> pair = patterns.get(i);
             float[] fs = pair.getSecond().getColorComponents();

@@ -40,7 +40,7 @@ extends PathAwareEntity {
     }
 
     @Override
-    protected int getXpToDrop(PlayerEntity player) {
+    protected int getCurrentExperience(PlayerEntity player) {
         return 1 + this.world.random.nextInt(3);
     }
 
@@ -64,7 +64,7 @@ extends PathAwareEntity {
     }
 
     @Override
-    public boolean isPushedByFluids() {
+    public boolean canFly() {
         return false;
     }
 

@@ -3,9 +3,14 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5605;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.TintableCompositeModel;
 import net.minecraft.entity.Entity;
@@ -14,38 +19,29 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class SmallTropicalFishEntityModel<T extends Entity>
 extends TintableCompositeModel<T> {
-    private final ModelPart body;
-    private final ModelPart field_3591;
-    private final ModelPart field_3590;
-    private final ModelPart field_3588;
-    private final ModelPart field_3587;
+    private final ModelPart field_27522;
+    private final ModelPart field_27523;
 
-    public SmallTropicalFishEntityModel(float scale) {
-        this.textureWidth = 32;
-        this.textureHeight = 32;
+    public SmallTropicalFishEntityModel(ModelPart modelPart) {
+        this.field_27522 = modelPart;
+        this.field_27523 = modelPart.method_32086("tail");
+    }
+
+    public static class_5607 method_32060(class_5605 arg) {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
         int i = 22;
-        this.body = new ModelPart(this, 0, 0);
-        this.body.addCuboid(-1.0f, -1.5f, -3.0f, 2.0f, 3.0f, 6.0f, scale);
-        this.body.setPivot(0.0f, 22.0f, 0.0f);
-        this.field_3591 = new ModelPart(this, 22, -6);
-        this.field_3591.addCuboid(0.0f, -1.5f, 0.0f, 0.0f, 3.0f, 6.0f, scale);
-        this.field_3591.setPivot(0.0f, 22.0f, 3.0f);
-        this.field_3590 = new ModelPart(this, 2, 16);
-        this.field_3590.addCuboid(-2.0f, -1.0f, 0.0f, 2.0f, 2.0f, 0.0f, scale);
-        this.field_3590.setPivot(-1.0f, 22.5f, 0.0f);
-        this.field_3590.yaw = 0.7853982f;
-        this.field_3588 = new ModelPart(this, 2, 12);
-        this.field_3588.addCuboid(0.0f, -1.0f, 0.0f, 2.0f, 2.0f, 0.0f, scale);
-        this.field_3588.setPivot(1.0f, 22.5f, 0.0f);
-        this.field_3588.yaw = -0.7853982f;
-        this.field_3587 = new ModelPart(this, 10, -5);
-        this.field_3587.addCuboid(0.0f, -3.0f, 0.0f, 0.0f, 3.0f, 6.0f, scale);
-        this.field_3587.setPivot(0.0f, 20.5f, -3.0f);
+        lv2.method_32117("body", class_5606.method_32108().method_32101(0, 0).method_32098(-1.0f, -1.5f, -3.0f, 2.0f, 3.0f, 6.0f, arg), class_5603.method_32090(0.0f, 22.0f, 0.0f));
+        lv2.method_32117("tail", class_5606.method_32108().method_32101(22, -6).method_32098(0.0f, -1.5f, 0.0f, 0.0f, 3.0f, 6.0f, arg), class_5603.method_32090(0.0f, 22.0f, 3.0f));
+        lv2.method_32117("right_fin", class_5606.method_32108().method_32101(2, 16).method_32098(-2.0f, -1.0f, 0.0f, 2.0f, 2.0f, 0.0f, arg), class_5603.method_32091(-1.0f, 22.5f, 0.0f, 0.0f, 0.7853982f, 0.0f));
+        lv2.method_32117("left_fin", class_5606.method_32108().method_32101(2, 12).method_32098(0.0f, -1.0f, 0.0f, 2.0f, 2.0f, 0.0f, arg), class_5603.method_32091(1.0f, 22.5f, 0.0f, 0.0f, -0.7853982f, 0.0f));
+        lv2.method_32117("top_fin", class_5606.method_32108().method_32101(10, -5).method_32098(0.0f, -3.0f, 0.0f, 0.0f, 3.0f, 6.0f, arg), class_5603.method_32090(0.0f, 20.5f, -3.0f));
+        return class_5607.method_32110(lv, 32, 32);
     }
 
     @Override
-    public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.body, this.field_3591, this.field_3590, this.field_3588, this.field_3587);
+    public ModelPart method_32008() {
+        return this.field_27522;
     }
 
     @Override
@@ -54,7 +50,7 @@ extends TintableCompositeModel<T> {
         if (!((Entity)entity).isTouchingWater()) {
             f = 1.5f;
         }
-        this.field_3591.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
+        this.field_27523.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
     }
 }
 

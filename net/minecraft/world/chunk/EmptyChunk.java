@@ -4,18 +4,14 @@
 package net.minecraft.world.chunk;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -62,18 +58,6 @@ extends WorldChunk {
     }
 
     @Override
-    public void addEntity(Entity entity) {
-    }
-
-    @Override
-    public void remove(Entity entity) {
-    }
-
-    @Override
-    public void remove(Entity entity, int section) {
-    }
-
-    @Override
     @Nullable
     public BlockEntity getBlockEntity(BlockPos pos, WorldChunk.CreationType creationType) {
         return null;
@@ -84,7 +68,7 @@ extends WorldChunk {
     }
 
     @Override
-    public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
+    public void setBlockEntity(BlockEntity blockEntity) {
     }
 
     @Override
@@ -93,14 +77,6 @@ extends WorldChunk {
 
     @Override
     public void markDirty() {
-    }
-
-    @Override
-    public void collectOtherEntities(@Nullable Entity except, Box box, List<Entity> entityList, Predicate<? super Entity> predicate) {
-    }
-
-    @Override
-    public <T extends Entity> void collectEntitiesByClass(Class<? extends T> entityClass, Box box, List<T> result, Predicate<? super T> predicate) {
     }
 
     @Override

@@ -22,12 +22,15 @@ import net.minecraft.block.StemBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.EmptyBlockView;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.ChunkSection;
@@ -38,24 +41,25 @@ import org.apache.logging.log4j.Logger;
 
 public class UpgradeData {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData();
+    public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData(EmptyBlockView.INSTANCE);
     private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
     private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
-    private final int[][] centerIndicesToUpgrade = new int[16][];
+    private final int[][] centerIndicesToUpgrade;
     private static final Map<Block, Logic> BLOCK_TO_LOGIC = new IdentityHashMap<Block, Logic>();
     private static final Set<Logic> CALLBACK_LOGICS = Sets.newHashSet();
 
-    private UpgradeData() {
+    private UpgradeData(HeightLimitView heightLimitView) {
+        this.centerIndicesToUpgrade = new int[heightLimitView.getSectionCount()][];
     }
 
-    public UpgradeData(NbtCompound tag) {
-        this();
+    public UpgradeData(CompoundTag tag, HeightLimitView heightLimitView) {
+        this(heightLimitView);
         if (tag.contains("Indices", 10)) {
-            NbtCompound nbtCompound = tag.getCompound("Indices");
+            CompoundTag compoundTag = tag.getCompound("Indices");
             for (int i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
                 String string = String.valueOf(i);
-                if (!nbtCompound.contains(string, 11)) continue;
-                this.centerIndicesToUpgrade[i] = nbtCompound.getIntArray(string);
+                if (!compoundTag.contains(string, 11)) continue;
+                this.centerIndicesToUpgrade[i] = compoundTag.getIntArray(string);
             }
         }
         int j = tag.getInt("Sides");
@@ -94,7 +98,7 @@ public class UpgradeData {
         int n = chunkPos.getStartZ() + (bl5 && (bl || bl2) ? 14 : (bl4 ? 0 : 15));
         Direction[] directions = Direction.values();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (BlockPos blockPos : BlockPos.iterate(k, 0, m, l, world.getHeight() - 1, n)) {
+        for (BlockPos blockPos : BlockPos.iterate(k, world.getBottomHeightLimit(), m, l, world.getTopHeightLimit() - 1, n)) {
             BlockState blockState;
             BlockState blockState2 = blockState = world.getBlockState(blockPos);
             for (Direction direction : directions) {
@@ -115,7 +119,7 @@ public class UpgradeData {
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
         ChunkPos chunkPos = chunk.getPos();
         World worldAccess = chunk.getWorld();
-        for (i = 0; i < 16; ++i) {
+        for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
             ChunkSection chunkSection = chunk.getSectionArray()[i];
             int[] is = this.centerIndicesToUpgrade[i];
             this.centerIndicesToUpgrade[i] = null;
@@ -127,11 +131,11 @@ public class UpgradeData {
                 int k = j & 0xF;
                 int l = j >> 8 & 0xF;
                 int m = j >> 4 & 0xF;
-                mutable.set(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
+                mutable.set(chunkPos.getStartX() + k, chunkSection.getYOffset() + l, chunkPos.getStartZ() + m);
                 BlockState blockState2 = blockState = palettedContainer.get(j);
                 for (Direction direction : directions) {
                     mutable2.set(mutable, direction);
-                    if (mutable.getX() >> 4 != chunkPos.x || mutable.getZ() >> 4 != chunkPos.z) continue;
+                    if (ChunkSectionPos.getSectionCoord(mutable.getX()) != chunkPos.x || ChunkSectionPos.getSectionCoord(mutable.getZ()) != chunkPos.z) continue;
                     blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, worldAccess, mutable, mutable2);
                 }
                 Block.replace(blockState, blockState2, worldAccess, mutable, 18);
@@ -139,7 +143,7 @@ public class UpgradeData {
         }
         for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
             if (this.centerIndicesToUpgrade[i] != null) {
-                LOGGER.warn("Discarding update data for section {} for chunk ({} {})", (Object)i, (Object)chunkPos.x, (Object)chunkPos.z);
+                LOGGER.warn("Discarding update data for section {} for chunk ({} {})", (Object)worldAccess.getSection(i), (Object)chunkPos.x, (Object)chunkPos.z);
             }
             this.centerIndicesToUpgrade[i] = null;
         }
@@ -153,24 +157,24 @@ public class UpgradeData {
         return this.sidesToUpgrade.isEmpty();
     }
 
-    public NbtCompound toNbt() {
+    public CompoundTag toTag() {
         int i;
-        NbtCompound nbtCompound = new NbtCompound();
-        NbtCompound nbtCompound2 = new NbtCompound();
+        CompoundTag compoundTag = new CompoundTag();
+        CompoundTag compoundTag2 = new CompoundTag();
         for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
             String string = String.valueOf(i);
             if (this.centerIndicesToUpgrade[i] == null || this.centerIndicesToUpgrade[i].length == 0) continue;
-            nbtCompound2.putIntArray(string, this.centerIndicesToUpgrade[i]);
+            compoundTag2.putIntArray(string, this.centerIndicesToUpgrade[i]);
         }
-        if (!nbtCompound2.isEmpty()) {
-            nbtCompound.put("Indices", nbtCompound2);
+        if (!compoundTag2.isEmpty()) {
+            compoundTag.put("Indices", compoundTag2);
         }
         i = 0;
         for (EightWayDirection eightWayDirection : this.sidesToUpgrade) {
             i |= 1 << eightWayDirection.ordinal();
         }
-        nbtCompound.putByte("Sides", (byte)i);
-        return nbtCompound;
+        compoundTag.putByte("Sides", (byte)i);
+        return compoundTag;
     }
 
     static enum BuiltinLogic implements Logic

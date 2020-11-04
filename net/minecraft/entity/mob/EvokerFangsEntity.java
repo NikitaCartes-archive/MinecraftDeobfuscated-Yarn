@@ -11,7 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -38,7 +38,7 @@ extends Entity {
         this.warmup = warmup;
         this.setOwner(owner);
         this.yaw = yaw * 57.295776f;
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
     }
 
     @Override
@@ -60,18 +60,18 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.warmup = nbt.getInt("Warmup");
-        if (nbt.containsUuid("Owner")) {
-            this.ownerUuid = nbt.getUuid("Owner");
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        this.warmup = tag.getInt("Warmup");
+        if (tag.containsUuid("Owner")) {
+            this.ownerUuid = tag.getUuid("Owner");
         }
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putInt("Warmup", this.warmup);
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        tag.putInt("Warmup", this.warmup);
         if (this.ownerUuid != null) {
-            nbt.putUuid("Owner", this.ownerUuid);
+            tag.putUuid("Owner", this.ownerUuid);
         }
     }
 
@@ -105,7 +105,7 @@ extends Entity {
                 this.startedAttack = true;
             }
             if (--this.ticksLeft < 0) {
-                this.remove();
+                this.discard();
             }
         }
     }

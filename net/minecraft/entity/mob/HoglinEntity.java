@@ -37,7 +37,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -59,8 +59,8 @@ implements Monster,
 Hoglin {
     private static final TrackedData<Boolean> BABY = DataTracker.registerData(HoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int movementCooldownTicks;
-    private int timeInOverworld = 0;
-    private boolean cannotBeHunted = false;
+    private int timeInOverworld;
+    private boolean cannotBeHunted;
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super HoglinEntity>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ADULT, SensorType.HOGLIN_SPECIFIC_SENSOR);
     protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, new MemoryModuleType[]{MemoryModuleType.AVOID_TARGET, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleType.NEAREST_REPELLENT, MemoryModuleType.PACIFIED});
 
@@ -164,11 +164,11 @@ Hoglin {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (world.getRandom().nextFloat() < 0.2f) {
             this.setBaby(true);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -219,12 +219,12 @@ Hoglin {
     }
 
     @Override
-    protected boolean shouldDropXp() {
+    protected boolean canDropLootAndXp() {
         return true;
     }
 
     @Override
-    protected int getXpToDrop(PlayerEntity player) {
+    protected int getCurrentExperience(PlayerEntity player) {
         return this.experiencePoints;
     }
 
@@ -237,7 +237,7 @@ Hoglin {
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
-        return stack.getItem() == Items.CRIMSON_FUNGUS;
+        return stack.isOf(Items.CRIMSON_FUNGUS);
     }
 
     public boolean isAdult() {
@@ -251,23 +251,23 @@ Hoglin {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         if (this.isImmuneToZombification()) {
-            nbt.putBoolean("IsImmuneToZombification", true);
+            tag.putBoolean("IsImmuneToZombification", true);
         }
-        nbt.putInt("TimeInOverworld", this.timeInOverworld);
+        tag.putInt("TimeInOverworld", this.timeInOverworld);
         if (this.cannotBeHunted) {
-            nbt.putBoolean("CannotBeHunted", true);
+            tag.putBoolean("CannotBeHunted", true);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.setImmuneToZombification(nbt.getBoolean("IsImmuneToZombification"));
-        this.timeInOverworld = nbt.getInt("TimeInOverworld");
-        this.setCannotBeHunted(nbt.getBoolean("CannotBeHunted"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
+        this.timeInOverworld = tag.getInt("TimeInOverworld");
+        this.setCannotBeHunted(tag.getBoolean("CannotBeHunted"));
     }
 
     public void setImmuneToZombification(boolean immuneToZombification) {

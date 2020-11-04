@@ -7,11 +7,13 @@ import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import org.jetbrains.annotations.Nullable;
 
 public class EnderChestInventory
 extends SimpleInventory {
+    @Nullable
     private EnderChestBlockEntity activeBlockEntity;
 
     public EnderChestInventory() {
@@ -22,32 +24,36 @@ extends SimpleInventory {
         this.activeBlockEntity = blockEntity;
     }
 
+    public boolean method_31556(EnderChestBlockEntity enderChestBlockEntity) {
+        return this.activeBlockEntity == enderChestBlockEntity;
+    }
+
     @Override
-    public void readNbtList(NbtList nbtList) {
+    public void readTags(ListTag tags) {
         int i;
         for (i = 0; i < this.size(); ++i) {
             this.setStack(i, ItemStack.EMPTY);
         }
-        for (i = 0; i < nbtList.size(); ++i) {
-            NbtCompound nbtCompound = nbtList.getCompound(i);
-            int j = nbtCompound.getByte("Slot") & 0xFF;
+        for (i = 0; i < tags.size(); ++i) {
+            CompoundTag compoundTag = tags.getCompound(i);
+            int j = compoundTag.getByte("Slot") & 0xFF;
             if (j < 0 || j >= this.size()) continue;
-            this.setStack(j, ItemStack.fromNbt(nbtCompound));
+            this.setStack(j, ItemStack.fromTag(compoundTag));
         }
     }
 
     @Override
-    public NbtList toNbtList() {
-        NbtList nbtList = new NbtList();
+    public ListTag getTags() {
+        ListTag listTag = new ListTag();
         for (int i = 0; i < this.size(); ++i) {
             ItemStack itemStack = this.getStack(i);
             if (itemStack.isEmpty()) continue;
-            NbtCompound nbtCompound = new NbtCompound();
-            nbtCompound.putByte("Slot", (byte)i);
-            itemStack.writeNbt(nbtCompound);
-            nbtList.add(nbtCompound);
+            CompoundTag compoundTag = new CompoundTag();
+            compoundTag.putByte("Slot", (byte)i);
+            itemStack.toTag(compoundTag);
+            listTag.add(compoundTag);
         }
-        return nbtList;
+        return listTag;
     }
 
     @Override
@@ -61,7 +67,7 @@ extends SimpleInventory {
     @Override
     public void onOpen(PlayerEntity player) {
         if (this.activeBlockEntity != null) {
-            this.activeBlockEntity.onOpen();
+            this.activeBlockEntity.onOpen(player);
         }
         super.onOpen(player);
     }
@@ -69,7 +75,7 @@ extends SimpleInventory {
     @Override
     public void onClose(PlayerEntity player) {
         if (this.activeBlockEntity != null) {
-            this.activeBlockEntity.onClose();
+            this.activeBlockEntity.onClose(player);
         }
         super.onClose(player);
         this.activeBlockEntity = null;

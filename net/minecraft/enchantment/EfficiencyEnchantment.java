@@ -32,7 +32,7 @@ extends Enchantment {
 
     @Override
     public boolean isAcceptableItem(ItemStack stack) {
-        if (stack.getItem() == Items.SHEARS) {
+        if (stack.isOf(Items.SHEARS)) {
             return true;
         }
         return super.isAcceptableItem(stack);

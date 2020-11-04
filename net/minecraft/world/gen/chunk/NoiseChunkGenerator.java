@@ -347,8 +347,8 @@ extends ChunkGenerator {
         int k = chunkGeneratorSettings.getBedrockFloorY();
         int l = this.worldHeight - 1 - chunkGeneratorSettings.getBedrockCeilingY();
         int m = 5;
-        boolean bl = l + 4 >= 0 && l < this.worldHeight;
-        boolean bl3 = bl2 = k + 4 >= 0 && k < this.worldHeight;
+        boolean bl = l + 5 - 1 >= 0 && l < this.worldHeight;
+        boolean bl3 = bl2 = k + 5 - 1 >= 0 && k < this.worldHeight;
         if (!bl && !bl2) {
             return;
         }
@@ -375,8 +375,8 @@ extends ChunkGenerator {
         ChunkPos chunkPos = chunk.getPos();
         int i = chunkPos.x;
         int j = chunkPos.z;
-        int k = i << 4;
-        int l = j << 4;
+        int k = ChunkSectionPos.getBlockCoord(i);
+        int l = ChunkSectionPos.getBlockCoord(j);
         for (StructureFeature<?> structureFeature : StructureFeature.JIGSAW_STRUCTURES) {
             accessor.getStructuresWithChildren(ChunkSectionPos.from(chunkPos, 0), structureFeature).forEach(start -> {
                 for (StructurePiece structurePiece : start.getChildren()) {
@@ -417,7 +417,7 @@ extends ChunkGenerator {
                 this.sampleNoiseColumn(ds[1][o], i * this.noiseSizeX + n + 1, j * this.noiseSizeZ + o);
             }
             for (o = 0; o < this.noiseSizeZ; ++o) {
-                ChunkSection chunkSection = protoChunk.getSection(15);
+                ChunkSection chunkSection = protoChunk.getSection(protoChunk.getSectionCount() - 1);
                 chunkSection.lock();
                 for (int p = this.noiseSizeY - 1; p >= 0; --p) {
                     double d = ds[0][o][p];
@@ -431,8 +431,8 @@ extends ChunkGenerator {
                     for (int t = this.verticalNoiseResolution - 1; t >= 0; --t) {
                         int u = p * this.verticalNoiseResolution + t;
                         int v = u & 0xF;
-                        int w = u >> 4;
-                        if (chunkSection.getYOffset() >> 4 != w) {
+                        int w = protoChunk.getSectionIndex(u);
+                        if (protoChunk.getSectionIndex(chunkSection.getYOffset()) != w) {
                             chunkSection.unlock();
                             chunkSection = protoChunk.getSection(w);
                             chunkSection.lock();
@@ -563,7 +563,7 @@ extends ChunkGenerator {
         int j = region.getCenterChunkZ();
         Biome biome = region.getBiome(new ChunkPos(i, j).getStartPos());
         ChunkRandom chunkRandom = new ChunkRandom();
-        chunkRandom.setPopulationSeed(region.getSeed(), i << 4, j << 4);
+        chunkRandom.setPopulationSeed(region.getSeed(), ChunkSectionPos.getBlockCoord(i), ChunkSectionPos.getBlockCoord(j));
         SpawnHelper.populateEntities(region, biome, i, j, chunkRandom);
     }
 }

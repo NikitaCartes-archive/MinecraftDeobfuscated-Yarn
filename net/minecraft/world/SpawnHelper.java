@@ -31,6 +31,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.collection.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GravityField;
 import net.minecraft.util.math.MathHelper;
@@ -67,7 +68,7 @@ public final class SpawnHelper {
             MobEntity mobEntity;
             if (entity instanceof MobEntity && ((mobEntity = (MobEntity)entity).isPersistent() || mobEntity.cannotDespawn()) || (spawnGroup = entity.getType().getSpawnGroup()) == SpawnGroup.MISC) continue;
             BlockPos blockPos = entity.getBlockPos();
-            long l = ChunkPos.toLong(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+            long l = ChunkPos.toLong(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
             chunkSource.query(l, worldChunk -> {
                 SpawnSettings.SpawnDensity spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, worldChunk).getSpawnSettings().getSpawnDensity(entity.getType());
                 if (spawnDensity != null) {
@@ -83,10 +84,10 @@ public final class SpawnHelper {
         return DirectBiomeAccessType.INSTANCE.getBiome(0L, pos.getX(), pos.getY(), pos.getZ(), chunk.getBiomeArray());
     }
 
-    public static void spawn(ServerWorld world, WorldChunk chunk2, Info info, boolean spawnAnimals, boolean spawnMonsters, boolean rareSpawn) {
+    public static void spawn(ServerWorld world, WorldChunk chunk2, Info info, boolean spawnAnimals, boolean spawnMonsters, boolean shouldSpawnAnimals) {
         world.getProfiler().push("spawner");
         for (SpawnGroup spawnGroup : SPAWNABLE_GROUPS) {
-            if (!spawnAnimals && spawnGroup.isPeaceful() || !spawnMonsters && !spawnGroup.isPeaceful() || !rareSpawn && spawnGroup.isRare() || !info.isBelowCap(spawnGroup)) continue;
+            if (!spawnAnimals && spawnGroup.isPeaceful() || !spawnMonsters && !spawnGroup.isPeaceful() || !shouldSpawnAnimals && spawnGroup.isAnimal() || !info.isBelowCap(spawnGroup)) continue;
             SpawnHelper.spawnEntitiesInChunk(spawnGroup, world, chunk2, (entityType, blockPos, chunk) -> info.test(entityType, blockPos, chunk), (mobEntity, chunk) -> info.run(mobEntity, chunk));
         }
         world.getProfiler().pop();
@@ -94,7 +95,7 @@ public final class SpawnHelper {
 
     public static void spawnEntitiesInChunk(SpawnGroup group, ServerWorld world, WorldChunk chunk, Checker checker, Runner runner) {
         BlockPos blockPos = SpawnHelper.getSpawnPos(world, chunk);
-        if (blockPos.getY() < 1) {
+        if (blockPos.getY() < world.getBottomHeightLimit() + 1) {
             return;
         }
         SpawnHelper.spawnEntitiesInChunk(group, world, chunk, blockPos, checker, runner);
@@ -217,12 +218,12 @@ public final class SpawnHelper {
         return WeightedPicker.getRandom(random, list);
     }
 
-    private static boolean containsSpawnEntry(ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, SpawnSettings.SpawnEntry spawnEntry, BlockPos pos) {
-        return SpawnHelper.method_29950(world, structureAccessor, chunkGenerator, spawnGroup, pos, null).contains(spawnEntry);
+    private static boolean containsSpawnEntry(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, SpawnSettings.SpawnEntry spawnEntry, BlockPos blockPos) {
+        return SpawnHelper.method_29950(serverWorld, structureAccessor, chunkGenerator, spawnGroup, blockPos, null).contains(spawnEntry);
     }
 
     private static List<SpawnSettings.SpawnEntry> method_29950(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos blockPos, @Nullable Biome biome) {
-        if (spawnGroup == SpawnGroup.MONSTER && serverWorld.getBlockState(blockPos.down()).getBlock() == Blocks.NETHER_BRICKS && structureAccessor.getStructureAt(blockPos, false, StructureFeature.FORTRESS).hasChildren()) {
+        if (spawnGroup == SpawnGroup.MONSTER && serverWorld.getBlockState(blockPos.down()).isOf(Blocks.NETHER_BRICKS) && structureAccessor.getStructureAt(blockPos, false, StructureFeature.FORTRESS).hasChildren()) {
             return StructureFeature.FORTRESS.getMonsterSpawns();
         }
         return chunkGenerator.getEntitySpawnList(biome != null ? biome : serverWorld.getBiome(blockPos), structureAccessor, spawnGroup, blockPos);
@@ -233,7 +234,7 @@ public final class SpawnHelper {
         int i = chunkPos.getStartX() + world.random.nextInt(16);
         int j = chunkPos.getStartZ() + world.random.nextInt(16);
         int k = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i, j) + 1;
-        int l = world.random.nextInt(k + 1);
+        int l = world.random.nextInt(k - world.getBottomHeightLimit() + 1) + world.getBottomHeightLimit();
         return new BlockPos(i, l, j);
     }
 
@@ -281,12 +282,12 @@ public final class SpawnHelper {
 
     public static void populateEntities(ServerWorldAccess serverWorldAccess, Biome biome, int chunkX, int chunkZ, Random random) {
         SpawnSettings spawnSettings = biome.getSpawnSettings();
-        List<SpawnSettings.SpawnEntry> list = spawnSettings.getSpawnEntry(SpawnGroup.CREATURE);
+        List<SpawnSettings.SpawnEntry> list = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
         if (list.isEmpty()) {
             return;
         }
-        int i = chunkX << 4;
-        int j = chunkZ << 4;
+        int i = ChunkSectionPos.getBlockCoord(chunkX);
+        int j = ChunkSectionPos.getBlockCoord(chunkZ);
         while (random.nextFloat() < spawnSettings.getCreatureSpawnProbability()) {
             SpawnSettings.SpawnEntry spawnEntry = WeightedPicker.getRandom(random, list);
             int k = spawnEntry.minGroupSize + random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
@@ -340,7 +341,7 @@ public final class SpawnHelper {
             } while (!world.getBlockState(mutable).isAir());
             do {
                 mutable.move(Direction.DOWN);
-            } while (world.getBlockState(mutable).isAir() && mutable.getY() > 0);
+            } while (world.getBlockState(mutable).isAir() && mutable.getY() > world.getBottomHeightLimit());
         }
         if (SpawnRestriction.getLocation(entityType) == SpawnRestriction.Location.ON_GROUND && world.getBlockState((BlockPos)(blockPos = mutable.down())).canPathfindThrough(world, (BlockPos)blockPos, NavigationType.LAND)) {
             return blockPos;

@@ -3,36 +3,53 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class EndermiteEntityModel<T extends Entity>
-extends CompositeEntityModel<T> {
+extends class_5597<T> {
     private static final int[][] field_3366 = new int[][]{{4, 3, 2}, {6, 4, 5}, {3, 3, 1}, {1, 2, 1}};
     private static final int[][] field_3369 = new int[][]{{0, 0}, {0, 5}, {0, 14}, {0, 18}};
-    private static final int field_3367 = field_3366.length;
-    private final ModelPart[] field_3368 = new ModelPart[field_3367];
+    private final ModelPart field_27413;
+    private final ModelPart[] field_3368;
 
-    public EndermiteEntityModel() {
-        float f = -3.5f;
-        for (int i = 0; i < this.field_3368.length; ++i) {
-            this.field_3368[i] = new ModelPart(this, field_3369[i][0], field_3369[i][1]);
-            this.field_3368[i].addCuboid((float)field_3366[i][0] * -0.5f, 0.0f, (float)field_3366[i][2] * -0.5f, field_3366[i][0], field_3366[i][1], field_3366[i][2]);
-            this.field_3368[i].setPivot(0.0f, 24 - field_3366[i][1], f);
-            if (i >= this.field_3368.length - 1) continue;
-            f += (float)(field_3366[i][2] + field_3366[i + 1][2]) * 0.5f;
+    public EndermiteEntityModel(ModelPart modelPart) {
+        this.field_27413 = modelPart;
+        this.field_3368 = new ModelPart[4];
+        for (int i = 0; i < 4; ++i) {
+            this.field_3368[i] = modelPart.method_32086(EndermiteEntityModel.method_31997(i));
         }
     }
 
+    private static String method_31997(int i) {
+        return "segment" + i;
+    }
+
+    public static class_5607 method_31996() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        float f = -3.5f;
+        for (int i = 0; i < 4; ++i) {
+            lv2.method_32117(EndermiteEntityModel.method_31997(i), class_5606.method_32108().method_32101(field_3369[i][0], field_3369[i][1]).method_32097((float)field_3366[i][0] * -0.5f, 0.0f, (float)field_3366[i][2] * -0.5f, field_3366[i][0], field_3366[i][1], field_3366[i][2]), class_5603.method_32090(0.0f, 24 - field_3366[i][1], f));
+            if (i >= 3) continue;
+            f += (float)(field_3366[i][2] + field_3366[i + 1][2]) * 0.5f;
+        }
+        return class_5607.method_32110(lv, 64, 32);
+    }
+
     @Override
-    public Iterable<ModelPart> getParts() {
-        return Arrays.asList(this.field_3368);
+    public ModelPart method_32008() {
+        return this.field_27413;
     }
 
     @Override

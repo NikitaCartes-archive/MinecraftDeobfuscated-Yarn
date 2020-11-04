@@ -14,9 +14,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelRotation;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.AffineTransformation;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelVariant
@@ -26,9 +26,9 @@ implements ModelBakeSettings {
     private final boolean uvLock;
     private final int weight;
 
-    public ModelVariant(Identifier location, AffineTransformation rotation, boolean uvLock, int weight) {
+    public ModelVariant(Identifier location, AffineTransformation affineTransformation, boolean uvLock, int weight) {
         this.location = location;
-        this.rotation = rotation;
+        this.rotation = affineTransformation;
         this.uvLock = uvLock;
         this.weight = weight;
     }
@@ -43,7 +43,7 @@ implements ModelBakeSettings {
     }
 
     @Override
-    public boolean isUvLocked() {
+    public boolean isShaded() {
         return this.uvLock;
     }
 

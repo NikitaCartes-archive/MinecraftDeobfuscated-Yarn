@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TurtleEggBlock;
+import net.minecraft.class_5532;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -21,7 +22,6 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -48,7 +48,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -146,41 +146,41 @@ extends AnimalEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("HomePosX", this.getHomePos().getX());
-        nbt.putInt("HomePosY", this.getHomePos().getY());
-        nbt.putInt("HomePosZ", this.getHomePos().getZ());
-        nbt.putBoolean("HasEgg", this.hasEgg());
-        nbt.putInt("TravelPosX", this.getTravelPos().getX());
-        nbt.putInt("TravelPosY", this.getTravelPos().getY());
-        nbt.putInt("TravelPosZ", this.getTravelPos().getZ());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("HomePosX", this.getHomePos().getX());
+        tag.putInt("HomePosY", this.getHomePos().getY());
+        tag.putInt("HomePosZ", this.getHomePos().getZ());
+        tag.putBoolean("HasEgg", this.hasEgg());
+        tag.putInt("TravelPosX", this.getTravelPos().getX());
+        tag.putInt("TravelPosY", this.getTravelPos().getY());
+        tag.putInt("TravelPosZ", this.getTravelPos().getZ());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        int i = nbt.getInt("HomePosX");
-        int j = nbt.getInt("HomePosY");
-        int k = nbt.getInt("HomePosZ");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        int i = tag.getInt("HomePosX");
+        int j = tag.getInt("HomePosY");
+        int k = tag.getInt("HomePosZ");
         this.setHomePos(new BlockPos(i, j, k));
-        super.readCustomDataFromNbt(nbt);
-        this.setHasEgg(nbt.getBoolean("HasEgg"));
-        int l = nbt.getInt("TravelPosX");
-        int m = nbt.getInt("TravelPosY");
-        int n = nbt.getInt("TravelPosZ");
+        super.readCustomDataFromTag(tag);
+        this.setHasEgg(tag.getBoolean("HasEgg"));
+        int l = tag.getInt("TravelPosX");
+        int m = tag.getInt("TravelPosY");
+        int n = tag.getInt("TravelPosZ");
         this.setTravelPos(new BlockPos(l, m, n));
     }
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setHomePos(this.getBlockPos());
         this.setTravelPos(BlockPos.ORIGIN);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     public static boolean canSpawn(EntityType<TurtleEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return pos.getY() < world.getSeaLevel() + 4 && TurtleEggBlock.isSandBelow(world, pos) && world.getBaseLightLevel(pos, 0) > 8;
+        return pos.getY() < world.getSeaLevel() + 4 && TurtleEggBlock.isSand(world, pos) && world.getBaseLightLevel(pos, 0) > 8;
     }
 
     @Override
@@ -201,7 +201,7 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean isPushedByFluids() {
+    public boolean canFly() {
         return false;
     }
 
@@ -291,7 +291,7 @@ extends AnimalEntity {
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
-        return stack.getItem() == Blocks.SEAGRASS.asItem();
+        return stack.isOf(Blocks.SEAGRASS.asItem());
     }
 
     @Override
@@ -299,7 +299,7 @@ extends AnimalEntity {
         if (!this.isLandBound() && world.getFluidState(pos).isIn(FluidTags.WATER)) {
             return 10.0f;
         }
-        if (TurtleEggBlock.isSandBelow(world, pos)) {
+        if (TurtleEggBlock.isSand(world, pos)) {
             return 10.0f;
         }
         return world.getBrightness(pos) - 0.5f;
@@ -309,7 +309,7 @@ extends AnimalEntity {
     public void tickMovement() {
         BlockPos blockPos;
         super.tickMovement();
-        if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0 && TurtleEggBlock.isSandBelow(this.world, blockPos = this.getBlockPos())) {
+        if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0 && TurtleEggBlock.isSand(this.world, blockPos = this.getBlockPos())) {
             this.world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
         }
     }
@@ -408,7 +408,7 @@ extends AnimalEntity {
             double f = this.targetZ - this.turtle.getZ();
             double g = MathHelper.sqrt(d * d + e * e + f * f);
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-            this.turtle.bodyYaw = this.turtle.yaw = this.wrapDegrees(this.turtle.yaw, h, 90.0f);
+            this.turtle.bodyYaw = this.turtle.yaw = this.changeAngle(this.turtle.yaw, h, 90.0f);
             float i = (float)(this.speed * this.turtle.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             this.turtle.setMovementSpeed(MathHelper.lerp(0.125f, this.turtle.getMovementSpeed(), i));
             this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, (double)this.turtle.getMovementSpeed() * (e /= g) * 0.1, 0.0));
@@ -664,12 +664,12 @@ extends AnimalEntity {
             }
             if (this.turtle.getNavigation().isIdle()) {
                 Vec3d vec3d = Vec3d.ofBottomCenter(blockPos);
-                Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, 0.3141592741012573);
+                Vec3d vec3d2 = class_5532.method_31512(this.turtle, 16, 3, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
+                    vec3d2 = class_5532.method_31512(this.turtle, 8, 7, vec3d, 1.5707963705062866);
                 }
                 if (vec3d2 != null && !bl && !this.turtle.world.getBlockState(new BlockPos(vec3d2)).isOf(Blocks.WATER)) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 5, vec3d);
+                    vec3d2 = class_5532.method_31512(this.turtle, 16, 5, vec3d, 1.5707963705062866);
                 }
                 if (vec3d2 == null) {
                     this.noPath = true;
@@ -717,9 +717,9 @@ extends AnimalEntity {
         public void tick() {
             if (this.turtle.getNavigation().isIdle()) {
                 Vec3d vec3d = Vec3d.ofBottomCenter(this.turtle.getTravelPos());
-                Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, 0.3141592741012573);
+                Vec3d vec3d2 = class_5532.method_31512(this.turtle, 16, 3, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
+                    vec3d2 = class_5532.method_31512(this.turtle, 8, 7, vec3d, 1.5707963705062866);
                 }
                 if (vec3d2 != null) {
                     int i = MathHelper.floor(vec3d2.x);

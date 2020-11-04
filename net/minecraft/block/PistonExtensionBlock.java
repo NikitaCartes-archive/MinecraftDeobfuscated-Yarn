@@ -15,6 +15,8 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -51,12 +53,18 @@ extends BlockWithEntity {
 
     @Override
     @Nullable
-    public BlockEntity createBlockEntity(BlockView world) {
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return null;
     }
 
-    public static BlockEntity createBlockEntityPiston(BlockState pushedBlock, Direction dir, boolean extending, boolean bl) {
-        return new PistonBlockEntity(pushedBlock, dir, extending, bl);
+    public static BlockEntity createBlockEntityPiston(BlockPos blockPos, BlockState blockState, BlockState blockState2, Direction direction, boolean bl, boolean bl2) {
+        return new PistonBlockEntity(blockPos, blockState, blockState2, direction, bl, bl2);
+    }
+
+    @Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return PistonExtensionBlock.checkType(type, BlockEntityType.PISTON, PistonBlockEntity::tick);
     }
 
     @Override

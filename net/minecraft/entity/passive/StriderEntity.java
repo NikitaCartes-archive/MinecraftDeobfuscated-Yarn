@@ -52,7 +52,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -122,15 +122,15 @@ Saddleable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        this.saddledComponent.writeNbt(nbt);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        this.saddledComponent.toTag(tag);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.saddledComponent.readNbt(nbt);
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.saddledComponent.fromTag(tag);
     }
 
     @Override
@@ -196,7 +196,7 @@ Saddleable {
             return false;
         }
         PlayerEntity playerEntity = (PlayerEntity)entity;
-        return playerEntity.getMainHandStack().getItem() == Items.WARPED_FUNGUS_ON_A_STICK || playerEntity.getOffHandStack().getItem() == Items.WARPED_FUNGUS_ON_A_STICK;
+        return playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
     }
 
     @Override
@@ -207,10 +207,7 @@ Saddleable {
     @Override
     @Nullable
     public Entity getPrimaryPassenger() {
-        if (this.getPassengerList().isEmpty()) {
-            return null;
-        }
-        return this.getPassengerList().get(0);
+        return this.getFirstPassenger();
     }
 
     @Override
@@ -350,7 +347,7 @@ Saddleable {
 
     @Override
     protected boolean canAddPassenger(Entity passenger) {
-        return this.getPassengerList().isEmpty() && !this.isSubmergedIn(FluidTags.LAVA);
+        return !this.hasPassengers() && !this.isSubmergedIn(FluidTags.LAVA);
     }
 
     @Override
@@ -406,7 +403,7 @@ Saddleable {
         ActionResult actionResult = super.interactMob(player, hand);
         if (!actionResult.isAccepted()) {
             ItemStack itemStack = player.getStackInHand(hand);
-            if (itemStack.getItem() == Items.SADDLE) {
+            if (itemStack.isOf(Items.SADDLE)) {
                 return itemStack.useOnEntity(player, this, hand);
             }
             return ActionResult.PASS;
@@ -425,9 +422,9 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (this.isBaby()) {
-            return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+            return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         }
         if (this.random.nextInt(30) == 0) {
             MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
@@ -441,7 +438,7 @@ Saddleable {
         } else {
             entityData = new PassiveEntity.PassiveData(0.5f);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     private EntityData method_30336(ServerWorldAccess serverWorldAccess, LocalDifficulty localDifficulty, MobEntity mobEntity, @Nullable EntityData entityData) {

@@ -6,6 +6,7 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
@@ -20,6 +21,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
@@ -39,6 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -166,19 +169,19 @@ implements Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        if (neighborState.isOf(this) && direction.getAxis().isHorizontal()) {
-            ChestType chestType = neighborState.get(CHEST_TYPE);
-            if (state.get(CHEST_TYPE) == ChestType.SINGLE && chestType != ChestType.SINGLE && state.get(FACING) == neighborState.get(FACING) && ChestBlock.getFacing(neighborState) == direction.getOpposite()) {
+        if (newState.isOf(this) && direction.getAxis().isHorizontal()) {
+            ChestType chestType = newState.get(CHEST_TYPE);
+            if (state.get(CHEST_TYPE) == ChestType.SINGLE && chestType != ChestType.SINGLE && state.get(FACING) == newState.get(FACING) && ChestBlock.getFacing(newState) == direction.getOpposite()) {
                 return (BlockState)state.with(CHEST_TYPE, chestType.getOpposite());
             }
         } else if (ChestBlock.getFacing(state) == direction) {
             return (BlockState)state.with(CHEST_TYPE, ChestType.SINGLE);
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
@@ -281,6 +284,10 @@ implements Waterloggable {
         return Stats.CUSTOM.getOrCreateStat(Stats.OPEN_CHEST);
     }
 
+    public BlockEntityType<? extends ChestBlockEntity> getExpectedEntityType() {
+        return (BlockEntityType)this.entityTypeRetriever.get();
+    }
+
     @Nullable
     public static Inventory getInventory(ChestBlock block, BlockState state, World world, BlockPos pos, boolean ignoreBlocked) {
         return block.getBlockEntitySource(state, world, pos, ignoreBlocked).apply(INVENTORY_RETRIEVER).orElse(null);
@@ -325,8 +332,14 @@ implements Waterloggable {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new ChestBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new ChestBlockEntity(pos, state);
+    }
+
+    @Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return world.isClient ? ChestBlock.checkType(type, this.getExpectedEntityType(), ChestBlockEntity::clientTick) : null;
     }
 
     public static boolean isChestBlocked(WorldAccess world, BlockPos pos) {
@@ -377,6 +390,14 @@ implements Waterloggable {
     @Override
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
+    }
+
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof ChestBlockEntity) {
+            ((ChestBlockEntity)blockEntity).onScheduledTick();
+        }
     }
 }
 

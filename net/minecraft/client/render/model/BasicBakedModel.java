@@ -32,15 +32,15 @@ implements BakedModel {
     protected final ModelTransformation transformation;
     protected final ModelOverrideList itemPropertyOverrides;
 
-    public BasicBakedModel(List<BakedQuad> quads, Map<Direction, List<BakedQuad>> faceQuads, boolean usesAo, boolean isSideLit, boolean hasDepth, Sprite sprite, ModelTransformation transformation, ModelOverrideList itemPropertyOverrides) {
+    public BasicBakedModel(List<BakedQuad> quads, Map<Direction, List<BakedQuad>> faceQuads, boolean usesAo, boolean isSideLit, boolean hasDepth, Sprite sprite, ModelTransformation modelTransformation, ModelOverrideList modelOverrideList) {
         this.quads = quads;
         this.faceQuads = faceQuads;
         this.usesAo = usesAo;
         this.hasDepth = hasDepth;
         this.isSideLit = isSideLit;
         this.sprite = sprite;
-        this.transformation = transformation;
-        this.itemPropertyOverrides = itemPropertyOverrides;
+        this.transformation = modelTransformation;
+        this.itemPropertyOverrides = modelOverrideList;
     }
 
     @Override

@@ -57,6 +57,7 @@ public final class BlockTags {
     public static final Tag.Identified<Block> PIGLIN_REPELLENTS = BlockTags.register("piglin_repellents");
     public static final Tag.Identified<Block> GOLD_ORES = BlockTags.register("gold_ores");
     public static final Tag.Identified<Block> NON_FLAMMABLE_WOOD = BlockTags.register("non_flammable_wood");
+    public static final Tag.Identified<Block> CANDLES = BlockTags.register("candles");
     public static final Tag.Identified<Block> FLOWER_POTS = BlockTags.register("flower_pots");
     public static final Tag.Identified<Block> ENDERMAN_HOLDABLE = BlockTags.register("enderman_holdable");
     public static final Tag.Identified<Block> ICE = BlockTags.register("ice");
@@ -100,6 +101,9 @@ public final class BlockTags {
     public static final Tag.Identified<Block> INFINIBURN_END = BlockTags.register("infiniburn_end");
     public static final Tag.Identified<Block> BASE_STONE_OVERWORLD = BlockTags.register("base_stone_overworld");
     public static final Tag.Identified<Block> BASE_STONE_NETHER = BlockTags.register("base_stone_nether");
+    public static final Tag.Identified<Block> CANDLE_CAKES = BlockTags.register("candle_cakes");
+    public static final Tag.Identified<Block> CAULDRONS = BlockTags.register("cauldrons");
+    public static final Tag.Identified<Block> CRYSTAL_SOUND_BLOCKS = BlockTags.register("crystal_sound_blocks");
 
     private static Tag.Identified<Block> register(String id) {
         return REQUIRED_TAGS.add(id);

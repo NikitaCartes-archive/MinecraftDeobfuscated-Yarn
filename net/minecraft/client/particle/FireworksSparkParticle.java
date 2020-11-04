@@ -18,8 +18,8 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.FireworkItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -154,10 +154,10 @@ public class FireworksSparkParticle {
     extends NoRenderParticle {
         private int age;
         private final ParticleManager particleManager;
-        private NbtList explosions;
+        private ListTag explosions;
         private boolean flicker;
 
-        public FireworkParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, @Nullable NbtCompound tag) {
+        public FireworkParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, @Nullable CompoundTag tag) {
             super(world, x, y, z);
             this.velocityX = velocityX;
             this.velocityY = velocityY;
@@ -171,8 +171,8 @@ public class FireworksSparkParticle {
                 } else {
                     this.maxAge = this.explosions.size() * 2 - 1;
                     for (int i = 0; i < this.explosions.size(); ++i) {
-                        NbtCompound nbtCompound = this.explosions.getCompound(i);
-                        if (!nbtCompound.getBoolean("Flicker")) continue;
+                        CompoundTag compoundTag = this.explosions.getCompound(i);
+                        if (!compoundTag.getBoolean("Flicker")) continue;
                         this.flicker = true;
                         this.maxAge += 15;
                         break;
@@ -191,8 +191,8 @@ public class FireworksSparkParticle {
                     bl2 = true;
                 } else {
                     for (int i = 0; i < this.explosions.size(); ++i) {
-                        NbtCompound nbtCompound = this.explosions.getCompound(i);
-                        if (FireworkItem.Type.byId(nbtCompound.getByte("Type")) != FireworkItem.Type.LARGE_BALL) continue;
+                        CompoundTag compoundTag = this.explosions.getCompound(i);
+                        if (FireworkItem.Type.byId(compoundTag.getByte("Type")) != FireworkItem.Type.LARGE_BALL) continue;
                         bl2 = true;
                         break;
                     }
@@ -202,12 +202,12 @@ public class FireworksSparkParticle {
             }
             if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
                 int j = this.age / 2;
-                NbtCompound nbtCompound2 = this.explosions.getCompound(j);
-                FireworkItem.Type type = FireworkItem.Type.byId(nbtCompound2.getByte("Type"));
-                boolean bl3 = nbtCompound2.getBoolean("Trail");
-                boolean bl4 = nbtCompound2.getBoolean("Flicker");
-                int[] is = nbtCompound2.getIntArray("Colors");
-                int[] js = nbtCompound2.getIntArray("FadeColors");
+                CompoundTag compoundTag2 = this.explosions.getCompound(j);
+                FireworkItem.Type type = FireworkItem.Type.byId(compoundTag2.getByte("Type"));
+                boolean bl3 = compoundTag2.getBoolean("Trail");
+                boolean bl4 = compoundTag2.getBoolean("Flicker");
+                int[] is = compoundTag2.getIntArray("Colors");
+                int[] js = compoundTag2.getIntArray("FadeColors");
                 if (is.length == 0) {
                     is = new int[]{DyeColor.BLACK.getFireworkColor()};
                 }

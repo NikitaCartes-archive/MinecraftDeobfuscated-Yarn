@@ -44,7 +44,7 @@ public class GlDebug {
         return "Unknown (0x" + Integer.toHexString(opcode).toUpperCase() + ")";
     }
 
-    private static String getSource(int opcode) {
+    public static String getSource(int opcode) {
         switch (opcode) {
             case 33350: {
                 return "API";
@@ -68,7 +68,7 @@ public class GlDebug {
         return GlDebug.unknown(opcode);
     }
 
-    private static String getType(int opcode) {
+    public static String getType(int opcode) {
         switch (opcode) {
             case 33356: {
                 return "ERROR";
@@ -95,7 +95,7 @@ public class GlDebug {
         return GlDebug.unknown(opcode);
     }
 
-    private static String getSeverity(int opcode) {
+    public static String getSeverity(int opcode) {
         switch (opcode) {
             case 37190: {
                 return "HIGH";
@@ -113,8 +113,8 @@ public class GlDebug {
         return GlDebug.unknown(opcode);
     }
 
-    private static void info(int source, int type, int id, int severity, int messageLength, long message, long l) {
-        LOGGER.info("OpenGL debug message, id={}, source={}, type={}, severity={}, message={}", (Object)id, (Object)GlDebug.getSource(source), (Object)GlDebug.getType(type), (Object)GlDebug.getSeverity(severity), (Object)GLDebugMessageCallback.getMessage(messageLength, message));
+    private static void info(int source, int type, int id, int severity, int i, long l, long m) {
+        LOGGER.info("OpenGL debug message, id={}, source={}, type={}, severity={}, message={}", (Object)id, (Object)GlDebug.getSource(source), (Object)GlDebug.getType(type), (Object)GlDebug.getSeverity(severity), (Object)GLDebugMessageCallback.getMessage(i, l));
     }
 
     private static void registerConstant(int constant, String description) {
@@ -170,9 +170,6 @@ public class GlDebug {
         GlDebug.registerConstant(4, "GL11.GL_TRIANGLES");
         GlDebug.registerConstant(5, "GL11.GL_TRIANGLE_STRIP");
         GlDebug.registerConstant(6, "GL11.GL_TRIANGLE_FAN");
-        GlDebug.registerConstant(7, "GL11.GL_QUADS");
-        GlDebug.registerConstant(8, "GL11.GL_QUAD_STRIP");
-        GlDebug.registerConstant(9, "GL11.GL_POLYGON");
         GlDebug.registerConstant(0, "GL11.GL_ZERO");
         GlDebug.registerConstant(1, "GL11.GL_ONE");
         GlDebug.registerConstant(768, "GL11.GL_SRC_COLOR");

@@ -142,9 +142,9 @@ public class LookTargetUtil {
         return source.squaredDistanceTo(vec3d) < source.squaredDistanceTo(vec3d2) ? first : second;
     }
 
-    public static Optional<LivingEntity> getEntity(LivingEntity entity, MemoryModuleType<UUID> uuidMemoryModule) {
-        Optional<UUID> optional = entity.getBrain().getOptionalMemory(uuidMemoryModule);
-        return optional.map(uUID -> (LivingEntity)((ServerWorld)livingEntity.world).getEntity((UUID)uUID));
+    public static Optional<LivingEntity> getEntity(LivingEntity entity2, MemoryModuleType<UUID> uuidMemoryModule) {
+        Optional<UUID> optional = entity2.getBrain().getOptionalMemory(uuidMemoryModule);
+        return optional.map(uUID -> ((ServerWorld)livingEntity.world).getEntity((UUID)uUID)).map(entity -> entity instanceof LivingEntity ? (LivingEntity)entity : null);
     }
 
     public static Stream<VillagerEntity> streamSeenVillagers(VillagerEntity villager, Predicate<VillagerEntity> filter) {

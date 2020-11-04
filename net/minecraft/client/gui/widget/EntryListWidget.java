@@ -20,6 +20,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
@@ -119,11 +120,11 @@ implements Drawable {
         return this.children.size() - 1;
     }
 
-    protected int getEntryCount() {
+    protected int getItemCount() {
         return this.children().size();
     }
 
-    protected boolean isSelectedEntry(int index) {
+    protected boolean isSelectedItem(int index) {
         return Objects.equals(this.getSelected(), this.children().get(index));
     }
 
@@ -135,7 +136,7 @@ implements Drawable {
         int l = j + i;
         int m = MathHelper.floor(y - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
         int n = m / this.itemHeight;
-        if (x < (double)this.getScrollbarPositionX() && x >= (double)k && x <= (double)l && n >= 0 && m >= 0 && n < this.getEntryCount()) {
+        if (x < (double)this.getScrollbarPositionX() && x >= (double)k && x <= (double)l && n >= 0 && m >= 0 && n < this.getItemCount()) {
             return (E)((Entry)this.children().get(n));
         }
         return null;
@@ -156,7 +157,7 @@ implements Drawable {
     }
 
     protected int getMaxPosition() {
-        return this.getEntryCount() * this.itemHeight + this.headerHeight;
+        return this.getItemCount() * this.itemHeight + this.headerHeight;
     }
 
     protected void clickedHeader(int x, int y) {
@@ -168,7 +169,7 @@ implements Drawable {
     protected void renderBackground(MatrixStack matrices) {
     }
 
-    protected void renderDecorations(MatrixStack matrices, int mouseX, int mouseY) {
+    protected void renderDecorations(MatrixStack matrixStack, int i, int j) {
     }
 
     @Override
@@ -185,7 +186,7 @@ implements Drawable {
             this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             float f = 32.0f;
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(this.left, this.bottom, 0.0).texture((float)this.left / 32.0f, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0f).color(32, 32, 32, 255).next();
             bufferBuilder.vertex(this.right, this.bottom, 0.0).texture((float)this.right / 32.0f, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0f).color(32, 32, 32, 255).next();
             bufferBuilder.vertex(this.right, this.top, 0.0).texture((float)this.right / 32.0f, (float)(this.top + (int)this.getScrollAmount()) / 32.0f).color(32, 32, 32, 255).next();
@@ -204,7 +205,7 @@ implements Drawable {
             RenderSystem.depthFunc(519);
             float g = 32.0f;
             m = -100;
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(this.left, this.top, -100.0).texture(0.0f, (float)this.top / 32.0f).color(64, 64, 64, 255).next();
             bufferBuilder.vertex(this.left + this.width, this.top, -100.0).texture((float)this.width / 32.0f, (float)this.top / 32.0f).color(64, 64, 64, 255).next();
             bufferBuilder.vertex(this.left + this.width, 0.0, -100.0).texture((float)this.width / 32.0f, 0.0f).color(64, 64, 64, 255).next();
@@ -222,7 +223,7 @@ implements Drawable {
             RenderSystem.shadeModel(7425);
             RenderSystem.disableTexture();
             n = 4;
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(this.left, this.top + 4, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 0).next();
             bufferBuilder.vertex(this.right, this.top + 4, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 0).next();
             bufferBuilder.vertex(this.right, this.top, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 255).next();
@@ -241,7 +242,7 @@ implements Drawable {
             if (n < this.top) {
                 n = this.top;
             }
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(i, this.bottom, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(j, this.bottom, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(j, this.top, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 255).next();
@@ -379,7 +380,7 @@ implements Drawable {
         this.moveSelectionIf(direction, entry -> true);
     }
 
-    protected void ensureSelectedEntryVisible() {
+    protected void method_30015() {
         E entry = this.getSelected();
         if (entry != null) {
             this.setSelected(entry);
@@ -398,7 +399,7 @@ implements Drawable {
         if (!this.children().isEmpty()) {
             int k;
             int j = this.children().indexOf(this.getSelected());
-            while (j != (k = MathHelper.clamp(j + i, 0, this.getEntryCount() - 1))) {
+            while (j != (k = MathHelper.clamp(j + i, 0, this.getItemCount() - 1))) {
                 Entry entry = (Entry)this.children().get(k);
                 if (predicate.test(entry)) {
                     this.setSelected(entry);
@@ -416,7 +417,7 @@ implements Drawable {
     }
 
     protected void renderList(MatrixStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
-        int i = this.getEntryCount();
+        int i = this.getItemCount();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         for (int j = 0; j < i; ++j) {
@@ -428,20 +429,20 @@ implements Drawable {
             int n = this.itemHeight - 4;
             E entry = this.getEntry(j);
             int o = this.getRowWidth();
-            if (this.renderSelection && this.isSelectedEntry(j)) {
+            if (this.renderSelection && this.isSelectedItem(j)) {
                 p = this.left + this.width / 2 - o / 2;
                 int q = this.left + this.width / 2 + o / 2;
                 RenderSystem.disableTexture();
                 float f = this.isFocused() ? 1.0f : 0.5f;
                 RenderSystem.color4f(f, f, f, 1.0f);
-                bufferBuilder.begin(7, VertexFormats.POSITION);
+                bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
                 bufferBuilder.vertex(p, m + n + 2, 0.0).next();
                 bufferBuilder.vertex(q, m + n + 2, 0.0).next();
                 bufferBuilder.vertex(q, m - 2, 0.0).next();
                 bufferBuilder.vertex(p, m - 2, 0.0).next();
                 tessellator.draw();
                 RenderSystem.color4f(0.0f, 0.0f, 0.0f, 1.0f);
-                bufferBuilder.begin(7, VertexFormats.POSITION);
+                bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
                 bufferBuilder.vertex(p + 1, m + n + 1, 0.0).next();
                 bufferBuilder.vertex(q - 1, m + n + 1, 0.0).next();
                 bufferBuilder.vertex(q - 1, m - 1, 0.0).next();
@@ -458,7 +459,7 @@ implements Drawable {
         return this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
     }
 
-    public int getRowRight() {
+    public int method_31383() {
         return this.getRowLeft() + this.getRowWidth();
     }
 
@@ -490,8 +491,8 @@ implements Drawable {
         return bl;
     }
 
-    private void setEntryParentList(Entry<E> entry) {
-        ((Entry)entry).parentList = this;
+    private void method_29621(Entry<E> entry) {
+        ((Entry)entry).list = this;
     }
 
     @Override
@@ -521,14 +522,14 @@ implements Drawable {
         @Override
         public E set(int i, E entry) {
             Entry entry2 = (Entry)this.entries.set(i, entry);
-            EntryListWidget.this.setEntryParentList(entry);
+            EntryListWidget.this.method_29621(entry);
             return entry2;
         }
 
         @Override
         public void add(int i, E entry) {
             this.entries.add(i, entry);
-            EntryListWidget.this.setEntryParentList(entry);
+            EntryListWidget.this.method_29621(entry);
         }
 
         @Override
@@ -561,13 +562,13 @@ implements Drawable {
     public static abstract class Entry<E extends Entry<E>>
     implements Element {
         @Deprecated
-        private EntryListWidget<E> parentList;
+        private EntryListWidget<E> list;
 
         public abstract void render(MatrixStack var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, boolean var9, float var10);
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {
-            return Objects.equals(this.parentList.getEntryAtPosition(mouseX, mouseY), this);
+            return Objects.equals(this.list.getEntryAtPosition(mouseX, mouseY), this);
         }
     }
 

@@ -17,7 +17,7 @@ implements ParticleEffect {
     private static final ParticleEffect.Factory<DefaultParticleType> PARAMETER_FACTORY = new ParticleEffect.Factory<DefaultParticleType>(){
 
         @Override
-        public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
+        public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, StringReader stringReader) {
             return (DefaultParticleType)particleType;
         }
 

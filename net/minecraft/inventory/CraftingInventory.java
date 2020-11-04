@@ -7,8 +7,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
-import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -92,9 +92,9 @@ RecipeInputProvider {
     }
 
     @Override
-    public void provideRecipeInputs(RecipeMatcher finder) {
+    public void provideRecipeInputs(RecipeFinder finder) {
         for (ItemStack itemStack : this.stacks) {
-            finder.addUnenchantedInput(itemStack);
+            finder.addNormalItem(itemStack);
         }
     }
 }

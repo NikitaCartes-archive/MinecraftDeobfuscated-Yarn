@@ -10,7 +10,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockBox;
@@ -26,7 +25,7 @@ import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public abstract class TrunkPlacer {
-    public static final Codec<TrunkPlacer> TYPE_CODEC = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::getType, TrunkPlacerType::getCodec);
+    public static final Codec<TrunkPlacer> CODEC = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::getType, TrunkPlacerType::getCodec);
     protected final int baseHeight;
     protected final int firstRandomHeight;
     protected final int secondRandomHeight;
@@ -58,10 +57,7 @@ public abstract class TrunkPlacer {
     }
 
     private static boolean canGenerate(TestableWorld world, BlockPos pos) {
-        return world.testBlockState(pos, state -> {
-            Block block = state.getBlock();
-            return Feature.isSoil(block) && !state.isOf(Blocks.GRASS_BLOCK) && !state.isOf(Blocks.MYCELIUM);
-        });
+        return world.testBlockState(pos, state -> Feature.isSoil(state) && !state.isOf(Blocks.GRASS_BLOCK) && !state.isOf(Blocks.MYCELIUM));
     }
 
     protected static void setToDirt(ModifiableTestableWorld world, BlockPos pos) {

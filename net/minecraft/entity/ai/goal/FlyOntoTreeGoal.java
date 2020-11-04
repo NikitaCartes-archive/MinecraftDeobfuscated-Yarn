@@ -3,9 +3,9 @@
  */
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.class_5534;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.BlockTags;
@@ -26,7 +26,7 @@ extends WanderAroundFarGoal {
     protected Vec3d getWanderTarget() {
         Vec3d vec3d = null;
         if (this.mob.isTouchingWater()) {
-            vec3d = TargetFinder.findGroundTarget(this.mob, 15, 15);
+            vec3d = class_5534.method_31527(this.mob, 15, 15);
         }
         if (this.mob.getRandom().nextFloat() >= this.probability) {
             vec3d = this.getTreeTarget();
@@ -41,9 +41,9 @@ extends WanderAroundFarGoal {
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
         Iterable<BlockPos> iterable = BlockPos.iterate(MathHelper.floor(this.mob.getX() - 3.0), MathHelper.floor(this.mob.getY() - 6.0), MathHelper.floor(this.mob.getZ() - 3.0), MathHelper.floor(this.mob.getX() + 3.0), MathHelper.floor(this.mob.getY() + 6.0), MathHelper.floor(this.mob.getZ() + 3.0));
         for (BlockPos blockPos2 : iterable) {
-            Block block;
+            BlockState blockState;
             boolean bl;
-            if (blockPos.equals(blockPos2) || !(bl = (block = this.mob.world.getBlockState(mutable2.set(blockPos2, Direction.DOWN)).getBlock()) instanceof LeavesBlock || block.isIn(BlockTags.LOGS)) || !this.mob.world.isAir(blockPos2) || !this.mob.world.isAir(mutable.set(blockPos2, Direction.UP))) continue;
+            if (blockPos.equals(blockPos2) || !(bl = (blockState = this.mob.world.getBlockState(mutable2.set(blockPos2, Direction.DOWN))).getBlock() instanceof LeavesBlock || blockState.isIn(BlockTags.LOGS)) || !this.mob.world.isAir(blockPos2) || !this.mob.world.isAir(mutable.set(blockPos2, Direction.UP))) continue;
             return Vec3d.ofBottomCenter(blockPos2);
         }
         return null;

@@ -31,7 +31,7 @@ public interface Phase {
     public PhaseType<? extends Phase> getType();
 
     @Nullable
-    public Vec3d getPathTarget();
+    public Vec3d getTarget();
 
     public float modifyDamageTaken(DamageSource var1, float var2);
 }

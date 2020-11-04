@@ -58,9 +58,9 @@ public final class EntityPredicates {
     public static final Predicate<Entity> EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL = entity -> !(entity instanceof PlayerEntity) || !entity.isSpectator() && !((PlayerEntity)entity).isCreative() && entity.world.getDifficulty() != Difficulty.PEACEFUL;
     public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
 
-    public static Predicate<Entity> maxDistance(double x, double y, double z, double max) {
-        double d = max * max;
-        return entity -> entity != null && entity.squaredDistanceTo(x, y, z) <= d;
+    public static Predicate<Entity> maxDistance(double x, double y, double z, double d) {
+        double e = d * d;
+        return entity -> entity != null && entity.squaredDistanceTo(x, y, z) <= e;
     }
 
     public static Predicate<Entity> canBePushedBy(Entity entity) {

@@ -9,7 +9,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -48,21 +50,21 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
+    protected void writeCustomDataToTag(CompoundTag tag) {
         if (this.ownerUuid != null) {
-            nbt.putUuid("Owner", this.ownerUuid);
+            tag.putUuid("Owner", this.ownerUuid);
         }
         if (this.leftOwner) {
-            nbt.putBoolean("LeftOwner", true);
+            tag.putBoolean("LeftOwner", true);
         }
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        if (nbt.containsUuid("Owner")) {
-            this.ownerUuid = nbt.getUuid("Owner");
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        if (tag.containsUuid("Owner")) {
+            this.ownerUuid = tag.getUuid("Owner");
         }
-        this.leftOwner = nbt.getBoolean("LeftOwner");
+        this.leftOwner = tag.getBoolean("LeftOwner");
     }
 
     @Override
@@ -150,14 +152,30 @@ extends Entity {
         this.yaw = ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
     }
 
-    protected static float updateRotation(float prevRot, float newRot) {
-        while (newRot - prevRot < -180.0f) {
-            prevRot -= 360.0f;
+    protected static float updateRotation(float f, float g) {
+        while (g - f < -180.0f) {
+            f -= 360.0f;
         }
-        while (newRot - prevRot >= 180.0f) {
-            prevRot += 360.0f;
+        while (g - f >= 180.0f) {
+            f += 360.0f;
         }
-        return MathHelper.lerp(0.2f, prevRot, newRot);
+        return MathHelper.lerp(0.2f, f, g);
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        Entity entity = this.getOwner();
+        return new EntitySpawnS2CPacket(this, entity == null ? 0 : entity.getEntityId());
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+        super.onSpawnPacket(packet);
+        Entity entity = this.world.getEntityById(packet.getEntityData());
+        if (entity != null) {
+            this.setOwner(entity);
+        }
     }
 }
 

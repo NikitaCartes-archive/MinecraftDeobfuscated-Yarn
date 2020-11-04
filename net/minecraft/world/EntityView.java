@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.class_5575;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -26,11 +27,13 @@ public interface EntityView {
      * 
      * @return a list of entities within a box, excluding the given entity, all satisfying the given predicate
      * 
-     * @param except the entity the box logically surrounds; this entity is ignored if it is inside the box
+     * @param except the entity the box logically surrounds. This entity is ignored if it is inside the box.
      * @param box the box in which to search for entities
-     * @param predicate a predicate which entities must satisfy in order to be included in the returned list
+     * @param predicate a predicate which entities must satisfy in order to be included in the returned list.
      */
-    public List<Entity> getOtherEntities(@Nullable Entity var1, Box var2, @Nullable Predicate<? super Entity> var3);
+    public List<Entity> getOtherEntities(@Nullable Entity var1, Box var2, Predicate<? super Entity> var3);
+
+    public <T extends Entity> List<T> getEntitiesByType(class_5575<Entity, T> var1, Box var2, Predicate<? super T> var3);
 
     /**
      * Computes a list of entities within some box whose runtime Java class is the same as or is
@@ -42,10 +45,8 @@ public interface EntityView {
      * @param box the box in which to search for entities
      * @param predicate a predicate which entities must satisfy in order to be included in the returned list
      */
-    public <T extends Entity> List<T> getEntitiesByClass(Class<? extends T> var1, Box var2, @Nullable Predicate<? super T> var3);
-
-    default public <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
-        return this.getEntitiesByClass(entityClass, box, predicate);
+    default public <T extends Entity> List<T> getEntitiesByClass(Class<T> entityClass, Box box, Predicate<? super T> predicate) {
+        return this.getEntitiesByType(class_5575.method_31795(entityClass), box, predicate);
     }
 
     public List<? extends PlayerEntity> getPlayers();
@@ -54,10 +55,10 @@ public interface EntityView {
      * Computes a list of entities within some box, excluding the given entity, that are not spectators.
      * 
      * @return a list of entities within a box, excluding the given entity
-     * @see #getOtherEntities(Entity, Box, Predicate)
+     * @see #getSurroundingEntities(Entity, Box, Predicate)
      * @see Entity#isSpectator()
      * 
-     * @param except the entity the box logically surrounds; this entity is ignored if it is inside the box
+     * @param except the entity the box logically surrounds. This entity is ignored if it is inside the box.
      * @param box the box in which to search for entities
      */
     default public List<Entity> getOtherEntities(@Nullable Entity except, Box box) {
@@ -69,18 +70,14 @@ public interface EntityView {
             return true;
         }
         for (Entity entity2 : this.getOtherEntities(entity, shape.getBoundingBox())) {
-            if (entity2.removed || !entity2.inanimate || entity != null && entity2.isConnectedThroughVehicle(entity) || !VoxelShapes.matchesAnywhere(shape, VoxelShapes.cuboid(entity2.getBoundingBox()), BooleanBiFunction.AND)) continue;
+            if (entity2.isRemoved() || !entity2.inanimate || entity != null && entity2.isConnectedThroughVehicle(entity) || !VoxelShapes.matchesAnywhere(shape, VoxelShapes.cuboid(entity2.getBoundingBox()), BooleanBiFunction.AND)) continue;
             return false;
         }
         return true;
     }
 
-    default public <T extends Entity> List<T> getNonSpectatingEntities(Class<? extends T> entityClass, Box box) {
+    default public <T extends Entity> List<T> getNonSpectatingEntities(Class<T> entityClass, Box box) {
         return this.getEntitiesByClass(entityClass, box, EntityPredicates.EXCEPT_SPECTATOR);
-    }
-
-    default public <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> entityClass, Box box) {
-        return this.getEntitiesIncludingUngeneratedChunks(entityClass, box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
     default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity2, Box box, Predicate<Entity> predicate) {
@@ -143,12 +140,7 @@ public interface EntityView {
 
     @Nullable
     default public <T extends LivingEntity> T getClosestEntity(Class<? extends T> entityClass, TargetPredicate targetPredicate, @Nullable LivingEntity entity, double x, double y, double z, Box box) {
-        return this.getClosestEntity(this.getEntitiesByClass(entityClass, box, null), targetPredicate, entity, x, y, z);
-    }
-
-    @Nullable
-    default public <T extends LivingEntity> T getClosestEntityIncludingUngeneratedChunks(Class<? extends T> entityClass, TargetPredicate targetPredicate, @Nullable LivingEntity entity, double x, double y, double z, Box box) {
-        return this.getClosestEntity(this.getEntitiesIncludingUngeneratedChunks(entityClass, box, null), targetPredicate, entity, x, y, z);
+        return (T)this.getClosestEntity(this.getEntitiesByClass(entityClass, box, livingEntity -> true), targetPredicate, entity, x, y, z);
     }
 
     @Nullable
@@ -174,12 +166,12 @@ public interface EntityView {
         return list;
     }
 
-    default public <T extends LivingEntity> List<T> getTargets(Class<? extends T> entityClass, TargetPredicate targetPredicate, LivingEntity targetingEntity, Box box) {
-        List<T> list = this.getEntitiesByClass(entityClass, box, null);
+    default public <T extends LivingEntity> List<T> getTargets(Class<T> entityClass, TargetPredicate targetPredicate, LivingEntity targetingEntity, Box box) {
+        List<LivingEntity> list = this.getEntitiesByClass(entityClass, box, livingEntity -> true);
         ArrayList<LivingEntity> list2 = Lists.newArrayList();
-        for (LivingEntity livingEntity : list) {
-            if (!targetPredicate.test(targetingEntity, livingEntity)) continue;
-            list2.add(livingEntity);
+        for (LivingEntity livingEntity2 : list) {
+            if (!targetPredicate.test(targetingEntity, livingEntity2)) continue;
+            list2.add(livingEntity2);
         }
         return list2;
     }

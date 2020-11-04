@@ -7,7 +7,7 @@ import com.mojang.serialization.Lifecycle;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -30,10 +30,10 @@ public interface SaveProperties {
 
     public void addServerBrand(String var1, boolean var2);
 
-    default public void populateCrashReport(CrashReportSection reportSection) {
-        reportSection.add("Known server brands", () -> String.join((CharSequence)", ", this.getServerBrands()));
-        reportSection.add("Level was modded", () -> Boolean.toString(this.isModded()));
-        reportSection.add("Level storage version", () -> {
+    default public void populateCrashReport(CrashReportSection crashReportSection) {
+        crashReportSection.add("Known server brands", () -> String.join((CharSequence)", ", this.getServerBrands()));
+        crashReportSection.add("Level was modded", () -> Boolean.toString(this.isModded()));
+        crashReportSection.add("Level storage version", () -> {
             int i = this.getVersion();
             return String.format("0x%05X - %s", i, this.getFormatName(i));
         });
@@ -52,16 +52,16 @@ public interface SaveProperties {
     }
 
     @Nullable
-    public NbtCompound getCustomBossEvents();
+    public CompoundTag getCustomBossEvents();
 
-    public void setCustomBossEvents(@Nullable NbtCompound var1);
+    public void setCustomBossEvents(@Nullable CompoundTag var1);
 
     public ServerWorldProperties getMainWorldProperties();
 
     @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo();
 
-    public NbtCompound cloneWorldNbt(DynamicRegistryManager var1, @Nullable NbtCompound var2);
+    public CompoundTag cloneWorldTag(DynamicRegistryManager var1, @Nullable CompoundTag var2);
 
     public boolean isHardcore();
 
@@ -85,11 +85,11 @@ public interface SaveProperties {
 
     public GameRules getGameRules();
 
-    public NbtCompound getPlayerData();
+    public CompoundTag getPlayerData();
 
-    public NbtCompound getDragonFight();
+    public CompoundTag getDragonFight();
 
-    public void setDragonFight(NbtCompound var1);
+    public void setDragonFight(CompoundTag var1);
 
     public GeneratorOptions getGeneratorOptions();
 

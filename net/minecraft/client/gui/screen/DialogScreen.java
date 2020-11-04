@@ -7,8 +7,8 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -20,7 +20,7 @@ public class DialogScreen
 extends Screen {
     private final StringVisitable message;
     private final ImmutableList<ChoiceButton> choiceButtons;
-    private MultilineText lines = MultilineText.EMPTY;
+    private class_5489 lines = class_5489.field_26528;
     private int linesY;
     private int buttonWidth;
 
@@ -43,8 +43,8 @@ extends Screen {
         }
         int i = 5 + this.buttonWidth + 5;
         int j = i * this.choiceButtons.size();
-        this.lines = MultilineText.create(this.textRenderer, this.message, j);
-        int k = this.lines.count() * this.textRenderer.fontHeight;
+        this.lines = class_5489.method_30890(this.textRenderer, this.message, j);
+        int k = this.lines.method_30887() * this.textRenderer.fontHeight;
         this.linesY = (int)((double)height / 2.0 - (double)k / 2.0);
         int l = this.linesY + k + this.textRenderer.fontHeight * 2;
         int m = (int)((double)width / 2.0 - (double)j / 2.0);
@@ -58,7 +58,7 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackgroundTexture(0);
         DialogScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.linesY - this.textRenderer.fontHeight * 2, -1);
-        this.lines.drawCenterWithShadow(matrices, this.width / 2, this.linesY);
+        this.lines.method_30888(matrices, this.width / 2, this.linesY);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

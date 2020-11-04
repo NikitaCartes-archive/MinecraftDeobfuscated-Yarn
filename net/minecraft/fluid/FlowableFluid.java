@@ -340,7 +340,7 @@ extends Fluid {
         if (block instanceof FluidFillable) {
             return ((FluidFillable)((Object)block)).canFillWithFluid(world, pos, state, fluid);
         }
-        if (block instanceof DoorBlock || block.isIn(BlockTags.SIGNS) || block == Blocks.LADDER || block == Blocks.SUGAR_CANE || block == Blocks.BUBBLE_COLUMN) {
+        if (block instanceof DoorBlock || state.isIn(BlockTags.SIGNS) || state.isOf(Blocks.LADDER) || state.isOf(Blocks.SUGAR_CANE) || state.isOf(Blocks.BUBBLE_COLUMN)) {
             return false;
         }
         Material material = state.getMaterial();
@@ -379,7 +379,7 @@ extends Fluid {
         this.tryFlow(world, pos, state);
     }
 
-    protected static int getBlockStateLevel(FluidState state) {
+    protected static int method_15741(FluidState state) {
         if (state.isStill()) {
             return 0;
         }

@@ -18,7 +18,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -37,7 +37,6 @@ extends AbstractMinecartEntity
 implements Inventory,
 NamedScreenHandlerFactory {
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
-    private boolean field_7733 = true;
     @Nullable
     private Identifier lootTableId;
     private long lootSeed;
@@ -118,49 +117,42 @@ NamedScreenHandlerFactory {
 
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
-        if (this.removed) {
+        if (this.isRemoved()) {
             return false;
         }
         return !(player.squaredDistanceTo(this) > 64.0);
     }
 
     @Override
-    @Nullable
-    public Entity moveToWorld(ServerWorld destination) {
-        this.field_7733 = false;
-        return super.moveToWorld(destination);
-    }
-
-    @Override
-    public void remove() {
-        if (!this.world.isClient && this.field_7733) {
+    public void remove(Entity.RemovalReason reason) {
+        if (!this.world.isClient && reason.shouldDestroy()) {
             ItemScatterer.spawn(this.world, this, (Inventory)this);
         }
-        super.remove();
+        super.remove(reason);
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         if (this.lootTableId != null) {
-            nbt.putString("LootTable", this.lootTableId.toString());
+            tag.putString("LootTable", this.lootTableId.toString());
             if (this.lootSeed != 0L) {
-                nbt.putLong("LootTableSeed", this.lootSeed);
+                tag.putLong("LootTableSeed", this.lootSeed);
             }
         } else {
-            Inventories.writeNbt(nbt, this.inventory);
+            Inventories.toTag(tag, this.inventory);
         }
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if (nbt.contains("LootTable", 8)) {
-            this.lootTableId = new Identifier(nbt.getString("LootTable"));
-            this.lootSeed = nbt.getLong("LootTableSeed");
+        if (tag.contains("LootTable", 8)) {
+            this.lootTableId = new Identifier(tag.getString("LootTable"));
+            this.lootSeed = tag.getLong("LootTableSeed");
         } else {
-            Inventories.readNbt(nbt, this.inventory);
+            Inventories.fromTag(tag, this.inventory);
         }
     }
 
@@ -180,6 +172,9 @@ NamedScreenHandlerFactory {
         if (this.lootTableId == null) {
             int i = 15 - ScreenHandler.calculateComparatorOutput(this);
             f += (float)i * 0.001f;
+        }
+        if (this.isTouchingWater()) {
+            f *= 0.95f;
         }
         this.setVelocity(this.getVelocity().multiply(f, 0.0, f));
     }

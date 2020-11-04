@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.List;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -13,6 +14,7 @@ import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.GameRules;
 
@@ -68,7 +70,7 @@ extends TrackTargetGoal {
     protected void callSameTypeForRevenge() {
         double d = this.getFollowRange();
         Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0, d);
-        List<?> list = this.mob.world.getEntitiesIncludingUngeneratedChunks(this.mob.getClass(), box);
+        List<Entity> list = this.mob.world.getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
         for (MobEntity mobEntity : list) {
             if (this.mob == mobEntity || mobEntity.getTarget() != null || this.mob instanceof TameableEntity && ((TameableEntity)this.mob).getOwner() != ((TameableEntity)mobEntity).getOwner() || mobEntity.isTeammate(this.mob.getAttacker())) continue;
             if (this.noHelpTypes != null) {

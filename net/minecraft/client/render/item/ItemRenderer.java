@@ -29,6 +29,7 @@ import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexConsumers;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.item.ItemModels;
@@ -47,7 +48,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -60,17 +61,19 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ItemRenderer
-implements SynchronousResourceReloader {
+implements SynchronousResourceReloadListener {
     public static final Identifier ENCHANTED_ITEM_GLINT = new Identifier("textures/misc/enchanted_item_glint.png");
     private static final Set<Item> WITHOUT_MODELS = Sets.newHashSet(Items.AIR);
     public float zOffset;
     private final ItemModels models;
     private final TextureManager textureManager;
     private final ItemColors colorMap;
+    private final BuiltinModelItemRenderer field_27770;
 
-    public ItemRenderer(TextureManager manager, BakedModelManager bakery, ItemColors colorMap) {
+    public ItemRenderer(TextureManager manager, BakedModelManager bakery, ItemColors colorMap, BuiltinModelItemRenderer builtinModelItemRenderer) {
         this.textureManager = manager;
         this.models = new ItemModels(bakery);
+        this.field_27770 = builtinModelItemRenderer;
         for (Item item : Registry.ITEM) {
             if (WITHOUT_MODELS.contains(item)) continue;
             this.models.putModel(item, new ModelIdentifier(Registry.ITEM.getId(item), "inventory"));
@@ -100,19 +103,19 @@ implements SynchronousResourceReloader {
         }
         matrices.push();
         boolean bl2 = bl = renderMode == ModelTransformation.Mode.GUI || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
-        if (stack.getItem() == Items.TRIDENT && bl) {
+        if (stack.isOf(Items.TRIDENT) && bl) {
             model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
         }
         model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
         matrices.translate(-0.5, -0.5, -0.5);
-        if (model.isBuiltin() || stack.getItem() == Items.TRIDENT && !bl) {
-            BuiltinModelItemRenderer.INSTANCE.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
+        if (model.isBuiltin() || stack.isOf(Items.TRIDENT) && !bl) {
+            this.field_27770.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
         } else {
             VertexConsumer vertexConsumer;
             Block block;
             boolean bl22 = renderMode != ModelTransformation.Mode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem ? !((block = ((BlockItem)stack.getItem()).getBlock()) instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock) : true;
             RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl22);
-            if (stack.getItem() == Items.COMPASS && stack.hasGlint()) {
+            if (stack.isOf(Items.COMPASS) && stack.hasGlint()) {
                 matrices.push();
                 MatrixStack.Entry entry = matrices.peek();
                 if (renderMode == ModelTransformation.Mode.GUI) {
@@ -132,32 +135,32 @@ implements SynchronousResourceReloader {
 
     public static VertexConsumer getArmorGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, boolean solid, boolean glint) {
         if (glint) {
-            return VertexConsumers.union(provider.getBuffer(solid ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), provider.getBuffer(layer));
+            return VertexConsumers.dual(provider.getBuffer(solid ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), provider.getBuffer(layer));
         }
         return provider.getBuffer(layer);
     }
 
     public static VertexConsumer getCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
-        return VertexConsumers.union(new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()), provider.getBuffer(layer));
+        return VertexConsumers.dual(new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()), provider.getBuffer(layer));
     }
 
     public static VertexConsumer getDirectCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
-        return VertexConsumers.union(new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry.getModel(), entry.getNormal()), provider.getBuffer(layer));
+        return VertexConsumers.dual(new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry.getModel(), entry.getNormal()), provider.getBuffer(layer));
     }
 
     public static VertexConsumer getItemGlintConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
         if (glint) {
             if (MinecraftClient.isFabulousGraphicsOrBetter() && layer == TexturedRenderLayers.getItemEntityTranslucentCull()) {
-                return VertexConsumers.union(vertexConsumers.getBuffer(RenderLayer.method_30676()), vertexConsumers.getBuffer(layer));
+                return VertexConsumers.dual(vertexConsumers.getBuffer(RenderLayer.method_30676()), vertexConsumers.getBuffer(layer));
             }
-            return VertexConsumers.union(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer));
+            return VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer));
         }
         return vertexConsumers.getBuffer(layer);
     }
 
     public static VertexConsumer getDirectItemGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, boolean solid, boolean glint) {
         if (glint) {
-            return VertexConsumers.union(provider.getBuffer(solid ? RenderLayer.getDirectGlint() : RenderLayer.getDirectEntityGlint()), provider.getBuffer(layer));
+            return VertexConsumers.dual(provider.getBuffer(solid ? RenderLayer.getDirectGlint() : RenderLayer.getDirectEntityGlint()), provider.getBuffer(layer));
         }
         return provider.getBuffer(layer);
     }
@@ -178,8 +181,7 @@ implements SynchronousResourceReloader {
     }
 
     public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-        Item item = stack.getItem();
-        BakedModel bakedModel = item == Items.TRIDENT ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : this.models.getModel(stack);
+        BakedModel bakedModel = stack.isOf(Items.TRIDENT) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : this.models.getModel(stack);
         ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
         BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity);
         return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
@@ -290,7 +292,7 @@ implements SynchronousResourceReloader {
      */
     public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, @Nullable String countLabel) {
         ClientPlayerEntity clientPlayerEntity;
-        float k;
+        float f;
         if (stack.isEmpty()) {
             return;
         }
@@ -302,18 +304,15 @@ implements SynchronousResourceReloader {
             renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrixStack.peek().getModel(), (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
             immediate.draw();
         }
-        if (stack.isDamaged()) {
+        if (stack.isItemBarVisible()) {
             RenderSystem.disableDepthTest();
             RenderSystem.disableTexture();
             RenderSystem.disableAlphaTest();
             RenderSystem.disableBlend();
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
-            float f = stack.getDamage();
-            float g = stack.getMaxDamage();
-            float h = Math.max(0.0f, (g - f) / g);
-            int i = Math.round(13.0f - f * 13.0f / g);
-            int j = MathHelper.hsvToRgb(h / 3.0f, 1.0f, 1.0f);
+            int i = stack.getItemBarStep();
+            int j = stack.getItemBarColor();
             this.renderGuiQuad(bufferBuilder, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
             this.renderGuiQuad(bufferBuilder, x + 2, y + 13, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
             RenderSystem.enableBlend();
@@ -321,22 +320,22 @@ implements SynchronousResourceReloader {
             RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();
         }
-        float f = k = (clientPlayerEntity = MinecraftClient.getInstance().player) == null ? 0.0f : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), MinecraftClient.getInstance().getTickDelta());
-        if (k > 0.0f) {
+        float f2 = f = (clientPlayerEntity = MinecraftClient.getInstance().player) == null ? 0.0f : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), MinecraftClient.getInstance().getTickDelta());
+        if (f > 0.0f) {
             RenderSystem.disableDepthTest();
             RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             Tessellator tessellator2 = Tessellator.getInstance();
             BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
-            this.renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(16.0f * (1.0f - k)), 16, MathHelper.ceil(16.0f * k), 255, 255, 255, 127);
+            this.renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(16.0f * (1.0f - f)), 16, MathHelper.ceil(16.0f * f), 255, 255, 255, 127);
             RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();
         }
     }
 
     private void renderGuiQuad(BufferBuilder buffer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
-        buffer.begin(7, VertexFormats.POSITION_COLOR);
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         buffer.vertex(x + 0, y + 0, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + 0, y + height, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + width, y + height, 0.0).color(red, green, blue, alpha).next();
@@ -345,7 +344,7 @@ implements SynchronousResourceReloader {
     }
 
     @Override
-    public void reload(ResourceManager manager) {
+    public void apply(ResourceManager manager) {
         this.models.reloadModels();
     }
 }

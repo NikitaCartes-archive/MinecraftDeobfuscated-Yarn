@@ -7,10 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
@@ -25,14 +23,14 @@ public abstract class BlockEntity {
     private final BlockEntityType<?> type;
     @Nullable
     protected World world;
-    protected BlockPos pos = BlockPos.ORIGIN;
+    protected final BlockPos pos;
     protected boolean removed;
-    @Nullable
     private BlockState cachedState;
-    private boolean invalid;
 
-    public BlockEntity(BlockEntityType<?> type) {
-        this.type = type;
+    public BlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
+        this.type = blockEntityType;
+        this.pos = blockPos.toImmutable();
+        this.cachedState = blockState;
     }
 
     @Nullable
@@ -40,48 +38,46 @@ public abstract class BlockEntity {
         return this.world;
     }
 
-    public void setLocation(World world, BlockPos pos) {
+    public void setWorld(World world) {
         this.world = world;
-        this.pos = pos.toImmutable();
     }
 
     public boolean hasWorld() {
         return this.world != null;
     }
 
-    public void fromTag(BlockState state, NbtCompound tag) {
-        this.pos = new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
+    public void fromTag(CompoundTag compoundTag) {
     }
 
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        return this.writeIdentifyingData(nbt);
+    public CompoundTag toTag(CompoundTag tag) {
+        return this.writeIdentifyingData(tag);
     }
 
-    private NbtCompound writeIdentifyingData(NbtCompound nbt) {
+    private CompoundTag writeIdentifyingData(CompoundTag tag) {
         Identifier identifier = BlockEntityType.getId(this.getType());
         if (identifier == null) {
             throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
         }
-        nbt.putString("id", identifier.toString());
-        nbt.putInt("x", this.pos.getX());
-        nbt.putInt("y", this.pos.getY());
-        nbt.putInt("z", this.pos.getZ());
-        return nbt;
+        tag.putString("id", identifier.toString());
+        tag.putInt("x", this.pos.getX());
+        tag.putInt("y", this.pos.getY());
+        tag.putInt("z", this.pos.getZ());
+        return tag;
     }
 
     @Nullable
-    public static BlockEntity createFromTag(BlockState state, NbtCompound tag) {
-        String string = tag.getString("id");
+    public static BlockEntity createFromTag(BlockPos blockPos, BlockState blockState, CompoundTag compoundTag) {
+        String string = compoundTag.getString("id");
         return Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
             try {
-                return blockEntityType.instantiate();
+                return blockEntityType.instantiate(blockPos, blockState);
             } catch (Throwable throwable) {
                 LOGGER.error("Failed to create block entity {}", (Object)string, (Object)throwable);
                 return null;
             }
         }).map(blockEntity -> {
             try {
-                blockEntity.fromTag(state, tag);
+                blockEntity.fromTag(compoundTag);
                 return blockEntity;
             } catch (Throwable throwable) {
                 LOGGER.error("Failed to load data for block entity {}", (Object)string, (Object)throwable);
@@ -95,16 +91,19 @@ public abstract class BlockEntity {
 
     public void markDirty() {
         if (this.world != null) {
-            this.cachedState = this.world.getBlockState(this.pos);
-            this.world.markDirty(this.pos, this);
-            if (!this.cachedState.isAir()) {
-                this.world.updateComparators(this.pos, this.cachedState.getBlock());
-            }
+            BlockEntity.markDirty(this.world, this.pos, this.cachedState);
+        }
+    }
+
+    protected static void markDirty(World world, BlockPos blockPos, BlockState blockState) {
+        world.markDirty(blockPos);
+        if (!blockState.isAir()) {
+            world.updateComparators(blockPos, blockState.getBlock());
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public double getRenderDistance() {
+    public double getSquaredRenderDistance() {
         return 64.0;
     }
 
@@ -113,9 +112,6 @@ public abstract class BlockEntity {
     }
 
     public BlockState getCachedState() {
-        if (this.cachedState == null) {
-            this.cachedState = this.world.getBlockState(this.pos);
-        }
         return this.cachedState;
     }
 
@@ -124,8 +120,8 @@ public abstract class BlockEntity {
         return null;
     }
 
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.writeIdentifyingData(new NbtCompound());
+    public CompoundTag toInitialChunkDataTag() {
+        return this.writeIdentifyingData(new CompoundTag());
     }
 
     public boolean isRemoved() {
@@ -144,43 +140,26 @@ public abstract class BlockEntity {
         return false;
     }
 
-    public void resetBlock() {
-        this.cachedState = null;
-    }
-
     public void populateCrashReport(CrashReportSection crashReportSection) {
         crashReportSection.add("Name", () -> Registry.BLOCK_ENTITY_TYPE.getId(this.getType()) + " // " + this.getClass().getCanonicalName());
         if (this.world == null) {
             return;
         }
-        CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.getCachedState());
-        CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.world.getBlockState(this.pos));
-    }
-
-    public void setPos(BlockPos pos) {
-        this.pos = pos.toImmutable();
+        CrashReportSection.addBlockInfo(crashReportSection, this.world, this.pos, this.getCachedState());
+        CrashReportSection.addBlockInfo(crashReportSection, this.world, this.pos, this.world.getBlockState(this.pos));
     }
 
     public boolean copyItemDataRequiresOperator() {
         return false;
     }
 
-    public void applyRotation(BlockRotation rotation) {
-    }
-
-    public void applyMirror(BlockMirror mirror) {
-    }
-
     public BlockEntityType<?> getType() {
         return this.type;
     }
 
-    public void markInvalid() {
-        if (this.invalid) {
-            return;
-        }
-        this.invalid = true;
-        LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY_TYPE.getId(this.getType()), this::getPos);
+    @Deprecated
+    public void setCachedState(BlockState blockState) {
+        this.cachedState = blockState;
     }
 }
 

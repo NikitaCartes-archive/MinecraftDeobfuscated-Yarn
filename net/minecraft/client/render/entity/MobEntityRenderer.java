@@ -5,12 +5,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -26,8 +26,8 @@ import net.minecraft.world.LightType;
 @Environment(value=EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>>
 extends LivingEntityRenderer<T, M> {
-    public MobEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
-        super(entityRenderDispatcher, entityModel, f);
+    public MobEntityRenderer(class_5617.class_5618 arg, M entityModel, float f) {
+        super(arg, entityModel, f);
     }
 
     @Override
@@ -58,6 +58,7 @@ extends LivingEntityRenderer<T, M> {
     }
 
     private <E extends Entity> void method_4073(T mobEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, E entity) {
+        int v;
         matrixStack.push();
         Vec3d vec3d = entity.method_30951(f);
         double d = (double)(MathHelper.lerp(f, ((MobEntity)mobEntity).bodyYaw, ((MobEntity)mobEntity).prevBodyYaw) * ((float)Math.PI / 180)) + 1.5707963267948966;
@@ -83,43 +84,29 @@ extends LivingEntityRenderer<T, M> {
         int s = this.dispatcher.getRenderer(entity).getBlockLight(entity, blockPos2);
         int t = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, blockPos);
         int u = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, blockPos2);
-        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025f, 0.025f, p, q);
-        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025f, 0.0f, p, q);
+        for (v = 0; v <= 24; ++v) {
+            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025f, 0.025f, p, q, v, false);
+        }
+        for (v = 24; v >= 0; --v) {
+            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025f, 0.0f, p, q, v, true);
+        }
         matrixStack.pop();
     }
 
-    public static void method_23186(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, int l, float m, float n, float o, float p) {
-        int q = 24;
-        for (int r = 0; r < 24; ++r) {
-            float s = (float)r / 23.0f;
-            int t = (int)MathHelper.lerp(s, i, j);
-            int u = (int)MathHelper.lerp(s, k, l);
-            int v = LightmapTextureManager.pack(t, u);
-            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r, false, o, p);
-            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r + 1, true, o, p);
-        }
-    }
-
-    public static void method_23187(VertexConsumer vertexConsumer, Matrix4f matrix4f, int i, float f, float g, float h, float j, float k, int l, int m, boolean bl, float n, float o) {
-        float p = 0.5f;
-        float q = 0.4f;
-        float r = 0.3f;
-        if (m % 2 == 0) {
-            p *= 0.7f;
-            q *= 0.7f;
-            r *= 0.7f;
-        }
-        float s = (float)m / (float)l;
-        float t = f * s;
-        float u = g > 0.0f ? g * s * s : g - g * (1.0f - s) * (1.0f - s);
-        float v = h * s;
-        if (!bl) {
-            vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0f).light(i).next();
-        }
-        vertexConsumer.vertex(matrix4f, t - n, u + k, v + o).color(p, q, r, 1.0f).light(i).next();
-        if (bl) {
-            vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0f).light(i).next();
-        }
+    private static void method_23187(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, int l, float m, float n, float o, float p, int q, boolean bl) {
+        float r = (float)q / 24.0f;
+        int s = (int)MathHelper.lerp(r, i, j);
+        int t = (int)MathHelper.lerp(r, k, l);
+        int u = LightmapTextureManager.pack(s, t);
+        float v = q % 2 == (bl ? 1 : 0) ? 0.7f : 1.0f;
+        float w = 0.5f * v;
+        float x = 0.4f * v;
+        float y = 0.3f * v;
+        float z = f * r;
+        float aa = g > 0.0f ? g * r * r : g - g * (1.0f - r) * (1.0f - r);
+        float ab = h * r;
+        vertexConsumer.vertex(matrix4f, z - o, aa + n, ab + p).color(w, x, y, 1.0f).light(u).next();
+        vertexConsumer.vertex(matrix4f, z + o, aa + m - n, ab - p).color(w, x, y, 1.0f).light(u).next();
     }
 }
 

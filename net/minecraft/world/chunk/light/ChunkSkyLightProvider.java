@@ -30,16 +30,11 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
     @Override
     protected int getPropagatedLevel(long sourceId, long targetId, int level) {
         boolean bl2;
-        VoxelShape voxelShape;
-        if (targetId == Long.MAX_VALUE) {
+        VoxelShape voxelShape2;
+        int q;
+        int p;
+        if (targetId == Long.MAX_VALUE || sourceId == Long.MAX_VALUE) {
             return 15;
-        }
-        if (sourceId == Long.MAX_VALUE) {
-            if (((SkyLightStorage)this.lightStorage).isTopmostBlock(targetId)) {
-                level = 0;
-            } else {
-                return 15;
-            }
         }
         if (level >= 15) {
             return level;
@@ -55,34 +50,18 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
         int l = BlockPos.unpackLongX(targetId);
         int m = BlockPos.unpackLongY(targetId);
         int n = BlockPos.unpackLongZ(targetId);
-        boolean bl = i == l && k == n;
         int o = Integer.signum(l - i);
-        int p = Integer.signum(m - j);
-        int q = Integer.signum(n - k);
-        Direction direction = sourceId == Long.MAX_VALUE ? Direction.DOWN : Direction.fromVector(o, p, q);
-        BlockState blockState2 = this.getStateForLighting(sourceId, null);
-        if (direction != null) {
-            VoxelShape voxelShape2;
-            voxelShape = this.getOpaqueShape(blockState2, sourceId, direction);
-            if (VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2 = this.getOpaqueShape(blockState, targetId, direction.getOpposite()))) {
-                return 15;
-            }
-        } else {
-            voxelShape = this.getOpaqueShape(blockState2, sourceId, Direction.DOWN);
-            if (VoxelShapes.unionCoversFullCube(voxelShape, VoxelShapes.empty())) {
-                return 15;
-            }
-            int r = bl ? -1 : 0;
-            Direction direction2 = Direction.fromVector(o, r, q);
-            if (direction2 == null) {
-                return 15;
-            }
-            VoxelShape voxelShape3 = this.getOpaqueShape(blockState, targetId, direction2.getOpposite());
-            if (VoxelShapes.unionCoversFullCube(VoxelShapes.empty(), voxelShape3)) {
-                return 15;
-            }
+        Direction direction = Direction.fromVector(o, p = Integer.signum(m - j), q = Integer.signum(n - k));
+        if (direction == null) {
+            throw new IllegalStateException(String.format("Light was spread in illegal direction %d, %d, %d", o, p, q));
         }
-        boolean bl3 = bl2 = sourceId == Long.MAX_VALUE || bl && j > m;
+        BlockState blockState2 = this.getStateForLighting(sourceId, null);
+        VoxelShape voxelShape = this.getOpaqueShape(blockState2, sourceId, direction);
+        if (VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2 = this.getOpaqueShape(blockState, targetId, direction.getOpposite()))) {
+            return 15;
+        }
+        boolean bl = i == l && k == n;
+        boolean bl3 = bl2 = bl && j > m;
         if (bl2 && level == 0 && mutableInt.getValue() == 0) {
             return 0;
         }
@@ -125,7 +104,8 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
                     continue block1;
                 }
                 if (!((SkyLightStorage)this.lightStorage).hasSection(u)) continue;
-                this.propagateLevel(id, t, level, decrease);
+                long v = BlockPos.add(id, 0, -s, 0);
+                this.propagateLevel(v, t, level, decrease);
             } while (++s <= m * 16);
         }
     }
@@ -133,46 +113,23 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
     @Override
     protected int recalculateLevel(long id, long excludedId, int maxLevel) {
         int i = maxLevel;
-        if (Long.MAX_VALUE != excludedId) {
-            int j = this.getPropagatedLevel(Long.MAX_VALUE, id, 0);
-            if (i > j) {
-                i = j;
-            }
-            if (i == 0) {
-                return i;
-            }
-        }
         long l = ChunkSectionPos.fromBlockPos(id);
         ChunkNibbleArray chunkNibbleArray = ((SkyLightStorage)this.lightStorage).getLightSection(l, true);
         for (Direction direction : DIRECTIONS) {
-            int o;
+            int j;
             long m = BlockPos.offset(id, direction);
+            if (m == excludedId) continue;
             long n = ChunkSectionPos.fromBlockPos(m);
             ChunkNibbleArray chunkNibbleArray2 = l == n ? chunkNibbleArray : ((SkyLightStorage)this.lightStorage).getLightSection(n, true);
             if (chunkNibbleArray2 != null) {
-                if (m == excludedId) continue;
-                int k = this.getPropagatedLevel(m, id, this.getCurrentLevelFromSection(chunkNibbleArray2, m));
-                if (i > k) {
-                    i = k;
-                }
-                if (i != 0) continue;
-                return i;
-            }
-            if (direction == Direction.DOWN) continue;
-            m = BlockPos.removeChunkSectionLocalY(m);
-            while (!((SkyLightStorage)this.lightStorage).hasSection(n) && !((SkyLightStorage)this.lightStorage).isAtOrAboveTopmostSection(n)) {
-                n = ChunkSectionPos.offset(n, Direction.UP);
-                m = BlockPos.add(m, 0, 16, 0);
-            }
-            ChunkNibbleArray chunkNibbleArray3 = ((SkyLightStorage)this.lightStorage).getLightSection(n, true);
-            if (m == excludedId) continue;
-            if (chunkNibbleArray3 != null) {
-                o = this.getPropagatedLevel(m, id, this.getCurrentLevelFromSection(chunkNibbleArray3, m));
+                j = this.getCurrentLevelFromSection(chunkNibbleArray2, m);
             } else {
-                int n2 = o = ((SkyLightStorage)this.lightStorage).isSectionEnabled(n) ? 0 : 15;
+                if (direction == Direction.DOWN) continue;
+                j = 15 - ((SkyLightStorage)this.lightStorage).method_31931(m, true);
             }
-            if (i > o) {
-                i = o;
+            int k = this.getPropagatedLevel(m, id, j);
+            if (i > k) {
+                i = k;
             }
             if (i != 0) continue;
             return i;

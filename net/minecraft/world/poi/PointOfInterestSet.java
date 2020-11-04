@@ -20,7 +20,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -39,16 +38,16 @@ public class PointOfInterestSet {
     private boolean valid;
 
     public static Codec<PointOfInterestSet> createCodec(Runnable updateListener) {
-        return RecordCodecBuilder.create(instance -> instance.group(RecordCodecBuilder.point(updateListener), Codec.BOOL.optionalFieldOf("Valid", false).forGetter(pointOfInterestSet -> pointOfInterestSet.valid), ((MapCodec)PointOfInterest.createCodec(updateListener).listOf().fieldOf("Records")).forGetter(pointOfInterestSet -> ImmutableList.copyOf(pointOfInterestSet.pointsOfInterestByPos.values()))).apply((Applicative<PointOfInterestSet, ?>)instance, PointOfInterestSet::new)).orElseGet(Util.method_29188("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(updateListener, false, ImmutableList.of()));
+        return RecordCodecBuilder.create(instance -> instance.group(RecordCodecBuilder.point(updateListener), Codec.BOOL.optionalFieldOf("Valid", false).forGetter(pointOfInterestSet -> pointOfInterestSet.valid), ((MapCodec)PointOfInterest.createCodec(updateListener).listOf().fieldOf("Records")).forGetter(pointOfInterestSet -> ImmutableList.copyOf(pointOfInterestSet.pointsOfInterestByPos.values()))).apply((Applicative<PointOfInterestSet, ?>)instance, PointOfInterestSet::new)).orElseGet(Util.addPrefix("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(updateListener, false, ImmutableList.of()));
     }
 
     public PointOfInterestSet(Runnable updateListener) {
         this(updateListener, true, ImmutableList.of());
     }
 
-    private PointOfInterestSet(Runnable updateListener, boolean valid, List<PointOfInterest> list) {
+    private PointOfInterestSet(Runnable updateListener, boolean bl, List<PointOfInterest> list) {
         this.updateListener = updateListener;
-        this.valid = valid;
+        this.valid = bl;
         list.forEach(this::add);
     }
 
@@ -72,11 +71,7 @@ public class PointOfInterestSet {
             if (pointOfInterestType2.equals(pointOfInterest.getType())) {
                 return false;
             }
-            String string = "POI data mismatch: already registered at " + blockPos;
-            if (SharedConstants.isDevelopment) {
-                throw Util.throwOrPause(new IllegalStateException(string));
-            }
-            LOGGER.error(string);
+            throw Util.throwOrPause(new IllegalStateException("POI data mismatch: already registered at " + blockPos));
         }
         this.pointsOfInterestByPos.put(s, poi);
         this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType2, pointOfInterestType -> Sets.newHashSet()).add(poi);
@@ -86,7 +81,7 @@ public class PointOfInterestSet {
     public void remove(BlockPos pos) {
         PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.remove(ChunkSectionPos.packLocal(pos));
         if (pointOfInterest == null) {
-            LOGGER.error("POI data mismatch: never registered at " + pos);
+            LOGGER.error("POI data mismatch: never registered at {}", (Object)pos);
             return;
         }
         this.pointsOfInterestByType.get(pointOfInterest.getType()).remove(pointOfInterest);

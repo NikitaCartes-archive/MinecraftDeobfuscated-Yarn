@@ -25,12 +25,13 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 import net.minecraft.Bootstrap;
 import net.minecraft.datafixer.Schemas;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
@@ -119,7 +120,7 @@ public class Main {
             if (bl) {
                 LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
             }
-            ResourcePackManager resourcePackManager = new ResourcePackManager(new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
+            ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
             DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(resourcePackManager, dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings, bl);
             CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, Util.getMainWorkerExecutor(), Runnable::run);
             try {
@@ -130,7 +131,7 @@ public class Main {
                 return;
             }
             serverResourceManager.loadRegistryTags();
-            RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+            RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
             SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
             if (saveProperties == null) {
                 GeneratorOptions generatorOptions;

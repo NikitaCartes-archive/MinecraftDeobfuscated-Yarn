@@ -11,6 +11,7 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.SwampHutGenerator;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
@@ -50,7 +51,7 @@ extends StructureFeature<DefaultFeatureConfig> {
 
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig) {
-            SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, i * 16, j * 16);
+            SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, ChunkSectionPos.getBlockCoord(i), ChunkSectionPos.getBlockCoord(j));
             this.children.add(swampHutGenerator);
             this.setBoundingBoxFromChildren();
         }

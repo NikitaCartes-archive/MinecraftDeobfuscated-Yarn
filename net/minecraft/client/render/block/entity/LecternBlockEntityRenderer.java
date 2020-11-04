@@ -11,20 +11,21 @@ import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.block.entity.EnchantingTableBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.BookModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.client.util.math.Vector3f;
 
 @Environment(value=EnvType.CLIENT)
 public class LecternBlockEntityRenderer
-extends BlockEntityRenderer<LecternBlockEntity> {
-    private final BookModel book = new BookModel();
+implements BlockEntityRenderer<LecternBlockEntity> {
+    private final BookModel book;
 
-    public LecternBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-        super(blockEntityRenderDispatcher);
+    public LecternBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+        this.book = new BookModel(context.getLayerModelPart(EntityModelLayers.BOOK));
     }
 
     @Override
@@ -36,12 +37,12 @@ extends BlockEntityRenderer<LecternBlockEntity> {
         matrixStack.push();
         matrixStack.translate(0.5, 1.0625, 0.5);
         float g = blockState.get(LecternBlock.FACING).rotateYClockwise().asRotation();
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-g));
-        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(67.5f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-g));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(67.5f));
         matrixStack.translate(0.0, -0.125, 0.0);
         this.book.setPageAngles(0.0f, 0.1f, 0.9f, 1.2f);
         VertexConsumer vertexConsumer = EnchantingTableBlockEntityRenderer.BOOK_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-        this.book.renderBook(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
+        this.book.method_24184(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }
 }

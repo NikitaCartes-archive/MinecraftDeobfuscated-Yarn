@@ -10,7 +10,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.FollowGroupLeaderGoal;
 import net.minecraft.entity.passive.FishEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -95,14 +95,14 @@ extends FishEntity {
         }
     }
 
-    public void pullInOtherFish(Stream<SchoolingFishEntity> fish) {
+    public void pullInOtherFish(Stream<? extends SchoolingFishEntity> fish) {
         fish.limit(this.getMaxGroupSize() - this.groupSize).filter(schoolingFishEntity -> schoolingFishEntity != this).forEach(schoolingFishEntity -> schoolingFishEntity.joinGroupOf(this));
     }
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         if (entityData == null) {
             entityData = new FishData(this);
         } else {

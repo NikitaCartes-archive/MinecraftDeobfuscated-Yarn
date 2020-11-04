@@ -58,9 +58,9 @@ extends Item {
         return TypedActionResult.pass(itemStack);
     }
 
-    protected ItemStack fill(ItemStack stack, PlayerEntity player, ItemStack outputStack) {
-        player.incrementStat(Stats.USED.getOrCreateStat(this));
-        return ItemUsage.method_30012(stack, player, outputStack);
+    protected ItemStack fill(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
+        playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+        return ItemUsage.method_30012(itemStack, playerEntity, itemStack2);
     }
 }
 

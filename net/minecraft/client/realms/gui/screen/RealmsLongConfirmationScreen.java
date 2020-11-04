@@ -23,11 +23,11 @@ extends RealmsScreen {
     protected final BooleanConsumer field_22697;
     private final boolean yesNoQuestion;
 
-    public RealmsLongConfirmationScreen(BooleanConsumer booleanConsumer, Type type, Text line2, Text line3, boolean yesNoQuestion) {
+    public RealmsLongConfirmationScreen(BooleanConsumer booleanConsumer, Type type, Text text, Text text2, boolean yesNoQuestion) {
         this.field_22697 = booleanConsumer;
         this.type = type;
-        this.line2 = line2;
-        this.line3 = line3;
+        this.line2 = text;
+        this.line3 = text2;
         this.yesNoQuestion = yesNoQuestion;
     }
 
@@ -54,7 +54,7 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        RealmsLongConfirmationScreen.drawCenteredText(matrices, this.textRenderer, this.type.text, this.width / 2, RealmsLongConfirmationScreen.row(2), this.type.colorCode);
+        RealmsLongConfirmationScreen.drawCenteredString(matrices, this.textRenderer, this.type.text, this.width / 2, RealmsLongConfirmationScreen.row(2), this.type.colorCode);
         RealmsLongConfirmationScreen.drawCenteredText(matrices, this.textRenderer, this.line2, this.width / 2, RealmsLongConfirmationScreen.row(4), 0xFFFFFF);
         RealmsLongConfirmationScreen.drawCenteredText(matrices, this.textRenderer, this.line3, this.width / 2, RealmsLongConfirmationScreen.row(6), 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);

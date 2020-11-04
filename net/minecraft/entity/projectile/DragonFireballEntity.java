@@ -4,8 +4,6 @@
 package net.minecraft.entity.projectile;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -24,11 +22,6 @@ public class DragonFireballEntity
 extends ExplosiveProjectileEntity {
     public DragonFireballEntity(EntityType<? extends DragonFireballEntity> entityType, World world) {
         super((EntityType<? extends ExplosiveProjectileEntity>)entityType, world);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public DragonFireballEntity(World world, double x, double y, double z, double directionX, double directionY, double directionZ) {
-        super(EntityType.DRAGON_FIREBALL, x, y, z, directionX, directionY, directionZ, world);
     }
 
     public DragonFireballEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
@@ -57,13 +50,13 @@ extends ExplosiveProjectileEntity {
                 for (LivingEntity livingEntity : list) {
                     double d = this.squaredDistanceTo(livingEntity);
                     if (!(d < 16.0)) continue;
-                    areaEffectCloudEntity.setPosition(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
+                    areaEffectCloudEntity.updatePosition(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
                     break;
                 }
             }
             this.world.syncWorldEvent(2006, this.getBlockPos(), this.isSilent() ? -1 : 1);
             this.world.spawnEntity(areaEffectCloudEntity);
-            this.remove();
+            this.discard();
         }
     }
 

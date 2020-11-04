@@ -21,7 +21,7 @@ extends Item {
 
     @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-        if (!world.isClient && !state.getBlock().isIn(BlockTags.FIRE)) {
+        if (!world.isClient && !state.isIn(BlockTags.FIRE)) {
             stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         }
         if (state.isIn(BlockTags.LEAVES) || state.isOf(Blocks.COBWEB) || state.isOf(Blocks.GRASS) || state.isOf(Blocks.FERN) || state.isOf(Blocks.DEAD_BUSH) || state.isOf(Blocks.VINE) || state.isOf(Blocks.TRIPWIRE) || state.isIn(BlockTags.WOOL)) {
@@ -31,7 +31,7 @@ extends Item {
     }
 
     @Override
-    public boolean isSuitableFor(BlockState state) {
+    public boolean isEffectiveOn(BlockState state) {
         return state.isOf(Blocks.COBWEB) || state.isOf(Blocks.REDSTONE_WIRE) || state.isOf(Blocks.TRIPWIRE);
     }
 

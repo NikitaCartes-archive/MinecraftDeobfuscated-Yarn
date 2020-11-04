@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.SmoothUtil;
@@ -141,11 +141,11 @@ public class Mouse {
                         if (this.client.inGameHud.getSpectatorHud().isOpen()) {
                             this.client.inGameHud.getSpectatorHud().cycleSlot(-g);
                         } else {
-                            float h = MathHelper.clamp(this.client.player.abilities.getFlySpeed() + g * 0.005f, 0.0f, 0.2f);
-                            this.client.player.abilities.setFlySpeed(h);
+                            float h = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + g * 0.005f, 0.0f, 0.2f);
+                            this.client.player.getAbilities().setFlySpeed(h);
                         }
                     } else {
-                        this.client.player.inventory.scrollInHotbar(g);
+                        this.client.player.getInventory().scrollInHotbar(g);
                     }
                 }
             }
@@ -158,8 +158,8 @@ public class Mouse {
         }
     }
 
-    public void setup(long window) {
-        InputUtil.setMouseCallbacks(window, (l, d, e) -> this.client.execute(() -> this.onCursorPos(l, d, e)), (l, i, j, k) -> this.client.execute(() -> this.onMouseButton(l, i, j, k)), (l, d, e) -> this.client.execute(() -> this.onMouseScroll(l, d, e)), (l, i, m) -> {
+    public void setup(long l2) {
+        InputUtil.setMouseCallbacks(l2, (l, d, e) -> this.client.execute(() -> this.onCursorPos(l, d, e)), (l, i, j, k) -> this.client.execute(() -> this.onMouseButton(l, i, j, k)), (l, d, e) -> this.client.execute(() -> this.onMouseScroll(l, d, e)), (l, i, m) -> {
             Path[] paths = new Path[i];
             for (int j = 0; j < i; ++j) {
                 paths[j] = Paths.get(GLFWDropCallback.getName(m, j), new String[0]);
@@ -200,8 +200,8 @@ public class Mouse {
     }
 
     public void updateMouse() {
+        double l;
         double k;
-        double j;
         double d = GlfwUtil.getTime();
         double e = d - this.lastMouseUpdateTime;
         this.lastMouseUpdateTime = d;
@@ -211,27 +211,33 @@ public class Mouse {
             return;
         }
         double f = this.client.options.mouseSensitivity * (double)0.6f + (double)0.2f;
-        double g = f * f * f * 8.0;
+        double g = f * f * f;
+        double h = g * 8.0;
         if (this.client.options.smoothCameraEnabled) {
-            double h = this.cursorXSmoother.smooth(this.cursorDeltaX * g, e * g);
-            double i = this.cursorYSmoother.smooth(this.cursorDeltaY * g, e * g);
-            j = h;
+            double i = this.cursorXSmoother.smooth(this.cursorDeltaX * h, e * h);
+            double j = this.cursorYSmoother.smooth(this.cursorDeltaY * h, e * h);
             k = i;
+            l = j;
+        } else if (this.client.options.getPerspective().isFirstPerson() && this.client.player.isUsingSpyglass()) {
+            this.cursorXSmoother.clear();
+            this.cursorYSmoother.clear();
+            k = this.cursorDeltaX * g;
+            l = this.cursorDeltaY * g;
         } else {
             this.cursorXSmoother.clear();
             this.cursorYSmoother.clear();
-            j = this.cursorDeltaX * g;
-            k = this.cursorDeltaY * g;
+            k = this.cursorDeltaX * h;
+            l = this.cursorDeltaY * h;
         }
         this.cursorDeltaX = 0.0;
         this.cursorDeltaY = 0.0;
-        int l = 1;
+        int m = 1;
         if (this.client.options.invertYMouse) {
-            l = -1;
+            m = -1;
         }
-        this.client.getTutorialManager().onUpdateMouse(j, k);
+        this.client.getTutorialManager().onUpdateMouse(k, l);
         if (this.client.player != null) {
-            this.client.player.changeLookDirection(j, k * (double)l);
+            this.client.player.changeLookDirection(k, l * (double)m);
         }
     }
 

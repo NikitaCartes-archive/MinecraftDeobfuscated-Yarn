@@ -3,23 +3,17 @@
  */
 package net.minecraft.util.shape;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import java.util.Arrays;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
 
-public final class ArrayVoxelShape
+public class ArrayVoxelShape
 extends VoxelShape {
     private final DoubleList xPoints;
     private final DoubleList yPoints;
     private final DoubleList zPoints;
-
-    protected ArrayVoxelShape(VoxelSet shape, double[] xPoints, double[] yPoints, double[] zPoints) {
-        this(shape, DoubleArrayList.wrap(Arrays.copyOf(xPoints, shape.getXSize() + 1)), DoubleArrayList.wrap(Arrays.copyOf(yPoints, shape.getYSize() + 1)), DoubleArrayList.wrap(Arrays.copyOf(zPoints, shape.getZSize() + 1)));
-    }
 
     ArrayVoxelShape(VoxelSet shape, DoubleList xPoints, DoubleList yPoints, DoubleList zPoints) {
         super(shape);

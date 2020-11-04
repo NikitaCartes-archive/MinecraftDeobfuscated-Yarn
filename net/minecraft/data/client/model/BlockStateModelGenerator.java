@@ -629,7 +629,9 @@ public class BlockStateModelGenerator {
 
     private void registerCauldron() {
         this.registerItemModel(Items.CAULDRON);
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.CAULDRON).coordinate(BlockStateVariantMap.create(Properties.LEVEL_3).register((Integer)0, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockModelId(Blocks.CAULDRON))).register((Integer)1, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.CAULDRON, "_level1"))).register((Integer)2, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.CAULDRON, "_level2"))).register((Integer)3, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.CAULDRON, "_level3")))));
+        this.registerSimpleState(Blocks.CAULDRON);
+        this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(Blocks.LAVA_CAULDRON, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.LAVA_CAULDRON, Texture.method_32232(Blocks.LAVA), this.modelCollector)));
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.WATER_CAULDRON).coordinate(BlockStateVariantMap.create(Properties.LEVEL_3).register((Integer)1, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.WATER_CAULDRON, "_level1"))).register((Integer)2, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.WATER_CAULDRON, "_level2"))).register((Integer)3, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.WATER_CAULDRON, Texture.method_32232(Blocks.WATER), this.modelCollector)))));
     }
 
     private void registerCubeColumn(Block block, Block endTexture) {
@@ -669,6 +671,18 @@ public class BlockStateModelGenerator {
 
     private void registerComposter() {
         this.blockStateCollector.accept(MultipartBlockStateSupplier.create(Blocks.COMPOSTER).with(BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getId(Blocks.COMPOSTER))).with((When)When.create().set(Properties.LEVEL_8, 1), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents1"))).with((When)When.create().set(Properties.LEVEL_8, 2), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents2"))).with((When)When.create().set(Properties.LEVEL_8, 3), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents3"))).with((When)When.create().set(Properties.LEVEL_8, 4), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents4"))).with((When)When.create().set(Properties.LEVEL_8, 5), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents5"))).with((When)When.create().set(Properties.LEVEL_8, 6), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents6"))).with((When)When.create().set(Properties.LEVEL_8, 7), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents7"))).with((When)When.create().set(Properties.LEVEL_8, 8), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents_ready"))));
+    }
+
+    private void method_32229(Block block) {
+        this.registerItemModel(block);
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, Models.CROSS.upload(block, Texture.cross(block), this.modelCollector))).coordinate(this.createUpDefaultFacingVariantMap()));
+    }
+
+    private void method_32227() {
+        this.method_32229(Blocks.SMALL_AMETHYST_BUD);
+        this.method_32229(Blocks.MEDIUM_AMETHYST_BUD);
+        this.method_32229(Blocks.LARGE_AMETHYST_BUD);
+        this.method_32229(Blocks.AMETHYST_CLUSTER);
     }
 
     private void registerNetherrackBottomCustomTop(Block block) {
@@ -768,7 +782,7 @@ public class BlockStateModelGenerator {
     }
 
     private void registerGrassPath() {
-        this.blockStateCollector.accept(BlockStateModelGenerator.createBlockStateWithRandomHorizontalRotations(Blocks.GRASS_PATH, ModelIds.getBlockModelId(Blocks.GRASS_PATH)));
+        this.blockStateCollector.accept(BlockStateModelGenerator.createBlockStateWithRandomHorizontalRotations(Blocks.DIRT_PATH, ModelIds.getBlockModelId(Blocks.DIRT_PATH)));
     }
 
     private void registerPressurePlate(Block pressurePlate, Block textureSource) {
@@ -1104,6 +1118,23 @@ public class BlockStateModelGenerator {
         this.registerSimpleState(Blocks.LAVA);
         this.registerSimpleState(Blocks.SLIME_BLOCK);
         this.registerItemModel(Items.CHAIN);
+        this.method_32228(Blocks.WHITE_CANDLE, Blocks.WHITE_CANDLE_CAKE);
+        this.method_32228(Blocks.ORANGE_CANDLE, Blocks.ORANGE_CANDLE_CAKE);
+        this.method_32228(Blocks.MAGENTA_CANDLE, Blocks.MAGENTA_CANDLE_CAKE);
+        this.method_32228(Blocks.LIGHT_BLUE_CANDLE, Blocks.LIGHT_BLUE_CANDLE_CAKE);
+        this.method_32228(Blocks.YELLOW_CANDLE, Blocks.YELLOW_CANDLE_CAKE);
+        this.method_32228(Blocks.LIME_CANDLE, Blocks.LIME_CANDLE_CAKE);
+        this.method_32228(Blocks.PINK_CANDLE, Blocks.PINK_CANDLE_CAKE);
+        this.method_32228(Blocks.GRAY_CANDLE, Blocks.GRAY_CANDLE_CAKE);
+        this.method_32228(Blocks.LIGHT_GRAY_CANDLE, Blocks.LIGHT_GRAY_CANDLE_CAKE);
+        this.method_32228(Blocks.CYAN_CANDLE, Blocks.CYAN_CANDLE_CAKE);
+        this.method_32228(Blocks.PURPLE_CANDLE, Blocks.PURPLE_CANDLE_CAKE);
+        this.method_32228(Blocks.BLUE_CANDLE, Blocks.BLUE_CANDLE_CAKE);
+        this.method_32228(Blocks.BROWN_CANDLE, Blocks.BROWN_CANDLE_CAKE);
+        this.method_32228(Blocks.GREEN_CANDLE, Blocks.GREEN_CANDLE_CAKE);
+        this.method_32228(Blocks.RED_CANDLE, Blocks.RED_CANDLE_CAKE);
+        this.method_32228(Blocks.BLACK_CANDLE, Blocks.BLACK_CANDLE_CAKE);
+        this.method_32228(Blocks.CANDLE, Blocks.CANDLE_CAKE);
         this.registerSimpleState(Blocks.POTTED_BAMBOO);
         this.registerSimpleState(Blocks.POTTED_CACTUS);
         this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
@@ -1168,8 +1199,25 @@ public class BlockStateModelGenerator {
         this.registerCubeColumn(Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE);
         this.registerCubeColumn(Blocks.CHISELED_RED_SANDSTONE, Blocks.RED_SANDSTONE);
         this.registerSingleton(Blocks.CHISELED_POLISHED_BLACKSTONE, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.AMETHYST_BLOCK, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.BUDDING_AMETHYST, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.CALCITE, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.TUFF, TexturedModel.CUBE_ALL);
+        this.registerSimpleCubeAll(Blocks.COPPER_ORE);
+        this.registerSimpleCubeAll(Blocks.COPPER_BLOCK);
+        this.registerSimpleCubeAll(Blocks.LIGHTLY_WEATHERED_COPPER_BLOCK);
+        this.registerSimpleCubeAll(Blocks.SEMI_WEATHERED_COPPER_BLOCK);
+        this.registerSimpleCubeAll(Blocks.WEATHERED_COPPER_BLOCK);
+        this.registerInfested(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER);
+        this.registerInfested(Blocks.LIGHTLY_WEATHERED_COPPER_BLOCK, Blocks.WAXED_LIGHTLY_WEATHERED_COPPER);
+        this.registerInfested(Blocks.SEMI_WEATHERED_COPPER_BLOCK, Blocks.WAXED_SEMI_WEATHERED_COPPER);
+        this.registerCubeAllModelTexturePool(Blocks.CUT_COPPER).method_32230(Blocks.WAXED_CUT_COPPER).slab(Blocks.CUT_COPPER_SLAB, Blocks.WAXED_CUT_COPPER_SLAB).stairs(Blocks.CUT_COPPER_STAIRS, Blocks.WAXED_CUT_COPPER_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.LIGHTLY_WEATHERED_CUT_COPPER).method_32230(Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER).slab(Blocks.LIGHTLY_WEATHERED_CUT_COPPER_SLAB, Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB).stairs(Blocks.LIGHTLY_WEATHERED_CUT_COPPER_STAIRS, Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.SEMI_WEATHERED_CUT_COPPER).method_32230(Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER).slab(Blocks.SEMI_WEATHERED_CUT_COPPER_SLAB, Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB).stairs(Blocks.SEMI_WEATHERED_CUT_COPPER_STAIRS, Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.WEATHERED_CUT_COPPER).slab(Blocks.WEATHERED_CUT_COPPER_SLAB, new Block[0]).stairs(Blocks.WEATHERED_CUT_COPPER_STAIRS, new Block[0]);
         this.registerPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
         this.registerPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
+        this.method_32227();
         this.registerBookshelf();
         this.registerBrewingStand();
         this.registerCake();
@@ -1182,6 +1230,7 @@ public class BlockStateModelGenerator {
         this.registerDaylightDetector();
         this.registerEndPortalFrame();
         this.method_31064(Blocks.END_ROD);
+        this.method_31064(Blocks.LIGHTNING_ROD);
         this.registerFarmland();
         this.registerFire();
         this.registerSoulFire();
@@ -1323,6 +1372,7 @@ public class BlockStateModelGenerator {
         this.registerSimpleCubeAll(Blocks.GREEN_TERRACOTTA);
         this.registerSimpleCubeAll(Blocks.RED_TERRACOTTA);
         this.registerSimpleCubeAll(Blocks.BLACK_TERRACOTTA);
+        this.registerSimpleCubeAll(Blocks.TINTED_GLASS);
         this.registerGlassPane(Blocks.GLASS, Blocks.GLASS_PANE);
         this.registerGlassPane(Blocks.WHITE_STAINED_GLASS, Blocks.WHITE_STAINED_GLASS_PANE);
         this.registerGlassPane(Blocks.ORANGE_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS_PANE);
@@ -1406,56 +1456,56 @@ public class BlockStateModelGenerator {
         this.registerCoral(Blocks.HORN_CORAL, Blocks.DEAD_HORN_CORAL, Blocks.HORN_CORAL_BLOCK, Blocks.DEAD_HORN_CORAL_BLOCK, Blocks.HORN_CORAL_FAN, Blocks.DEAD_HORN_CORAL_FAN, Blocks.HORN_CORAL_WALL_FAN, Blocks.DEAD_HORN_CORAL_WALL_FAN);
         this.registerGourd(Blocks.MELON_STEM, Blocks.ATTACHED_MELON_STEM);
         this.registerGourd(Blocks.PUMPKIN_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
-        this.registerCubeAllModelTexturePool(Blocks.ACACIA_PLANKS).button(Blocks.ACACIA_BUTTON).fence(Blocks.ACACIA_FENCE).fenceGate(Blocks.ACACIA_FENCE_GATE).pressurePlate(Blocks.ACACIA_PRESSURE_PLATE).sign(Blocks.ACACIA_SIGN, Blocks.ACACIA_WALL_SIGN).slab(Blocks.ACACIA_SLAB).stairs(Blocks.ACACIA_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.ACACIA_PLANKS).button(Blocks.ACACIA_BUTTON).fence(Blocks.ACACIA_FENCE).fenceGate(Blocks.ACACIA_FENCE_GATE).pressurePlate(Blocks.ACACIA_PRESSURE_PLATE).sign(Blocks.ACACIA_SIGN, Blocks.ACACIA_WALL_SIGN).slab(Blocks.ACACIA_SLAB, new Block[0]).stairs(Blocks.ACACIA_STAIRS, new Block[0]);
         this.registerDoor(Blocks.ACACIA_DOOR);
         this.registerOrientableTrapdoor(Blocks.ACACIA_TRAPDOOR);
         this.registerLog(Blocks.ACACIA_LOG).log(Blocks.ACACIA_LOG).wood(Blocks.ACACIA_WOOD);
         this.registerLog(Blocks.STRIPPED_ACACIA_LOG).log(Blocks.STRIPPED_ACACIA_LOG).wood(Blocks.STRIPPED_ACACIA_WOOD);
         this.registerFlowerPotPlant(Blocks.ACACIA_SAPLING, Blocks.POTTED_ACACIA_SAPLING, TintType.NOT_TINTED);
         this.registerSingleton(Blocks.ACACIA_LEAVES, TexturedModel.LEAVES);
-        this.registerCubeAllModelTexturePool(Blocks.BIRCH_PLANKS).button(Blocks.BIRCH_BUTTON).fence(Blocks.BIRCH_FENCE).fenceGate(Blocks.BIRCH_FENCE_GATE).pressurePlate(Blocks.BIRCH_PRESSURE_PLATE).sign(Blocks.BIRCH_SIGN, Blocks.BIRCH_WALL_SIGN).slab(Blocks.BIRCH_SLAB).stairs(Blocks.BIRCH_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.BIRCH_PLANKS).button(Blocks.BIRCH_BUTTON).fence(Blocks.BIRCH_FENCE).fenceGate(Blocks.BIRCH_FENCE_GATE).pressurePlate(Blocks.BIRCH_PRESSURE_PLATE).sign(Blocks.BIRCH_SIGN, Blocks.BIRCH_WALL_SIGN).slab(Blocks.BIRCH_SLAB, new Block[0]).stairs(Blocks.BIRCH_STAIRS, new Block[0]);
         this.registerDoor(Blocks.BIRCH_DOOR);
         this.registerOrientableTrapdoor(Blocks.BIRCH_TRAPDOOR);
         this.registerLog(Blocks.BIRCH_LOG).log(Blocks.BIRCH_LOG).wood(Blocks.BIRCH_WOOD);
         this.registerLog(Blocks.STRIPPED_BIRCH_LOG).log(Blocks.STRIPPED_BIRCH_LOG).wood(Blocks.STRIPPED_BIRCH_WOOD);
         this.registerFlowerPotPlant(Blocks.BIRCH_SAPLING, Blocks.POTTED_BIRCH_SAPLING, TintType.NOT_TINTED);
         this.registerSingleton(Blocks.BIRCH_LEAVES, TexturedModel.LEAVES);
-        this.registerCubeAllModelTexturePool(Blocks.OAK_PLANKS).button(Blocks.OAK_BUTTON).fence(Blocks.OAK_FENCE).fenceGate(Blocks.OAK_FENCE_GATE).pressurePlate(Blocks.OAK_PRESSURE_PLATE).sign(Blocks.OAK_SIGN, Blocks.OAK_WALL_SIGN).slab(Blocks.OAK_SLAB).slab(Blocks.PETRIFIED_OAK_SLAB).stairs(Blocks.OAK_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.OAK_PLANKS).button(Blocks.OAK_BUTTON).fence(Blocks.OAK_FENCE).fenceGate(Blocks.OAK_FENCE_GATE).pressurePlate(Blocks.OAK_PRESSURE_PLATE).sign(Blocks.OAK_SIGN, Blocks.OAK_WALL_SIGN).slab(Blocks.OAK_SLAB, new Block[0]).slab(Blocks.PETRIFIED_OAK_SLAB, new Block[0]).stairs(Blocks.OAK_STAIRS, new Block[0]);
         this.registerDoor(Blocks.OAK_DOOR);
         this.registerTrapdoor(Blocks.OAK_TRAPDOOR);
         this.registerLog(Blocks.OAK_LOG).log(Blocks.OAK_LOG).wood(Blocks.OAK_WOOD);
         this.registerLog(Blocks.STRIPPED_OAK_LOG).log(Blocks.STRIPPED_OAK_LOG).wood(Blocks.STRIPPED_OAK_WOOD);
         this.registerFlowerPotPlant(Blocks.OAK_SAPLING, Blocks.POTTED_OAK_SAPLING, TintType.NOT_TINTED);
         this.registerSingleton(Blocks.OAK_LEAVES, TexturedModel.LEAVES);
-        this.registerCubeAllModelTexturePool(Blocks.SPRUCE_PLANKS).button(Blocks.SPRUCE_BUTTON).fence(Blocks.SPRUCE_FENCE).fenceGate(Blocks.SPRUCE_FENCE_GATE).pressurePlate(Blocks.SPRUCE_PRESSURE_PLATE).sign(Blocks.SPRUCE_SIGN, Blocks.SPRUCE_WALL_SIGN).slab(Blocks.SPRUCE_SLAB).stairs(Blocks.SPRUCE_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.SPRUCE_PLANKS).button(Blocks.SPRUCE_BUTTON).fence(Blocks.SPRUCE_FENCE).fenceGate(Blocks.SPRUCE_FENCE_GATE).pressurePlate(Blocks.SPRUCE_PRESSURE_PLATE).sign(Blocks.SPRUCE_SIGN, Blocks.SPRUCE_WALL_SIGN).slab(Blocks.SPRUCE_SLAB, new Block[0]).stairs(Blocks.SPRUCE_STAIRS, new Block[0]);
         this.registerDoor(Blocks.SPRUCE_DOOR);
         this.registerOrientableTrapdoor(Blocks.SPRUCE_TRAPDOOR);
         this.registerLog(Blocks.SPRUCE_LOG).log(Blocks.SPRUCE_LOG).wood(Blocks.SPRUCE_WOOD);
         this.registerLog(Blocks.STRIPPED_SPRUCE_LOG).log(Blocks.STRIPPED_SPRUCE_LOG).wood(Blocks.STRIPPED_SPRUCE_WOOD);
         this.registerFlowerPotPlant(Blocks.SPRUCE_SAPLING, Blocks.POTTED_SPRUCE_SAPLING, TintType.NOT_TINTED);
         this.registerSingleton(Blocks.SPRUCE_LEAVES, TexturedModel.LEAVES);
-        this.registerCubeAllModelTexturePool(Blocks.DARK_OAK_PLANKS).button(Blocks.DARK_OAK_BUTTON).fence(Blocks.DARK_OAK_FENCE).fenceGate(Blocks.DARK_OAK_FENCE_GATE).pressurePlate(Blocks.DARK_OAK_PRESSURE_PLATE).sign(Blocks.DARK_OAK_SIGN, Blocks.DARK_OAK_WALL_SIGN).slab(Blocks.DARK_OAK_SLAB).stairs(Blocks.DARK_OAK_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.DARK_OAK_PLANKS).button(Blocks.DARK_OAK_BUTTON).fence(Blocks.DARK_OAK_FENCE).fenceGate(Blocks.DARK_OAK_FENCE_GATE).pressurePlate(Blocks.DARK_OAK_PRESSURE_PLATE).sign(Blocks.DARK_OAK_SIGN, Blocks.DARK_OAK_WALL_SIGN).slab(Blocks.DARK_OAK_SLAB, new Block[0]).stairs(Blocks.DARK_OAK_STAIRS, new Block[0]);
         this.registerDoor(Blocks.DARK_OAK_DOOR);
         this.registerTrapdoor(Blocks.DARK_OAK_TRAPDOOR);
         this.registerLog(Blocks.DARK_OAK_LOG).log(Blocks.DARK_OAK_LOG).wood(Blocks.DARK_OAK_WOOD);
         this.registerLog(Blocks.STRIPPED_DARK_OAK_LOG).log(Blocks.STRIPPED_DARK_OAK_LOG).wood(Blocks.STRIPPED_DARK_OAK_WOOD);
         this.registerFlowerPotPlant(Blocks.DARK_OAK_SAPLING, Blocks.POTTED_DARK_OAK_SAPLING, TintType.NOT_TINTED);
         this.registerSingleton(Blocks.DARK_OAK_LEAVES, TexturedModel.LEAVES);
-        this.registerCubeAllModelTexturePool(Blocks.JUNGLE_PLANKS).button(Blocks.JUNGLE_BUTTON).fence(Blocks.JUNGLE_FENCE).fenceGate(Blocks.JUNGLE_FENCE_GATE).pressurePlate(Blocks.JUNGLE_PRESSURE_PLATE).sign(Blocks.JUNGLE_SIGN, Blocks.JUNGLE_WALL_SIGN).slab(Blocks.JUNGLE_SLAB).stairs(Blocks.JUNGLE_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.JUNGLE_PLANKS).button(Blocks.JUNGLE_BUTTON).fence(Blocks.JUNGLE_FENCE).fenceGate(Blocks.JUNGLE_FENCE_GATE).pressurePlate(Blocks.JUNGLE_PRESSURE_PLATE).sign(Blocks.JUNGLE_SIGN, Blocks.JUNGLE_WALL_SIGN).slab(Blocks.JUNGLE_SLAB, new Block[0]).stairs(Blocks.JUNGLE_STAIRS, new Block[0]);
         this.registerDoor(Blocks.JUNGLE_DOOR);
         this.registerOrientableTrapdoor(Blocks.JUNGLE_TRAPDOOR);
         this.registerLog(Blocks.JUNGLE_LOG).log(Blocks.JUNGLE_LOG).wood(Blocks.JUNGLE_WOOD);
         this.registerLog(Blocks.STRIPPED_JUNGLE_LOG).log(Blocks.STRIPPED_JUNGLE_LOG).wood(Blocks.STRIPPED_JUNGLE_WOOD);
         this.registerFlowerPotPlant(Blocks.JUNGLE_SAPLING, Blocks.POTTED_JUNGLE_SAPLING, TintType.NOT_TINTED);
         this.registerSingleton(Blocks.JUNGLE_LEAVES, TexturedModel.LEAVES);
-        this.registerCubeAllModelTexturePool(Blocks.CRIMSON_PLANKS).button(Blocks.CRIMSON_BUTTON).fence(Blocks.CRIMSON_FENCE).fenceGate(Blocks.CRIMSON_FENCE_GATE).pressurePlate(Blocks.CRIMSON_PRESSURE_PLATE).sign(Blocks.CRIMSON_SIGN, Blocks.CRIMSON_WALL_SIGN).slab(Blocks.CRIMSON_SLAB).stairs(Blocks.CRIMSON_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.CRIMSON_PLANKS).button(Blocks.CRIMSON_BUTTON).fence(Blocks.CRIMSON_FENCE).fenceGate(Blocks.CRIMSON_FENCE_GATE).pressurePlate(Blocks.CRIMSON_PRESSURE_PLATE).sign(Blocks.CRIMSON_SIGN, Blocks.CRIMSON_WALL_SIGN).slab(Blocks.CRIMSON_SLAB, new Block[0]).stairs(Blocks.CRIMSON_STAIRS, new Block[0]);
         this.registerDoor(Blocks.CRIMSON_DOOR);
         this.registerOrientableTrapdoor(Blocks.CRIMSON_TRAPDOOR);
         this.registerLog(Blocks.CRIMSON_STEM).stem(Blocks.CRIMSON_STEM).wood(Blocks.CRIMSON_HYPHAE);
         this.registerLog(Blocks.STRIPPED_CRIMSON_STEM).stem(Blocks.STRIPPED_CRIMSON_STEM).wood(Blocks.STRIPPED_CRIMSON_HYPHAE);
         this.registerFlowerPotPlant(Blocks.CRIMSON_FUNGUS, Blocks.POTTED_CRIMSON_FUNGUS, TintType.NOT_TINTED);
         this.registerRoots(Blocks.CRIMSON_ROOTS, Blocks.POTTED_CRIMSON_ROOTS);
-        this.registerCubeAllModelTexturePool(Blocks.WARPED_PLANKS).button(Blocks.WARPED_BUTTON).fence(Blocks.WARPED_FENCE).fenceGate(Blocks.WARPED_FENCE_GATE).pressurePlate(Blocks.WARPED_PRESSURE_PLATE).sign(Blocks.WARPED_SIGN, Blocks.WARPED_WALL_SIGN).slab(Blocks.WARPED_SLAB).stairs(Blocks.WARPED_STAIRS);
+        this.registerCubeAllModelTexturePool(Blocks.WARPED_PLANKS).button(Blocks.WARPED_BUTTON).fence(Blocks.WARPED_FENCE).fenceGate(Blocks.WARPED_FENCE_GATE).pressurePlate(Blocks.WARPED_PRESSURE_PLATE).sign(Blocks.WARPED_SIGN, Blocks.WARPED_WALL_SIGN).slab(Blocks.WARPED_SLAB, new Block[0]).stairs(Blocks.WARPED_STAIRS, new Block[0]);
         this.registerDoor(Blocks.WARPED_DOOR);
         this.registerOrientableTrapdoor(Blocks.WARPED_TRAPDOOR);
         this.registerLog(Blocks.WARPED_STEM).stem(Blocks.WARPED_STEM).wood(Blocks.WARPED_HYPHAE);
@@ -1469,38 +1519,38 @@ public class BlockStateModelGenerator {
             Identifier identifier2 = Models.CUBE_MIRRORED_ALL.upload(Blocks.STONE, (Texture)texture, this.modelCollector);
             this.blockStateCollector.accept(BlockStateModelGenerator.createBlockStateWithTwoModelAndRandomInversion(Blocks.STONE, identifier, identifier2));
             return identifier;
-        }).slab(Blocks.STONE_SLAB).pressurePlate(Blocks.STONE_PRESSURE_PLATE).button(Blocks.STONE_BUTTON).stairs(Blocks.STONE_STAIRS);
+        }).slab(Blocks.STONE_SLAB, new Block[0]).pressurePlate(Blocks.STONE_PRESSURE_PLATE).button(Blocks.STONE_BUTTON).stairs(Blocks.STONE_STAIRS, new Block[0]);
         this.registerDoor(Blocks.IRON_DOOR);
         this.registerTrapdoor(Blocks.IRON_TRAPDOOR);
-        this.registerCubeAllModelTexturePool(Blocks.STONE_BRICKS).wall(Blocks.STONE_BRICK_WALL).stairs(Blocks.STONE_BRICK_STAIRS).slab(Blocks.STONE_BRICK_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.MOSSY_STONE_BRICKS).wall(Blocks.MOSSY_STONE_BRICK_WALL).stairs(Blocks.MOSSY_STONE_BRICK_STAIRS).slab(Blocks.MOSSY_STONE_BRICK_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.COBBLESTONE).wall(Blocks.COBBLESTONE_WALL).stairs(Blocks.COBBLESTONE_STAIRS).slab(Blocks.COBBLESTONE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.MOSSY_COBBLESTONE).wall(Blocks.MOSSY_COBBLESTONE_WALL).stairs(Blocks.MOSSY_COBBLESTONE_STAIRS).slab(Blocks.MOSSY_COBBLESTONE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.PRISMARINE).wall(Blocks.PRISMARINE_WALL).stairs(Blocks.PRISMARINE_STAIRS).slab(Blocks.PRISMARINE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.PRISMARINE_BRICKS).stairs(Blocks.PRISMARINE_BRICK_STAIRS).slab(Blocks.PRISMARINE_BRICK_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.DARK_PRISMARINE).stairs(Blocks.DARK_PRISMARINE_STAIRS).slab(Blocks.DARK_PRISMARINE_SLAB);
-        this.registerTexturePool(Blocks.SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL).wall(Blocks.SANDSTONE_WALL).stairs(Blocks.SANDSTONE_STAIRS).slab(Blocks.SANDSTONE_SLAB);
-        this.registerTexturePool(Blocks.SMOOTH_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.SANDSTONE, "_top"))).slab(Blocks.SMOOTH_SANDSTONE_SLAB).stairs(Blocks.SMOOTH_SANDSTONE_STAIRS);
-        this.registerTexturePool(Blocks.CUT_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_SANDSTONE)))).slab(Blocks.CUT_SANDSTONE_SLAB);
-        this.registerTexturePool(Blocks.RED_SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL).wall(Blocks.RED_SANDSTONE_WALL).stairs(Blocks.RED_SANDSTONE_STAIRS).slab(Blocks.RED_SANDSTONE_SLAB);
-        this.registerTexturePool(Blocks.SMOOTH_RED_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.RED_SANDSTONE, "_top"))).slab(Blocks.SMOOTH_RED_SANDSTONE_SLAB).stairs(Blocks.SMOOTH_RED_SANDSTONE_STAIRS);
-        this.registerTexturePool(Blocks.CUT_RED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.RED_SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_RED_SANDSTONE)))).slab(Blocks.CUT_RED_SANDSTONE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.BRICKS).wall(Blocks.BRICK_WALL).stairs(Blocks.BRICK_STAIRS).slab(Blocks.BRICK_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.NETHER_BRICKS).fence(Blocks.NETHER_BRICK_FENCE).wall(Blocks.NETHER_BRICK_WALL).stairs(Blocks.NETHER_BRICK_STAIRS).slab(Blocks.NETHER_BRICK_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.PURPUR_BLOCK).stairs(Blocks.PURPUR_STAIRS).slab(Blocks.PURPUR_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.DIORITE).wall(Blocks.DIORITE_WALL).stairs(Blocks.DIORITE_STAIRS).slab(Blocks.DIORITE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.POLISHED_DIORITE).stairs(Blocks.POLISHED_DIORITE_STAIRS).slab(Blocks.POLISHED_DIORITE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.GRANITE).wall(Blocks.GRANITE_WALL).stairs(Blocks.GRANITE_STAIRS).slab(Blocks.GRANITE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.POLISHED_GRANITE).stairs(Blocks.POLISHED_GRANITE_STAIRS).slab(Blocks.POLISHED_GRANITE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.ANDESITE).wall(Blocks.ANDESITE_WALL).stairs(Blocks.ANDESITE_STAIRS).slab(Blocks.ANDESITE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.POLISHED_ANDESITE).stairs(Blocks.POLISHED_ANDESITE_STAIRS).slab(Blocks.POLISHED_ANDESITE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.END_STONE_BRICKS).wall(Blocks.END_STONE_BRICK_WALL).stairs(Blocks.END_STONE_BRICK_STAIRS).slab(Blocks.END_STONE_BRICK_SLAB);
-        this.registerTexturePool(Blocks.QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN).stairs(Blocks.QUARTZ_STAIRS).slab(Blocks.QUARTZ_SLAB);
-        this.registerTexturePool(Blocks.SMOOTH_QUARTZ, TexturedModel.getCubeAll(Texture.getSubId(Blocks.QUARTZ_BLOCK, "_bottom"))).stairs(Blocks.SMOOTH_QUARTZ_STAIRS).slab(Blocks.SMOOTH_QUARTZ_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.RED_NETHER_BRICKS).slab(Blocks.RED_NETHER_BRICK_SLAB).stairs(Blocks.RED_NETHER_BRICK_STAIRS).wall(Blocks.RED_NETHER_BRICK_WALL);
-        this.registerTexturePool(Blocks.BLACKSTONE, TexturedModel.field_23959).wall(Blocks.BLACKSTONE_WALL).stairs(Blocks.BLACKSTONE_STAIRS).slab(Blocks.BLACKSTONE_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.POLISHED_BLACKSTONE_BRICKS).wall(Blocks.POLISHED_BLACKSTONE_BRICK_WALL).stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS).slab(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB);
-        this.registerCubeAllModelTexturePool(Blocks.POLISHED_BLACKSTONE).wall(Blocks.POLISHED_BLACKSTONE_WALL).pressurePlate(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE).button(Blocks.POLISHED_BLACKSTONE_BUTTON).stairs(Blocks.POLISHED_BLACKSTONE_STAIRS).slab(Blocks.POLISHED_BLACKSTONE_SLAB);
+        this.registerCubeAllModelTexturePool(Blocks.STONE_BRICKS).wall(Blocks.STONE_BRICK_WALL).stairs(Blocks.STONE_BRICK_STAIRS, new Block[0]).slab(Blocks.STONE_BRICK_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.MOSSY_STONE_BRICKS).wall(Blocks.MOSSY_STONE_BRICK_WALL).stairs(Blocks.MOSSY_STONE_BRICK_STAIRS, new Block[0]).slab(Blocks.MOSSY_STONE_BRICK_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.COBBLESTONE).wall(Blocks.COBBLESTONE_WALL).stairs(Blocks.COBBLESTONE_STAIRS, new Block[0]).slab(Blocks.COBBLESTONE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.MOSSY_COBBLESTONE).wall(Blocks.MOSSY_COBBLESTONE_WALL).stairs(Blocks.MOSSY_COBBLESTONE_STAIRS, new Block[0]).slab(Blocks.MOSSY_COBBLESTONE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.PRISMARINE).wall(Blocks.PRISMARINE_WALL).stairs(Blocks.PRISMARINE_STAIRS, new Block[0]).slab(Blocks.PRISMARINE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.PRISMARINE_BRICKS).stairs(Blocks.PRISMARINE_BRICK_STAIRS, new Block[0]).slab(Blocks.PRISMARINE_BRICK_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.DARK_PRISMARINE).stairs(Blocks.DARK_PRISMARINE_STAIRS, new Block[0]).slab(Blocks.DARK_PRISMARINE_SLAB, new Block[0]);
+        this.registerTexturePool(Blocks.SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP).wall(Blocks.SANDSTONE_WALL).stairs(Blocks.SANDSTONE_STAIRS, new Block[0]).slab(Blocks.SANDSTONE_SLAB, new Block[0]);
+        this.registerTexturePool(Blocks.SMOOTH_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.SANDSTONE, "_top"))).slab(Blocks.SMOOTH_SANDSTONE_SLAB, new Block[0]).stairs(Blocks.SMOOTH_SANDSTONE_STAIRS, new Block[0]);
+        this.registerTexturePool(Blocks.CUT_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_SANDSTONE)))).slab(Blocks.CUT_SANDSTONE_SLAB, new Block[0]);
+        this.registerTexturePool(Blocks.RED_SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP).wall(Blocks.RED_SANDSTONE_WALL).stairs(Blocks.RED_SANDSTONE_STAIRS, new Block[0]).slab(Blocks.RED_SANDSTONE_SLAB, new Block[0]);
+        this.registerTexturePool(Blocks.SMOOTH_RED_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.RED_SANDSTONE, "_top"))).slab(Blocks.SMOOTH_RED_SANDSTONE_SLAB, new Block[0]).stairs(Blocks.SMOOTH_RED_SANDSTONE_STAIRS, new Block[0]);
+        this.registerTexturePool(Blocks.CUT_RED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.RED_SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_RED_SANDSTONE)))).slab(Blocks.CUT_RED_SANDSTONE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.BRICKS).wall(Blocks.BRICK_WALL).stairs(Blocks.BRICK_STAIRS, new Block[0]).slab(Blocks.BRICK_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.NETHER_BRICKS).fence(Blocks.NETHER_BRICK_FENCE).wall(Blocks.NETHER_BRICK_WALL).stairs(Blocks.NETHER_BRICK_STAIRS, new Block[0]).slab(Blocks.NETHER_BRICK_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.PURPUR_BLOCK).stairs(Blocks.PURPUR_STAIRS, new Block[0]).slab(Blocks.PURPUR_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.DIORITE).wall(Blocks.DIORITE_WALL).stairs(Blocks.DIORITE_STAIRS, new Block[0]).slab(Blocks.DIORITE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.POLISHED_DIORITE).stairs(Blocks.POLISHED_DIORITE_STAIRS, new Block[0]).slab(Blocks.POLISHED_DIORITE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.GRANITE).wall(Blocks.GRANITE_WALL).stairs(Blocks.GRANITE_STAIRS, new Block[0]).slab(Blocks.GRANITE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.POLISHED_GRANITE).stairs(Blocks.POLISHED_GRANITE_STAIRS, new Block[0]).slab(Blocks.POLISHED_GRANITE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.ANDESITE).wall(Blocks.ANDESITE_WALL).stairs(Blocks.ANDESITE_STAIRS, new Block[0]).slab(Blocks.ANDESITE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.POLISHED_ANDESITE).stairs(Blocks.POLISHED_ANDESITE_STAIRS, new Block[0]).slab(Blocks.POLISHED_ANDESITE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.END_STONE_BRICKS).wall(Blocks.END_STONE_BRICK_WALL).stairs(Blocks.END_STONE_BRICK_STAIRS, new Block[0]).slab(Blocks.END_STONE_BRICK_SLAB, new Block[0]);
+        this.registerTexturePool(Blocks.QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN).stairs(Blocks.QUARTZ_STAIRS, new Block[0]).slab(Blocks.QUARTZ_SLAB, new Block[0]);
+        this.registerTexturePool(Blocks.SMOOTH_QUARTZ, TexturedModel.getCubeAll(Texture.getSubId(Blocks.QUARTZ_BLOCK, "_bottom"))).stairs(Blocks.SMOOTH_QUARTZ_STAIRS, new Block[0]).slab(Blocks.SMOOTH_QUARTZ_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.RED_NETHER_BRICKS).slab(Blocks.RED_NETHER_BRICK_SLAB, new Block[0]).stairs(Blocks.RED_NETHER_BRICK_STAIRS, new Block[0]).wall(Blocks.RED_NETHER_BRICK_WALL);
+        this.registerTexturePool(Blocks.BLACKSTONE, TexturedModel.field_23959).wall(Blocks.BLACKSTONE_WALL).stairs(Blocks.BLACKSTONE_STAIRS, new Block[0]).slab(Blocks.BLACKSTONE_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.POLISHED_BLACKSTONE_BRICKS).wall(Blocks.POLISHED_BLACKSTONE_BRICK_WALL).stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, new Block[0]).slab(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, new Block[0]);
+        this.registerCubeAllModelTexturePool(Blocks.POLISHED_BLACKSTONE).wall(Blocks.POLISHED_BLACKSTONE_WALL).pressurePlate(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE).button(Blocks.POLISHED_BLACKSTONE_BUTTON).stairs(Blocks.POLISHED_BLACKSTONE_STAIRS, new Block[0]).slab(Blocks.POLISHED_BLACKSTONE_SLAB, new Block[0]);
         this.registerSmoothStone();
         this.registerTurnableRail(Blocks.RAIL);
         this.registerStraightRail(Blocks.POWERED_RAIL);
@@ -1527,6 +1577,13 @@ public class BlockStateModelGenerator {
         this.registerInfestedStone();
         this.registerInfested(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
         SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel((Item)spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
+    }
+
+    private void method_32228(Block block, Block block2) {
+        this.registerItemModel(block.asItem());
+        Texture texture = Texture.all(Texture.getId(block));
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(BlockStateVariantMap.create(Properties.CANDLES).register((Integer)1, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CANDLE.upload(block, "_one_candle", texture, this.modelCollector))).register((Integer)2, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_TWO_CANDLES.upload(block, "_two_candles", texture, this.modelCollector))).register((Integer)3, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_THREE_CANDLES.upload(block, "_three_candles", texture, this.modelCollector))).register((Integer)4, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_FOUR_CANDLES.upload(block, "_four_candles", texture, this.modelCollector)))));
+        this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block2, Models.TEMPLATE_CAKE_WITH_CANDLE.upload(block2, Texture.method_32231(block), this.modelCollector)));
     }
 
     class BuiltinModelPool {
@@ -1620,6 +1677,17 @@ public class BlockStateModelGenerator {
             return this;
         }
 
+        public BlockTexturePool method_32230(Block ... blocks) {
+            if (this.baseModelId == null) {
+                throw new IllegalStateException("Full block not generated yet");
+            }
+            for (Block block : blocks) {
+                BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, this.baseModelId));
+                BlockStateModelGenerator.this.registerParentedItemModel(block, this.baseModelId);
+            }
+            return this;
+        }
+
         public BlockTexturePool button(Block buttonBlock) {
             Identifier identifier = Models.BUTTON.upload(buttonBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
             Identifier identifier2 = Models.BUTTON_PRESSED.upload(buttonBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
@@ -1673,21 +1741,29 @@ public class BlockStateModelGenerator {
             return this;
         }
 
-        public BlockTexturePool slab(Block slabBlock) {
+        public BlockTexturePool slab(Block slabBlock, Block ... blocks) {
             if (this.baseModelId == null) {
                 throw new IllegalStateException("Full block not generated yet");
             }
             Identifier identifier = Models.SLAB.upload(slabBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
             Identifier identifier2 = Models.SLAB_TOP.upload(slabBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSlabBlockState(slabBlock, identifier, identifier2, this.baseModelId));
+            for (Block block : blocks) {
+                BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSlabBlockState(block, identifier, identifier2, this.baseModelId));
+                BlockStateModelGenerator.this.registerParentedItemModel(block, identifier);
+            }
             return this;
         }
 
-        public BlockTexturePool stairs(Block stairsBlock) {
+        public BlockTexturePool stairs(Block stairsBlock, Block ... blocks) {
             Identifier identifier = Models.INNER_STAIRS.upload(stairsBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
             Identifier identifier2 = Models.STAIRS.upload(stairsBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
             Identifier identifier3 = Models.OUTER_STAIRS.upload(stairsBlock, this.texture, (BiConsumer<Identifier, Supplier<JsonElement>>)BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createStairsBlockState(stairsBlock, identifier, identifier2, identifier3));
+            for (Block block : blocks) {
+                BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createStairsBlockState(block, identifier, identifier2, identifier3));
+                BlockStateModelGenerator.this.registerParentedItemModel(block, identifier2);
+            }
             return this;
         }
     }

@@ -58,7 +58,7 @@ extends ChunkGenerator {
             BlockState blockState;
             BlockState blockState2 = blockState = blockStates[i] == null ? Blocks.AIR.getDefaultState() : blockStates[i];
             if (Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) continue;
-            return i - 1;
+            return this.config.getBottomHeightLimit() + i - 1;
         }
         return blockStates.length;
     }
@@ -72,11 +72,12 @@ extends ChunkGenerator {
         for (int i = 0; i < blockStates.length; ++i) {
             BlockState blockState = blockStates[i];
             if (blockState == null) continue;
-            for (int j = 0; j < 16; ++j) {
-                for (int k = 0; k < 16; ++k) {
-                    chunk.setBlockState(mutable.set(j, i, k), blockState, false);
-                    heightmap.trackUpdate(j, i, k, blockState);
-                    heightmap2.trackUpdate(j, i, k, blockState);
+            int j = world.getBottomHeightLimit() + i;
+            for (int k = 0; k < 16; ++k) {
+                for (int l = 0; l < 16; ++l) {
+                    chunk.setBlockState(mutable.set(k, j, l), blockState, false);
+                    heightmap.trackUpdate(k, j, l, blockState);
+                    heightmap2.trackUpdate(k, j, l, blockState);
                 }
             }
         }
@@ -88,7 +89,7 @@ extends ChunkGenerator {
         for (int i = blockStates.length - 1; i >= 0; --i) {
             BlockState blockState = blockStates[i];
             if (blockState == null || !heightmapType.getBlockPredicate().test(blockState)) continue;
-            return i + 1;
+            return this.config.getBottomHeightLimit() + i + 1;
         }
         return 0;
     }

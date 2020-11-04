@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class FurnaceOutputSlot
 extends Slot {
@@ -48,8 +49,8 @@ extends Slot {
     @Override
     protected void onCrafted(ItemStack stack) {
         stack.onCraft(this.player.world, this.player, this.amount);
-        if (!this.player.world.isClient && this.inventory instanceof AbstractFurnaceBlockEntity) {
-            ((AbstractFurnaceBlockEntity)this.inventory).dropExperience(this.player);
+        if (this.player instanceof ServerPlayerEntity && this.inventory instanceof AbstractFurnaceBlockEntity) {
+            ((AbstractFurnaceBlockEntity)this.inventory).dropExperience((ServerPlayerEntity)this.player);
         }
         this.amount = 0;
     }

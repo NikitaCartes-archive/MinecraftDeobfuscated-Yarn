@@ -126,7 +126,7 @@ implements Waterloggable {
     private boolean shouldConnectTo(BlockState state, boolean faceFullSquare, Direction side) {
         Block block = state.getBlock();
         boolean bl = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, side);
-        return state.isIn(BlockTags.WALLS) || !WallBlock.cannotConnect(block) && faceFullSquare || block instanceof PaneBlock || bl;
+        return state.isIn(BlockTags.WALLS) || !WallBlock.cannotConnect(state) && faceFullSquare || block instanceof PaneBlock || bl;
     }
 
     @Override
@@ -153,17 +153,17 @@ implements Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction == Direction.DOWN) {
-            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+            return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
         }
         if (direction == Direction.UP) {
-            return this.method_24421(world, state, neighborPos, neighborState);
+            return this.method_24421(world, state, posFrom, newState);
         }
-        return this.method_24423(world, pos, state, neighborPos, neighborState, direction);
+        return this.method_24423(world, pos, state, posFrom, newState, direction);
     }
 
     private static boolean method_24424(BlockState blockState, Property<WallShape> property) {
@@ -223,7 +223,7 @@ implements Waterloggable {
         if (bl7) {
             return false;
         }
-        return blockState2.getBlock().isIn(BlockTags.WALL_POST_OVERRIDE) || WallBlock.method_24427(voxelShape, TALL_POST_SHAPE);
+        return blockState2.isIn(BlockTags.WALL_POST_OVERRIDE) || WallBlock.method_24427(voxelShape, TALL_POST_SHAPE);
     }
 
     private BlockState method_24425(BlockState blockState, boolean bl, boolean bl2, boolean bl3, boolean bl4, VoxelShape voxelShape) {

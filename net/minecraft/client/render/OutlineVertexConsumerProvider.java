@@ -38,7 +38,7 @@ implements VertexConsumerProvider {
         if (optional.isPresent()) {
             VertexConsumer vertexConsumer2 = this.plainDrawer.getBuffer(optional.get());
             OutlineVertexConsumer outlineVertexConsumer = new OutlineVertexConsumer(vertexConsumer2, this.red, this.green, this.blue, this.alpha);
-            return VertexConsumers.union(outlineVertexConsumer, vertexConsumer);
+            return VertexConsumers.dual(outlineVertexConsumer, vertexConsumer);
         }
         return vertexConsumer;
     }

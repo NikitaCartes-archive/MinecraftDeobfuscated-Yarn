@@ -77,8 +77,8 @@ public class Explosion {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, DestructionType destructionType) {
-        this(world, entity, null, null, d, e, f, g, bl, destructionType);
+    public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType destructionType) {
+        this(world, entity, null, null, x, y, z, power, createFire, destructionType);
     }
 
     public Explosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, DestructionType destructionType) {
@@ -201,28 +201,25 @@ public class Explosion {
                 ad = ProtectionEnchantment.transformExplosionKnockback((LivingEntity)entity, ac);
             }
             entity.setVelocity(entity.getVelocity().add(x * ad, y * ad, z * ad));
-            if (!(entity instanceof PlayerEntity) || (playerEntity = (PlayerEntity)entity).isSpectator() || playerEntity.isCreative() && playerEntity.abilities.flying) continue;
+            if (!(entity instanceof PlayerEntity) || (playerEntity = (PlayerEntity)entity).isSpectator() || playerEntity.isCreative() && playerEntity.getAbilities().flying) continue;
             this.affectedPlayers.put(playerEntity, new Vec3d(x * ac, y * ac, z * ac));
         }
     }
 
-    /**
-     * @param particles whether this explosion should emit explosion or explosion emitter particles around the source of the explosion
-     */
-    public void affectWorld(boolean particles) {
-        boolean bl;
+    public void affectWorld(boolean bl) {
+        boolean bl2;
         if (this.world.isClient) {
             this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0f, (1.0f + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2f) * 0.7f, false);
         }
-        boolean bl2 = bl = this.destructionType != DestructionType.NONE;
-        if (particles) {
-            if (this.power < 2.0f || !bl) {
+        boolean bl3 = bl2 = this.destructionType != DestructionType.NONE;
+        if (bl) {
+            if (this.power < 2.0f || !bl2) {
                 this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
             } else {
                 this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
             }
         }
-        if (bl) {
+        if (bl2) {
             ObjectArrayList objectArrayList = new ObjectArrayList();
             Collections.shuffle(this.affectedBlocks, this.world.random);
             for (BlockPos blockPos : this.affectedBlocks) {
@@ -232,7 +229,7 @@ public class Explosion {
                 BlockPos blockPos2 = blockPos.toImmutable();
                 this.world.getProfiler().push("explosion_blocks");
                 if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
-                    BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
+                    BlockEntity blockEntity = blockState.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
                     LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).random(this.world.random).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos)).parameter(LootContextParameters.TOOL, ItemStack.EMPTY).optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity).optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
                     if (this.destructionType == DestructionType.DESTROY) {
                         builder.parameter(LootContextParameters.EXPLOSION_RADIUS, Float.valueOf(this.power));

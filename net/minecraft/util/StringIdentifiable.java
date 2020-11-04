@@ -49,9 +49,9 @@ public interface StringIdentifiable {
             @Override
             public <T> DataResult<Pair<E, T>> decode(DynamicOps<T> dynamicOps, T object) {
                 if (dynamicOps.compressMaps()) {
-                    return dynamicOps.getNumberValue(object).flatMap((? super R number) -> Optional.ofNullable(compressedDecoder.apply(number.intValue())).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element id: " + number))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
+                    return dynamicOps.getNumberValue(object).flatMap((? super R id) -> Optional.ofNullable(compressedDecoder.apply(id.intValue())).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element id: " + id))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
                 }
-                return dynamicOps.getStringValue(object).flatMap((? super R string) -> Optional.ofNullable(decoder.apply(string)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name: " + string))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
+                return dynamicOps.getStringValue(object).flatMap((? super R name) -> Optional.ofNullable(decoder.apply(name)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name: " + name))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
             }
 
             public String toString() {
@@ -65,15 +65,15 @@ public interface StringIdentifiable {
         };
     }
 
-    public static Keyable method_28142(final StringIdentifiable[] stringIdentifiables) {
+    public static Keyable toKeyable(final StringIdentifiable[] values) {
         return new Keyable(){
 
             @Override
             public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
                 if (dynamicOps.compressMaps()) {
-                    return IntStream.range(0, stringIdentifiables.length).mapToObj(dynamicOps::createInt);
+                    return IntStream.range(0, values.length).mapToObj(dynamicOps::createInt);
                 }
-                return Arrays.stream(stringIdentifiables).map(StringIdentifiable::asString).map(dynamicOps::createString);
+                return Arrays.stream(values).map(StringIdentifiable::asString).map(dynamicOps::createString);
             }
         };
     }

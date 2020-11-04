@@ -5,62 +5,82 @@ package net.minecraft.util.shape;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleLists;
 import net.minecraft.util.shape.PairList;
 
-public final class SimplePairList
+public class SimplePairList
 implements PairList {
-    private final DoubleArrayList valueIndices;
-    private final IntArrayList minValues;
-    private final IntArrayList maxValues;
+    private static final DoubleList field_27346 = DoubleLists.unmodifiable(DoubleArrayList.wrap(new double[]{0.0}));
+    private final double[] valueIndices;
+    private final int[] minValues;
+    private final int[] maxValues;
+    private final int field_27347;
 
-    protected SimplePairList(DoubleList first, DoubleList second, boolean includeFirstOnly, boolean includeSecondOnly) {
-        int i = 0;
-        int j = 0;
+    public SimplePairList(DoubleList first, DoubleList doubleList, boolean includeFirstOnly, boolean includeSecondOnly) {
         double d = Double.NaN;
-        int k = first.size();
-        int l = second.size();
-        int m = k + l;
-        this.valueIndices = new DoubleArrayList(m);
-        this.minValues = new IntArrayList(m);
-        this.maxValues = new IntArrayList(m);
+        int i = first.size();
+        int j = doubleList.size();
+        int k = i + j;
+        this.valueIndices = new double[k];
+        this.minValues = new int[k];
+        this.maxValues = new int[k];
+        boolean bl = !includeFirstOnly;
+        boolean bl2 = !includeSecondOnly;
+        int l = 0;
+        int m = 0;
+        int n = 0;
         while (true) {
             double e;
-            boolean bl2;
-            boolean bl = i < k;
-            boolean bl3 = bl2 = j < l;
-            if (!bl && !bl2) break;
-            boolean bl32 = bl && (!bl2 || first.getDouble(i) < second.getDouble(j) + 1.0E-7);
-            double d2 = e = bl32 ? first.getDouble(i++) : second.getDouble(j++);
-            if ((i == 0 || !bl) && !bl32 && !includeSecondOnly || (j == 0 || !bl2) && bl32 && !includeFirstOnly) continue;
+            boolean bl5;
+            boolean bl4;
+            boolean bl3 = m >= i;
+            boolean bl6 = bl4 = n >= j;
+            if (bl3 && bl4) break;
+            boolean bl7 = bl5 = !bl3 && (bl4 || first.getDouble(m) < doubleList.getDouble(n) + 1.0E-7);
+            if (bl5) {
+                ++m;
+                if (bl && (n == 0 || bl4)) {
+                    continue;
+                }
+            } else {
+                ++n;
+                if (bl2 && (m == 0 || bl3)) continue;
+            }
+            int o = m - 1;
+            int p = n - 1;
+            double d2 = e = bl5 ? first.getDouble(o) : doubleList.getDouble(p);
             if (!(d >= e - 1.0E-7)) {
-                this.minValues.add(i - 1);
-                this.maxValues.add(j - 1);
-                this.valueIndices.add(e);
+                this.minValues[l] = o;
+                this.maxValues[l] = p;
+                this.valueIndices[l] = e;
+                ++l;
                 d = e;
                 continue;
             }
-            if (this.valueIndices.isEmpty()) continue;
-            this.minValues.set(this.minValues.size() - 1, i - 1);
-            this.maxValues.set(this.maxValues.size() - 1, j - 1);
+            this.minValues[l - 1] = o;
+            this.maxValues[l - 1] = p;
         }
-        if (this.valueIndices.isEmpty()) {
-            this.valueIndices.add(Math.min(first.getDouble(k - 1), second.getDouble(l - 1)));
-        }
+        this.field_27347 = Math.max(1, l);
     }
 
     @Override
     public boolean forEachPair(PairList.Consumer predicate) {
-        for (int i = 0; i < this.valueIndices.size() - 1; ++i) {
-            if (predicate.merge(this.minValues.getInt(i), this.maxValues.getInt(i), i)) continue;
+        int i = this.field_27347 - 1;
+        for (int j = 0; j < i; ++j) {
+            if (predicate.merge(this.minValues[j], this.maxValues[j], j)) continue;
             return false;
         }
         return true;
     }
 
     @Override
+    public int size() {
+        return this.field_27347;
+    }
+
+    @Override
     public DoubleList getPairs() {
-        return this.valueIndices;
+        return this.field_27347 <= 1 ? field_27346 : DoubleArrayList.wrap(this.valueIndices, this.field_27347);
     }
 }
 

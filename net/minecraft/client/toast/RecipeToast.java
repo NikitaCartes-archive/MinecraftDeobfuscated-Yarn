@@ -44,7 +44,7 @@ implements Toast {
         manager.getGame().textRenderer.draw(matrices, field_26533, 30.0f, 7.0f, -11534256);
         manager.getGame().textRenderer.draw(matrices, field_26534, 30.0f, 18.0f, -16777216);
         Recipe<?> recipe = this.recipes.get((int)(startTime / Math.max(1L, 5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
-        ItemStack itemStack = recipe.createIcon();
+        ItemStack itemStack = recipe.getRecipeKindIcon();
         RenderSystem.pushMatrix();
         RenderSystem.scalef(0.6f, 0.6f, 1.0f);
         manager.getGame().getItemRenderer().renderInGui(itemStack, 3, 3);

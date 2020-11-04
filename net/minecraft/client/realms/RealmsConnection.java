@@ -63,7 +63,7 @@ public class RealmsConnection {
                     RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getProfile()));
                     minecraftClient.setCurrentServerEntry(realmsServer.method_31403(string));
                 } catch (UnknownHostException unknownHostException) {
-                    minecraftClient.getResourcePackProvider().clear();
+                    minecraftClient.getResourcePackDownloader().clear();
                     if (RealmsConnection.this.aborted) {
                         return;
                     }
@@ -71,7 +71,7 @@ public class RealmsConnection {
                     DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", "Unknown host '" + string + "'"));
                     minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
                 } catch (Exception exception) {
-                    minecraftClient.getResourcePackProvider().clear();
+                    minecraftClient.getResourcePackDownloader().clear();
                     if (RealmsConnection.this.aborted) {
                         return;
                     }

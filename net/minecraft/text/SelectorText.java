@@ -32,7 +32,7 @@ implements ParsableText {
             EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(pattern));
             entitySelector = entitySelectorReader.read();
         } catch (CommandSyntaxException commandSyntaxException) {
-            LOGGER.warn("Invalid selector component: {}", (Object)pattern, (Object)commandSyntaxException.getMessage());
+            LOGGER.warn("Invalid selector component: {}: {}", (Object)pattern, (Object)commandSyntaxException.getMessage());
         }
         this.selector = entitySelector;
     }

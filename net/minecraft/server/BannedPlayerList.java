@@ -22,8 +22,8 @@ extends ServerConfigList<GameProfile, BannedPlayerEntry> {
     }
 
     @Override
-    public boolean contains(GameProfile profile) {
-        return this.contains(profile);
+    public boolean contains(GameProfile gameProfile) {
+        return this.contains(gameProfile);
     }
 
     @Override

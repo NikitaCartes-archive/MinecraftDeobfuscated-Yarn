@@ -45,7 +45,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.ScreenHandler;
@@ -242,7 +242,7 @@ implements Shearable {
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.getItem() == Items.SHEARS) {
+        if (itemStack.isOf(Items.SHEARS)) {
             if (!this.world.isClient && this.isShearable()) {
                 this.sheared(SoundCategory.PLAYERS);
                 itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
@@ -271,17 +271,17 @@ implements Shearable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putBoolean("Sheared", this.isSheared());
-        nbt.putByte("Color", (byte)this.getColor().getId());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putBoolean("Sheared", this.isSheared());
+        tag.putByte("Color", (byte)this.getColor().getId());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.setSheared(nbt.getBoolean("Sheared"));
-        this.setColor(DyeColor.byId(nbt.getByte("Color")));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setSheared(tag.getBoolean("Sheared"));
+        this.setColor(DyeColor.byId(tag.getByte("Color")));
     }
 
     @Override
@@ -364,9 +364,9 @@ implements Shearable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setColor(SheepEntity.generateDefaultColor(world.getRandom()));
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     private DyeColor getChildColor(AnimalEntity firstParent, AnimalEntity secondParent) {

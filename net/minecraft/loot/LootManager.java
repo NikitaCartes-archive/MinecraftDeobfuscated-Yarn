@@ -56,7 +56,7 @@ extends JsonDataLoader {
         ImmutableMap<Identifier, LootTable> immutableMap = builder.build();
         LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.conditionManager::get, immutableMap::get);
         immutableMap.forEach((identifier, lootTable) -> LootManager.validate(lootTableReporter, identifier, lootTable));
-        lootTableReporter.getMessages().forEach((key, value) -> LOGGER.warn("Found validation problem in " + key + ": " + value));
+        lootTableReporter.getMessages().forEach((key, value) -> LOGGER.warn("Found validation problem in {}: {}", key, value));
         this.tables = immutableMap;
     }
 

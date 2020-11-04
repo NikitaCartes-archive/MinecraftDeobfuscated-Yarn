@@ -36,12 +36,12 @@ implements AutoCloseable {
     public ServerResourceManager(CommandManager.RegistrationEnvironment registrationEnvironment, int i) {
         this.commandManager = new CommandManager(registrationEnvironment);
         this.functionLoader = new FunctionLoader(i, this.commandManager.getDispatcher());
-        this.resourceManager.registerReloader(this.registryTagManager);
-        this.resourceManager.registerReloader(this.lootConditionManager);
-        this.resourceManager.registerReloader(this.recipeManager);
-        this.resourceManager.registerReloader(this.lootManager);
-        this.resourceManager.registerReloader(this.functionLoader);
-        this.resourceManager.registerReloader(this.serverAdvancementLoader);
+        this.resourceManager.registerListener(this.registryTagManager);
+        this.resourceManager.registerListener(this.lootConditionManager);
+        this.resourceManager.registerListener(this.recipeManager);
+        this.resourceManager.registerListener(this.lootManager);
+        this.resourceManager.registerListener(this.functionLoader);
+        this.resourceManager.registerListener(this.serverAdvancementLoader);
     }
 
     public FunctionLoader getFunctionLoader() {
@@ -76,9 +76,9 @@ implements AutoCloseable {
         return this.resourceManager;
     }
 
-    public static CompletableFuture<ServerResourceManager> reload(List<ResourcePack> list, CommandManager.RegistrationEnvironment registrationEnvironment, int i, Executor executor, Executor executor2) {
+    public static CompletableFuture<ServerResourceManager> reload(List<ResourcePack> packs, CommandManager.RegistrationEnvironment registrationEnvironment, int i, Executor executor, Executor executor2) {
         ServerResourceManager serverResourceManager = new ServerResourceManager(registrationEnvironment, i);
-        CompletableFuture<Unit> completableFuture = serverResourceManager.resourceManager.reload(executor, executor2, list, field_25334);
+        CompletableFuture<Unit> completableFuture = serverResourceManager.resourceManager.beginReload(executor, executor2, packs, field_25334);
         return ((CompletableFuture)completableFuture.whenComplete((unit, throwable) -> {
             if (throwable != null) {
                 serverResourceManager.close();

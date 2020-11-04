@@ -96,7 +96,7 @@ implements Fertilizable {
         boolean bl;
         int i = state.get(AGE);
         boolean bl2 = bl = i == 3;
-        if (!bl && player.getStackInHand(hand).getItem() == Items.BONE_MEAL) {
+        if (!bl && player.getStackInHand(hand).isOf(Items.BONE_MEAL)) {
             return ActionResult.PASS;
         }
         if (i > 1) {

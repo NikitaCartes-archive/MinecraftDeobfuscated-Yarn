@@ -24,11 +24,11 @@ extends Task<E> {
         this(livingEntity -> true, f, bl, i);
     }
 
-    public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, float speed, boolean requiresWalkTarget, int radius) {
+    public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, float f, boolean requiresWalkTarget, int i) {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.WALK_TARGET, requiresWalkTarget ? MemoryModuleState.REGISTERED : MemoryModuleState.VALUE_ABSENT, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleState.VALUE_PRESENT));
         this.startCondition = startCondition;
-        this.radius = radius;
-        this.field_23131 = speed;
+        this.radius = i;
+        this.field_23131 = f;
     }
 
     @Override

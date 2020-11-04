@@ -12,10 +12,10 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
-import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.util.collection.DefaultedList;
 
 public class SimpleInventory
@@ -109,7 +109,7 @@ RecipeInputProvider {
     public boolean canInsert(ItemStack stack) {
         boolean bl = false;
         for (ItemStack itemStack : this.stacks) {
-            if (!itemStack.isEmpty() && (!this.canCombine(itemStack, stack) || itemStack.getCount() >= itemStack.getMaxCount())) continue;
+            if (!itemStack.isEmpty() && (!ItemStack.method_31577(itemStack, stack) || itemStack.getCount() >= itemStack.getMaxCount())) continue;
             bl = true;
             break;
         }
@@ -170,9 +170,9 @@ RecipeInputProvider {
     }
 
     @Override
-    public void provideRecipeInputs(RecipeMatcher finder) {
+    public void provideRecipeInputs(RecipeFinder finder) {
         for (ItemStack itemStack : this.stacks) {
-            finder.addInput(itemStack);
+            finder.addItem(itemStack);
         }
     }
 
@@ -193,15 +193,11 @@ RecipeInputProvider {
     private void addToExistingSlot(ItemStack stack) {
         for (int i = 0; i < this.size; ++i) {
             ItemStack itemStack = this.getStack(i);
-            if (!this.canCombine(itemStack, stack)) continue;
+            if (!ItemStack.method_31577(itemStack, stack)) continue;
             this.transfer(stack, itemStack);
             if (!stack.isEmpty()) continue;
             return;
         }
-    }
-
-    private boolean canCombine(ItemStack one, ItemStack two) {
-        return one.getItem() == two.getItem() && ItemStack.areTagsEqual(one, two);
     }
 
     private void transfer(ItemStack source, ItemStack target) {
@@ -214,22 +210,22 @@ RecipeInputProvider {
         }
     }
 
-    public void readNbtList(NbtList nbtList) {
-        for (int i = 0; i < nbtList.size(); ++i) {
-            ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
+    public void readTags(ListTag tags) {
+        for (int i = 0; i < tags.size(); ++i) {
+            ItemStack itemStack = ItemStack.fromTag(tags.getCompound(i));
             if (itemStack.isEmpty()) continue;
             this.addStack(itemStack);
         }
     }
 
-    public NbtList toNbtList() {
-        NbtList nbtList = new NbtList();
+    public ListTag getTags() {
+        ListTag listTag = new ListTag();
         for (int i = 0; i < this.size(); ++i) {
             ItemStack itemStack = this.getStack(i);
             if (itemStack.isEmpty()) continue;
-            nbtList.add(itemStack.writeNbt(new NbtCompound()));
+            listTag.add(itemStack.toTag(new CompoundTag()));
         }
-        return nbtList;
+        return listTag;
     }
 }
 

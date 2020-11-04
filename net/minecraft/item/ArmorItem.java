@@ -24,12 +24,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Wearable;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class ArmorItem
 extends Item
@@ -129,6 +131,12 @@ implements Wearable {
 
     public float method_26353() {
         return this.toughness;
+    }
+
+    @Override
+    @Nullable
+    public SoundEvent method_31570() {
+        return this.getMaterial().getEquipSound();
     }
 }
 

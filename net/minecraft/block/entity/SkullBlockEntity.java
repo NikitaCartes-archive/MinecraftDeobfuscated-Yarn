@@ -10,20 +10,19 @@ import com.mojang.authlib.properties.Property;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.ChatUtil;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class SkullBlockEntity
-extends BlockEntity
-implements Tickable {
+extends BlockEntity {
     @Nullable
     private static UserCache userCache;
     @Nullable
@@ -33,8 +32,8 @@ implements Tickable {
     private int ticksPowered;
     private boolean powered;
 
-    public SkullBlockEntity() {
-        super(BlockEntityType.SKULL);
+    public SkullBlockEntity(BlockPos blockPos, BlockState blockState) {
+        super(BlockEntityType.SKULL, blockPos, blockState);
     }
 
     public static void setUserCache(UserCache value) {
@@ -46,37 +45,33 @@ implements Tickable {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
         if (this.owner != null) {
-            NbtCompound nbtCompound = new NbtCompound();
-            NbtHelper.writeGameProfile(nbtCompound, this.owner);
-            nbt.put("SkullOwner", nbtCompound);
+            CompoundTag compoundTag = new CompoundTag();
+            NbtHelper.fromGameProfile(compoundTag, this.owner);
+            tag.put("SkullOwner", compoundTag);
         }
-        return nbt;
+        return tag;
     }
 
     @Override
-    public void fromTag(BlockState state, NbtCompound tag) {
+    public void fromTag(CompoundTag compoundTag) {
         String string;
-        super.fromTag(state, tag);
-        if (tag.contains("SkullOwner", 10)) {
-            this.setOwner(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
-        } else if (tag.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = tag.getString("ExtraType"))) {
-            this.setOwner(new GameProfile(null, string));
+        super.fromTag(compoundTag);
+        if (compoundTag.contains("SkullOwner", 10)) {
+            this.setOwnerAndType(NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner")));
+        } else if (compoundTag.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = compoundTag.getString("ExtraType"))) {
+            this.setOwnerAndType(new GameProfile(null, string));
         }
     }
 
-    @Override
-    public void tick() {
-        BlockState blockState = this.getCachedState();
-        if (blockState.isOf(Blocks.DRAGON_HEAD) || blockState.isOf(Blocks.DRAGON_WALL_HEAD)) {
-            if (this.world.isReceivingRedstonePower(this.pos)) {
-                this.powered = true;
-                ++this.ticksPowered;
-            } else {
-                this.powered = false;
-            }
+    public static void method_31695(World world, BlockPos blockPos, BlockState blockState, SkullBlockEntity skullBlockEntity) {
+        if (world.isReceivingRedstonePower(blockPos)) {
+            skullBlockEntity.powered = true;
+            ++skullBlockEntity.ticksPowered;
+        } else {
+            skullBlockEntity.powered = false;
         }
     }
 
@@ -97,16 +92,16 @@ implements Tickable {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 4, this.toInitialChunkDataNbt());
+        return new BlockEntityUpdateS2CPacket(this.pos, 4, this.toInitialChunkDataTag());
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.writeNbt(new NbtCompound());
+    public CompoundTag toInitialChunkDataTag() {
+        return this.toTag(new CompoundTag());
     }
 
-    public void setOwner(@Nullable GameProfile owner) {
-        this.owner = owner;
+    public void setOwnerAndType(@Nullable GameProfile gameProfile) {
+        this.owner = gameProfile;
         this.loadOwnerProperties();
     }
 

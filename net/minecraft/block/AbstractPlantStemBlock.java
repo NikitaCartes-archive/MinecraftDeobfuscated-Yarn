@@ -34,8 +34,8 @@ implements Fertilizable {
     }
 
     @Override
-    public BlockState getRandomGrowthState(WorldAccess world) {
-        return (BlockState)this.getDefaultState().with(AGE, world.getRandom().nextInt(25));
+    public BlockState getRandomGrowthState(WorldAccess worldAccess) {
+        return (BlockState)this.getDefaultState().with(AGE, worldAccess.getRandom().nextInt(25));
     }
 
     @Override
@@ -52,17 +52,17 @@ implements Fertilizable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
-        if (direction == this.growthDirection && (neighborState.isOf(this) || neighborState.isOf(this.getPlant()))) {
+        if (direction == this.growthDirection && (newState.isOf(this) || newState.isOf(this.getPlant()))) {
             return this.getPlant().getDefaultState();
         }
         if (this.tickWater) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override

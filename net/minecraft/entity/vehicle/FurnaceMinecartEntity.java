@@ -15,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.ActionResult;
@@ -74,7 +74,7 @@ extends AbstractMinecartEntity {
 
     @Override
     protected double getMaxOffRailSpeed() {
-        return 0.2;
+        return (this.isTouchingWater() ? 3.0 : 4.0) / 20.0;
     }
 
     @Override
@@ -108,7 +108,11 @@ extends AbstractMinecartEntity {
             d = MathHelper.sqrt(d);
             this.pushX /= d;
             this.pushZ /= d;
-            this.setVelocity(this.getVelocity().multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ));
+            Vec3d vec3d = this.getVelocity().multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ);
+            if (this.isTouchingWater()) {
+                vec3d = vec3d.multiply(0.1);
+            }
+            this.setVelocity(vec3d);
         } else {
             this.setVelocity(this.getVelocity().multiply(0.98, 0.0, 0.98));
         }
@@ -119,7 +123,7 @@ extends AbstractMinecartEntity {
     public ActionResult interact(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (ACCEPTABLE_FUEL.test(itemStack) && this.fuel + 3600 <= 32000) {
-            if (!player.abilities.creativeMode) {
+            if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
             this.fuel += 3600;
@@ -132,19 +136,19 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putDouble("PushX", this.pushX);
-        nbt.putDouble("PushZ", this.pushZ);
-        nbt.putShort("Fuel", (short)this.fuel);
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putDouble("PushX", this.pushX);
+        tag.putDouble("PushZ", this.pushZ);
+        tag.putShort("Fuel", (short)this.fuel);
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.pushX = nbt.getDouble("PushX");
-        this.pushZ = nbt.getDouble("PushZ");
-        this.fuel = nbt.getShort("Fuel");
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.pushX = tag.getDouble("PushX");
+        this.pushZ = tag.getDouble("PushZ");
+        this.fuel = tag.getShort("Fuel");
     }
 
     protected boolean isLit() {

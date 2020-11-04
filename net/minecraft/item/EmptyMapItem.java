@@ -12,7 +12,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class EmptyMapItem
@@ -23,9 +22,9 @@ extends NetworkSyncedItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = FilledMapItem.createMap(world, MathHelper.floor(user.getX()), MathHelper.floor(user.getZ()), (byte)0, true, false);
+        ItemStack itemStack = FilledMapItem.createMap(world, user.getBlockX(), user.getBlockZ(), (byte)0, true, false);
         ItemStack itemStack2 = user.getStackInHand(hand);
-        if (!user.abilities.creativeMode) {
+        if (!user.getAbilities().creativeMode) {
             itemStack2.decrement(1);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
@@ -33,7 +32,7 @@ extends NetworkSyncedItem {
         if (itemStack2.isEmpty()) {
             return TypedActionResult.success(itemStack, world.isClient());
         }
-        if (!user.inventory.insertStack(itemStack.copy())) {
+        if (!user.getInventory().insertStack(itemStack.copy())) {
             user.dropItem(itemStack, false);
         }
         return TypedActionResult.success(itemStack2, world.isClient());

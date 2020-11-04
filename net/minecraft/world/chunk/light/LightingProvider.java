@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
@@ -20,12 +21,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class LightingProvider
 implements LightingView {
+    protected final HeightLimitView field_27339;
     @Nullable
     private final ChunkLightProvider<?, ?> blockLightProvider;
     @Nullable
     private final ChunkLightProvider<?, ?> skyLightProvider;
 
     public LightingProvider(ChunkProvider chunkProvider, boolean hasBlockLight, boolean hasSkyLight) {
+        this.field_27339 = chunkProvider.getWorld();
         this.blockLightProvider = hasBlockLight ? new ChunkBlockLightProvider(chunkProvider) : null;
         this.skyLightProvider = hasSkyLight ? new ChunkSkyLightProvider(chunkProvider) : null;
     }
@@ -139,6 +142,18 @@ implements LightingView {
         int i = this.skyLightProvider == null ? 0 : this.skyLightProvider.getLightLevel(pos) - ambientDarkness;
         int j = this.blockLightProvider == null ? 0 : this.blockLightProvider.getLightLevel(pos);
         return Math.max(j, i);
+    }
+
+    public int method_31928() {
+        return this.field_27339.getSectionCount() + 2;
+    }
+
+    public int method_31929() {
+        return this.field_27339.getBottomSectionLimit() - 1;
+    }
+
+    public int method_31930() {
+        return this.method_31929() + this.method_31928();
     }
 }
 

@@ -5,9 +5,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.BeeEntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.Identifier;
 
@@ -19,8 +20,8 @@ extends MobEntityRenderer<BeeEntity, BeeEntityModel<BeeEntity>> {
     private static final Identifier PASSIVE_TEXTURE = new Identifier("textures/entity/bee/bee.png");
     private static final Identifier NECTAR_TEXTURE = new Identifier("textures/entity/bee/bee_nectar.png");
 
-    public BeeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher, new BeeEntityModel(), 0.4f);
+    public BeeEntityRenderer(class_5617.class_5618 arg) {
+        super(arg, new BeeEntityModel(arg.method_32167(EntityModelLayers.BEE)), 0.4f);
     }
 
     @Override

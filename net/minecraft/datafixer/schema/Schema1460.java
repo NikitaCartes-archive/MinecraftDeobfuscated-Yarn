@@ -177,6 +177,7 @@ extends IdentifierNormalizingSchema {
         schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(Schema1460.getIdentifierType()));
         schema.registerType(false, TypeReferences.POI_CHUNK, DSL::remainder);
         schema.registerType(true, TypeReferences.CHUNK_GENERATOR_SETTINGS, DSL::remainder);
+        schema.registerType(false, TypeReferences.ENTITY_CHUNK, () -> DSL.optionalFields("Entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema))));
     }
 }
 

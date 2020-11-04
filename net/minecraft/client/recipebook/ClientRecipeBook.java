@@ -53,7 +53,7 @@ extends RecipeBook {
         HashMap<RecipeBookGroup, List<List<Recipe<?>>>> map = Maps.newHashMap();
         HashBasedTable table = HashBasedTable.create();
         for (Recipe<?> recipe : iterable) {
-            if (recipe.isIgnoredInRecipeBook()) continue;
+            if (recipe.isIgnoredInRecipeBook() || recipe.method_31584()) continue;
             RecipeBookGroup recipeBookGroup2 = ClientRecipeBook.getGroupForRecipe(recipe);
             String string = recipe.getGroup();
             if (string.isEmpty()) {

@@ -18,11 +18,10 @@ import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Boxes;
@@ -32,13 +31,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 
 /**
  * A piston block entity represents the block being pushed by a piston.
  */
 public class PistonBlockEntity
-extends BlockEntity
-implements Tickable {
+extends BlockEntity {
     private BlockState pushedBlock;
     private Direction facing;
     private boolean extending;
@@ -49,21 +48,21 @@ implements Tickable {
     private long savedWorldTime;
     private int field_26705;
 
-    public PistonBlockEntity() {
-        super(BlockEntityType.PISTON);
+    public PistonBlockEntity(BlockPos blockPos, BlockState blockState) {
+        super(BlockEntityType.PISTON, blockPos, blockState);
     }
 
-    public PistonBlockEntity(BlockState pushedBlock, Direction facing, boolean extending, boolean source) {
-        this();
-        this.pushedBlock = pushedBlock;
-        this.facing = facing;
-        this.extending = extending;
-        this.source = source;
+    public PistonBlockEntity(BlockPos blockPos, BlockState blockState, BlockState blockState2, Direction direction, boolean bl, boolean bl2) {
+        this(blockPos, blockState);
+        this.pushedBlock = blockState2;
+        this.facing = direction;
+        this.extending = bl;
+        this.source = bl2;
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.writeNbt(new NbtCompound());
+    public CompoundTag toInitialChunkDataTag() {
+        return this.toTag(new CompoundTag());
     }
 
     public boolean isExtending() {
@@ -111,20 +110,20 @@ implements Tickable {
         return this.pushedBlock;
     }
 
-    private void pushEntities(float nextProgress) {
-        Direction direction = this.getMovementDirection();
-        double d = nextProgress - this.progress;
-        VoxelShape voxelShape = this.getHeadBlockState().getCollisionShape(this.world, this.getPos());
+    private static void pushEntities(World world, BlockPos blockPos, float f, PistonBlockEntity pistonBlockEntity) {
+        Direction direction = pistonBlockEntity.getMovementDirection();
+        double d = f - pistonBlockEntity.progress;
+        VoxelShape voxelShape = pistonBlockEntity.getHeadBlockState().getCollisionShape(world, blockPos);
         if (voxelShape.isEmpty()) {
             return;
         }
-        Box box = this.offsetHeadBox(voxelShape.getBoundingBox());
-        List<Entity> list = this.world.getOtherEntities(null, Boxes.stretch(box, direction, d).union(box));
+        Box box = PistonBlockEntity.offsetHeadBox(blockPos, voxelShape.getBoundingBox(), pistonBlockEntity);
+        List<Entity> list = world.getOtherEntities(null, Boxes.stretch(box, direction, d).union(box));
         if (list.isEmpty()) {
             return;
         }
         List<Box> list2 = voxelShape.getBoundingBoxes();
-        boolean bl = this.pushedBlock.isOf(Blocks.SLIME_BLOCK);
+        boolean bl = pistonBlockEntity.pushedBlock.isOf(Blocks.SLIME_BLOCK);
         for (Entity entity : list) {
             Box box4;
             Box box2;
@@ -134,32 +133,32 @@ implements Tickable {
                 if (entity instanceof ServerPlayerEntity) continue;
                 Vec3d vec3d = entity.getVelocity();
                 double e = vec3d.x;
-                double f = vec3d.y;
-                double g = vec3d.z;
+                double g = vec3d.y;
+                double h = vec3d.z;
                 switch (direction.getAxis()) {
                     case X: {
                         e = direction.getOffsetX();
                         break;
                     }
                     case Y: {
-                        f = direction.getOffsetY();
+                        g = direction.getOffsetY();
                         break;
                     }
                     case Z: {
-                        g = direction.getOffsetZ();
+                        h = direction.getOffsetZ();
                     }
                 }
-                entity.setVelocity(e, f, g);
+                entity.setVelocity(e, g, h);
             }
-            double h = 0.0;
+            double i = 0.0;
             Iterator<Box> iterator = list2.iterator();
-            while (!(!iterator.hasNext() || (box3 = Boxes.stretch(this.offsetHeadBox(box2 = iterator.next()), direction, d)).intersects(box4 = entity.getBoundingBox()) && (h = Math.max(h, PistonBlockEntity.getIntersectionSize(box3, direction, box4))) >= d)) {
+            while (!(!iterator.hasNext() || (box3 = Boxes.stretch(PistonBlockEntity.offsetHeadBox(blockPos, box2 = iterator.next(), pistonBlockEntity), direction, d)).intersects(box4 = entity.getBoundingBox()) && (i = Math.max(i, PistonBlockEntity.getIntersectionSize(box3, direction, box4))) >= d)) {
             }
-            if (h <= 0.0) continue;
-            h = Math.min(h, d) + 0.01;
-            PistonBlockEntity.method_23672(direction, entity, h, direction);
-            if (this.extending || !this.source) continue;
-            this.push(entity, direction, d);
+            if (i <= 0.0) continue;
+            i = Math.min(i, d) + 0.01;
+            PistonBlockEntity.method_23672(direction, entity, i, direction);
+            if (pistonBlockEntity.extending || !pistonBlockEntity.source) continue;
+            PistonBlockEntity.push(blockPos, entity, direction, d);
         }
     }
 
@@ -169,18 +168,18 @@ implements Tickable {
         field_12205.set(null);
     }
 
-    private void method_23674(float f) {
-        if (!this.isPushingHoneyBlock()) {
+    private static void method_23674(World world, BlockPos blockPos, float f, PistonBlockEntity pistonBlockEntity) {
+        if (!pistonBlockEntity.isPushingHoneyBlock()) {
             return;
         }
-        Direction direction = this.getMovementDirection();
+        Direction direction = pistonBlockEntity.getMovementDirection();
         if (!direction.getAxis().isHorizontal()) {
             return;
         }
-        double d = this.pushedBlock.getCollisionShape(this.world, this.pos).getMax(Direction.Axis.Y);
-        Box box = this.offsetHeadBox(new Box(0.0, d, 0.0, 1.0, 1.5000000999999998, 1.0));
-        double e = f - this.progress;
-        List<Entity> list = this.world.getOtherEntities(null, box, entity -> PistonBlockEntity.method_23671(box, entity));
+        double d = pistonBlockEntity.pushedBlock.getCollisionShape(world, blockPos).getMax(Direction.Axis.Y);
+        Box box = PistonBlockEntity.offsetHeadBox(blockPos, new Box(0.0, d, 0.0, 1.0, 1.5000000999999998, 1.0), pistonBlockEntity);
+        double e = f - pistonBlockEntity.progress;
+        List<Entity> list = world.getOtherEntities(null, box, entity -> PistonBlockEntity.method_23671(box, entity));
         for (Entity entity2 : list) {
             PistonBlockEntity.method_23672(direction, entity2, e, direction);
         }
@@ -220,18 +219,18 @@ implements Tickable {
         return box2.maxZ - box.minZ;
     }
 
-    private Box offsetHeadBox(Box box) {
-        double d = this.getAmountExtended(this.progress);
-        return box.offset((double)this.pos.getX() + d * (double)this.facing.getOffsetX(), (double)this.pos.getY() + d * (double)this.facing.getOffsetY(), (double)this.pos.getZ() + d * (double)this.facing.getOffsetZ());
+    private static Box offsetHeadBox(BlockPos blockPos, Box box, PistonBlockEntity pistonBlockEntity) {
+        double d = pistonBlockEntity.getAmountExtended(pistonBlockEntity.progress);
+        return box.offset((double)blockPos.getX() + d * (double)pistonBlockEntity.facing.getOffsetX(), (double)blockPos.getY() + d * (double)pistonBlockEntity.facing.getOffsetY(), (double)blockPos.getZ() + d * (double)pistonBlockEntity.facing.getOffsetZ());
     }
 
-    private void push(Entity entity, Direction direction, double amount) {
+    private static void push(BlockPos blockPos, Entity entity, Direction direction, double amount) {
         double e;
         Direction direction2;
         double d;
         Box box2;
         Box box = entity.getBoundingBox();
-        if (box.intersects(box2 = VoxelShapes.fullCube().getBoundingBox().offset(this.pos)) && Math.abs((d = PistonBlockEntity.getIntersectionSize(box2, direction2 = direction.getOpposite(), box) + 0.01) - (e = PistonBlockEntity.getIntersectionSize(box2, direction2, box.intersection(box2)) + 0.01)) < 0.01) {
+        if (box.intersects(box2 = VoxelShapes.fullCube().getBoundingBox().offset(blockPos)) && Math.abs((d = PistonBlockEntity.getIntersectionSize(box2, direction2 = direction.getOpposite(), box) + 0.01) - (e = PistonBlockEntity.getIntersectionSize(box2, direction2, box.intersection(box2)) + 0.01)) < 0.01) {
             d = Math.min(d, amount) + 0.01;
             PistonBlockEntity.method_23672(direction, entity, d, direction2);
         }
@@ -254,60 +253,59 @@ implements Tickable {
         }
     }
 
-    @Override
-    public void tick() {
-        this.savedWorldTime = this.world.getTime();
-        this.lastProgress = this.progress;
-        if (this.lastProgress >= 1.0f) {
-            if (this.world.isClient && this.field_26705 < 5) {
-                ++this.field_26705;
+    public static void tick(World world, BlockPos blockPos, BlockState blockState, PistonBlockEntity pistonBlockEntity) {
+        pistonBlockEntity.savedWorldTime = world.getTime();
+        pistonBlockEntity.lastProgress = pistonBlockEntity.progress;
+        if (pistonBlockEntity.lastProgress >= 1.0f) {
+            if (world.isClient && pistonBlockEntity.field_26705 < 5) {
+                ++pistonBlockEntity.field_26705;
                 return;
             }
-            this.world.removeBlockEntity(this.pos);
-            this.markRemoved();
-            if (this.pushedBlock != null && this.world.getBlockState(this.pos).isOf(Blocks.MOVING_PISTON)) {
-                BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
-                if (blockState.isAir()) {
-                    this.world.setBlockState(this.pos, this.pushedBlock, 84);
-                    Block.replace(this.pushedBlock, blockState, this.world, this.pos, 3);
+            world.removeBlockEntity(blockPos);
+            pistonBlockEntity.markRemoved();
+            if (pistonBlockEntity.pushedBlock != null && world.getBlockState(blockPos).isOf(Blocks.MOVING_PISTON)) {
+                BlockState blockState2 = Block.postProcessState(pistonBlockEntity.pushedBlock, world, blockPos);
+                if (blockState2.isAir()) {
+                    world.setBlockState(blockPos, pistonBlockEntity.pushedBlock, 84);
+                    Block.replace(pistonBlockEntity.pushedBlock, blockState2, world, blockPos, 3);
                 } else {
-                    if (blockState.contains(Properties.WATERLOGGED) && blockState.get(Properties.WATERLOGGED).booleanValue()) {
-                        blockState = (BlockState)blockState.with(Properties.WATERLOGGED, false);
+                    if (blockState2.contains(Properties.WATERLOGGED) && blockState2.get(Properties.WATERLOGGED).booleanValue()) {
+                        blockState2 = (BlockState)blockState2.with(Properties.WATERLOGGED, false);
                     }
-                    this.world.setBlockState(this.pos, blockState, 67);
-                    this.world.updateNeighbor(this.pos, blockState.getBlock(), this.pos);
+                    world.setBlockState(blockPos, blockState2, 67);
+                    world.updateNeighbor(blockPos, blockState2.getBlock(), blockPos);
                 }
             }
             return;
         }
-        float f = this.progress + 0.5f;
-        this.pushEntities(f);
-        this.method_23674(f);
-        this.progress = f;
-        if (this.progress >= 1.0f) {
-            this.progress = 1.0f;
+        float f = pistonBlockEntity.progress + 0.5f;
+        PistonBlockEntity.pushEntities(world, blockPos, f, pistonBlockEntity);
+        PistonBlockEntity.method_23674(world, blockPos, f, pistonBlockEntity);
+        pistonBlockEntity.progress = f;
+        if (pistonBlockEntity.progress >= 1.0f) {
+            pistonBlockEntity.progress = 1.0f;
         }
     }
 
     @Override
-    public void fromTag(BlockState state, NbtCompound tag) {
-        super.fromTag(state, tag);
-        this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
-        this.facing = Direction.byId(tag.getInt("facing"));
-        this.lastProgress = this.progress = tag.getFloat("progress");
-        this.extending = tag.getBoolean("extending");
-        this.source = tag.getBoolean("source");
+    public void fromTag(CompoundTag compoundTag) {
+        super.fromTag(compoundTag);
+        this.pushedBlock = NbtHelper.toBlockState(compoundTag.getCompound("blockState"));
+        this.facing = Direction.byId(compoundTag.getInt("facing"));
+        this.lastProgress = this.progress = compoundTag.getFloat("progress");
+        this.extending = compoundTag.getBoolean("extending");
+        this.source = compoundTag.getBoolean("source");
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        nbt.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
-        nbt.putInt("facing", this.facing.getId());
-        nbt.putFloat("progress", this.lastProgress);
-        nbt.putBoolean("extending", this.extending);
-        nbt.putBoolean("source", this.source);
-        return nbt;
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        tag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
+        tag.putInt("facing", this.facing.getId());
+        tag.putFloat("progress", this.lastProgress);
+        tag.putBoolean("extending", this.extending);
+        tag.putBoolean("source", this.source);
+        return tag;
     }
 
     public VoxelShape getCollisionShape(BlockView world, BlockPos pos) {
@@ -330,7 +328,7 @@ implements Tickable {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public double getRenderDistance() {
+    public double getSquaredRenderDistance() {
         return 68.0;
     }
 }

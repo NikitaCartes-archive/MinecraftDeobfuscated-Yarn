@@ -5,12 +5,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -18,6 +18,7 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -27,7 +28,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class ItemFrameEntityRenderer
@@ -37,14 +37,13 @@ extends EntityRenderer<ItemFrameEntity> {
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final ItemRenderer itemRenderer;
 
-    public ItemFrameEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer itemRenderer) {
-        super(dispatcher);
-        this.itemRenderer = itemRenderer;
+    public ItemFrameEntityRenderer(class_5617.class_5618 arg) {
+        super(arg);
+        this.itemRenderer = arg.method_32168();
     }
 
     @Override
     public void render(ItemFrameEntity itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        ItemStack itemStack;
         super.render(itemFrameEntity, f, g, matrixStack, vertexConsumerProvider, i);
         matrixStack.push();
         Direction direction = itemFrameEntity.getHorizontalFacing();
@@ -52,30 +51,30 @@ extends EntityRenderer<ItemFrameEntity> {
         matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
         double d = 0.46875;
         matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
-        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.pitch));
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - itemFrameEntity.yaw));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.pitch));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - itemFrameEntity.yaw));
         boolean bl = itemFrameEntity.isInvisible();
+        ItemStack itemStack = itemFrameEntity.getHeldItemStack();
         if (!bl) {
             BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
             BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
-            ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
+            ModelIdentifier modelIdentifier = itemStack.isOf(Items.FILLED_MAP) ? MAP_FRAME : NORMAL_FRAME;
             matrixStack.push();
             matrixStack.translate(-0.5, -0.5, -0.5);
             blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(TexturedRenderLayers.getEntitySolid()), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, i, OverlayTexture.DEFAULT_UV);
             matrixStack.pop();
         }
-        if (!(itemStack = itemFrameEntity.getHeldItemStack()).isEmpty()) {
-            boolean bl2;
-            boolean bl3 = bl2 = itemStack.getItem() == Items.FILLED_MAP;
+        if (!itemStack.isEmpty()) {
+            boolean bl2 = itemStack.isOf(Items.FILLED_MAP);
             if (bl) {
                 matrixStack.translate(0.0, 0.0, 0.5);
             } else {
                 matrixStack.translate(0.0, 0.0, 0.4375);
             }
             int j = bl2 ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
-            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0f / 8.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0f / 8.0f));
             if (bl2) {
-                matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
                 float h = 0.0078125f;
                 matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);
                 matrixStack.translate(-64.0, -64.0, 0.0);

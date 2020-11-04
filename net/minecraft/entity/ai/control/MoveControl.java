@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.ai.control;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeMaker;
@@ -89,13 +88,12 @@ public class MoveControl {
                 return;
             }
             float n = (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;
-            this.entity.yaw = this.wrapDegrees(this.entity.yaw, n, 90.0f);
+            this.entity.yaw = this.changeAngle(this.entity.yaw, n, 90.0f);
             this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
             BlockPos blockPos = this.entity.getBlockPos();
             BlockState blockState = this.entity.world.getBlockState(blockPos);
-            Block block = blockState.getBlock();
             VoxelShape voxelShape = blockState.getCollisionShape(this.entity.world, blockPos);
-            if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0f, this.entity.getWidth()) || !voxelShape.isEmpty() && this.entity.getY() < voxelShape.getMax(Direction.Axis.Y) + (double)blockPos.getY() && !block.isIn(BlockTags.DOORS) && !block.isIn(BlockTags.FENCES)) {
+            if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0f, this.entity.getWidth()) || !voxelShape.isEmpty() && this.entity.getY() < voxelShape.getMax(Direction.Axis.Y) + (double)blockPos.getY() && !blockState.isIn(BlockTags.DOORS) && !blockState.isIn(BlockTags.FENCES)) {
                 this.entity.getJumpControl().setActive();
                 this.state = State.JUMPING;
             }
@@ -112,10 +110,10 @@ public class MoveControl {
     private boolean method_25946(float f, float g) {
         PathNodeMaker pathNodeMaker;
         EntityNavigation entityNavigation = this.entity.getNavigation();
-        return entityNavigation == null || (pathNodeMaker = entityNavigation.getNodeMaker()) == null || pathNodeMaker.getDefaultNodeType(this.entity.world, MathHelper.floor(this.entity.getX() + (double)f), MathHelper.floor(this.entity.getY()), MathHelper.floor(this.entity.getZ() + (double)g)) == PathNodeType.WALKABLE;
+        return entityNavigation == null || (pathNodeMaker = entityNavigation.getNodeMaker()) == null || pathNodeMaker.getDefaultNodeType(this.entity.world, MathHelper.floor(this.entity.getX() + (double)f), this.entity.getBlockY(), MathHelper.floor(this.entity.getZ() + (double)g)) == PathNodeType.WALKABLE;
     }
 
-    protected float wrapDegrees(float from, float to, float max) {
+    protected float changeAngle(float from, float to, float max) {
         float g;
         float f = MathHelper.wrapDegrees(to - from);
         if (f > max) {

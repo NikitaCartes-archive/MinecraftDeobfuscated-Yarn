@@ -30,7 +30,7 @@ extends TorchBlock {
     private static final Map<BlockView, List<BurnoutEntry>> BURNOUT_MAP = new WeakHashMap<BlockView, List<BurnoutEntry>>();
 
     protected RedstoneTorchBlock(AbstractBlock.Settings settings) {
-        super(settings, DustParticleEffect.DEFAULT);
+        super(settings, DustParticleEffect.RED);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LIT, true));
     }
 

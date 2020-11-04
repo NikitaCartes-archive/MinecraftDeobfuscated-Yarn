@@ -21,7 +21,7 @@ import org.apache.logging.log4j.MarkerManager;
 public class PacketEncoder
 extends MessageToByteEncoder<Packet<?>> {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.NETWORK_PACKETS_MARKER);
+    private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.MARKER_NETWORK_PACKETS);
     private final NetworkSide side;
 
     public PacketEncoder(NetworkSide side) {
@@ -30,13 +30,13 @@ extends MessageToByteEncoder<Packet<?>> {
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Packet<?> packet, ByteBuf byteBuf) throws Exception {
-        NetworkState networkState = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get();
+        NetworkState networkState = channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get();
         if (networkState == null) {
             throw new RuntimeException("ConnectionProtocol unknown: " + packet);
         }
         Integer integer = networkState.getPacketId(this.side, packet);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(MARKER, "OUT: [{}:{}] {}", (Object)channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), (Object)integer, (Object)packet.getClass().getName());
+            LOGGER.debug(MARKER, "OUT: [{}:{}] {}", (Object)channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get(), (Object)integer, (Object)packet.getClass().getName());
         }
         if (integer == null) {
             throw new IOException("Can't serialize unregistered packet");

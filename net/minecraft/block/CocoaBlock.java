@@ -56,8 +56,8 @@ implements Fertilizable {
 
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        Block block = world.getBlockState(pos.offset(state.get(FACING))).getBlock();
-        return block.isIn(BlockTags.JUNGLE_LOGS);
+        BlockState blockState = world.getBlockState(pos.offset(state.get(FACING)));
+        return blockState.isIn(BlockTags.JUNGLE_LOGS);
     }
 
     @Override
@@ -92,11 +92,11 @@ implements Fertilizable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (direction == state.get(FACING) && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override

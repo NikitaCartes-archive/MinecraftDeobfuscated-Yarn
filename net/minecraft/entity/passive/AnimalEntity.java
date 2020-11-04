@@ -18,7 +18,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -86,11 +86,11 @@ extends PassiveEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("InLove", this.loveTicks);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("InLove", this.loveTicks);
         if (this.lovingPlayer != null) {
-            nbt.putUuid("LoveCause", this.lovingPlayer);
+            tag.putUuid("LoveCause", this.lovingPlayer);
         }
     }
 
@@ -100,10 +100,10 @@ extends PassiveEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.loveTicks = nbt.getInt("InLove");
-        this.lovingPlayer = nbt.containsUuid("LoveCause") ? nbt.getUuid("LoveCause") : null;
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.loveTicks = tag.getInt("InLove");
+        this.lovingPlayer = tag.containsUuid("LoveCause") ? tag.getUuid("LoveCause") : null;
     }
 
     public static boolean isValidNaturalSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -121,12 +121,12 @@ extends PassiveEntity {
     }
 
     @Override
-    protected int getXpToDrop(PlayerEntity player) {
+    protected int getCurrentExperience(PlayerEntity player) {
         return 1 + this.world.random.nextInt(3);
     }
 
     public boolean isBreedingItem(ItemStack stack) {
-        return stack.getItem() == Items.WHEAT;
+        return stack.isOf(Items.WHEAT);
     }
 
     @Override
@@ -152,7 +152,7 @@ extends PassiveEntity {
     }
 
     protected void eat(PlayerEntity player, ItemStack stack) {
-        if (!player.abilities.creativeMode) {
+        if (!player.getAbilities().creativeMode) {
             stack.decrement(1);
         }
     }
@@ -207,8 +207,8 @@ extends PassiveEntity {
         return this.isInLove() && other.isInLove();
     }
 
-    public void breed(ServerWorld world, AnimalEntity other) {
-        PassiveEntity passiveEntity = this.createChild(world, other);
+    public void breed(ServerWorld serverWorld, AnimalEntity other) {
+        PassiveEntity passiveEntity = this.createChild(serverWorld, other);
         if (passiveEntity == null) {
             return;
         }
@@ -226,10 +226,10 @@ extends PassiveEntity {
         other.resetLoveTicks();
         passiveEntity.setBaby(true);
         passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0f, 0.0f);
-        world.spawnEntityAndPassengers(passiveEntity);
-        world.sendEntityStatus(this, (byte)18);
-        if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-            world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
+        serverWorld.spawnEntityAndPassengers(passiveEntity);
+        serverWorld.sendEntityStatus(this, (byte)18);
+        if (serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+            serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
         }
     }
 

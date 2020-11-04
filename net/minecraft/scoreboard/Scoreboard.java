@@ -15,8 +15,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -161,24 +161,24 @@ public class Scoreboard {
     }
 
     @Nullable
-    public ScoreboardObjective getObjectiveForSlot(int slot) {
-        return this.objectiveSlots[slot];
+    public ScoreboardObjective getObjectiveForSlot(int i) {
+        return this.objectiveSlots[i];
     }
 
-    public Team getTeam(String name) {
-        return this.teams.get(name);
+    public Team getTeam(String string) {
+        return this.teams.get(string);
     }
 
-    public Team addTeam(String name) {
-        if (name.length() > 16) {
-            throw new IllegalArgumentException("The team name '" + name + "' is too long!");
+    public Team addTeam(String string) {
+        if (string.length() > 16) {
+            throw new IllegalArgumentException("The team name '" + string + "' is too long!");
         }
-        Team team = this.getTeam(name);
+        Team team = this.getTeam(string);
         if (team != null) {
-            throw new IllegalArgumentException("A team with the name '" + name + "' already exists!");
+            throw new IllegalArgumentException("A team with the name '" + string + "' already exists!");
         }
-        team = new Team(this, name);
-        this.teams.put(name, team);
+        team = new Team(this, string);
+        this.teams.put(string, team);
         this.updateScoreboardTeamAndPlayers(team);
         return team;
     }
@@ -202,10 +202,10 @@ public class Scoreboard {
         return team.getPlayerList().add(playerName);
     }
 
-    public boolean clearPlayerTeam(String playerName) {
-        Team team = this.getPlayerTeam(playerName);
+    public boolean clearPlayerTeam(String string) {
+        Team team = this.getPlayerTeam(string);
         if (team != null) {
-            this.removePlayerFromTeam(playerName, team);
+            this.removePlayerFromTeam(string, team);
             return true;
         }
         return false;
@@ -228,8 +228,8 @@ public class Scoreboard {
     }
 
     @Nullable
-    public Team getPlayerTeam(String playerName) {
-        return this.teamsByPlayer.get(playerName);
+    public Team getPlayerTeam(String string) {
+        return this.teamsByPlayer.get(string);
     }
 
     public void updateObjective(ScoreboardObjective objective) {
@@ -315,31 +315,31 @@ public class Scoreboard {
         this.clearPlayerTeam(string);
     }
 
-    protected NbtList toNbt() {
-        NbtList nbtList = new NbtList();
+    protected ListTag toTag() {
+        ListTag listTag = new ListTag();
         this.playerObjectives.values().stream().map(Map::values).forEach(collection -> collection.stream().filter(score -> score.getObjective() != null).forEach(score -> {
-            NbtCompound nbtCompound = new NbtCompound();
-            nbtCompound.putString("Name", score.getPlayerName());
-            nbtCompound.putString("Objective", score.getObjective().getName());
-            nbtCompound.putInt("Score", score.getScore());
-            nbtCompound.putBoolean("Locked", score.isLocked());
-            nbtList.add(nbtCompound);
+            CompoundTag compoundTag = new CompoundTag();
+            compoundTag.putString("Name", score.getPlayerName());
+            compoundTag.putString("Objective", score.getObjective().getName());
+            compoundTag.putInt("Score", score.getScore());
+            compoundTag.putBoolean("Locked", score.isLocked());
+            listTag.add(compoundTag);
         }));
-        return nbtList;
+        return listTag;
     }
 
-    protected void readNbt(NbtList list) {
-        for (int i = 0; i < list.size(); ++i) {
-            NbtCompound nbtCompound = list.getCompound(i);
-            ScoreboardObjective scoreboardObjective = this.getObjective(nbtCompound.getString("Objective"));
-            String string = nbtCompound.getString("Name");
+    protected void fromTag(ListTag listTag) {
+        for (int i = 0; i < listTag.size(); ++i) {
+            CompoundTag compoundTag = listTag.getCompound(i);
+            ScoreboardObjective scoreboardObjective = this.getObjective(compoundTag.getString("Objective"));
+            String string = compoundTag.getString("Name");
             if (string.length() > 40) {
                 string = string.substring(0, 40);
             }
             ScoreboardPlayerScore scoreboardPlayerScore = this.getPlayerScore(string, scoreboardObjective);
-            scoreboardPlayerScore.setScore(nbtCompound.getInt("Score"));
-            if (!nbtCompound.contains("Locked")) continue;
-            scoreboardPlayerScore.setLocked(nbtCompound.getBoolean("Locked"));
+            scoreboardPlayerScore.setScore(compoundTag.getInt("Score"));
+            if (!compoundTag.contains("Locked")) continue;
+            scoreboardPlayerScore.setLocked(compoundTag.getBoolean("Locked"));
         }
     }
 }

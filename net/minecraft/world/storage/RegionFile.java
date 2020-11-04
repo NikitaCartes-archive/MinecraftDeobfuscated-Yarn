@@ -137,6 +137,10 @@ implements AutoCloseable {
         return this.method_22409(pos, b, RegionFile.getInputStream(byteBuffer, n));
     }
 
+    private static int method_31739() {
+        return (int)(Util.getEpochTimeMs() / 1000L);
+    }
+
     private static boolean hasChunkStreamVersionId(byte b) {
         return (b & 0x80) != 0;
     }
@@ -234,6 +238,19 @@ implements AutoCloseable {
         this.channel.force(true);
     }
 
+    public void method_31740(ChunkPos chunkPos) throws IOException {
+        int i = RegionFile.getIndex(chunkPos);
+        int j = this.sectorData.get(i);
+        if (j == 0) {
+            return;
+        }
+        this.sectorData.put(i, 0);
+        this.saveTimes.put(i, RegionFile.method_31739());
+        this.writeHeader();
+        Files.deleteIfExists(this.getExternalChunkPath(chunkPos));
+        this.sectors.free(RegionFile.getOffset(j), RegionFile.getSize(j));
+    }
+
     protected synchronized void writeChunk(ChunkPos pos, ByteBuffer byteBuffer) throws IOException {
         OutputAction outputAction;
         int o;
@@ -256,9 +273,8 @@ implements AutoCloseable {
             outputAction = () -> Files.deleteIfExists(this.getExternalChunkPath(pos));
             this.channel.write(byteBuffer, o * 4096);
         }
-        int p = (int)(Util.getEpochTimeMs() / 1000L);
         this.sectorData.put(i, this.packSectorData(o, n));
-        this.saveTimes.put(i, p);
+        this.saveTimes.put(i, RegionFile.method_31739());
         this.writeHeader();
         outputAction.run();
         if (k != 0) {

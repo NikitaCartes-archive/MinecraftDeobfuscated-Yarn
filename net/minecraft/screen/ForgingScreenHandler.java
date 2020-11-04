@@ -15,7 +15,6 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ForgingScreenHandler
@@ -85,12 +84,12 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.context.run((world, blockPos) -> this.dropInventory(player, (World)world, this.input));
+        this.context.run((world, blockPos) -> this.dropInventory(player, this.input));
     }
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.context.get((world, blockPos) -> {
+        return this.context.run((world, blockPos) -> {
             if (!this.canUse(world.getBlockState((BlockPos)blockPos))) {
                 return false;
             }
@@ -113,7 +112,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onQuickTransfer(itemStack2, itemStack);
+                slot.onStackChanged(itemStack2, itemStack);
             } else if (index == 0 || index == 1) {
                 if (!this.insertItem(itemStack2, 3, 39, false)) {
                     return ItemStack.EMPTY;

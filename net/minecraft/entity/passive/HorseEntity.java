@@ -25,7 +25,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
@@ -61,11 +61,11 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("Variant", this.getVariant());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("Variant", this.getVariant());
         if (!this.items.getStack(1).isEmpty()) {
-            nbt.put("ArmorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
+            tag.put("ArmorItem", this.items.getStack(1).toTag(new CompoundTag()));
         }
     }
 
@@ -79,11 +79,11 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
+    public void readCustomDataFromTag(CompoundTag tag) {
         ItemStack itemStack;
-        super.readCustomDataFromNbt(nbt);
-        this.setVariant(nbt.getInt("Variant"));
-        if (nbt.contains("ArmorItem", 10) && !(itemStack = ItemStack.fromNbt(nbt.getCompound("ArmorItem"))).isEmpty() && this.isHorseArmor(itemStack)) {
+        super.readCustomDataFromTag(tag);
+        this.setVariant(tag.getInt("Variant"));
+        if (tag.contains("ArmorItem", 10) && !(itemStack = ItemStack.fromTag(tag.getCompound("ArmorItem"))).isEmpty() && this.isHorseArmor(itemStack)) {
             this.items.setStack(1, itemStack);
         }
         this.updateSaddle();
@@ -203,7 +203,7 @@ extends HorseBaseEntity {
                 this.playAngrySound();
                 return ActionResult.success(this.world.isClient);
             }
-            boolean bl2 = bl = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
+            boolean bl2 = bl = !this.isBaby() && !this.isSaddled() && itemStack.isOf(Items.SADDLE);
             if (this.isHorseArmor(itemStack) || bl) {
                 this.openInventory(player);
                 return ActionResult.success(this.world.isClient);
@@ -257,7 +257,7 @@ extends HorseBaseEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         HorseColor horseColor;
         if (entityData instanceof HorseData) {
             horseColor = ((HorseData)entityData).color;
@@ -266,7 +266,7 @@ extends HorseBaseEntity {
             entityData = new HorseData(horseColor);
         }
         this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), this.random));
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     public static class HorseData

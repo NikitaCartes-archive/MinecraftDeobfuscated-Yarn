@@ -20,7 +20,7 @@ extends AlwaysSelectedEntryListWidget<E> {
     public void setSelectedItem(int index) {
         if (index == -1) {
             this.setSelected(null);
-        } else if (super.getEntryCount() != 0) {
+        } else if (super.getItemCount() != 0) {
             this.setSelected(this.getEntry(index));
         }
     }
@@ -54,8 +54,8 @@ extends AlwaysSelectedEntryListWidget<E> {
     }
 
     @Override
-    public int getEntryCount() {
-        return super.getEntryCount();
+    public int getItemCount() {
+        return super.getItemCount();
     }
 
     @Override

@@ -20,7 +20,6 @@ import net.minecraft.command.argument.LookingPosArgument;
 import net.minecraft.command.argument.PosArgument;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
@@ -39,14 +38,13 @@ implements ArgumentType<PosArgument> {
         if (!context.getSource().getWorld().isChunkLoaded(blockPos)) {
             throw UNLOADED_EXCEPTION.create();
         }
-        context.getSource().getWorld();
-        if (!ServerWorld.isInBuildLimit(blockPos)) {
+        if (!context.getSource().getWorld().isInBuildLimit(blockPos)) {
             throw OUT_OF_WORLD_EXCEPTION.create();
         }
         return blockPos;
     }
 
-    public static BlockPos getBlockPos(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+    public static BlockPos getBlockPos(CommandContext<ServerCommandSource> context, String name) {
         return context.getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
     }
 

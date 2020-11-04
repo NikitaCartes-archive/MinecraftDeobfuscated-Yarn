@@ -3,14 +3,12 @@
  */
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.AbstractFireballEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameRules;
@@ -25,11 +23,6 @@ extends AbstractFireballEntity {
         super((EntityType<? extends AbstractFireballEntity>)entityType, world);
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public FireballEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-        super((EntityType<? extends AbstractFireballEntity>)EntityType.FIREBALL, x, y, z, velocityX, velocityY, velocityZ, world);
-    }
-
     public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
         super((EntityType<? extends AbstractFireballEntity>)EntityType.FIREBALL, owner, velocityX, velocityY, velocityZ, world);
     }
@@ -40,7 +33,7 @@ extends AbstractFireballEntity {
         if (!this.world.isClient) {
             boolean bl = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
             this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE);
-            this.remove();
+            this.discard();
         }
     }
 
@@ -59,16 +52,16 @@ extends AbstractFireballEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("ExplosionPower", this.explosionPower);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("ExplosionPower", this.explosionPower);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("ExplosionPower", 99)) {
-            this.explosionPower = nbt.getInt("ExplosionPower");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("ExplosionPower", 99)) {
+            this.explosionPower = tag.getInt("ExplosionPower");
         }
     }
 }

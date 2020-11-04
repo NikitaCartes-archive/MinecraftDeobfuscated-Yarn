@@ -163,7 +163,7 @@ implements UnbakedModel {
                 unbakedModel = null;
             }
             if (unbakedModel == null) {
-                jsonUnbakedModel.parentId = ModelLoader.MISSING_ID;
+                jsonUnbakedModel.parentId = ModelLoader.MISSING;
                 unbakedModel = unbakedModelGetter.apply(jsonUnbakedModel.parentId);
             }
             if (!(unbakedModel instanceof JsonUnbakedModel)) {

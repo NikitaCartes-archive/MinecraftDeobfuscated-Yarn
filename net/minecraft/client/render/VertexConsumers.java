@@ -7,12 +7,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
 
-/**
- * A utility for combining multiple VertexConsumers into one.
- */
 @Environment(value=EnvType.CLIENT)
 public class VertexConsumers {
-    public static VertexConsumer union(VertexConsumer first, VertexConsumer second) {
+    public static VertexConsumer dual(VertexConsumer first, VertexConsumer second) {
         return new Dual(first, second);
     }
 

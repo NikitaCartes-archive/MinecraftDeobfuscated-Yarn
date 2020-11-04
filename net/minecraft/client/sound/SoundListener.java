@@ -5,8 +5,8 @@ package net.minecraft.client.sound;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import org.lwjgl.openal.AL10;
 
 @Environment(value=EnvType.CLIENT)
@@ -23,7 +23,7 @@ public class SoundListener {
         return this.pos;
     }
 
-    public void setOrientation(Vec3f at, Vec3f up) {
+    public void setOrientation(Vector3f at, Vector3f up) {
         AL10.alListenerfv(4111, new float[]{at.getX(), at.getY(), at.getZ(), up.getX(), up.getY(), up.getZ()});
     }
 
@@ -38,7 +38,7 @@ public class SoundListener {
 
     public void init() {
         this.setPosition(Vec3d.ZERO);
-        this.setOrientation(Vec3f.NEGATIVE_Z, Vec3f.POSITIVE_Y);
+        this.setOrientation(Vector3f.NEGATIVE_Z, Vector3f.POSITIVE_Y);
     }
 }
 

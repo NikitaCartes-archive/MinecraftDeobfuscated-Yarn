@@ -13,21 +13,21 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.Session;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloader;
+import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class SplashTextResourceSupplier
-extends SinglePreparationResourceReloader<List<String>> {
+extends SinglePreparationResourceReloadListener<List<String>> {
     private static final Identifier RESOURCE_ID = new Identifier("texts/splashes.txt");
     private static final Random RANDOM = new Random();
     private final List<String> splashTexts = Lists.newArrayList();
-    private final Session field_18934;
+    private final Session session;
 
     public SplashTextResourceSupplier(Session session) {
-        this.field_18934 = session;
+        this.session = session;
     }
 
     /*
@@ -106,8 +106,8 @@ extends SinglePreparationResourceReloader<List<String>> {
         if (this.splashTexts.isEmpty()) {
             return null;
         }
-        if (this.field_18934 != null && RANDOM.nextInt(this.splashTexts.size()) == 42) {
-            return this.field_18934.getUsername().toUpperCase(Locale.ROOT) + " IS YOU";
+        if (this.session != null && RANDOM.nextInt(this.splashTexts.size()) == 42) {
+            return this.session.getUsername().toUpperCase(Locale.ROOT) + " IS YOU";
         }
         return this.splashTexts.get(RANDOM.nextInt(this.splashTexts.size()));
     }

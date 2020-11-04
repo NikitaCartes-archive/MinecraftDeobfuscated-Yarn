@@ -10,11 +10,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.Option;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,21 +51,21 @@ extends ElementListWidget<ButtonEntry> {
     }
 
     @Nullable
-    public ClickableWidget getButtonFor(Option option) {
+    public AbstractButtonWidget getButtonFor(Option option) {
         for (ButtonEntry buttonEntry : this.children()) {
-            for (ClickableWidget clickableWidget : buttonEntry.buttons) {
-                if (!(clickableWidget instanceof OptionButtonWidget) || ((OptionButtonWidget)clickableWidget).getOption() != option) continue;
-                return clickableWidget;
+            for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
+                if (!(abstractButtonWidget instanceof OptionButtonWidget) || ((OptionButtonWidget)abstractButtonWidget).getOption() != option) continue;
+                return abstractButtonWidget;
             }
         }
         return null;
     }
 
-    public Optional<ClickableWidget> getHoveredButton(double mouseX, double mouseY) {
+    public Optional<AbstractButtonWidget> getHoveredButton(double mouseX, double mouseY) {
         for (ButtonEntry buttonEntry : this.children()) {
-            for (ClickableWidget clickableWidget : buttonEntry.buttons) {
-                if (!clickableWidget.isMouseOver(mouseX, mouseY)) continue;
-                return Optional.of(clickableWidget);
+            for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
+                if (!abstractButtonWidget.isMouseOver(mouseX, mouseY)) continue;
+                return Optional.of(abstractButtonWidget);
             }
         }
         return Optional.empty();
@@ -74,9 +74,9 @@ extends ElementListWidget<ButtonEntry> {
     @Environment(value=EnvType.CLIENT)
     public static class ButtonEntry
     extends ElementListWidget.Entry<ButtonEntry> {
-        private final List<ClickableWidget> buttons;
+        private final List<AbstractButtonWidget> buttons;
 
-        private ButtonEntry(List<ClickableWidget> buttons) {
+        private ButtonEntry(List<AbstractButtonWidget> buttons) {
             this.buttons = buttons;
         }
 
@@ -85,11 +85,11 @@ extends ElementListWidget<ButtonEntry> {
         }
 
         public static ButtonEntry create(GameOptions options, int width, Option firstOption, @Nullable Option secondOption) {
-            ClickableWidget clickableWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
+            AbstractButtonWidget abstractButtonWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
             if (secondOption == null) {
-                return new ButtonEntry(ImmutableList.of(clickableWidget));
+                return new ButtonEntry(ImmutableList.of(abstractButtonWidget));
             }
-            return new ButtonEntry(ImmutableList.of(clickableWidget, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
+            return new ButtonEntry(ImmutableList.of(abstractButtonWidget, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
         }
 
         @Override

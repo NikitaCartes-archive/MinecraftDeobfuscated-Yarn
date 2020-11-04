@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5532;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -15,7 +16,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -41,7 +41,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
@@ -92,8 +92,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && this.random.nextFloat() < 0.03f) {
             this.equipStack(EquipmentSlot.OFFHAND, new ItemStack(Items.NAUTILUS_SHELL));
             this.handDropChances[EquipmentSlot.OFFHAND.getEntitySlotId()] = 2.0f;
@@ -103,7 +103,7 @@ implements RangedAttackMob {
 
     public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         boolean bl;
-        Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
+        Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
         boolean bl2 = bl = world.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(world, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
         if (Objects.equals(optional, Optional.of(BiomeKeys.RIVER)) || Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_RIVER))) {
             return random.nextInt(15) == 0 && bl;
@@ -173,16 +173,16 @@ implements RangedAttackMob {
 
     @Override
     protected boolean prefersNewEquipment(ItemStack newStack, ItemStack oldStack) {
-        if (oldStack.getItem() == Items.NAUTILUS_SHELL) {
+        if (oldStack.isOf(Items.NAUTILUS_SHELL)) {
             return false;
         }
-        if (oldStack.getItem() == Items.TRIDENT) {
-            if (newStack.getItem() == Items.TRIDENT) {
+        if (oldStack.isOf(Items.TRIDENT)) {
+            if (newStack.isOf(Items.TRIDENT)) {
                 return newStack.getDamage() < oldStack.getDamage();
             }
             return false;
         }
-        if (newStack.getItem() == Items.TRIDENT) {
+        if (newStack.isOf(Items.TRIDENT)) {
             return true;
         }
         return super.prefersNewEquipment(newStack, oldStack);
@@ -206,7 +206,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean isPushedByFluids() {
+    public boolean canFly() {
         return !this.isSwimming();
     }
 
@@ -291,7 +291,7 @@ implements RangedAttackMob {
                 double g = MathHelper.sqrt(d * d + e * e + f * f);
                 e /= g;
                 float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-                this.drowned.bodyYaw = this.drowned.yaw = this.wrapDegrees(this.drowned.yaw, h, 90.0f);
+                this.drowned.bodyYaw = this.drowned.yaw = this.changeAngle(this.drowned.yaw, h, 90.0f);
                 float i = (float)(this.speed * this.drowned.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
                 float j = MathHelper.lerp(0.125f, this.drowned.getMovementSpeed(), i);
                 this.drowned.setMovementSpeed(j);
@@ -449,7 +449,7 @@ implements RangedAttackMob {
         @Override
         public void tick() {
             if (this.drowned.getY() < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.hasFinishedCurrentPath())) {
-                Vec3d vec3d = TargetFinder.findTargetTowards(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), this.minY - 1, this.drowned.getZ()));
+                Vec3d vec3d = class_5532.method_31512(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), this.minY - 1, this.drowned.getZ()), 1.5707963705062866);
                 if (vec3d == null) {
                     this.foundTarget = true;
                     return;
@@ -481,7 +481,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return super.canStart() && this.drowned.getMainHandStack().getItem() == Items.TRIDENT;
+            return super.canStart() && this.drowned.getMainHandStack().isOf(Items.TRIDENT);
         }
 
         @Override

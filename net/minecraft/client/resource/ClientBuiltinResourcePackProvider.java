@@ -33,6 +33,7 @@ import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackProvider;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ZipResourcePack;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.TranslatableText;
@@ -49,6 +50,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ClientBuiltinResourcePackProvider
 implements ResourcePackProvider {
+    private static final PackResourceMetadata DEFAULT_PACK_METADATA = new PackResourceMetadata(new TranslatableText("resourcePack.vanilla.description"), ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion()));
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Pattern ALPHANUMERAL = Pattern.compile("^[a-fA-F0-9]{40}$");
     private final DefaultResourcePack pack;
@@ -63,21 +65,21 @@ implements ResourcePackProvider {
     public ClientBuiltinResourcePackProvider(File serverPacksRoot, ResourceIndex index) {
         this.serverPacksRoot = serverPacksRoot;
         this.index = index;
-        this.pack = new DefaultClientResourcePack(index);
+        this.pack = new DefaultClientResourcePack(DEFAULT_PACK_METADATA, index);
     }
 
     @Override
-    public void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory) {
+    public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
         ResourcePackProfile resourcePackProfile2;
         ResourcePackProfile resourcePackProfile = ResourcePackProfile.of("vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.PACK_SOURCE_BUILTIN);
         if (resourcePackProfile != null) {
-            profileAdder.accept(resourcePackProfile);
+            consumer.accept(resourcePackProfile);
         }
         if (this.serverContainer != null) {
-            profileAdder.accept(this.serverContainer);
+            consumer.accept(this.serverContainer);
         }
-        if ((resourcePackProfile2 = this.method_25454(factory)) != null) {
-            profileAdder.accept(resourcePackProfile2);
+        if ((resourcePackProfile2 = this.getProgrammerArtResourcePackProfile(factory)) != null) {
+            consumer.accept(resourcePackProfile2);
         }
     }
 
@@ -91,7 +93,7 @@ implements ResourcePackProvider {
         map.put("X-Minecraft-UUID", MinecraftClient.getInstance().getSession().getUuid());
         map.put("X-Minecraft-Version", SharedConstants.getGameVersion().getName());
         map.put("X-Minecraft-Version-ID", SharedConstants.getGameVersion().getId());
-        map.put("X-Minecraft-Pack-Format", String.valueOf(SharedConstants.getGameVersion().getPackVersion()));
+        map.put("X-Minecraft-Pack-Format", String.valueOf(ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion())));
         map.put("User-Agent", "Minecraft Java/" + SharedConstants.getGameVersion().getName());
         return map;
     }
@@ -115,7 +117,7 @@ implements ResourcePackProvider {
                 Map<String, String> map = ClientBuiltinResourcePackProvider.getDownloadHeaders();
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
-                completableFuture = NetworkUtils.downloadResourcePack(file, string, map, 0x6400000, progressScreen, minecraftClient.getNetworkProxy());
+                completableFuture = NetworkUtils.download(file, string, map, 0x6400000, progressScreen, minecraftClient.getNetworkProxy());
             }
             CompletableFuture<?> completableFuture2 = this.downloadTask = ((CompletableFuture)completableFuture.thenCompose(object -> {
                 if (!this.verifyFile(string4, file)) {
@@ -202,31 +204,31 @@ implements ResourcePackProvider {
             return Util.completeExceptionally(new IOException(String.format("Invalid resourcepack at %s", packZip), iOException));
         }
         LOGGER.info("Applying server pack {}", (Object)packZip);
-        this.serverContainer = new ResourcePackProfile("server", true, () -> new ZipResourcePack(packZip), new TranslatableText("resourcePack.server.name"), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()), ResourcePackProfile.InsertionPosition.TOP, true, packSource);
+        this.serverContainer = new ResourcePackProfile("server", true, () -> new ZipResourcePack(packZip), new TranslatableText("resourcePack.server.name"), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata, ResourceType.CLIENT_RESOURCES), ResourcePackProfile.InsertionPosition.TOP, true, packSource);
         return MinecraftClient.getInstance().reloadResourcesConcurrently();
     }
 
     @Nullable
-    private ResourcePackProfile method_25454(ResourcePackProfile.Factory factory) {
+    private ResourcePackProfile getProgrammerArtResourcePackProfile(ResourcePackProfile.Factory factory) {
         File file2;
         ResourcePackProfile resourcePackProfile = null;
         File file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"));
         if (file != null && file.isFile()) {
-            resourcePackProfile = ClientBuiltinResourcePackProvider.method_25453(factory, () -> ClientBuiltinResourcePackProvider.method_16048(file));
+            resourcePackProfile = ClientBuiltinResourcePackProvider.getProgrammerArtResourcePackProfile(factory, () -> ClientBuiltinResourcePackProvider.getProgrammerArtResourcePackFromZipFile(file));
         }
         if (resourcePackProfile == null && SharedConstants.isDevelopment && (file2 = this.index.findFile("../resourcepacks/programmer_art")) != null && file2.isDirectory()) {
-            resourcePackProfile = ClientBuiltinResourcePackProvider.method_25453(factory, () -> ClientBuiltinResourcePackProvider.method_25455(file2));
+            resourcePackProfile = ClientBuiltinResourcePackProvider.getProgrammerArtResourcePackProfile(factory, () -> ClientBuiltinResourcePackProvider.getProgrammerArtResourcePackFromDirectory(file2));
         }
         return resourcePackProfile;
     }
 
     @Nullable
-    private static ResourcePackProfile method_25453(ResourcePackProfile.Factory factory, Supplier<ResourcePack> supplier) {
-        return ResourcePackProfile.of("programer_art", false, supplier, factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
+    private static ResourcePackProfile getProgrammerArtResourcePackProfile(ResourcePackProfile.Factory factory, Supplier<ResourcePack> packSupplier) {
+        return ResourcePackProfile.of("programer_art", false, packSupplier, factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
     }
 
-    private static DirectoryResourcePack method_25455(File file) {
-        return new DirectoryResourcePack(file){
+    private static DirectoryResourcePack getProgrammerArtResourcePackFromDirectory(File packDirectory) {
+        return new DirectoryResourcePack(packDirectory){
 
             @Override
             public String getName() {
@@ -235,8 +237,8 @@ implements ResourcePackProvider {
         };
     }
 
-    private static ResourcePack method_16048(File file) {
-        return new ZipResourcePack(file){
+    private static ResourcePack getProgrammerArtResourcePackFromZipFile(File zipFile) {
+        return new ZipResourcePack(zipFile){
 
             @Override
             public String getName() {

@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
@@ -54,7 +55,7 @@ public class CubeMapRenderer {
             RenderSystem.rotatef(y, 0.0f, 1.0f, 0.0f);
             for (int k = 0; k < 6; ++k) {
                 client.getTextureManager().bindTexture(this.faces[k]);
-                bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+                bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
                 int l = Math.round(255.0f * alpha) / (j + 1);
                 if (k == 0) {
                     bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0f, 0.0f).color(255, 255, 255, l).next();

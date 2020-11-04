@@ -92,7 +92,7 @@ import net.minecraft.world.gen.placer.BlockPlacerType;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
-import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
+import net.minecraft.world.gen.tree.TreeDecoratorType;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
 import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.commons.lang3.Validate;
@@ -140,25 +140,8 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<LootFunctionType>> LOOT_FUNCTION_TYPE_KEY = Registry.createRegistryKey("loot_function_type");
     public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE_KEY = Registry.createRegistryKey("loot_condition_type");
     public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = Registry.createRegistryKey("dimension_type");
-    /**
-     * A registry key representing the {@link World} type. Can be used to obtain
-     * registry keys with the {@link World} type, such as that for the overworld.
-     * 
-     * <p>Notice that {@code this == Registry.DIMENSION_KEY}.
-     * 
-     * @see #DIMENSION_KEY
-     * @see World#OVERWORLD
-     * @see net.minecraft.server.MinecraftServer#worlds
-     */
-    public static final RegistryKey<Registry<World>> WORLD_KEY = Registry.createRegistryKey("dimension");
-    /**
-     * A registry key representing the {@link DimensionOptions} type.
-     * 
-     * <p>Notice that {@code this == Registry.WORLD_KEY}.
-     * 
-     * @see #WORLD_KEY
-     */
-    public static final RegistryKey<Registry<DimensionOptions>> DIMENSION_KEY = Registry.createRegistryKey("dimension");
+    public static final RegistryKey<Registry<World>> DIMENSION = Registry.createRegistryKey("dimension");
+    public static final RegistryKey<Registry<DimensionOptions>> DIMENSION_OPTIONS = Registry.createRegistryKey("dimension");
     public static final Registry<SoundEvent> SOUND_EVENT = Registry.create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
     public static final DefaultedRegistry<Fluid> FLUID = Registry.create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
     public static final Registry<StatusEffect> STATUS_EFFECT = Registry.create(MOB_EFFECT_KEY, () -> StatusEffects.LUCK);
@@ -230,8 +213,7 @@ IndexedIterable<T> {
     public static final Registry<StructureProcessorType<?>> STRUCTURE_PROCESSOR = Registry.create(STRUCTURE_PROCESSOR_KEY, () -> StructureProcessorType.BLOCK_IGNORE);
     public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = Registry.create(STRUCTURE_POOL_ELEMENT_KEY, () -> StructurePoolElementType.EMPTY_POOL_ELEMENT);
     /**
-     * The key representing the type of elements held by this registry. It is also the
-     * key of this registry within the root registry.
+     * The {@linkplain RegistryKey} representing the ID of the actual registry.
      */
     private final RegistryKey<? extends Registry<T>> registryKey;
     private final Lifecycle lifecycle;
@@ -255,27 +237,27 @@ IndexedIterable<T> {
         });
     }
 
-    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Supplier<T> defaultEntry) {
-        return Registry.create(key, Lifecycle.experimental(), defaultEntry);
+    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> registryKey, Supplier<T> defaultEntry) {
+        return Registry.create(registryKey, Lifecycle.experimental(), defaultEntry);
     }
 
-    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Supplier<T> defaultEntry) {
-        return Registry.create(key, defaultId, Lifecycle.experimental(), defaultEntry);
+    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> registryKey, String defaultId, Supplier<T> defaultEntry) {
+        return Registry.create(registryKey, defaultId, Lifecycle.experimental(), defaultEntry);
     }
 
-    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Supplier<T> defaultEntry) {
-        return Registry.create(key, new SimpleRegistry(key, lifecycle), defaultEntry, lifecycle);
+    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Supplier<T> defaultEntry) {
+        return Registry.create(registryKey, new SimpleRegistry(registryKey, lifecycle), defaultEntry, lifecycle);
     }
 
-    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, Supplier<T> defaultEntry) {
-        return Registry.create(key, new DefaultedRegistry(defaultId, key, lifecycle), defaultEntry, lifecycle);
+    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> registryKey, String defaultId, Lifecycle lifecycle, Supplier<T> defaultEntry) {
+        return Registry.create(registryKey, new DefaultedRegistry(defaultId, registryKey, lifecycle), defaultEntry, lifecycle);
     }
 
-    private static <T, R extends MutableRegistry<T>> R create(RegistryKey<? extends Registry<T>> key, R registry, Supplier<T> defaultEntry, Lifecycle lifecycle) {
-        Identifier identifier = key.getValue();
+    private static <T, R extends MutableRegistry<T>> R create(RegistryKey<? extends Registry<T>> registryKey, R registry, Supplier<T> defaultEntry, Lifecycle lifecycle) {
+        Identifier identifier = registryKey.getValue();
         DEFAULT_ENTRIES.put(identifier, defaultEntry);
         MutableRegistry<MutableRegistry<?>> mutableRegistry = ROOT;
-        return mutableRegistry.add(key, registry, lifecycle);
+        return mutableRegistry.add(registryKey, registry, lifecycle);
     }
 
     protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {

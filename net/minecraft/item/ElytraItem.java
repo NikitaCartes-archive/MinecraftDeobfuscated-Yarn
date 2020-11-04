@@ -12,9 +12,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.Wearable;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class ElytraItem
 extends Item
@@ -30,7 +33,7 @@ implements Wearable {
 
     @Override
     public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-        return ingredient.getItem() == Items.PHANTOM_MEMBRANE;
+        return ingredient.isOf(Items.PHANTOM_MEMBRANE);
     }
 
     @Override
@@ -44,6 +47,12 @@ implements Wearable {
             return TypedActionResult.success(itemStack, world.isClient());
         }
         return TypedActionResult.fail(itemStack);
+    }
+
+    @Override
+    @Nullable
+    public SoundEvent method_31570() {
+        return SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA;
     }
 }
 

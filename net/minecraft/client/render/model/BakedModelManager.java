@@ -18,14 +18,14 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloader;
+import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BakedModelManager
-extends SinglePreparationResourceReloader<ModelLoader>
+extends SinglePreparationResourceReloadListener<ModelLoader>
 implements AutoCloseable {
     private Map<Identifier, BakedModel> models;
     @Nullable
@@ -33,14 +33,14 @@ implements AutoCloseable {
     private final BlockModels blockModelCache;
     private final TextureManager textureManager;
     private final BlockColors colorMap;
-    private int mipmapLevels;
+    private int mipmap;
     private BakedModel missingModel;
     private Object2IntMap<BlockState> stateLookup;
 
     public BakedModelManager(TextureManager textureManager, BlockColors colorMap, int mipmap) {
         this.textureManager = textureManager;
         this.colorMap = colorMap;
-        this.mipmapLevels = mipmap;
+        this.mipmap = mipmap;
         this.blockModelCache = new BlockModels(this);
     }
 
@@ -59,7 +59,7 @@ implements AutoCloseable {
     @Override
     protected ModelLoader prepare(ResourceManager resourceManager, Profiler profiler) {
         profiler.startTick();
-        ModelLoader modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmapLevels);
+        ModelLoader modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmap);
         profiler.endTick();
         return modelLoader;
     }
@@ -74,7 +74,7 @@ implements AutoCloseable {
         this.atlasManager = modelLoader.upload(this.textureManager, profiler);
         this.models = modelLoader.getBakedModelMap();
         this.stateLookup = modelLoader.getStateLookup();
-        this.missingModel = this.models.get(ModelLoader.MISSING_ID);
+        this.missingModel = this.models.get(ModelLoader.MISSING);
         profiler.swap("cache");
         this.blockModelCache.reload();
         profiler.pop();
@@ -106,8 +106,8 @@ implements AutoCloseable {
         }
     }
 
-    public void setMipmapLevels(int mipmapLevels) {
-        this.mipmapLevels = mipmapLevels;
+    public void resetMipmapLevels(int i) {
+        this.mipmap = i;
     }
 
     @Override

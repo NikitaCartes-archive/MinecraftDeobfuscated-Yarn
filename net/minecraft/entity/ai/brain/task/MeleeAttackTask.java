@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
@@ -30,7 +31,10 @@ extends Task<MobEntity> {
     }
 
     private boolean method_25942(MobEntity mobEntity) {
-        return mobEntity.isHolding(item -> item instanceof RangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item));
+        return mobEntity.isHolding(itemStack -> {
+            Item item = itemStack.getItem();
+            return item instanceof RangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item);
+        });
     }
 
     @Override

@@ -49,12 +49,12 @@ extends ForgingScreenHandler {
 
     @Override
     protected boolean canTakeOutput(PlayerEntity player, boolean present) {
-        return (player.abilities.creativeMode || player.experienceLevel >= this.levelCost.get()) && this.levelCost.get() > 0;
+        return (player.getAbilities().creativeMode || player.experienceLevel >= this.levelCost.get()) && this.levelCost.get() > 0;
     }
 
     @Override
     protected ItemStack onTakeOutput(PlayerEntity player, ItemStack stack) {
-        if (!player.abilities.creativeMode) {
+        if (!player.getAbilities().creativeMode) {
             player.addExperienceLevels(-this.levelCost.get());
         }
         this.input.setStack(0, ItemStack.EMPTY);
@@ -72,7 +72,7 @@ extends ForgingScreenHandler {
         this.levelCost.set(0);
         this.context.run((world, blockPos) -> {
             BlockState blockState = world.getBlockState((BlockPos)blockPos);
-            if (!playerEntity.abilities.creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12f) {
+            if (!playerEntity.getAbilities().creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12f) {
                 BlockState blockState2 = AnvilBlock.getLandingState(blockState);
                 if (blockState2 == null) {
                     world.removeBlock((BlockPos)blockPos, false);
@@ -107,7 +107,7 @@ extends ForgingScreenHandler {
         this.repairItemUsage = 0;
         if (!itemStack3.isEmpty()) {
             boolean bl;
-            boolean bl2 = bl = itemStack3.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantmentNbt(itemStack3).isEmpty();
+            boolean bl2 = bl = itemStack3.isOf(Items.ENCHANTED_BOOK) && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
             if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
                 int m;
                 int l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
@@ -124,7 +124,7 @@ extends ForgingScreenHandler {
                 }
                 this.repairItemUsage = m;
             } else {
-                if (!(bl || itemStack2.getItem() == itemStack3.getItem() && itemStack2.isDamageable())) {
+                if (!(bl || itemStack2.isOf(itemStack3.getItem()) && itemStack2.isDamageable())) {
                     this.output.setStack(0, ItemStack.EMPTY);
                     this.levelCost.set(0);
                     return;
@@ -152,7 +152,7 @@ extends ForgingScreenHandler {
                     int q = map.getOrDefault(enchantment, 0);
                     r = q == (r = map2.get(enchantment).intValue()) ? r + 1 : Math.max(r, q);
                     boolean bl4 = enchantment.isAcceptableItem(itemStack);
-                    if (this.player.abilities.creativeMode || itemStack.getItem() == Items.ENCHANTED_BOOK) {
+                    if (this.player.getAbilities().creativeMode || itemStack.isOf(Items.ENCHANTED_BOOK)) {
                         bl4 = true;
                     }
                     for (Enchantment enchantment2 : map.keySet()) {
@@ -219,7 +219,7 @@ extends ForgingScreenHandler {
         if (k == i && k > 0 && this.levelCost.get() >= 40) {
             this.levelCost.set(39);
         }
-        if (this.levelCost.get() >= 40 && !this.player.abilities.creativeMode) {
+        if (this.levelCost.get() >= 40 && !this.player.getAbilities().creativeMode) {
             itemStack2 = ItemStack.EMPTY;
         }
         if (!itemStack2.isEmpty()) {
@@ -241,11 +241,11 @@ extends ForgingScreenHandler {
         return cost * 2 + 1;
     }
 
-    public void setNewItemName(String newItemName) {
-        this.newItemName = newItemName;
+    public void setNewItemName(String string) {
+        this.newItemName = string;
         if (this.getSlot(2).hasStack()) {
             ItemStack itemStack = this.getSlot(2).getStack();
-            if (StringUtils.isBlank(newItemName)) {
+            if (StringUtils.isBlank(string)) {
                 itemStack.removeCustomName();
             } else {
                 itemStack.setCustomName(new LiteralText(this.newItemName));

@@ -63,7 +63,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ChunkGenerator {
     public static final Codec<ChunkGenerator> CODEC;
     /**
-     * Used to control the population step without replacing the actual biome that comes from the original {@link #biomeSource}.
+     * Used to control the population step without replacing the actual biome that comes from the original {@link biomeSource}.
      * 
      * <p>This is used by {@link FlatChunkGenerator} to overwrite biome properties like whether lakes generate, while preserving the original biome ID.
      */
@@ -109,10 +109,10 @@ public abstract class ChunkGenerator {
             double e = (double)(4 * i + i * m * 6) + (random.nextDouble() - 0.5) * ((double)i * 2.5);
             int o = (int)Math.round(Math.cos(d) * e);
             int p = (int)Math.round(Math.sin(d) * e);
-            BlockPos blockPos = this.populationSource.locateBiome((o << 4) + 8, 0, (p << 4) + 8, 112, list::contains, random);
+            BlockPos blockPos = this.populationSource.locateBiome(ChunkSectionPos.method_32205(o, 8), 0, ChunkSectionPos.method_32205(p, 8), 112, list::contains, random);
             if (blockPos != null) {
-                o = blockPos.getX() >> 4;
-                p = blockPos.getZ() >> 4;
+                o = ChunkSectionPos.getSectionCoord(blockPos.getX());
+                p = ChunkSectionPos.getSectionCoord(blockPos.getZ());
             }
             this.strongholds.add(new ChunkPos(o, p));
             d += Math.PI * 2 / (double)k;
@@ -134,9 +134,6 @@ public abstract class ChunkGenerator {
         ((ProtoChunk)chunk).setBiomes(new BiomeArray(biomeRegistry, chunkPos, this.biomeSource));
     }
 
-    /**
-     * Generates caves for the given chunk.
-     */
     public void carve(long seed, BiomeAccess access, Chunk chunk, GenerationStep.Carver carver) {
         BiomeAccess biomeAccess = access.withSource(this.populationSource);
         ChunkRandom chunkRandom = new ChunkRandom();
@@ -165,12 +162,11 @@ public abstract class ChunkGenerator {
      * Tries to find the closest structure of a given type near a given block.
      * <p>
      * New chunks will only be generated up to the {@link net.minecraft.world.chunk.ChunkStatus#STRUCTURE_STARTS} phase by this method.
-     * <p>
-     * The radius is ignored for strongholds.
      * 
      * @return {@code null} if no structure could be found within the given search radius
      * 
-     * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
+     * @param radius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
+     * This is ignored for strongholds.
      * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the STRUCTURE_STARTS stage) are returned, excluding strongholds
      */
     @Nullable
@@ -184,7 +180,7 @@ public abstract class ChunkGenerator {
             double d = Double.MAX_VALUE;
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             for (ChunkPos chunkPos : this.strongholds) {
-                mutable.set((chunkPos.x << 4) + 8, 32, (chunkPos.z << 4) + 8);
+                mutable.set(ChunkSectionPos.method_32205(chunkPos.x, 8), 32, ChunkSectionPos.method_32205(chunkPos.z, 8));
                 double e = mutable.getSquaredDistance(center);
                 if (blockPos == null) {
                     blockPos = new BlockPos(mutable);
@@ -207,10 +203,10 @@ public abstract class ChunkGenerator {
     public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
         int i = region.getCenterChunkX();
         int j = region.getCenterChunkZ();
-        int k = i * 16;
-        int l = j * 16;
+        int k = ChunkSectionPos.getBlockCoord(i);
+        int l = ChunkSectionPos.getBlockCoord(j);
         BlockPos blockPos = new BlockPos(k, 0, l);
-        Biome biome = this.populationSource.getBiomeForNoiseGen((i << 2) + 2, 2, (j << 2) + 2);
+        Biome biome = this.populationSource.method_31609(i, j);
         ChunkRandom chunkRandom = new ChunkRandom();
         long m = chunkRandom.setPopulationSeed(region.getSeed(), k, l);
         try {
@@ -222,9 +218,6 @@ public abstract class ChunkGenerator {
         }
     }
 
-    /**
-     * Places the surface blocks of the biomes after the noise has been generated.
-     */
     public abstract void buildSurface(ChunkRegion var1, Chunk var2);
 
     public void populateEntities(ChunkRegion region) {
@@ -247,18 +240,18 @@ public abstract class ChunkGenerator {
     }
 
     public List<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
-        return biome.getSpawnSettings().getSpawnEntry(group);
+        return biome.getSpawnSettings().getSpawnEntries(group);
     }
 
     /**
      * Determines which structures should start in the given chunk and creates their starting points.
      */
-    public void setStructureStarts(DynamicRegistryManager registryManager, StructureAccessor accessor, Chunk chunk, StructureManager structureManager, long worldSeed) {
+    public void setStructureStarts(DynamicRegistryManager dynamicRegistryManager, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long worldSeed) {
         ChunkPos chunkPos = chunk.getPos();
-        Biome biome = this.populationSource.getBiomeForNoiseGen((chunkPos.x << 2) + 2, 0, (chunkPos.z << 2) + 2);
-        this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, registryManager, accessor, chunk, structureManager, worldSeed, chunkPos, biome);
+        Biome biome = this.populationSource.method_31609(chunkPos.x, chunkPos.z);
+        this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome);
         for (Supplier<ConfiguredStructureFeature<?, ?>> supplier : biome.getGenerationSettings().getStructureFeatures()) {
-            this.setStructureStart(supplier.get(), registryManager, accessor, chunk, structureManager, worldSeed, chunkPos, biome);
+            this.setStructureStart(supplier.get(), dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome);
         }
     }
 
@@ -280,8 +273,8 @@ public abstract class ChunkGenerator {
         int i = 8;
         int j = chunk.getPos().x;
         int k = chunk.getPos().z;
-        int l = j << 4;
-        int m = k << 4;
+        int l = ChunkSectionPos.getBlockCoord(j);
+        int m = ChunkSectionPos.getBlockCoord(k);
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk.getPos(), 0);
         for (int n = j - 8; n <= j + 8; ++n) {
             for (int o = k - 8; o <= k + 8; ++o) {
@@ -325,9 +318,9 @@ public abstract class ChunkGenerator {
         return this.getHeight(x, z, heightmapType) - 1;
     }
 
-    public boolean isStrongholdStartingChunk(ChunkPos pos) {
+    public boolean isStrongholdStartingChunk(ChunkPos chunkPos) {
         this.generateStrongholdPositions();
-        return this.strongholds.contains(pos);
+        return this.strongholds.contains(chunkPos);
     }
 
     static {

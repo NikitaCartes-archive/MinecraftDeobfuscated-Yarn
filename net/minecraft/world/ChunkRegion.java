@@ -15,12 +15,13 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_5575;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -139,7 +140,7 @@ implements StructureWorldAccess {
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4).getBlockState(pos);
+        return this.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockState(pos);
     }
 
     @Override
@@ -186,7 +187,7 @@ implements StructureWorldAccess {
             return false;
         }
         if (drop) {
-            BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(pos) : null;
+            BlockEntity blockEntity = blockState.hasBlockEntity() ? this.getBlockEntity(pos) : null;
             Block.dropStacks(blockState, this.world, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
         }
         return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3, maxUpdateDepth);
@@ -200,24 +201,23 @@ implements StructureWorldAccess {
         if (blockEntity != null) {
             return blockEntity;
         }
-        NbtCompound nbtCompound = chunk.getBlockEntityNbt(pos);
+        CompoundTag compoundTag = chunk.getBlockEntityTag(pos);
         BlockState blockState = chunk.getBlockState(pos);
-        if (nbtCompound != null) {
-            if ("DUMMY".equals(nbtCompound.getString("id"))) {
-                Block block = blockState.getBlock();
-                if (!(block instanceof BlockEntityProvider)) {
+        if (compoundTag != null) {
+            if ("DUMMY".equals(compoundTag.getString("id"))) {
+                if (!blockState.hasBlockEntity()) {
                     return null;
                 }
-                blockEntity = ((BlockEntityProvider)((Object)block)).createBlockEntity(this.world);
+                blockEntity = ((BlockEntityProvider)((Object)blockState.getBlock())).createBlockEntity(pos, blockState);
             } else {
-                blockEntity = BlockEntity.createFromTag(blockState, nbtCompound);
+                blockEntity = BlockEntity.createFromTag(pos, blockState, compoundTag);
             }
             if (blockEntity != null) {
-                chunk.setBlockEntity(pos, blockEntity);
+                chunk.setBlockEntity(blockEntity);
                 return blockEntity;
             }
         }
-        if (blockState.getBlock() instanceof BlockEntityProvider) {
+        if (blockState.hasBlockEntity()) {
             LOGGER.warn("Tried to access a block entity before it was created. {}", (Object)pos);
         }
         return null;
@@ -225,24 +225,28 @@ implements StructureWorldAccess {
 
     @Override
     public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-        Block block;
         Chunk chunk = this.getChunk(pos);
         BlockState blockState = chunk.setBlockState(pos, state, false);
         if (blockState != null) {
             this.world.onBlockChanged(pos, blockState, state);
         }
-        if ((block = state.getBlock()).hasBlockEntity()) {
+        if (state.hasBlockEntity()) {
             if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
-                chunk.setBlockEntity(pos, ((BlockEntityProvider)((Object)block)).createBlockEntity(this));
+                BlockEntity blockEntity = ((BlockEntityProvider)((Object)state.getBlock())).createBlockEntity(pos, state);
+                if (blockEntity != null) {
+                    chunk.setBlockEntity(blockEntity);
+                } else {
+                    chunk.removeBlockEntity(pos);
+                }
             } else {
-                NbtCompound nbtCompound = new NbtCompound();
-                nbtCompound.putInt("x", pos.getX());
-                nbtCompound.putInt("y", pos.getY());
-                nbtCompound.putInt("z", pos.getZ());
-                nbtCompound.putString("id", "DUMMY");
-                chunk.addPendingBlockEntityNbt(nbtCompound);
+                CompoundTag compoundTag = new CompoundTag();
+                compoundTag.putInt("x", pos.getX());
+                compoundTag.putInt("y", pos.getY());
+                compoundTag.putInt("z", pos.getZ());
+                compoundTag.putString("id", "DUMMY");
+                chunk.addPendingBlockEntityTag(compoundTag);
             }
-        } else if (blockState != null && blockState.getBlock().hasBlockEntity()) {
+        } else if (blockState != null && blockState.hasBlockEntity()) {
             chunk.removeBlockEntity(pos);
         }
         if (state.shouldPostProcess(this, pos)) {
@@ -257,8 +261,8 @@ implements StructureWorldAccess {
 
     @Override
     public boolean spawnEntity(Entity entity) {
-        int i = MathHelper.floor(entity.getX() / 16.0);
-        int j = MathHelper.floor(entity.getZ() / 16.0);
+        int i = ChunkSectionPos.getSectionCoord(entity.getBlockX());
+        int j = ChunkSectionPos.getSectionCoord(entity.getBlockZ());
         this.getChunk(i, j).addEntity(entity);
         return true;
     }
@@ -296,7 +300,7 @@ implements StructureWorldAccess {
 
     @Override
     public LocalDifficulty getLocalDifficulty(BlockPos pos) {
-        if (!this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4)) {
+        if (!this.isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()))) {
             throw new RuntimeException("We are asking a region for a chunk out of bound");
         }
         return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.getMoonSize());
@@ -334,7 +338,7 @@ implements StructureWorldAccess {
 
     @Override
     public int getTopY(Heightmap.Type heightmap, int x, int z) {
-        return this.getChunk(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 0xF, z & 0xF) + 1;
+        return this.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z)).sampleHeightmap(heightmap, x & 0xF, z & 0xF) + 1;
     }
 
     @Override
@@ -360,7 +364,7 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public <T extends Entity> List<T> getEntitiesByClass(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
+    public <T extends Entity> List<T> getEntitiesByType(class_5575<Entity, T> arg, Box box, Predicate<? super T> predicate) {
         return Collections.emptyList();
     }
 
@@ -376,6 +380,16 @@ implements StructureWorldAccess {
     @Override
     public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
         return this.field_26822.getStructuresWithChildren(pos, feature);
+    }
+
+    @Override
+    public int getSectionCount() {
+        return this.world.getSectionCount();
+    }
+
+    @Override
+    public int getBottomSectionLimit() {
+        return this.world.getBottomSectionLimit();
     }
 }
 

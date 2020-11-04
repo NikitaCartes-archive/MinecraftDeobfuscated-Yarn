@@ -13,7 +13,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
@@ -23,7 +25,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -36,22 +37,15 @@ extends AbstractDecorationEntity {
 
     public LeashKnotEntity(World world, BlockPos pos) {
         super(EntityType.LEASH_KNOT, world, pos);
-        this.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
-        float f = 0.125f;
-        float g = 0.1875f;
-        float h = 0.25f;
-        this.setBoundingBox(new Box(this.getX() - 0.1875, this.getY() - 0.25 + 0.125, this.getZ() - 0.1875, this.getX() + 0.1875, this.getY() + 0.25 + 0.125, this.getZ() + 0.1875));
-        this.teleporting = true;
-    }
-
-    @Override
-    public void setPosition(double x, double y, double z) {
-        super.setPosition((double)MathHelper.floor(x) + 0.5, (double)MathHelper.floor(y) + 0.5, (double)MathHelper.floor(z) + 0.5);
+        this.updatePosition(pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
     protected void updateAttachmentPosition() {
-        this.setPos((double)this.attachmentPos.getX() + 0.5, (double)this.attachmentPos.getY() + 0.5, (double)this.attachmentPos.getZ() + 0.5);
+        this.setPos((double)this.attachmentPos.getX() + 0.5, (double)this.attachmentPos.getY() + 0.375, (double)this.attachmentPos.getZ() + 0.5);
+        double d = (double)this.getType().getWidth() / 2.0;
+        double e = this.getType().getHeight();
+        this.setBoundingBox(new Box(this.getX() - d, this.getY(), this.getZ() - d, this.getX() + d, this.getY() + e, this.getZ() + d));
     }
 
     @Override
@@ -70,7 +64,7 @@ extends AbstractDecorationEntity {
 
     @Override
     protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-        return -0.0625f;
+        return 0.0625f;
     }
 
     @Override
@@ -85,11 +79,11 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
+    public void writeCustomDataToTag(CompoundTag tag) {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
+    public void readCustomDataFromTag(CompoundTag tag) {
     }
 
     @Override
@@ -106,8 +100,8 @@ extends AbstractDecorationEntity {
             bl = true;
         }
         if (!bl) {
-            this.remove();
-            if (player.abilities.creativeMode) {
+            this.discard();
+            if (player.getAbilities().creativeMode) {
                 for (MobEntity mobEntity : list) {
                     if (!mobEntity.isLeashed() || mobEntity.getHoldingEntity() != this) continue;
                     mobEntity.detachLeash(true, false);
@@ -119,7 +113,7 @@ extends AbstractDecorationEntity {
 
     @Override
     public boolean canStayAttached() {
-        return this.world.getBlockState(this.attachmentPos).getBlock().isIn(BlockTags.FENCES);
+        return this.world.getBlockState(this.attachmentPos).isIn(BlockTags.FENCES);
     }
 
     public static LeashKnotEntity getOrCreate(World world, BlockPos pos) {
@@ -151,6 +145,12 @@ extends AbstractDecorationEntity {
     @Environment(value=EnvType.CLIENT)
     public Vec3d method_30951(float f) {
         return this.method_30950(f).add(0.0, 0.2, 0.0);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public ItemStack getPickBlockStack() {
+        return new ItemStack(Items.LEAD);
     }
 }
 

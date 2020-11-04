@@ -5,6 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelUtil;
 import net.minecraft.client.render.entity.model.OcelotEntityModel;
 import net.minecraft.entity.passive.CatEntity;
@@ -17,8 +18,8 @@ extends OcelotEntityModel<T> {
     private float tailCurlAnimation;
     private float headDownAnimation;
 
-    public CatEntityModel(float f) {
-        super(f);
+    public CatEntityModel(ModelPart modelPart) {
+        super(modelPart);
     }
 
     @Override
@@ -29,22 +30,22 @@ extends OcelotEntityModel<T> {
         if (this.sleepAnimation <= 0.0f) {
             this.head.pitch = 0.0f;
             this.head.roll = 0.0f;
-            this.leftFrontLeg.pitch = 0.0f;
-            this.leftFrontLeg.roll = 0.0f;
-            this.rightFrontLeg.pitch = 0.0f;
-            this.rightFrontLeg.roll = 0.0f;
-            this.rightFrontLeg.pivotX = -1.2f;
-            this.leftBackLeg.pitch = 0.0f;
-            this.rightBackLeg.pitch = 0.0f;
-            this.rightBackLeg.roll = 0.0f;
-            this.rightBackLeg.pivotX = -1.1f;
-            this.rightBackLeg.pivotY = 18.0f;
+            this.field_27456.pitch = 0.0f;
+            this.field_27456.roll = 0.0f;
+            this.field_27457.pitch = 0.0f;
+            this.field_27457.roll = 0.0f;
+            this.field_27457.pivotX = -1.2f;
+            this.field_27454.pitch = 0.0f;
+            this.field_27455.pitch = 0.0f;
+            this.field_27455.roll = 0.0f;
+            this.field_27455.pivotX = -1.1f;
+            this.field_27455.pivotY = 18.0f;
         }
         super.animateModel(catEntity, f, g, h);
         if (((TameableEntity)catEntity).isInSittingPose()) {
-            this.body.pitch = 0.7853982f;
-            this.body.pivotY += -4.0f;
-            this.body.pivotZ += 5.0f;
+            this.torso.pitch = 0.7853982f;
+            this.torso.pivotY += -4.0f;
+            this.torso.pivotZ += 5.0f;
             this.head.pivotY += -3.3f;
             this.head.pivotZ += 1.0f;
             this.upperTail.pivotY += 8.0f;
@@ -53,18 +54,18 @@ extends OcelotEntityModel<T> {
             this.lowerTail.pivotZ += -0.8f;
             this.upperTail.pitch = 1.7278761f;
             this.lowerTail.pitch = 2.670354f;
-            this.leftFrontLeg.pitch = -0.15707964f;
-            this.leftFrontLeg.pivotY = 16.1f;
-            this.leftFrontLeg.pivotZ = -7.0f;
-            this.rightFrontLeg.pitch = -0.15707964f;
-            this.rightFrontLeg.pivotY = 16.1f;
-            this.rightFrontLeg.pivotZ = -7.0f;
-            this.leftBackLeg.pitch = -1.5707964f;
-            this.leftBackLeg.pivotY = 21.0f;
-            this.leftBackLeg.pivotZ = 1.0f;
-            this.rightBackLeg.pitch = -1.5707964f;
-            this.rightBackLeg.pivotY = 21.0f;
-            this.rightBackLeg.pivotZ = 1.0f;
+            this.field_27456.pitch = -0.15707964f;
+            this.field_27456.pivotY = 16.1f;
+            this.field_27456.pivotZ = -7.0f;
+            this.field_27457.pitch = -0.15707964f;
+            this.field_27457.pivotY = 16.1f;
+            this.field_27457.pivotZ = -7.0f;
+            this.field_27454.pitch = -1.5707964f;
+            this.field_27454.pivotY = 21.0f;
+            this.field_27454.pivotZ = 1.0f;
+            this.field_27455.pitch = -1.5707964f;
+            this.field_27455.pivotY = 21.0f;
+            this.field_27455.pivotZ = 1.0f;
             this.animationState = 3;
         }
     }
@@ -75,15 +76,15 @@ extends OcelotEntityModel<T> {
         if (this.sleepAnimation > 0.0f) {
             this.head.roll = ModelUtil.interpolateAngle(this.head.roll, -1.2707963f, this.sleepAnimation);
             this.head.yaw = ModelUtil.interpolateAngle(this.head.yaw, 1.2707963f, this.sleepAnimation);
-            this.leftFrontLeg.pitch = -1.2707963f;
-            this.rightFrontLeg.pitch = -0.47079635f;
-            this.rightFrontLeg.roll = -0.2f;
-            this.rightFrontLeg.pivotX = -0.2f;
-            this.leftBackLeg.pitch = -0.4f;
-            this.rightBackLeg.pitch = 0.5f;
-            this.rightBackLeg.roll = -0.5f;
-            this.rightBackLeg.pivotX = -0.3f;
-            this.rightBackLeg.pivotY = 20.0f;
+            this.field_27456.pitch = -1.2707963f;
+            this.field_27457.pitch = -0.47079635f;
+            this.field_27457.roll = -0.2f;
+            this.field_27457.pivotX = -0.2f;
+            this.field_27454.pitch = -0.4f;
+            this.field_27455.pitch = 0.5f;
+            this.field_27455.roll = -0.5f;
+            this.field_27455.pivotX = -0.3f;
+            this.field_27455.pivotY = 20.0f;
             this.upperTail.pitch = ModelUtil.interpolateAngle(this.upperTail.pitch, 0.8f, this.tailCurlAnimation);
             this.lowerTail.pitch = ModelUtil.interpolateAngle(this.lowerTail.pitch, -0.4f, this.tailCurlAnimation);
         }

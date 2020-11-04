@@ -10,6 +10,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DaylightDetectorBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
@@ -26,6 +28,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class DaylightDetectorBlock
 extends BlockWithEntity {
@@ -53,10 +56,7 @@ extends BlockWithEntity {
         return state.get(POWER);
     }
 
-    public static void updateState(BlockState state, World world, BlockPos pos) {
-        if (!world.getDimension().hasSkyLight()) {
-            return;
-        }
+    private static void updateState(BlockState state, World world, BlockPos pos) {
         int i = world.getLightLevel(LightType.SKY, pos) - world.getAmbientDarkness();
         float f = world.getSkyAngleRadians(1.0f);
         boolean bl = state.get(INVERTED);
@@ -98,8 +98,23 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new DaylightDetectorBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new DaylightDetectorBlockEntity(pos, state);
+    }
+
+    @Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        if (!world.isClient && world.getDimension().hasSkyLight()) {
+            return DaylightDetectorBlock.checkType(type, BlockEntityType.DAYLIGHT_DETECTOR, DaylightDetectorBlock::tick);
+        }
+        return null;
+    }
+
+    private static void tick(World world, BlockPos pos, BlockState blockState, DaylightDetectorBlockEntity daylightDetectorBlockEntity) {
+        if (world.getTime() % 20L == 0L) {
+            DaylightDetectorBlock.updateState(blockState, world, pos);
+        }
     }
 
     @Override

@@ -44,7 +44,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class DispenserBlock
@@ -79,12 +78,12 @@ extends BlockWithEntity {
         return ActionResult.CONSUME;
     }
 
-    protected void dispense(ServerWorld world, BlockPos pos) {
-        BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
+    protected void dispense(ServerWorld serverWorld, BlockPos pos) {
+        BlockPointerImpl blockPointerImpl = new BlockPointerImpl(serverWorld, pos);
         DispenserBlockEntity dispenserBlockEntity = (DispenserBlockEntity)blockPointerImpl.getBlockEntity();
         int i = dispenserBlockEntity.chooseNonEmptySlot();
         if (i < 0) {
-            world.syncWorldEvent(1001, pos, 0);
+            serverWorld.syncWorldEvent(1001, pos, 0);
             return;
         }
         ItemStack itemStack = dispenserBlockEntity.getStack(i);
@@ -116,8 +115,8 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new DispenserBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new DispenserBlockEntity(pos, state);
     }
 
     @Override

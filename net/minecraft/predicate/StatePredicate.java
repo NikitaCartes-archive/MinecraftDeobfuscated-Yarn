@@ -46,8 +46,8 @@ public class StatePredicate {
         return json.getAsString();
     }
 
-    private StatePredicate(List<Condition> conditions) {
-        this.conditions = ImmutableList.copyOf(conditions);
+    private StatePredicate(List<Condition> testers) {
+        this.conditions = ImmutableList.copyOf(testers);
     }
 
     public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S container) {

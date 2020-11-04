@@ -21,7 +21,7 @@ import java.util.function.BiFunction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -49,7 +49,7 @@ public class BlockArgumentParser {
     private StateManager<Block, BlockState> stateFactory;
     private BlockState blockState;
     @Nullable
-    private NbtCompound data;
+    private CompoundTag data;
     private Identifier tagId = new Identifier("");
     private int cursorPos;
     private BiFunction<SuggestionsBuilder, TagGroup<Block>, CompletableFuture<Suggestions>> suggestions = SUGGEST_DEFAULT;
@@ -69,7 +69,7 @@ public class BlockArgumentParser {
     }
 
     @Nullable
-    public NbtCompound getNbtData() {
+    public CompoundTag getNbtData() {
         return this.data;
     }
 
@@ -149,11 +149,11 @@ public class BlockArgumentParser {
     private boolean hasBlockEntity(TagGroup<Block> tagGroup) {
         Tag<Block> tag;
         if (this.blockState != null) {
-            return this.blockState.getBlock().hasBlockEntity();
+            return this.blockState.hasBlockEntity();
         }
         if (this.tagId != null && (tag = tagGroup.getTag(this.tagId)) != null) {
             for (Block block : tag.values()) {
-                if (!block.hasBlockEntity()) continue;
+                if (!block.getDefaultState().hasBlockEntity()) continue;
                 return true;
             }
         }
@@ -219,7 +219,7 @@ public class BlockArgumentParser {
             boolean bl = false;
             boolean bl2 = false;
             Iterator<Block> iterator = tag.values().iterator();
-            while (!(!iterator.hasNext() || (bl |= !(block = iterator.next()).getStateManager().getProperties().isEmpty()) && (bl2 |= block.hasBlockEntity()))) {
+            while (!(!iterator.hasNext() || (bl |= !(block = iterator.next()).getStateManager().getProperties().isEmpty()) && (bl2 |= block.getDefaultState().hasBlockEntity()))) {
             }
             if (bl) {
                 suggestionsBuilder.suggest(String.valueOf('['));
@@ -236,7 +236,7 @@ public class BlockArgumentParser {
             if (!this.blockState.getBlock().getStateManager().getProperties().isEmpty()) {
                 suggestionsBuilder.suggest(String.valueOf('['));
             }
-            if (this.blockState.getBlock().hasBlockEntity()) {
+            if (this.blockState.hasBlockEntity()) {
                 suggestionsBuilder.suggest(String.valueOf('{'));
             }
         }
@@ -365,7 +365,7 @@ public class BlockArgumentParser {
     }
 
     public void parseSnbt() throws CommandSyntaxException {
-        this.data = new StringNbtReader(this.reader).parseCompound();
+        this.data = new StringNbtReader(this.reader).parseCompoundTag();
     }
 
     private <T extends Comparable<T>> void parsePropertyValue(Property<T> property, String string, int i) throws CommandSyntaxException {

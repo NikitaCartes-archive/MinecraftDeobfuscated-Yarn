@@ -7,10 +7,10 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -47,41 +47,41 @@ extends StructurePiece {
         this.boundingBox = blockBox;
     }
 
-    public PoolStructurePiece(StructureManager manager, NbtCompound tag) {
-        super(StructurePieceType.JIGSAW, tag);
+    public PoolStructurePiece(StructureManager manager, CompoundTag tag2) {
+        super(StructurePieceType.JIGSAW, tag2);
         this.structureManager = manager;
-        this.pos = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
-        this.groundLevelDelta = tag.getInt("ground_level_delta");
-        this.poolElement = StructurePoolElement.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("pool_element")).resultOrPartial(field_24991::error).orElse(EmptyPoolElement.INSTANCE);
-        this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
+        this.pos = new BlockPos(tag2.getInt("PosX"), tag2.getInt("PosY"), tag2.getInt("PosZ"));
+        this.groundLevelDelta = tag2.getInt("ground_level_delta");
+        this.poolElement = StructurePoolElement.CODEC.parse(NbtOps.INSTANCE, tag2.getCompound("pool_element")).resultOrPartial(field_24991::error).orElse(EmptyPoolElement.INSTANCE);
+        this.rotation = BlockRotation.valueOf(tag2.getString("rotation"));
         this.boundingBox = this.poolElement.getBoundingBox(manager, this.pos, this.rotation);
-        NbtList nbtList = tag.getList("junctions", 10);
+        ListTag listTag = tag2.getList("junctions", 10);
         this.junctions.clear();
-        nbtList.forEach(nbtElement -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<NbtElement>(NbtOps.INSTANCE, (NbtElement)nbtElement))));
+        listTag.forEach(tag -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<Tag>(NbtOps.INSTANCE, (Tag)tag))));
     }
 
     @Override
-    protected void toNbt(NbtCompound tag) {
-        tag.putInt("PosX", this.pos.getX());
-        tag.putInt("PosY", this.pos.getY());
-        tag.putInt("PosZ", this.pos.getZ());
-        tag.putInt("ground_level_delta", this.groundLevelDelta);
-        StructurePoolElement.CODEC.encodeStart(NbtOps.INSTANCE, this.poolElement).resultOrPartial(field_24991::error).ifPresent(nbtElement -> tag.put("pool_element", (NbtElement)nbtElement));
-        tag.putString("rotation", this.rotation.name());
-        NbtList nbtList = new NbtList();
+    protected void toNbt(CompoundTag tag2) {
+        tag2.putInt("PosX", this.pos.getX());
+        tag2.putInt("PosY", this.pos.getY());
+        tag2.putInt("PosZ", this.pos.getZ());
+        tag2.putInt("ground_level_delta", this.groundLevelDelta);
+        StructurePoolElement.CODEC.encodeStart(NbtOps.INSTANCE, this.poolElement).resultOrPartial(field_24991::error).ifPresent(tag -> tag2.put("pool_element", (Tag)tag));
+        tag2.putString("rotation", this.rotation.name());
+        ListTag listTag = new ListTag();
         for (JigsawJunction jigsawJunction : this.junctions) {
-            nbtList.add(jigsawJunction.serialize(NbtOps.INSTANCE).getValue());
+            listTag.add(jigsawJunction.serialize(NbtOps.INSTANCE).getValue());
         }
-        tag.put("junctions", nbtList);
+        tag2.put("junctions", listTag);
     }
 
     @Override
-    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-        return this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
+    public boolean generate(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
+        return this.method_27236(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, blockPos, false);
     }
 
-    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, BlockPos pos, boolean keepJigsaws) {
-        return this.poolElement.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pos, this.rotation, boundingBox, random, keepJigsaws);
+    public boolean method_27236(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, BlockPos blockPos, boolean keepJigsaws) {
+        return this.poolElement.generate(this.structureManager, structureWorldAccess, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random, keepJigsaws);
     }
 
     @Override

@@ -5,6 +5,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
+import net.minecraft.class_5617;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
@@ -12,15 +18,15 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EnderDragonEntityRenderer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class EndCrystalEntityRenderer
@@ -32,15 +38,22 @@ extends EntityRenderer<EndCrystalEntity> {
     private final ModelPart frame;
     private final ModelPart bottom;
 
-    public EndCrystalEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher);
+    public EndCrystalEntityRenderer(class_5617.class_5618 arg) {
+        super(arg);
         this.shadowRadius = 0.5f;
-        this.frame = new ModelPart(64, 32, 0, 0);
-        this.frame.addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f);
-        this.core = new ModelPart(64, 32, 32, 0);
-        this.core.addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f);
-        this.bottom = new ModelPart(64, 32, 0, 16);
-        this.bottom.addCuboid(-6.0f, 0.0f, -6.0f, 12.0f, 4.0f, 12.0f);
+        ModelPart modelPart = arg.method_32167(EntityModelLayers.END_CRYSTAL);
+        this.frame = modelPart.method_32086("glass");
+        this.core = modelPart.method_32086("cube");
+        this.bottom = modelPart.method_32086("base");
+    }
+
+    public static class_5607 method_32164() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        lv2.method_32117("glass", class_5606.method_32108().method_32101(0, 0).method_32097(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f), class_5603.field_27701);
+        lv2.method_32117("cube", class_5606.method_32108().method_32101(32, 0).method_32097(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f), class_5603.field_27701);
+        lv2.method_32117("base", class_5606.method_32108().method_32101(0, 16).method_32097(-6.0f, 0.0f, -6.0f, 12.0f, 4.0f, 12.0f), class_5603.field_27701);
+        return class_5607.method_32110(lv, 64, 32);
     }
 
     @Override
@@ -53,21 +66,21 @@ extends EntityRenderer<EndCrystalEntity> {
         matrixStack.scale(2.0f, 2.0f, 2.0f);
         matrixStack.translate(0.0, -0.5, 0.0);
         int k = OverlayTexture.DEFAULT_UV;
-        if (endCrystalEntity.shouldShowBottom()) {
+        if (endCrystalEntity.getShowBottom()) {
             this.bottom.render(matrixStack, vertexConsumer, i, k);
         }
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
         matrixStack.translate(0.0, 1.5f + h / 2.0f, 0.0);
-        matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
+        matrixStack.multiply(new Quaternion(new Vector3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
         this.frame.render(matrixStack, vertexConsumer, i, k);
         float l = 0.875f;
         matrixStack.scale(0.875f, 0.875f, 0.875f);
-        matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
+        matrixStack.multiply(new Quaternion(new Vector3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
         this.frame.render(matrixStack, vertexConsumer, i, k);
         matrixStack.scale(0.875f, 0.875f, 0.875f);
-        matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
+        matrixStack.multiply(new Quaternion(new Vector3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
         this.core.render(matrixStack, vertexConsumer, i, k);
         matrixStack.pop();
         matrixStack.pop();

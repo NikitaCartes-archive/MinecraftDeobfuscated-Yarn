@@ -5,6 +5,12 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5605;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
 import net.minecraft.entity.passive.SheepEntity;
@@ -14,27 +20,21 @@ public class SheepWoolEntityModel<T extends SheepEntity>
 extends QuadrupedEntityModel<T> {
     private float field_3541;
 
-    public SheepWoolEntityModel() {
-        super(12, 0.0f, false, 8.0f, 4.0f, 2.0f, 2.0f, 24);
-        this.head = new ModelPart(this, 0, 0);
-        this.head.addCuboid(-3.0f, -4.0f, -4.0f, 6.0f, 6.0f, 6.0f, 0.6f);
-        this.head.setPivot(0.0f, 6.0f, -8.0f);
-        this.body = new ModelPart(this, 28, 8);
-        this.body.addCuboid(-4.0f, -10.0f, -7.0f, 8.0f, 16.0f, 6.0f, 1.75f);
-        this.body.setPivot(0.0f, 5.0f, 2.0f);
-        float f = 0.5f;
-        this.backRightLeg = new ModelPart(this, 0, 16);
-        this.backRightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, 0.5f);
-        this.backRightLeg.setPivot(-3.0f, 12.0f, 7.0f);
-        this.backLeftLeg = new ModelPart(this, 0, 16);
-        this.backLeftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, 0.5f);
-        this.backLeftLeg.setPivot(3.0f, 12.0f, 7.0f);
-        this.frontRightLeg = new ModelPart(this, 0, 16);
-        this.frontRightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, 0.5f);
-        this.frontRightLeg.setPivot(-3.0f, 12.0f, -5.0f);
-        this.frontLeftLeg = new ModelPart(this, 0, 16);
-        this.frontLeftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, 0.5f);
-        this.frontLeftLeg.setPivot(3.0f, 12.0f, -5.0f);
+    public SheepWoolEntityModel(ModelPart modelPart) {
+        super(modelPart, false, 8.0f, 4.0f, 2.0f, 2.0f, 24);
+    }
+
+    public static class_5607 method_32037() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32098(-3.0f, -4.0f, -4.0f, 6.0f, 6.0f, 6.0f, new class_5605(0.6f)), class_5603.method_32090(0.0f, 6.0f, -8.0f));
+        lv2.method_32117("body", class_5606.method_32108().method_32101(28, 8).method_32098(-4.0f, -10.0f, -7.0f, 8.0f, 16.0f, 6.0f, new class_5605(1.75f)), class_5603.method_32091(0.0f, 5.0f, 2.0f, 1.5707964f, 0.0f, 0.0f));
+        class_5606 lv3 = class_5606.method_32108().method_32101(0, 16).method_32098(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, new class_5605(0.5f));
+        lv2.method_32117("right_hind_leg", lv3, class_5603.method_32090(-3.0f, 12.0f, 7.0f));
+        lv2.method_32117("left_hind_leg", lv3, class_5603.method_32090(3.0f, 12.0f, 7.0f));
+        lv2.method_32117("right_front_leg", lv3, class_5603.method_32090(-3.0f, 12.0f, -5.0f));
+        lv2.method_32117("left_front_leg", lv3, class_5603.method_32090(3.0f, 12.0f, -5.0f));
+        return class_5607.method_32110(lv, 64, 32);
     }
 
     @Override

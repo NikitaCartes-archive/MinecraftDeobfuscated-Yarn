@@ -33,7 +33,7 @@ extends ValueObject {
             String string = JsonUtils.getStringOr("playerList", node, null);
             realmsServerPlayerList.players = string != null ? ((jsonElement = jsonParser.parse(string)).isJsonArray() ? RealmsServerPlayerList.parsePlayers(jsonElement.getAsJsonArray()) : Lists.newArrayList()) : Lists.newArrayList();
         } catch (Exception exception) {
-            LOGGER.error("Could not parse RealmsServerPlayerList: " + exception.getMessage());
+            LOGGER.error("Could not parse RealmsServerPlayerList: {}", (Object)exception.getMessage());
         }
         return realmsServerPlayerList;
     }

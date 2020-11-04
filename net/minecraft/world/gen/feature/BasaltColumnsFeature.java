@@ -69,7 +69,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
 
     @Nullable
     private static BlockPos method_27094(WorldAccess worldAccess, int i, BlockPos.Mutable mutable, int j) {
-        while (mutable.getY() > 1 && j > 0) {
+        while (mutable.getY() > worldAccess.getBottomHeightLimit() + 1 && j > 0) {
             --j;
             if (BasaltColumnsFeature.method_30379(worldAccess, i, mutable)) {
                 return mutable;
@@ -90,7 +90,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
 
     @Nullable
     private static BlockPos method_27098(WorldAccess worldAccess, BlockPos.Mutable mutable, int i) {
-        while (mutable.getY() < worldAccess.getHeight() && i > 0) {
+        while (mutable.getY() < worldAccess.getTopHeightLimit() && i > 0) {
             --i;
             BlockState blockState = worldAccess.getBlockState(mutable);
             if (field_24132.contains(blockState.getBlock())) {

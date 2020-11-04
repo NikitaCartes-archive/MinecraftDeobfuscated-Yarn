@@ -8,12 +8,6 @@ import java.util.Collection;
 import java.util.Optional;
 import net.minecraft.state.property.Property;
 
-/**
- * Represents a property that has boolean values.
- * 
- * <p>See {@link net.minecraft.state.property.Properties} for example
- * usages.
- */
 public class BooleanProperty
 extends Property<Boolean> {
     private final ImmutableSet<Boolean> values = ImmutableSet.of(Boolean.valueOf(true), Boolean.valueOf(false));
@@ -27,12 +21,6 @@ extends Property<Boolean> {
         return this.values;
     }
 
-    /**
-     * Creates a boolean property.
-     * 
-     * @param name the name of the property; see {@linkplain Property#name the note on the
-     * name}
-     */
     public static BooleanProperty of(String name) {
         return new BooleanProperty(name);
     }

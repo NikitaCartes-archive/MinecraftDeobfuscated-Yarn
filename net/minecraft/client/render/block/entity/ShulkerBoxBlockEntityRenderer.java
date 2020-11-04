@@ -12,23 +12,23 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class ShulkerBoxBlockEntityRenderer
-extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
+implements BlockEntityRenderer<ShulkerBoxBlockEntity> {
     private final ShulkerEntityModel<?> model;
 
-    public ShulkerBoxBlockEntityRenderer(ShulkerEntityModel<?> shulkerEntityModel, BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-        super(blockEntityRenderDispatcher);
-        this.model = shulkerEntityModel;
+    public ShulkerBoxBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+        this.model = new ShulkerEntityModel(context.getLayerModelPart(EntityModelLayers.SHULKER));
     }
 
     @Override
@@ -50,7 +50,7 @@ extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
         this.model.getBottomShell().render(matrixStack, vertexConsumer, i, j);
         matrixStack.translate(0.0, -shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5f, 0.0);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0f * shulkerBoxBlockEntity.getAnimationProgress(f)));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0f * shulkerBoxBlockEntity.getAnimationProgress(f)));
         this.model.getTopShell().render(matrixStack, vertexConsumer, i, j);
         matrixStack.pop();
     }

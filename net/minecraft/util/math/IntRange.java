@@ -4,6 +4,7 @@
 package net.minecraft.util.math;
 
 import java.util.Random;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * An integer range, inclusive on both ends. Used to choose a random
@@ -26,10 +27,7 @@ public class IntRange {
     }
 
     public int choose(Random random) {
-        if (this.min == this.max) {
-            return this.min;
-        }
-        return random.nextInt(this.max - this.min + 1) + this.min;
+        return MathHelper.nextInt(random, this.min, this.max);
     }
 
     public int getMin() {

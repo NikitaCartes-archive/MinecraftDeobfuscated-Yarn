@@ -125,7 +125,7 @@ implements RangedAttackMob {
                     this.setDrinking(false);
                     ItemStack itemStack = this.getMainHandStack();
                     this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-                    if (itemStack.getItem() == Items.POTION && (list = PotionUtil.getPotionEffects(itemStack)) != null) {
+                    if (itemStack.isOf(Items.POTION) && (list = PotionUtil.getPotionEffects(itemStack)) != null) {
                         for (StatusEffectInstance statusEffectInstance : list) {
                             this.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
                         }
@@ -185,7 +185,7 @@ implements RangedAttackMob {
         if (source.getAttacker() == this) {
             amount = 0.0f;
         }
-        if (source.isMagic()) {
+        if (source.getMagic()) {
             amount = (float)((double)amount * 0.15);
         }
         return amount;

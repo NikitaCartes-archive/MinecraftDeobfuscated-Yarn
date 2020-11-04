@@ -30,10 +30,10 @@ extends Feature<SingleStateFeatureConfig> {
     public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
         int t;
         int j;
-        while (blockPos.getY() > 5 && structureWorldAccess.isAir(blockPos)) {
+        while (blockPos.getY() > structureWorldAccess.getBottomHeightLimit() + 5 && structureWorldAccess.isAir(blockPos)) {
             blockPos = blockPos.down();
         }
-        if (blockPos.getY() <= 4) {
+        if (blockPos.getY() <= structureWorldAccess.getBottomHeightLimit() + 4) {
             return false;
         }
         if (structureWorldAccess.getStructures(ChunkSectionPos.from(blockPos = blockPos.down(4)), StructureFeature.VILLAGE).findAny().isPresent()) {
@@ -88,7 +88,7 @@ extends Feature<SingleStateFeatureConfig> {
             for (int s = 0; s < 16; ++s) {
                 for (t = 4; t < 8; ++t) {
                     BlockPos blockPos2;
-                    if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.isSoil(structureWorldAccess.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || structureWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
+                    if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.isSoil(structureWorldAccess.getBlockState(blockPos2 = blockPos.add(j, t - 1, s))) || structureWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
                     Biome biome = structureWorldAccess.getBiome(blockPos2);
                     if (biome.getGenerationSettings().getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
                         structureWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);

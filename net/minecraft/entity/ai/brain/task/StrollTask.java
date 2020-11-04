@@ -5,7 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.class_5534;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -33,7 +33,7 @@ extends Task<PathAwareEntity> {
 
     @Override
     protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-        Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(pathAwareEntity, this.horizontalRadius, this.verticalRadius));
+        Optional<Vec3d> optional = Optional.ofNullable(class_5534.method_31527(pathAwareEntity, this.horizontalRadius, this.verticalRadius));
         pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.speed, 0)));
     }
 }

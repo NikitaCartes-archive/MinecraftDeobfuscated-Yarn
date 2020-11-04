@@ -70,11 +70,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
     private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
     private static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
-    private static final Text FROM_NEWER_VERSION_FIRST_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
-    private static final Text FROM_NEWER_VERSION_SECOND_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
-    private static final Text SNAPSHOT_FIRST_LINE = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
-    private static final Text SNAPSHOT_SECOND_LINE = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
-    private static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+    private static final Text field_26606 = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
+    private static final Text field_26607 = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
+    private static final Text field_26608 = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
+    private static final Text field_26609 = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
+    private static final Text field_26610 = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
     private final SelectWorldScreen parent;
     @Nullable
     private List<LevelSummary> levels;
@@ -102,7 +102,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             Collections.sort(this.levels);
         }
         if (this.levels.isEmpty()) {
-            this.client.openScreen(CreateWorldScreen.create(null));
+            this.client.openScreen(CreateWorldScreen.method_31130(null));
             return;
         }
         String string = supplier.get().toLowerCase(Locale.ROOT);
@@ -142,7 +142,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         this.moveSelectionIf(direction, entry -> !((Entry)entry).level.isLocked());
     }
 
-    public Optional<Entry> getSelectedAsOptional() {
+    public Optional<Entry> method_20159() {
         return Optional.ofNullable(this.getSelected());
     }
 
@@ -203,19 +203,19 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 if (this.level.isLocked()) {
                     DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                     if (bl) {
-                        this.screen.setTooltip(this.client.textRenderer.wrapLines(LOCKED_TEXT, 175));
+                        this.screen.setTooltip(this.client.textRenderer.wrapLines(field_26610, 175));
                     }
                 } else if (this.level.isDifferentVersion()) {
                     DrawableHelper.drawTexture(matrices, x, y, 32.0f, j, 32, 32, 256, 256);
                     if (this.level.isFutureLevel()) {
                         DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                         if (bl) {
-                            this.screen.setTooltip(ImmutableList.of(FROM_NEWER_VERSION_FIRST_LINE.asOrderedText(), FROM_NEWER_VERSION_SECOND_LINE.asOrderedText()));
+                            this.screen.setTooltip(ImmutableList.of(field_26606.asOrderedText(), field_26607.asOrderedText()));
                         }
                     } else if (!SharedConstants.getGameVersion().isStable()) {
                         DrawableHelper.drawTexture(matrices, x, y, 64.0f, j, 32, 32, 256, 256);
                         if (bl) {
-                            this.screen.setTooltip(ImmutableList.of(SNAPSHOT_FIRST_LINE.asOrderedText(), SNAPSHOT_SECOND_LINE.asOrderedText()));
+                            this.screen.setTooltip(ImmutableList.of(field_26608.asOrderedText(), field_26609.asOrderedText()));
                         }
                     }
                 } else {
@@ -230,7 +230,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 return true;
             }
             WorldListWidget.this.setSelected(this);
-            this.screen.worldSelected(WorldListWidget.this.getSelectedAsOptional().isPresent());
+            this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
             if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
                 this.play();
                 return true;
@@ -274,7 +274,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     } else {
                         this.client.openScreen(this.screen);
                     }
-                }, new TranslatableText("selectWorld.versionQuestion"), new TranslatableText("selectWorld.versionWarning", this.level.getVersion(), new TranslatableText("selectWorld.versionJoinButton"), ScreenTexts.CANCEL)));
+                }, new TranslatableText("selectWorld.versionQuestion"), new TranslatableText("selectWorld.versionWarning", this.level.getVersion()), new TranslatableText("selectWorld.versionJoinButton"), ScreenTexts.CANCEL));
             } else {
                 this.start();
             }

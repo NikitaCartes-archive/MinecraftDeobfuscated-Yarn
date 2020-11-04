@@ -37,7 +37,7 @@ extends MovingSoundInstance {
             MinecraftClient.getInstance().getSoundManager().playNextTick(this.getReplacement());
             this.replaced = true;
         }
-        if (this.bee.removed || this.replaced) {
+        if (this.bee.isRemoved() || this.replaced) {
             this.setDone();
             return;
         }

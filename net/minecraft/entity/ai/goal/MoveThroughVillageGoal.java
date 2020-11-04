@@ -10,8 +10,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import net.minecraft.block.DoorBlock;
-import net.minecraft.entity.ai.NavigationConditions;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.class_5493;
+import net.minecraft.class_5532;
+import net.minecraft.class_5534;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
@@ -34,21 +35,21 @@ extends Goal {
     private final int distance;
     private final BooleanSupplier doorPassingThroughGetter;
 
-    public MoveThroughVillageGoal(PathAwareEntity entity, double speed, boolean requiresNighttime, int distance, BooleanSupplier doorPassingThroughGetter) {
-        this.mob = entity;
+    public MoveThroughVillageGoal(PathAwareEntity pathAwareEntity, double speed, boolean requiresNighttime, int distance, BooleanSupplier doorPassingThroughGetter) {
+        this.mob = pathAwareEntity;
         this.speed = speed;
         this.requiresNighttime = requiresNighttime;
         this.distance = distance;
         this.doorPassingThroughGetter = doorPassingThroughGetter;
         this.setControls(EnumSet.of(Goal.Control.MOVE));
-        if (!NavigationConditions.hasMobNavigation(entity)) {
+        if (!class_5493.method_30955(pathAwareEntity)) {
             throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
         }
     }
 
     @Override
     public boolean canStart() {
-        if (!NavigationConditions.hasMobNavigation(this.mob)) {
+        if (!class_5493.method_30955(this.mob)) {
             return false;
         }
         this.forgetOldTarget();
@@ -60,7 +61,7 @@ extends Goal {
         if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
             return false;
         }
-        Vec3d vec3d = TargetFinder.findGroundTarget(this.mob, 15, 7, blockPos2 -> {
+        Vec3d vec3d = class_5534.method_31530(this.mob, 15, 7, blockPos2 -> {
             if (!serverWorld.isNearOccupiedPointOfInterest((BlockPos)blockPos2)) {
                 return Double.NEGATIVE_INFINITY;
             }
@@ -84,7 +85,7 @@ extends Goal {
         this.targetPath = mobNavigation.findPathTo(this.target, 0);
         mobNavigation.setCanPathThroughDoors(bl);
         if (this.targetPath == null) {
-            Vec3d vec3d2 = TargetFinder.findTargetTowards(this.mob, 10, 7, Vec3d.ofBottomCenter(this.target));
+            Vec3d vec3d2 = class_5532.method_31512(this.mob, 10, 7, Vec3d.ofBottomCenter(this.target), 1.5707963705062866);
             if (vec3d2 == null) {
                 return false;
             }

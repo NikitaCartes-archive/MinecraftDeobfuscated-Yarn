@@ -29,7 +29,7 @@ public interface TutorialStepHandler {
     default public void onTarget(ClientWorld world, HitResult hitResult) {
     }
 
-    default public void onBlockBreaking(ClientWorld client, BlockPos pos, BlockState state, float progress) {
+    default public void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
     }
 
     default public void onInventoryOpened() {

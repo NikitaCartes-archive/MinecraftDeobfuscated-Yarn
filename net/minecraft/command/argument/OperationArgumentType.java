@@ -29,7 +29,7 @@ implements ArgumentType<Operation> {
         return new OperationArgumentType();
     }
 
-    public static Operation getOperation(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+    public static Operation getOperation(CommandContext<ServerCommandSource> commandContext, String string) {
         return commandContext.getArgument(string, Operation.class);
     }
 

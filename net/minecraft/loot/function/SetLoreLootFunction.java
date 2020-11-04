@@ -21,9 +21,9 @@ import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.function.SetNameLootFunction;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
@@ -54,44 +54,44 @@ extends ConditionalLootFunction {
 
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
-        NbtList nbtList = this.getLoreForMerge(stack, !this.lore.isEmpty());
-        if (nbtList != null) {
+        ListTag listTag = this.getLoreForMerge(stack, !this.lore.isEmpty());
+        if (listTag != null) {
             if (this.replace) {
-                nbtList.clear();
+                listTag.clear();
             }
             UnaryOperator<Text> unaryOperator = SetNameLootFunction.applySourceEntity(context, this.entity);
-            this.lore.stream().map(unaryOperator).map(Text.Serializer::toJson).map(NbtString::of).forEach(nbtList::add);
+            this.lore.stream().map(unaryOperator).map(Text.Serializer::toJson).map(StringTag::of).forEach(listTag::add);
         }
         return stack;
     }
 
     @Nullable
-    private NbtList getLoreForMerge(ItemStack stack, boolean otherLoreExists) {
-        NbtCompound nbtCompound2;
-        NbtCompound nbtCompound;
+    private ListTag getLoreForMerge(ItemStack stack, boolean otherLoreExists) {
+        CompoundTag compoundTag2;
+        CompoundTag compoundTag;
         if (stack.hasTag()) {
-            nbtCompound = stack.getTag();
+            compoundTag = stack.getTag();
         } else if (otherLoreExists) {
-            nbtCompound = new NbtCompound();
-            stack.setTag(nbtCompound);
+            compoundTag = new CompoundTag();
+            stack.setTag(compoundTag);
         } else {
             return null;
         }
-        if (nbtCompound.contains("display", 10)) {
-            nbtCompound2 = nbtCompound.getCompound("display");
+        if (compoundTag.contains("display", 10)) {
+            compoundTag2 = compoundTag.getCompound("display");
         } else if (otherLoreExists) {
-            nbtCompound2 = new NbtCompound();
-            nbtCompound.put("display", nbtCompound2);
+            compoundTag2 = new CompoundTag();
+            compoundTag.put("display", compoundTag2);
         } else {
             return null;
         }
-        if (nbtCompound2.contains("Lore", 9)) {
-            return nbtCompound2.getList("Lore", 8);
+        if (compoundTag2.contains("Lore", 9)) {
+            return compoundTag2.getList("Lore", 8);
         }
         if (otherLoreExists) {
-            NbtList nbtList = new NbtList();
-            nbtCompound2.put("Lore", nbtList);
-            return nbtList;
+            ListTag listTag = new ListTag();
+            compoundTag2.put("Lore", listTag);
+            return listTag;
         }
         return null;
     }

@@ -14,6 +14,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
@@ -37,10 +38,10 @@ CollisionView {
         int l;
         int k;
         this.world = world;
-        this.minX = minPos.getX() >> 4;
-        this.minZ = minPos.getZ() >> 4;
-        int i = maxPos.getX() >> 4;
-        int j = maxPos.getZ() >> 4;
+        this.minX = ChunkSectionPos.getSectionCoord(minPos.getX());
+        this.minZ = ChunkSectionPos.getSectionCoord(minPos.getZ());
+        int i = ChunkSectionPos.getSectionCoord(maxPos.getX());
+        int j = ChunkSectionPos.getSectionCoord(maxPos.getZ());
         this.chunks = new Chunk[i - this.minX + 1][j - this.minZ + 1];
         ChunkManager chunkManager = world.getChunkManager();
         this.empty = true;
@@ -49,8 +50,8 @@ CollisionView {
                 this.chunks[k - this.minX][l - this.minZ] = chunkManager.getWorldChunk(k, l);
             }
         }
-        for (k = minPos.getX() >> 4; k <= maxPos.getX() >> 4; ++k) {
-            for (l = minPos.getZ() >> 4; l <= maxPos.getZ() >> 4; ++l) {
+        for (k = ChunkSectionPos.getSectionCoord(minPos.getX()); k <= ChunkSectionPos.getSectionCoord(maxPos.getX()); ++k) {
+            for (l = ChunkSectionPos.getSectionCoord(minPos.getZ()); l <= ChunkSectionPos.getSectionCoord(maxPos.getZ()); ++l) {
                 Chunk chunk = this.chunks[k - this.minX][l - this.minZ];
                 if (chunk == null || chunk.areSectionsEmptyBetween(minPos.getY(), maxPos.getY())) continue;
                 this.empty = false;
@@ -60,7 +61,7 @@ CollisionView {
     }
 
     private Chunk method_22354(BlockPos blockPos) {
-        return this.method_22353(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+        return this.method_22353(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
     }
 
     private Chunk method_22353(int i, int j) {
@@ -79,7 +80,7 @@ CollisionView {
     }
 
     @Override
-    public BlockView getChunkAsView(int chunkX, int chunkZ) {
+    public BlockView getExistingChunk(int chunkX, int chunkZ) {
         return this.method_22353(chunkX, chunkZ);
     }
 
@@ -92,7 +93,7 @@ CollisionView {
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        if (World.isOutOfBuildLimitVertically(pos)) {
+        if (this.isOutOfHeightLimit(pos)) {
             return Blocks.AIR.getDefaultState();
         }
         Chunk chunk = this.method_22354(pos);
@@ -111,11 +112,21 @@ CollisionView {
 
     @Override
     public FluidState getFluidState(BlockPos pos) {
-        if (World.isOutOfBuildLimitVertically(pos)) {
+        if (this.isOutOfHeightLimit(pos)) {
             return Fluids.EMPTY.getDefaultState();
         }
         Chunk chunk = this.method_22354(pos);
         return chunk.getFluidState(pos);
+    }
+
+    @Override
+    public int getSectionCount() {
+        return this.world.getSectionCount();
+    }
+
+    @Override
+    public int getBottomSectionLimit() {
+        return this.world.getBottomSectionLimit();
     }
 }
 

@@ -14,8 +14,8 @@ implements BlockPointer {
     private final ServerWorld world;
     private final BlockPos pos;
 
-    public BlockPointerImpl(ServerWorld world, BlockPos pos) {
-        this.world = world;
+    public BlockPointerImpl(ServerWorld serverWorld, BlockPos pos) {
+        this.world = serverWorld;
         this.pos = pos;
     }
 

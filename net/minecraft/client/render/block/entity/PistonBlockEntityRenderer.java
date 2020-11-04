@@ -12,26 +12,25 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class PistonBlockEntityRenderer
-extends BlockEntityRenderer<PistonBlockEntity> {
-    private final BlockRenderManager manager = MinecraftClient.getInstance().getBlockRenderManager();
+implements BlockEntityRenderer<PistonBlockEntity> {
+    private final BlockRenderManager manager;
 
-    public PistonBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-        super(blockEntityRenderDispatcher);
+    public PistonBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+        this.manager = context.getRenderManager();
     }
 
     @Override

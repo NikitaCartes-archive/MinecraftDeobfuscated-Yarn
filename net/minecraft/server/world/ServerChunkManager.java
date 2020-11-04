@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5567;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -38,7 +39,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.BlockView;
@@ -78,7 +78,7 @@ extends ChunkManager {
     @Nullable
     private SpawnHelper.Info spawnEntry;
 
-    public ServerChunkManager(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier) {
+    public ServerChunkManager(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, class_5567 arg, Supplier<PersistentStateManager> supplier) {
         this.world = serverWorld;
         this.mainThreadExecutor = new MainThreadExecutor(serverWorld);
         this.chunkGenerator = chunkGenerator;
@@ -87,7 +87,7 @@ extends ChunkManager {
         File file2 = new File(file, "data");
         file2.mkdirs();
         this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
-        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(serverWorld, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, supplier, viewDistance, bl);
+        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(serverWorld, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, arg, supplier, viewDistance, bl);
         this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
         this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
         this.initChunkCaches();
@@ -271,19 +271,13 @@ extends ChunkManager {
     }
 
     @Override
-    public boolean shouldTickEntity(Entity entity) {
-        long l = ChunkPos.toLong(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4);
-        return this.isFutureReady(l, ChunkHolder::getEntityTickingFuture);
-    }
-
-    @Override
     public boolean shouldTickChunk(ChunkPos pos) {
         return this.isFutureReady(pos.toLong(), ChunkHolder::getEntityTickingFuture);
     }
 
     @Override
     public boolean shouldTickBlock(BlockPos pos) {
-        long l = ChunkPos.toLong(pos.getX() >> 4, pos.getZ() >> 4);
+        long l = ChunkPos.toLong(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
         return this.isFutureReady(l, ChunkHolder::getTickingFuture);
     }
 
@@ -368,7 +362,7 @@ extends ChunkManager {
             this.world.getProfiler().pop();
             this.world.getProfiler().pop();
         }
-        this.threadedAnvilChunkStorage.tickEntityMovement();
+        this.threadedAnvilChunkStorage.tickPlayerMovement();
     }
 
     private void ifChunkLoaded(long pos, Consumer<WorldChunk> chunkConsumer) {
@@ -380,7 +374,7 @@ extends ChunkManager {
 
     @Override
     public String getDebugString() {
-        return "ServerChunkCache: " + this.getLoadedChunkCount();
+        return Integer.toString(this.getLoadedChunkCount());
     }
 
     @VisibleForTesting
@@ -398,8 +392,8 @@ extends ChunkManager {
 
     public void markForUpdate(BlockPos pos) {
         int j;
-        int i = pos.getX() >> 4;
-        ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, j = pos.getZ() >> 4));
+        int i = ChunkSectionPos.getSectionCoord(pos.getX());
+        ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, j = ChunkSectionPos.getSectionCoord(pos.getZ())));
         if (chunkHolder != null) {
             chunkHolder.markForBlockUpdate(pos);
         }
@@ -438,15 +432,8 @@ extends ChunkManager {
         this.ticketManager.setChunkForced(pos, forced);
     }
 
-    /**
-     * Updates the chunk section position of the {@code player}. This can either be a
-     * result of the player's movement or its camera entity's movement.
-     * 
-     * <p>This updates the section position player's client is currently watching and
-     * the player's position in its entity tracker.
-     */
-    public void updatePosition(ServerPlayerEntity player) {
-        this.threadedAnvilChunkStorage.updatePosition(player);
+    public void updateCameraPosition(ServerPlayerEntity player) {
+        this.threadedAnvilChunkStorage.updateCameraPosition(player);
     }
 
     public void unloadEntity(Entity entity) {
@@ -476,8 +463,8 @@ extends ChunkManager {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public String getChunkLoadingDebugInfo(ChunkPos pos) {
-        return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(pos);
+    public String getChunkLoadingDebugInfo(ChunkPos chunkPos) {
+        return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(chunkPos);
     }
 
     public PersistentStateManager getPersistentStateManager() {

@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -37,11 +35,6 @@ extends ExplosiveProjectileEntity {
 
     public WitherSkullEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
         super(EntityType.WITHER_SKULL, owner, directionX, directionY, directionZ, world);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public WitherSkullEntity(World world, double x, double y, double z, double directionX, double directionY, double directionZ) {
-        super(EntityType.WITHER_SKULL, x, y, z, directionX, directionY, directionZ, world);
     }
 
     @Override
@@ -103,7 +96,7 @@ extends ExplosiveProjectileEntity {
         if (!this.world.isClient) {
             Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
             this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0f, false, destructionType);
-            this.remove();
+            this.discard();
         }
     }
 

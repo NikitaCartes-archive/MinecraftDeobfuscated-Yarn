@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockRenderView;
@@ -126,7 +127,7 @@ BiomeAccess.Storage {
     }
 
     default public Chunk getChunk(BlockPos pos) {
-        return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
+        return this.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
     }
 
     default public Chunk getChunk(int chunkX, int chunkZ) {
@@ -139,7 +140,7 @@ BiomeAccess.Storage {
 
     @Override
     @Nullable
-    default public BlockView getChunkAsView(int chunkX, int chunkZ) {
+    default public BlockView getExistingChunk(int chunkX, int chunkZ) {
         return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
     }
 
@@ -180,7 +181,7 @@ BiomeAccess.Storage {
 
     @Deprecated
     default public boolean isChunkLoaded(BlockPos pos) {
-        return this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
+        return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
     }
 
     @Deprecated
@@ -190,7 +191,7 @@ BiomeAccess.Storage {
 
     @Deprecated
     default public boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-        if (maxY < 0 || minY >= 256) {
+        if (maxY < this.getBottomHeightLimit() || minY >= this.getTopHeightLimit()) {
             return false;
         }
         minZ >>= 4;

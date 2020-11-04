@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.ZombieEntityModel;
 import net.minecraft.entity.LivingEntity;
@@ -18,8 +18,8 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends
 extends BipedEntityRenderer<T, M> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/zombie/zombie.png");
 
-    protected ZombieBaseEntityRenderer(EntityRenderDispatcher dispatcher, M zombieEntityModel, M zombieEntityModel2, M zombieEntityModel3) {
-        super(dispatcher, zombieEntityModel, 0.5f);
+    protected ZombieBaseEntityRenderer(class_5617.class_5618 arg, M zombieEntityModel, M zombieEntityModel2, M zombieEntityModel3) {
+        super(arg, zombieEntityModel, 0.5f);
         this.addFeature(new ArmorFeatureRenderer(this, zombieEntityModel2, zombieEntityModel3));
     }
 

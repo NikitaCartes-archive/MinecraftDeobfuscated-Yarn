@@ -19,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
 public class TestFunctions {
     private static final Collection<TestFunction> TEST_FUNCTIONS = Lists.newArrayList();
     private static final Set<String> testClasses = Sets.newHashSet();
-    private static final Map<String, Consumer<ServerWorld>> BEFORE_BATCH_CONSUMERS = Maps.newHashMap();
+    private static final Map<String, Consumer<ServerWorld>> WORLD_SETTERS = Maps.newHashMap();
+    private static final Map<String, Consumer<ServerWorld>> field_27806 = Maps.newHashMap();
     private static final Collection<TestFunction> field_25302 = Sets.newHashSet();
 
     public static Collection<TestFunction> getTestFunctions(String testClass) {
@@ -39,8 +40,13 @@ public class TestFunctions {
     }
 
     @Nullable
-    public static Consumer<ServerWorld> getAfterBatchConsumer(String batchId) {
-        return BEFORE_BATCH_CONSUMERS.get(batchId);
+    public static Consumer<ServerWorld> getWorldSetter(String batchId) {
+        return WORLD_SETTERS.get(batchId);
+    }
+
+    @Nullable
+    public static Consumer<ServerWorld> method_32244(String string) {
+        return field_27806.get(string);
     }
 
     public static Optional<TestFunction> getTestFunction(String structurePath) {

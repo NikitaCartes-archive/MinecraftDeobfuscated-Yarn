@@ -7,7 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class SliderWidget
-extends ClickableWidget {
+extends AbstractButtonWidget {
     protected double value;
 
     public SliderWidget(int x, int y, int width, int height, Text text, double value) {
@@ -36,8 +36,8 @@ extends ClickableWidget {
     }
 
     @Override
-    protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
-        client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
+    protected void renderBg(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
+        client.getTextureManager().bindTexture(WIDGETS_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         int i = (this.isHovered() ? 2 : 1) * 20;
         this.drawTexture(matrices, this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + i, 4, 20);

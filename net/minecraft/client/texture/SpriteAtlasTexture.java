@@ -65,7 +65,7 @@ implements TextureTickListener {
     }
 
     @Override
-    public void load(ResourceManager manager) throws IOException {
+    public void load(ResourceManager manager) {
     }
 
     public void upload(Data data) {
@@ -140,7 +140,7 @@ implements TextureTickListener {
 
     private Collection<Sprite.Info> loadSprites(ResourceManager resourceManager, Set<Identifier> ids) {
         ArrayList<CompletableFuture<Void>> list = Lists.newArrayList();
-        ConcurrentLinkedQueue<Sprite.Info> concurrentLinkedQueue = new ConcurrentLinkedQueue<Sprite.Info>();
+        ConcurrentLinkedQueue<Sprite.Info> queue = new ConcurrentLinkedQueue<Sprite.Info>();
         for (Identifier identifier : ids) {
             if (MissingSprite.getMissingSpriteId().equals(identifier)) continue;
             list.add(CompletableFuture.runAsync(() -> {
@@ -161,31 +161,31 @@ implements TextureTickListener {
                     LOGGER.error("Using missing texture, unable to load {} : {}", (Object)identifier2, (Object)iOException);
                     return;
                 }
-                concurrentLinkedQueue.add(info);
+                queue.add(info);
             }, Util.getMainWorkerExecutor()));
         }
         CompletableFuture.allOf(list.toArray(new CompletableFuture[0])).join();
-        return concurrentLinkedQueue;
+        return queue;
     }
 
     private List<Sprite> loadSprites(ResourceManager resourceManager, TextureStitcher textureStitcher, int maxLevel) {
-        ConcurrentLinkedQueue concurrentLinkedQueue = new ConcurrentLinkedQueue();
+        ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
         ArrayList list = Lists.newArrayList();
         textureStitcher.getStitchedSprites((info, atlasWidth, atlasHeight, x, y) -> {
             if (info == MissingSprite.getMissingInfo()) {
                 MissingSprite missingSprite = MissingSprite.getMissingSprite(this, maxLevel, atlasWidth, atlasHeight, x, y);
-                concurrentLinkedQueue.add(missingSprite);
+                queue.add(missingSprite);
             } else {
                 list.add(CompletableFuture.runAsync(() -> {
                     Sprite sprite = this.loadSprite(resourceManager, info, atlasWidth, atlasHeight, maxLevel, x, y);
                     if (sprite != null) {
-                        concurrentLinkedQueue.add(sprite);
+                        queue.add(sprite);
                     }
                 }, Util.getMainWorkerExecutor()));
             }
         });
         CompletableFuture.allOf(list.toArray(new CompletableFuture[0])).join();
-        return Lists.newArrayList(concurrentLinkedQueue);
+        return Lists.newArrayList(queue);
     }
 
     /*
@@ -209,8 +209,8 @@ implements TextureTickListener {
         }
     }
 
-    private Identifier getTexturePath(Identifier id) {
-        return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), ".png"));
+    private Identifier getTexturePath(Identifier identifier) {
+        return new Identifier(identifier.getNamespace(), String.format("textures/%s%s", identifier.getPath(), ".png"));
     }
 
     public void tickAnimatedSprites() {

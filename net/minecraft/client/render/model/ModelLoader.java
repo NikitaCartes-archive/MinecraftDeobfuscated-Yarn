@@ -63,6 +63,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -71,7 +72,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.IOUtils;
@@ -121,8 +121,8 @@ public class ModelLoader {
         TexturedRenderLayers.addDefaultTextures(hashSet::add);
     });
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final ModelIdentifier MISSING_ID = new ModelIdentifier("builtin/missing", "missing");
-    private static final String field_21773 = MISSING_ID.toString();
+    public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
+    private static final String field_21773 = MISSING.toString();
     @VisibleForTesting
     public static final String MISSING_DEFINITION = ("{    'textures': {       'particle': '" + MissingSprite.getMissingSpriteId().getPath() + "',       'missingno': '" + MissingSprite.getMissingSpriteId().getPath() + "'    },    'elements': [         {  'from': [ 0, 0, 0 ],            'to': [ 16, 16, 16 ],            'faces': {                'down':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'down',  'texture': '#missingno' },                'up':    { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'up',    'texture': '#missingno' },                'north': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'north', 'texture': '#missingno' },                'south': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'south', 'texture': '#missingno' },                'west':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'west',  'texture': '#missingno' },                'east':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'east',  'texture': '#missingno' }            }        }    ]}").replace('\'', '\"');
     private static final Map<String, String> BUILTIN_MODEL_DEFINITIONS = Maps.newHashMap(ImmutableMap.of("missing", MISSING_DEFINITION));
@@ -156,8 +156,8 @@ public class ModelLoader {
         this.blockColors = blockColors;
         profiler.push("missing_model");
         try {
-            this.unbakedModels.put(MISSING_ID, this.loadModelFromJson(MISSING_ID));
-            this.addModel(MISSING_ID);
+            this.unbakedModels.put(MISSING, this.loadModelFromJson(MISSING));
+            this.addModel(MISSING);
         } catch (IOException iOException) {
             LOGGER.error("Error loading missing model, should never happen :(", (Throwable)iOException);
             throw new RuntimeException(iOException);
@@ -238,7 +238,7 @@ public class ModelLoader {
         }
         Block block = stateFactory.getOwner();
         return blockState -> {
-            if (blockState == null || block != blockState.getBlock()) {
+            if (blockState == null || !blockState.isOf(block)) {
                 return false;
             }
             for (Map.Entry entry : map.entrySet()) {
@@ -265,7 +265,7 @@ public class ModelLoader {
             throw new IllegalStateException("Circular reference while loading " + id);
         }
         this.modelsToLoad.add(id);
-        UnbakedModel unbakedModel = this.unbakedModels.get(MISSING_ID);
+        UnbakedModel unbakedModel = this.unbakedModels.get(MISSING);
         while (!this.modelsToLoad.isEmpty()) {
             Identifier identifier = this.modelsToLoad.iterator().next();
             try {
@@ -305,7 +305,7 @@ public class ModelLoader {
             immutableList.forEach(blockState -> map.put(BlockModels.getModelId(identifier, blockState), (BlockState)blockState));
             HashMap map2 = Maps.newHashMap();
             Identifier identifier2 = new Identifier(id.getNamespace(), "blockstates/" + id.getPath() + ".json");
-            UnbakedModel unbakedModel = this.unbakedModels.get(MISSING_ID);
+            UnbakedModel unbakedModel = this.unbakedModels.get(MISSING);
             ModelDefinition modelDefinition2 = new ModelDefinition(ImmutableList.of(unbakedModel), ImmutableList.of());
             Pair<UnbakedModel, Supplier<ModelDefinition>> pair = Pair.of(unbakedModel, () -> modelDefinition2);
             try {
@@ -313,7 +313,7 @@ public class ModelLoader {
                 try {
                     list2 = this.resourceManager.getAllResources(identifier2).stream().map(resource -> {
                         try (InputStream inputStream = resource.getInputStream();){
-                            Pair<String, ModelVariantMap> pair = Pair.of(resource.getResourcePackName(), ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
+                            Pair<String, ModelVariantMap> pair = Pair.of(resource.getResourcePackName(), ModelVariantMap.deserialize(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
                             return pair;
                         } catch (Exception exception) {
                             throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), exception.getMessage()));
@@ -428,20 +428,20 @@ public class ModelLoader {
     }
 
     @Nullable
-    public BakedModel bake(Identifier id, ModelBakeSettings settings) {
+    public BakedModel bake(Identifier identifier, ModelBakeSettings settings) {
         JsonUnbakedModel jsonUnbakedModel;
-        Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(id, settings.getRotation(), settings.isUvLocked());
+        Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isShaded());
         if (this.bakedModelCache.containsKey(triple)) {
             return this.bakedModelCache.get(triple);
         }
         if (this.spriteAtlasManager == null) {
             throw new IllegalStateException("bake called too early");
         }
-        UnbakedModel unbakedModel = this.getOrLoadModel(id);
+        UnbakedModel unbakedModel = this.getOrLoadModel(identifier);
         if (unbakedModel instanceof JsonUnbakedModel && (jsonUnbakedModel = (JsonUnbakedModel)unbakedModel).getRootModel() == GENERATION_MARKER) {
-            return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, id, false);
+            return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, identifier, false);
         }
-        BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, settings, id);
+        BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, settings, identifier);
         this.bakedModelCache.put(triple, bakedModel);
         return bakedModel;
     }

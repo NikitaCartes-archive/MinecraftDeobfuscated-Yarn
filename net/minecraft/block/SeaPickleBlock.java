@@ -75,19 +75,19 @@ Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (!state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
     public boolean canReplace(BlockState state, ItemPlacementContext context) {
-        if (context.getStack().getItem() == this.asItem() && state.get(PICKLES) < 4) {
+        if (context.getStack().isOf(this.asItem()) && state.get(PICKLES) < 4) {
             return true;
         }
         return super.canReplace(state, context);

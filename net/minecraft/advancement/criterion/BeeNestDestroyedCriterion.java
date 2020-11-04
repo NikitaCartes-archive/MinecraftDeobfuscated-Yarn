@@ -8,6 +8,7 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
@@ -46,8 +47,8 @@ extends AbstractCriterion<Conditions> {
         return null;
     }
 
-    public void test(ServerPlayerEntity player, Block block, ItemStack stack, int beeCount) {
-        this.test(player, conditions -> conditions.test(block, stack, beeCount));
+    public void test(ServerPlayerEntity player, BlockState blockState, ItemStack stack, int beeCount) {
+        this.test(player, conditions -> conditions.test(blockState, stack, beeCount));
     }
 
     @Override
@@ -73,8 +74,8 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(EntityPredicate.Extended.EMPTY, block, itemPredicateBuilder.build(), beeCountRange);
         }
 
-        public boolean test(Block block, ItemStack stack, int count) {
-            if (this.block != null && block != this.block) {
+        public boolean test(BlockState blockState, ItemStack stack, int count) {
+            if (this.block != null && !blockState.isOf(this.block)) {
                 return false;
             }
             if (!this.item.test(stack)) {

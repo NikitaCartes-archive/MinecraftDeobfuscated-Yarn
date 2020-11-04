@@ -13,7 +13,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.MutableText;
@@ -32,8 +32,8 @@ public class AdvancementDisplay {
     private final boolean showToast;
     private final boolean announceToChat;
     private final boolean hidden;
-    private float x;
-    private float y;
+    private float xPos;
+    private float yPos;
 
     public AdvancementDisplay(ItemStack icon, Text title, Text description, @Nullable Identifier background, AdvancementFrame frame, boolean showToast, boolean announceToChat, boolean hidden) {
         this.title = title;
@@ -46,9 +46,9 @@ public class AdvancementDisplay {
         this.hidden = hidden;
     }
 
-    public void setPos(float x, float y) {
-        this.x = x;
-        this.y = y;
+    public void setPosition(float xPos, float yPos) {
+        this.xPos = xPos;
+        this.yPos = yPos;
     }
 
     public Text getTitle() {
@@ -76,12 +76,12 @@ public class AdvancementDisplay {
 
     @Environment(value=EnvType.CLIENT)
     public float getX() {
-        return this.x;
+        return this.xPos;
     }
 
     @Environment(value=EnvType.CLIENT)
     public float getY() {
-        return this.y;
+        return this.yPos;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -123,8 +123,8 @@ public class AdvancementDisplay {
         ItemStack itemStack = new ItemStack(item);
         if (json.has("nbt")) {
             try {
-                NbtCompound nbtCompound = StringNbtReader.parse(JsonHelper.asString(json.get("nbt"), "nbt"));
-                itemStack.setTag(nbtCompound);
+                CompoundTag compoundTag = StringNbtReader.parse(JsonHelper.asString(json.get("nbt"), "nbt"));
+                itemStack.setTag(compoundTag);
             } catch (CommandSyntaxException commandSyntaxException) {
                 throw new JsonSyntaxException("Invalid nbt tag: " + commandSyntaxException.getMessage());
             }
@@ -151,8 +151,8 @@ public class AdvancementDisplay {
         if (this.background != null) {
             buf.writeIdentifier(this.background);
         }
-        buf.writeFloat(this.x);
-        buf.writeFloat(this.y);
+        buf.writeFloat(this.xPos);
+        buf.writeFloat(this.yPos);
     }
 
     public static AdvancementDisplay fromPacket(PacketByteBuf buf) {
@@ -165,7 +165,7 @@ public class AdvancementDisplay {
         boolean bl = (i & 2) != 0;
         boolean bl2 = (i & 4) != 0;
         AdvancementDisplay advancementDisplay = new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, false, bl2);
-        advancementDisplay.setPos(buf.readFloat(), buf.readFloat());
+        advancementDisplay.setPosition(buf.readFloat(), buf.readFloat());
         return advancementDisplay;
     }
 

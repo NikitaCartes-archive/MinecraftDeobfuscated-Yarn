@@ -3,42 +3,50 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.Entity;
 
 @Environment(value=EnvType.CLIENT)
 public class SquidEntityModel<T extends Entity>
-extends CompositeEntityModel<T> {
-    private final ModelPart head;
+extends class_5597<T> {
     private final ModelPart[] tentacles = new ModelPart[8];
-    private final ImmutableList<ModelPart> parts;
+    private final ModelPart field_27513;
 
-    public SquidEntityModel() {
+    public SquidEntityModel(ModelPart modelPart) {
+        this.field_27513 = modelPart;
+        Arrays.setAll(this.tentacles, i -> modelPart.method_32086(SquidEntityModel.method_32056(i)));
+    }
+
+    private static String method_32056(int i) {
+        return "tentacle" + i;
+    }
+
+    public static class_5607 method_32055() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
         int i = -16;
-        this.head = new ModelPart(this, 0, 0);
-        this.head.addCuboid(-6.0f, -8.0f, -6.0f, 12.0f, 16.0f, 12.0f);
-        this.head.pivotY += 8.0f;
-        for (int j = 0; j < this.tentacles.length; ++j) {
-            this.tentacles[j] = new ModelPart(this, 48, 0);
-            double d = (double)j * Math.PI * 2.0 / (double)this.tentacles.length;
+        lv2.method_32117("body", class_5606.method_32108().method_32101(0, 0).method_32097(-6.0f, -8.0f, -6.0f, 12.0f, 16.0f, 12.0f), class_5603.method_32090(0.0f, 8.0f, 0.0f));
+        int j = 8;
+        class_5606 lv3 = class_5606.method_32108().method_32101(48, 0).method_32097(-1.0f, 0.0f, -1.0f, 2.0f, 18.0f, 2.0f);
+        for (int k = 0; k < 8; ++k) {
+            double d = (double)k * Math.PI * 2.0 / 8.0;
             float f = (float)Math.cos(d) * 5.0f;
-            float g = (float)Math.sin(d) * 5.0f;
-            this.tentacles[j].addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 18.0f, 2.0f);
-            this.tentacles[j].pivotX = f;
-            this.tentacles[j].pivotZ = g;
-            this.tentacles[j].pivotY = 15.0f;
-            d = (double)j * Math.PI * -2.0 / (double)this.tentacles.length + 1.5707963267948966;
-            this.tentacles[j].yaw = (float)d;
+            float g = 15.0f;
+            float h = (float)Math.sin(d) * 5.0f;
+            d = (double)k * Math.PI * -2.0 / 8.0 + 1.5707963267948966;
+            float l = (float)d;
+            lv2.method_32117(SquidEntityModel.method_32056(k), lv3, class_5603.method_32091(f, 15.0f, h, 0.0f, l, 0.0f));
         }
-        ImmutableList.Builder builder = ImmutableList.builder();
-        builder.add(this.head);
-        builder.addAll(Arrays.asList(this.tentacles));
-        this.parts = builder.build();
+        return class_5607.method_32110(lv, 64, 32);
     }
 
     @Override
@@ -49,8 +57,8 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public Iterable<ModelPart> getParts() {
-        return this.parts;
+    public ModelPart method_32008() {
+        return this.field_27513;
     }
 }
 

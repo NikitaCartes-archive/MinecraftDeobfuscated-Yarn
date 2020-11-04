@@ -151,7 +151,7 @@ public final class Biome {
         if (this.getTemperature(pos) >= 0.15f) {
             return false;
         }
-        if (pos.getY() >= 0 && pos.getY() < 256 && world.getLightLevel(LightType.BLOCK, pos) < 10) {
+        if (pos.getY() >= world.getBottomHeightLimit() && pos.getY() < world.getTopHeightLimit() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
             BlockState blockState = world.getBlockState(pos);
             FluidState fluidState = world.getFluidState(pos);
             if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
@@ -173,14 +173,14 @@ public final class Biome {
         if (this.getTemperature(blockPos) >= 0.15f) {
             return false;
         }
-        return blockPos.getY() >= 0 && blockPos.getY() < 256 && world.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = world.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos);
+        return blockPos.getY() >= world.getBottomHeightLimit() && blockPos.getY() < world.getTopHeightLimit() && world.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = world.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos);
     }
 
     public GenerationSettings getGenerationSettings() {
         return this.generationSettings;
     }
 
-    public void generateFeatureStep(StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos origin) {
+    public void generateFeatureStep(StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos pos) {
         List<List<Supplier<ConfiguredFeature<?, ?>>>> list = this.generationSettings.getFeatures();
         int i = GenerationStep.Feature.values().length;
         for (int j = 0; j < i; ++j) {
@@ -189,12 +189,12 @@ public final class Biome {
                 List list2 = this.structures.getOrDefault(j, Collections.emptyList());
                 for (StructureFeature structureFeature : list2) {
                     random.setDecoratorSeed(populationSeed, k, j);
-                    int l = origin.getX() >> 4;
-                    int m = origin.getZ() >> 4;
-                    int n = l << 4;
-                    int o = m << 4;
+                    int l = ChunkSectionPos.getSectionCoord(pos.getX());
+                    int m = ChunkSectionPos.getSectionCoord(pos.getZ());
+                    int n = ChunkSectionPos.getBlockCoord(l);
+                    int o = ChunkSectionPos.getBlockCoord(m);
                     try {
-                        structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature).forEach(structureStart -> structureStart.generateStructure(region, structureAccessor, chunkGenerator, random, new BlockBox(n, o, n + 15, o + 15), new ChunkPos(l, m)));
+                        structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature).forEach(structureStart -> structureStart.generateStructure(region, structureAccessor, chunkGenerator, random, new BlockBox(n, region.getBottomHeightLimit() + 1, o, n + 15, region.getTopHeightLimit(), o + 15), new ChunkPos(l, m)));
                     } catch (Exception exception) {
                         CrashReport crashReport = CrashReport.create(exception, "Feature placement");
                         crashReport.addElement("Feature").add("Id", Registry.STRUCTURE_FEATURE.getId(structureFeature)).add("Description", () -> structureFeature.toString());
@@ -208,7 +208,7 @@ public final class Biome {
                 ConfiguredFeature<?, ?> configuredFeature = supplier.get();
                 random.setDecoratorSeed(populationSeed, k, j);
                 try {
-                    configuredFeature.generate(region, chunkGenerator, random, origin);
+                    configuredFeature.generate(region, chunkGenerator, random, pos);
                 } catch (Exception exception2) {
                     CrashReport crashReport2 = CrashReport.create(exception2, "Feature placement");
                     crashReport2.addElement("Feature").add("Id", Registry.FEATURE.getId((Feature<?>)configuredFeature.feature)).add("Config", configuredFeature.config).add("Description", () -> configuredFeature.feature.toString());

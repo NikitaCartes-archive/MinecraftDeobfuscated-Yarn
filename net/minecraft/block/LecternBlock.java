@@ -18,7 +18,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -54,8 +54,8 @@ extends BlockWithEntity {
     public static final VoxelShape COLLISION_SHAPE = VoxelShapes.union(BASE_SHAPE, COLLISION_SHAPE_TOP);
     public static final VoxelShape WEST_SHAPE = VoxelShapes.union(Block.createCuboidShape(1.0, 10.0, 0.0, 5.333333, 14.0, 16.0), Block.createCuboidShape(5.333333, 12.0, 0.0, 9.666667, 16.0, 16.0), Block.createCuboidShape(9.666667, 14.0, 0.0, 14.0, 18.0, 16.0), BASE_SHAPE);
     public static final VoxelShape NORTH_SHAPE = VoxelShapes.union(Block.createCuboidShape(0.0, 10.0, 1.0, 16.0, 14.0, 5.333333), Block.createCuboidShape(0.0, 12.0, 5.333333, 16.0, 16.0, 9.666667), Block.createCuboidShape(0.0, 14.0, 9.666667, 16.0, 18.0, 14.0), BASE_SHAPE);
-    public static final VoxelShape EAST_SHAPE = VoxelShapes.union(Block.createCuboidShape(15.0, 10.0, 0.0, 10.666667, 14.0, 16.0), Block.createCuboidShape(10.666667, 12.0, 0.0, 6.333333, 16.0, 16.0), Block.createCuboidShape(6.333333, 14.0, 0.0, 2.0, 18.0, 16.0), BASE_SHAPE);
-    public static final VoxelShape SOUTH_SHAPE = VoxelShapes.union(Block.createCuboidShape(0.0, 10.0, 15.0, 16.0, 14.0, 10.666667), Block.createCuboidShape(0.0, 12.0, 10.666667, 16.0, 16.0, 6.333333), Block.createCuboidShape(0.0, 14.0, 6.333333, 16.0, 18.0, 2.0), BASE_SHAPE);
+    public static final VoxelShape EAST_SHAPE = VoxelShapes.union(Block.createCuboidShape(10.666667, 10.0, 0.0, 15.0, 14.0, 16.0), Block.createCuboidShape(6.333333, 12.0, 0.0, 10.666667, 16.0, 16.0), Block.createCuboidShape(2.0, 14.0, 0.0, 6.333333, 18.0, 16.0), BASE_SHAPE);
+    public static final VoxelShape SOUTH_SHAPE = VoxelShapes.union(Block.createCuboidShape(0.0, 10.0, 10.666667, 16.0, 14.0, 15.0), Block.createCuboidShape(0.0, 12.0, 6.333333, 16.0, 16.0, 10.666667), Block.createCuboidShape(0.0, 14.0, 2.0, 16.0, 18.0, 6.333333), BASE_SHAPE);
 
     protected LecternBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -79,13 +79,13 @@ extends BlockWithEntity {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        NbtCompound nbtCompound2;
+        CompoundTag compoundTag2;
         World world = ctx.getWorld();
         ItemStack itemStack = ctx.getStack();
-        NbtCompound nbtCompound = itemStack.getTag();
+        CompoundTag compoundTag = itemStack.getTag();
         PlayerEntity playerEntity = ctx.getPlayer();
         boolean bl = false;
-        if (!world.isClient && playerEntity != null && nbtCompound != null && playerEntity.isCreativeLevelTwoOp() && nbtCompound.contains("BlockEntityTag") && (nbtCompound2 = nbtCompound.getCompound("BlockEntityTag")).contains("Book")) {
+        if (!world.isClient && playerEntity != null && compoundTag != null && playerEntity.isCreativeLevelTwoOp() && compoundTag.contains("BlockEntityTag") && (compoundTag2 = compoundTag.getCompound("BlockEntityTag")).contains("Book")) {
             bl = true;
         }
         return (BlockState)((BlockState)this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite())).with(HAS_BOOK, bl);
@@ -131,9 +131,8 @@ extends BlockWithEntity {
     }
 
     @Override
-    @Nullable
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new LecternBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new LecternBlockEntity(pos, state);
     }
 
     public static boolean putBookIfAbsent(World world, BlockPos pos, BlockState state, ItemStack book) {
@@ -248,7 +247,7 @@ extends BlockWithEntity {
             return ActionResult.success(world.isClient);
         }
         ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.isEmpty() || itemStack.getItem().isIn(ItemTags.LECTERN_BOOKS)) {
+        if (itemStack.isEmpty() || itemStack.isIn(ItemTags.LECTERN_BOOKS)) {
             return ActionResult.PASS;
         }
         return ActionResult.CONSUME;

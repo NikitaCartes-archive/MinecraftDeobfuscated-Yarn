@@ -188,8 +188,8 @@ implements ChunkLightingView {
     }
 
     @Override
-    public int getLightLevel(BlockPos pos) {
-        return ((LightStorage)this.lightStorage).getLight(pos.asLong());
+    public int getLightLevel(BlockPos blockPos) {
+        return ((LightStorage)this.lightStorage).getLight(blockPos.asLong());
     }
 
     @Environment(value=EnvType.CLIENT)

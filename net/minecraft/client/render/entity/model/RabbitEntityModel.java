@@ -6,6 +6,11 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -16,86 +21,51 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class RabbitEntityModel<T extends RabbitEntity>
 extends EntityModel<T> {
-    private final ModelPart leftFoot = new ModelPart(this, 26, 24);
-    private final ModelPart rightFoot;
-    private final ModelPart leftBackLeg;
-    private final ModelPart rightBackLeg;
-    private final ModelPart body;
-    private final ModelPart leftFrontLeg;
-    private final ModelPart rightFrontLeg;
-    private final ModelPart head;
-    private final ModelPart rightEar;
-    private final ModelPart leftEar;
+    private final ModelPart field_27480;
+    private final ModelPart field_27481;
+    private final ModelPart field_27482;
+    private final ModelPart field_27483;
+    private final ModelPart torso;
+    private final ModelPart field_27484;
+    private final ModelPart field_27485;
+    private final ModelPart field_27486;
+    private final ModelPart field_27487;
+    private final ModelPart field_27488;
     private final ModelPart tail;
     private final ModelPart nose;
     private float field_3531;
 
-    public RabbitEntityModel() {
-        this.leftFoot.addCuboid(-1.0f, 5.5f, -3.7f, 2.0f, 1.0f, 7.0f);
-        this.leftFoot.setPivot(3.0f, 17.5f, 3.7f);
-        this.leftFoot.mirror = true;
-        this.setAngle(this.leftFoot, 0.0f, 0.0f, 0.0f);
-        this.rightFoot = new ModelPart(this, 8, 24);
-        this.rightFoot.addCuboid(-1.0f, 5.5f, -3.7f, 2.0f, 1.0f, 7.0f);
-        this.rightFoot.setPivot(-3.0f, 17.5f, 3.7f);
-        this.rightFoot.mirror = true;
-        this.setAngle(this.rightFoot, 0.0f, 0.0f, 0.0f);
-        this.leftBackLeg = new ModelPart(this, 30, 15);
-        this.leftBackLeg.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 4.0f, 5.0f);
-        this.leftBackLeg.setPivot(3.0f, 17.5f, 3.7f);
-        this.leftBackLeg.mirror = true;
-        this.setAngle(this.leftBackLeg, -0.34906584f, 0.0f, 0.0f);
-        this.rightBackLeg = new ModelPart(this, 16, 15);
-        this.rightBackLeg.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 4.0f, 5.0f);
-        this.rightBackLeg.setPivot(-3.0f, 17.5f, 3.7f);
-        this.rightBackLeg.mirror = true;
-        this.setAngle(this.rightBackLeg, -0.34906584f, 0.0f, 0.0f);
-        this.body = new ModelPart(this, 0, 0);
-        this.body.addCuboid(-3.0f, -2.0f, -10.0f, 6.0f, 5.0f, 10.0f);
-        this.body.setPivot(0.0f, 19.0f, 8.0f);
-        this.body.mirror = true;
-        this.setAngle(this.body, -0.34906584f, 0.0f, 0.0f);
-        this.leftFrontLeg = new ModelPart(this, 8, 15);
-        this.leftFrontLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 7.0f, 2.0f);
-        this.leftFrontLeg.setPivot(3.0f, 17.0f, -1.0f);
-        this.leftFrontLeg.mirror = true;
-        this.setAngle(this.leftFrontLeg, -0.17453292f, 0.0f, 0.0f);
-        this.rightFrontLeg = new ModelPart(this, 0, 15);
-        this.rightFrontLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 7.0f, 2.0f);
-        this.rightFrontLeg.setPivot(-3.0f, 17.0f, -1.0f);
-        this.rightFrontLeg.mirror = true;
-        this.setAngle(this.rightFrontLeg, -0.17453292f, 0.0f, 0.0f);
-        this.head = new ModelPart(this, 32, 0);
-        this.head.addCuboid(-2.5f, -4.0f, -5.0f, 5.0f, 4.0f, 5.0f);
-        this.head.setPivot(0.0f, 16.0f, -1.0f);
-        this.head.mirror = true;
-        this.setAngle(this.head, 0.0f, 0.0f, 0.0f);
-        this.rightEar = new ModelPart(this, 52, 0);
-        this.rightEar.addCuboid(-2.5f, -9.0f, -1.0f, 2.0f, 5.0f, 1.0f);
-        this.rightEar.setPivot(0.0f, 16.0f, -1.0f);
-        this.rightEar.mirror = true;
-        this.setAngle(this.rightEar, 0.0f, -0.2617994f, 0.0f);
-        this.leftEar = new ModelPart(this, 58, 0);
-        this.leftEar.addCuboid(0.5f, -9.0f, -1.0f, 2.0f, 5.0f, 1.0f);
-        this.leftEar.setPivot(0.0f, 16.0f, -1.0f);
-        this.leftEar.mirror = true;
-        this.setAngle(this.leftEar, 0.0f, 0.2617994f, 0.0f);
-        this.tail = new ModelPart(this, 52, 6);
-        this.tail.addCuboid(-1.5f, -1.5f, 0.0f, 3.0f, 3.0f, 2.0f);
-        this.tail.setPivot(0.0f, 20.0f, 7.0f);
-        this.tail.mirror = true;
-        this.setAngle(this.tail, -0.3490659f, 0.0f, 0.0f);
-        this.nose = new ModelPart(this, 32, 9);
-        this.nose.addCuboid(-0.5f, -2.5f, -5.5f, 1.0f, 1.0f, 1.0f);
-        this.nose.setPivot(0.0f, 16.0f, -1.0f);
-        this.nose.mirror = true;
-        this.setAngle(this.nose, 0.0f, 0.0f, 0.0f);
+    public RabbitEntityModel(ModelPart modelPart) {
+        this.field_27480 = modelPart.method_32086("left_hind_foot");
+        this.field_27481 = modelPart.method_32086("right_hind_foot");
+        this.field_27482 = modelPart.method_32086("left_haunch");
+        this.field_27483 = modelPart.method_32086("right_haunch");
+        this.torso = modelPart.method_32086("body");
+        this.field_27484 = modelPart.method_32086("left_front_leg");
+        this.field_27485 = modelPart.method_32086("right_front_leg");
+        this.field_27486 = modelPart.method_32086("head");
+        this.field_27487 = modelPart.method_32086("right_ear");
+        this.field_27488 = modelPart.method_32086("left_ear");
+        this.tail = modelPart.method_32086("tail");
+        this.nose = modelPart.method_32086("nose");
     }
 
-    private void setAngle(ModelPart modelPart, float pitch, float yaw, float roll) {
-        modelPart.pitch = pitch;
-        modelPart.yaw = yaw;
-        modelPart.roll = roll;
+    public static class_5607 method_32034() {
+        class_5609 lv = new class_5609();
+        class_5610 lv2 = lv.method_32111();
+        lv2.method_32117("left_hind_foot", class_5606.method_32108().method_32101(26, 24).method_32097(-1.0f, 5.5f, -3.7f, 2.0f, 1.0f, 7.0f), class_5603.method_32090(3.0f, 17.5f, 3.7f));
+        lv2.method_32117("right_hind_foot", class_5606.method_32108().method_32101(8, 24).method_32097(-1.0f, 5.5f, -3.7f, 2.0f, 1.0f, 7.0f), class_5603.method_32090(-3.0f, 17.5f, 3.7f));
+        lv2.method_32117("left_haunch", class_5606.method_32108().method_32101(30, 15).method_32097(-1.0f, 0.0f, 0.0f, 2.0f, 4.0f, 5.0f), class_5603.method_32091(3.0f, 17.5f, 3.7f, -0.34906584f, 0.0f, 0.0f));
+        lv2.method_32117("right_haunch", class_5606.method_32108().method_32101(16, 15).method_32097(-1.0f, 0.0f, 0.0f, 2.0f, 4.0f, 5.0f), class_5603.method_32091(-3.0f, 17.5f, 3.7f, -0.34906584f, 0.0f, 0.0f));
+        lv2.method_32117("body", class_5606.method_32108().method_32101(0, 0).method_32097(-3.0f, -2.0f, -10.0f, 6.0f, 5.0f, 10.0f), class_5603.method_32091(0.0f, 19.0f, 8.0f, -0.34906584f, 0.0f, 0.0f));
+        lv2.method_32117("left_front_leg", class_5606.method_32108().method_32101(8, 15).method_32097(-1.0f, 0.0f, -1.0f, 2.0f, 7.0f, 2.0f), class_5603.method_32091(3.0f, 17.0f, -1.0f, -0.17453292f, 0.0f, 0.0f));
+        lv2.method_32117("right_front_leg", class_5606.method_32108().method_32101(0, 15).method_32097(-1.0f, 0.0f, -1.0f, 2.0f, 7.0f, 2.0f), class_5603.method_32091(-3.0f, 17.0f, -1.0f, -0.17453292f, 0.0f, 0.0f));
+        lv2.method_32117("head", class_5606.method_32108().method_32101(32, 0).method_32097(-2.5f, -4.0f, -5.0f, 5.0f, 4.0f, 5.0f), class_5603.method_32090(0.0f, 16.0f, -1.0f));
+        lv2.method_32117("right_ear", class_5606.method_32108().method_32101(52, 0).method_32097(-2.5f, -9.0f, -1.0f, 2.0f, 5.0f, 1.0f), class_5603.method_32091(0.0f, 16.0f, -1.0f, 0.0f, -0.2617994f, 0.0f));
+        lv2.method_32117("left_ear", class_5606.method_32108().method_32101(58, 0).method_32097(0.5f, -9.0f, -1.0f, 2.0f, 5.0f, 1.0f), class_5603.method_32091(0.0f, 16.0f, -1.0f, 0.0f, 0.2617994f, 0.0f));
+        lv2.method_32117("tail", class_5606.method_32108().method_32101(52, 6).method_32097(-1.5f, -1.5f, 0.0f, 3.0f, 3.0f, 2.0f), class_5603.method_32091(0.0f, 20.0f, 7.0f, -0.3490659f, 0.0f, 0.0f));
+        lv2.method_32117("nose", class_5606.method_32108().method_32101(32, 9).method_32097(-0.5f, -2.5f, -5.5f, 1.0f, 1.0f, 1.0f), class_5603.method_32090(0.0f, 16.0f, -1.0f));
+        return class_5607.method_32110(lv, 64, 32);
     }
 
     @Override
@@ -105,18 +75,18 @@ extends EntityModel<T> {
             matrices.push();
             matrices.scale(0.56666666f, 0.56666666f, 0.56666666f);
             matrices.translate(0.0, 1.375, 0.125);
-            ImmutableList.of(this.head, this.leftEar, this.rightEar, this.nose).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.field_27486, this.field_27488, this.field_27487, this.nose).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
             matrices.push();
             matrices.scale(0.4f, 0.4f, 0.4f);
             matrices.translate(0.0, 2.25, 0.0);
-            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.body, this.leftFrontLeg, this.rightFrontLeg, this.tail).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.field_27480, this.field_27481, this.field_27482, this.field_27483, this.torso, this.field_27484, this.field_27485, this.tail).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         } else {
             matrices.push();
             matrices.scale(0.6f, 0.6f, 0.6f);
             matrices.translate(0.0, 1.0, 0.0);
-            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.body, this.leftFrontLeg, this.rightFrontLeg, this.head, this.rightEar, this.leftEar, this.tail, this.nose, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.field_27480, this.field_27481, this.field_27482, this.field_27483, this.torso, this.field_27484, this.field_27485, this.field_27486, this.field_27487, this.field_27488, this.tail, this.nose, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         }
     }
@@ -125,20 +95,20 @@ extends EntityModel<T> {
     public void setAngles(T rabbitEntity, float f, float g, float h, float i, float j) {
         float k = h - (float)((RabbitEntity)rabbitEntity).age;
         this.nose.pitch = j * ((float)Math.PI / 180);
-        this.head.pitch = j * ((float)Math.PI / 180);
-        this.rightEar.pitch = j * ((float)Math.PI / 180);
-        this.leftEar.pitch = j * ((float)Math.PI / 180);
+        this.field_27486.pitch = j * ((float)Math.PI / 180);
+        this.field_27487.pitch = j * ((float)Math.PI / 180);
+        this.field_27488.pitch = j * ((float)Math.PI / 180);
         this.nose.yaw = i * ((float)Math.PI / 180);
-        this.head.yaw = i * ((float)Math.PI / 180);
-        this.rightEar.yaw = this.nose.yaw - 0.2617994f;
-        this.leftEar.yaw = this.nose.yaw + 0.2617994f;
+        this.field_27486.yaw = i * ((float)Math.PI / 180);
+        this.field_27487.yaw = this.nose.yaw - 0.2617994f;
+        this.field_27488.yaw = this.nose.yaw + 0.2617994f;
         this.field_3531 = MathHelper.sin(((RabbitEntity)rabbitEntity).getJumpProgress(k) * (float)Math.PI);
-        this.leftBackLeg.pitch = (this.field_3531 * 50.0f - 21.0f) * ((float)Math.PI / 180);
-        this.rightBackLeg.pitch = (this.field_3531 * 50.0f - 21.0f) * ((float)Math.PI / 180);
-        this.leftFoot.pitch = this.field_3531 * 50.0f * ((float)Math.PI / 180);
-        this.rightFoot.pitch = this.field_3531 * 50.0f * ((float)Math.PI / 180);
-        this.leftFrontLeg.pitch = (this.field_3531 * -40.0f - 11.0f) * ((float)Math.PI / 180);
-        this.rightFrontLeg.pitch = (this.field_3531 * -40.0f - 11.0f) * ((float)Math.PI / 180);
+        this.field_27482.pitch = (this.field_3531 * 50.0f - 21.0f) * ((float)Math.PI / 180);
+        this.field_27483.pitch = (this.field_3531 * 50.0f - 21.0f) * ((float)Math.PI / 180);
+        this.field_27480.pitch = this.field_3531 * 50.0f * ((float)Math.PI / 180);
+        this.field_27481.pitch = this.field_3531 * 50.0f * ((float)Math.PI / 180);
+        this.field_27484.pitch = (this.field_3531 * -40.0f - 11.0f) * ((float)Math.PI / 180);
+        this.field_27485.pitch = (this.field_3531 * -40.0f - 11.0f) * ((float)Math.PI / 180);
     }
 
     @Override

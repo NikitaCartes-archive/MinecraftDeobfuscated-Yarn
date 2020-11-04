@@ -27,10 +27,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -73,7 +71,7 @@ extends ProjectileEntity {
 
     protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, double x, double y, double z, World world) {
         this(type, world);
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
     }
 
     protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, LivingEntity owner, World world) {
@@ -113,7 +111,7 @@ extends ProjectileEntity {
     @Override
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
 
@@ -169,7 +167,7 @@ extends ProjectileEntity {
         if (hitResult.getType() != HitResult.Type.MISS) {
             vec3d2 = hitResult.getPos();
         }
-        while (!this.removed) {
+        while (!this.isRemoved()) {
             EntityHitResult entityHitResult = this.getEntityCollision(vec3d3, vec3d2);
             if (entityHitResult != null) {
                 hitResult = entityHitResult;
@@ -220,7 +218,7 @@ extends ProjectileEntity {
             Vec3d vec3d4 = this.getVelocity();
             this.setVelocity(vec3d4.x, vec3d4.y - (double)0.05f, vec3d4.z);
         }
-        this.setPosition(h, j, k);
+        this.updatePosition(h, j, k);
         this.checkBlockCollision();
     }
 
@@ -236,9 +234,9 @@ extends ProjectileEntity {
     }
 
     @Override
-    public void move(MovementType movementType, Vec3d movement) {
-        super.move(movementType, movement);
-        if (movementType != MovementType.SELF && this.method_26351()) {
+    public void move(MovementType type, Vec3d movement) {
+        super.move(type, movement);
+        if (type != MovementType.SELF && this.method_26351()) {
             this.method_26352();
         }
     }
@@ -246,7 +244,7 @@ extends ProjectileEntity {
     protected void age() {
         ++this.life;
         if (this.life >= 1200) {
-            this.remove();
+            this.discard();
         }
     }
 
@@ -277,7 +275,7 @@ extends ProjectileEntity {
             if (this.piercedEntities.size() < this.getPierceLevel() + 1) {
                 this.piercedEntities.add(entity.getEntityId());
             } else {
-                this.remove();
+                this.discard();
                 return;
             }
         }
@@ -333,7 +331,7 @@ extends ProjectileEntity {
             }
             this.playSound(this.sound, 1.0f, 1.2f / (this.random.nextFloat() * 0.2f + 0.9f));
             if (this.getPierceLevel() <= 0) {
-                this.remove();
+                this.discard();
             }
         } else {
             entity.setFireTicks(j);
@@ -344,7 +342,7 @@ extends ProjectileEntity {
                 if (this.pickupType == PickupPermission.ALLOWED) {
                     this.dropStack(this.asItemStack(), 0.1f);
                 }
-                this.remove();
+                this.discard();
             }
         }
     }
@@ -389,52 +387,52 @@ extends ProjectileEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putShort("life", (short)this.life);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putShort("life", (short)this.life);
         if (this.inBlockState != null) {
-            nbt.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
+            tag.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
         }
-        nbt.putByte("shake", (byte)this.shake);
-        nbt.putBoolean("inGround", this.inGround);
-        nbt.putByte("pickup", (byte)this.pickupType.ordinal());
-        nbt.putDouble("damage", this.damage);
-        nbt.putBoolean("crit", this.isCritical());
-        nbt.putByte("PierceLevel", this.getPierceLevel());
-        nbt.putString("SoundEvent", Registry.SOUND_EVENT.getId(this.sound).toString());
-        nbt.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
+        tag.putByte("shake", (byte)this.shake);
+        tag.putBoolean("inGround", this.inGround);
+        tag.putByte("pickup", (byte)this.pickupType.ordinal());
+        tag.putDouble("damage", this.damage);
+        tag.putBoolean("crit", this.isCritical());
+        tag.putByte("PierceLevel", this.getPierceLevel());
+        tag.putString("SoundEvent", Registry.SOUND_EVENT.getId(this.sound).toString());
+        tag.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.life = nbt.getShort("life");
-        if (nbt.contains("inBlockState", 10)) {
-            this.inBlockState = NbtHelper.toBlockState(nbt.getCompound("inBlockState"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.life = tag.getShort("life");
+        if (tag.contains("inBlockState", 10)) {
+            this.inBlockState = NbtHelper.toBlockState(tag.getCompound("inBlockState"));
         }
-        this.shake = nbt.getByte("shake") & 0xFF;
-        this.inGround = nbt.getBoolean("inGround");
-        if (nbt.contains("damage", 99)) {
-            this.damage = nbt.getDouble("damage");
+        this.shake = tag.getByte("shake") & 0xFF;
+        this.inGround = tag.getBoolean("inGround");
+        if (tag.contains("damage", 99)) {
+            this.damage = tag.getDouble("damage");
         }
-        if (nbt.contains("pickup", 99)) {
-            this.pickupType = PickupPermission.fromOrdinal(nbt.getByte("pickup"));
-        } else if (nbt.contains("player", 99)) {
-            this.pickupType = nbt.getBoolean("player") ? PickupPermission.ALLOWED : PickupPermission.DISALLOWED;
+        if (tag.contains("pickup", 99)) {
+            this.pickupType = PickupPermission.fromOrdinal(tag.getByte("pickup"));
+        } else if (tag.contains("player", 99)) {
+            this.pickupType = tag.getBoolean("player") ? PickupPermission.ALLOWED : PickupPermission.DISALLOWED;
         }
-        this.setCritical(nbt.getBoolean("crit"));
-        this.setPierceLevel(nbt.getByte("PierceLevel"));
-        if (nbt.contains("SoundEvent", 8)) {
-            this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(nbt.getString("SoundEvent"))).orElse(this.getHitSound());
+        this.setCritical(tag.getBoolean("crit"));
+        this.setPierceLevel(tag.getByte("PierceLevel"));
+        if (tag.contains("SoundEvent", 8)) {
+            this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(tag.getString("SoundEvent"))).orElse(this.getHitSound());
         }
-        this.setShotFromCrossbow(nbt.getBoolean("ShotFromCrossbow"));
+        this.setShotFromCrossbow(tag.getBoolean("ShotFromCrossbow"));
     }
 
     @Override
     public void setOwner(@Nullable Entity entity) {
         super.setOwner(entity);
         if (entity instanceof PlayerEntity) {
-            this.pickupType = ((PlayerEntity)entity).abilities.creativeMode ? PickupPermission.CREATIVE_ONLY : PickupPermission.ALLOWED;
+            this.pickupType = ((PlayerEntity)entity).getAbilities().creativeMode ? PickupPermission.CREATIVE_ONLY : PickupPermission.ALLOWED;
         }
     }
 
@@ -444,13 +442,13 @@ extends ProjectileEntity {
         if (this.world.isClient || !this.inGround && !this.isNoClip() || this.shake > 0) {
             return;
         }
-        boolean bl2 = bl = this.pickupType == PickupPermission.ALLOWED || this.pickupType == PickupPermission.CREATIVE_ONLY && player.abilities.creativeMode || this.isNoClip() && this.getOwner().getUuid() == player.getUuid();
-        if (this.pickupType == PickupPermission.ALLOWED && !player.inventory.insertStack(this.asItemStack())) {
+        boolean bl2 = bl = this.pickupType == PickupPermission.ALLOWED || this.pickupType == PickupPermission.CREATIVE_ONLY && player.getAbilities().creativeMode || this.isNoClip() && this.getOwner().getUuid() == player.getUuid();
+        if (this.pickupType == PickupPermission.ALLOWED && !player.getInventory().insertStack(this.asItemStack())) {
             bl = false;
         }
         if (bl) {
             player.sendPickup(this, 1);
-            this.remove();
+            this.discard();
         }
     }
 
@@ -547,12 +545,6 @@ extends ProjectileEntity {
 
     public void setShotFromCrossbow(boolean shotFromCrossbow) {
         this.setProjectileFlag(4, shotFromCrossbow);
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        Entity entity = this.getOwner();
-        return new EntitySpawnS2CPacket(this, entity == null ? 0 : entity.getEntityId());
     }
 
     public static enum PickupPermission {

@@ -33,22 +33,22 @@ extends ConnectingBlock {
     }
 
     public BlockState withConnectionProperties(BlockView world, BlockPos pos) {
-        Block block = world.getBlockState(pos.down()).getBlock();
-        Block block2 = world.getBlockState(pos.up()).getBlock();
-        Block block3 = world.getBlockState(pos.north()).getBlock();
-        Block block4 = world.getBlockState(pos.east()).getBlock();
-        Block block5 = world.getBlockState(pos.south()).getBlock();
-        Block block6 = world.getBlockState(pos.west()).getBlock();
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(DOWN, block == this || block == Blocks.CHORUS_FLOWER || block == Blocks.END_STONE)).with(UP, block2 == this || block2 == Blocks.CHORUS_FLOWER)).with(NORTH, block3 == this || block3 == Blocks.CHORUS_FLOWER)).with(EAST, block4 == this || block4 == Blocks.CHORUS_FLOWER)).with(SOUTH, block5 == this || block5 == Blocks.CHORUS_FLOWER)).with(WEST, block6 == this || block6 == Blocks.CHORUS_FLOWER);
+        BlockState blockState = world.getBlockState(pos.down());
+        BlockState blockState2 = world.getBlockState(pos.up());
+        BlockState blockState3 = world.getBlockState(pos.north());
+        BlockState blockState4 = world.getBlockState(pos.east());
+        BlockState blockState5 = world.getBlockState(pos.south());
+        BlockState blockState6 = world.getBlockState(pos.west());
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(DOWN, blockState.isOf(this) || blockState.isOf(Blocks.CHORUS_FLOWER) || blockState.isOf(Blocks.END_STONE))).with(UP, blockState2.isOf(this) || blockState2.isOf(Blocks.CHORUS_FLOWER))).with(NORTH, blockState3.isOf(this) || blockState3.isOf(Blocks.CHORUS_FLOWER))).with(EAST, blockState4.isOf(this) || blockState4.isOf(Blocks.CHORUS_FLOWER))).with(SOUTH, blockState5.isOf(this) || blockState5.isOf(Blocks.CHORUS_FLOWER))).with(WEST, blockState6.isOf(this) || blockState6.isOf(Blocks.CHORUS_FLOWER));
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (!state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
-            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+            return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
         }
-        boolean bl = neighborState.getBlock() == this || neighborState.isOf(Blocks.CHORUS_FLOWER) || direction == Direction.DOWN && neighborState.isOf(Blocks.END_STONE);
+        boolean bl = newState.isOf(this) || newState.isOf(Blocks.CHORUS_FLOWER) || direction == Direction.DOWN && newState.isOf(Blocks.END_STONE);
         return (BlockState)state.with((Property)FACING_PROPERTIES.get(direction), bl);
     }
 
@@ -65,17 +65,16 @@ extends ConnectingBlock {
         boolean bl = !world.getBlockState(pos.up()).isAir() && !blockState.isAir();
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos = pos.offset(direction);
-            Block block = world.getBlockState(blockPos).getBlock();
-            if (block != this) continue;
+            BlockState blockState2 = world.getBlockState(blockPos);
+            if (!blockState2.isOf(this)) continue;
             if (bl) {
                 return false;
             }
-            Block block2 = world.getBlockState(blockPos.down()).getBlock();
-            if (block2 != this && block2 != Blocks.END_STONE) continue;
+            BlockState blockState3 = world.getBlockState(blockPos.down());
+            if (!blockState3.isOf(this) && !blockState3.isOf(Blocks.END_STONE)) continue;
             return true;
         }
-        Block block3 = blockState.getBlock();
-        return block3 == this || block3 == Blocks.END_STONE;
+        return blockState.isOf(this) || blockState.isOf(Blocks.END_STONE);
     }
 
     @Override

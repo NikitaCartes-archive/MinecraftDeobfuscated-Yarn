@@ -46,10 +46,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
@@ -394,7 +393,7 @@ Saddleable {
 
     public ActionResult method_30009(PlayerEntity playerEntity, ItemStack itemStack) {
         boolean bl = this.receiveFood(playerEntity, itemStack);
-        if (!playerEntity.abilities.creativeMode) {
+        if (!playerEntity.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }
         if (this.world.isClient) {
@@ -408,23 +407,22 @@ Saddleable {
         float f = 0.0f;
         int i = 0;
         int j = 0;
-        Item item2 = item.getItem();
-        if (item2 == Items.WHEAT) {
+        if (item.isOf(Items.WHEAT)) {
             f = 2.0f;
             i = 20;
             j = 3;
-        } else if (item2 == Items.SUGAR) {
+        } else if (item.isOf(Items.SUGAR)) {
             f = 1.0f;
             i = 30;
             j = 3;
-        } else if (item2 == Blocks.HAY_BLOCK.asItem()) {
+        } else if (item.isOf(Blocks.HAY_BLOCK.asItem())) {
             f = 20.0f;
             i = 180;
-        } else if (item2 == Items.APPLE) {
+        } else if (item.isOf(Items.APPLE)) {
             f = 3.0f;
             i = 60;
             j = 3;
-        } else if (item2 == Items.GOLDEN_CARROT) {
+        } else if (item.isOf(Items.GOLDEN_CARROT)) {
             f = 4.0f;
             i = 60;
             j = 5;
@@ -432,7 +430,7 @@ Saddleable {
                 bl = true;
                 this.lovePlayer(player);
             }
-        } else if (item2 == Items.GOLDEN_APPLE || item2 == Items.ENCHANTED_GOLDEN_APPLE) {
+        } else if (item.isOf(Items.GOLDEN_APPLE) || item.isOf(Items.ENCHANTED_GOLDEN_APPLE)) {
             f = 10.0f;
             i = 240;
             j = 10;
@@ -699,39 +697,39 @@ Saddleable {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putBoolean("EatingHaystack", this.isEatingGrass());
-        nbt.putBoolean("Bred", this.isBred());
-        nbt.putInt("Temper", this.getTemper());
-        nbt.putBoolean("Tame", this.isTame());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putBoolean("EatingHaystack", this.isEatingGrass());
+        tag.putBoolean("Bred", this.isBred());
+        tag.putInt("Temper", this.getTemper());
+        tag.putBoolean("Tame", this.isTame());
         if (this.getOwnerUuid() != null) {
-            nbt.putUuid("Owner", this.getOwnerUuid());
+            tag.putUuid("Owner", this.getOwnerUuid());
         }
         if (!this.items.getStack(0).isEmpty()) {
-            nbt.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
+            tag.put("SaddleItem", this.items.getStack(0).toTag(new CompoundTag()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
+    public void readCustomDataFromTag(CompoundTag tag) {
         ItemStack itemStack;
         UUID uUID;
-        super.readCustomDataFromNbt(nbt);
-        this.setEatingGrass(nbt.getBoolean("EatingHaystack"));
-        this.setBred(nbt.getBoolean("Bred"));
-        this.setTemper(nbt.getInt("Temper"));
-        this.setTame(nbt.getBoolean("Tame"));
-        if (nbt.containsUuid("Owner")) {
-            uUID = nbt.getUuid("Owner");
+        super.readCustomDataFromTag(tag);
+        this.setEatingGrass(tag.getBoolean("EatingHaystack"));
+        this.setBred(tag.getBoolean("Bred"));
+        this.setTemper(tag.getInt("Temper"));
+        this.setTame(tag.getBoolean("Tame"));
+        if (tag.containsUuid("Owner")) {
+            uUID = tag.getUuid("Owner");
         } else {
-            String string = nbt.getString("Owner");
+            String string = tag.getString("Owner");
             uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
         }
         if (uUID != null) {
             this.setOwnerUuid(uUID);
         }
-        if (nbt.contains("SaddleItem", 10) && (itemStack = ItemStack.fromNbt(nbt.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
+        if (tag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(tag.getCompound("SaddleItem"))).isOf(Items.SADDLE)) {
             this.items.setStack(0, itemStack);
         }
         this.updateSaddle();
@@ -847,7 +845,7 @@ Saddleable {
             float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
             float h = 0.7f * this.lastAngryAnimationProgress;
             float i = 0.15f * this.lastAngryAnimationProgress;
-            passenger.setPosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
+            passenger.updatePosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
             if (passenger instanceof LivingEntity) {
                 ((LivingEntity)passenger).bodyYaw = this.bodyYaw;
             }
@@ -882,10 +880,10 @@ Saddleable {
      * <p>In the item slot argument type, the slot is referred to as <code>
      * horse.armor</code>. In this horse's screen, it appears in the middle of
      * the left side, and right below the saddle slot if this horse has a saddle
-     * slot.
+     * slot.</p>
      * 
      * <p>This is used by horse armors and llama carpets, but can be
-     * refitted to any purpose.
+     * refitted to any purpose.</p>
      */
     public boolean hasArmorSlot() {
         return false;
@@ -913,7 +911,7 @@ Saddleable {
     public boolean equip(int slot, ItemStack item) {
         int i = slot - 400;
         if (i >= 0 && i < 2 && i < this.items.size()) {
-            if (i == 0 && item.getItem() != Items.SADDLE) {
+            if (i == 0 && !item.isOf(Items.SADDLE)) {
                 return false;
             }
             if (!(i != 1 || this.hasArmorSlot() && this.isHorseArmor(item))) {
@@ -934,10 +932,7 @@ Saddleable {
     @Override
     @Nullable
     public Entity getPrimaryPassenger() {
-        if (this.getPassengerList().isEmpty()) {
-            return null;
-        }
-        return this.getPassengerList().get(0);
+        return this.getFirstPassenger();
     }
 
     @Nullable
@@ -984,12 +979,12 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(0.2f);
         }
         this.initAttributes();
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 }
 

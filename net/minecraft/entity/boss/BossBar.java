@@ -53,15 +53,15 @@ public abstract class BossBar {
         this.color = color;
     }
 
-    public Style getStyle() {
+    public Style getOverlay() {
         return this.style;
     }
 
-    public void setStyle(Style style) {
+    public void setOverlay(Style style) {
         this.style = style;
     }
 
-    public boolean shouldDarkenSky() {
+    public boolean getDarkenSky() {
         return this.darkenSky;
     }
 
@@ -84,7 +84,7 @@ public abstract class BossBar {
         return this;
     }
 
-    public boolean shouldThickenFog() {
+    public boolean getThickenFog() {
         return this.thickenFog;
     }
 

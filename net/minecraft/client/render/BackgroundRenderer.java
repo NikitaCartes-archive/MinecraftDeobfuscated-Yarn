@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -21,7 +22,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 
@@ -88,8 +88,8 @@ public class BackgroundRenderer {
             if (i2 >= 4) {
                 float[] fs;
                 g = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) > 0.0f ? -1.0f : 1.0f;
-                Vec3f vec3f = new Vec3f(g, 0.0f, 0.0f);
-                r = camera.getHorizontalPlane().dot(vec3f);
+                Vector3f vector3f = new Vector3f(g, 0.0f, 0.0f);
+                r = camera.getHorizontalPlane().dot(vector3f);
                 if (r < 0.0f) {
                     r = 0.0f;
                 }
@@ -118,7 +118,7 @@ public class BackgroundRenderer {
             }
             lastWaterFogColorUpdateTime = -1L;
         }
-        double d = camera.getPos().y * world.getLevelProperties().getHorizonShadingRatio();
+        double d = (camera.getPos().y - (double)world.getBottomHeightLimit()) * world.getLevelProperties().getHorizonShadingRatio();
         if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
             j2 = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
             d = j2 < 20 ? (d *= (double)(1.0f - (float)j2 / 20.0f)) : 0.0;

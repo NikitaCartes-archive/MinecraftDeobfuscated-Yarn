@@ -3,11 +3,11 @@
  */
 package net.minecraft.test;
 
-import net.minecraft.test.GameTestState;
+import net.minecraft.test.GameTest;
 
 public interface TestListener {
-    public void onStarted(GameTestState var1);
+    public void onStarted(GameTest var1);
 
-    public void onFailed(GameTestState var1);
+    public void onFailed(GameTest var1);
 }
 

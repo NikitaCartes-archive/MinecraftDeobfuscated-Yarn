@@ -21,7 +21,7 @@ extends AbstractCookingRecipe {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ItemStack createIcon() {
+    public ItemStack getRecipeKindIcon() {
         return new ItemStack(Blocks.BLAST_FURNACE);
     }
 

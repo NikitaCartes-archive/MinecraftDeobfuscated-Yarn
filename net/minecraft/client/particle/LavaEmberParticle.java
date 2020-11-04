@@ -33,8 +33,8 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getBrightness(float tint) {
-        int i = super.getBrightness(tint);
+    public int getColorMultiplier(float tint) {
+        int i = super.getColorMultiplier(tint);
         int j = 240;
         int k = i >> 16 & 0xFF;
         return 0xF0 | k << 16;

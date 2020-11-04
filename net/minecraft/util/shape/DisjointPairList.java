@@ -14,7 +14,7 @@ implements PairList {
     private final DoubleList second;
     private final boolean inverted;
 
-    public DisjointPairList(DoubleList first, DoubleList second, boolean inverted) {
+    protected DisjointPairList(DoubleList first, DoubleList second, boolean inverted) {
         this.first = first;
         this.second = second;
         this.inverted = inverted;
@@ -35,16 +35,14 @@ implements PairList {
 
     private boolean iterateSections(PairList.Consumer consumer) {
         int j;
-        int i = this.first.size() - 1;
+        int i = this.first.size();
         for (j = 0; j < i; ++j) {
             if (consumer.merge(j, -1, j)) continue;
             return false;
         }
-        if (!consumer.merge(i, -1, i)) {
-            return false;
-        }
-        for (j = 0; j < this.second.size(); ++j) {
-            if (consumer.merge(i, j, i + 1 + j)) continue;
+        j = this.second.size() - 1;
+        for (int k = 0; k < j; ++k) {
+            if (consumer.merge(i - 1, k, i + k)) continue;
             return false;
         }
         return true;

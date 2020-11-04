@@ -28,9 +28,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
@@ -44,6 +44,7 @@ import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
@@ -52,7 +53,6 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
-import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -134,7 +134,7 @@ public abstract class PlayerManager {
     }
 
     public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player) {
-        NbtCompound nbtCompound2;
+        CompoundTag compoundTag2;
         Entity entity;
         ServerWorld serverWorld2;
         GameProfile gameProfile = player.getGameProfile();
@@ -142,8 +142,8 @@ public abstract class PlayerManager {
         GameProfile gameProfile2 = userCache.getByUuid(gameProfile.getId());
         String string = gameProfile2 == null ? gameProfile.getName() : gameProfile2.getName();
         userCache.add(gameProfile);
-        NbtCompound nbtCompound = this.loadPlayerData(player);
-        RegistryKey<World> registryKey = nbtCompound != null ? DimensionType.method_28521(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbtCompound.get("Dimension"))).resultOrPartial(LOGGER::error).orElse(World.OVERWORLD) : World.OVERWORLD;
+        CompoundTag compoundTag = this.loadPlayerData(player);
+        RegistryKey<World> registryKey = compoundTag != null ? DimensionType.method_28521(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.get("Dimension"))).resultOrPartial(LOGGER::error).orElse(World.OVERWORLD) : World.OVERWORLD;
         ServerWorld serverWorld = this.server.getWorld(registryKey);
         if (serverWorld == null) {
             LOGGER.warn("Unknown respawn dimension {}, defaulting to overworld", (Object)registryKey);
@@ -167,8 +167,8 @@ public abstract class PlayerManager {
         serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getEntityId(), player.interactionManager.getGameMode(), player.interactionManager.getPreviousGameMode(), BiomeAccess.hashSeed(serverWorld2.getSeed()), worldProperties.isHardcore(), this.server.getWorldRegistryKeys(), this.registryManager, serverWorld2.getDimension(), serverWorld2.getRegistryKey(), this.getMaxPlayerCount(), this.viewDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.isFlat()));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
         serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
-        serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.abilities));
-        serverPlayNetworkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.inventory.selectedSlot));
+        serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
+        serverPlayNetworkHandler.sendPacket(new HeldItemChangeS2CPacket(player.getInventory().selectedSlot));
         serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values()));
         serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(this.server.getTagManager()));
         this.sendCommandTree(player);
@@ -189,18 +189,18 @@ public abstract class PlayerManager {
         this.server.getBossBarManager().onPlayerConnect(player);
         this.sendWorldInfo(player, serverWorld2);
         if (!this.server.getResourcePackUrl().isEmpty()) {
-            player.sendResourcePackUrl(this.server.getResourcePackUrl(), this.server.getResourcePackHash());
+            player.sendResourcePackUrl(this.server.getResourcePackUrl(), this.server.getResourcePackHash(), this.server.requireResourcePack());
         }
         for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
             serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getEntityId(), statusEffectInstance));
         }
-        if (nbtCompound != null && nbtCompound.contains("RootVehicle", 10) && (entity = EntityType.loadEntityWithPassengers((nbtCompound2 = nbtCompound.getCompound("RootVehicle")).getCompound("Entity"), serverWorld2, vehicle -> {
+        if (compoundTag != null && compoundTag.contains("RootVehicle", 10) && (entity = EntityType.loadEntityWithPassengers((compoundTag2 = compoundTag.getCompound("RootVehicle")).getCompound("Entity"), serverWorld2, vehicle -> {
             if (!serverWorld2.tryLoadEntity((Entity)vehicle)) {
                 return null;
             }
             return vehicle;
         })) != null) {
-            UUID uUID = nbtCompound2.containsUuid("Attach") ? nbtCompound2.getUuid("Attach") : null;
+            UUID uUID = compoundTag2.containsUuid("Attach") ? compoundTag2.getUuid("Attach") : null;
             if (entity.getUuid().equals(uUID)) {
                 player.startRiding(entity, true);
             } else {
@@ -212,9 +212,9 @@ public abstract class PlayerManager {
             }
             if (!player.hasVehicle()) {
                 LOGGER.warn("Couldn't reattach entity to player");
-                serverWorld2.removeEntity(entity);
+                entity.discard();
                 for (Entity entity2 : entity.getPassengersDeep()) {
-                    serverWorld2.removeEntity(entity2);
+                    entity2.discard();
                 }
             }
         }
@@ -276,17 +276,17 @@ public abstract class PlayerManager {
     }
 
     @Nullable
-    public NbtCompound loadPlayerData(ServerPlayerEntity player) {
-        NbtCompound nbtCompound2;
-        NbtCompound nbtCompound = this.server.getSaveProperties().getPlayerData();
-        if (player.getName().getString().equals(this.server.getUserName()) && nbtCompound != null) {
-            nbtCompound2 = nbtCompound;
-            player.readNbt(nbtCompound2);
+    public CompoundTag loadPlayerData(ServerPlayerEntity player) {
+        CompoundTag compoundTag2;
+        CompoundTag compoundTag = this.server.getSaveProperties().getPlayerData();
+        if (player.getName().getString().equals(this.server.getUserName()) && compoundTag != null) {
+            compoundTag2 = compoundTag;
+            player.fromTag(compoundTag2);
             LOGGER.debug("loading single player");
         } else {
-            nbtCompound2 = this.saveHandler.loadPlayerData(player);
+            compoundTag2 = this.saveHandler.loadPlayerData(player);
         }
-        return nbtCompound2;
+        return compoundTag2;
     }
 
     protected void savePlayerData(ServerPlayerEntity player) {
@@ -302,23 +302,17 @@ public abstract class PlayerManager {
     }
 
     public void remove(ServerPlayerEntity player) {
-        Entity entity;
+        Entity entity2;
         ServerWorld serverWorld = player.getServerWorld();
         player.incrementStat(Stats.LEAVE_GAME);
         this.savePlayerData(player);
-        if (player.hasVehicle() && (entity = player.getRootVehicle()).hasPlayerRider()) {
+        if (player.hasVehicle() && (entity2 = player.getRootVehicle()).hasPlayerRider()) {
             LOGGER.debug("Removing player mount");
             player.stopRiding();
-            serverWorld.removeEntity(entity);
-            entity.removed = true;
-            for (Entity entity2 : entity.getPassengersDeep()) {
-                serverWorld.removeEntity(entity2);
-                entity2.removed = true;
-            }
-            serverWorld.getChunk(player.chunkX, player.chunkZ).markDirty();
+            entity2.method_31748().forEach(entity -> entity.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
         }
         player.detach();
-        serverWorld.removePlayer(player);
+        serverWorld.removePlayer(player, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
         player.getAdvancementTracker().clearCriteria();
         this.players.remove(player);
         this.server.getBossBarManager().onPlayerDisconnect(player);
@@ -381,7 +375,7 @@ public abstract class PlayerManager {
 
     public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
         this.players.remove(player);
-        player.getServerWorld().removePlayer(player);
+        player.getServerWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
         BlockPos blockPos = player.getSpawnPointPosition();
         float f = player.getSpawnAngle();
         boolean bl = player.isSpawnPointSet();
@@ -416,8 +410,8 @@ public abstract class PlayerManager {
         } else if (blockPos != null) {
             serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, 0.0f));
         }
-        while (!serverWorld2.isSpaceEmpty(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
-            serverPlayerEntity.setPosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
+        while (!serverWorld2.isSpaceEmpty(serverPlayerEntity) && serverPlayerEntity.getY() < (double)serverWorld2.getTopHeightLimit()) {
+            serverPlayerEntity.updatePosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
         }
         WorldProperties worldProperties = serverPlayerEntity.world.getLevelProperties();
         serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.world.getDimension(), serverPlayerEntity.world.getRegistryKey(), BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()), serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.interactionManager.getPreviousGameMode(), serverPlayerEntity.getServerWorld().isDebugWorld(), serverPlayerEntity.getServerWorld().isFlat(), alive));
@@ -599,7 +593,7 @@ public abstract class PlayerManager {
     public void sendPlayerStatus(ServerPlayerEntity player) {
         player.refreshScreenHandler(player.playerScreenHandler);
         player.markHealthDirty();
-        player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.inventory.selectedSlot));
+        player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(player.getInventory().selectedSlot));
     }
 
     public int getCurrentPlayerCount() {
@@ -640,7 +634,7 @@ public abstract class PlayerManager {
      * 
      * @return the user data of the host of the server if the server is an integrated server, otherwise {@code null}
      */
-    public NbtCompound getUserData() {
+    public CompoundTag getUserData() {
         return null;
     }
 
@@ -669,9 +663,9 @@ public abstract class PlayerManager {
         }
     }
 
-    public void broadcastChatMessage(Text message, MessageType type, UUID sender) {
-        this.server.sendSystemMessage(message, sender);
-        this.sendToAll(new GameMessageS2CPacket(message, type, sender));
+    public void broadcastChatMessage(Text message, MessageType type, UUID senderUuid) {
+        this.server.sendSystemMessage(message, senderUuid);
+        this.sendToAll(new GameMessageS2CPacket(message, type, senderUuid));
     }
 
     public ServerStatHandler createStatHandler(PlayerEntity player) {

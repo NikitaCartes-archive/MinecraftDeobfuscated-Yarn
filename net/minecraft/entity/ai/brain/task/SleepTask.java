@@ -43,7 +43,7 @@ extends Task<LivingEntity> {
             return false;
         }
         BlockState blockState = world.getBlockState(globalPos.getPos());
-        return globalPos.getPos().isWithinDistance(entity.getPos(), 2.0) && blockState.getBlock().isIn(BlockTags.BEDS) && blockState.get(BedBlock.OCCUPIED) == false;
+        return globalPos.getPos().isWithinDistance(entity.getPos(), 2.0) && blockState.isIn(BlockTags.BEDS) && blockState.get(BedBlock.OCCUPIED) == false;
     }
 
     @Override
