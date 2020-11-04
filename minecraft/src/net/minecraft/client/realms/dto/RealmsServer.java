@@ -77,7 +77,7 @@ public class RealmsServer extends ValueObject {
 				try {
 					string2 = RealmsUtil.uuidToName(string);
 				} catch (Exception var8) {
-					LOGGER.error("Could not get name for " + string, (Throwable)var8);
+					LOGGER.error("Could not get name for {}", string, var8);
 					continue;
 				}
 
@@ -123,7 +123,7 @@ public class RealmsServer extends ValueObject {
 			realmsServer.minigameId = JsonUtils.getIntOr("minigameId", node, -1);
 			realmsServer.minigameImage = JsonUtils.getStringOr("minigameImage", node, null);
 		} catch (Exception var3) {
-			LOGGER.error("Could not parse McoServer: " + var3.getMessage());
+			LOGGER.error("Could not parse McoServer: {}", var3.getMessage());
 		}
 
 		return realmsServer;
@@ -133,7 +133,7 @@ public class RealmsServer extends ValueObject {
 		server.players
 			.sort(
 				(playerInfo, playerInfo2) -> ComparisonChain.start()
-						.compareFalseFirst(playerInfo2.isAccepted(), playerInfo.isAccepted())
+						.compareFalseFirst(playerInfo2.getAccepted(), playerInfo.getAccepted())
 						.compare(playerInfo.getName().toLowerCase(Locale.ROOT), playerInfo2.getName().toLowerCase(Locale.ROOT))
 						.result()
 			);
@@ -201,7 +201,7 @@ public class RealmsServer extends ValueObject {
 		try {
 			return parse(new JsonParser().parse(json).getAsJsonObject());
 		} catch (Exception var2) {
-			LOGGER.error("Could not parse McoServer: " + var2.getMessage());
+			LOGGER.error("Could not parse McoServer: {}", var2.getMessage());
 			return new RealmsServer();
 		}
 	}
@@ -226,15 +226,15 @@ public class RealmsServer extends ValueObject {
 		return Objects.hash(new Object[]{this.id, this.name, this.motd, this.state, this.owner, this.expired});
 	}
 
-	public boolean equals(Object o) {
-		if (o == null) {
+	public boolean equals(Object obj) {
+		if (obj == null) {
 			return false;
-		} else if (o == this) {
+		} else if (obj == this) {
 			return true;
-		} else if (o.getClass() != this.getClass()) {
+		} else if (obj.getClass() != this.getClass()) {
 			return false;
 		} else {
-			RealmsServer realmsServer = (RealmsServer)o;
+			RealmsServer realmsServer = (RealmsServer)obj;
 			return new EqualsBuilder()
 				.append(this.id, realmsServer.id)
 				.append(this.name, realmsServer.name)

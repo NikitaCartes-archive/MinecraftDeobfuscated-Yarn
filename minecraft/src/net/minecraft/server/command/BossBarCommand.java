@@ -282,10 +282,10 @@ public class BossBarCommand {
 	}
 
 	private static int setStyle(ServerCommandSource source, CommandBossBar bossBar, BossBar.Style style) throws CommandSyntaxException {
-		if (bossBar.getStyle().equals(style)) {
+		if (bossBar.getOverlay().equals(style)) {
 			throw SET_STYLE_UNCHANGED_EXCEPTION.create();
 		} else {
-			bossBar.setStyle(style);
+			bossBar.setOverlay(style);
 			source.sendFeedback(new TranslatableText("commands.bossbar.set.style.success", bossBar.toHoverableText()), true);
 			return 0;
 		}

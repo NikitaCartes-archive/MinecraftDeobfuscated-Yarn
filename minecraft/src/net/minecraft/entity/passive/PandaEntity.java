@@ -40,10 +40,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -81,8 +80,8 @@ public class PandaEntity extends AnimalEntity {
 	private float lastRollOverAnimationProgress;
 	private PandaEntity.LookAtEntityGoal lookAtPlayerGoal;
 	private static final Predicate<ItemEntity> IS_FOOD = itemEntity -> {
-		Item item = itemEntity.getStack().getItem();
-		return (item == Blocks.BAMBOO.asItem() || item == Blocks.CAKE.asItem()) && itemEntity.isAlive() && !itemEntity.cannotPickup();
+		ItemStack itemStack = itemEntity.getStack();
+		return (itemStack.isOf(Blocks.BAMBOO.asItem()) || itemStack.isOf(Blocks.CAKE.asItem())) && itemEntity.isAlive() && !itemEntity.cannotPickup();
 	};
 
 	public PandaEntity(EntityType<? extends PandaEntity> entityType, World world) {
@@ -215,17 +214,17 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putString("MainGene", this.getMainGene().getName());
-		nbt.putString("HiddenGene", this.getHiddenGene().getName());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putString("MainGene", this.getMainGene().getName());
+		tag.putString("HiddenGene", this.getHiddenGene().getName());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setMainGene(PandaEntity.Gene.byName(nbt.getString("MainGene")));
-		this.setHiddenGene(PandaEntity.Gene.byName(nbt.getString("HiddenGene")));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setMainGene(PandaEntity.Gene.byName(tag.getString("MainGene")));
+		this.setHiddenGene(PandaEntity.Gene.byName(tag.getString("HiddenGene")));
 	}
 
 	@Nullable
@@ -511,12 +510,12 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	protected void loot(ItemEntity item) {
 		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && IS_FOOD.test(item)) {
-			this.method_29499(item);
+			this.triggerItemPickedUpByEntityCriteria(item);
 			ItemStack itemStack = item.getStack();
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 			this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
 			this.sendPickup(item, itemStack.getCount());
-			item.remove();
+			item.discard();
 		}
 	}
 
@@ -529,7 +528,7 @@ public class PandaEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
@@ -538,7 +537,7 @@ public class PandaEntity extends AnimalEntity {
 			entityData = new PassiveEntity.PassiveData(0.2F);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public void initGenes(PandaEntity mother, @Nullable PandaEntity father) {
@@ -616,7 +615,7 @@ public class PandaEntity extends AnimalEntity {
 				this.stop();
 				this.setEating(true);
 				ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.MAINHAND);
-				if (!itemStack2.isEmpty() && !player.abilities.creativeMode) {
+				if (!itemStack2.isEmpty() && !player.getAbilities().creativeMode) {
 					this.dropStack(itemStack2);
 				}
 
@@ -647,11 +646,11 @@ public class PandaEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.getItem() == Blocks.BAMBOO.asItem();
+		return stack.isOf(Blocks.BAMBOO.asItem());
 	}
 
 	private boolean canEat(ItemStack stack) {
-		return this.isBreedingItem(stack) || stack.getItem() == Blocks.CAKE.asItem();
+		return this.isBreedingItem(stack) || stack.isOf(Blocks.CAKE.asItem());
 	}
 
 	@Nullable
@@ -857,14 +856,13 @@ public class PandaEntity extends AnimalEntity {
 					} else {
 						this.target = this.mob
 							.world
-							.getClosestEntityIncludingUngeneratedChunks(
-								this.targetType,
+							.getClosestEntity(
+								this.mob.world.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
 								this.targetPredicate,
 								this.mob,
 								this.mob.getX(),
 								this.mob.getEyeY(),
-								this.mob.getZ(),
-								this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range)
+								this.mob.getZ()
 							);
 					}
 				}

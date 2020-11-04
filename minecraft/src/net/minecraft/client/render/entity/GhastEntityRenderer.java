@@ -2,6 +2,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.GhastEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.GhastEntity;
@@ -12,8 +14,8 @@ public class GhastEntityRenderer extends MobEntityRenderer<GhastEntity, GhastEnt
 	private static final Identifier TEXTURE = new Identifier("textures/entity/ghast/ghast.png");
 	private static final Identifier ANGRY_TEXTURE = new Identifier("textures/entity/ghast/ghast_shooting.png");
 
-	public GhastEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new GhastEntityModel<>(), 1.5F);
+	public GhastEntityRenderer(class_5617.class_5618 arg) {
+		super(arg, new GhastEntityModel<>(arg.method_32167(EntityModelLayers.GHAST)), 1.5F);
 	}
 
 	public Identifier getTexture(GhastEntity ghastEntity) {

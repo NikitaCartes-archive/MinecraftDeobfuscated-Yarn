@@ -66,7 +66,7 @@ public class AnimalMateGoal extends Goal {
 
 	@Nullable
 	private AnimalEntity findMate() {
-		List<AnimalEntity> list = this.world.getTargets(this.entityClass, VALID_MATE_PREDICATE, this.animal, this.animal.getBoundingBox().expand(8.0));
+		List<? extends AnimalEntity> list = this.world.getTargets(this.entityClass, VALID_MATE_PREDICATE, this.animal, this.animal.getBoundingBox().expand(8.0));
 		double d = Double.MAX_VALUE;
 		AnimalEntity animalEntity = null;
 

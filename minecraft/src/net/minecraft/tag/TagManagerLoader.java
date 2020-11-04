@@ -10,12 +10,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
+import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 
-public class TagManagerLoader implements ResourceReloader {
+public class TagManagerLoader implements ResourceReloadListener {
 	private final TagGroupLoader<Block> blocks = new TagGroupLoader<>(Registry.BLOCK::getOrEmpty, "tags/blocks", "block");
 	private final TagGroupLoader<Item> items = new TagGroupLoader<>(Registry.ITEM::getOrEmpty, "tags/items", "item");
 	private final TagGroupLoader<Fluid> fluids = new TagGroupLoader<>(Registry.FLUID::getOrEmpty, "tags/fluids", "fluid");
@@ -28,7 +28,7 @@ public class TagManagerLoader implements ResourceReloader {
 
 	@Override
 	public CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
+		ResourceReloadListener.Synchronizer synchronizer,
 		ResourceManager manager,
 		Profiler prepareProfiler,
 		Profiler applyProfiler,
@@ -43,10 +43,10 @@ public class TagManagerLoader implements ResourceReloader {
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(
 				void_ -> {
-					TagGroup<Block> tagGroup = this.blocks.buildGroup((Map<Identifier, Tag.Builder>)completableFuture.join());
-					TagGroup<Item> tagGroup2 = this.items.buildGroup((Map<Identifier, Tag.Builder>)completableFuture2.join());
-					TagGroup<Fluid> tagGroup3 = this.fluids.buildGroup((Map<Identifier, Tag.Builder>)completableFuture3.join());
-					TagGroup<EntityType<?>> tagGroup4 = this.entityTypes.buildGroup((Map<Identifier, Tag.Builder>)completableFuture4.join());
+					TagGroup<Block> tagGroup = this.blocks.applyReload((Map<Identifier, Tag.Builder>)completableFuture.join());
+					TagGroup<Item> tagGroup2 = this.items.applyReload((Map<Identifier, Tag.Builder>)completableFuture2.join());
+					TagGroup<Fluid> tagGroup3 = this.fluids.applyReload((Map<Identifier, Tag.Builder>)completableFuture3.join());
+					TagGroup<EntityType<?>> tagGroup4 = this.entityTypes.applyReload((Map<Identifier, Tag.Builder>)completableFuture4.join());
 					TagManager tagManager = TagManager.create(tagGroup, tagGroup2, tagGroup3, tagGroup4);
 					Multimap<Identifier, Identifier> multimap = RequiredTagListRegistry.getMissingTags(tagManager);
 					if (!multimap.isEmpty()) {

@@ -20,9 +20,6 @@ import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * A utility class to save screenshots.
- */
 @Environment(EnvType.CLIENT)
 public class ScreenshotUtils {
 	private static final Logger LOGGER = LogManager.getLogger();

@@ -1862,15 +1862,25 @@ public class BlockStateModelGenerator {
 
 	private void registerCauldron() {
 		this.registerItemModel(Items.CAULDRON);
+		this.registerSimpleState(Blocks.CAULDRON);
 		this.blockStateCollector
 			.accept(
-				VariantsBlockStateSupplier.create(Blocks.CAULDRON)
+				createSingletonBlockState(
+					Blocks.LAVA_CAULDRON, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.LAVA_CAULDRON, Texture.method_32232(Blocks.LAVA), this.modelCollector)
+				)
+			);
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.WATER_CAULDRON)
 					.coordinate(
 						BlockStateVariantMap.create(Properties.LEVEL_3)
-							.register(0, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockModelId(Blocks.CAULDRON)))
-							.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.CAULDRON, "_level1")))
-							.register(2, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.CAULDRON, "_level2")))
-							.register(3, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.CAULDRON, "_level3")))
+							.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.WATER_CAULDRON, "_level1")))
+							.register(2, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.WATER_CAULDRON, "_level2")))
+							.register(
+								3,
+								BlockStateVariant.create()
+									.put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.WATER_CAULDRON, Texture.method_32232(Blocks.WATER), this.modelCollector))
+							)
 					)
 			);
 	}
@@ -2070,6 +2080,24 @@ public class BlockStateModelGenerator {
 			);
 	}
 
+	private void method_32229(Block block) {
+		this.registerItemModel(block);
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(
+						block, BlockStateVariant.create().put(VariantSettings.MODEL, Models.CROSS.upload(block, Texture.cross(block), this.modelCollector))
+					)
+					.coordinate(this.createUpDefaultFacingVariantMap())
+			);
+	}
+
+	private void method_32227() {
+		this.method_32229(Blocks.SMALL_AMETHYST_BUD);
+		this.method_32229(Blocks.MEDIUM_AMETHYST_BUD);
+		this.method_32229(Blocks.LARGE_AMETHYST_BUD);
+		this.method_32229(Blocks.AMETHYST_CLUSTER);
+	}
+
 	private void registerNetherrackBottomCustomTop(Block block) {
 		Texture texture = new Texture()
 			.put(TextureKey.BOTTOM, Texture.getId(Blocks.NETHERRACK))
@@ -2263,7 +2291,7 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerGrassPath() {
-		this.blockStateCollector.accept(createBlockStateWithRandomHorizontalRotations(Blocks.GRASS_PATH, ModelIds.getBlockModelId(Blocks.GRASS_PATH)));
+		this.blockStateCollector.accept(createBlockStateWithRandomHorizontalRotations(Blocks.DIRT_PATH, ModelIds.getBlockModelId(Blocks.DIRT_PATH)));
 	}
 
 	private void registerPressurePlate(Block pressurePlate, Block textureSource) {
@@ -3345,6 +3373,23 @@ public class BlockStateModelGenerator {
 		this.registerSimpleState(Blocks.LAVA);
 		this.registerSimpleState(Blocks.SLIME_BLOCK);
 		this.registerItemModel(Items.CHAIN);
+		this.method_32228(Blocks.WHITE_CANDLE, Blocks.WHITE_CANDLE_CAKE);
+		this.method_32228(Blocks.ORANGE_CANDLE, Blocks.ORANGE_CANDLE_CAKE);
+		this.method_32228(Blocks.MAGENTA_CANDLE, Blocks.MAGENTA_CANDLE_CAKE);
+		this.method_32228(Blocks.LIGHT_BLUE_CANDLE, Blocks.LIGHT_BLUE_CANDLE_CAKE);
+		this.method_32228(Blocks.YELLOW_CANDLE, Blocks.YELLOW_CANDLE_CAKE);
+		this.method_32228(Blocks.LIME_CANDLE, Blocks.LIME_CANDLE_CAKE);
+		this.method_32228(Blocks.PINK_CANDLE, Blocks.PINK_CANDLE_CAKE);
+		this.method_32228(Blocks.GRAY_CANDLE, Blocks.GRAY_CANDLE_CAKE);
+		this.method_32228(Blocks.LIGHT_GRAY_CANDLE, Blocks.LIGHT_GRAY_CANDLE_CAKE);
+		this.method_32228(Blocks.CYAN_CANDLE, Blocks.CYAN_CANDLE_CAKE);
+		this.method_32228(Blocks.PURPLE_CANDLE, Blocks.PURPLE_CANDLE_CAKE);
+		this.method_32228(Blocks.BLUE_CANDLE, Blocks.BLUE_CANDLE_CAKE);
+		this.method_32228(Blocks.BROWN_CANDLE, Blocks.BROWN_CANDLE_CAKE);
+		this.method_32228(Blocks.GREEN_CANDLE, Blocks.GREEN_CANDLE_CAKE);
+		this.method_32228(Blocks.RED_CANDLE, Blocks.RED_CANDLE_CAKE);
+		this.method_32228(Blocks.BLACK_CANDLE, Blocks.BLACK_CANDLE_CAKE);
+		this.method_32228(Blocks.CANDLE, Blocks.CANDLE_CAKE);
 		this.registerSimpleState(Blocks.POTTED_BAMBOO);
 		this.registerSimpleState(Blocks.POTTED_CACTUS);
 		this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
@@ -3411,8 +3456,34 @@ public class BlockStateModelGenerator {
 		this.registerCubeColumn(Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE);
 		this.registerCubeColumn(Blocks.CHISELED_RED_SANDSTONE, Blocks.RED_SANDSTONE);
 		this.registerSingleton(Blocks.CHISELED_POLISHED_BLACKSTONE, TexturedModel.CUBE_ALL);
+		this.registerSingleton(Blocks.AMETHYST_BLOCK, TexturedModel.CUBE_ALL);
+		this.registerSingleton(Blocks.BUDDING_AMETHYST, TexturedModel.CUBE_ALL);
+		this.registerSingleton(Blocks.CALCITE, TexturedModel.CUBE_ALL);
+		this.registerSingleton(Blocks.TUFF, TexturedModel.CUBE_ALL);
+		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
+		this.registerSimpleCubeAll(Blocks.COPPER_BLOCK);
+		this.registerSimpleCubeAll(Blocks.LIGHTLY_WEATHERED_COPPER_BLOCK);
+		this.registerSimpleCubeAll(Blocks.SEMI_WEATHERED_COPPER_BLOCK);
+		this.registerSimpleCubeAll(Blocks.WEATHERED_COPPER_BLOCK);
+		this.registerInfested(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER);
+		this.registerInfested(Blocks.LIGHTLY_WEATHERED_COPPER_BLOCK, Blocks.WAXED_LIGHTLY_WEATHERED_COPPER);
+		this.registerInfested(Blocks.SEMI_WEATHERED_COPPER_BLOCK, Blocks.WAXED_SEMI_WEATHERED_COPPER);
+		this.registerCubeAllModelTexturePool(Blocks.CUT_COPPER)
+			.method_32230(Blocks.WAXED_CUT_COPPER)
+			.slab(Blocks.CUT_COPPER_SLAB, Blocks.WAXED_CUT_COPPER_SLAB)
+			.stairs(Blocks.CUT_COPPER_STAIRS, Blocks.WAXED_CUT_COPPER_STAIRS);
+		this.registerCubeAllModelTexturePool(Blocks.LIGHTLY_WEATHERED_CUT_COPPER)
+			.method_32230(Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER)
+			.slab(Blocks.LIGHTLY_WEATHERED_CUT_COPPER_SLAB, Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB)
+			.stairs(Blocks.LIGHTLY_WEATHERED_CUT_COPPER_STAIRS, Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER_STAIRS);
+		this.registerCubeAllModelTexturePool(Blocks.SEMI_WEATHERED_CUT_COPPER)
+			.method_32230(Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER)
+			.slab(Blocks.SEMI_WEATHERED_CUT_COPPER_SLAB, Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB)
+			.stairs(Blocks.SEMI_WEATHERED_CUT_COPPER_STAIRS, Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER_STAIRS);
+		this.registerCubeAllModelTexturePool(Blocks.WEATHERED_CUT_COPPER).slab(Blocks.WEATHERED_CUT_COPPER_SLAB).stairs(Blocks.WEATHERED_CUT_COPPER_STAIRS);
 		this.registerPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
 		this.registerPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
+		this.method_32227();
 		this.registerBookshelf();
 		this.registerBrewingStand();
 		this.registerCake();
@@ -3425,6 +3496,7 @@ public class BlockStateModelGenerator {
 		this.registerDaylightDetector();
 		this.registerEndPortalFrame();
 		this.method_31064(Blocks.END_ROD);
+		this.method_31064(Blocks.LIGHTNING_ROD);
 		this.registerFarmland();
 		this.registerFire();
 		this.registerSoulFire();
@@ -3649,6 +3721,7 @@ public class BlockStateModelGenerator {
 		this.registerSimpleCubeAll(Blocks.GREEN_TERRACOTTA);
 		this.registerSimpleCubeAll(Blocks.RED_TERRACOTTA);
 		this.registerSimpleCubeAll(Blocks.BLACK_TERRACOTTA);
+		this.registerSimpleCubeAll(Blocks.TINTED_GLASS);
 		this.registerGlassPane(Blocks.GLASS, Blocks.GLASS_PANE);
 		this.registerGlassPane(Blocks.WHITE_STAINED_GLASS, Blocks.WHITE_STAINED_GLASS_PANE);
 		this.registerGlassPane(Blocks.ORANGE_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS_PANE);
@@ -3931,7 +4004,7 @@ public class BlockStateModelGenerator {
 		this.registerCubeAllModelTexturePool(Blocks.PRISMARINE).wall(Blocks.PRISMARINE_WALL).stairs(Blocks.PRISMARINE_STAIRS).slab(Blocks.PRISMARINE_SLAB);
 		this.registerCubeAllModelTexturePool(Blocks.PRISMARINE_BRICKS).stairs(Blocks.PRISMARINE_BRICK_STAIRS).slab(Blocks.PRISMARINE_BRICK_SLAB);
 		this.registerCubeAllModelTexturePool(Blocks.DARK_PRISMARINE).stairs(Blocks.DARK_PRISMARINE_STAIRS).slab(Blocks.DARK_PRISMARINE_SLAB);
-		this.registerTexturePool(Blocks.SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL)
+		this.registerTexturePool(Blocks.SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP)
 			.wall(Blocks.SANDSTONE_WALL)
 			.stairs(Blocks.SANDSTONE_STAIRS)
 			.slab(Blocks.SANDSTONE_SLAB);
@@ -3942,7 +4015,7 @@ public class BlockStateModelGenerator {
 				Blocks.CUT_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_SANDSTONE)))
 			)
 			.slab(Blocks.CUT_SANDSTONE_SLAB);
-		this.registerTexturePool(Blocks.RED_SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL)
+		this.registerTexturePool(Blocks.RED_SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP)
 			.wall(Blocks.RED_SANDSTONE_WALL)
 			.stairs(Blocks.RED_SANDSTONE_STAIRS)
 			.slab(Blocks.RED_SANDSTONE_SLAB);
@@ -4021,6 +4094,30 @@ public class BlockStateModelGenerator {
 		SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel(spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
 	}
 
+	private void method_32228(Block block, Block block2) {
+		this.registerItemModel(block.asItem());
+		Texture texture = Texture.all(Texture.getId(block));
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(block)
+					.coordinate(
+						BlockStateVariantMap.create(Properties.CANDLES)
+							.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CANDLE.upload(block, "_one_candle", texture, this.modelCollector)))
+							.register(
+								2, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_TWO_CANDLES.upload(block, "_two_candles", texture, this.modelCollector))
+							)
+							.register(
+								3, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_THREE_CANDLES.upload(block, "_three_candles", texture, this.modelCollector))
+							)
+							.register(
+								4, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_FOUR_CANDLES.upload(block, "_four_candles", texture, this.modelCollector))
+							)
+					)
+			);
+		this.blockStateCollector
+			.accept(createSingletonBlockState(block2, Models.TEMPLATE_CAKE_WITH_CANDLE.upload(block2, Texture.method_32231(block), this.modelCollector)));
+	}
+
 	class BlockTexturePool {
 		private final Texture texture;
 		@Nullable
@@ -4039,6 +4136,19 @@ public class BlockStateModelGenerator {
 		public BlockStateModelGenerator.BlockTexturePool base(Function<Texture, Identifier> modelFactory) {
 			this.baseModelId = (Identifier)modelFactory.apply(this.texture);
 			return this;
+		}
+
+		public BlockStateModelGenerator.BlockTexturePool method_32230(Block... blocks) {
+			if (this.baseModelId == null) {
+				throw new IllegalStateException("Full block not generated yet");
+			} else {
+				for (Block block : blocks) {
+					BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, this.baseModelId));
+					BlockStateModelGenerator.this.registerParentedItemModel(block, this.baseModelId);
+				}
+
+				return this;
+			}
 		}
 
 		public BlockStateModelGenerator.BlockTexturePool button(Block buttonBlock) {
@@ -4096,7 +4206,7 @@ public class BlockStateModelGenerator {
 			return this;
 		}
 
-		public BlockStateModelGenerator.BlockTexturePool slab(Block slabBlock) {
+		public BlockStateModelGenerator.BlockTexturePool slab(Block slabBlock, Block... blocks) {
 			if (this.baseModelId == null) {
 				throw new IllegalStateException("Full block not generated yet");
 			} else {
@@ -4104,15 +4214,27 @@ public class BlockStateModelGenerator {
 				Identifier identifier2 = Models.SLAB_TOP.upload(slabBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
 				BlockStateModelGenerator.this.blockStateCollector
 					.accept(BlockStateModelGenerator.createSlabBlockState(slabBlock, identifier, identifier2, this.baseModelId));
+
+				for (Block block : blocks) {
+					BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSlabBlockState(block, identifier, identifier2, this.baseModelId));
+					BlockStateModelGenerator.this.registerParentedItemModel(block, identifier);
+				}
+
 				return this;
 			}
 		}
 
-		public BlockStateModelGenerator.BlockTexturePool stairs(Block stairsBlock) {
+		public BlockStateModelGenerator.BlockTexturePool stairs(Block stairsBlock, Block... blocks) {
 			Identifier identifier = Models.INNER_STAIRS.upload(stairsBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
 			Identifier identifier2 = Models.STAIRS.upload(stairsBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
 			Identifier identifier3 = Models.OUTER_STAIRS.upload(stairsBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createStairsBlockState(stairsBlock, identifier, identifier2, identifier3));
+
+			for (Block block : blocks) {
+				BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createStairsBlockState(block, identifier, identifier2, identifier3));
+				BlockStateModelGenerator.this.registerParentedItemModel(block, identifier2);
+			}
+
 			return this;
 		}
 	}

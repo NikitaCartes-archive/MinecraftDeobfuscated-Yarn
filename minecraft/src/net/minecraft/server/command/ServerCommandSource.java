@@ -35,12 +35,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-/**
- * Represents a command source used on server side.
- * 
- * @see MinecraftServer#getCommandSource()
- * @see Entity#getCommandSource()
- */
 public class ServerCommandSource implements CommandSource {
 	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.player"));
 	public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.entity"));
@@ -273,11 +267,11 @@ public class ServerCommandSource implements CommandSource {
 		}
 	}
 
-	public ServerCommandSource withLookingAt(Entity entity, EntityAnchorArgumentType.EntityAnchor anchor) throws CommandSyntaxException {
+	public ServerCommandSource withLookingAt(Entity entity, EntityAnchorArgumentType.EntityAnchor anchor) {
 		return this.withLookingAt(anchor.positionAt(entity));
 	}
 
-	public ServerCommandSource withLookingAt(Vec3d position) throws CommandSyntaxException {
+	public ServerCommandSource withLookingAt(Vec3d position) {
 		Vec3d vec3d = this.entityAnchor.positionAt(this);
 		double d = position.x - vec3d.x;
 		double e = position.y - vec3d.y;
@@ -309,9 +303,6 @@ public class ServerCommandSource implements CommandSource {
 		return this.world;
 	}
 
-	/**
-	 * Gets the entity from this command source or returns null if this command source is not an entity.
-	 */
 	@Nullable
 	public Entity getEntity() {
 		return this.entity;

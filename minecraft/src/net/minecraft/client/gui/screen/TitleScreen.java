@@ -15,12 +15,12 @@ import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
-import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
-import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
-import net.minecraft.client.gui.screen.option.OptionsScreen;
+import net.minecraft.client.gui.screen.options.AccessibilityOptionsScreen;
+import net.minecraft.client.gui.screen.options.LanguageOptionsScreen;
+import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.resource.language.I18n;
@@ -41,7 +41,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class TitleScreen extends Screen {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger field_23775 = LogManager.getLogger();
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
 	private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
@@ -124,7 +124,7 @@ public class TitleScreen extends Screen {
 				0,
 				106,
 				20,
-				ButtonWidget.WIDGETS_TEXTURE,
+				ButtonWidget.WIDGETS_LOCATION,
 				256,
 				256,
 				buttonWidget -> this.client.openScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())),
@@ -199,13 +199,13 @@ public class TitleScreen extends Screen {
 	}
 
 	private void initWidgetsDemo(int y, int spacingY) {
-		boolean bl = this.canReadDemoWorldData();
+		boolean bl = this.method_31129();
 		this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), buttonWidget -> {
 			if (bl) {
 				this.client.startIntegratedServer("Demo_World");
 			} else {
 				DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-				this.client.createWorld("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.method_31112(impl));
+				this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.method_31112(impl));
 			}
 		}));
 		this.buttonResetDemo = this.addButton(
@@ -234,7 +234,7 @@ public class TitleScreen extends Screen {
 						}
 					} catch (IOException var16) {
 						SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-						LOGGER.warn("Failed to access demo world", (Throwable)var16);
+						field_23775.warn("Failed to access demo world", (Throwable)var16);
 					}
 				}
 			)
@@ -242,12 +242,12 @@ public class TitleScreen extends Screen {
 		this.buttonResetDemo.active = bl;
 	}
 
-	private boolean canReadDemoWorldData() {
+	private boolean method_31129() {
 		try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
 			return session.getLevelSummary() != null;
 		} catch (IOException var15) {
 			SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-			LOGGER.warn("Failed to read demo world data", (Throwable)var15);
+			field_23775.warn("Failed to read demo world data", (Throwable)var15);
 			return false;
 		}
 	}
@@ -303,7 +303,7 @@ public class TitleScreen extends Screen {
 				float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
 				h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
 				RenderSystem.scalef(h, h, h);
-				drawCenteredText(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | l);
+				drawCenteredString(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | l);
 				RenderSystem.popMatrix();
 			}
 
@@ -324,8 +324,8 @@ public class TitleScreen extends Screen {
 				fill(matrices, this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 16777215 | l);
 			}
 
-			for (ClickableWidget clickableWidget : this.buttons) {
-				clickableWidget.setAlpha(g);
+			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+				abstractButtonWidget.setAlpha(g);
 			}
 
 			super.render(matrices, mouseX, mouseY, delta);
@@ -366,7 +366,7 @@ public class TitleScreen extends Screen {
 				session.deleteSessionLock();
 			} catch (IOException var15) {
 				SystemToast.addWorldDeleteFailureToast(this.client, "Demo_World");
-				LOGGER.warn("Failed to delete demo world", (Throwable)var15);
+				field_23775.warn("Failed to delete demo world", (Throwable)var15);
 			}
 		}
 

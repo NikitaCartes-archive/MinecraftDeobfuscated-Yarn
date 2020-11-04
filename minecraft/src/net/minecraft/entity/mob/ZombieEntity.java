@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_5493;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -19,7 +20,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.goal.BreakDoorGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -46,7 +46,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -134,7 +134,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	public void setCanBreakDoors(boolean canBreakDoors) {
-		if (this.shouldBreakDoors() && NavigationConditions.hasMobNavigation(this)) {
+		if (this.shouldBreakDoors() && class_5493.method_30955(this)) {
 			if (this.canBreakDoors != canBreakDoors) {
 				this.canBreakDoors = canBreakDoors;
 				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(canBreakDoors);
@@ -160,12 +160,12 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected int getXpToDrop(PlayerEntity player) {
+	protected int getCurrentExperience(PlayerEntity player) {
 		if (this.isBaby()) {
 			this.experiencePoints = (int)((float)this.experiencePoints * 2.5F);
 		}
 
-		return super.getXpToDrop(player);
+		return super.getCurrentExperience(player);
 	}
 
 	@Override
@@ -298,7 +298,7 @@ public class ZombieEntity extends HostileEntity {
 					SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
 					if (SpawnHelper.canSpawn(location, this.world, blockPos, entityType)
 						&& SpawnRestriction.canSpawn(entityType, serverWorld, SpawnReason.REINFORCEMENT, blockPos, this.world.random)) {
-						zombieEntity.setPosition((double)m, (double)n, (double)o);
+						zombieEntity.updatePosition((double)m, (double)n, (double)o);
 						if (!this.world.isPlayerInRange((double)m, (double)n, (double)o, 7.0)
 							&& this.world.intersectsEntities(zombieEntity)
 							&& this.world.isSpaceEmpty(zombieEntity)
@@ -376,44 +376,44 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putBoolean("IsBaby", this.isBaby());
-		nbt.putBoolean("CanBreakDoors", this.canBreakDoors());
-		nbt.putInt("InWaterTime", this.isTouchingWater() ? this.inWaterTime : -1);
-		nbt.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("IsBaby", this.isBaby());
+		tag.putBoolean("CanBreakDoors", this.canBreakDoors());
+		tag.putInt("InWaterTime", this.isTouchingWater() ? this.inWaterTime : -1);
+		tag.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setBaby(nbt.getBoolean("IsBaby"));
-		this.setCanBreakDoors(nbt.getBoolean("CanBreakDoors"));
-		this.inWaterTime = nbt.getInt("InWaterTime");
-		if (nbt.contains("DrownedConversionTime", 99) && nbt.getInt("DrownedConversionTime") > -1) {
-			this.setTicksUntilWaterConversion(nbt.getInt("DrownedConversionTime"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setBaby(tag.getBoolean("IsBaby"));
+		this.setCanBreakDoors(tag.getBoolean("CanBreakDoors"));
+		this.inWaterTime = tag.getInt("InWaterTime");
+		if (tag.contains("DrownedConversionTime", 99) && tag.getInt("DrownedConversionTime") > -1) {
+			this.setTicksUntilWaterConversion(tag.getInt("DrownedConversionTime"));
 		}
 	}
 
 	@Override
-	public void onKilledOther(ServerWorld world, LivingEntity other) {
-		super.onKilledOther(world, other);
-		if ((world.getDifficulty() == Difficulty.NORMAL || world.getDifficulty() == Difficulty.HARD) && other instanceof VillagerEntity) {
-			if (world.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
+	public void onKilledOther(ServerWorld serverWorld, LivingEntity livingEntity) {
+		super.onKilledOther(serverWorld, livingEntity);
+		if ((serverWorld.getDifficulty() == Difficulty.NORMAL || serverWorld.getDifficulty() == Difficulty.HARD) && livingEntity instanceof VillagerEntity) {
+			if (serverWorld.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
 				return;
 			}
 
-			VillagerEntity villagerEntity = (VillagerEntity)other;
+			VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
 			ZombieVillagerEntity zombieVillagerEntity = villagerEntity.method_29243(EntityType.ZOMBIE_VILLAGER, false);
 			zombieVillagerEntity.initialize(
-				world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
+				serverWorld, serverWorld.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
 			);
 			zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
 			zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
-			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
+			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
 			zombieVillagerEntity.setXp(villagerEntity.getExperience());
 			if (!this.isSilent()) {
-				world.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
+				serverWorld.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
 			}
 		}
 	}
@@ -425,15 +425,15 @@ public class ZombieEntity extends HostileEntity {
 
 	@Override
 	public boolean canPickupItem(ItemStack stack) {
-		return stack.getItem() == Items.EGG && this.isBaby() && this.hasVehicle() ? false : super.canPickupItem(stack);
+		return stack.isOf(Items.EGG) && this.isBaby() && this.hasVehicle() ? false : super.canPickupItem(stack);
 	}
 
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		float f = difficulty.getClampedLocalDifficulty();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * f);
 		if (entityData == null) {

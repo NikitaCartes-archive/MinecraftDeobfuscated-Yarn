@@ -38,12 +38,11 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BannerItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -112,18 +111,18 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		NbtList nbtList = new NbtList();
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		ListTag listTag = new ListTag();
 
 		for (int i = 0; i < this.inventory.size(); i++) {
 			ItemStack itemStack = this.inventory.getStack(i);
 			if (!itemStack.isEmpty()) {
-				nbtList.add(itemStack.writeNbt(new NbtCompound()));
+				listTag.add(itemStack.toTag(new CompoundTag()));
 			}
 		}
 
-		nbt.put("Inventory", nbtList);
+		tag.put("Inventory", listTag);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -139,12 +138,12 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		NbtList nbtList = nbt.getList("Inventory", 10);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		ListTag listTag = tag.getList("Inventory", 10);
 
-		for (int i = 0; i < nbtList.size(); i++) {
-			ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
+		for (int i = 0; i < listTag.size(); i++) {
+			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
 			if (!itemStack.isEmpty()) {
 				this.inventory.addStack(itemStack);
 			}
@@ -167,11 +166,11 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -184,7 +183,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		super.method_30759(f);
 		if (this.random.nextInt(300) == 0) {
 			ItemStack itemStack = this.getMainHandStack();
-			if (itemStack.getItem() == Items.CROSSBOW) {
+			if (itemStack.isOf(Items.CROSSBOW)) {
 				Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack);
 				map.putIfAbsent(Enchantments.PIERCING, 1);
 				EnchantmentHelper.set(map, itemStack);
@@ -234,22 +233,19 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		ItemStack itemStack = item.getStack();
 		if (itemStack.getItem() instanceof BannerItem) {
 			super.loot(item);
-		} else {
-			Item item2 = itemStack.getItem();
-			if (this.method_7111(item2)) {
-				this.method_29499(item);
-				ItemStack itemStack2 = this.inventory.addStack(itemStack);
-				if (itemStack2.isEmpty()) {
-					item.remove();
-				} else {
-					itemStack.setCount(itemStack2.getCount());
-				}
+		} else if (this.method_7111(itemStack)) {
+			this.triggerItemPickedUpByEntityCriteria(item);
+			ItemStack itemStack2 = this.inventory.addStack(itemStack);
+			if (itemStack2.isEmpty()) {
+				item.discard();
+			} else {
+				itemStack.setCount(itemStack2.getCount());
 			}
 		}
 	}
 
-	private boolean method_7111(Item item) {
-		return this.hasActiveRaid() && item == Items.WHITE_BANNER;
+	private boolean method_7111(ItemStack itemStack) {
+		return this.hasActiveRaid() && itemStack.isOf(Items.WHITE_BANNER);
 	}
 
 	@Override

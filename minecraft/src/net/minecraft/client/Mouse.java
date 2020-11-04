@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.SmoothUtil;
@@ -144,11 +144,11 @@ public class Mouse {
 						if (this.client.inGameHud.getSpectatorHud().isOpen()) {
 							this.client.inGameHud.getSpectatorHud().cycleSlot((double)(-g));
 						} else {
-							float h = MathHelper.clamp(this.client.player.abilities.getFlySpeed() + g * 0.005F, 0.0F, 0.2F);
-							this.client.player.abilities.setFlySpeed(h);
+							float h = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + g * 0.005F, 0.0F, 0.2F);
+							this.client.player.getAbilities().setFlySpeed(h);
 						}
 					} else {
-						this.client.player.inventory.scrollInHotbar((double)g);
+						this.client.player.getInventory().scrollInHotbar((double)g);
 					}
 				}
 			}
@@ -161,20 +161,20 @@ public class Mouse {
 		}
 	}
 
-	public void setup(long window) {
+	public void setup(long l) {
 		InputUtil.setMouseCallbacks(
-			window,
-			(l, d, e) -> this.client.execute(() -> this.onCursorPos(l, d, e)),
-			(l, i, j, k) -> this.client.execute(() -> this.onMouseButton(l, i, j, k)),
-			(l, d, e) -> this.client.execute(() -> this.onMouseScroll(l, d, e)),
-			(l, i, m) -> {
+			l,
+			(lx, d, e) -> this.client.execute(() -> this.onCursorPos(lx, d, e)),
+			(lx, i, j, k) -> this.client.execute(() -> this.onMouseButton(lx, i, j, k)),
+			(lx, d, e) -> this.client.execute(() -> this.onMouseScroll(lx, d, e)),
+			(lx, i, m) -> {
 				Path[] paths = new Path[i];
 
 				for (int j = 0; j < i; j++) {
 					paths[j] = Paths.get(GLFWDropCallback.getName(m, j));
 				}
 
-				this.client.execute(() -> this.method_29616(l, Arrays.asList(paths)));
+				this.client.execute(() -> this.method_29616(lx, Arrays.asList(paths)));
 			}
 		);
 	}
@@ -218,31 +218,37 @@ public class Mouse {
 		this.lastMouseUpdateTime = d;
 		if (this.isCursorLocked() && this.client.isWindowFocused()) {
 			double f = this.client.options.mouseSensitivity * 0.6F + 0.2F;
-			double g = f * f * f * 8.0;
-			double j;
+			double g = f * f * f;
+			double h = g * 8.0;
 			double k;
+			double l;
 			if (this.client.options.smoothCameraEnabled) {
-				double h = this.cursorXSmoother.smooth(this.cursorDeltaX * g, e * g);
-				double i = this.cursorYSmoother.smooth(this.cursorDeltaY * g, e * g);
-				j = h;
+				double i = this.cursorXSmoother.smooth(this.cursorDeltaX * h, e * h);
+				double j = this.cursorYSmoother.smooth(this.cursorDeltaY * h, e * h);
 				k = i;
+				l = j;
+			} else if (this.client.options.getPerspective().isFirstPerson() && this.client.player.isUsingSpyglass()) {
+				this.cursorXSmoother.clear();
+				this.cursorYSmoother.clear();
+				k = this.cursorDeltaX * g;
+				l = this.cursorDeltaY * g;
 			} else {
 				this.cursorXSmoother.clear();
 				this.cursorYSmoother.clear();
-				j = this.cursorDeltaX * g;
-				k = this.cursorDeltaY * g;
+				k = this.cursorDeltaX * h;
+				l = this.cursorDeltaY * h;
 			}
 
 			this.cursorDeltaX = 0.0;
 			this.cursorDeltaY = 0.0;
-			int l = 1;
+			int m = 1;
 			if (this.client.options.invertYMouse) {
-				l = -1;
+				m = -1;
 			}
 
-			this.client.getTutorialManager().onUpdateMouse(j, k);
+			this.client.getTutorialManager().onUpdateMouse(k, l);
 			if (this.client.player != null) {
-				this.client.player.changeLookDirection(j, k * (double)l);
+				this.client.player.changeLookDirection(k, l * (double)m);
 			}
 		} else {
 			this.cursorDeltaX = 0.0;

@@ -14,16 +14,16 @@ import org.lwjgl.system.MemoryUtil;
 @Environment(EnvType.CLIENT)
 public class GlUniform extends Uniform implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private int location;
+	private int loc;
 	private final int count;
 	private final int dataType;
 	private final IntBuffer intData;
 	private final FloatBuffer floatData;
 	private final String name;
 	private boolean stateDirty;
-	private final GlShader program;
+	private final GlProgram program;
 
-	public GlUniform(String name, int dataType, int count, GlShader program) {
+	public GlUniform(String name, int dataType, int count, GlProgram program) {
 		this.name = name;
 		this.count = count;
 		this.dataType = dataType;
@@ -36,20 +36,20 @@ public class GlUniform extends Uniform implements AutoCloseable {
 			this.floatData = MemoryUtil.memAllocFloat(count);
 		}
 
-		this.location = -1;
+		this.loc = -1;
 		this.markStateDirty();
 	}
 
-	public static int getUniformLocation(int program, CharSequence name) {
-		return GlStateManager.getUniformLocation(program, name);
+	public static int getUniformLocation(int i, CharSequence charSequence) {
+		return GlStateManager.getUniformLocation(i, charSequence);
 	}
 
-	public static void uniform1(int location, int value) {
-		RenderSystem.glUniform1i(location, value);
+	public static void uniform1(int i, int j) {
+		RenderSystem.glUniform1i(i, j);
 	}
 
-	public static int getAttribLocation(int program, CharSequence name) {
-		return GlStateManager.getAttribLocation(program, name);
+	public static int getAttribLocation(int i, CharSequence charSequence) {
+		return GlStateManager.getAttribLocation(i, charSequence);
 	}
 
 	public void close() {
@@ -88,8 +88,8 @@ public class GlUniform extends Uniform implements AutoCloseable {
 		return i;
 	}
 
-	public void setLoc(int loc) {
-		this.location = loc;
+	public void setLoc(int i) {
+		this.loc = i;
 	}
 
 	public String getName() {
@@ -154,7 +154,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public void setForDataType(int value1, int value2, int value3, int value4) {
+	public void set(int value1, int value2, int value3, int value4) {
 		this.intData.position(0);
 		if (this.dataType >= 0) {
 			this.intData.put(0, value1);
@@ -190,7 +190,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	@Override
 	public void set(Matrix4f values) {
 		this.floatData.position(0);
-		values.writeRowFirst(this.floatData);
+		values.writeToBuffer(this.floatData);
 		this.markStateDirty();
 	}
 
@@ -214,19 +214,19 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	private void uploadInts() {
-		this.floatData.clear();
+		this.intData.rewind();
 		switch (this.dataType) {
 			case 0:
-				RenderSystem.glUniform1(this.location, this.intData);
+				RenderSystem.glUniform1(this.loc, this.intData);
 				break;
 			case 1:
-				RenderSystem.glUniform2(this.location, this.intData);
+				RenderSystem.glUniform2(this.loc, this.intData);
 				break;
 			case 2:
-				RenderSystem.glUniform3(this.location, this.intData);
+				RenderSystem.glUniform3(this.loc, this.intData);
 				break;
 			case 3:
-				RenderSystem.glUniform4(this.location, this.intData);
+				RenderSystem.glUniform4(this.loc, this.intData);
 				break;
 			default:
 				LOGGER.warn("Uniform.upload called, but count value ({}) is  not in the range of 1 to 4. Ignoring.", this.count);
@@ -234,19 +234,19 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	private void uploadFloats() {
-		this.floatData.clear();
+		this.floatData.rewind();
 		switch (this.dataType) {
 			case 4:
-				RenderSystem.glUniform1(this.location, this.floatData);
+				RenderSystem.glUniform1(this.loc, this.floatData);
 				break;
 			case 5:
-				RenderSystem.glUniform2(this.location, this.floatData);
+				RenderSystem.glUniform2(this.loc, this.floatData);
 				break;
 			case 6:
-				RenderSystem.glUniform3(this.location, this.floatData);
+				RenderSystem.glUniform3(this.loc, this.floatData);
 				break;
 			case 7:
-				RenderSystem.glUniform4(this.location, this.floatData);
+				RenderSystem.glUniform4(this.loc, this.floatData);
 				break;
 			default:
 				LOGGER.warn("Uniform.upload called, but count value ({}) is not in the range of 1 to 4. Ignoring.", this.count);
@@ -257,13 +257,13 @@ public class GlUniform extends Uniform implements AutoCloseable {
 		this.floatData.clear();
 		switch (this.dataType) {
 			case 8:
-				RenderSystem.glUniformMatrix2(this.location, false, this.floatData);
+				RenderSystem.glUniformMatrix2(this.loc, false, this.floatData);
 				break;
 			case 9:
-				RenderSystem.glUniformMatrix3(this.location, false, this.floatData);
+				RenderSystem.glUniformMatrix3(this.loc, false, this.floatData);
 				break;
 			case 10:
-				RenderSystem.glUniformMatrix4(this.location, false, this.floatData);
+				RenderSystem.glUniformMatrix4(this.loc, false, this.floatData);
 		}
 	}
 }

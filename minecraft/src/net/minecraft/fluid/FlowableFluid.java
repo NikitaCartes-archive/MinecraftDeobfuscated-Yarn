@@ -386,10 +386,10 @@ public abstract class FlowableFluid extends Fluid {
 		if (block instanceof FluidFillable) {
 			return ((FluidFillable)block).canFillWithFluid(world, pos, state, fluid);
 		} else if (!(block instanceof DoorBlock)
-			&& !block.isIn(BlockTags.SIGNS)
-			&& block != Blocks.LADDER
-			&& block != Blocks.SUGAR_CANE
-			&& block != Blocks.BUBBLE_COLUMN) {
+			&& !state.isIn(BlockTags.SIGNS)
+			&& !state.isOf(Blocks.LADDER)
+			&& !state.isOf(Blocks.SUGAR_CANE)
+			&& !state.isOf(Blocks.BUBBLE_COLUMN)) {
 			Material material = state.getMaterial();
 			return material != Material.PORTAL
 					&& material != Material.STRUCTURE_VOID
@@ -443,7 +443,7 @@ public abstract class FlowableFluid extends Fluid {
 		this.tryFlow(world, pos, state);
 	}
 
-	protected static int getBlockStateLevel(FluidState state) {
+	protected static int method_15741(FluidState state) {
 		return state.isStill() ? 0 : 8 - Math.min(state.getLevel(), 8) + (state.get(FALLING) ? 8 : 0);
 	}
 

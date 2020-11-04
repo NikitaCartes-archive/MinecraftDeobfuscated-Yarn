@@ -1,7 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.class_5532;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
@@ -15,7 +15,7 @@ public class SwimAroundGoal extends WanderAroundGoal {
 	@Nullable
 	@Override
 	protected Vec3d getWanderTarget() {
-		Vec3d vec3d = TargetFinder.findTarget(this.mob, 10, 7);
+		Vec3d vec3d = class_5532.method_31510(this.mob, 10, 7);
 		int i = 0;
 
 		while (
@@ -23,7 +23,7 @@ public class SwimAroundGoal extends WanderAroundGoal {
 				&& !this.mob.world.getBlockState(new BlockPos(vec3d)).canPathfindThrough(this.mob.world, new BlockPos(vec3d), NavigationType.WATER)
 				&& i++ < 10
 		) {
-			vec3d = TargetFinder.findTarget(this.mob, 10, 7);
+			vec3d = class_5532.method_31510(this.mob, 10, 7);
 		}
 
 		return vec3d;

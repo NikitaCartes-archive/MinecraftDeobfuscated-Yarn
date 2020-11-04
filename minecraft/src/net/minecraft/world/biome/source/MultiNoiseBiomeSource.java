@@ -21,9 +21,9 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.BuiltinBiomes;
@@ -107,16 +107,16 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		this.humidityNoiseParameters = humidityNoiseParameters;
 		this.altitudeNoiseParameters = altitudeNoiseParameters;
 		this.weirdnessNoiseParameters = weirdnessNoiseParameters;
-		this.temperatureNoise = DoublePerlinNoiseSampler.method_30846(
+		this.temperatureNoise = DoublePerlinNoiseSampler.create(
 			new ChunkRandom(seed), temperatureNoiseParameters.getFirstOctave(), temperatureNoiseParameters.getAmplitudes()
 		);
-		this.humidityNoise = DoublePerlinNoiseSampler.method_30846(
+		this.humidityNoise = DoublePerlinNoiseSampler.create(
 			new ChunkRandom(seed + 1L), humidityNoiseParameters.getFirstOctave(), humidityNoiseParameters.getAmplitudes()
 		);
-		this.altitudeNoise = DoublePerlinNoiseSampler.method_30846(
+		this.altitudeNoise = DoublePerlinNoiseSampler.create(
 			new ChunkRandom(seed + 2L), altitudeNoiseParameters.getFirstOctave(), altitudeNoiseParameters.getAmplitudes()
 		);
-		this.weirdnessNoise = DoublePerlinNoiseSampler.method_30846(
+		this.weirdnessNoise = DoublePerlinNoiseSampler.create(
 			new ChunkRandom(seed + 3L), weirdnessNoiseParameters.getFirstOctave(), weirdnessNoiseParameters.getAmplitudes()
 		);
 		this.biomePoints = biomePoints;

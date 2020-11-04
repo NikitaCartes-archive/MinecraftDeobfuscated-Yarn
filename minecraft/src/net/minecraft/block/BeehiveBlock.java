@@ -8,6 +8,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -25,7 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -44,7 +46,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -80,7 +81,7 @@ public class BeehiveBlock extends BlockWithEntity {
 				this.angerNearbyBees(world, pos);
 			}
 
-			Criteria.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state.getBlock(), stack, beehiveBlockEntity.getBeeCount());
+			Criteria.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state, stack, beehiveBlockEntity.getBeeCount());
 		}
 	}
 
@@ -108,17 +109,17 @@ public class BeehiveBlock extends BlockWithEntity {
 		int i = (Integer)state.get(HONEY_LEVEL);
 		boolean bl = false;
 		if (i >= 5) {
-			if (itemStack.getItem() == Items.SHEARS) {
+			if (itemStack.isOf(Items.SHEARS)) {
 				world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 				dropHoneycomb(world, pos);
 				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
 				bl = true;
-			} else if (itemStack.getItem() == Items.GLASS_BOTTLE) {
+			} else if (itemStack.isOf(Items.GLASS_BOTTLE)) {
 				itemStack.decrement(1);
 				world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 				if (itemStack.isEmpty()) {
 					player.setStackInHand(hand, new ItemStack(Items.HONEY_BOTTLE));
-				} else if (!player.inventory.insertStack(new ItemStack(Items.HONEY_BOTTLE))) {
+				} else if (!player.getInventory().insertStack(new ItemStack(Items.HONEY_BOTTLE))) {
 					player.dropItem(new ItemStack(Items.HONEY_BOTTLE), false);
 				}
 
@@ -240,8 +241,14 @@ public class BeehiveBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new BeehiveBlockEntity();
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new BeehiveBlockEntity(pos, state);
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		return world.isClient ? null : checkType(type, BlockEntityType.BEEHIVE, BeehiveBlockEntity::serverTick);
 	}
 
 	@Override
@@ -258,14 +265,14 @@ public class BeehiveBlock extends BlockWithEntity {
 				}
 
 				if (bl) {
-					NbtCompound nbtCompound = new NbtCompound();
-					nbtCompound.put("Bees", beehiveBlockEntity.getBees());
-					itemStack.putSubTag("BlockEntityTag", nbtCompound);
+					CompoundTag compoundTag = new CompoundTag();
+					compoundTag.put("Bees", beehiveBlockEntity.getBees());
+					itemStack.putSubTag("BlockEntityTag", compoundTag);
 				}
 
-				NbtCompound nbtCompound = new NbtCompound();
-				nbtCompound.putInt("honey_level", i);
-				itemStack.putSubTag("BlockStateTag", nbtCompound);
+				CompoundTag compoundTag = new CompoundTag();
+				compoundTag.putInt("honey_level", i);
+				itemStack.putSubTag("BlockStateTag", compoundTag);
 				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);
@@ -294,10 +301,8 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
-		if (world.getBlockState(neighborPos).getBlock() instanceof FireBlock) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		if (world.getBlockState(posFrom).getBlock() instanceof FireBlock) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeehiveBlockEntity) {
 				BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
@@ -305,7 +310,7 @@ public class BeehiveBlock extends BlockWithEntity {
 			}
 		}
 
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	public static Direction getRandomGenerationDirection(Random random) {

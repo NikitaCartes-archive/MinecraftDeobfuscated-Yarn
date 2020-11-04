@@ -13,7 +13,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -37,7 +39,7 @@ public class EndCrystalEntity extends Entity {
 
 	public EndCrystalEntity(World world, double x, double y, double z) {
 		this(EntityType.END_CRYSTAL, world);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 	}
 
 	@Override
@@ -63,22 +65,22 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound nbt) {
+	protected void writeCustomDataToTag(CompoundTag tag) {
 		if (this.getBeamTarget() != null) {
-			nbt.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
+			tag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
 		}
 
-		nbt.putBoolean("ShowBottom", this.shouldShowBottom());
+		tag.putBoolean("ShowBottom", this.getShowBottom());
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		if (nbt.contains("BeamTarget", 10)) {
-			this.setBeamTarget(NbtHelper.toBlockPos(nbt.getCompound("BeamTarget")));
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		if (tag.contains("BeamTarget", 10)) {
+			this.setBeamTarget(NbtHelper.toBlockPos(tag.getCompound("BeamTarget")));
 		}
 
-		if (nbt.contains("ShowBottom", 1)) {
-			this.setShowBottom(nbt.getBoolean("ShowBottom"));
+		if (tag.contains("ShowBottom", 1)) {
+			this.setShowBottom(tag.getBoolean("ShowBottom"));
 		}
 	}
 
@@ -94,8 +96,8 @@ public class EndCrystalEntity extends Entity {
 		} else if (source.getAttacker() instanceof EnderDragonEntity) {
 			return false;
 		} else {
-			if (!this.removed && !this.world.isClient) {
-				this.remove();
+			if (!this.isRemoved() && !this.world.isClient) {
+				this.remove(Entity.RemovalReason.KILLED);
 				if (!source.isExplosive()) {
 					this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), 6.0F, Explosion.DestructionType.DESTROY);
 				}
@@ -135,7 +137,7 @@ public class EndCrystalEntity extends Entity {
 		this.getDataTracker().set(SHOW_BOTTOM, showBottom);
 	}
 
-	public boolean shouldShowBottom() {
+	public boolean getShowBottom() {
 		return this.getDataTracker().get(SHOW_BOTTOM);
 	}
 
@@ -143,6 +145,12 @@ public class EndCrystalEntity extends Entity {
 	@Override
 	public boolean shouldRender(double distance) {
 		return super.shouldRender(distance) || this.getBeamTarget() != null;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public ItemStack getPickBlockStack() {
+		return new ItemStack(Items.END_CRYSTAL);
 	}
 
 	@Override

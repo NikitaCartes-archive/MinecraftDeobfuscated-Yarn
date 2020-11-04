@@ -46,18 +46,18 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		this.targetedEntity = null;
 	}
 
-	public void addPointOfInterest(VillageDebugRenderer.PointOfInterest poi) {
-		this.pointsOfInterest.put(poi.pos, poi);
+	public void addPointOfInterest(VillageDebugRenderer.PointOfInterest pointOfInterest) {
+		this.pointsOfInterest.put(pointOfInterest.pos, pointOfInterest);
 	}
 
-	public void removePointOfInterest(BlockPos pos) {
-		this.pointsOfInterest.remove(pos);
+	public void removePointOfInterest(BlockPos blockPos) {
+		this.pointsOfInterest.remove(blockPos);
 	}
 
 	public void setFreeTicketCount(BlockPos pos, int freeTicketCount) {
 		VillageDebugRenderer.PointOfInterest pointOfInterest = (VillageDebugRenderer.PointOfInterest)this.pointsOfInterest.get(pos);
 		if (pointOfInterest == null) {
-			LOGGER.warn("Strange, setFreeTicketCount was called for an unknown POI: " + pos);
+			LOGGER.warn("Strange, setFreeTicketCount was called for an unknown POI: {}", pos);
 		} else {
 			pointOfInterest.freeTicketCount = freeTicketCount;
 		}
@@ -86,7 +86,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	private void method_24805() {
 		this.brains.entrySet().removeIf(entry -> {
 			Entity entity = this.client.world.getEntityById(((VillageDebugRenderer.Brain)entry.getValue()).field_18924);
-			return entity == null || entity.removed;
+			return entity == null || entity.isRemoved();
 		});
 	}
 

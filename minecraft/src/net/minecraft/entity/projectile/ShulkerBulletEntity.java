@@ -13,8 +13,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -46,13 +45,6 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		this.noClip = true;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public ShulkerBulletEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		this(EntityType.SHULKER_BULLET, world);
-		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
-		this.setVelocity(velocityX, velocityY, velocityZ);
-	}
-
 	public ShulkerBulletEntity(World world, LivingEntity owner, Entity target, Direction.Axis axis) {
 		this(EntityType.SHULKER_BULLET, world);
 		this.setOwner(owner);
@@ -72,35 +64,35 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
+	protected void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.target != null) {
-			nbt.putUuid("Target", this.target.getUuid());
+			tag.putUuid("Target", this.target.getUuid());
 		}
 
 		if (this.direction != null) {
-			nbt.putInt("Dir", this.direction.getId());
+			tag.putInt("Dir", this.direction.getId());
 		}
 
-		nbt.putInt("Steps", this.stepCount);
-		nbt.putDouble("TXD", this.targetX);
-		nbt.putDouble("TYD", this.targetY);
-		nbt.putDouble("TZD", this.targetZ);
+		tag.putInt("Steps", this.stepCount);
+		tag.putDouble("TXD", this.targetX);
+		tag.putDouble("TYD", this.targetY);
+		tag.putDouble("TZD", this.targetZ);
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.stepCount = nbt.getInt("Steps");
-		this.targetX = nbt.getDouble("TXD");
-		this.targetY = nbt.getDouble("TYD");
-		this.targetZ = nbt.getDouble("TZD");
-		if (nbt.contains("Dir", 99)) {
-			this.direction = Direction.byId(nbt.getInt("Dir"));
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.stepCount = tag.getInt("Steps");
+		this.targetX = tag.getDouble("TXD");
+		this.targetY = tag.getDouble("TYD");
+		this.targetZ = tag.getDouble("TZD");
+		if (tag.contains("Dir", 99)) {
+			this.direction = Direction.byId(tag.getInt("Dir"));
 		}
 
-		if (nbt.containsUuid("Target")) {
-			this.targetUuid = nbt.getUuid("Target");
+		if (tag.containsUuid("Target")) {
+			this.targetUuid = tag.getUuid("Target");
 		}
 	}
 
@@ -189,7 +181,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	@Override
 	public void checkDespawn() {
 		if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
-			this.remove();
+			this.discard();
 		}
 	}
 
@@ -224,11 +216,11 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 
 		this.checkBlockCollision();
 		Vec3d vec3d = this.getVelocity();
-		this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
+		this.updatePosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
 		ProjectileUtil.method_7484(this, 0.5F);
 		if (this.world.isClient) {
 			this.world.addParticle(ParticleTypes.END_ROD, this.getX() - vec3d.x, this.getY() - vec3d.y + 0.15, this.getZ() - vec3d.z, 0.0, 0.0, 0.0);
-		} else if (this.target != null && !this.target.removed) {
+		} else if (this.target != null && !this.target.isRemoved()) {
 			if (this.stepCount > 0) {
 				this.stepCount--;
 				if (this.stepCount == 0) {
@@ -299,7 +291,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		this.remove();
+		this.discard();
 	}
 
 	@Override
@@ -312,14 +304,19 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		if (!this.world.isClient) {
 			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HURT, 1.0F, 1.0F);
 			((ServerWorld)this.world).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
-			this.remove();
+			this.discard();
 		}
 
 		return true;
 	}
 
+	@Environment(EnvType.CLIENT)
 	@Override
-	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this);
+	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+		super.onSpawnPacket(packet);
+		double d = packet.getVelocityX();
+		double e = packet.getVelocityY();
+		double f = packet.getVelocityZ();
+		this.setVelocity(d, e, f);
 	}
 }

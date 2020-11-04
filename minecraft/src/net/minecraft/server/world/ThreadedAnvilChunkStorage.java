@@ -19,7 +19,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,12 +38,12 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5567;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
@@ -58,7 +57,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.TypeFilterableList;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -111,6 +109,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> worldGenExecutor;
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> mainExecutor;
 	private final WorldGenerationProgressListener worldGenerationProgressListener;
+	private final class_5567 field_26931;
 	private final ThreadedAnvilChunkStorage.TicketManager ticketManager;
 	private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
 	private final StructureManager structureManager;
@@ -126,11 +125,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		LevelStorage.Session session,
 		DataFixer dataFixer,
 		StructureManager structureManager,
-		Executor workerExecutor,
+		Executor executor,
 		ThreadExecutor<Runnable> mainThreadExecutor,
 		ChunkProvider chunkProvider,
 		ChunkGenerator chunkGenerator,
 		WorldGenerationProgressListener worldGenerationProgressListener,
+		class_5567 arg,
 		Supplier<PersistentStateManager> supplier,
 		int i,
 		boolean bl
@@ -141,40 +141,41 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.world = serverWorld;
 		this.chunkGenerator = chunkGenerator;
 		this.mainThreadExecutor = mainThreadExecutor;
-		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(workerExecutor, "worldgen");
+		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");
 		MessageListener<Runnable> messageListener = MessageListener.create("main", mainThreadExecutor::send);
 		this.worldGenerationProgressListener = worldGenerationProgressListener;
-		TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(workerExecutor, "light");
-		this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), workerExecutor, Integer.MAX_VALUE);
+		this.field_26931 = arg;
+		TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(executor, "light");
+		this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), executor, Integer.MAX_VALUE);
 		this.worldGenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
 		this.mainExecutor = this.chunkTaskPrioritySystem.createExecutor(messageListener, false);
 		this.serverLightingProvider = new ServerLightingProvider(
 			chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false)
 		);
-		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(workerExecutor, mainThreadExecutor);
+		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(executor, mainThreadExecutor);
 		this.persistentStateManagerFactory = supplier;
-		this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer, bl);
+		this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer, bl, serverWorld);
 		this.setViewDistance(i);
 	}
 
 	private static double getSquaredDistance(ChunkPos pos, Entity entity) {
-		double d = (double)(pos.x * 16 + 8);
-		double e = (double)(pos.z * 16 + 8);
+		double d = (double)ChunkSectionPos.method_32205(pos.x, 8);
+		double e = (double)ChunkSectionPos.method_32205(pos.z, 8);
 		double f = d - entity.getX();
 		double g = e - entity.getZ();
 		return f * f + g * g;
 	}
 
-	private static int getChebyshevDistance(ChunkPos pos, ServerPlayerEntity player, boolean useWatchedPosition) {
+	private static int getChebyshevDistance(ChunkPos pos, ServerPlayerEntity player, boolean useCameraPosition) {
 		int i;
 		int j;
-		if (useWatchedPosition) {
-			ChunkSectionPos chunkSectionPos = player.getWatchedSection();
+		if (useCameraPosition) {
+			ChunkSectionPos chunkSectionPos = player.getCameraPosition();
 			i = chunkSectionPos.getSectionX();
 			j = chunkSectionPos.getSectionZ();
 		} else {
-			i = MathHelper.floor(player.getX() / 16.0);
-			j = MathHelper.floor(player.getZ() / 16.0);
+			i = ChunkSectionPos.getSectionCoord(player.getBlockX());
+			j = ChunkSectionPos.getSectionCoord(player.getBlockZ());
 		}
 
 		return getChebyshevDistance(pos, i, j);
@@ -244,7 +245,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				if (chunkHolder == null) {
 					return CompletableFuture.completedFuture(Either.right(new ChunkHolder.Unloaded() {
 						public String toString() {
-							return "Unloaded " + chunkPos.toString();
+							return "Unloaded " + chunkPos;
 						}
 					}));
 				}
@@ -266,7 +267,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					final int mx = lx;
 					return Either.right(new ChunkHolder.Unloaded() {
 						public String toString() {
-							return "Unloaded " + new ChunkPos(i + mx % (margin * 2 + 1), j + mx / (margin * 2 + 1)) + " " + ((ChunkHolder.Unloaded)either.right().get()).toString();
+							return "Unloaded " + new ChunkPos(i + mx % (margin * 2 + 1), j + mx / (margin * 2 + 1)) + " " + either.right().get();
 						}
 					});
 				}
@@ -306,7 +307,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				if (holder != null) {
 					holder.setLevel(level);
 				} else {
-					holder = new ChunkHolder(new ChunkPos(pos), level, this.serverLightingProvider, this.chunkTaskPrioritySystem, this);
+					holder = new ChunkHolder(new ChunkPos(pos), level, this.world, this.serverLightingProvider, this.chunkTaskPrioritySystem, this);
 				}
 
 				this.currentChunkHolders.put(pos, holder);
@@ -421,7 +422,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}, this.unloadTaskQueue::add).whenComplete((void_, throwable) -> {
 			if (throwable != null) {
-				LOGGER.error("Failed to save chunk " + chunkHolder.getPos(), throwable);
+				LOGGER.error("Failed to save chunk {}", chunkHolder.getPos(), throwable);
 			}
 		});
 	}
@@ -454,15 +455,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 						Chunk chunk = (Chunk)optional.get();
 						if (chunk.getStatus().isAtLeast(requiredStatus)) {
-							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex;
-							if (requiredStatus == ChunkStatus.LIGHT) {
-								completableFuturex = this.upgradeChunk(holder, requiredStatus);
-							} else {
-								completableFuturex = requiredStatus.runLoadTask(
-									this.world, this.structureManager, this.serverLightingProvider, chunkx -> this.convertToFullChunk(holder), chunk
-								);
-							}
-
+							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = requiredStatus.runLoadTask(
+								this.world, this.structureManager, this.serverLightingProvider, chunkx -> this.convertToFullChunk(holder), chunk
+							);
 							this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
 							return completableFuturex;
 						} else {
@@ -479,12 +474,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				this.world.getProfiler().visit("chunkLoad");
-				NbtCompound nbtCompound = this.getUpdatedChunkNbt(pos);
-				if (nbtCompound != null) {
-					boolean bl = nbtCompound.contains("Level", 10) && nbtCompound.getCompound("Level").contains("Status", 8);
+				CompoundTag compoundTag = this.getUpdatedChunkTag(pos);
+				if (compoundTag != null) {
+					boolean bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
 					if (bl) {
-						Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, nbtCompound);
-						chunk.setLastSaveTime(this.world.getTime());
+						Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, compoundTag);
 						this.method_27053(pos, chunk.getStatus().getChunkType());
 						return Either.left(chunk);
 					}
@@ -504,7 +498,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 
 			this.method_27054(pos);
-			return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA));
+			return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA, this.world));
 		}, this.mainThreadExecutor);
 	}
 
@@ -570,17 +564,24 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return chunkStatus;
 	}
 
+	private static void method_31413(ServerWorld serverWorld, List<CompoundTag> list) {
+		if (!list.isEmpty()) {
+			serverWorld.method_31426(EntityType.method_31489(list, serverWorld));
+		}
+	}
+
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> convertToFullChunk(ChunkHolder chunkHolder) {
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getFutureFor(ChunkStatus.FULL.getPrevious());
 		return completableFuture.thenApplyAsync(either -> {
 			ChunkStatus chunkStatus = ChunkHolder.getTargetStatusForLevel(chunkHolder.getLevel());
 			return !chunkStatus.isAtLeast(ChunkStatus.FULL) ? ChunkHolder.UNLOADED_CHUNK : either.mapLeft(chunk -> {
 				ChunkPos chunkPos = chunkHolder.getPos();
+				ProtoChunk protoChunk = (ProtoChunk)chunk;
 				WorldChunk worldChunk;
-				if (chunk instanceof ReadOnlyChunk) {
-					worldChunk = ((ReadOnlyChunk)chunk).getWrappedChunk();
+				if (protoChunk instanceof ReadOnlyChunk) {
+					worldChunk = ((ReadOnlyChunk)protoChunk).getWrappedChunk();
 				} else {
-					worldChunk = new WorldChunk(this.world, (ProtoChunk)chunk);
+					worldChunk = new WorldChunk(this.world, protoChunk, worldChunkx -> method_31413(this.world, protoChunk.getEntities()));
 					chunkHolder.setCompletedChunk(new ReadOnlyChunk(worldChunk));
 				}
 
@@ -588,26 +589,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				worldChunk.loadToWorld();
 				if (this.loadedChunks.add(chunkPos.toLong())) {
 					worldChunk.setLoadedToWorld(true);
-					this.world.addBlockEntities(worldChunk.getBlockEntities().values());
-					List<Entity> list = null;
-					TypeFilterableList[] var6 = worldChunk.getEntitySectionArray();
-					int var7 = var6.length;
-
-					for (int var8 = 0; var8 < var7; var8++) {
-						for (Entity entity : var6[var8]) {
-							if (!(entity instanceof PlayerEntity) && !this.world.loadEntity(entity)) {
-								if (list == null) {
-									list = Lists.<Entity>newArrayList(entity);
-								} else {
-									list.add(entity);
-								}
-							}
-						}
-					}
-
-					if (list != null) {
-						list.forEach(worldChunk::remove);
-					}
+					worldChunk.updateAllBlockEntityTickers();
 				}
 
 				return worldChunk;
@@ -623,21 +605,20 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				worldChunk.runPostProcessing();
 				return Either.left(worldChunk);
 			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
-		completableFuture2.thenAcceptAsync(either -> either.mapLeft(worldChunk -> {
+		completableFuture2.thenAcceptAsync(either -> either.ifLeft(worldChunk -> {
 				this.totalChunksLoadedCount.getAndIncrement();
 				Packet<?>[] packets = new Packet[2];
 				this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> this.sendChunkDataPackets(serverPlayerEntity, packets, worldChunk));
-				return Either.left(worldChunk);
 			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
 		return completableFuture2;
 	}
 
-	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkAccessible(ChunkHolder holder) {
-		return holder.getChunkAt(ChunkStatus.FULL, this).thenApplyAsync(either -> either.mapLeft(chunk -> {
-				WorldChunk worldChunk = (WorldChunk)chunk;
+	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> method_31417(ChunkHolder chunkHolder) {
+		return this.getRegion(chunkHolder.getPos(), 1, ChunkStatus::byDistanceFromFull).thenApplyAsync(either -> either.mapLeft(list -> {
+				WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
 				worldChunk.disableTickSchedulers();
 				return worldChunk;
-			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
+			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
 	}
 
 	public int getTotalChunksLoadedCount() {
@@ -649,7 +630,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		if (!chunk.needsSaving()) {
 			return false;
 		} else {
-			chunk.setLastSaveTime(this.world.getTime());
 			chunk.setShouldSave(false);
 			ChunkPos chunkPos = chunk.getPos();
 
@@ -666,8 +646,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				}
 
 				this.world.getProfiler().visit("chunkSave");
-				NbtCompound nbtCompound = ChunkSerializer.serialize(this.world, chunk);
-				this.setNbt(chunkPos, nbtCompound);
+				CompoundTag compoundTag = ChunkSerializer.serialize(this.world, chunk);
+				this.setTagAt(chunkPos, compoundTag);
 				this.method_27053(chunkPos, chunkStatus.getChunkType());
 				return true;
 			} catch (Exception var5) {
@@ -682,10 +662,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		if (b != 0) {
 			return b == 1;
 		} else {
-			NbtCompound nbtCompound;
+			CompoundTag compoundTag;
 			try {
-				nbtCompound = this.getUpdatedChunkNbt(chunkPos);
-				if (nbtCompound == null) {
+				compoundTag = this.getUpdatedChunkTag(chunkPos);
+				if (compoundTag == null) {
 					this.method_27054(chunkPos);
 					return false;
 				}
@@ -695,7 +675,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				return false;
 			}
 
-			ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(nbtCompound);
+			ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(compoundTag);
 			return this.method_27053(chunkPos, chunkType) == 1;
 		}
 	}
@@ -744,7 +724,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return this.chunkHolders.size();
 	}
 
-	protected ThreadedAnvilChunkStorage.TicketManager getTicketManager() {
+	protected ChunkTicketManager getTicketManager() {
 		return this.ticketManager;
 	}
 
@@ -765,7 +745,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			.addColumn("entity_ticking_ready")
 			.addColumn("ticket")
 			.addColumn("spawning")
-			.addColumn("entity_count")
 			.addColumn("block_entity_count")
 			.startBody(writer);
 
@@ -786,7 +765,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				getFutureStatus(chunkHolder.getEntityTickingFuture()),
 				this.ticketManager.getTicket(entry.getLongKey()),
 				!this.isTooFarFromPlayersToSpawnMobs(chunkPos),
-				optional2.map(worldChunk -> Stream.of(worldChunk.getEntitySectionArray()).mapToInt(TypeFilterableList::size).sum()).orElse(0),
 				optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0)
 			);
 		}
@@ -804,9 +782,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	@Nullable
-	private NbtCompound getUpdatedChunkNbt(ChunkPos pos) throws IOException {
-		NbtCompound nbtCompound = this.getNbt(pos);
-		return nbtCompound == null ? null : this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound);
+	private CompoundTag getUpdatedChunkTag(ChunkPos pos) throws IOException {
+		CompoundTag compoundTag = this.getNbt(pos);
+		return compoundTag == null ? null : this.updateChunkTag(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
 	}
 
 	boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {
@@ -825,8 +803,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	void handlePlayerAddedOrRemoved(ServerPlayerEntity player, boolean added) {
 		boolean bl = this.doesNotGenerateChunks(player);
 		boolean bl2 = this.playerChunkWatchingManager.method_21715(player);
-		int i = MathHelper.floor(player.getX()) >> 4;
-		int j = MathHelper.floor(player.getZ()) >> 4;
+		int i = ChunkSectionPos.getSectionCoord(player.getBlockX());
+		int j = ChunkSectionPos.getSectionCoord(player.getBlockZ());
 		if (added) {
 			this.playerChunkWatchingManager.add(ChunkPos.toLong(i, j), player, bl);
 			this.method_20726(player);
@@ -834,7 +812,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				this.ticketManager.handleChunkEnter(ChunkSectionPos.from(player), player);
 			}
 		} else {
-			ChunkSectionPos chunkSectionPos = player.getWatchedSection();
+			ChunkSectionPos chunkSectionPos = player.getCameraPosition();
 			this.playerChunkWatchingManager.remove(chunkSectionPos.toChunkPos().toLong(), player);
 			if (!bl2) {
 				this.ticketManager.handleChunkLeave(chunkSectionPos, player);
@@ -851,18 +829,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	private ChunkSectionPos method_20726(ServerPlayerEntity serverPlayerEntity) {
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(serverPlayerEntity);
-		serverPlayerEntity.setWatchedSection(chunkSectionPos);
+		serverPlayerEntity.setCameraPosition(chunkSectionPos);
 		serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ()));
 		return chunkSectionPos;
 	}
 
-	/**
-	 * Updates the chunk section position of the {@code player}. This updates the player
-	 * position for both entity tracking and chunk loading (watching) logic.
-	 * 
-	 * @see ServerChunkManager#updatePosition(ServerPlayerEntity)
-	 */
-	public void updatePosition(ServerPlayerEntity player) {
+	public void updateCameraPosition(ServerPlayerEntity player) {
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
 			if (entityTracker.entity == player) {
 				entityTracker.updateCameraPosition(this.world.getPlayers());
@@ -871,9 +843,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
-		int i = MathHelper.floor(player.getX()) >> 4;
-		int j = MathHelper.floor(player.getZ()) >> 4;
-		ChunkSectionPos chunkSectionPos = player.getWatchedSection();
+		int i = ChunkSectionPos.getSectionCoord(player.getBlockX());
+		int j = ChunkSectionPos.getSectionCoord(player.getBlockZ());
+		ChunkSectionPos chunkSectionPos = player.getCameraPosition();
 		ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(player);
 		long l = chunkSectionPos.toChunkPos().toLong();
 		long m = chunkSectionPos2.toChunkPos().toLong();
@@ -989,15 +961,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	/**
-	 * Ticks and updates the tracked status of each tracker.
-	 * 
-	 * <p>This first checks if entities have changed chunk sections, and updates
-	 * tracking status of those entities to all players. It then checks if any player
-	 * has changed chunk sections, and updates all entities tracking status to those
-	 * players. This ensures all possible updates are accounted for.
-	 */
-	protected void tickEntityMovement() {
+	protected void tickPlayerMovement() {
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 		List<ServerPlayerEntity> list2 = this.world.getPlayers();
 
@@ -1040,7 +1004,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	private void sendChunkDataPackets(ServerPlayerEntity player, Packet<?>[] packets, WorldChunk chunk) {
 		if (packets[0] == null) {
-			packets[0] = new ChunkDataS2CPacket(chunk, 65535);
+			packets[0] = new ChunkDataS2CPacket(chunk);
 			packets[1] = new LightUpdateS2CPacket(chunk.getPos(), this.serverLightingProvider, true);
 		}
 
@@ -1051,7 +1015,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
 			Entity entity = entityTracker.entity;
-			if (entity != player && entity.chunkX == chunk.getPos().x && entity.chunkZ == chunk.getPos().z) {
+			if (entity != player && entity.getChunkPos().equals(chunk.getPos())) {
 				entityTracker.updateCameraPosition(player);
 				if (entity instanceof MobEntity && ((MobEntity)entity).getHoldingEntity() != null) {
 					list.add(entity);
@@ -1082,6 +1046,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	public CompletableFuture<Void> enableTickSchedulers(WorldChunk worldChunk) {
 		return this.mainThreadExecutor.submit((Runnable)(() -> worldChunk.enableTickSchedulers(this.world)));
+	}
+
+	void method_31414(ChunkPos chunkPos, ChunkHolder.LevelType levelType) {
+		this.field_26931.onChunkStatusChange(chunkPos, levelType);
 	}
 
 	class EntityTracker {
@@ -1141,7 +1109,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				if (bl) {
 					boolean bl2 = this.entity.teleporting;
 					if (!bl2) {
-						ChunkPos chunkPos = new ChunkPos(this.entity.chunkX, this.entity.chunkZ);
+						ChunkPos chunkPos = this.entity.getChunkPos();
 						ChunkHolder chunkHolder = ThreadedAnvilChunkStorage.this.getChunkHolder(chunkPos.toLong());
 						if (chunkHolder != null && chunkHolder.getWorldChunk() != null) {
 							bl2 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, player, false) <= ThreadedAnvilChunkStorage.this.watchDistance;
@@ -1162,10 +1130,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 
 		private int getMaxTrackDistance() {
-			Collection<Entity> collection = this.entity.getPassengersDeep();
 			int i = this.maxDistance;
 
-			for (Entity entity : collection) {
+			for (Entity entity : this.entity.getPassengersDeep()) {
 				int j = entity.getType().getMaxTrackDistance() * 16;
 				if (j > i) {
 					i = j;

@@ -37,8 +37,8 @@ public class RequiredTagList<T> {
 		this.tags.forEach(tagx -> tagx.updateDelegate(id -> tag));
 	}
 
-	public void updateTagManager(TagManager tagManager) {
-		TagGroup<T> tagGroup = (TagGroup<T>)this.groupGetter.apply(tagManager);
+	public void updateTagManager(TagManager manager) {
+		TagGroup<T> tagGroup = (TagGroup<T>)this.groupGetter.apply(manager);
 		this.group = tagGroup;
 		this.tags.forEach(tag -> tag.updateDelegate(tagGroup::getTag));
 	}
@@ -54,8 +54,8 @@ public class RequiredTagList<T> {
 	/**
 	 * Gets the required tags which are not supplied by the current datapacks.
 	 */
-	public Set<Identifier> getMissingTags(TagManager tagManager) {
-		TagGroup<T> tagGroup = (TagGroup<T>)this.groupGetter.apply(tagManager);
+	public Set<Identifier> getMissingTags(TagManager manager) {
+		TagGroup<T> tagGroup = (TagGroup<T>)this.groupGetter.apply(manager);
 		Set<Identifier> set = (Set<Identifier>)this.tags.stream().map(RequiredTagList.TagWrapper::getId).collect(Collectors.toSet());
 		ImmutableSet<Identifier> immutableSet = ImmutableSet.copyOf(tagGroup.getTagIds());
 		return Sets.<Identifier>difference(set, immutableSet);

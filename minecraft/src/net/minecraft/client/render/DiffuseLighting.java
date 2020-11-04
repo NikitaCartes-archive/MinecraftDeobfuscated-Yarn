@@ -3,16 +3,16 @@ package net.minecraft.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class DiffuseLighting {
-	private static final Vec3f field_24426 = Util.make(new Vec3f(0.2F, 1.0F, -0.7F), Vec3f::normalize);
-	private static final Vec3f field_24427 = Util.make(new Vec3f(-0.2F, 1.0F, 0.7F), Vec3f::normalize);
-	private static final Vec3f field_24428 = Util.make(new Vec3f(0.2F, 1.0F, -0.7F), Vec3f::normalize);
-	private static final Vec3f field_24429 = Util.make(new Vec3f(-0.2F, -1.0F, 0.7F), Vec3f::normalize);
+	private static final Vector3f field_24426 = Util.make(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::normalize);
+	private static final Vector3f field_24427 = Util.make(new Vector3f(-0.2F, 1.0F, 0.7F), Vector3f::normalize);
+	private static final Vector3f field_24428 = Util.make(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::normalize);
+	private static final Vector3f field_24429 = Util.make(new Vector3f(-0.2F, -1.0F, 0.7F), Vector3f::normalize);
 
 	public static void enable() {
 		RenderSystem.enableLighting();
@@ -29,7 +29,7 @@ public class DiffuseLighting {
 		RenderSystem.setupLevelDiffuseLighting(field_24428, field_24429, modelMatrix);
 	}
 
-	public static void disableForLevel(Matrix4f modelMatrix) {
+	public static void method_27869(Matrix4f modelMatrix) {
 		RenderSystem.setupLevelDiffuseLighting(field_24426, field_24427, modelMatrix);
 	}
 

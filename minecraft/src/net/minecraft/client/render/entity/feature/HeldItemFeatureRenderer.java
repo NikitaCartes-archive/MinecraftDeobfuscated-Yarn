@@ -8,10 +8,10 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithArms> extends FeatureRenderer<T, M> {
@@ -51,8 +51,8 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 		if (!stack.isEmpty()) {
 			matrices.push();
 			this.getContextModel().setArmAngle(arm, matrices);
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			boolean bl = arm == Arm.LEFT;
 			matrices.translate((double)((float)(bl ? -1 : 1) / 16.0F), 0.125, -0.625);
 			MinecraftClient.getInstance().getHeldItemRenderer().renderItem(entity, stack, transformationMode, bl, matrices, vertexConsumers, light);

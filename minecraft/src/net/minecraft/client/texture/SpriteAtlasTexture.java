@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -51,7 +52,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	}
 
 	@Override
-	public void load(ResourceManager manager) throws IOException {
+	public void load(ResourceManager manager) {
 	}
 
 	public void upload(SpriteAtlasTexture.Data data) {
@@ -141,7 +142,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 
 	private Collection<Sprite.Info> loadSprites(ResourceManager resourceManager, Set<Identifier> ids) {
 		List<CompletableFuture<?>> list = Lists.<CompletableFuture<?>>newArrayList();
-		ConcurrentLinkedQueue<Sprite.Info> concurrentLinkedQueue = new ConcurrentLinkedQueue();
+		Queue<Sprite.Info> queue = new ConcurrentLinkedQueue();
 
 		for (Identifier identifier : ids) {
 			if (!MissingSprite.getMissingSpriteId().equals(identifier)) {
@@ -186,33 +187,33 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 						return;
 					}
 
-					concurrentLinkedQueue.add(info);
+					queue.add(info);
 				}, Util.getMainWorkerExecutor()));
 			}
 		}
 
 		CompletableFuture.allOf((CompletableFuture[])list.toArray(new CompletableFuture[0])).join();
-		return concurrentLinkedQueue;
+		return queue;
 	}
 
 	private List<Sprite> loadSprites(ResourceManager resourceManager, TextureStitcher textureStitcher, int maxLevel) {
-		ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue();
+		Queue<Sprite> queue = new ConcurrentLinkedQueue();
 		List<CompletableFuture<?>> list = Lists.<CompletableFuture<?>>newArrayList();
 		textureStitcher.getStitchedSprites((info, atlasWidth, atlasHeight, x, y) -> {
 			if (info == MissingSprite.getMissingInfo()) {
 				MissingSprite missingSprite = MissingSprite.getMissingSprite(this, maxLevel, atlasWidth, atlasHeight, x, y);
-				concurrentLinkedQueue.add(missingSprite);
+				queue.add(missingSprite);
 			} else {
 				list.add(CompletableFuture.runAsync(() -> {
 					Sprite sprite = this.loadSprite(resourceManager, info, atlasWidth, atlasHeight, maxLevel, x, y);
 					if (sprite != null) {
-						concurrentLinkedQueue.add(sprite);
+						queue.add(sprite);
 					}
 				}, Util.getMainWorkerExecutor()));
 			}
 		});
 		CompletableFuture.allOf((CompletableFuture[])list.toArray(new CompletableFuture[0])).join();
-		return Lists.<Sprite>newArrayList(concurrentLinkedQueue);
+		return Lists.<Sprite>newArrayList(queue);
 	}
 
 	@Nullable
@@ -254,8 +255,8 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		}
 	}
 
-	private Identifier getTexturePath(Identifier id) {
-		return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), ".png"));
+	private Identifier getTexturePath(Identifier identifier) {
+		return new Identifier(identifier.getNamespace(), String.format("textures/%s%s", identifier.getPath(), ".png"));
 	}
 
 	public void tickAnimatedSprites() {

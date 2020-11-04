@@ -13,8 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -97,7 +97,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static int lastScrollYPosition = -1;
 	private static volatile boolean hasParentalConsent;
 	private static volatile boolean checkedParentalConsent;
-	private static volatile boolean checkedClientCompatibility;
+	private static volatile boolean checkedClientCompatability;
 	private static Screen realmsGenericErrorScreen;
 	private static boolean regionsPinged;
 	private final RateLimiter rateLimiter;
@@ -128,7 +128,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private List<KeyCombo> keyCombos;
 	private int clicks;
 	private ReentrantLock connectLock = new ReentrantLock();
-	private MultilineText field_26466 = MultilineText.EMPTY;
+	private class_5489 field_26466 = class_5489.field_26528;
 	private RealmsMainScreen.HoverState hoverState;
 	private ButtonWidget showPopupButton;
 	private ButtonWidget pendingInvitesButton;
@@ -193,11 +193,11 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.client.openScreen(realmsGenericErrorScreen);
 		} else {
 			this.connectLock = new ReentrantLock();
-			if (checkedClientCompatibility && !hasParentalConsent()) {
+			if (checkedClientCompatability && !hasParentalConsent()) {
 				this.checkParentalConsent();
 			}
 
-			this.checkClientCompatibility();
+			this.checkClientCompatability();
 			this.checkUnreadNews();
 			if (!this.dontSetConnectedToRealms) {
 				this.client.setConnectedToRealms(false);
@@ -220,7 +220,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 			this.addChild(this.realmSelectionList);
 			this.focusOn(this.realmSelectionList);
-			this.field_26466 = MultilineText.create(this.textRenderer, field_26456, 100);
+			this.field_26466 = class_5489.method_30890(this.textRenderer, field_26456, 100);
 		}
 	}
 
@@ -473,9 +473,9 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 	}
 
-	private void checkClientCompatibility() {
-		if (!checkedClientCompatibility) {
-			checkedClientCompatibility = true;
+	private void checkClientCompatability() {
+		if (!checkedClientCompatability) {
+			checkedClientCompatability = true;
 			(new Thread("MCO Compatability Checker #1") {
 					public void run() {
 						RealmsClient realmsClient = RealmsClient.createRealmsClient();
@@ -496,7 +496,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 							RealmsMainScreen.this.checkParentalConsent();
 						} catch (RealmsServiceException var3) {
-							RealmsMainScreen.checkedClientCompatibility = false;
+							RealmsMainScreen.checkedClientCompatability = false;
 							RealmsMainScreen.LOGGER.error("Couldn't connect to realms", (Throwable)var3);
 							if (var3.httpResultCode == 401) {
 								RealmsMainScreen.realmsGenericErrorScreen = new RealmsGenericErrorScreen(
@@ -556,7 +556,7 @@ public class RealmsMainScreen extends RealmsScreen {
 							RealmsMainScreen.realmsDataFetcher.forceUpdate();
 						}
 					} catch (RealmsServiceException var3) {
-						RealmsMainScreen.LOGGER.error("Couldn't connect to Realms: " + var3);
+						RealmsMainScreen.LOGGER.error("Couldn't connect to Realms: {}", var3.toString());
 					}
 				}
 			}).start();
@@ -577,7 +577,7 @@ public class RealmsMainScreen extends RealmsScreen {
 							RealmsMainScreen.realmsDataFetcher.forceUpdate();
 						}
 					} catch (RealmsServiceException var3) {
-						RealmsMainScreen.LOGGER.error("Couldn't connect to Realms: " + var3);
+						RealmsMainScreen.LOGGER.error("Couldn't connect to Realms: {}", var3.toString());
 					}
 				}
 			}).start();
@@ -685,7 +685,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
+	public boolean charTyped(char chr, int keyCode) {
 		this.keyCombos.forEach(keyCombo -> keyCombo.keyPressed(chr));
 		return true;
 	}
@@ -787,7 +787,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			if (this.children.contains(this.realmSelectionList)) {
 				Element element = this.realmSelectionList;
 				if (!this.children.remove(element)) {
-					LOGGER.error("Unable to remove widget: " + element);
+					LOGGER.error("Unable to remove widget: {}", element);
 				}
 			}
 
@@ -822,7 +822,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 		}
 
-		this.field_26466.draw(matrices, this.width / 2 + 52, j + 7, 10, 5000268);
+		this.field_26466.method_30896(matrices, this.width / 2 + 52, j + 7, 10, 5000268);
 	}
 
 	private int popupX0() {
@@ -1213,7 +1213,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			if (keyCode != 257 && keyCode != 32 && keyCode != 335) {
 				return super.keyPressed(keyCode, scanCode, modifiers);
 			} else {
-				AlwaysSelectedEntryListWidget.Entry entry = this.getSelected();
+				RealmsMainScreen.Entry entry = this.getSelected();
 				return entry == null ? super.keyPressed(keyCode, scanCode, modifiers) : entry.mouseClicked(0.0, 0.0, 0);
 			}
 		}
@@ -1225,7 +1225,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				int j = this.getScrollbarPositionX();
 				int k = (int)Math.floor(mouseY - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
 				int l = k / this.itemHeight;
-				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getEntryCount()) {
+				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getItemCount()) {
 					this.itemClicked(k, l, mouseX, mouseY, this.width);
 					RealmsMainScreen.this.clicks = RealmsMainScreen.this.clicks + 7;
 					this.setSelected(l);
@@ -1329,7 +1329,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		@Override
 		public int getMaxPosition() {
-			return this.getEntryCount() * 36;
+			return this.getItemCount() * 36;
 		}
 
 		@Override

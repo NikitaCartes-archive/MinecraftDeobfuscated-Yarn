@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -111,8 +110,8 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 				double e = this.method_13424(o, p, blockPos2, m, n, d);
 				if (e < 0.0) {
 					BlockPos blockPos3 = blockPos.add(o, j, p);
-					Block block = worldAccess.getBlockState(blockPos3).getBlock();
-					if (this.isSnowyOrIcy(block) || block == Blocks.SNOW_BLOCK) {
+					BlockState blockState = worldAccess.getBlockState(blockPos3);
+					if (isSnowyOrIcy(blockState) || blockState.isOf(Blocks.SNOW_BLOCK)) {
 						if (bl) {
 							this.setBlockState(worldAccess, blockPos3, Blocks.WATER.getDefaultState());
 						} else {
@@ -215,42 +214,42 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 		return MathHelper.ceil(g / 2.0F);
 	}
 
-	private boolean isSnowyOrIcy(Block block) {
-		return block == Blocks.PACKED_ICE || block == Blocks.SNOW_BLOCK || block == Blocks.BLUE_ICE;
+	private static boolean isSnowyOrIcy(BlockState blockState) {
+		return blockState.isOf(Blocks.PACKED_ICE) || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.BLUE_ICE);
 	}
 
 	private boolean isAirBelow(BlockView world, BlockPos pos) {
 		return world.getBlockState(pos.down()).getMaterial() == Material.AIR;
 	}
 
-	private void method_13418(WorldAccess world, BlockPos pos, int i, int height, boolean bl, int j) {
-		int k = bl ? j : i / 2;
+	private void method_13418(WorldAccess world, BlockPos pos, int i, int j, boolean bl, int k) {
+		int l = bl ? k : i / 2;
 
-		for (int l = -k; l <= k; l++) {
-			for (int m = -k; m <= k; m++) {
-				for (int n = 0; n <= height; n++) {
-					BlockPos blockPos = pos.add(l, n, m);
-					Block block = world.getBlockState(blockPos).getBlock();
-					if (this.isSnowyOrIcy(block) || block == Blocks.SNOW) {
+		for (int m = -l; m <= l; m++) {
+			for (int n = -l; n <= l; n++) {
+				for (int o = 0; o <= j; o++) {
+					BlockPos blockPos = pos.add(m, o, n);
+					BlockState blockState = world.getBlockState(blockPos);
+					if (isSnowyOrIcy(blockState) || blockState.isOf(Blocks.SNOW)) {
 						if (this.isAirBelow(world, blockPos)) {
 							this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
 							this.setBlockState(world, blockPos.up(), Blocks.AIR.getDefaultState());
-						} else if (this.isSnowyOrIcy(block)) {
-							Block[] blocks = new Block[]{
-								world.getBlockState(blockPos.west()).getBlock(),
-								world.getBlockState(blockPos.east()).getBlock(),
-								world.getBlockState(blockPos.north()).getBlock(),
-								world.getBlockState(blockPos.south()).getBlock()
+						} else if (isSnowyOrIcy(blockState)) {
+							BlockState[] blockStates = new BlockState[]{
+								world.getBlockState(blockPos.west()),
+								world.getBlockState(blockPos.east()),
+								world.getBlockState(blockPos.north()),
+								world.getBlockState(blockPos.south())
 							};
-							int o = 0;
+							int p = 0;
 
-							for (Block block2 : blocks) {
-								if (!this.isSnowyOrIcy(block2)) {
-									o++;
+							for (BlockState blockState2 : blockStates) {
+								if (!isSnowyOrIcy(blockState2)) {
+									p++;
 								}
 							}
 
-							if (o >= 3) {
+							if (p >= 3) {
 								this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
 							}
 						}

@@ -121,6 +121,6 @@ public class AnvilBlock extends FallingBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public int getColor(BlockState state, BlockView world, BlockPos pos) {
-		return state.getTopMaterialColor(world, pos).color;
+		return state.getMapColor(world, pos).color;
 	}
 }

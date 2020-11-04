@@ -7,14 +7,14 @@ import net.minecraft.util.Language;
 
 @Environment(EnvType.CLIENT)
 public class I18n {
-	private static volatile Language field_25290 = Language.getInstance();
+	private static volatile Language language = Language.getInstance();
 
-	static void method_29391(Language language) {
-		field_25290 = language;
+	static void setLanguage(Language language) {
+		I18n.language = language;
 	}
 
 	public static String translate(String key, Object... args) {
-		String string = field_25290.get(key);
+		String string = language.get(key);
 
 		try {
 			return String.format(string, args);
@@ -24,6 +24,6 @@ public class I18n {
 	}
 
 	public static boolean hasTranslation(String key) {
-		return field_25290.hasTranslation(key);
+		return language.hasTranslation(key);
 	}
 }

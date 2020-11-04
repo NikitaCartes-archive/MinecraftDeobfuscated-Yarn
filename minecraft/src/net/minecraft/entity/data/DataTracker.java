@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -111,14 +110,14 @@ public class DataTracker {
 		return entry;
 	}
 
-	public <T> T get(TrackedData<T> data) {
-		return this.getEntry(data).get();
+	public <T> T get(TrackedData<T> trackedData) {
+		return this.getEntry(trackedData).get();
 	}
 
-	public <T> void set(TrackedData<T> key, T value) {
+	public <T> void set(TrackedData<T> key, T object) {
 		DataTracker.Entry<T> entry = this.getEntry(key);
-		if (ObjectUtils.notEqual(value, entry.get())) {
-			entry.set(value);
+		if (ObjectUtils.notEqual(object, entry.get())) {
+			entry.set(object);
 			this.trackedEntity.onTrackedDataSet(key);
 			entry.setDirty(true);
 			this.dirty = true;
@@ -129,7 +128,7 @@ public class DataTracker {
 		return this.dirty;
 	}
 
-	public static void entriesToPacket(List<DataTracker.Entry<?>> list, PacketByteBuf packetByteBuf) throws IOException {
+	public static void entriesToPacket(List<DataTracker.Entry<?>> list, PacketByteBuf packetByteBuf) {
 		if (list != null) {
 			int i = 0;
 
@@ -182,42 +181,42 @@ public class DataTracker {
 		return list;
 	}
 
-	private static <T> void writeEntryToPacket(PacketByteBuf buf, DataTracker.Entry<T> entry) throws IOException {
+	private static <T> void writeEntryToPacket(PacketByteBuf packetByteBuf, DataTracker.Entry<T> entry) {
 		TrackedData<T> trackedData = entry.getData();
 		int i = TrackedDataHandlerRegistry.getId(trackedData.getType());
 		if (i < 0) {
 			throw new EncoderException("Unknown serializer type " + trackedData.getType());
 		} else {
-			buf.writeByte(trackedData.getId());
-			buf.writeVarInt(i);
-			trackedData.getType().write(buf, entry.get());
+			packetByteBuf.writeByte(trackedData.getId());
+			packetByteBuf.writeVarInt(i);
+			trackedData.getType().write(packetByteBuf, entry.get());
 		}
 	}
 
 	@Nullable
-	public static List<DataTracker.Entry<?>> deserializePacket(PacketByteBuf buf) throws IOException {
+	public static List<DataTracker.Entry<?>> deserializePacket(PacketByteBuf packetByteBuf) {
 		List<DataTracker.Entry<?>> list = null;
 
 		int i;
-		while ((i = buf.readUnsignedByte()) != 255) {
+		while ((i = packetByteBuf.readUnsignedByte()) != 255) {
 			if (list == null) {
 				list = Lists.<DataTracker.Entry<?>>newArrayList();
 			}
 
-			int j = buf.readVarInt();
+			int j = packetByteBuf.readVarInt();
 			TrackedDataHandler<?> trackedDataHandler = TrackedDataHandlerRegistry.get(j);
 			if (trackedDataHandler == null) {
 				throw new DecoderException("Unknown serializer type " + j);
 			}
 
-			list.add(entryFromPacket(buf, i, trackedDataHandler));
+			list.add(entryFromPacket(packetByteBuf, i, trackedDataHandler));
 		}
 
 		return list;
 	}
 
-	private static <T> DataTracker.Entry<T> entryFromPacket(PacketByteBuf buf, int i, TrackedDataHandler<T> trackedDataHandler) {
-		return new DataTracker.Entry<>(trackedDataHandler.create(i), trackedDataHandler.read(buf));
+	private static <T> DataTracker.Entry<T> entryFromPacket(PacketByteBuf packetByteBuf, int i, TrackedDataHandler<T> trackedDataHandler) {
+		return new DataTracker.Entry<>(trackedDataHandler.create(i), trackedDataHandler.read(packetByteBuf));
 	}
 
 	@Environment(EnvType.CLIENT)

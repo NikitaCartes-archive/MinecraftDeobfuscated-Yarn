@@ -33,14 +33,12 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -54,14 +52,14 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new SignBlockEntity();
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new SignBlockEntity(pos, state);
 	}
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		boolean bl = itemStack.getItem() instanceof DyeItem && player.abilities.allowModifyWorld;
+		boolean bl = itemStack.getItem() instanceof DyeItem && player.getAbilities().allowModifyWorld;
 		if (world.isClient) {
 			return bl ? ActionResult.SUCCESS : ActionResult.CONSUME;
 		} else {

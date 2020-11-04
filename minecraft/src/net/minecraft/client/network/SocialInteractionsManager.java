@@ -19,7 +19,7 @@ public class SocialInteractionsManager {
 	private final MinecraftClient client;
 	private final Set<UUID> hiddenPlayers = Sets.<UUID>newHashSet();
 	private final SocialInteractionsService socialInteractionsService;
-	private final Map<String, UUID> field_26927 = Maps.<String, UUID>newHashMap();
+	private final Map<String, UUID> playerNameByUuid = Maps.<String, UUID>newHashMap();
 
 	public SocialInteractionsManager(MinecraftClient client, SocialInteractionsService socialInteractionsService) {
 		this.client = client;
@@ -34,8 +34,8 @@ public class SocialInteractionsManager {
 		this.hiddenPlayers.remove(uuid);
 	}
 
-	public boolean method_31391(UUID uUID) {
-		return this.isPlayerHidden(uUID) || this.isPlayerBlocked(uUID);
+	public boolean isPlayerMuted(UUID uuid) {
+		return this.isPlayerHidden(uuid) || this.isPlayerBlocked(uuid);
 	}
 
 	public boolean isPlayerHidden(UUID uuid) {
@@ -50,28 +50,28 @@ public class SocialInteractionsManager {
 		return this.hiddenPlayers;
 	}
 
-	public UUID method_31407(String string) {
-		return (UUID)this.field_26927.getOrDefault(string, Util.NIL_UUID);
+	public UUID getUuid(String playerName) {
+		return (UUID)this.playerNameByUuid.getOrDefault(playerName, Util.NIL_UUID);
 	}
 
-	public void method_31337(PlayerListEntry playerListEntry) {
-		GameProfile gameProfile = playerListEntry.getProfile();
+	public void setPlayerOnline(PlayerListEntry player) {
+		GameProfile gameProfile = player.getProfile();
 		if (gameProfile.isComplete()) {
-			this.field_26927.put(gameProfile.getName(), gameProfile.getId());
+			this.playerNameByUuid.put(gameProfile.getName(), gameProfile.getId());
 		}
 
 		Screen screen = this.client.currentScreen;
 		if (screen instanceof SocialInteractionsScreen) {
 			SocialInteractionsScreen socialInteractionsScreen = (SocialInteractionsScreen)screen;
-			socialInteractionsScreen.setPlayerOnline(playerListEntry);
+			socialInteractionsScreen.setPlayerOnline(player);
 		}
 	}
 
-	public void method_31341(UUID uUID) {
+	public void setPlayerOffline(UUID uuid) {
 		Screen screen = this.client.currentScreen;
 		if (screen instanceof SocialInteractionsScreen) {
 			SocialInteractionsScreen socialInteractionsScreen = (SocialInteractionsScreen)screen;
-			socialInteractionsScreen.setPlayerOffline(uUID);
+			socialInteractionsScreen.setPlayerOffline(uuid);
 		}
 	}
 }

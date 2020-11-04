@@ -29,11 +29,11 @@ public class ScoreboardPlayerScore {
 		this.forceUpdate = true;
 	}
 
-	public void incrementScore(int amount) {
+	public void incrementScore(int i) {
 		if (this.objective.getCriterion().isReadOnly()) {
 			throw new IllegalStateException("Cannot modify read-only score");
 		} else {
-			this.setScore(this.getScore() + amount);
+			this.setScore(this.getScore() + i);
 		}
 	}
 

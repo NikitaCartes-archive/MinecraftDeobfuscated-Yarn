@@ -10,8 +10,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -56,7 +56,7 @@ public class FireworkItem extends Item {
 			ItemStack itemStack = user.getStackInHand(hand);
 			if (!world.isClient) {
 				world.spawnEntity(new FireworkRocketEntity(world, itemStack, user));
-				if (!user.abilities.creativeMode) {
+				if (!user.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 			}
@@ -70,20 +70,20 @@ public class FireworkItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		NbtCompound nbtCompound = stack.getSubTag("Fireworks");
-		if (nbtCompound != null) {
-			if (nbtCompound.contains("Flight", 99)) {
+		CompoundTag compoundTag = stack.getSubTag("Fireworks");
+		if (compoundTag != null) {
+			if (compoundTag.contains("Flight", 99)) {
 				tooltip.add(
-					new TranslatableText("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte("Flight"))).formatted(Formatting.GRAY)
+					new TranslatableText("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(compoundTag.getByte("Flight"))).formatted(Formatting.GRAY)
 				);
 			}
 
-			NbtList nbtList = nbtCompound.getList("Explosions", 10);
-			if (!nbtList.isEmpty()) {
-				for (int i = 0; i < nbtList.size(); i++) {
-					NbtCompound nbtCompound2 = nbtList.getCompound(i);
+			ListTag listTag = compoundTag.getList("Explosions", 10);
+			if (!listTag.isEmpty()) {
+				for (int i = 0; i < listTag.size(); i++) {
+					CompoundTag compoundTag2 = listTag.getCompound(i);
 					List<Text> list = Lists.<Text>newArrayList();
-					FireworkChargeItem.appendFireworkTooltip(nbtCompound2, list);
+					FireworkChargeItem.appendFireworkTooltip(compoundTag2, list);
 					if (!list.isEmpty()) {
 						for (int j = 1; j < list.size(); j++) {
 							list.set(j, new LiteralText("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
@@ -94,6 +94,13 @@ public class FireworkItem extends Item {
 				}
 			}
 		}
+	}
+
+	@Override
+	public ItemStack getDefaultStack() {
+		ItemStack itemStack = new ItemStack(this);
+		itemStack.getOrCreateTag().putByte("Flight", (byte)1);
+		return itemStack;
 	}
 
 	public static enum Type {

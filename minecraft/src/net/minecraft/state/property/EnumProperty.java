@@ -12,24 +12,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
 
-/**
- * Represents a property that has enum values.
- * 
- * <p id="notes-on-enum">Notes on the enum class:
- * <ul>
- *   <li>The enum class is required to have 2 or more values.
- *   <li>The enum class is required to provide a name for each value by
- * overriding {@link StringIdentifiable#asString()}.
- *   <li>The names of the values are required to match the {@linkplain
- * net.minecraft.state.StateManager#VALID_NAME_PATTERN valid name pattern}.
- * Otherwise, {@link IllegalArgumentException} will be thrown during the
- * {@linkplain net.minecraft.state.StateManager.Builder#validate(Property)
- * validation of a property}.
- * </ul>
- * 
- * <p>See {@link net.minecraft.state.property.Properties} for example
- * usages.
- */
 public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Property<T> {
 	private final ImmutableSet<T> values;
 	private final Map<String, T> byName = Maps.<String, T>newHashMap();
@@ -82,70 +64,36 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Proper
 	}
 
 	/**
-	 * Creates an enum property with all values of the given enum class.
+	 * Creates an enum property.
 	 * 
-	 * <p>See <a href="#notes-on-enum">notes on the enum class</a>.
-	 * 
-	 * @throws IllegalArgumentException if multiple values have the same name
-	 * 
-	 * @param name the name of the property; see {@linkplain Property#name the note on the
-	 * name}
-	 * @param type the type of the values the property contains
+	 * @param name the name of this property
+	 * @param type the type this property contains
 	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type) {
 		return of(name, type, Predicates.alwaysTrue());
 	}
 
 	/**
-	 * Creates an enum property with the values allowed by the given filter.
+	 * Creates an enum property.
 	 * 
-	 * <p>See <a href="#notes-on-enum">notes on the enum class</a>.
-	 * 
-	 * @throws IllegalArgumentException if multiple values have the same name
-	 * 
-	 * @see #of(String, Class)
-	 * 
-	 * @param name the name of the property; see {@linkplain Property#name the note on the
-	 * name}
-	 * @param type the type of the values the property contains
-	 * @param filter the filter which specifies if a value is allowed; required to allow 2
-	 * or more values
+	 * @param name the name of this property
+	 * @param type the type this property contains
+	 * @param filter a filter that specifies if a value is allowed
 	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Predicate<T> filter) {
 		return of(name, type, (Collection<T>)Arrays.stream(type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
 	}
 
-	/**
-	 * Creates an enum property with the given values.
-	 * 
-	 * <p>See <a href="#notes-on-enum">notes on the enum class</a>.
-	 * 
-	 * @throws IllegalArgumentException if multiple values have the same name
-	 * 
-	 * @see #of(String, Class)
-	 * 
-	 * @param name the name of the property; see {@linkplain Property#name the note on the
-	 * name}
-	 * @param type the type of the values the property contains
-	 * @param values the values the property contains; required to have 2 or more values
-	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, T... values) {
 		return of(name, type, Lists.<T>newArrayList(values));
 	}
 
 	/**
-	 * Creates an enum property with the given values.
+	 * Creates an enum property.
 	 * 
-	 * <p>See <a href="#notes-on-enum">notes on the enum class</a>.
-	 * 
-	 * @throws IllegalArgumentException if multiple values have the same name
-	 * 
-	 * @see #of(String, Class)
-	 * 
-	 * @param name the name of the property; see {@linkplain Property#name the note on the
-	 * name}
-	 * @param type the type of the values the property contains
-	 * @param values the values the property contains; required to have 2 or more values
+	 * @param name the name of this property
+	 * @param type the type this property contains
+	 * @param values the values this property could contain
 	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Collection<T> values) {
 		return new EnumProperty<>(name, type, values);

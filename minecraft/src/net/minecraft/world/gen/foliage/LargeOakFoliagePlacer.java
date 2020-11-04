@@ -45,7 +45,7 @@ public class LargeOakFoliagePlacer extends BlobFoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
-		return MathHelper.square((float)dx + 0.5F) + MathHelper.square((float)dz + 0.5F) > (float)(radius * radius);
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+		return MathHelper.square((float)baseHeight + 0.5F) + MathHelper.square((float)y + 0.5F) > (float)(dz * dz);
 	}
 }

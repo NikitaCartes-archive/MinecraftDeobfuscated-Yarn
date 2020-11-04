@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,8 +19,8 @@ public class LeadItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
-		Block block = world.getBlockState(blockPos).getBlock();
-		if (block.isIn(BlockTags.FENCES)) {
+		BlockState blockState = world.getBlockState(blockPos);
+		if (blockState.isIn(BlockTags.FENCES)) {
 			PlayerEntity playerEntity = context.getPlayer();
 			if (!world.isClient && playerEntity != null) {
 				attachHeldMobsToBlock(playerEntity, world, blockPos);
@@ -32,20 +32,20 @@ public class LeadItem extends Item {
 		}
 	}
 
-	public static ActionResult attachHeldMobsToBlock(PlayerEntity player, World world, BlockPos pos) {
+	public static ActionResult attachHeldMobsToBlock(PlayerEntity playerEntity, World world, BlockPos blockPos) {
 		LeashKnotEntity leashKnotEntity = null;
 		boolean bl = false;
 		double d = 7.0;
-		int i = pos.getX();
-		int j = pos.getY();
-		int k = pos.getZ();
+		int i = blockPos.getX();
+		int j = blockPos.getY();
+		int k = blockPos.getZ();
 
 		for (MobEntity mobEntity : world.getNonSpectatingEntities(
 			MobEntity.class, new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0)
 		)) {
-			if (mobEntity.getHoldingEntity() == player) {
+			if (mobEntity.getHoldingEntity() == playerEntity) {
 				if (leashKnotEntity == null) {
-					leashKnotEntity = LeashKnotEntity.getOrCreate(world, pos);
+					leashKnotEntity = LeashKnotEntity.getOrCreate(world, blockPos);
 				}
 
 				mobEntity.attachLeash(leashKnotEntity, true);

@@ -35,10 +35,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -247,17 +246,17 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("RabbitType", this.getRabbitType());
-		nbt.putInt("MoreCarrotTicks", this.moreCarrotTicks);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("RabbitType", this.getRabbitType());
+		tag.putInt("MoreCarrotTicks", this.moreCarrotTicks);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setRabbitType(nbt.getInt("RabbitType"));
-		this.moreCarrotTicks = nbt.getInt("MoreCarrotTicks");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setRabbitType(tag.getInt("RabbitType"));
+		this.moreCarrotTicks = tag.getInt("MoreCarrotTicks");
 	}
 
 	protected SoundEvent getJumpSound() {
@@ -299,8 +298,8 @@ public class RabbitEntity extends AnimalEntity {
 		return this.isInvulnerableTo(source) ? false : super.damage(source, amount);
 	}
 
-	private boolean isBreedingItem(Item item) {
-		return item == Items.CARROT || item == Items.GOLDEN_CARROT || item == Blocks.DANDELION.asItem();
+	private static boolean method_6614(ItemStack itemStack) {
+		return itemStack.isOf(Items.CARROT) || itemStack.isOf(Items.GOLDEN_CARROT) || itemStack.isOf(Blocks.DANDELION.asItem());
 	}
 
 	public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
@@ -320,7 +319,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return this.isBreedingItem(stack.getItem());
+		return method_6614(stack);
 	}
 
 	public int getRabbitType() {
@@ -345,7 +344,7 @@ public class RabbitEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		int i = this.chooseType(world);
 		if (entityData instanceof RabbitEntity.RabbitData) {
@@ -355,7 +354,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		this.setRabbitType(i);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private int chooseType(WorldAccess world) {
@@ -445,12 +444,12 @@ public class RabbitEntity extends AnimalEntity {
 				BlockState blockState = world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
 				if (this.hasTarget && block instanceof CarrotsBlock) {
-					Integer integer = blockState.get(CarrotsBlock.AGE);
-					if (integer == 0) {
+					int i = (Integer)blockState.get(CarrotsBlock.AGE);
+					if (i == 0) {
 						world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
 						world.breakBlock(blockPos, true, this.rabbit);
 					} else {
-						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(integer - 1)), 2);
+						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(i - 1)), 2);
 						world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 					}
 
@@ -464,12 +463,10 @@ public class RabbitEntity extends AnimalEntity {
 
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
-			Block block = world.getBlockState(pos).getBlock();
-			if (block == Blocks.FARMLAND && this.wantsCarrots && !this.hasTarget) {
-				pos = pos.up();
-				BlockState blockState = world.getBlockState(pos);
-				block = blockState.getBlock();
-				if (block instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
+			BlockState blockState = world.getBlockState(pos);
+			if (blockState.isOf(Blocks.FARMLAND) && this.wantsCarrots && !this.hasTarget) {
+				blockState = world.getBlockState(pos.up());
+				if (blockState.getBlock() instanceof CarrotsBlock && ((CarrotsBlock)blockState.getBlock()).isMature(blockState)) {
 					this.hasTarget = true;
 					return true;
 				}

@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.TexturedRenderLayers;
@@ -13,6 +14,7 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -22,7 +24,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
@@ -31,9 +32,9 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final ItemRenderer itemRenderer;
 
-	public ItemFrameEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer itemRenderer) {
-		super(dispatcher);
-		this.itemRenderer = itemRenderer;
+	public ItemFrameEntityRenderer(class_5617.class_5618 arg) {
+		super(arg);
+		this.itemRenderer = arg.method_32168();
 	}
 
 	public void render(ItemFrameEntity itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -44,13 +45,14 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
 		double d = 0.46875;
 		matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.pitch));
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - itemFrameEntity.yaw));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.pitch));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - itemFrameEntity.yaw));
 		boolean bl = itemFrameEntity.isInvisible();
+		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 		if (!bl) {
 			BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
 			BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
-			ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
+			ModelIdentifier modelIdentifier = itemStack.isOf(Items.FILLED_MAP) ? MAP_FRAME : NORMAL_FRAME;
 			matrixStack.push();
 			matrixStack.translate(-0.5, -0.5, -0.5);
 			blockRenderManager.getModelRenderer()
@@ -68,9 +70,8 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 			matrixStack.pop();
 		}
 
-		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 		if (!itemStack.isEmpty()) {
-			boolean bl2 = itemStack.getItem() == Items.FILLED_MAP;
+			boolean bl2 = itemStack.isOf(Items.FILLED_MAP);
 			if (bl) {
 				matrixStack.translate(0.0, 0.0, 0.5);
 			} else {
@@ -78,9 +79,9 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 			}
 
 			int j = bl2 ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0F / 8.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0F / 8.0F));
 			if (bl2) {
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 				float h = 0.0078125F;
 				matrixStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
 				matrixStack.translate(-64.0, -64.0, 0.0);

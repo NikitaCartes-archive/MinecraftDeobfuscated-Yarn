@@ -1,6 +1,9 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DaylightDetectorBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
@@ -43,23 +46,21 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 		return (Integer)state.get(POWER);
 	}
 
-	public static void updateState(BlockState state, World world, BlockPos pos) {
-		if (world.getDimension().hasSkyLight()) {
-			int i = world.getLightLevel(LightType.SKY, pos) - world.getAmbientDarkness();
-			float f = world.getSkyAngleRadians(1.0F);
-			boolean bl = (Boolean)state.get(INVERTED);
-			if (bl) {
-				i = 15 - i;
-			} else if (i > 0) {
-				float g = f < (float) Math.PI ? 0.0F : (float) (Math.PI * 2);
-				f += (g - f) * 0.2F;
-				i = Math.round((float)i * MathHelper.cos(f));
-			}
+	private static void updateState(BlockState state, World world, BlockPos pos) {
+		int i = world.getLightLevel(LightType.SKY, pos) - world.getAmbientDarkness();
+		float f = world.getSkyAngleRadians(1.0F);
+		boolean bl = (Boolean)state.get(INVERTED);
+		if (bl) {
+			i = 15 - i;
+		} else if (i > 0) {
+			float g = f < (float) Math.PI ? 0.0F : (float) (Math.PI * 2);
+			f += (g - f) * 0.2F;
+			i = Math.round((float)i * MathHelper.cos(f));
+		}
 
-			i = MathHelper.clamp(i, 0, 15);
-			if ((Integer)state.get(POWER) != i) {
-				world.setBlockState(pos, state.with(POWER, Integer.valueOf(i)), 3);
-			}
+		i = MathHelper.clamp(i, 0, 15);
+		if ((Integer)state.get(POWER) != i) {
+			world.setBlockState(pos, state.with(POWER, Integer.valueOf(i)), 3);
 		}
 	}
 
@@ -90,8 +91,20 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new DaylightDetectorBlockEntity();
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new DaylightDetectorBlockEntity(pos, state);
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		return !world.isClient && world.getDimension().hasSkyLight() ? checkType(type, BlockEntityType.DAYLIGHT_DETECTOR, DaylightDetectorBlock::tick) : null;
+	}
+
+	private static void tick(World world, BlockPos pos, BlockState blockState, DaylightDetectorBlockEntity daylightDetectorBlockEntity) {
+		if (world.getTime() % 20L == 0L) {
+			updateState(blockState, world, pos);
+		}
 	}
 
 	@Override

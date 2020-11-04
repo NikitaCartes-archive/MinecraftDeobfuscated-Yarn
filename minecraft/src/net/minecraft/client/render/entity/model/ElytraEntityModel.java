@@ -3,6 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5605;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
@@ -10,14 +16,29 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ElytraEntityModel<T extends LivingEntity> extends AnimalModel<T> {
-	private final ModelPart field_3364;
-	private final ModelPart field_3365 = new ModelPart(this, 22, 0);
+	private final ModelPart field_27412;
+	private final ModelPart field_3365;
 
-	public ElytraEntityModel() {
-		this.field_3365.addCuboid(-10.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, 1.0F);
-		this.field_3364 = new ModelPart(this, 22, 0);
-		this.field_3364.mirror = true;
-		this.field_3364.addCuboid(0.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, 1.0F);
+	public ElytraEntityModel(ModelPart modelPart) {
+		this.field_3365 = modelPart.method_32086("left_wing");
+		this.field_27412 = modelPart.method_32086("right_wing");
+	}
+
+	public static class_5607 method_31994() {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
+		class_5605 lv3 = new class_5605(1.0F);
+		lv2.method_32117(
+			"left_wing",
+			class_5606.method_32108().method_32101(22, 0).method_32098(-10.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, lv3),
+			class_5603.method_32091(5.0F, 0.0F, 0.0F, (float) (Math.PI / 12), 0.0F, (float) (-Math.PI / 12))
+		);
+		lv2.method_32117(
+			"right_wing",
+			class_5606.method_32108().method_32101(22, 0).method_32096().method_32098(0.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, lv3),
+			class_5603.method_32091(-5.0F, 0.0F, 0.0F, (float) (Math.PI / 12), 0.0F, (float) (Math.PI / 12))
+		);
+		return class_5607.method_32110(lv, 64, 32);
 	}
 
 	@Override
@@ -27,7 +48,7 @@ public class ElytraEntityModel<T extends LivingEntity> extends AnimalModel<T> {
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.field_3365, this.field_3364);
+		return ImmutableList.<ModelPart>of(this.field_3365, this.field_27412);
 	}
 
 	public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
@@ -52,7 +73,6 @@ public class ElytraEntityModel<T extends LivingEntity> extends AnimalModel<T> {
 			n = 0.08726646F;
 		}
 
-		this.field_3365.pivotX = 5.0F;
 		this.field_3365.pivotY = m;
 		if (livingEntity instanceof AbstractClientPlayerEntity) {
 			AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
@@ -68,10 +88,9 @@ public class ElytraEntityModel<T extends LivingEntity> extends AnimalModel<T> {
 			this.field_3365.yaw = n;
 		}
 
-		this.field_3364.pivotX = -this.field_3365.pivotX;
-		this.field_3364.yaw = -this.field_3365.yaw;
-		this.field_3364.pivotY = this.field_3365.pivotY;
-		this.field_3364.pitch = this.field_3365.pitch;
-		this.field_3364.roll = -this.field_3365.roll;
+		this.field_27412.yaw = -this.field_3365.yaw;
+		this.field_27412.pivotY = this.field_3365.pivotY;
+		this.field_27412.pitch = this.field_3365.pitch;
+		this.field_27412.roll = -this.field_3365.roll;
 	}
 }

@@ -16,11 +16,13 @@ import net.minecraft.util.math.MathHelper;
 public class MinecartInsideSoundInstance extends MovingSoundInstance {
 	private final PlayerEntity player;
 	private final AbstractMinecartEntity minecart;
+	private final boolean field_27773;
 
-	public MinecartInsideSoundInstance(PlayerEntity player, AbstractMinecartEntity minecart) {
-		super(SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.NEUTRAL);
+	public MinecartInsideSoundInstance(PlayerEntity player, AbstractMinecartEntity minecart, boolean bl) {
+		super(bl ? SoundEvents.ENTITY_MINECART_INSIDE_UNDERWATER : SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.NEUTRAL);
 		this.player = player;
 		this.minecart = minecart;
+		this.field_27773 = bl;
 		this.attenuationType = SoundInstance.AttenuationType.NONE;
 		this.repeat = true;
 		this.repeatDelay = 0;
@@ -39,15 +41,17 @@ public class MinecartInsideSoundInstance extends MovingSoundInstance {
 
 	@Override
 	public void tick() {
-		if (!this.minecart.removed && this.player.hasVehicle() && this.player.getVehicle() == this.minecart) {
+		if (this.minecart.isRemoved() || !this.player.hasVehicle() || this.player.getVehicle() != this.minecart) {
+			this.setDone();
+		} else if (this.field_27773 != this.player.isSubmergedInWater()) {
+			this.volume = 0.0F;
+		} else {
 			float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.minecart.getVelocity()));
 			if ((double)f >= 0.01) {
 				this.volume = 0.0F + MathHelper.clamp(f, 0.0F, 1.0F) * 0.75F;
 			} else {
 				this.volume = 0.0F;
 			}
-		} else {
-			this.setDone();
 		}
 	}
 }

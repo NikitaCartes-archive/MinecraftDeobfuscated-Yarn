@@ -16,7 +16,7 @@ public interface ItemSteerable {
 		if (!entity.isAlive()) {
 			return false;
 		} else {
-			Entity entity2 = entity.getPassengerList().isEmpty() ? null : (Entity)entity.getPassengerList().get(0);
+			Entity entity2 = entity.getFirstPassenger();
 			if (entity.hasPassengers() && entity.canBeControlledByRider() && entity2 instanceof PlayerEntity) {
 				entity.yaw = entity2.yaw;
 				entity.prevYaw = entity.yaw;

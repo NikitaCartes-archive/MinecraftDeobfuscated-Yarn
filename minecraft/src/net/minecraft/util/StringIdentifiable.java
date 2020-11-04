@@ -46,16 +46,14 @@ public interface StringIdentifiable {
 				return dynamicOps.compressMaps()
 					? dynamicOps.getNumberValue(object)
 						.flatMap(
-							number -> (DataResult)Optional.ofNullable(compressedDecoder.apply(number.intValue()))
+							id -> (DataResult)Optional.ofNullable(compressedDecoder.apply(id.intValue()))
 									.map(DataResult::success)
-									.orElseGet(() -> DataResult.error("Unknown element id: " + number))
+									.orElseGet(() -> DataResult.error("Unknown element id: " + id))
 						)
 						.map(stringIdentifiable -> com.mojang.datafixers.util.Pair.of(stringIdentifiable, dynamicOps.empty()))
 					: dynamicOps.getStringValue(object)
 						.flatMap(
-							string -> (DataResult)Optional.ofNullable(decoder.apply(string))
-									.map(DataResult::success)
-									.orElseGet(() -> DataResult.error("Unknown element name: " + string))
+							name -> (DataResult)Optional.ofNullable(decoder.apply(name)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name: " + name))
 						)
 						.map(stringIdentifiable -> com.mojang.datafixers.util.Pair.of(stringIdentifiable, dynamicOps.empty()));
 			}
@@ -66,13 +64,13 @@ public interface StringIdentifiable {
 		};
 	}
 
-	static Keyable method_28142(StringIdentifiable[] stringIdentifiables) {
+	static Keyable toKeyable(StringIdentifiable[] values) {
 		return new Keyable() {
 			@Override
 			public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
 				return dynamicOps.compressMaps()
-					? IntStream.range(0, stringIdentifiables.length).mapToObj(dynamicOps::createInt)
-					: Arrays.stream(stringIdentifiables).map(StringIdentifiable::asString).map(dynamicOps::createString);
+					? IntStream.range(0, values.length).mapToObj(dynamicOps::createInt)
+					: Arrays.stream(values).map(StringIdentifiable::asString).map(dynamicOps::createString);
 			}
 		};
 	}

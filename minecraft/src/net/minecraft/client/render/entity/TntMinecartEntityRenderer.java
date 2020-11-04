@@ -2,18 +2,20 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecartEntity> {
-	public TntMinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher);
+	public TntMinecartEntityRenderer(class_5617.class_5618 arg) {
+		super(arg, EntityModelLayers.TNT_MINECART);
 	}
 
 	protected void renderBlock(

@@ -40,8 +40,8 @@ public class Sprite implements AutoCloseable {
 	 */
 	private int frameTicks;
 
-	protected Sprite(SpriteAtlasTexture atlas, Sprite.Info info, int maxLevel, int atlasWidth, int atlasHeight, int x, int y, NativeImage nativeImage) {
-		this.atlas = atlas;
+	protected Sprite(SpriteAtlasTexture spriteAtlasTexture, Sprite.Info info, int maxLevel, int atlasWidth, int atlasHeight, int x, int y, NativeImage nativeImage) {
+		this.atlas = spriteAtlasTexture;
 		AnimationResourceMetadata animationResourceMetadata = info.animationData;
 		int i = info.width;
 		int j = info.height;

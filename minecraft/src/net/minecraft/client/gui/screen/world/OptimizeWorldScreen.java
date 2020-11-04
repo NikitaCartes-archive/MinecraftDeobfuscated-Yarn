@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class OptimizeWorldScreen extends Screen {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger field_25482 = LogManager.getLogger();
 	private static final Object2IntMap<RegistryKey<World>> DIMENSION_COLORS = Util.make(
 		new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
 			object2IntOpenCustomHashMap.put(World.OVERWORLD, -13408734);
@@ -41,35 +41,30 @@ public class OptimizeWorldScreen extends Screen {
 	private final WorldUpdater updater;
 
 	@Nullable
-	public static OptimizeWorldScreen create(
-		MinecraftClient client, BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, boolean eraseCache
+	public static OptimizeWorldScreen method_27031(
+		MinecraftClient minecraftClient, BooleanConsumer booleanConsumer, DataFixer dataFixer, LevelStorage.Session session, boolean bl
 	) {
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 
-		try (MinecraftClient.IntegratedResourceManager integratedResourceManager = client.method_29604(
-				impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, storageSession
+		try (MinecraftClient.IntegratedResourceManager integratedResourceManager = minecraftClient.method_29604(
+				impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session
 			)) {
 			SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
-			storageSession.backupLevelDataFile(impl, saveProperties);
+			session.backupLevelDataFile(impl, saveProperties);
 			ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
-			return new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutableSet);
+			return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);
 		} catch (Exception var22) {
-			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var22);
+			field_25482.warn("Failed to load datapacks, can't optimize world", (Throwable)var22);
 			return null;
 		}
 	}
 
 	private OptimizeWorldScreen(
-		BooleanConsumer callback,
-		DataFixer dataFixer,
-		LevelStorage.Session storageSession,
-		LevelInfo levelInfo,
-		boolean eraseCache,
-		ImmutableSet<RegistryKey<World>> worlds
+		BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session session, LevelInfo levelInfo, boolean bl, ImmutableSet<RegistryKey<World>> immutableSet
 	) {
 		super(new TranslatableText("optimizeWorld.title", levelInfo.getLevelName()));
 		this.callback = callback;
-		this.updater = new WorldUpdater(storageSession, dataFixer, worlds, eraseCache);
+		this.updater = new WorldUpdater(session, dataFixer, immutableSet, bl);
 	}
 
 	@Override
@@ -118,15 +113,17 @@ public class OptimizeWorldScreen extends Screen {
 			);
 			int m = 0;
 
-			for (RegistryKey<World> registryKey : this.updater.method_28304()) {
+			for (RegistryKey<World> registryKey : this.updater.getWorlds()) {
 				int n = MathHelper.floor(this.updater.getProgress(registryKey) * (float)(j - i));
 				fill(matrices, i + m, k, i + m + n, l, DIMENSION_COLORS.getInt(registryKey));
 				m += n;
 			}
 
 			int o = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-			drawCenteredText(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * 9 + 2, 10526880);
-			drawCenteredText(matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880);
+			drawCenteredString(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * 9 + 2, 10526880);
+			drawCenteredString(
+				matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880
+			);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

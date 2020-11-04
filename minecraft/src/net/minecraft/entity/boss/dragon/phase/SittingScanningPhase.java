@@ -36,8 +36,8 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 				float f = (float)vec3d2.dotProduct(vec3d);
 				float g = (float)(Math.acos((double)f) * 180.0F / (float)Math.PI) + 0.5F;
 				if (g < 0.0F || g > 10.0F) {
-					double d = livingEntity.getX() - this.dragon.head.getX();
-					double e = livingEntity.getZ() - this.dragon.head.getZ();
+					double d = livingEntity.getX() - this.dragon.partHead.getX();
+					double e = livingEntity.getZ() - this.dragon.partHead.getZ();
 					double h = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(d, e) * 180.0F / (float)Math.PI - (double)this.dragon.yaw), -100.0, 100.0);
 					this.dragon.field_20865 *= 0.8F;
 					float i = MathHelper.sqrt(d * d + e * e) + 1.0F;
@@ -55,7 +55,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 			this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
 			if (livingEntity != null) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-				this.dragon.getPhaseManager().create(PhaseType.CHARGING_PLAYER).setPathTarget(new Vec3d(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ()));
+				this.dragon.getPhaseManager().create(PhaseType.CHARGING_PLAYER).setTarget(new Vec3d(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ()));
 			}
 		}
 	}

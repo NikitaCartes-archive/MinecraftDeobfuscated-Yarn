@@ -3,6 +3,7 @@ package net.minecraft.block.entity;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -11,7 +12,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -26,8 +27,8 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	protected Identifier lootTableId;
 	protected long lootTableSeed;
 
-	protected LootableContainerBlockEntity(BlockEntityType<?> blockEntityType) {
-		super(blockEntityType);
+	protected LootableContainerBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
+		super(blockEntityType, blockPos, blockState);
 	}
 
 	public static void setLootTable(BlockView world, Random random, BlockPos pos, Identifier id) {
@@ -37,23 +38,23 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		}
 	}
 
-	protected boolean deserializeLootTable(NbtCompound nbt) {
-		if (nbt.contains("LootTable", 8)) {
-			this.lootTableId = new Identifier(nbt.getString("LootTable"));
-			this.lootTableSeed = nbt.getLong("LootTableSeed");
+	protected boolean deserializeLootTable(CompoundTag compoundTag) {
+		if (compoundTag.contains("LootTable", 8)) {
+			this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
+			this.lootTableSeed = compoundTag.getLong("LootTableSeed");
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected boolean serializeLootTable(NbtCompound nbt) {
+	protected boolean serializeLootTable(CompoundTag compoundTag) {
 		if (this.lootTableId == null) {
 			return false;
 		} else {
-			nbt.putString("LootTable", this.lootTableId.toString());
+			compoundTag.putString("LootTable", this.lootTableId.toString());
 			if (this.lootTableSeed != 0L) {
-				nbt.putLong("LootTableSeed", this.lootTableSeed);
+				compoundTag.putLong("LootTableSeed", this.lootTableSeed);
 			}
 
 			return true;

@@ -24,6 +24,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.SectionDistanceLevelPropagator;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.ChunkSection;
@@ -34,8 +35,8 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	private final PointOfInterestStorage.PointOfInterestDistanceTracker pointOfInterestDistanceTracker;
 	private final LongSet preloadedChunks = new LongOpenHashSet();
 
-	public PointOfInterestStorage(File file, DataFixer dataFixer, boolean bl) {
-		super(file, PointOfInterestSet::createCodec, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK, bl);
+	public PointOfInterestStorage(File file, DataFixer dataFixer, boolean bl, HeightLimitView heightLimitView) {
+		super(file, PointOfInterestSet::createCodec, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK, bl, heightLimitView);
 		this.pointOfInterestDistanceTracker = new PointOfInterestStorage.PointOfInterestDistanceTracker();
 	}
 
@@ -77,7 +78,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	public Stream<PointOfInterest> getInChunk(
 		Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return IntStream.range(0, 16)
+		return IntStream.range(this.field_27240.getBottomSectionLimit(), this.field_27240.getTopSectionLimit())
 			.boxed()
 			.map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong()))
 			.filter(Optional::isPresent)
@@ -112,11 +113,11 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<BlockPos> getNearestPosition(
-		Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus occupationStatus
+		Predicate<PointOfInterestType> typePredicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return this.getInCircle(typePredicate, pos, radius, occupationStatus)
+		return this.getInCircle(typePredicate, blockPos, i, occupationStatus)
 			.map(PointOfInterest::getPos)
-			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)));
+			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)));
 	}
 
 	public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> positionPredicate, BlockPos pos, int radius) {
@@ -188,7 +189,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public void initForPalette(ChunkPos chunkPos, ChunkSection chunkSection) {
-		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, chunkSection.getYOffset() >> 4);
+		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, ChunkSectionPos.getSectionCoord(chunkSection.getYOffset()));
 		Util.ifPresentOrElse(this.get(chunkSectionPos.asLong()), pointOfInterestSet -> pointOfInterestSet.updatePointsOfInterest(biConsumer -> {
 				if (shouldScan(chunkSection)) {
 					this.scanAndPopulate(chunkSection, chunkSectionPos, biConsumer);
@@ -220,10 +221,10 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	/**
 	 * Preloads chunks in a square area with the given radius. Loads the chunks with {@code ChunkStatus.EMPTY}.
 	 * 
-	 * @param radius the radius in blocks
+	 * @param radius The radius in blocks
 	 */
 	public void preloadChunks(WorldView world, BlockPos pos, int radius) {
-		ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16))
+		ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.field_27240.getBottomSectionLimit(), this.field_27240.getTopSectionLimit())
 			.map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong())))
 			.filter(pair -> !(Boolean)((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false))
 			.map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos())

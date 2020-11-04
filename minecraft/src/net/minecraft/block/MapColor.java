@@ -4,27 +4,25 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 /**
- * Represents the surface color of a block when rendered from the {@link net.minecraft.client.render.MapRenderer}.
- * Color names refer to a material or an object which refers to their vanilla Minecraft textures, not their real-world counterparts, eg. "emerald green".
- * Names are in the form of either <i>blockReference_baseColor</i> or <i>color</i>.
+ * Represents the surface color of a block when rendered from the {@link net.minecraft.client.gui.MapRenderer}.
  */
 public class MapColor {
 	public static final MapColor[] COLORS = new MapColor[64];
 	public static final MapColor CLEAR = new MapColor(0, 0);
-	public static final MapColor PALE_GREEN = new MapColor(1, 8368696);
-	public static final MapColor PALE_YELLOW = new MapColor(2, 16247203);
-	public static final MapColor WHITE_GRAY = new MapColor(3, 13092807);
-	public static final MapColor BRIGHT_RED = new MapColor(4, 16711680);
-	public static final MapColor PALE_PURPLE = new MapColor(5, 10526975);
-	public static final MapColor IRON_GRAY = new MapColor(6, 10987431);
-	public static final MapColor DARK_GREEN = new MapColor(7, 31744);
+	public static final MapColor GRASS = new MapColor(1, 8368696);
+	public static final MapColor SAND = new MapColor(2, 16247203);
+	public static final MapColor WEB = new MapColor(3, 13092807);
+	public static final MapColor LAVA = new MapColor(4, 16711680);
+	public static final MapColor ICE = new MapColor(5, 10526975);
+	public static final MapColor IRON = new MapColor(6, 10987431);
+	public static final MapColor FOLIAGE = new MapColor(7, 31744);
 	public static final MapColor WHITE = new MapColor(8, 16777215);
-	public static final MapColor LIGHT_BLUE_GRAY = new MapColor(9, 10791096);
-	public static final MapColor DIRT_BROWN = new MapColor(10, 9923917);
-	public static final MapColor STONE_GRAY = new MapColor(11, 7368816);
-	public static final MapColor WATER_BLUE = new MapColor(12, 4210943);
-	public static final MapColor OAK_TAN = new MapColor(13, 9402184);
-	public static final MapColor OFF_WHITE = new MapColor(14, 16776437);
+	public static final MapColor CLAY = new MapColor(9, 10791096);
+	public static final MapColor DIRT = new MapColor(10, 9923917);
+	public static final MapColor STONE = new MapColor(11, 7368816);
+	public static final MapColor WATER = new MapColor(12, 4210943);
+	public static final MapColor WOOD = new MapColor(13, 9402184);
+	public static final MapColor QUARTZ = new MapColor(14, 16776437);
 	public static final MapColor ORANGE = new MapColor(15, 14188339);
 	public static final MapColor MAGENTA = new MapColor(16, 11685080);
 	public static final MapColor LIGHT_BLUE = new MapColor(17, 6724056);
@@ -41,34 +39,34 @@ public class MapColor {
 	public static final MapColor RED = new MapColor(28, 10040115);
 	public static final MapColor BLACK = new MapColor(29, 1644825);
 	public static final MapColor GOLD = new MapColor(30, 16445005);
-	public static final MapColor DIAMOND_BLUE = new MapColor(31, 6085589);
-	public static final MapColor LAPIS_BLUE = new MapColor(32, 4882687);
-	public static final MapColor EMERALD_GREEN = new MapColor(33, 55610);
-	public static final MapColor SPRUCE_BROWN = new MapColor(34, 8476209);
-	public static final MapColor DARK_RED = new MapColor(35, 7340544);
-	public static final MapColor TERRACOTTA_WHITE = new MapColor(36, 13742497);
-	public static final MapColor TERRACOTTA_ORANGE = new MapColor(37, 10441252);
-	public static final MapColor TERRACOTTA_MAGENTA = new MapColor(38, 9787244);
-	public static final MapColor TERRACOTTA_LIGHT_BLUE = new MapColor(39, 7367818);
-	public static final MapColor TERRACOTTA_YELLOW = new MapColor(40, 12223780);
-	public static final MapColor TERRACOTTA_LIME = new MapColor(41, 6780213);
-	public static final MapColor TERRACOTTA_PINK = new MapColor(42, 10505550);
-	public static final MapColor TERRACOTTA_GRAY = new MapColor(43, 3746083);
-	public static final MapColor TERRACOTTA_LIGHT_GRAY = new MapColor(44, 8874850);
-	public static final MapColor TERRACOTTA_CYAN = new MapColor(45, 5725276);
-	public static final MapColor TERRACOTTA_PURPLE = new MapColor(46, 8014168);
-	public static final MapColor TERRACOTTA_BLUE = new MapColor(47, 4996700);
-	public static final MapColor TERRACOTTA_BROWN = new MapColor(48, 4993571);
-	public static final MapColor TERRACOTTA_GREEN = new MapColor(49, 5001770);
-	public static final MapColor TERRACOTTA_RED = new MapColor(50, 9321518);
-	public static final MapColor TERRACOTTA_BLACK = new MapColor(51, 2430480);
-	public static final MapColor field_25702 = new MapColor(52, 12398641);
-	public static final MapColor field_25703 = new MapColor(53, 9715553);
-	public static final MapColor field_25704 = new MapColor(54, 6035741);
-	public static final MapColor field_25705 = new MapColor(55, 1474182);
-	public static final MapColor field_25706 = new MapColor(56, 3837580);
-	public static final MapColor field_25707 = new MapColor(57, 5647422);
-	public static final MapColor field_25708 = new MapColor(58, 1356933);
+	public static final MapColor DIAMOND = new MapColor(31, 6085589);
+	public static final MapColor LAPIS = new MapColor(32, 4882687);
+	public static final MapColor EMERALD = new MapColor(33, 55610);
+	public static final MapColor SPRUCE = new MapColor(34, 8476209);
+	public static final MapColor NETHER = new MapColor(35, 7340544);
+	public static final MapColor WHITE_TERRACOTTA = new MapColor(36, 13742497);
+	public static final MapColor ORANGE_TERRACOTTA = new MapColor(37, 10441252);
+	public static final MapColor MAGENTA_TERRACOTTA = new MapColor(38, 9787244);
+	public static final MapColor LIGHT_BLUE_TERRACOTTA = new MapColor(39, 7367818);
+	public static final MapColor YELLOW_TERRACOTTA = new MapColor(40, 12223780);
+	public static final MapColor LIME_TERRACOTTA = new MapColor(41, 6780213);
+	public static final MapColor PINK_TERRACOTTA = new MapColor(42, 10505550);
+	public static final MapColor GRAY_TERRACOTTA = new MapColor(43, 3746083);
+	public static final MapColor LIGHT_GRAY_TERRACOTTA = new MapColor(44, 8874850);
+	public static final MapColor CYAN_TERRACOTTA = new MapColor(45, 5725276);
+	public static final MapColor PURPLE_TERRACOTTA = new MapColor(46, 8014168);
+	public static final MapColor BLUE_TERRACOTTA = new MapColor(47, 4996700);
+	public static final MapColor BROWN_TERRACOTTA = new MapColor(48, 4993571);
+	public static final MapColor GREEN_TERRACOTTA = new MapColor(49, 5001770);
+	public static final MapColor RED_TERRACOTTA = new MapColor(50, 9321518);
+	public static final MapColor BLACK_TERRACOTTA = new MapColor(51, 2430480);
+	public static final MapColor CRIMSON_NYLIUM = new MapColor(52, 12398641);
+	public static final MapColor CRIMSON_STEM = new MapColor(53, 9715553);
+	public static final MapColor CRIMSON_HYPHAE = new MapColor(54, 6035741);
+	public static final MapColor WARPED_NYLIUM = new MapColor(55, 1474182);
+	public static final MapColor WARPED_STEM = new MapColor(56, 3837580);
+	public static final MapColor WARPED_HYPHAE = new MapColor(57, 5647422);
+	public static final MapColor WARPED_WART = new MapColor(58, 1356933);
 	public final int color;
 	public final int id;
 

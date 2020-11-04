@@ -7,10 +7,10 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.FoxEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
@@ -36,9 +36,9 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 			(double)(this.getContextModel().head.pivotZ / 16.0F)
 		);
 		float m = foxEntity.getHeadRoll(h);
-		matrixStack.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(m));
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(k));
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(l));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(m));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(k));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(l));
 		if (foxEntity.isBaby()) {
 			if (bl) {
 				matrixStack.translate(0.4F, 0.26F, 0.15F);
@@ -51,9 +51,9 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 			matrixStack.translate(0.06F, 0.27F, -0.5);
 		}
 
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 		if (bl) {
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 		}
 
 		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);

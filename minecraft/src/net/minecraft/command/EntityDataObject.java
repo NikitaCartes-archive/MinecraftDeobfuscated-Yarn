@@ -11,8 +11,9 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.Tag;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
@@ -45,19 +46,19 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public void setNbt(NbtCompound nbt) throws CommandSyntaxException {
+	public void setTag(CompoundTag tag) throws CommandSyntaxException {
 		if (this.entity instanceof PlayerEntity) {
 			throw INVALID_ENTITY_EXCEPTION.create();
 		} else {
 			UUID uUID = this.entity.getUuid();
-			this.entity.readNbt(nbt);
+			this.entity.fromTag(tag);
 			this.entity.setUuid(uUID);
 		}
 	}
 
 	@Override
-	public NbtCompound getNbt() {
-		return NbtPredicate.entityToNbt(this.entity);
+	public CompoundTag getTag() {
+		return NbtPredicate.entityToTag(this.entity);
 	}
 
 	@Override
@@ -66,12 +67,12 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public Text feedbackQuery(NbtElement element) {
-		return new TranslatableText("commands.data.entity.query", this.entity.getDisplayName(), element.toText());
+	public Text feedbackQuery(Tag tag) {
+		return new TranslatableText("commands.data.entity.query", this.entity.getDisplayName(), NbtHelper.method_32270(tag));
 	}
 
 	@Override
-	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
-		return new TranslatableText("commands.data.entity.get", path, this.entity.getDisplayName(), String.format(Locale.ROOT, "%.2f", scale), result);
+	public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double scale, int result) {
+		return new TranslatableText("commands.data.entity.get", nbtPath, this.entity.getDisplayName(), String.format(Locale.ROOT, "%.2f", scale), result);
 	}
 }

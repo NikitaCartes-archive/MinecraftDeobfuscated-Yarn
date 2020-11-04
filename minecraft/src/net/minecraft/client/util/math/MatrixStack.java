@@ -12,17 +12,17 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class MatrixStack {
-	private final Deque<MatrixStack.Entry> stack = Util.make(Queues.<MatrixStack.Entry>newArrayDeque(), arrayDeque -> {
+	private final Deque<MatrixStack.Entry> stack = Util.make(Queues.<MatrixStack.Entry>newArrayDeque(), stack -> {
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
 		Matrix3f matrix3f = new Matrix3f();
 		matrix3f.loadIdentity();
-		arrayDeque.add(new MatrixStack.Entry(matrix4f, matrix3f));
+		stack.add(new MatrixStack.Entry(matrix4f, matrix3f));
 	});
 
 	public void translate(double x, double y, double z) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
-		entry.modelMatrix.multiply(Matrix4f.translate((float)x, (float)y, (float)z));
+		entry.modelMatrix.multiplyByTranslation((float)x, (float)y, (float)z);
 	}
 
 	public void scale(float x, float y, float z) {
@@ -71,9 +71,9 @@ public class MatrixStack {
 		private final Matrix4f modelMatrix;
 		private final Matrix3f normalMatrix;
 
-		private Entry(Matrix4f matrix4f, Matrix3f matrix3f) {
-			this.modelMatrix = matrix4f;
-			this.normalMatrix = matrix3f;
+		private Entry(Matrix4f modelMatrix, Matrix3f normalMatrix) {
+			this.modelMatrix = modelMatrix;
+			this.normalMatrix = normalMatrix;
 		}
 
 		public Matrix4f getModel() {

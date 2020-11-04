@@ -10,8 +10,8 @@ public class LanguageResourceMetadata {
 	public static final LanguageResourceMetadataReader READER = new LanguageResourceMetadataReader();
 	private final Collection<LanguageDefinition> definitions;
 
-	public LanguageResourceMetadata(Collection<LanguageDefinition> collection) {
-		this.definitions = collection;
+	public LanguageResourceMetadata(Collection<LanguageDefinition> definitions) {
+		this.definitions = definitions;
 	}
 
 	public Collection<LanguageDefinition> getLanguageDefinitions() {

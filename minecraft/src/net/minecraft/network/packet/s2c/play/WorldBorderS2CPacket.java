@@ -27,9 +27,9 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.centerX = border.getCenterX();
 		this.centerZ = border.getCenterZ();
 		this.oldSize = border.getSize();
-		this.size = border.getSizeLerpTarget();
-		this.interpolationDuration = border.getSizeLerpTime();
-		this.portalTeleportPosLimit = border.getMaxRadius();
+		this.size = border.getTargetSize();
+		this.interpolationDuration = border.getTargetRemainingTime();
+		this.portalTeleportPosLimit = border.getMaxWorldBorderRadius();
 		this.warningBlocks = border.getWarningBlocks();
 		this.warningTime = border.getWarningTime();
 	}
@@ -132,7 +132,7 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 					border.setSize(this.size);
 				}
 
-				border.setMaxRadius(this.portalTeleportPosLimit);
+				border.setMaxWorldBorderRadius(this.portalTeleportPosLimit);
 				border.setWarningBlocks(this.warningBlocks);
 				border.setWarningTime(this.warningTime);
 		}

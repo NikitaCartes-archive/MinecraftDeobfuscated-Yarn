@@ -17,8 +17,8 @@ public class CoralClawFeature extends CoralFeature {
 	}
 
 	@Override
-	protected boolean generateCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
-		if (!this.generateCoralPiece(world, random, pos, state)) {
+	protected boolean spawnCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
+		if (!this.spawnCoralPiece(world, random, pos, state)) {
 			return false;
 		} else {
 			Direction direction = Direction.Type.HORIZONTAL.random(random);
@@ -42,7 +42,7 @@ public class CoralClawFeature extends CoralFeature {
 					k = random.nextInt(3) + 3;
 				}
 
-				for (int l = 0; l < j && this.generateCoralPiece(world, random, mutable, state); l++) {
+				for (int l = 0; l < j && this.spawnCoralPiece(world, random, mutable, state); l++) {
 					mutable.move(direction3);
 				}
 
@@ -51,7 +51,7 @@ public class CoralClawFeature extends CoralFeature {
 
 				for (int l = 0; l < k; l++) {
 					mutable.move(direction);
-					if (!this.generateCoralPiece(world, random, mutable, state)) {
+					if (!this.spawnCoralPiece(world, random, mutable, state)) {
 						break;
 					}
 

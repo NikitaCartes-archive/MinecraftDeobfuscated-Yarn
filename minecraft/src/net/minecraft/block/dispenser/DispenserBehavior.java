@@ -8,6 +8,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.block.CandleBlock;
+import net.minecraft.block.CandleCakeBlock;
 import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.FluidDrainable;
@@ -197,7 +199,7 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.getBlockPos().offset(direction);
 				World world = pointer.getWorld();
 				ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
-				EntityType.loadFromEntityNbt(world, null, armorStandEntity, stack.getTag());
+				EntityType.loadFromEntityTag(world, null, armorStandEntity, stack.getTag());
 				armorStandEntity.yaw = direction.asRotation();
 				world.spawnEntity(armorStandEntity);
 				stack.decrement(1);
@@ -394,7 +396,7 @@ public interface DispenserBehavior {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (AbstractFireBlock.method_30032(world, blockPos, direction)) {
 					world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
-				} else if (CampfireBlock.method_30035(blockState)) {
+				} else if (CampfireBlock.method_30035(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
 					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
 				} else if (blockState.getBlock() instanceof TntBlock) {
 					TntBlock.primeTnt(world, blockPos);
@@ -530,7 +532,7 @@ public interface DispenserBehavior {
 					ServerWorld serverWorld = pointer.getWorld();
 					BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 					BlockState blockState = serverWorld.getBlockState(blockPos);
-					if (blockState.method_27851(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL))
+					if (blockState.isIn(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL))
 						&& (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
 						((BeehiveBlock)blockState.getBlock()).takeHoney(serverWorld, blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
 						this.setSuccess(true);
@@ -570,7 +572,7 @@ public interface DispenserBehavior {
 	}
 
 	static void method_27042(BlockPointer blockPointer, Entity entity, Direction direction) {
-		entity.setPosition(
+		entity.updatePosition(
 			blockPointer.getX() + (double)direction.getOffsetX() * (0.5000099999997474 - (double)entity.getWidth() / 2.0),
 			blockPointer.getY() + (double)direction.getOffsetY() * (0.5000099999997474 - (double)entity.getHeight() / 2.0) - (double)entity.getHeight() / 2.0,
 			blockPointer.getZ() + (double)direction.getOffsetZ() * (0.5000099999997474 - (double)entity.getWidth() / 2.0)

@@ -223,6 +223,11 @@ public class RenderLayers {
 		hashMap.put(Blocks.POTTED_WARPED_ROOTS, renderLayer3);
 		hashMap.put(Blocks.CRIMSON_DOOR, renderLayer3);
 		hashMap.put(Blocks.WARPED_DOOR, renderLayer3);
+		hashMap.put(Blocks.SMALL_AMETHYST_BUD, renderLayer3);
+		hashMap.put(Blocks.MEDIUM_AMETHYST_BUD, renderLayer3);
+		hashMap.put(Blocks.LARGE_AMETHYST_BUD, renderLayer3);
+		hashMap.put(Blocks.AMETHYST_CLUSTER, renderLayer3);
+		hashMap.put(Blocks.LIGHTNING_ROD, renderLayer3);
 		RenderLayer renderLayer4 = RenderLayer.getTranslucent();
 		hashMap.put(Blocks.ICE, renderLayer4);
 		hashMap.put(Blocks.NETHER_PORTAL, renderLayer4);
@@ -262,6 +267,7 @@ public class RenderLayers {
 		hashMap.put(Blocks.HONEY_BLOCK, renderLayer4);
 		hashMap.put(Blocks.FROSTED_ICE, renderLayer4);
 		hashMap.put(Blocks.BUBBLE_COLUMN, renderLayer4);
+		hashMap.put(Blocks.TINTED_GLASS, renderLayer4);
 	});
 	private static final Map<Fluid, RenderLayer> FLUIDS = Util.make(Maps.<Fluid, RenderLayer>newHashMap(), hashMap -> {
 		RenderLayer renderLayer = RenderLayer.getTranslucent();
@@ -280,8 +286,8 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer getMovingBlockLayer(BlockState state) {
-		Block block = state.getBlock();
+	public static RenderLayer getMovingBlockLayer(BlockState blockState) {
+		Block block = blockState.getBlock();
 		if (block instanceof LeavesBlock) {
 			return fancyGraphicsOrBetter ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
 		} else {

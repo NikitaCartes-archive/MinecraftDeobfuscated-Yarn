@@ -51,18 +51,20 @@ public class ListPoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		StructureWorldAccess world,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		BlockPos pos,
 		BlockPos blockPos,
-		BlockRotation rotation,
-		BlockBox box,
+		BlockPos blockPos2,
+		BlockRotation blockRotation,
+		BlockBox blockBox,
 		Random random,
 		boolean keepJigsaws
 	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			if (!structurePoolElement.generate(structureManager, world, structureAccessor, chunkGenerator, pos, blockPos, rotation, box, random, keepJigsaws)) {
+			if (!structurePoolElement.generate(
+				structureManager, structureWorldAccess, structureAccessor, chunkGenerator, blockPos, blockPos2, blockRotation, blockBox, random, keepJigsaws
+			)) {
 				return false;
 			}
 		}

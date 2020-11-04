@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
@@ -19,9 +20,9 @@ public class ChunkRendererRegion implements BlockRenderView {
 	protected final int chunkXOffset;
 	protected final int chunkZOffset;
 	protected final BlockPos offset;
-	protected final int sizeX;
-	protected final int sizeY;
-	protected final int sizeZ;
+	protected final int xSize;
+	protected final int ySize;
+	protected final int zSize;
 	protected final WorldChunk[][] chunks;
 	protected final BlockState[] blockStates;
 	protected final FluidState[] fluidStates;
@@ -29,10 +30,10 @@ public class ChunkRendererRegion implements BlockRenderView {
 
 	@Nullable
 	public static ChunkRendererRegion create(World world, BlockPos startPos, BlockPos endPos, int chunkRadius) {
-		int i = startPos.getX() - chunkRadius >> 4;
-		int j = startPos.getZ() - chunkRadius >> 4;
-		int k = endPos.getX() + chunkRadius >> 4;
-		int l = endPos.getZ() + chunkRadius >> 4;
+		int i = ChunkSectionPos.getSectionCoord(startPos.getX() - chunkRadius);
+		int j = ChunkSectionPos.getSectionCoord(startPos.getZ() - chunkRadius);
+		int k = ChunkSectionPos.getSectionCoord(endPos.getX() + chunkRadius);
+		int l = ChunkSectionPos.getSectionCoord(endPos.getZ() + chunkRadius);
 		WorldChunk[][] worldChunks = new WorldChunk[k - i + 1][l - j + 1];
 
 		for (int m = i; m <= k; m++) {
@@ -52,8 +53,8 @@ public class ChunkRendererRegion implements BlockRenderView {
 	}
 
 	public static boolean method_30000(BlockPos blockPos, BlockPos blockPos2, int i, int j, WorldChunk[][] worldChunks) {
-		for (int k = blockPos.getX() >> 4; k <= blockPos2.getX() >> 4; k++) {
-			for (int l = blockPos.getZ() >> 4; l <= blockPos2.getZ() >> 4; l++) {
+		for (int k = ChunkSectionPos.getSectionCoord(blockPos.getX()); k <= ChunkSectionPos.getSectionCoord(blockPos2.getX()); k++) {
+			for (int l = ChunkSectionPos.getSectionCoord(blockPos.getZ()); l <= ChunkSectionPos.getSectionCoord(blockPos2.getZ()); l++) {
 				WorldChunk worldChunk = worldChunks[k - i][l - j];
 				if (!worldChunk.areSectionsEmptyBetween(blockPos.getY(), blockPos2.getY())) {
 					return false;
@@ -70,15 +71,15 @@ public class ChunkRendererRegion implements BlockRenderView {
 		this.chunkZOffset = chunkZ;
 		this.chunks = chunks;
 		this.offset = startPos;
-		this.sizeX = endPos.getX() - startPos.getX() + 1;
-		this.sizeY = endPos.getY() - startPos.getY() + 1;
-		this.sizeZ = endPos.getZ() - startPos.getZ() + 1;
-		this.blockStates = new BlockState[this.sizeX * this.sizeY * this.sizeZ];
-		this.fluidStates = new FluidState[this.sizeX * this.sizeY * this.sizeZ];
+		this.xSize = endPos.getX() - startPos.getX() + 1;
+		this.ySize = endPos.getY() - startPos.getY() + 1;
+		this.zSize = endPos.getZ() - startPos.getZ() + 1;
+		this.blockStates = new BlockState[this.xSize * this.ySize * this.zSize];
+		this.fluidStates = new FluidState[this.xSize * this.ySize * this.zSize];
 
 		for (BlockPos blockPos : BlockPos.iterate(startPos, endPos)) {
-			int i = (blockPos.getX() >> 4) - chunkX;
-			int j = (blockPos.getZ() >> 4) - chunkZ;
+			int i = ChunkSectionPos.getSectionCoord(blockPos.getX()) - chunkX;
+			int j = ChunkSectionPos.getSectionCoord(blockPos.getZ()) - chunkZ;
 			WorldChunk worldChunk = chunks[i][j];
 			int k = this.getIndex(blockPos);
 			this.blockStates[k] = worldChunk.getBlockState(blockPos);
@@ -94,7 +95,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 		int i = x - this.offset.getX();
 		int j = y - this.offset.getY();
 		int k = z - this.offset.getZ();
-		return k * this.sizeX * this.sizeY + j * this.sizeX + i;
+		return k * this.xSize * this.ySize + j * this.xSize + i;
 	}
 
 	@Override
@@ -124,14 +125,24 @@ public class ChunkRendererRegion implements BlockRenderView {
 	}
 
 	@Nullable
-	public BlockEntity getBlockEntity(BlockPos pos, WorldChunk.CreationType creationType) {
-		int i = (pos.getX() >> 4) - this.chunkXOffset;
-		int j = (pos.getZ() >> 4) - this.chunkZOffset;
-		return this.chunks[i][j].getBlockEntity(pos, creationType);
+	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
+		int i = ChunkSectionPos.getSectionCoord(blockPos.getX()) - this.chunkXOffset;
+		int j = ChunkSectionPos.getSectionCoord(blockPos.getZ()) - this.chunkZOffset;
+		return this.chunks[i][j].getBlockEntity(blockPos, creationType);
 	}
 
 	@Override
 	public int getColor(BlockPos pos, ColorResolver colorResolver) {
 		return this.world.getColor(pos, colorResolver);
+	}
+
+	@Override
+	public int getSectionCount() {
+		return this.world.getSectionCount();
+	}
+
+	@Override
+	public int getBottomSectionLimit() {
+		return this.world.getBottomSectionLimit();
 	}
 }

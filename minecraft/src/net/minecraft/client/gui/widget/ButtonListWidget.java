@@ -8,8 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.Option;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.Option;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
@@ -44,11 +44,11 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 	}
 
 	@Nullable
-	public ClickableWidget getButtonFor(Option option) {
+	public AbstractButtonWidget getButtonFor(Option option) {
 		for (ButtonListWidget.ButtonEntry buttonEntry : this.children()) {
-			for (ClickableWidget clickableWidget : buttonEntry.buttons) {
-				if (clickableWidget instanceof OptionButtonWidget && ((OptionButtonWidget)clickableWidget).getOption() == option) {
-					return clickableWidget;
+			for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
+				if (abstractButtonWidget instanceof OptionButtonWidget && ((OptionButtonWidget)abstractButtonWidget).getOption() == option) {
+					return abstractButtonWidget;
 				}
 			}
 		}
@@ -56,11 +56,11 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		return null;
 	}
 
-	public Optional<ClickableWidget> getHoveredButton(double mouseX, double mouseY) {
+	public Optional<AbstractButtonWidget> getHoveredButton(double mouseX, double mouseY) {
 		for (ButtonListWidget.ButtonEntry buttonEntry : this.children()) {
-			for (ClickableWidget clickableWidget : buttonEntry.buttons) {
-				if (clickableWidget.isMouseOver(mouseX, mouseY)) {
-					return Optional.of(clickableWidget);
+			for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
+				if (abstractButtonWidget.isMouseOver(mouseX, mouseY)) {
+					return Optional.of(abstractButtonWidget);
 				}
 			}
 		}
@@ -70,9 +70,9 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 
 	@Environment(EnvType.CLIENT)
 	public static class ButtonEntry extends ElementListWidget.Entry<ButtonListWidget.ButtonEntry> {
-		private final List<ClickableWidget> buttons;
+		private final List<AbstractButtonWidget> buttons;
 
-		private ButtonEntry(List<ClickableWidget> buttons) {
+		private ButtonEntry(List<AbstractButtonWidget> buttons) {
 			this.buttons = buttons;
 		}
 
@@ -81,10 +81,10 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		}
 
 		public static ButtonListWidget.ButtonEntry create(GameOptions options, int width, Option firstOption, @Nullable Option secondOption) {
-			ClickableWidget clickableWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
+			AbstractButtonWidget abstractButtonWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
 			return secondOption == null
-				? new ButtonListWidget.ButtonEntry(ImmutableList.of(clickableWidget))
-				: new ButtonListWidget.ButtonEntry(ImmutableList.of(clickableWidget, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
+				? new ButtonListWidget.ButtonEntry(ImmutableList.of(abstractButtonWidget))
+				: new ButtonListWidget.ButtonEntry(ImmutableList.of(abstractButtonWidget, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
 		}
 
 		@Override

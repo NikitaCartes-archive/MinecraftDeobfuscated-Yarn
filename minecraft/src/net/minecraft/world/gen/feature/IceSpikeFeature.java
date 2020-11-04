@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -18,7 +17,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
+		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomHeightLimit() + 2) {
 			blockPos = blockPos.down();
 		}
 
@@ -43,15 +42,13 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 						float h = (float)MathHelper.abs(n) - 0.25F;
 						if ((m == 0 && n == 0 || !(g * g + h * h > f * f)) && (m != -l && m != l && n != -l && n != l || !(random.nextFloat() > 0.75F))) {
 							BlockState blockState = structureWorldAccess.getBlockState(blockPos.add(m, k, n));
-							Block block = blockState.getBlock();
-							if (blockState.isAir() || isSoil(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+							if (blockState.isAir() || isSoil(blockState) || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.ICE)) {
 								this.setBlockState(structureWorldAccess, blockPos.add(m, k, n), Blocks.PACKED_ICE.getDefaultState());
 							}
 
 							if (k != 0 && l > 1) {
 								blockState = structureWorldAccess.getBlockState(blockPos.add(m, -k, n));
-								block = blockState.getBlock();
-								if (blockState.isAir() || isSoil(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+								if (blockState.isAir() || isSoil(blockState) || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.ICE)) {
 									this.setBlockState(structureWorldAccess, blockPos.add(m, -k, n), Blocks.PACKED_ICE.getDefaultState());
 								}
 							}
@@ -77,8 +74,11 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 
 					while (blockPos2.getY() > 50) {
 						BlockState blockState2 = structureWorldAccess.getBlockState(blockPos2);
-						Block block2 = blockState2.getBlock();
-						if (!blockState2.isAir() && !isSoil(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) {
+						if (!blockState2.isAir()
+							&& !isSoil(blockState2)
+							&& !blockState2.isOf(Blocks.SNOW_BLOCK)
+							&& !blockState2.isOf(Blocks.ICE)
+							&& !blockState2.isOf(Blocks.PACKED_ICE)) {
 							break;
 						}
 

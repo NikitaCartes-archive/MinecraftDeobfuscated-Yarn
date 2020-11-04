@@ -223,7 +223,7 @@ public class LootTable {
 				if (identifier != null) {
 					jsonObject.addProperty("type", identifier.toString());
 				} else {
-					LootTable.LOGGER.warn("Failed to find id for param set " + lootTable.type);
+					LootTable.LOGGER.warn("Failed to find id for param set {}", lootTable.type);
 				}
 			}
 

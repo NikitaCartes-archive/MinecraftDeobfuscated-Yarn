@@ -34,10 +34,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
@@ -86,22 +85,22 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("Variant", this.getVariant());
-		nbt.putInt("Strength", this.getStrength());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("Variant", this.getVariant());
+		tag.putInt("Strength", this.getStrength());
 		if (!this.items.getStack(1).isEmpty()) {
-			nbt.put("DecorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
+			tag.put("DecorItem", this.items.getStack(1).toTag(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		this.setStrength(nbt.getInt("Strength"));
-		super.readCustomDataFromNbt(nbt);
-		this.setVariant(nbt.getInt("Variant"));
-		if (nbt.contains("DecorItem", 10)) {
-			this.items.setStack(1, ItemStack.fromNbt(nbt.getCompound("DecorItem")));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		this.setStrength(tag.getInt("Strength"));
+		super.readCustomDataFromTag(tag);
+		this.setVariant(tag.getInt("Variant"));
+		if (tag.contains("DecorItem", 10)) {
+			this.items.setStack(1, ItemStack.fromTag(tag.getCompound("DecorItem")));
 		}
 
 		this.updateSaddle();
@@ -154,7 +153,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 			float f = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 			float g = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
 			float h = 0.3F;
-			passenger.setPosition(
+			passenger.updatePosition(
 				this.getX() + (double)(0.3F * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3F * f)
 			);
 		}
@@ -181,12 +180,11 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		int j = 0;
 		float f = 0.0F;
 		boolean bl = false;
-		Item item2 = item.getItem();
-		if (item2 == Items.WHEAT) {
+		if (item.isOf(Items.WHEAT)) {
 			i = 10;
 			j = 3;
 			f = 2.0F;
-		} else if (item2 == Blocks.HAY_BLOCK.asItem()) {
+		} else if (item.isOf(Blocks.HAY_BLOCK.asItem())) {
 			i = 90;
 			j = 6;
 			f = 10.0F;
@@ -245,7 +243,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.initializeStrength();
 		int i;
@@ -257,7 +255,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 
 		this.setVariant(i);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -321,8 +319,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Override
 	public boolean isHorseArmor(ItemStack item) {
-		Item item2 = item.getItem();
-		return ItemTags.CARPETS.contains(item2);
+		return item.isIn(ItemTags.CARPETS);
 	}
 
 	@Override

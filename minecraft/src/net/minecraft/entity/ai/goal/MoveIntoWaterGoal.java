@@ -26,7 +26,7 @@ public class MoveIntoWaterGoal extends Goal {
 			MathHelper.floor(this.mob.getY() - 2.0),
 			MathHelper.floor(this.mob.getZ() - 2.0),
 			MathHelper.floor(this.mob.getX() + 2.0),
-			MathHelper.floor(this.mob.getY()),
+			this.mob.getBlockY(),
 			MathHelper.floor(this.mob.getZ() + 2.0)
 		)) {
 			if (this.mob.world.getFluidState(blockPos2).isIn(FluidTags.WATER)) {

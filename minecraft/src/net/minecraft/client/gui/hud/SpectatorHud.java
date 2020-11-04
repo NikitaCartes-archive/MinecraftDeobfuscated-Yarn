@@ -41,7 +41,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		return MathHelper.clamp((float)l / 2000.0F, 0.0F, 1.0F);
 	}
 
-	public void render(MatrixStack matrices, float f) {
+	public void render(MatrixStack matrixStack, float f) {
 		if (this.spectatorMenu != null) {
 			float g = this.getSpectatorMenuHeight();
 			if (g <= 0.0F) {
@@ -52,32 +52,34 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 				this.setZOffset(-90);
 				int k = MathHelper.floor((float)this.client.getWindow().getScaledHeight() - 22.0F * g);
 				SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
-				this.renderSpectatorMenu(matrices, g, i, k, spectatorMenuState);
+				this.renderSpectatorMenu(matrixStack, g, i, k, spectatorMenuState);
 				this.setZOffset(j);
 			}
 		}
 	}
 
-	protected void renderSpectatorMenu(MatrixStack matrices, float f, int i, int j, SpectatorMenuState spectatorMenuState) {
+	protected void renderSpectatorMenu(MatrixStack matrixStack, float f, int i, int j, SpectatorMenuState spectatorMenuState) {
 		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, f);
 		this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
-		this.drawTexture(matrices, i - 91, j, 0, 0, 182, 22);
+		this.drawTexture(matrixStack, i - 91, j, 0, 0, 182, 22);
 		if (spectatorMenuState.getSelectedSlot() >= 0) {
-			this.drawTexture(matrices, i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
+			this.drawTexture(matrixStack, i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
 		}
 
 		for (int k = 0; k < 9; k++) {
-			this.renderSpectatorCommand(matrices, k, this.client.getWindow().getScaledWidth() / 2 - 90 + k * 20 + 2, (float)(j + 3), f, spectatorMenuState.getCommand(k));
+			this.renderSpectatorCommand(
+				matrixStack, k, this.client.getWindow().getScaledWidth() / 2 - 90 + k * 20 + 2, (float)(j + 3), f, spectatorMenuState.getCommand(k)
+			);
 		}
 
 		RenderSystem.disableRescaleNormal();
 		RenderSystem.disableBlend();
 	}
 
-	private void renderSpectatorCommand(MatrixStack matrices, int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
+	private void renderSpectatorCommand(MatrixStack matrixStack, int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
 		this.client.getTextureManager().bindTexture(SPECTATOR_TEXTURE);
 		if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
 			int k = (int)(g * 255.0F);
@@ -85,18 +87,18 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 			RenderSystem.translatef((float)j, f, 0.0F);
 			float h = spectatorMenuCommand.isEnabled() ? 1.0F : 0.25F;
 			RenderSystem.color4f(h, h, h, g);
-			spectatorMenuCommand.renderIcon(matrices, h, k);
+			spectatorMenuCommand.renderIcon(matrixStack, h, k);
 			RenderSystem.popMatrix();
 			if (k > 3 && spectatorMenuCommand.isEnabled()) {
 				Text text = this.client.options.keysHotbar[i].getBoundKeyLocalizedText();
 				this.client
 					.textRenderer
-					.drawWithShadow(matrices, text, (float)(j + 19 - 2 - this.client.textRenderer.getWidth(text)), f + 6.0F + 3.0F, 16777215 + (k << 24));
+					.drawWithShadow(matrixStack, text, (float)(j + 19 - 2 - this.client.textRenderer.getWidth(text)), f + 6.0F + 3.0F, 16777215 + (k << 24));
 			}
 		}
 	}
 
-	public void render(MatrixStack matrices) {
+	public void render(MatrixStack matrixStack) {
 		int i = (int)(this.getSpectatorMenuHeight() * 255.0F);
 		if (i > 3 && this.spectatorMenu != null) {
 			SpectatorMenuCommand spectatorMenuCommand = this.spectatorMenu.getSelectedCommand();
@@ -107,7 +109,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 				RenderSystem.pushMatrix();
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
-				this.client.textRenderer.drawWithShadow(matrices, text, (float)j, (float)k, 16777215 + (i << 24));
+				this.client.textRenderer.drawWithShadow(matrixStack, text, (float)j, (float)k, 16777215 + (i << 24));
 				RenderSystem.disableBlend();
 				RenderSystem.popMatrix();
 			}

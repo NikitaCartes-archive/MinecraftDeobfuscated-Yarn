@@ -6,6 +6,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -81,7 +83,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			Optional<CampfireCookingRecipe> optional = campfireBlockEntity.getRecipeFor(itemStack);
 			if (optional.isPresent()) {
 				if (!world.isClient
-					&& campfireBlockEntity.addItem(player.abilities.creativeMode ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)optional.get()).getCookTime())) {
+					&& campfireBlockEntity.addItem(player.getAbilities().creativeMode ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)optional.get()).getCookTime())) {
 					player.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
 					return ActionResult.SUCCESS;
 				}
@@ -128,16 +130,14 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return direction == Direction.DOWN
-			? state.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(neighborState)))
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			? state.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(newState)))
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	private boolean doesBlockCauseSignalFire(BlockState state) {
@@ -301,8 +301,20 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new CampfireBlockEntity();
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new CampfireBlockEntity(pos, state);
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		if (world.isClient) {
+			return state.get(LIT) ? checkType(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::clientTick) : null;
+		} else {
+			return state.get(LIT)
+				? checkType(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::litServerTick)
+				: checkType(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::unlitServerTick);
+		}
 	}
 
 	@Override
@@ -311,10 +323,8 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	public static boolean method_30035(BlockState blockState) {
-		return blockState.method_27851(
-				BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(Properties.WATERLOGGED) && abstractBlockState.contains(Properties.LIT)
-			)
-			&& !(Boolean)blockState.get(Properties.WATERLOGGED)
-			&& !(Boolean)blockState.get(Properties.LIT);
+		return blockState.isIn(BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(WATERLOGGED) && abstractBlockState.contains(LIT))
+			&& !(Boolean)blockState.get(WATERLOGGED)
+			&& !(Boolean)blockState.get(LIT);
 	}
 }

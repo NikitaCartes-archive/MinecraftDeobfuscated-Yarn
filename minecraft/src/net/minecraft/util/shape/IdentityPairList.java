@@ -11,13 +11,20 @@ public class IdentityPairList implements PairList {
 
 	@Override
 	public boolean forEachPair(PairList.Consumer predicate) {
-		for (int i = 0; i <= this.merged.size(); i++) {
-			if (!predicate.merge(i, i, i)) {
+		int i = this.merged.size() - 1;
+
+		for (int j = 0; j < i; j++) {
+			if (!predicate.merge(j, j, j)) {
 				return false;
 			}
 		}
 
 		return true;
+	}
+
+	@Override
+	public int size() {
+		return this.merged.size();
 	}
 
 	@Override

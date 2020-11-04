@@ -14,26 +14,26 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.metadata.LanguageResourceMetadata;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Language;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class LanguageManager implements SynchronousResourceReloader {
+public class LanguageManager implements SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final LanguageDefinition field_25291 = new LanguageDefinition("en_us", "US", "English", false);
-	private Map<String, LanguageDefinition> languageDefs = ImmutableMap.of("en_us", field_25291);
+	private static final LanguageDefinition ENGLISH_US = new LanguageDefinition("en_us", "US", "English", false);
+	private Map<String, LanguageDefinition> languageDefs = ImmutableMap.of("en_us", ENGLISH_US);
 	private String currentLanguageCode;
-	private LanguageDefinition language = field_25291;
+	private LanguageDefinition language = ENGLISH_US;
 
-	public LanguageManager(String string) {
-		this.currentLanguageCode = string;
+	public LanguageManager(String languageCode) {
+		this.currentLanguageCode = languageCode;
 	}
 
-	private static Map<String, LanguageDefinition> method_29393(Stream<ResourcePack> stream) {
+	private static Map<String, LanguageDefinition> loadAvailableLanguages(Stream<ResourcePack> packs) {
 		Map<String, LanguageDefinition> map = Maps.<String, LanguageDefinition>newHashMap();
-		stream.forEach(resourcePack -> {
+		packs.forEach(resourcePack -> {
 			try {
 				LanguageResourceMetadata languageResourceMetadata = resourcePack.parseMetadata(LanguageResourceMetadata.READER);
 				if (languageResourceMetadata != null) {
@@ -49,9 +49,9 @@ public class LanguageManager implements SynchronousResourceReloader {
 	}
 
 	@Override
-	public void reload(ResourceManager manager) {
-		this.languageDefs = method_29393(manager.streamResourcePacks());
-		LanguageDefinition languageDefinition = (LanguageDefinition)this.languageDefs.getOrDefault("en_us", field_25291);
+	public void apply(ResourceManager manager) {
+		this.languageDefs = loadAvailableLanguages(manager.streamResourcePacks());
+		LanguageDefinition languageDefinition = (LanguageDefinition)this.languageDefs.getOrDefault("en_us", ENGLISH_US);
 		this.language = (LanguageDefinition)this.languageDefs.getOrDefault(this.currentLanguageCode, languageDefinition);
 		List<LanguageDefinition> list = Lists.<LanguageDefinition>newArrayList(languageDefinition);
 		if (this.language != languageDefinition) {
@@ -59,7 +59,7 @@ public class LanguageManager implements SynchronousResourceReloader {
 		}
 
 		TranslationStorage translationStorage = TranslationStorage.load(manager, list);
-		I18n.method_29391(translationStorage);
+		I18n.setLanguage(translationStorage);
 		Language.setInstance(translationStorage);
 	}
 

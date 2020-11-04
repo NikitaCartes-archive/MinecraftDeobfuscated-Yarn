@@ -1,5 +1,6 @@
 package net.minecraft.block.entity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
@@ -7,10 +8,11 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.SmokerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.math.BlockPos;
 
 public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
-	public SmokerBlockEntity() {
-		super(BlockEntityType.SMOKER, RecipeType.SMOKING);
+	public SmokerBlockEntity(BlockPos blockPos, BlockState blockState) {
+		super(BlockEntityType.SMOKER, blockPos, blockState, RecipeType.SMOKING);
 	}
 
 	@Override

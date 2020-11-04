@@ -56,7 +56,7 @@ public class LocationPredicate {
 		NumberRange.FloatRange x,
 		NumberRange.FloatRange y,
 		NumberRange.FloatRange z,
-		@Nullable RegistryKey<Biome> biome,
+		@Nullable RegistryKey<Biome> registryKey,
 		@Nullable StructureFeature<?> feature,
 		@Nullable RegistryKey<World> dimension,
 		@Nullable Boolean smokey,
@@ -67,7 +67,7 @@ public class LocationPredicate {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.biome = biome;
+		this.biome = registryKey;
 		this.feature = feature;
 		this.dimension = dimension;
 		this.smokey = smokey;
@@ -76,12 +76,12 @@ public class LocationPredicate {
 		this.fluid = fluid;
 	}
 
-	public static LocationPredicate biome(RegistryKey<Biome> biome) {
+	public static LocationPredicate biome(RegistryKey<Biome> registryKey) {
 		return new LocationPredicate(
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
-			biome,
+			registryKey,
 			null,
 			null,
 			null,
@@ -210,7 +210,7 @@ public class LocationPredicate {
 				? (RegistryKey)Identifier.CODEC
 					.parse(JsonOps.INSTANCE, jsonObject.get("dimension"))
 					.resultOrPartial(field_24732::error)
-					.map(identifier -> RegistryKey.of(Registry.WORLD_KEY, identifier))
+					.map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier))
 					.orElse(null)
 				: null;
 			StructureFeature<?> structureFeature = jsonObject.has("feature")

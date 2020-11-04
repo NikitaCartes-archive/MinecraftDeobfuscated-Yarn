@@ -8,9 +8,9 @@ import net.minecraft.util.math.MathHelper;
 public class ProtectionEnchantment extends Enchantment {
 	public final ProtectionEnchantment.Type protectionType;
 
-	public ProtectionEnchantment(Enchantment.Rarity weight, ProtectionEnchantment.Type protectionType, EquipmentSlot... slotTypes) {
-		super(weight, protectionType == ProtectionEnchantment.Type.FALL ? EnchantmentTarget.ARMOR_FEET : EnchantmentTarget.ARMOR, slotTypes);
-		this.protectionType = protectionType;
+	public ProtectionEnchantment(Enchantment.Rarity weight, ProtectionEnchantment.Type type, EquipmentSlot... equipmentSlots) {
+		super(weight, type == ProtectionEnchantment.Type.FALL ? EnchantmentTarget.ARMOR_FEET : EnchantmentTarget.ARMOR, equipmentSlots);
+		this.protectionType = type;
 	}
 
 	@Override

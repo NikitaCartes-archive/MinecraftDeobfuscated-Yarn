@@ -75,7 +75,7 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (this.shouldHatchProgress(world) && isSandBelow(world, pos)) {
+		if (this.shouldHatchProgress(world) && isSand(world, pos)) {
 			int i = (Integer)state.get(HATCH);
 			if (i < 2) {
 				world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
@@ -96,8 +96,8 @@ public class TurtleEggBlock extends Block {
 		}
 	}
 
-	public static boolean isSandBelow(BlockView world, BlockPos pos) {
-		return method_29952(world, pos.down());
+	public static boolean isSand(BlockView blockView, BlockPos blockPos) {
+		return method_29952(blockView, blockPos.down());
 	}
 
 	public static boolean method_29952(BlockView blockView, BlockPos blockPos) {
@@ -106,7 +106,7 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (isSandBelow(world, pos) && !world.isClient) {
+		if (isSand(world, pos) && !world.isClient) {
 			world.syncWorldEvent(2005, pos, 0);
 		}
 	}
@@ -124,7 +124,7 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public boolean canReplace(BlockState state, ItemPlacementContext context) {
-		return context.getStack().getItem() == this.asItem() && state.get(EGGS) < 4 ? true : super.canReplace(state, context);
+		return context.getStack().isOf(this.asItem()) && state.get(EGGS) < 4 ? true : super.canReplace(state, context);
 	}
 
 	@Nullable

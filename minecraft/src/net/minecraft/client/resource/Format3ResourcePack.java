@@ -888,8 +888,8 @@ public class Format3ResourcePack implements ResourcePack {
 		return builder.build();
 	});
 
-	private static Identifier getMetadataLocation(Identifier id) {
-		return new Identifier(id.getNamespace(), id.getPath() + ".mcmeta");
+	private static Identifier getMetadataLocation(Identifier identifier) {
+		return new Identifier(identifier.getNamespace(), identifier.getPath() + ".mcmeta");
 	}
 
 	public Format3ResourcePack(ResourcePack resourcePack, Map<Identifier, Identifier> map) {
@@ -897,8 +897,8 @@ public class Format3ResourcePack implements ResourcePack {
 		this.idMap = map;
 	}
 
-	private Identifier getRedirectedId(Identifier id) {
-		return (Identifier)this.idMap.getOrDefault(id, id);
+	private Identifier getRedirectedId(Identifier identifier) {
+		return (Identifier)this.idMap.getOrDefault(identifier, identifier);
 	}
 
 	@Override

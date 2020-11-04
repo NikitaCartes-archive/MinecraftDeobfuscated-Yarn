@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConcretePowderBlock;
@@ -19,9 +18,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.AutomaticItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.state.property.Properties;
@@ -46,7 +45,7 @@ public class FallingBlockEntity extends Entity {
 	private boolean hurtEntities;
 	private int fallHurtMax = 40;
 	private float fallHurtAmount = 2.0F;
-	public NbtCompound blockEntityData;
+	public CompoundTag blockEntityData;
 	protected static final TrackedData<BlockPos> BLOCK_POS = DataTracker.registerData(FallingBlockEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 
 	public FallingBlockEntity(EntityType<? extends FallingBlockEntity> entityType, World world) {
@@ -57,7 +56,7 @@ public class FallingBlockEntity extends Entity {
 		this(EntityType.FALLING_BLOCK, world);
 		this.block = block;
 		this.inanimate = true;
-		this.setPosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
+		this.updatePosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
 		this.setVelocity(Vec3d.ZERO);
 		this.prevX = x;
 		this.prevY = y;
@@ -91,13 +90,13 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	public boolean collides() {
-		return !this.removed;
+		return !this.isRemoved();
 	}
 
 	@Override
 	public void tick() {
 		if (this.block.isAir()) {
-			this.remove();
+			this.discard();
 		} else {
 			Block block = this.block.getBlock();
 			if (this.timeFalling++ == 0) {
@@ -105,7 +104,7 @@ public class FallingBlockEntity extends Entity {
 				if (this.world.getBlockState(blockPos).isOf(block)) {
 					this.world.removeBlock(blockPos, false);
 				} else if (!this.world.isClient) {
-					this.remove();
+					this.discard();
 					return;
 				}
 			}
@@ -137,7 +136,7 @@ public class FallingBlockEntity extends Entity {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
 					if (!blockState.isOf(Blocks.MOVING_PISTON)) {
-						this.remove();
+						this.discard();
 						if (!this.destroyedOnLanding) {
 							boolean bl3 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
 							boolean bl4 = FallingBlock.canFallThrough(this.world.getBlockState(blockPos.down())) && (!bl || !bl2);
@@ -152,19 +151,19 @@ public class FallingBlockEntity extends Entity {
 										((FallingBlock)block).onLanding(this.world, blockPos, this.block, blockState, this);
 									}
 
-									if (this.blockEntityData != null && block instanceof BlockEntityProvider) {
+									if (this.blockEntityData != null && this.block.hasBlockEntity()) {
 										BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 										if (blockEntity != null) {
-											NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+											CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
 
 											for (String string : this.blockEntityData.getKeys()) {
-												NbtElement nbtElement = this.blockEntityData.get(string);
+												Tag tag = this.blockEntityData.get(string);
 												if (!"x".equals(string) && !"y".equals(string) && !"z".equals(string)) {
-													nbtCompound.put(string, nbtElement.copy());
+													compoundTag.put(string, tag.copy());
 												}
 											}
 
-											blockEntity.fromTag(this.block, nbtCompound);
+											blockEntity.fromTag(compoundTag);
 											blockEntity.markDirty();
 										}
 									}
@@ -178,12 +177,16 @@ public class FallingBlockEntity extends Entity {
 							((FallingBlock)block).onDestroyedOnLanding(this.world, blockPos, this);
 						}
 					}
-				} else if (!this.world.isClient && (this.timeFalling > 100 && (blockPos.getY() < 1 || blockPos.getY() > 256) || this.timeFalling > 600)) {
+				} else if (!this.world.isClient
+					&& (
+						this.timeFalling > 100 && (blockPos.getY() <= this.world.getBottomHeightLimit() || blockPos.getY() > this.world.getTopHeightLimit())
+							|| this.timeFalling > 600
+					)) {
 					if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 						this.dropItem(block);
 					}
 
-					this.remove();
+					this.discard();
 				}
 			}
 
@@ -219,36 +222,36 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound nbt) {
-		nbt.put("BlockState", NbtHelper.fromBlockState(this.block));
-		nbt.putInt("Time", this.timeFalling);
-		nbt.putBoolean("DropItem", this.dropItem);
-		nbt.putBoolean("HurtEntities", this.hurtEntities);
-		nbt.putFloat("FallHurtAmount", this.fallHurtAmount);
-		nbt.putInt("FallHurtMax", this.fallHurtMax);
+	protected void writeCustomDataToTag(CompoundTag tag) {
+		tag.put("BlockState", NbtHelper.fromBlockState(this.block));
+		tag.putInt("Time", this.timeFalling);
+		tag.putBoolean("DropItem", this.dropItem);
+		tag.putBoolean("HurtEntities", this.hurtEntities);
+		tag.putFloat("FallHurtAmount", this.fallHurtAmount);
+		tag.putInt("FallHurtMax", this.fallHurtMax);
 		if (this.blockEntityData != null) {
-			nbt.put("TileEntityData", this.blockEntityData);
+			tag.put("TileEntityData", this.blockEntityData);
 		}
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		this.block = NbtHelper.toBlockState(nbt.getCompound("BlockState"));
-		this.timeFalling = nbt.getInt("Time");
-		if (nbt.contains("HurtEntities", 99)) {
-			this.hurtEntities = nbt.getBoolean("HurtEntities");
-			this.fallHurtAmount = nbt.getFloat("FallHurtAmount");
-			this.fallHurtMax = nbt.getInt("FallHurtMax");
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		this.block = NbtHelper.toBlockState(tag.getCompound("BlockState"));
+		this.timeFalling = tag.getInt("Time");
+		if (tag.contains("HurtEntities", 99)) {
+			this.hurtEntities = tag.getBoolean("HurtEntities");
+			this.fallHurtAmount = tag.getFloat("FallHurtAmount");
+			this.fallHurtMax = tag.getInt("FallHurtMax");
 		} else if (this.block.isIn(BlockTags.ANVIL)) {
 			this.hurtEntities = true;
 		}
 
-		if (nbt.contains("DropItem", 99)) {
-			this.dropItem = nbt.getBoolean("DropItem");
+		if (tag.contains("DropItem", 99)) {
+			this.dropItem = tag.getBoolean("DropItem");
 		}
 
-		if (nbt.contains("TileEntityData", 10)) {
-			this.blockEntityData = nbt.getCompound("TileEntityData");
+		if (tag.contains("TileEntityData", 10)) {
+			this.blockEntityData = tag.getCompound("TileEntityData");
 		}
 
 		if (this.block.isAir()) {
@@ -289,5 +292,18 @@ public class FallingBlockEntity extends Entity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this, Block.getRawIdFromState(this.getBlockState()));
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+		super.onSpawnPacket(packet);
+		this.block = Block.getStateFromRawId(packet.getEntityData());
+		this.inanimate = true;
+		double d = packet.getX();
+		double e = packet.getY();
+		double f = packet.getZ();
+		this.updatePosition(d, e + (double)((1.0F - this.getHeight()) / 2.0F), f);
+		this.setFallingBlockPos(this.getBlockPos());
 	}
 }

@@ -16,8 +16,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryLookupCodec;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -33,7 +34,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class FlatChunkGeneratorConfig {
+public class FlatChunkGeneratorConfig implements HeightLimitView {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.<FlatChunkGeneratorConfig>create(
 			instance -> instance.group(
@@ -74,10 +75,10 @@ public class FlatChunkGeneratorConfig {
 	private final StructuresConfig structuresConfig;
 	private final List<FlatChunkGeneratorLayer> layers = Lists.<FlatChunkGeneratorLayer>newArrayList();
 	private Supplier<Biome> biome;
-	private final BlockState[] layerBlocks = new BlockState[256];
+	private final BlockState[] layerBlocks;
 	private boolean hasNoTerrain;
-	private boolean hasFeatures = false;
-	private boolean hasLakes = false;
+	private boolean hasFeatures;
+	private boolean hasLakes;
 
 	public FlatChunkGeneratorConfig(
 		Registry<Biome> biomeRegistry,
@@ -110,6 +111,7 @@ public class FlatChunkGeneratorConfig {
 		this.biomeRegistry = biomeRegistry;
 		this.structuresConfig = structuresConfig;
 		this.biome = () -> biomeRegistry.getOrThrow(BiomeKeys.PLAINS);
+		this.layerBlocks = new BlockState[this.getHeight()];
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -178,7 +180,8 @@ public class FlatChunkGeneratorConfig {
 			BlockState blockState = blockStates[ix];
 			if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
 				this.layerBlocks[ix] = null;
-				builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(ix, blockState)));
+				int j = this.getBottomHeightLimit() + ix;
+				builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(j, blockState)));
 			}
 		}
 
@@ -218,7 +221,7 @@ public class FlatChunkGeneratorConfig {
 
 	public void updateLayerBlocks() {
 		Arrays.fill(this.layerBlocks, 0, this.layerBlocks.length, null);
-		int i = 0;
+		int i = this.getBottomHeightLimit();
 
 		for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.layers) {
 			flatChunkGeneratorLayer.setStartY(i);
@@ -232,7 +235,7 @@ public class FlatChunkGeneratorConfig {
 				BlockState blockState = flatChunkGeneratorLayer2.getBlockState();
 				if (!blockState.isOf(Blocks.AIR)) {
 					this.hasNoTerrain = false;
-					this.layerBlocks[j] = blockState;
+					this.layerBlocks[this.method_31926(j)] = blockState;
 				}
 			}
 		}
@@ -252,5 +255,19 @@ public class FlatChunkGeneratorConfig {
 		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK));
 		flatChunkGeneratorConfig.updateLayerBlocks();
 		return flatChunkGeneratorConfig;
+	}
+
+	public int method_31926(int i) {
+		return i - this.getBottomHeightLimit();
+	}
+
+	@Override
+	public int getSectionCount() {
+		return 16;
+	}
+
+	@Override
+	public int getBottomSectionLimit() {
+		return 0;
 	}
 }

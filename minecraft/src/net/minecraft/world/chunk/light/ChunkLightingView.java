@@ -9,7 +9,7 @@ public interface ChunkLightingView extends LightingView {
 	@Nullable
 	ChunkNibbleArray getLightSection(ChunkSectionPos pos);
 
-	int getLightLevel(BlockPos pos);
+	int getLightLevel(BlockPos blockPos);
 
 	public static enum Empty implements ChunkLightingView {
 		INSTANCE;
@@ -21,7 +21,7 @@ public interface ChunkLightingView extends LightingView {
 		}
 
 		@Override
-		public int getLightLevel(BlockPos pos) {
+		public int getLightLevel(BlockPos blockPos) {
 			return 0;
 		}
 

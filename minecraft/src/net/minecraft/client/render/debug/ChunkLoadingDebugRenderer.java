@@ -19,6 +19,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
@@ -68,7 +69,9 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				int i = 0;
 
 				for (String string2 : strings) {
-					DebugRenderer.drawString(string2, (double)((chunkPos.x << 4) + 8), e + (double)i, (double)((chunkPos.z << 4) + 8), -1, 0.15F);
+					DebugRenderer.drawString(
+						string2, (double)ChunkSectionPos.method_32205(chunkPos.x, 8), e + (double)i, (double)ChunkSectionPos.method_32205(chunkPos.z, 8), -1, 0.15F
+					);
 					i -= 2;
 				}
 			}
@@ -87,8 +90,8 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 		private ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
 			RegistryKey<World> registryKey = clientWorld.getRegistryKey();
-			int i = (int)d >> 4;
-			int j = (int)e >> 4;
+			int i = ChunkSectionPos.method_32204(d);
+			int j = ChunkSectionPos.method_32204(e);
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();
 			ClientChunkManager clientChunkManager = clientWorld.getChunkManager();
 

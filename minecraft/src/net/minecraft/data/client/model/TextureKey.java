@@ -38,6 +38,9 @@ public final class TextureKey {
 	public static final TextureKey TORCH = method_27043("torch");
 	public static final TextureKey LAYER0 = method_27043("layer0");
 	public static final TextureKey LIT_LOG = method_27043("lit_log");
+	public static final TextureKey CANDLE = method_27043("candle");
+	public static final TextureKey INSIDE = method_27043("inside");
+	public static final TextureKey CONTENT = method_27043("content");
 	private final String name;
 	@Nullable
 	private final TextureKey parent;

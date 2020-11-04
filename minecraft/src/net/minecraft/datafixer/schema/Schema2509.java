@@ -10,15 +10,15 @@ public class Schema2509 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static void registerEntity(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, String name) {
-		schema.register(entityTypes, name, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
+	protected static void renameZombifiedPiglin(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
+		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
 		map.remove("minecraft:zombie_pigman");
-		registerEntity(schema, map, "minecraft:zombified_piglin");
+		renameZombifiedPiglin(schema, map, "minecraft:zombified_piglin");
 		return map;
 	}
 }

@@ -58,7 +58,7 @@ public class TagEntry extends LeafEntry {
 		return this.expand ? this.grow(lootContext, consumer) : super.expand(lootContext, consumer);
 	}
 
-	public static LeafEntry.Builder<?> expandBuilder(Tag<Item> name) {
+	public static LeafEntry.Builder<?> builder(Tag<Item> name) {
 		return builder((weight, quality, conditions, functions) -> new TagEntry(name, true, weight, quality, conditions, functions));
 	}
 

@@ -50,7 +50,7 @@ public class BodyControl {
 	}
 
 	private boolean isIndependent() {
-		return this.entity.getPassengerList().isEmpty() || !(this.entity.getPassengerList().get(0) instanceof MobEntity);
+		return !(this.entity.getFirstPassenger() instanceof MobEntity);
 	}
 
 	private boolean isMoving() {

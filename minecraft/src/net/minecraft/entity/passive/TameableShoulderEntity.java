@@ -1,7 +1,7 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
@@ -13,11 +13,11 @@ public abstract class TameableShoulderEntity extends TameableEntity {
 	}
 
 	public boolean mountOnto(ServerPlayerEntity player) {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("id", this.getSavedEntityId());
-		this.writeNbt(nbtCompound);
-		if (player.addShoulderEntity(nbtCompound)) {
-			this.remove();
+		CompoundTag compoundTag = new CompoundTag();
+		compoundTag.putString("id", this.getSavedEntityId());
+		this.toTag(compoundTag);
+		if (player.addShoulderEntity(compoundTag)) {
+			this.discard();
 			return true;
 		} else {
 			return false;

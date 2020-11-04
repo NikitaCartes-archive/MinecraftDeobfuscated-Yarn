@@ -31,7 +31,7 @@ import net.minecraft.loot.function.FurnaceSmeltLootFunction;
 import net.minecraft.loot.function.LootingEnchantLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetNbtLootFunction;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -49,9 +49,9 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 	);
 	private final Map<Identifier, LootTable.Builder> lootTables = Maps.<Identifier, LootTable.Builder>newHashMap();
 
-	private static LootTable.Builder createForSheep(ItemConvertible item) {
+	private static LootTable.Builder createForSheep(ItemConvertible itemConvertible) {
 		return LootTable.builder()
-			.pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(item)))
+			.pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(itemConvertible)))
 			.pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(LootTableEntry.builder(EntityType.SHEEP.getLootTableId())));
 	}
 
@@ -182,7 +182,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 				.pool(
 					LootPool.builder()
-						.with(TagEntry.expandBuilder(ItemTags.CREEPER_DROP_MUSIC_DISCS))
+						.with(TagEntry.builder(ItemTags.CREEPER_DROP_MUSIC_DISCS))
 						.conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.KILLER, EntityPredicate.Builder.create().type(EntityTypeTags.SKELETONS)))
 				)
 		);
@@ -772,7 +772,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)).withLimit(1))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:slowness"))))
+								.apply(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
 						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 				)
@@ -1077,11 +1077,11 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.lootTables.forEach(biConsumer::accept);
 	}
 
-	private void register(EntityType<?> entityType, LootTable.Builder lootTable) {
-		this.register(entityType.getLootTableId(), lootTable);
+	private void register(EntityType<?> entityType, LootTable.Builder builder) {
+		this.register(entityType.getLootTableId(), builder);
 	}
 
-	private void register(Identifier entityId, LootTable.Builder lootTable) {
-		this.lootTables.put(entityId, lootTable);
+	private void register(Identifier identifier, LootTable.Builder builder) {
+		this.lootTables.put(identifier, builder);
 	}
 }

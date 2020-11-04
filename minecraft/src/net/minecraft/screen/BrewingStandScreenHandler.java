@@ -7,7 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
@@ -57,7 +56,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(index);
+		Slot slot = this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
@@ -90,7 +89,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 			}
 
 			if (itemStack2.isEmpty()) {
@@ -130,7 +129,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		public static boolean matches(ItemStack stack) {
-			return stack.getItem() == Items.BLAZE_POWDER;
+			return stack.isOf(Items.BLAZE_POWDER);
 		}
 
 		@Override
@@ -182,8 +181,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		public static boolean matches(ItemStack stack) {
-			Item item = stack.getItem();
-			return item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE;
+			return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE);
 		}
 	}
 }

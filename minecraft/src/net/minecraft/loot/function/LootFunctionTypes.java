@@ -31,6 +31,7 @@ public class LootFunctionTypes {
 	public static final LootFunctionType FILL_PLAYER_HEAD = register("fill_player_head", new FillPlayerHeadLootFunction.Serializer());
 	public static final LootFunctionType COPY_NBT = register("copy_nbt", new CopyNbtLootFunction.Serializer());
 	public static final LootFunctionType COPY_STATE = register("copy_state", new CopyStateFunction.Serializer());
+	public static final LootFunctionType SET_BANNER_PATTERN = register("set_banner_pattern", new SetBannerPatternFunction.Serializer());
 
 	private static LootFunctionType register(String id, JsonSerializer<? extends LootFunction> jsonSerializer) {
 		return Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(jsonSerializer));

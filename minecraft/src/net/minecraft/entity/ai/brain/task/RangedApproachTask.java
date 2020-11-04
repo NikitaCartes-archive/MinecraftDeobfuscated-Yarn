@@ -39,7 +39,7 @@ public class RangedApproachTask extends Task<MobEntity> {
 	}
 
 	private void rememberWalkTarget(LivingEntity entity, LivingEntity target) {
-		Brain brain = entity.getBrain();
+		Brain<?> brain = entity.getBrain();
 		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 		WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), this.speed, 0);
 		brain.remember(MemoryModuleType.WALK_TARGET, walkTarget);

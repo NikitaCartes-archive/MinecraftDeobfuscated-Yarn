@@ -1,22 +1,37 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class MagmaCubeEntityModel<T extends SlimeEntity> extends CompositeEntityModel<T> {
+public class MagmaCubeEntityModel<T extends SlimeEntity> extends class_5597<T> {
+	private final ModelPart field_27441;
 	private final ModelPart[] field_3427 = new ModelPart[8];
-	private final ModelPart innerCube;
-	private final ImmutableList<ModelPart> parts;
 
-	public MagmaCubeEntityModel() {
-		for (int i = 0; i < this.field_3427.length; i++) {
+	public MagmaCubeEntityModel(ModelPart modelPart) {
+		this.field_27441 = modelPart;
+		Arrays.setAll(this.field_3427, i -> modelPart.method_32086(method_32015(i)));
+	}
+
+	private static String method_32015(int i) {
+		return "cube" + i;
+	}
+
+	public static class_5607 method_32014() {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
+
+		for (int i = 0; i < 8; i++) {
 			int j = 0;
 			int k = i;
 			if (i == 2) {
@@ -27,16 +42,13 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends CompositeEntity
 				k = 19;
 			}
 
-			this.field_3427[i] = new ModelPart(this, j, k);
-			this.field_3427[i].addCuboid(-4.0F, (float)(16 + i), -4.0F, 8.0F, 1.0F, 8.0F);
+			lv2.method_32117(
+				method_32015(i), class_5606.method_32108().method_32101(j, k).method_32097(-4.0F, (float)(16 + i), -4.0F, 8.0F, 1.0F, 8.0F), class_5603.field_27701
+			);
 		}
 
-		this.innerCube = new ModelPart(this, 0, 16);
-		this.innerCube.addCuboid(-2.0F, 18.0F, -2.0F, 4.0F, 4.0F, 4.0F);
-		Builder<ModelPart> builder = ImmutableList.builder();
-		builder.add(this.innerCube);
-		builder.addAll(Arrays.asList(this.field_3427));
-		this.parts = builder.build();
+		lv2.method_32117("inside_cube", class_5606.method_32108().method_32101(0, 16).method_32097(-2.0F, 18.0F, -2.0F, 4.0F, 4.0F, 4.0F), class_5603.field_27701);
+		return class_5607.method_32110(lv, 64, 32);
 	}
 
 	public void setAngles(T slimeEntity, float f, float g, float h, float i, float j) {
@@ -53,7 +65,8 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends CompositeEntity
 		}
 	}
 
-	public ImmutableList<ModelPart> getParts() {
-		return this.parts;
+	@Override
+	public ModelPart method_32008() {
+		return this.field_27441;
 	}
 }

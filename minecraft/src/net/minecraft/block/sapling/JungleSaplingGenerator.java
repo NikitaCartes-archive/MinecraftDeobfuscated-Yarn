@@ -9,7 +9,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 public class JungleSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bees) {
+	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
 		return ConfiguredFeatures.JUNGLE_TREE_NO_VINE;
 	}
 

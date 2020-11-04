@@ -13,7 +13,7 @@ import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
@@ -96,7 +96,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 	}
 
 	@Override
-	public void populateRecipeFinder(RecipeMatcher finder) {
+	public void populateRecipeFinder(RecipeFinder finder) {
 		this.craftingInput.provideRecipeInputs(finder);
 	}
 
@@ -121,7 +121,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 		super.close(player);
 		this.craftingResult.clear();
 		if (!player.world.isClient) {
-			this.dropInventory(player, player.world, this.craftingInput);
+			this.dropInventory(player, this.craftingInput);
 		}
 	}
 
@@ -133,7 +133,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(index);
+		Slot slot = this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
@@ -143,7 +143,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 			} else if (index >= 1 && index < 5) {
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
@@ -152,12 +152,12 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !((Slot)this.slots.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
+			} else if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !this.slots.get(8 - equipmentSlot.getEntitySlotId()).hasStack()) {
 				int i = 8 - equipmentSlot.getEntitySlotId();
 				if (!this.insertItem(itemStack2, i, i + 1, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (equipmentSlot == EquipmentSlot.OFFHAND && !((Slot)this.slots.get(45)).hasStack()) {
+			} else if (equipmentSlot == EquipmentSlot.OFFHAND && !this.slots.get(45).hasStack()) {
 				if (!this.insertItem(itemStack2, 45, 46, false)) {
 					return ItemStack.EMPTY;
 				}

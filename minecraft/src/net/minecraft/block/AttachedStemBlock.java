@@ -3,11 +3,12 @@ package net.minecraft.block;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.BlockMirror;
@@ -20,7 +21,6 @@ import net.minecraft.world.WorldAccess;
 
 public class AttachedStemBlock extends PlantBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-	private final GourdBlock gourdBlock;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.SOUTH,
@@ -33,11 +33,14 @@ public class AttachedStemBlock extends PlantBlock {
 			Block.createCuboidShape(6.0, 0.0, 6.0, 16.0, 10.0, 10.0)
 		)
 	);
+	private final GourdBlock gourdBlock;
+	private final Supplier<Item> field_27095;
 
-	protected AttachedStemBlock(GourdBlock gourdBlock, AbstractBlock.Settings settings) {
+	protected AttachedStemBlock(GourdBlock gourdBlock, Supplier<Item> supplier, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 		this.gourdBlock = gourdBlock;
+		this.field_27095 = supplier;
 	}
 
 	@Override
@@ -46,12 +49,10 @@ public class AttachedStemBlock extends PlantBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
-		return !neighborState.isOf(this.gourdBlock) && direction == state.get(FACING)
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		return !newState.isOf(this.gourdBlock) && direction == state.get(FACING)
 			? this.gourdBlock.getStem().getDefaultState().with(StemBlock.AGE, Integer.valueOf(7))
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -60,18 +61,9 @@ public class AttachedStemBlock extends PlantBlock {
 	}
 
 	@Environment(EnvType.CLIENT)
-	protected Item getSeeds() {
-		if (this.gourdBlock == Blocks.PUMPKIN) {
-			return Items.PUMPKIN_SEEDS;
-		} else {
-			return this.gourdBlock == Blocks.MELON ? Items.MELON_SEEDS : Items.AIR;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return new ItemStack(this.getSeeds());
+		return new ItemStack((ItemConvertible)this.field_27095.get());
 	}
 
 	@Override

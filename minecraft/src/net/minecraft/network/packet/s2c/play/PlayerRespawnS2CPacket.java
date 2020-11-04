@@ -26,23 +26,16 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public PlayerRespawnS2CPacket(
-		DimensionType dimensionType,
-		RegistryKey<World> dimension,
-		long sha256Seed,
-		GameMode gameMode,
-		GameMode previousGameMode,
-		boolean debugWorld,
-		boolean flatWorld,
-		boolean keepPlayerAttributes
+		DimensionType dimensionType, RegistryKey<World> registryKey, long l, GameMode gameMode, GameMode previousGameMode, boolean bl, boolean bl2, boolean bl3
 	) {
 		this.field_25322 = dimensionType;
-		this.dimension = dimension;
-		this.sha256Seed = sha256Seed;
+		this.dimension = registryKey;
+		this.sha256Seed = l;
 		this.gameMode = gameMode;
 		this.previousGameMode = previousGameMode;
-		this.debugWorld = debugWorld;
-		this.flatWorld = flatWorld;
-		this.keepPlayerAttributes = keepPlayerAttributes;
+		this.debugWorld = bl;
+		this.flatWorld = bl2;
+		this.keepPlayerAttributes = bl3;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -52,7 +45,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		this.field_25322 = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
-		this.dimension = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
+		this.dimension = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.gameMode = GameMode.byId(buf.readUnsignedByte());
 		this.previousGameMode = GameMode.byId(buf.readUnsignedByte());

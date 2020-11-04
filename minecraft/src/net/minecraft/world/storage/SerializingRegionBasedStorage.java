@@ -20,13 +20,13 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.World;
+import net.minecraft.world.HeightLimitView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,15 +38,23 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private final Function<Runnable, Codec<R>> codecFactory;
 	private final Function<Runnable, R> factory;
 	private final DataFixer dataFixer;
-	private final DataFixTypes dataFixTypes;
+	private final DataFixTypes dataFixType;
+	protected final HeightLimitView field_27240;
 
 	public SerializingRegionBasedStorage(
-		File directory, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean bl
+		File directory,
+		Function<Runnable, Codec<R>> codecFactory,
+		Function<Runnable, R> factory,
+		DataFixer dataFixer,
+		DataFixTypes dataFixTypes,
+		boolean bl,
+		HeightLimitView heightLimitView
 	) {
 		this.codecFactory = codecFactory;
 		this.factory = factory;
 		this.dataFixer = dataFixer;
-		this.dataFixTypes = dataFixTypes;
+		this.dataFixType = dataFixTypes;
+		this.field_27240 = heightLimitView;
 		this.worker = new StorageIoWorker(directory, bl, directory.getName());
 	}
 
@@ -83,7 +91,8 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	protected boolean isPosInvalid(ChunkSectionPos pos) {
-		return World.isOutOfBuildLimitVertically(ChunkSectionPos.getBlockCoord(pos.getSectionY()));
+		int i = ChunkSectionPos.getBlockCoord(pos.getSectionY());
+		return this.field_27240.isOutOfHeightLimit(i);
 	}
 
 	protected R getOrCreate(long pos) {
@@ -102,7 +111,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	@Nullable
-	private NbtCompound loadNbt(ChunkPos pos) {
+	private CompoundTag loadNbt(ChunkPos pos) {
 		try {
 			return this.worker.getNbt(pos);
 		} catch (IOException var3) {
@@ -113,7 +122,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
 		if (data == null) {
-			for (int i = 0; i < 16; i++) {
+			for (int i = this.field_27240.getBottomSectionLimit(); i < this.field_27240.getTopSectionLimit(); i++) {
 				this.loadedElements.put(ChunkSectionPos.from(pos, i).asLong(), Optional.empty());
 			}
 		} else {
@@ -121,10 +130,10 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			int j = getDataVersion(dynamic);
 			int k = SharedConstants.getGameVersion().getWorldVersion();
 			boolean bl = j != k;
-			Dynamic<T> dynamic2 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic, j, k);
+			Dynamic<T> dynamic2 = this.dataFixer.update(this.dataFixType.getTypeReference(), dynamic, j, k);
 			OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
 
-			for (int l = 0; l < 16; l++) {
+			for (int l = this.field_27240.getBottomSectionLimit(); l < this.field_27240.getTopSectionLimit(); l++) {
 				long m = ChunkSectionPos.from(pos, l).asLong();
 				Optional<R> optional = optionalDynamic.get(Integer.toString(l))
 					.result()
@@ -141,19 +150,19 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	private void save(ChunkPos chunkPos) {
-		Dynamic<NbtElement> dynamic = this.method_20367(chunkPos, NbtOps.INSTANCE);
-		NbtElement nbtElement = dynamic.getValue();
-		if (nbtElement instanceof NbtCompound) {
-			this.worker.setResult(chunkPos, (NbtCompound)nbtElement);
+		Dynamic<Tag> dynamic = this.method_20367(chunkPos, NbtOps.INSTANCE);
+		Tag tag = dynamic.getValue();
+		if (tag instanceof CompoundTag) {
+			this.worker.setResult(chunkPos, (CompoundTag)tag);
 		} else {
-			LOGGER.error("Expected compound tag, got {}", nbtElement);
+			LOGGER.error("Expected compound tag, got {}", tag);
 		}
 	}
 
 	private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
 		Map<T, T> map = Maps.<T, T>newHashMap();
 
-		for (int i = 0; i < 16; i++) {
+		for (int i = this.field_27240.getBottomSectionLimit(); i < this.field_27240.getTopSectionLimit(); i++) {
 			long l = ChunkSectionPos.from(chunkPos, i).asLong();
 			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
@@ -195,7 +204,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	public void method_20436(ChunkPos chunkPos) {
 		if (!this.unsavedElements.isEmpty()) {
-			for (int i = 0; i < 16; i++) {
+			for (int i = this.field_27240.getBottomSectionLimit(); i < this.field_27240.getTopSectionLimit(); i++) {
 				long l = ChunkSectionPos.from(chunkPos, i).asLong();
 				if (this.unsavedElements.contains(l)) {
 					this.save(chunkPos);

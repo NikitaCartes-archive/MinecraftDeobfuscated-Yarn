@@ -47,7 +47,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -115,15 +115,15 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		this.saddledComponent.writeNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		this.saddledComponent.toTag(tag);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.saddledComponent.readNbt(nbt);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.saddledComponent.fromTag(tag);
 	}
 
 	@Override
@@ -186,8 +186,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			return false;
 		} else {
 			PlayerEntity playerEntity = (PlayerEntity)entity;
-			return playerEntity.getMainHandStack().getItem() == Items.WARPED_FUNGUS_ON_A_STICK
-				|| playerEntity.getOffHandStack().getItem() == Items.WARPED_FUNGUS_ON_A_STICK;
+			return playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
 		}
 	}
 
@@ -199,7 +198,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Nullable
 	@Override
 	public Entity getPrimaryPassenger() {
-		return this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
+		return this.getFirstPassenger();
 	}
 
 	@Override
@@ -352,7 +351,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	protected boolean canAddPassenger(Entity passenger) {
-		return this.getPassengerList().isEmpty() && !this.isSubmergedIn(FluidTags.LAVA);
+		return !this.hasPassengers() && !this.isSubmergedIn(FluidTags.LAVA);
 	}
 
 	@Override
@@ -409,7 +408,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (!actionResult.isAccepted()) {
 				ItemStack itemStack = player.getStackInHand(hand);
-				return itemStack.getItem() == Items.SADDLE ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
+				return itemStack.isOf(Items.SADDLE) ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
 			} else {
 				if (bl && !this.isSilent()) {
 					this.world
@@ -439,10 +438,10 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (this.isBaby()) {
-			return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+			return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		} else {
 			Object var7;
 			if (this.random.nextInt(30) == 0) {
@@ -458,7 +457,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 				var7 = new PassiveEntity.PassiveData(0.5F);
 			}
 
-			return super.initialize(world, difficulty, spawnReason, (EntityData)var7, entityNbt);
+			return super.initialize(world, difficulty, spawnReason, (EntityData)var7, entityTag);
 		}
 	}
 

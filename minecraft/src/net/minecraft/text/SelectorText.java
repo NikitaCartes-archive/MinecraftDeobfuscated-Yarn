@@ -24,7 +24,7 @@ public class SelectorText extends BaseText implements ParsableText {
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(pattern));
 			entitySelector = entitySelectorReader.read();
 		} catch (CommandSyntaxException var4) {
-			LOGGER.warn("Invalid selector component: {}", pattern, var4.getMessage());
+			LOGGER.warn("Invalid selector component: {}: {}", pattern, var4.getMessage());
 		}
 
 		this.selector = entitySelector;

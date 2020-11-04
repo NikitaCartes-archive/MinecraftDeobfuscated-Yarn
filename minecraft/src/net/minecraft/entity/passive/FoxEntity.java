@@ -56,9 +56,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -290,9 +290,9 @@ public class FoxEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		Optional<RegistryKey<Biome>> optional = world.getBiomeKey(this.getBlockPos());
+		Optional<RegistryKey<Biome>> optional = world.method_31081(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(optional);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
@@ -314,7 +314,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		this.initEquipment(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private void addTypeSpecificGoals() {
@@ -367,37 +367,37 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		List<UUID> list = this.getTrustedUuids();
-		NbtList nbtList = new NbtList();
+		ListTag listTag = new ListTag();
 
 		for (UUID uUID : list) {
 			if (uUID != null) {
-				nbtList.add(NbtHelper.fromUuid(uUID));
+				listTag.add(NbtHelper.fromUuid(uUID));
 			}
 		}
 
-		nbt.put("Trusted", nbtList);
-		nbt.putBoolean("Sleeping", this.isSleeping());
-		nbt.putString("Type", this.getFoxType().getKey());
-		nbt.putBoolean("Sitting", this.isSitting());
-		nbt.putBoolean("Crouching", this.isInSneakingPose());
+		tag.put("Trusted", listTag);
+		tag.putBoolean("Sleeping", this.isSleeping());
+		tag.putString("Type", this.getFoxType().getKey());
+		tag.putBoolean("Sitting", this.isSitting());
+		tag.putBoolean("Crouching", this.isInSneakingPose());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		NbtList nbtList = nbt.getList("Trusted", 11);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		ListTag listTag = tag.getList("Trusted", 11);
 
-		for (int i = 0; i < nbtList.size(); i++) {
-			this.addTrustedUuid(NbtHelper.toUuid(nbtList.get(i)));
+		for (int i = 0; i < listTag.size(); i++) {
+			this.addTrustedUuid(NbtHelper.toUuid(listTag.get(i)));
 		}
 
-		this.setSleeping(nbt.getBoolean("Sleeping"));
-		this.setType(FoxEntity.Type.byName(nbt.getString("Type")));
-		this.setSitting(nbt.getBoolean("Sitting"));
-		this.setCrouching(nbt.getBoolean("Crouching"));
+		this.setSleeping(tag.getBoolean("Sleeping"));
+		this.setType(FoxEntity.Type.byName(tag.getString("Type")));
+		this.setSitting(tag.getBoolean("Sitting"));
+		this.setCrouching(tag.getBoolean("Crouching"));
 		if (this.world instanceof ServerWorld) {
 			this.addTypeSpecificGoals();
 		}
@@ -488,11 +488,11 @@ public class FoxEntity extends AnimalEntity {
 			}
 
 			this.spit(this.getEquippedStack(EquipmentSlot.MAINHAND));
-			this.method_29499(item);
+			this.triggerItemPickedUpByEntityCriteria(item);
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack.split(1));
 			this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
 			this.sendPickup(item, itemStack.getCount());
-			item.remove();
+			item.discard();
 			this.eatingTime = 0;
 		}
 	}
@@ -537,7 +537,7 @@ public class FoxEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.getItem() == Items.SWEET_BERRIES;
+		return stack.isOf(Items.SWEET_BERRIES);
 	}
 
 	@Override

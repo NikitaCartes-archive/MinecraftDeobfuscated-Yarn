@@ -29,6 +29,7 @@ import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
 public class BlockModelRenderer {
+	private static final Direction[] field_27743 = Direction.values();
 	private final BlockColors colorMap;
 	private static final ThreadLocal<BlockModelRenderer.BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BlockModelRenderer.BrightnessCache());
 
@@ -59,7 +60,7 @@ public class BlockModelRenderer {
 		} catch (Throwable var17) {
 			CrashReport crashReport = CrashReport.create(var17, "Tesselating block model");
 			CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
-			CrashReportSection.addBlockInfo(crashReportSection, pos, state);
+			CrashReportSection.addBlockInfo(crashReportSection, world, pos, state);
 			crashReportSection.add("Using AO", bl);
 			throw new CrashException(crashReport);
 		}
@@ -78,16 +79,20 @@ public class BlockModelRenderer {
 		int overlay
 	) {
 		boolean bl = false;
-		float[] fs = new float[Direction.values().length * 2];
+		float[] fs = new float[field_27743.length * 2];
 		BitSet bitSet = new BitSet(3);
 		BlockModelRenderer.AmbientOcclusionCalculator ambientOcclusionCalculator = new BlockModelRenderer.AmbientOcclusionCalculator();
+		BlockPos.Mutable mutable = pos.mutableCopy();
 
-		for (Direction direction : Direction.values()) {
+		for (Direction direction : field_27743) {
 			random.setSeed(seed);
 			List<BakedQuad> list = model.getQuads(state, direction, random);
-			if (!list.isEmpty() && (!cull || Block.shouldDrawSide(state, world, pos, direction))) {
-				this.renderQuadsSmooth(world, state, pos, buffer, vertexConsumer, list, fs, bitSet, ambientOcclusionCalculator, overlay);
-				bl = true;
+			if (!list.isEmpty()) {
+				mutable.set(pos, direction);
+				if (!cull || Block.shouldDrawSide(state, world, pos, direction, mutable)) {
+					this.renderQuadsSmooth(world, state, pos, buffer, vertexConsumer, list, fs, bitSet, ambientOcclusionCalculator, overlay);
+					bl = true;
+				}
 			}
 		}
 
@@ -115,14 +120,18 @@ public class BlockModelRenderer {
 	) {
 		boolean bl = false;
 		BitSet bitSet = new BitSet(3);
+		BlockPos.Mutable mutable = pos.mutableCopy();
 
-		for (Direction direction : Direction.values()) {
+		for (Direction direction : field_27743) {
 			random.setSeed(l);
 			List<BakedQuad> list = model.getQuads(state, direction, random);
-			if (!list.isEmpty() && (!cull || Block.shouldDrawSide(state, world, pos, direction))) {
-				int j = WorldRenderer.getLightmapCoordinates(world, state, pos.offset(direction));
-				this.renderQuadsFlat(world, state, pos, j, i, false, buffer, vertexConsumer, list, bitSet);
-				bl = true;
+			if (!list.isEmpty()) {
+				mutable.set(pos, direction);
+				if (!cull || Block.shouldDrawSide(state, world, pos, direction, mutable)) {
+					int j = WorldRenderer.getLightmapCoordinates(world, state, mutable);
+					this.renderQuadsFlat(world, state, pos, j, i, false, buffer, vertexConsumer, list, bitSet);
+					bl = true;
+				}
 			}
 		}
 
@@ -234,7 +243,7 @@ public class BlockModelRenderer {
 			box[Direction.UP.getId()] = j;
 			box[Direction.NORTH.getId()] = h;
 			box[Direction.SOUTH.getId()] = k;
-			int l = Direction.values().length;
+			int l = field_27743.length;
 			box[Direction.WEST.getId() + l] = 1.0F - f;
 			box[Direction.EAST.getId() + l] = 1.0F - i;
 			box[Direction.DOWN.getId() + l] = 1.0F - g;
@@ -302,7 +311,7 @@ public class BlockModelRenderer {
 		Random random = new Random();
 		long l = 42L;
 
-		for (Direction direction : Direction.values()) {
+		for (Direction direction : field_27743) {
 			random.setSeed(42L);
 			renderQuad(entry, vertexConsumer, f, g, h, bakedModel.getQuads(blockState, direction, random), i, j);
 		}
@@ -918,7 +927,7 @@ public class BlockModelRenderer {
 		private final int shape;
 
 		private NeighborOrientation(Direction direction, boolean bl) {
-			this.shape = direction.getId() + (bl ? Direction.values().length : 0);
+			this.shape = direction.getId() + (bl ? BlockModelRenderer.field_27743.length : 0);
 		}
 	}
 

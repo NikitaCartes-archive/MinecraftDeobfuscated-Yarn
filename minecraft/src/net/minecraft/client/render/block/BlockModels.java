@@ -24,12 +24,12 @@ public class BlockModels {
 		this.modelManager = bakedModelManager;
 	}
 
-	public Sprite getSprite(BlockState state) {
-		return this.getModel(state).getSprite();
+	public Sprite getSprite(BlockState blockState) {
+		return this.getModel(blockState).getSprite();
 	}
 
-	public BakedModel getModel(BlockState state) {
-		BakedModel bakedModel = (BakedModel)this.models.get(state);
+	public BakedModel getModel(BlockState blockState) {
+		BakedModel bakedModel = (BakedModel)this.models.get(blockState);
 		if (bakedModel == null) {
 			bakedModel = this.modelManager.getMissingModel();
 		}
@@ -51,12 +51,12 @@ public class BlockModels {
 		}
 	}
 
-	public static ModelIdentifier getModelId(BlockState state) {
-		return getModelId(Registry.BLOCK.getId(state.getBlock()), state);
+	public static ModelIdentifier getModelId(BlockState blockState) {
+		return getModelId(Registry.BLOCK.getId(blockState.getBlock()), blockState);
 	}
 
-	public static ModelIdentifier getModelId(Identifier id, BlockState state) {
-		return new ModelIdentifier(id, propertyMapToString(state.getEntries()));
+	public static ModelIdentifier getModelId(Identifier identifier, BlockState blockState) {
+		return new ModelIdentifier(identifier, propertyMapToString(blockState.getEntries()));
 	}
 
 	public static String propertyMapToString(Map<Property<?>, Comparable<?>> map) {

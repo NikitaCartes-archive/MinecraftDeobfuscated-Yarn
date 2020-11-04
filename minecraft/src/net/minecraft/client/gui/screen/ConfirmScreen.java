@@ -3,16 +3,16 @@ package net.minecraft.client.gui.screen;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.MultilineText;
+import net.minecraft.class_5489;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ConfirmScreen extends Screen {
 	private final Text message;
-	private MultilineText messageSplit = MultilineText.EMPTY;
+	private class_5489 messageSplit = class_5489.field_26528;
 	protected Text yesTranslated;
 	protected Text noTranslated;
 	private int buttonEnableTimer;
@@ -22,12 +22,12 @@ public class ConfirmScreen extends Screen {
 		this(callback, title, message, ScreenTexts.YES, ScreenTexts.NO);
 	}
 
-	public ConfirmScreen(BooleanConsumer callback, Text title, Text message, Text yesTranslated, Text noTranslated) {
+	public ConfirmScreen(BooleanConsumer callback, Text title, Text message, Text text, Text text2) {
 		super(title);
 		this.callback = callback;
 		this.message = message;
-		this.yesTranslated = yesTranslated;
-		this.noTranslated = noTranslated;
+		this.yesTranslated = text;
+		this.noTranslated = text2;
 	}
 
 	@Override
@@ -40,22 +40,22 @@ public class ConfirmScreen extends Screen {
 		super.init();
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
 		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
-		this.messageSplit = MultilineText.create(this.textRenderer, this.message, this.width - 50);
+		this.messageSplit = class_5489.method_30890(this.textRenderer, this.message, this.width - 50);
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
-		this.messageSplit.drawCenterWithShadow(matrices, this.width / 2, 90);
+		this.messageSplit.method_30888(matrices, this.width / 2, 90);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	public void disableButtons(int ticks) {
-		this.buttonEnableTimer = ticks;
+	public void disableButtons(int i) {
+		this.buttonEnableTimer = i;
 
-		for (ClickableWidget clickableWidget : this.buttons) {
-			clickableWidget.active = false;
+		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+			abstractButtonWidget.active = false;
 		}
 	}
 
@@ -63,8 +63,8 @@ public class ConfirmScreen extends Screen {
 	public void tick() {
 		super.tick();
 		if (--this.buttonEnableTimer == 0) {
-			for (ClickableWidget clickableWidget : this.buttons) {
-				clickableWidget.active = true;
+			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+				abstractButtonWidget.active = true;
 			}
 		}
 	}

@@ -154,7 +154,7 @@ public class ProfilerSystem implements ReadableProfiler {
 	static class LocatedInfo implements ProfileLocationInfo {
 		private long time;
 		private long visits;
-		private Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap<>();
+		private final Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap<>();
 
 		private LocatedInfo() {
 		}

@@ -11,11 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ScoreboardCriterion {
-	/**
-	 * A map of all scoreboard criteria by their names.
-	 * Updated automatically in the constructor.
-	 */
-	public static final Map<String, ScoreboardCriterion> CRITERIA = Maps.<String, ScoreboardCriterion>newHashMap();
+	public static final Map<String, ScoreboardCriterion> OBJECTIVES = Maps.<String, ScoreboardCriterion>newHashMap();
 	public static final ScoreboardCriterion DUMMY = new ScoreboardCriterion("dummy");
 	public static final ScoreboardCriterion TRIGGER = new ScoreboardCriterion("trigger");
 	public static final ScoreboardCriterion DEATH_COUNT = new ScoreboardCriterion("deathCount");
@@ -65,33 +61,33 @@ public class ScoreboardCriterion {
 	};
 	private final String name;
 	private final boolean readOnly;
-	private final ScoreboardCriterion.RenderType defaultRenderType;
+	private final ScoreboardCriterion.RenderType criterionType;
 
 	public ScoreboardCriterion(String name) {
 		this(name, false, ScoreboardCriterion.RenderType.INTEGER);
 	}
 
-	protected ScoreboardCriterion(String name, boolean readOnly, ScoreboardCriterion.RenderType defaultRenderType) {
+	protected ScoreboardCriterion(String name, boolean readOnly, ScoreboardCriterion.RenderType renderType) {
 		this.name = name;
 		this.readOnly = readOnly;
-		this.defaultRenderType = defaultRenderType;
-		CRITERIA.put(name, this);
+		this.criterionType = renderType;
+		OBJECTIVES.put(name, this);
 	}
 
-	public static Optional<ScoreboardCriterion> getOrCreateStatCriterion(String name) {
-		if (CRITERIA.containsKey(name)) {
-			return Optional.of(CRITERIA.get(name));
+	public static Optional<ScoreboardCriterion> createStatCriterion(String name) {
+		if (OBJECTIVES.containsKey(name)) {
+			return Optional.of(OBJECTIVES.get(name));
 		} else {
 			int i = name.indexOf(58);
 			return i < 0
 				? Optional.empty()
 				: Registry.STAT_TYPE
 					.getOrEmpty(Identifier.splitOn(name.substring(0, i), '.'))
-					.flatMap(statType -> getOrCreateStatCriterion(statType, Identifier.splitOn(name.substring(i + 1), '.')));
+					.flatMap(statType -> createStatCriterion(statType, Identifier.splitOn(name.substring(i + 1), '.')));
 		}
 	}
 
-	private static <T> Optional<ScoreboardCriterion> getOrCreateStatCriterion(StatType<T> statType, Identifier id) {
+	private static <T> Optional<ScoreboardCriterion> createStatCriterion(StatType<T> statType, Identifier id) {
 		return statType.getRegistry().getOrEmpty(id).map(statType::getOrCreateStat);
 	}
 
@@ -103,8 +99,8 @@ public class ScoreboardCriterion {
 		return this.readOnly;
 	}
 
-	public ScoreboardCriterion.RenderType getDefaultRenderType() {
-		return this.defaultRenderType;
+	public ScoreboardCriterion.RenderType getCriterionType() {
+		return this.criterionType;
 	}
 
 	public static enum RenderType {

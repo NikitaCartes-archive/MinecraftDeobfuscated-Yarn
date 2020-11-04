@@ -16,8 +16,8 @@ public class BiomeAdditionsSound {
 				)
 				.apply(instance, BiomeAdditionsSound::new)
 	);
-	private SoundEvent sound;
-	private double chance;
+	private final SoundEvent sound;
+	private final double chance;
 
 	public BiomeAdditionsSound(SoundEvent sound, double chance) {
 		this.sound = sound;

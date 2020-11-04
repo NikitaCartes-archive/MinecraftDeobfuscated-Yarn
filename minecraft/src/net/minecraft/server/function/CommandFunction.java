@@ -5,7 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -30,19 +30,14 @@ public class CommandFunction {
 		return this.elements;
 	}
 
-	/**
-	 * Parses a function in the context of {@code source}.
-	 * 
-	 * <p>Any syntax errors, such as improper comment lines or unknown commands, will be thrown at this point.
-	 * 
-	 * @param lines the raw lines (including comments) read from a function file
-	 */
-	public static CommandFunction create(Identifier id, CommandDispatcher<ServerCommandSource> dispatcher, ServerCommandSource source, List<String> lines) {
-		List<CommandFunction.Element> list = Lists.<CommandFunction.Element>newArrayListWithCapacity(lines.size());
+	public static CommandFunction create(
+		Identifier id, CommandDispatcher<ServerCommandSource> commandDispatcher, ServerCommandSource serverCommandSource, List<String> list
+	) {
+		List<CommandFunction.Element> list2 = Lists.<CommandFunction.Element>newArrayListWithCapacity(list.size());
 
-		for (int i = 0; i < lines.size(); i++) {
+		for (int i = 0; i < list.size(); i++) {
 			int j = i + 1;
-			String string = ((String)lines.get(i)).trim();
+			String string = ((String)list.get(i)).trim();
 			StringReader stringReader = new StringReader(string);
 			if (stringReader.canRead() && stringReader.peek() != '#') {
 				if (stringReader.peek() == '/') {
@@ -58,19 +53,19 @@ public class CommandFunction {
 				}
 
 				try {
-					ParseResults<ServerCommandSource> parseResults = dispatcher.parse(stringReader, source);
+					ParseResults<ServerCommandSource> parseResults = commandDispatcher.parse(stringReader, serverCommandSource);
 					if (parseResults.getReader().canRead()) {
 						throw CommandManager.getException(parseResults);
 					}
 
-					list.add(new CommandFunction.CommandElement(parseResults));
+					list2.add(new CommandFunction.CommandElement(parseResults));
 				} catch (CommandSyntaxException var10) {
 					throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + var10.getMessage());
 				}
 			}
 		}
 
-		return new CommandFunction(id, (CommandFunction.Element[])list.toArray(new CommandFunction.Element[0]));
+		return new CommandFunction(id, (CommandFunction.Element[])list2.toArray(new CommandFunction.Element[0]));
 	}
 
 	public static class CommandElement implements CommandFunction.Element {
@@ -81,7 +76,7 @@ public class CommandFunction {
 		}
 
 		@Override
-		public void execute(CommandFunctionManager manager, ServerCommandSource source, ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) throws CommandSyntaxException {
+		public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> deque, int maxChainLength) throws CommandSyntaxException {
 			manager.getDispatcher().execute(new ParseResults<>(this.parsed.getContext().withSource(source), this.parsed.getReader(), this.parsed.getExceptions()));
 		}
 
@@ -91,7 +86,7 @@ public class CommandFunction {
 	}
 
 	public interface Element {
-		void execute(CommandFunctionManager manager, ServerCommandSource source, ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) throws CommandSyntaxException;
+		void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> deque, int maxChainLength) throws CommandSyntaxException;
 	}
 
 	public static class FunctionElement implements CommandFunction.Element {
@@ -102,14 +97,14 @@ public class CommandFunction {
 		}
 
 		@Override
-		public void execute(CommandFunctionManager manager, ServerCommandSource source, ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) {
+		public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> deque, int maxChainLength) {
 			this.function.get(manager).ifPresent(commandFunction -> {
 				CommandFunction.Element[] elements = commandFunction.getElements();
-				int j = maxChainLength - stack.size();
+				int j = maxChainLength - deque.size();
 				int k = Math.min(elements.length, j);
 
 				for (int l = k - 1; l >= 0; l--) {
-					stack.addFirst(new CommandFunctionManager.Entry(manager, source, elements[l]));
+					deque.addFirst(new CommandFunctionManager.Entry(manager, source, elements[l]));
 				}
 			});
 		}

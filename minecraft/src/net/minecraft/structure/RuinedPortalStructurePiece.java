@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.VineBlock;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
@@ -71,7 +71,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		this.processProperties(structure, center);
 	}
 
-	public RuinedPortalStructurePiece(StructureManager manager, NbtCompound tag) {
+	public RuinedPortalStructurePiece(StructureManager manager, CompoundTag tag) {
 		super(StructurePieceType.RUINED_PORTAL, tag);
 		this.template = new Identifier(tag.getString("Template"));
 		this.rotation = BlockRotation.valueOf(tag.getString("Rotation"));
@@ -85,7 +85,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	protected void toNbt(NbtCompound tag) {
+	protected void toNbt(CompoundTag tag) {
 		super.toNbt(tag);
 		tag.putString("Template", this.template.toString());
 		tag.putString("Rotation", this.rotation.name());
@@ -94,7 +94,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		RuinedPortalStructurePiece.Properties.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.properties)
 			.resultOrPartial(field_24992::error)
-			.ifPresent(nbtElement -> tag.put("Properties", nbtElement));
+			.ifPresent(tagx -> tag.put("Properties", tagx));
 	}
 
 	private void processProperties(Structure structure, BlockPos center) {
@@ -133,29 +133,29 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 
 	@Override
 	public boolean generate(
-		StructureWorldAccess world,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockBox boundingBox,
 		ChunkPos chunkPos,
-		BlockPos pos
+		BlockPos blockPos
 	) {
 		if (!boundingBox.contains(this.pos)) {
 			return true;
 		} else {
 			boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-			boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
-			this.placeNetherrackBase(random, world);
-			this.updateNetherracksInBound(random, world);
+			boolean bl = super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+			this.placeNetherrackBase(random, structureWorldAccess);
+			this.updateNetherracksInBound(random, structureWorldAccess);
 			if (this.properties.vines || this.properties.overgrown) {
-				BlockPos.stream(this.getBoundingBox()).forEach(blockPos -> {
+				BlockPos.stream(this.getBoundingBox()).forEach(blockPosx -> {
 					if (this.properties.vines) {
-						this.generateVines(random, world, blockPos);
+						this.generateVines(random, structureWorldAccess, blockPosx);
 					}
 
 					if (this.properties.overgrown) {
-						this.generateOvergrownLeaves(random, world, blockPos);
+						this.generateOvergrownLeaves(random, structureWorldAccess, blockPosx);
 					}
 				});
 			}
@@ -165,7 +165,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
+	protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
 	}
 
 	private void generateVines(Random random, WorldAccess world, BlockPos pos) {

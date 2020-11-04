@@ -25,13 +25,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.ChunkTickScheduler;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
@@ -50,57 +51,64 @@ public class ProtoChunk implements Chunk {
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
 	private volatile ChunkStatus status = ChunkStatus.EMPTY;
 	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
-	private final Map<BlockPos, NbtCompound> blockEntityTags = Maps.<BlockPos, NbtCompound>newHashMap();
-	private final ChunkSection[] sections = new ChunkSection[16];
-	private final List<NbtCompound> entities = Lists.<NbtCompound>newArrayList();
+	private final Map<BlockPos, CompoundTag> blockEntityTags = Maps.<BlockPos, CompoundTag>newHashMap();
+	private final ChunkSection[] sections;
+	private final List<CompoundTag> entities = Lists.<CompoundTag>newArrayList();
 	private final List<BlockPos> lightSources = Lists.<BlockPos>newArrayList();
-	private final ShortList[] postProcessingLists = new ShortList[16];
+	private final ShortList[] postProcessingLists;
 	private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
 	private final Map<StructureFeature<?>, LongSet> structureReferences = Maps.<StructureFeature<?>, LongSet>newHashMap();
 	private final UpgradeData upgradeData;
 	private final ChunkTickScheduler<Block> blockTickScheduler;
 	private final ChunkTickScheduler<Fluid> fluidTickScheduler;
+	private final HeightLimitView field_27229;
 	private long inhabitedTime;
 	private final Map<GenerationStep.Carver, BitSet> carvingMasks = new Object2ObjectArrayMap<>();
 	private volatile boolean lightOn;
 
-	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData) {
+	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView heightLimitView) {
 		this(
 			pos,
 			upgradeData,
 			null,
-			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), pos),
-			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos)
+			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), pos, heightLimitView),
+			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos, heightLimitView),
+			heightLimitView
 		);
 	}
 
 	public ProtoChunk(
 		ChunkPos pos,
 		UpgradeData upgradeData,
-		@Nullable ChunkSection[] sections,
+		@Nullable ChunkSection[] chunkSections,
 		ChunkTickScheduler<Block> blockTickScheduler,
-		ChunkTickScheduler<Fluid> fluidTickScheduler
+		ChunkTickScheduler<Fluid> fluidTickScheduler,
+		HeightLimitView heightLimitView
 	) {
 		this.pos = pos;
 		this.upgradeData = upgradeData;
 		this.blockTickScheduler = blockTickScheduler;
 		this.fluidTickScheduler = fluidTickScheduler;
-		if (sections != null) {
-			if (this.sections.length == sections.length) {
-				System.arraycopy(sections, 0, this.sections, 0, this.sections.length);
+		this.field_27229 = heightLimitView;
+		this.sections = new ChunkSection[heightLimitView.getSectionCount()];
+		if (chunkSections != null) {
+			if (this.sections.length == chunkSections.length) {
+				System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
 			} else {
-				LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", sections.length, this.sections.length);
+				LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", chunkSections.length, this.sections.length);
 			}
 		}
+
+		this.postProcessingLists = new ShortList[heightLimitView.getSectionCount()];
 	}
 
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
 		int i = pos.getY();
-		if (World.isOutOfBuildLimitVertically(i)) {
+		if (this.isOutOfHeightLimit(i)) {
 			return Blocks.VOID_AIR.getDefaultState();
 		} else {
-			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
+			ChunkSection chunkSection = this.getSectionArray()[this.getSectionIndex(i)];
 			return ChunkSection.isEmpty(chunkSection) ? Blocks.AIR.getDefaultState() : chunkSection.getBlockState(pos.getX() & 15, i & 15, pos.getZ() & 15);
 		}
 	}
@@ -108,10 +116,10 @@ public class ProtoChunk implements Chunk {
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
 		int i = pos.getY();
-		if (World.isOutOfBuildLimitVertically(i)) {
+		if (this.isOutOfHeightLimit(i)) {
 			return Fluids.EMPTY.getDefaultState();
 		} else {
-			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
+			ChunkSection chunkSection = this.getSectionArray()[this.getSectionIndex(i)];
 			return ChunkSection.isEmpty(chunkSection) ? Fluids.EMPTY.getDefaultState() : chunkSection.getFluidState(pos.getX() & 15, i & 15, pos.getZ() & 15);
 		}
 	}
@@ -122,17 +130,17 @@ public class ProtoChunk implements Chunk {
 	}
 
 	public ShortList[] getLightSourcesBySection() {
-		ShortList[] shortLists = new ShortList[16];
+		ShortList[] shortLists = new ShortList[this.getSectionCount()];
 
 		for (BlockPos blockPos : this.lightSources) {
-			Chunk.getList(shortLists, blockPos.getY() >> 4).add(getPackedSectionRelative(blockPos));
+			Chunk.getList(shortLists, this.getSectionIndex(blockPos.getY())).add(getPackedSectionRelative(blockPos));
 		}
 
 		return shortLists;
 	}
 
 	public void addLightSource(short chunkSliceRel, int sectionY) {
-		this.addLightSource(joinBlockPos(chunkSliceRel, sectionY, this.pos));
+		this.addLightSource(joinBlockPos(chunkSliceRel, this.getSection(sectionY), this.pos));
 	}
 
 	public void addLightSource(BlockPos pos) {
@@ -145,15 +153,16 @@ public class ProtoChunk implements Chunk {
 		int i = pos.getX();
 		int j = pos.getY();
 		int k = pos.getZ();
-		if (j >= 0 && j < 256) {
-			if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && state.isOf(Blocks.AIR)) {
+		if (j >= this.getBottomHeightLimit() && j < this.getTopHeightLimit()) {
+			int l = this.getSectionIndex(j);
+			if (this.sections[l] == WorldChunk.EMPTY_SECTION && state.isOf(Blocks.AIR)) {
 				return state;
 			} else {
 				if (state.getLuminance() > 0) {
 					this.lightSources.add(new BlockPos((i & 15) + this.getPos().getStartX(), j, (k & 15) + this.getPos().getStartZ()));
 				}
 
-				ChunkSection chunkSection = this.getSection(j >> 4);
+				ChunkSection chunkSection = this.getSection(l);
 				BlockState blockState = chunkSection.setBlockState(i & 15, j & 15, k & 15, state);
 				if (this.status.isAtLeast(ChunkStatus.FEATURES)
 					&& state != blockState
@@ -198,16 +207,15 @@ public class ProtoChunk implements Chunk {
 
 	public ChunkSection getSection(int y) {
 		if (this.sections[y] == WorldChunk.EMPTY_SECTION) {
-			this.sections[y] = new ChunkSection(y << 4);
+			this.sections[y] = new ChunkSection(this.getSection(y));
 		}
 
 		return this.sections[y];
 	}
 
 	@Override
-	public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
-		blockEntity.setPos(pos);
-		this.blockEntities.put(pos, blockEntity);
+	public void setBlockEntity(BlockEntity blockEntity) {
+		this.blockEntities.put(blockEntity.getPos(), blockEntity);
 	}
 
 	@Override
@@ -227,20 +235,20 @@ public class ProtoChunk implements Chunk {
 		return this.blockEntities;
 	}
 
-	public void addEntity(NbtCompound entityTag) {
+	public void addEntity(CompoundTag entityTag) {
 		this.entities.add(entityTag);
 	}
 
 	@Override
 	public void addEntity(Entity entity) {
 		if (!entity.hasVehicle()) {
-			NbtCompound nbtCompound = new NbtCompound();
-			entity.saveNbt(nbtCompound);
-			this.addEntity(nbtCompound);
+			CompoundTag compoundTag = new CompoundTag();
+			entity.saveToTag(compoundTag);
+			this.addEntity(compoundTag);
 		}
 	}
 
-	public List<NbtCompound> getEntities() {
+	public List<CompoundTag> getEntities() {
 		return this.entities;
 	}
 
@@ -315,10 +323,6 @@ public class ProtoChunk implements Chunk {
 		return this.pos;
 	}
 
-	@Override
-	public void setLastSaveTime(long lastSaveTime) {
-	}
-
 	@Nullable
 	@Override
 	public StructureStart<?> getStructureStart(StructureFeature<?> structure) {
@@ -377,16 +381,16 @@ public class ProtoChunk implements Chunk {
 	}
 
 	public static BlockPos joinBlockPos(short sectionRel, int sectionY, ChunkPos chunkPos) {
-		int i = (sectionRel & 15) + (chunkPos.x << 4);
-		int j = (sectionRel >>> 4 & 15) + (sectionY << 4);
-		int k = (sectionRel >>> 8 & 15) + (chunkPos.z << 4);
+		int i = ChunkSectionPos.method_32205(chunkPos.x, sectionRel & 15);
+		int j = ChunkSectionPos.method_32205(sectionY, sectionRel >>> 4 & 15);
+		int k = ChunkSectionPos.method_32205(chunkPos.z, sectionRel >>> 8 & 15);
 		return new BlockPos(i, j, k);
 	}
 
 	@Override
 	public void markBlockForPostProcessing(BlockPos pos) {
-		if (!World.isOutOfBuildLimitVertically(pos)) {
-			Chunk.getList(this.postProcessingLists, pos.getY() >> 4).add(getPackedSectionRelative(pos));
+		if (!this.isOutOfHeightLimit(pos)) {
+			Chunk.getList(this.postProcessingLists, this.getSectionIndex(pos.getY())).add(getPackedSectionRelative(pos));
 		}
 	}
 
@@ -396,8 +400,8 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void markBlockForPostProcessing(short packedPos, int index) {
-		Chunk.getList(this.postProcessingLists, index).add(packedPos);
+	public void markBlockForPostProcessing(short s, int i) {
+		Chunk.getList(this.postProcessingLists, i).add(s);
 	}
 
 	public ChunkTickScheduler<Block> getBlockTickScheduler() {
@@ -424,24 +428,24 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void addPendingBlockEntityNbt(NbtCompound nbt) {
-		this.blockEntityTags.put(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")), nbt);
+	public void addPendingBlockEntityTag(CompoundTag tag) {
+		this.blockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
 	}
 
-	public Map<BlockPos, NbtCompound> getBlockEntityNbts() {
+	public Map<BlockPos, CompoundTag> getBlockEntityTags() {
 		return Collections.unmodifiableMap(this.blockEntityTags);
 	}
 
 	@Override
-	public NbtCompound getBlockEntityNbt(BlockPos pos) {
-		return (NbtCompound)this.blockEntityTags.get(pos);
+	public CompoundTag getBlockEntityTag(BlockPos pos) {
+		return (CompoundTag)this.blockEntityTags.get(pos);
 	}
 
 	@Nullable
 	@Override
-	public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
+	public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
 		BlockEntity blockEntity = this.getBlockEntity(pos);
-		return blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : (NbtCompound)this.blockEntityTags.get(pos);
+		return blockEntity != null ? blockEntity.toTag(new CompoundTag()) : (CompoundTag)this.blockEntityTags.get(pos);
 	}
 
 	@Override
@@ -476,5 +480,15 @@ public class ProtoChunk implements Chunk {
 	public void setLightOn(boolean lightOn) {
 		this.lightOn = lightOn;
 		this.setShouldSave(true);
+	}
+
+	@Override
+	public int getSectionCount() {
+		return this.field_27229.getSectionCount();
+	}
+
+	@Override
+	public int getBottomSectionLimit() {
+		return this.field_27229.getBottomSectionLimit();
 	}
 }

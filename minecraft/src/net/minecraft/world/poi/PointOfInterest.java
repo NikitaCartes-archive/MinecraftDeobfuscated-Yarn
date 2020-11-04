@@ -71,11 +71,11 @@ public class PointOfInterest {
 		return this.type;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		} else {
-			return o != null && this.getClass() == o.getClass() ? Objects.equals(this.pos, ((PointOfInterest)o).pos) : false;
+			return obj != null && this.getClass() == obj.getClass() ? Objects.equals(this.pos, ((PointOfInterest)obj).pos) : false;
 		}
 	}
 

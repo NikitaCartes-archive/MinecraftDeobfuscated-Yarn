@@ -7,6 +7,7 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -53,16 +54,14 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 			Biome biome,
 			ProbabilityConfig probabilityConfig
 		) {
-			int k = i * 16;
-			int l = j * 16;
-			BlockPos blockPos = new BlockPos(k + 9, 90, l + 9);
+			BlockPos blockPos = new BlockPos(ChunkSectionPos.method_32205(i, 9), 90, ChunkSectionPos.method_32205(j, 9));
 			this.children.add(new BuriedTreasureGenerator.Piece(blockPos));
 			this.setBoundingBoxFromChildren();
 		}
 
 		@Override
-		public BlockPos getBlockPos() {
-			return new BlockPos((this.getChunkX() << 4) + 9, 0, (this.getChunkZ() << 4) + 9);
+		public BlockPos getPos() {
+			return new BlockPos(ChunkSectionPos.method_32205(this.getChunkX(), 9), 0, ChunkSectionPos.method_32205(this.getChunkZ(), 9));
 		}
 	}
 }

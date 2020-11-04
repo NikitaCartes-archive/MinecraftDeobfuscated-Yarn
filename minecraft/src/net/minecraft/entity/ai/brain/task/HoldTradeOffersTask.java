@@ -101,7 +101,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private void loadPossibleOffers(VillagerEntity villager) {
 		for (TradeOffer tradeOffer : villager.getOffers()) {
 			if (!tradeOffer.isDisabled() && this.isPossible(tradeOffer)) {
-				this.offers.add(tradeOffer.getSellItem());
+				this.offers.add(tradeOffer.getMutableSellItem());
 			}
 		}
 	}

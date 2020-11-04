@@ -1,6 +1,7 @@
 package net.minecraft.screen;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmithingRecipe;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SmithingScreenHandler extends ForgingScreenHandler {
@@ -44,7 +46,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 		this.output.unlockLastRecipe(player);
 		this.method_29539(0);
 		this.method_29539(1);
-		this.context.run((world, blockPos) -> world.syncWorldEvent(1044, blockPos, 0));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> world.syncWorldEvent(1044, blockPos, 0)));
 		return stack;
 	}
 

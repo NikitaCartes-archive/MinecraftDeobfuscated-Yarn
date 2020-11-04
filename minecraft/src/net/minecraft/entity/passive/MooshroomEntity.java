@@ -25,7 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -78,7 +78,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.BOWL && !this.isBaby()) {
+		if (itemStack.isOf(Items.BOWL) && !this.isBaby()) {
 			boolean bl = false;
 			ItemStack itemStack2;
 			if (this.stewEffect != null) {
@@ -102,14 +102,14 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return ActionResult.success(this.world.isClient);
-		} else if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
+		} else if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
 			this.sheared(SoundCategory.PLAYERS);
 			if (!this.world.isClient) {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
 			return ActionResult.success(this.world.isClient);
-		} else if (this.getMooshroomType() == MooshroomEntity.Type.BROWN && itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
+		} else if (this.getMooshroomType() == MooshroomEntity.Type.BROWN && itemStack.isIn(ItemTags.SMALL_FLOWERS)) {
 			if (this.stewEffect != null) {
 				for (int i = 0; i < 2; i++) {
 					this.world
@@ -130,7 +130,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 				}
 
 				Pair<StatusEffect, Integer> pair = (Pair<StatusEffect, Integer>)optional.get();
-				if (!player.abilities.creativeMode) {
+				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 
@@ -163,7 +163,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		if (!this.world.isClient()) {
 			((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
-			this.remove();
+			this.discard();
 			CowEntity cowEntity = EntityType.COW.create(this.world);
 			cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 			cowEntity.setHealth(this.getHealth());
@@ -193,25 +193,25 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putString("Type", this.getMooshroomType().name);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putString("Type", this.getMooshroomType().name);
 		if (this.stewEffect != null) {
-			nbt.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
-			nbt.putInt("EffectDuration", this.stewEffectDuration);
+			tag.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
+			tag.putInt("EffectDuration", this.stewEffectDuration);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setType(MooshroomEntity.Type.fromName(nbt.getString("Type")));
-		if (nbt.contains("EffectId", 1)) {
-			this.stewEffect = StatusEffect.byRawId(nbt.getByte("EffectId"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setType(MooshroomEntity.Type.fromName(tag.getString("Type")));
+		if (tag.contains("EffectId", 1)) {
+			this.stewEffect = StatusEffect.byRawId(tag.getByte("EffectId"));
 		}
 
-		if (nbt.contains("EffectDuration", 3)) {
-			this.stewEffectDuration = nbt.getInt("EffectDuration");
+		if (tag.contains("EffectDuration", 3)) {
+			this.stewEffectDuration = tag.getInt("EffectDuration");
 		}
 	}
 

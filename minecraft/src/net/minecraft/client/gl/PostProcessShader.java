@@ -11,13 +11,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class PostProcessShader implements AutoCloseable {
-	private final JsonEffectGlShader program;
+	private final JsonGlProgram program;
 	public final Framebuffer input;
 	public final Framebuffer output;
 	private final List<IntSupplier> samplerValues = Lists.<IntSupplier>newArrayList();
@@ -27,7 +28,7 @@ public class PostProcessShader implements AutoCloseable {
 	private Matrix4f projectionMatrix;
 
 	public PostProcessShader(ResourceManager resourceManager, String programName, Framebuffer input, Framebuffer output) throws IOException {
-		this.program = new JsonEffectGlShader(resourceManager, programName);
+		this.program = new JsonGlProgram(resourceManager, programName);
 		this.input = input;
 		this.output = output;
 	}
@@ -36,9 +37,9 @@ public class PostProcessShader implements AutoCloseable {
 		this.program.close();
 	}
 
-	public void addAuxTarget(String name, IntSupplier valueSupplier, int width, int height) {
+	public void addAuxTarget(String name, IntSupplier intSupplier, int width, int height) {
 		this.samplerNames.add(this.samplerNames.size(), name);
-		this.samplerValues.add(this.samplerValues.size(), valueSupplier);
+		this.samplerValues.add(this.samplerValues.size(), intSupplier);
 		this.samplerWidths.add(this.samplerWidths.size(), width);
 		this.samplerHeights.add(this.samplerHeights.size(), height);
 	}
@@ -74,7 +75,7 @@ public class PostProcessShader implements AutoCloseable {
 		this.output.beginWrite(false);
 		RenderSystem.depthFunc(519);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(0.0, 0.0, 500.0).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex((double)f, 0.0, 500.0).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex((double)f, (double)g, 500.0).color(255, 255, 255, 255).next();
@@ -93,7 +94,7 @@ public class PostProcessShader implements AutoCloseable {
 		}
 	}
 
-	public JsonEffectGlShader getProgram() {
+	public JsonGlProgram getProgram() {
 		return this.program;
 	}
 }

@@ -8,5 +8,5 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public interface ClientChatListener {
-	void onChatMessage(MessageType messageType, Text message, UUID sender);
+	void onChatMessage(MessageType messageType, Text message, UUID senderUuid);
 }

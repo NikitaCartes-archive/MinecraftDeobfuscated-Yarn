@@ -7,6 +7,7 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.FireBlock;
+import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.command.EntitySelectorOptions;
 import net.minecraft.command.argument.ArgumentTypes;
@@ -46,6 +47,7 @@ public class Bootstrap {
 					BrewingRecipeRegistry.registerDefaults();
 					EntitySelectorOptions.register();
 					DispenserBehavior.registerDefaults();
+					CauldronBehavior.registerBehavior();
 					ArgumentTypes.register();
 					RequiredTagListRegistry.validateRegistrations();
 					setOutputStreams();
@@ -54,9 +56,9 @@ public class Bootstrap {
 		}
 	}
 
-	private static <T> void collectMissingTranslations(Iterable<T> registry, Function<T, String> keyExtractor, Set<String> translationKeys) {
+	private static <T> void collectMissingTranslations(Iterable<T> iterable, Function<T, String> keyExtractor, Set<String> translationKeys) {
 		Language language = Language.getInstance();
-		registry.forEach(object -> {
+		iterable.forEach(object -> {
 			String string = (String)keyExtractor.apply(object);
 			if (!language.hasTranslation(string)) {
 				translationKeys.add(string);
@@ -94,7 +96,7 @@ public class Bootstrap {
 			throw new IllegalArgumentException("Not bootstrapped");
 		} else {
 			if (SharedConstants.isDevelopment) {
-				getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: " + string));
+				getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: {}", string));
 				CommandManager.checkMissing();
 			}
 

@@ -12,7 +12,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -113,22 +113,22 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	public void tickMovement() {
 		super.tickMovement();
 		if (this.isTrapped() && this.trapTime++ >= 18000) {
-			this.remove();
+			this.discard();
 		}
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putBoolean("SkeletonTrap", this.isTrapped());
-		nbt.putInt("SkeletonTrapTime", this.trapTime);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("SkeletonTrap", this.isTrapped());
+		tag.putInt("SkeletonTrapTime", this.trapTime);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setTrapped(nbt.getBoolean("SkeletonTrap"));
-		this.trapTime = nbt.getInt("SkeletonTrapTime");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setTrapped(tag.getBoolean("SkeletonTrap"));
+		this.trapTime = tag.getInt("SkeletonTrapTime");
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 			return super.interactMob(player, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem() == Items.SADDLE && !this.isSaddled()) {
+				if (itemStack.isOf(Items.SADDLE) && !this.isSaddled()) {
 					this.openInventory(player);
 					return ActionResult.success(this.world.isClient);
 				}

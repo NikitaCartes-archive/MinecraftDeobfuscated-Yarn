@@ -21,8 +21,8 @@ import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.pack.PackScreen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
@@ -32,6 +32,7 @@ import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.command.CommandManager;
@@ -56,13 +57,13 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class CreateWorldScreen extends Screen {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
-	private static final Text ENTER_SEED_TEXT = new TranslatableText("selectWorld.enterSeed");
-	private static final Text SEED_INFO_TEXT = new TranslatableText("selectWorld.seedInfo");
-	private static final Text ENTER_NAME_TEXT = new TranslatableText("selectWorld.enterName");
-	private static final Text RESULT_FOLDER_TEXT = new TranslatableText("selectWorld.resultFolder");
-	private static final Text ALLOW_COMMANDS_INFO_TEXT = new TranslatableText("selectWorld.allowCommands.info");
+	private static final Logger field_25480 = LogManager.getLogger();
+	private static final Text field_25898 = new TranslatableText("selectWorld.gameMode");
+	private static final Text field_26598 = new TranslatableText("selectWorld.enterSeed");
+	private static final Text field_26599 = new TranslatableText("selectWorld.seedInfo");
+	private static final Text field_26600 = new TranslatableText("selectWorld.enterName");
+	private static final Text field_26601 = new TranslatableText("selectWorld.resultFolder");
+	private static final Text field_26602 = new TranslatableText("selectWorld.allowCommands.info");
 	private final Screen parent;
 	private TextFieldWidget levelNameField;
 	private String saveDirectoryName;
@@ -74,11 +75,11 @@ public class CreateWorldScreen extends Screen {
 	private boolean cheatsEnabled;
 	private boolean tweakedCheats;
 	public boolean hardcore;
-	protected DataPackSettings dataPackSettings;
+	protected DataPackSettings field_25479;
 	@Nullable
-	private Path dataPackTempDir;
+	private Path field_25477;
 	@Nullable
-	private ResourcePackManager packManager;
+	private ResourcePackManager field_25792;
 	private boolean moreOptionsOpen;
 	private ButtonWidget createLevelButton;
 	private ButtonWidget gameModeSwitchButton;
@@ -94,17 +95,17 @@ public class CreateWorldScreen extends Screen {
 	public final MoreOptionsDialog moreOptionsDialog;
 
 	public CreateWorldScreen(
-		@Nullable Screen parent,
+		@Nullable Screen screen,
 		LevelInfo levelInfo,
 		GeneratorOptions generatorOptions,
-		@Nullable Path dataPackTempDir,
+		@Nullable Path path,
 		DataPackSettings dataPackSettings,
-		DynamicRegistryManager.Impl registryManager
+		DynamicRegistryManager.Impl impl
 	) {
 		this(
-			parent,
+			screen,
 			dataPackSettings,
-			new MoreOptionsDialog(registryManager, generatorOptions, GeneratorType.method_29078(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
+			new MoreOptionsDialog(impl, generatorOptions, GeneratorType.fromGeneratorOptions(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
 		);
 		this.levelName = levelInfo.getLevelName();
 		this.cheatsEnabled = levelInfo.areCommandsAllowed();
@@ -120,13 +121,13 @@ public class CreateWorldScreen extends Screen {
 			this.currentMode = CreateWorldScreen.Mode.CREATIVE;
 		}
 
-		this.dataPackTempDir = dataPackTempDir;
+		this.field_25477 = path;
 	}
 
-	public static CreateWorldScreen create(@Nullable Screen parent) {
+	public static CreateWorldScreen method_31130(@Nullable Screen screen) {
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 		return new CreateWorldScreen(
-			parent,
+			screen,
 			DataPackSettings.SAFE_MODE,
 			new MoreOptionsDialog(
 				impl,
@@ -137,11 +138,11 @@ public class CreateWorldScreen extends Screen {
 		);
 	}
 
-	private CreateWorldScreen(@Nullable Screen parent, DataPackSettings dataPackSettings, MoreOptionsDialog moreOptionsDialog) {
+	private CreateWorldScreen(@Nullable Screen screen, DataPackSettings dataPackSettings, MoreOptionsDialog moreOptionsDialog) {
 		super(new TranslatableText("selectWorld.create"));
-		this.parent = parent;
+		this.parent = screen;
 		this.levelName = I18n.translate("selectWorld.newWorld");
-		this.dataPackSettings = dataPackSettings;
+		this.field_25479 = dataPackSettings;
 		this.moreOptionsDialog = moreOptionsDialog;
 	}
 
@@ -192,7 +193,7 @@ public class CreateWorldScreen extends Screen {
 				public Text getMessage() {
 					return new TranslatableText(
 						"options.generic_value",
-						CreateWorldScreen.GAME_MODE_TEXT,
+						CreateWorldScreen.field_25898,
 						new TranslatableText("selectWorld.gameMode." + CreateWorldScreen.this.currentMode.translationSuffix)
 					);
 				}
@@ -254,7 +255,7 @@ public class CreateWorldScreen extends Screen {
 			new ButtonWidget(i, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.createLevel())
 		);
 		this.createLevelButton.active = !this.levelName.isEmpty();
-		this.addButton(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCloseScreen()));
+		this.addButton(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.method_30297()));
 		this.setMoreOptionsOpen();
 		this.setInitialFocus(this.levelNameField);
 		this.tweakDefaultsTo(this.currentMode);
@@ -292,8 +293,8 @@ public class CreateWorldScreen extends Screen {
 
 	private void createLevel() {
 		this.client.method_29970(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
-		if (this.copyTempDirDataPacks()) {
-			this.clearTempResources();
+		if (this.method_29696()) {
+			this.method_30298();
 			GeneratorOptions generatorOptions = this.moreOptionsDialog.getGeneratorOptions(this.hardcore);
 			LevelInfo levelInfo;
 			if (generatorOptions.isDebugWorld()) {
@@ -308,11 +309,11 @@ public class CreateWorldScreen extends Screen {
 					this.field_24290,
 					this.cheatsEnabled && !this.hardcore,
 					this.gameRules,
-					this.dataPackSettings
+					this.field_25479
 				);
 			}
 
-			this.client.createWorld(this.saveDirectoryName, levelInfo, this.moreOptionsDialog.getRegistryManager(), generatorOptions);
+			this.client.method_29607(this.saveDirectoryName, levelInfo, this.moreOptionsDialog.getRegistryManager(), generatorOptions);
 		}
 	}
 
@@ -398,21 +399,21 @@ public class CreateWorldScreen extends Screen {
 		if (this.moreOptionsOpen) {
 			this.setMoreOptionsOpen(false);
 		} else {
-			this.onCloseScreen();
+			this.method_30297();
 		}
 	}
 
-	public void onCloseScreen() {
+	public void method_30297() {
 		this.client.openScreen(this.parent);
-		this.clearTempResources();
+		this.method_30298();
 	}
 
-	private void clearTempResources() {
-		if (this.packManager != null) {
-			this.packManager.close();
+	private void method_30298() {
+		if (this.field_25792 != null) {
+			this.field_25792.close();
 		}
 
-		this.clearDataPackTempDir();
+		this.method_29695();
 	}
 
 	@Override
@@ -420,19 +421,19 @@ public class CreateWorldScreen extends Screen {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, -1);
 		if (this.moreOptionsOpen) {
-			drawTextWithShadow(matrices, this.textRenderer, ENTER_SEED_TEXT, this.width / 2 - 100, 47, -6250336);
-			drawTextWithShadow(matrices, this.textRenderer, SEED_INFO_TEXT, this.width / 2 - 100, 85, -6250336);
+			drawTextWithShadow(matrices, this.textRenderer, field_26598, this.width / 2 - 100, 47, -6250336);
+			drawTextWithShadow(matrices, this.textRenderer, field_26599, this.width / 2 - 100, 85, -6250336);
 			this.moreOptionsDialog.render(matrices, mouseX, mouseY, delta);
 		} else {
-			drawTextWithShadow(matrices, this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100, 47, -6250336);
+			drawTextWithShadow(matrices, this.textRenderer, field_26600, this.width / 2 - 100, 47, -6250336);
 			drawTextWithShadow(
-				matrices, this.textRenderer, new LiteralText("").append(RESULT_FOLDER_TEXT).append(" ").append(this.saveDirectoryName), this.width / 2 - 100, 85, -6250336
+				matrices, this.textRenderer, new LiteralText("").append(field_26601).append(" ").append(this.saveDirectoryName), this.width / 2 - 100, 85, -6250336
 			);
 			this.levelNameField.render(matrices, mouseX, mouseY, delta);
 			drawTextWithShadow(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 150, 122, -6250336);
 			drawTextWithShadow(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 150, 134, -6250336);
 			if (this.enableCheatsButton.visible) {
-				drawTextWithShadow(matrices, this.textRenderer, ALLOW_COMMANDS_INFO_TEXT, this.width / 2 - 150, 172, -6250336);
+				drawTextWithShadow(matrices, this.textRenderer, field_26602, this.width / 2 - 150, 172, -6250336);
 			}
 		}
 
@@ -445,23 +446,23 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Override
-	protected <T extends ClickableWidget> T addButton(T button) {
+	protected <T extends AbstractButtonWidget> T addButton(T button) {
 		return super.addButton(button);
 	}
 
 	@Nullable
-	protected Path getDataPackTempDir() {
-		if (this.dataPackTempDir == null) {
+	protected Path method_29693() {
+		if (this.field_25477 == null) {
 			try {
-				this.dataPackTempDir = Files.createTempDirectory("mcworld-");
+				this.field_25477 = Files.createTempDirectory("mcworld-");
 			} catch (IOException var2) {
-				LOGGER.warn("Failed to create temporary dir", (Throwable)var2);
+				field_25480.warn("Failed to create temporary dir", (Throwable)var2);
 				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
-				this.onCloseScreen();
+				this.method_30297();
 			}
 		}
 
-		return this.dataPackTempDir;
+		return this.field_25477;
 	}
 
 	private void method_29694() {
@@ -475,8 +476,8 @@ public class CreateWorldScreen extends Screen {
 		List<String> list = ImmutableList.copyOf(resourcePackManager.getEnabledNames());
 		List<String> list2 = (List<String>)resourcePackManager.getNames().stream().filter(string -> !list.contains(string)).collect(ImmutableList.toImmutableList());
 		DataPackSettings dataPackSettings = new DataPackSettings(list, list2);
-		if (list.equals(this.dataPackSettings.getEnabled())) {
-			this.dataPackSettings = dataPackSettings;
+		if (list.equals(this.field_25479.getEnabled())) {
+			this.field_25479 = dataPackSettings;
 		} else {
 			this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
 			ServerResourceManager.reload(
@@ -485,7 +486,7 @@ public class CreateWorldScreen extends Screen {
 				.handle(
 					(serverResourceManager, throwable) -> {
 						if (throwable != null) {
-							LOGGER.warn("Failed to validate datapack", throwable);
+							field_25480.warn("Failed to validate datapack", throwable);
 							this.client
 								.send(
 									() -> this.client
@@ -495,7 +496,7 @@ public class CreateWorldScreen extends Screen {
 														if (bl) {
 															this.method_29694();
 														} else {
-															this.dataPackSettings = DataPackSettings.SAFE_MODE;
+															this.field_25479 = DataPackSettings.SAFE_MODE;
 															this.client.openScreen(this);
 														}
 													},
@@ -508,7 +509,7 @@ public class CreateWorldScreen extends Screen {
 								);
 						} else {
 							this.client.send(() -> {
-								this.dataPackSettings = dataPackSettings;
+								this.field_25479 = dataPackSettings;
 								this.moreOptionsDialog.loadDatapacks(serverResourceManager);
 								serverResourceManager.close();
 								this.client.openScreen(this);
@@ -521,10 +522,10 @@ public class CreateWorldScreen extends Screen {
 		}
 	}
 
-	private void clearDataPackTempDir() {
-		if (this.dataPackTempDir != null) {
+	private void method_29695() {
+		if (this.field_25477 != null) {
 			try {
-				Stream<Path> stream = Files.walk(this.dataPackTempDir);
+				Stream<Path> stream = Files.walk(this.field_25477);
 				Throwable var2 = null;
 
 				try {
@@ -532,7 +533,7 @@ public class CreateWorldScreen extends Screen {
 						try {
 							Files.delete(path);
 						} catch (IOException var2x) {
-							LOGGER.warn("Failed to remove temporary file {}", path, var2x);
+							field_25480.warn("Failed to remove temporary file {}", path, var2x);
 						}
 					});
 				} catch (Throwable var12) {
@@ -552,32 +553,32 @@ public class CreateWorldScreen extends Screen {
 					}
 				}
 			} catch (IOException var14) {
-				LOGGER.warn("Failed to list temporary dir {}", this.dataPackTempDir);
+				field_25480.warn("Failed to list temporary dir {}", this.field_25477);
 			}
 
-			this.dataPackTempDir = null;
+			this.field_25477 = null;
 		}
 	}
 
-	private static void copyDataPack(Path srcFolder, Path destFolder, Path dataPackFile) {
+	private static void method_29687(Path path, Path path2, Path path3) {
 		try {
-			Util.relativeCopy(srcFolder, destFolder, dataPackFile);
+			Util.relativeCopy(path, path2, path3);
 		} catch (IOException var4) {
-			LOGGER.warn("Failed to copy datapack file from {} to {}", dataPackFile, destFolder);
+			field_25480.warn("Failed to copy datapack file from {} to {}", path3, path2);
 			throw new CreateWorldScreen.WorldCreationException(var4);
 		}
 	}
 
-	private boolean copyTempDirDataPacks() {
-		if (this.dataPackTempDir != null) {
+	private boolean method_29696() {
+		if (this.field_25477 != null) {
 			try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.saveDirectoryName)) {
-				Stream<Path> stream = Files.walk(this.dataPackTempDir);
+				Stream<Path> stream = Files.walk(this.field_25477);
 				Throwable var4 = null;
 
 				try {
 					Path path = session.getDirectory(WorldSavePath.DATAPACKS);
 					Files.createDirectories(path);
-					stream.filter(pathx -> !pathx.equals(this.dataPackTempDir)).forEach(path2 -> copyDataPack(this.dataPackTempDir, path, path2));
+					stream.filter(pathx -> !pathx.equals(this.field_25477)).forEach(path2 -> method_29687(this.field_25477, path, path2));
 				} catch (Throwable var29) {
 					var4 = var29;
 					throw var29;
@@ -595,9 +596,9 @@ public class CreateWorldScreen extends Screen {
 					}
 				}
 			} catch (CreateWorldScreen.WorldCreationException | IOException var33) {
-				LOGGER.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var33);
+				field_25480.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var33);
 				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
-				this.onCloseScreen();
+				this.method_30297();
 				return false;
 			}
 		}
@@ -620,14 +621,14 @@ public class CreateWorldScreen extends Screen {
 						try {
 							path3 = Files.createTempDirectory("mcworld-");
 						} catch (IOException var5) {
-							LOGGER.warn("Failed to create temporary dir");
+							field_25480.warn("Failed to create temporary dir");
 							throw new CreateWorldScreen.WorldCreationException(var5);
 						}
 
 						mutableObject.setValue(path3);
 					}
 
-					copyDataPack(path, path3, path2);
+					method_29687(path, path3, path2);
 				});
 			} catch (Throwable var14) {
 				var4 = var14;
@@ -646,7 +647,7 @@ public class CreateWorldScreen extends Screen {
 				}
 			}
 		} catch (CreateWorldScreen.WorldCreationException | IOException var16) {
-			LOGGER.warn("Failed to copy datapacks from world {}", path, var16);
+			field_25480.warn("Failed to copy datapacks from world {}", path, var16);
 			SystemToast.addPackCopyFailure(minecraftClient, path.toString());
 			return null;
 		}
@@ -656,16 +657,18 @@ public class CreateWorldScreen extends Screen {
 
 	@Nullable
 	private Pair<File, ResourcePackManager> method_30296() {
-		Path path = this.getDataPackTempDir();
+		Path path = this.method_29693();
 		if (path != null) {
 			File file = path.toFile();
-			if (this.packManager == null) {
-				this.packManager = new ResourcePackManager(new VanillaDataPackProvider(), new FileResourcePackProvider(file, ResourcePackSource.field_25347));
-				this.packManager.scanPacks();
+			if (this.field_25792 == null) {
+				this.field_25792 = new ResourcePackManager(
+					ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(file, ResourcePackSource.PACK_SOURCE_NONE)
+				);
+				this.field_25792.scanPacks();
 			}
 
-			this.packManager.setEnabledProfiles(this.dataPackSettings.getEnabled());
-			return Pair.of(file, this.packManager);
+			this.field_25792.setEnabledProfiles(this.field_25479.getEnabled());
+			return Pair.of(file, this.field_25792);
 		} else {
 			return null;
 		}

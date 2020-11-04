@@ -97,18 +97,18 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 		return path != null && path.reachesTarget();
 	}
 
-	private Optional<VillagerEntity> createChild(ServerWorld world, VillagerEntity parent, VillagerEntity partner) {
-		VillagerEntity villagerEntity = parent.createChild(world, partner);
-		if (villagerEntity == null) {
+	private Optional<VillagerEntity> createChild(ServerWorld serverWorld, VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
+		VillagerEntity villagerEntity3 = villagerEntity.createChild(serverWorld, villagerEntity2);
+		if (villagerEntity3 == null) {
 			return Optional.empty();
 		} else {
-			parent.setBreedingAge(6000);
-			partner.setBreedingAge(6000);
-			villagerEntity.setBreedingAge(-24000);
-			villagerEntity.refreshPositionAndAngles(parent.getX(), parent.getY(), parent.getZ(), 0.0F, 0.0F);
-			world.spawnEntityAndPassengers(villagerEntity);
-			world.sendEntityStatus(villagerEntity, (byte)12);
-			return Optional.of(villagerEntity);
+			villagerEntity.setBreedingAge(6000);
+			villagerEntity2.setBreedingAge(6000);
+			villagerEntity3.setBreedingAge(-24000);
+			villagerEntity3.refreshPositionAndAngles(villagerEntity.getX(), villagerEntity.getY(), villagerEntity.getZ(), 0.0F, 0.0F);
+			serverWorld.spawnEntityAndPassengers(villagerEntity3);
+			serverWorld.sendEntityStatus(villagerEntity3, (byte)12);
+			return Optional.of(villagerEntity3);
 		}
 	}
 

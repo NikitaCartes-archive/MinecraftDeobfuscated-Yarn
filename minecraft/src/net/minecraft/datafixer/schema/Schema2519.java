@@ -10,14 +10,14 @@ public class Schema2519 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static void registerEntity(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, String name) {
+	protected static void updateStriderItems(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, String name) {
 		schema.register(entityTypes, name, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		registerEntity(schema, map, "minecraft:strider");
+		updateStriderItems(schema, map, "minecraft:strider");
 		return map;
 	}
 }

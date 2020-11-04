@@ -8,17 +8,20 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.GraphicsMode;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -37,6 +40,15 @@ public class RenderSystem {
 	private static int MAX_SUPPORTED_TEXTURE_SIZE = -1;
 	private static boolean isInInit;
 	private static double lastDrawTime = Double.MIN_VALUE;
+	private static final RenderSystem.class_5590 sharedSequential = new RenderSystem.class_5590(1, 1, IntConsumer::accept);
+	private static final RenderSystem.class_5590 sharedSequentialQuad = new RenderSystem.class_5590(4, 6, (intConsumer, i) -> {
+		intConsumer.accept(i + 0);
+		intConsumer.accept(i + 1);
+		intConsumer.accept(i + 2);
+		intConsumer.accept(i + 2);
+		intConsumer.accept(i + 3);
+		intConsumer.accept(i + 0);
+	});
 
 	public static void initRenderThread() {
 		if (renderThread == null && gameThread != Thread.currentThread()) {
@@ -544,9 +556,9 @@ public class RenderSystem {
 		GlStateManager.clearCurrentColor();
 	}
 
-	public static void drawArrays(int mode, int first, int count) {
+	public static void drawElements(int mode, int first, int count) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.drawArrays(mode, first, count);
+		GlStateManager.drawArrays(mode, first, count, 0L);
 	}
 
 	public static void lineWidth(float width) {
@@ -749,19 +761,19 @@ public class RenderSystem {
 		GlStateManager.teardownOverlayColor();
 	}
 
-	public static void setupLevelDiffuseLighting(Vec3f vec3f, Vec3f vec3f2, Matrix4f matrix4f) {
+	public static void setupLevelDiffuseLighting(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.setupLevelDiffuseLighting(vec3f, vec3f2, matrix4f);
+		GlStateManager.setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
 	}
 
-	public static void setupGuiFlatDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
+	public static void setupGuiFlatDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.setupGuiFlatDiffuseLighting(vec3f, vec3f2);
+		GlStateManager.setupGuiFlatDiffuseLighting(vector3f, vector3f2);
 	}
 
-	public static void setupGui3DDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
+	public static void setupGui3DDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.setupGui3dDiffuseLighting(vec3f, vec3f2);
+		GlStateManager.setupGui3dDiffuseLighting(vector3f, vector3f2);
 	}
 
 	public static void mulTextureByProjModelView() {
@@ -828,6 +840,83 @@ public class RenderSystem {
 			gameOptions.graphicsMode = GraphicsMode.FANCY;
 			runnable.run();
 			gameOptions.graphicsMode = graphicsMode;
+		}
+	}
+
+	public static RenderSystem.class_5590 getSequentialBuffer(VertexFormat.DrawMode drawMode, int i) {
+		assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.class_5590 lv = drawMode == VertexFormat.DrawMode.QUADS ? sharedSequentialQuad : sharedSequential;
+		lv.method_31920(i);
+		return lv;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static final class class_5590 {
+		private final int field_27332;
+		private final int field_27333;
+		private final RenderSystem.class_5590.class_5591 field_27334;
+		private int field_27335;
+		private VertexFormat.IntType field_27336 = VertexFormat.IntType.BYTE;
+		private int field_27337;
+
+		private class_5590(int i, int j, RenderSystem.class_5590.class_5591 arg) {
+			this.field_27332 = i;
+			this.field_27333 = j;
+			this.field_27334 = arg;
+		}
+
+		private void method_31920(int i) {
+			if (i > this.field_27337) {
+				RenderSystem.LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", this.field_27337, i);
+				if (this.field_27335 == 0) {
+					this.field_27335 = GlStateManager.genBuffers();
+				}
+
+				VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(i);
+				int j = MathHelper.roundUpToMultiple(i * intType.size, 4);
+				GlStateManager.bindBuffers(34963, this.field_27335);
+				GlStateManager.method_31945(34963, (long)j, 35044);
+				ByteBuffer byteBuffer = GlStateManager.method_31946(34963, 35001);
+				if (byteBuffer == null) {
+					throw new RuntimeException("Failed to map GL buffer");
+				} else {
+					this.field_27336 = intType;
+					it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.method_31922(byteBuffer);
+
+					for (int k = 0; k < i; k += this.field_27333) {
+						this.field_27334.accept(intConsumer, k * this.field_27332 / this.field_27333);
+					}
+
+					GlStateManager.method_31947(34963);
+					GlStateManager.bindBuffers(34963, 0);
+					this.field_27337 = i;
+				}
+			}
+		}
+
+		private it.unimi.dsi.fastutil.ints.IntConsumer method_31922(ByteBuffer byteBuffer) {
+			switch (this.field_27336) {
+				case BYTE:
+					return i -> byteBuffer.put((byte)i);
+				case SHORT:
+					return i -> byteBuffer.putShort((short)i);
+				case INT:
+				default:
+					return byteBuffer::putInt;
+			}
+		}
+
+		public int method_31919() {
+			return this.field_27335;
+		}
+
+		public VertexFormat.IntType method_31924() {
+			return this.field_27336;
+		}
+
+		@Environment(EnvType.CLIENT)
+		interface class_5591 {
+			void accept(it.unimi.dsi.fastutil.ints.IntConsumer intConsumer, int i);
 		}
 	}
 }

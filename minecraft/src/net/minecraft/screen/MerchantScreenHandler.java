@@ -57,12 +57,12 @@ public class MerchantScreenHandler extends ScreenHandler {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.merchantInventory.updateOffers();
+		this.merchantInventory.updateRecipes();
 		super.onContentChanged(inventory);
 	}
 
 	public void setRecipeIndex(int index) {
-		this.merchantInventory.setOfferIndex(index);
+		this.merchantInventory.setRecipeIndex(index);
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(index);
+		Slot slot = this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
@@ -122,7 +122,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 				this.playYesSound();
 			} else if (index != 0 && index != 1) {
 				if (index >= 3 && index < 30) {
@@ -176,9 +176,9 @@ public class MerchantScreenHandler extends ScreenHandler {
 				if (!itemStack.isEmpty()) {
 					player.dropItem(itemStack, false);
 				}
-			} else {
-				player.inventory.offerOrDrop(player.world, this.merchantInventory.removeStack(0));
-				player.inventory.offerOrDrop(player.world, this.merchantInventory.removeStack(1));
+			} else if (player instanceof ServerPlayerEntity) {
+				player.getInventory().offerOrDrop(this.merchantInventory.removeStack(0));
+				player.getInventory().offerOrDrop(this.merchantInventory.removeStack(1));
 			}
 		}
 	}
@@ -215,8 +215,8 @@ public class MerchantScreenHandler extends ScreenHandler {
 	private void autofill(int slot, ItemStack stack) {
 		if (!stack.isEmpty()) {
 			for (int i = 3; i < 39; i++) {
-				ItemStack itemStack = ((Slot)this.slots.get(i)).getStack();
-				if (!itemStack.isEmpty() && this.equals(stack, itemStack)) {
+				ItemStack itemStack = this.slots.get(i).getStack();
+				if (!itemStack.isEmpty() && ItemStack.method_31577(stack, itemStack)) {
 					ItemStack itemStack2 = this.merchantInventory.getStack(slot);
 					int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
 					int k = Math.min(stack.getMaxCount() - j, itemStack.getCount());
@@ -231,10 +231,6 @@ public class MerchantScreenHandler extends ScreenHandler {
 				}
 			}
 		}
-	}
-
-	private boolean equals(ItemStack itemStack, ItemStack otherItemStack) {
-		return itemStack.getItem() == otherItemStack.getItem() && ItemStack.areTagsEqual(itemStack, otherItemStack);
 	}
 
 	@Environment(EnvType.CLIENT)

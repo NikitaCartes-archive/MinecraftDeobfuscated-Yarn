@@ -9,101 +9,95 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class CampfireBlockEntity extends BlockEntity implements Clearable, Tickable {
+public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	private final int[] cookingTimes = new int[4];
 	private final int[] cookingTotalTimes = new int[4];
 
-	public CampfireBlockEntity() {
-		super(BlockEntityType.CAMPFIRE);
+	public CampfireBlockEntity(BlockPos blockPos, BlockState blockState) {
+		super(BlockEntityType.CAMPFIRE, blockPos, blockState);
 	}
 
-	@Override
-	public void tick() {
-		boolean bl = (Boolean)this.getCachedState().get(CampfireBlock.LIT);
-		boolean bl2 = this.world.isClient;
-		if (bl2) {
-			if (bl) {
-				this.spawnSmokeParticles();
-			}
-		} else {
-			if (bl) {
-				this.updateItemsBeingCooked();
-			} else {
-				for (int i = 0; i < this.itemsBeingCooked.size(); i++) {
-					if (this.cookingTimes[i] > 0) {
-						this.cookingTimes[i] = MathHelper.clamp(this.cookingTimes[i] - 2, 0, this.cookingTotalTimes[i]);
-					}
-				}
-			}
-		}
-	}
+	public static void litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire) {
+		boolean bl = false;
 
-	private void updateItemsBeingCooked() {
-		for (int i = 0; i < this.itemsBeingCooked.size(); i++) {
-			ItemStack itemStack = this.itemsBeingCooked.get(i);
+		for (int i = 0; i < campfire.itemsBeingCooked.size(); i++) {
+			ItemStack itemStack = campfire.itemsBeingCooked.get(i);
 			if (!itemStack.isEmpty()) {
-				this.cookingTimes[i]++;
-				if (this.cookingTimes[i] >= this.cookingTotalTimes[i]) {
+				bl = true;
+				campfire.cookingTimes[i]++;
+				if (campfire.cookingTimes[i] >= campfire.cookingTotalTimes[i]) {
 					Inventory inventory = new SimpleInventory(itemStack);
-					ItemStack itemStack2 = (ItemStack)this.world
-						.getRecipeManager()
-						.getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, this.world)
+					ItemStack itemStack2 = (ItemStack)world.getRecipeManager()
+						.getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, world)
 						.map(campfireCookingRecipe -> campfireCookingRecipe.craft(inventory))
 						.orElse(itemStack);
-					BlockPos blockPos = this.getPos();
-					ItemScatterer.spawn(this.world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
-					this.itemsBeingCooked.set(i, ItemStack.EMPTY);
-					this.updateListeners();
+					ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
+					campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
+					world.updateListeners(pos, state, state, 3);
 				}
 			}
 		}
+
+		if (bl) {
+			markDirty(world, pos, state);
+		}
 	}
 
-	private void spawnSmokeParticles() {
-		World world = this.getWorld();
-		if (world != null) {
-			BlockPos blockPos = this.getPos();
-			Random random = world.random;
-			if (random.nextFloat() < 0.11F) {
-				for (int i = 0; i < random.nextInt(2) + 2; i++) {
-					CampfireBlock.spawnSmokeParticle(world, blockPos, (Boolean)this.getCachedState().get(CampfireBlock.SIGNAL_FIRE), false);
-				}
+	public static void unlitServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire) {
+		boolean bl = false;
+
+		for (int i = 0; i < campfire.itemsBeingCooked.size(); i++) {
+			if (campfire.cookingTimes[i] > 0) {
+				bl = true;
+				campfire.cookingTimes[i] = MathHelper.clamp(campfire.cookingTimes[i] - 2, 0, campfire.cookingTotalTimes[i]);
 			}
+		}
 
-			int i = ((Direction)this.getCachedState().get(CampfireBlock.FACING)).getHorizontal();
+		if (bl) {
+			markDirty(world, pos, state);
+		}
+	}
 
-			for (int j = 0; j < this.itemsBeingCooked.size(); j++) {
-				if (!this.itemsBeingCooked.get(j).isEmpty() && random.nextFloat() < 0.2F) {
-					Direction direction = Direction.fromHorizontal(Math.floorMod(j + i, 4));
-					float f = 0.3125F;
-					double d = (double)blockPos.getX()
-						+ 0.5
-						- (double)((float)direction.getOffsetX() * 0.3125F)
-						+ (double)((float)direction.rotateYClockwise().getOffsetX() * 0.3125F);
-					double e = (double)blockPos.getY() + 0.5;
-					double g = (double)blockPos.getZ()
-						+ 0.5
-						- (double)((float)direction.getOffsetZ() * 0.3125F)
-						+ (double)((float)direction.rotateYClockwise().getOffsetZ() * 0.3125F);
+	public static void clientTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire) {
+		Random random = world.random;
+		if (random.nextFloat() < 0.11F) {
+			for (int i = 0; i < random.nextInt(2) + 2; i++) {
+				CampfireBlock.spawnSmokeParticle(world, pos, (Boolean)state.get(CampfireBlock.SIGNAL_FIRE), false);
+			}
+		}
 
-					for (int k = 0; k < 4; k++) {
-						world.addParticle(ParticleTypes.SMOKE, d, e, g, 0.0, 5.0E-4, 0.0);
-					}
+		int i = ((Direction)state.get(CampfireBlock.FACING)).getHorizontal();
+
+		for (int j = 0; j < campfire.itemsBeingCooked.size(); j++) {
+			if (!campfire.itemsBeingCooked.get(j).isEmpty() && random.nextFloat() < 0.2F) {
+				Direction direction = Direction.fromHorizontal(Math.floorMod(j + i, 4));
+				float f = 0.3125F;
+				double d = (double)pos.getX()
+					+ 0.5
+					- (double)((float)direction.getOffsetX() * 0.3125F)
+					+ (double)((float)direction.rotateYClockwise().getOffsetX() * 0.3125F);
+				double e = (double)pos.getY() + 0.5;
+				double g = (double)pos.getZ()
+					+ 0.5
+					- (double)((float)direction.getOffsetZ() * 0.3125F)
+					+ (double)((float)direction.rotateYClockwise().getOffsetZ() * 0.3125F);
+
+				for (int k = 0; k < 4; k++) {
+					world.addParticle(ParticleTypes.SMOKE, d, e, g, 0.0, 5.0E-4, 0.0);
 				}
 			}
 		}
@@ -114,44 +108,44 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	}
 
 	@Override
-	public void fromTag(BlockState state, NbtCompound tag) {
-		super.fromTag(state, tag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		this.itemsBeingCooked.clear();
-		Inventories.readNbt(tag, this.itemsBeingCooked);
-		if (tag.contains("CookingTimes", 11)) {
-			int[] is = tag.getIntArray("CookingTimes");
+		Inventories.fromTag(compoundTag, this.itemsBeingCooked);
+		if (compoundTag.contains("CookingTimes", 11)) {
+			int[] is = compoundTag.getIntArray("CookingTimes");
 			System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 
-		if (tag.contains("CookingTotalTimes", 11)) {
-			int[] is = tag.getIntArray("CookingTotalTimes");
+		if (compoundTag.contains("CookingTotalTimes", 11)) {
+			int[] is = compoundTag.getIntArray("CookingTotalTimes");
 			System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
-		this.saveInitialChunkData(nbt);
-		nbt.putIntArray("CookingTimes", this.cookingTimes);
-		nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
-		return nbt;
+	public CompoundTag toTag(CompoundTag tag) {
+		this.saveInitialChunkData(tag);
+		tag.putIntArray("CookingTimes", this.cookingTimes);
+		tag.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
+		return tag;
 	}
 
-	private NbtCompound saveInitialChunkData(NbtCompound nbt) {
-		super.writeNbt(nbt);
-		Inventories.writeNbt(nbt, this.itemsBeingCooked, true);
-		return nbt;
+	private CompoundTag saveInitialChunkData(CompoundTag tag) {
+		super.toTag(tag);
+		Inventories.toTag(tag, this.itemsBeingCooked, true);
+		return tag;
 	}
 
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataNbt());
+		return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataTag());
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		return this.saveInitialChunkData(new NbtCompound());
+	public CompoundTag toInitialChunkDataTag() {
+		return this.saveInitialChunkData(new CompoundTag());
 	}
 
 	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {

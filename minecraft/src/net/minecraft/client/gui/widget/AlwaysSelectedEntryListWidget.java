@@ -14,14 +14,14 @@ public abstract class AlwaysSelectedEntryListWidget<E extends EntryListWidget.En
 
 	@Override
 	public boolean changeFocus(boolean lookForwards) {
-		if (!this.inFocus && this.getEntryCount() == 0) {
+		if (!this.inFocus && this.getItemCount() == 0) {
 			return false;
 		} else {
 			this.inFocus = !this.inFocus;
-			if (this.inFocus && this.getSelected() == null && this.getEntryCount() > 0) {
+			if (this.inFocus && this.getSelected() == null && this.getItemCount() > 0) {
 				this.moveSelection(EntryListWidget.MoveDirection.DOWN);
 			} else if (this.inFocus && this.getSelected() != null) {
-				this.ensureSelectedEntryVisible();
+				this.method_30015();
 			}
 
 			return this.inFocus;

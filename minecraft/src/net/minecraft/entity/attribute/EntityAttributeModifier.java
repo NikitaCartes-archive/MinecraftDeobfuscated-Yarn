@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,21 +76,21 @@ public class EntityAttributeModifier {
 			+ '}';
 	}
 
-	public NbtCompound toNbt() {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("Name", this.getName());
-		nbtCompound.putDouble("Amount", this.value);
-		nbtCompound.putInt("Operation", this.operation.getId());
-		nbtCompound.putUuid("UUID", this.uuid);
-		return nbtCompound;
+	public CompoundTag toTag() {
+		CompoundTag compoundTag = new CompoundTag();
+		compoundTag.putString("Name", this.getName());
+		compoundTag.putDouble("Amount", this.value);
+		compoundTag.putInt("Operation", this.operation.getId());
+		compoundTag.putUuid("UUID", this.uuid);
+		return compoundTag;
 	}
 
 	@Nullable
-	public static EntityAttributeModifier fromNbt(NbtCompound nbt) {
+	public static EntityAttributeModifier fromTag(CompoundTag tag) {
 		try {
-			UUID uUID = nbt.getUuid("UUID");
-			EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(nbt.getInt("Operation"));
-			return new EntityAttributeModifier(uUID, nbt.getString("Name"), nbt.getDouble("Amount"), operation);
+			UUID uUID = tag.getUuid("UUID");
+			EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(tag.getInt("Operation"));
+			return new EntityAttributeModifier(uUID, tag.getString("Name"), tag.getDouble("Amount"), operation);
 		} catch (Exception var3) {
 			LOGGER.warn("Unable to create attribute: {}", var3.getMessage());
 			return null;

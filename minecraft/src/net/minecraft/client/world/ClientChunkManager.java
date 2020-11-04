@@ -6,13 +6,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.biome.source.BiomeArray;
@@ -45,12 +43,12 @@ public class ClientChunkManager extends ChunkManager {
 		return this.lightingProvider;
 	}
 
-	private static boolean positionEquals(@Nullable WorldChunk chunk, int x, int z) {
+	private static boolean positionEquals(@Nullable WorldChunk chunk, int x, int y) {
 		if (chunk == null) {
 			return false;
 		} else {
 			ChunkPos chunkPos = chunk.getPos();
-			return chunkPos.x == x && chunkPos.z == z;
+			return chunkPos.x == x && chunkPos.z == y;
 		}
 	}
 
@@ -82,38 +80,38 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Nullable
-	public WorldChunk loadChunkFromPacket(
-		int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, NbtCompound tag, int verticalStripBitmask, boolean complete
-	) {
+	public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask) {
 		if (!this.chunks.isInRadius(x, z)) {
 			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", x, z);
 			return null;
 		} else {
 			int i = this.chunks.getIndex(x, z);
 			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(i);
-			if (!complete && positionEquals(worldChunk, x, z)) {
-				worldChunk.loadFromPacket(biomes, buf, tag, verticalStripBitmask);
-			} else {
+			ChunkPos chunkPos = new ChunkPos(x, z);
+			if (!positionEquals(worldChunk, x, z)) {
 				if (biomes == null) {
 					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", x, z);
 					return null;
 				}
 
-				worldChunk = new WorldChunk(this.world, new ChunkPos(x, z), biomes);
+				worldChunk = new WorldChunk(this.world, chunkPos, biomes);
 				worldChunk.loadFromPacket(biomes, buf, tag, verticalStripBitmask);
 				this.chunks.set(i, worldChunk);
+			} else {
+				worldChunk.loadFromPacket(biomes, buf, tag, verticalStripBitmask);
 			}
 
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
 			LightingProvider lightingProvider = this.getLightingProvider();
-			lightingProvider.setColumnEnabled(new ChunkPos(x, z), true);
+			lightingProvider.setColumnEnabled(chunkPos, true);
 
 			for (int j = 0; j < chunkSections.length; j++) {
 				ChunkSection chunkSection = chunkSections[j];
-				lightingProvider.setSectionStatus(ChunkSectionPos.from(x, j, z), ChunkSection.isEmpty(chunkSection));
+				int k = this.world.getSection(j);
+				lightingProvider.setSectionStatus(ChunkSectionPos.from(x, k, z), ChunkSection.isEmpty(chunkSection));
 			}
 
-			this.world.resetChunkColor(x, z);
+			this.world.resetChunkColor(chunkPos);
 			return worldChunk;
 		}
 	}
@@ -154,7 +152,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public String getDebugString() {
-		return "Client Chunk Cache: " + this.chunks.chunks.length() + ", " + this.getLoadedChunkCount();
+		return this.chunks.chunks.length() + ", " + this.getLoadedChunkCount();
 	}
 
 	public int getLoadedChunkCount() {
@@ -168,17 +166,12 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public boolean shouldTickBlock(BlockPos pos) {
-		return this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
+		return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 	}
 
 	@Override
 	public boolean shouldTickChunk(ChunkPos pos) {
 		return this.isChunkLoaded(pos.x, pos.z);
-	}
-
-	@Override
-	public boolean shouldTickEntity(Entity entity) {
-		return this.isChunkLoaded(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4);
 	}
 
 	@Environment(EnvType.CLIENT)

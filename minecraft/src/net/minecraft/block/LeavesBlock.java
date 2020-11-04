@@ -57,10 +57,8 @@ public class LeavesBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
-		int i = getDistanceFromLog(neighborState) + 1;
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		int i = getDistanceFromLog(newState) + 1;
 		if (i != 1 || (Integer)state.get(DISTANCE) != i) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
@@ -84,7 +82,7 @@ public class LeavesBlock extends Block {
 	}
 
 	private static int getDistanceFromLog(BlockState state) {
-		if (BlockTags.LOGS.contains(state.getBlock())) {
+		if (state.isIn(BlockTags.LOGS)) {
 			return 0;
 		} else {
 			return state.getBlock() instanceof LeavesBlock ? (Integer)state.get(DISTANCE) : 7;

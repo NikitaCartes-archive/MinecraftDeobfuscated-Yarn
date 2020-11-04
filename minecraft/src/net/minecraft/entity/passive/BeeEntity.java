@@ -12,6 +12,9 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5530;
+import net.minecraft.class_5531;
+import net.minecraft.class_5533;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -31,7 +34,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.Durations;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -61,7 +63,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -86,7 +88,7 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
-	private static final TrackedData<Byte> BEE_FLAGS = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Byte> STATUS_TRACKER = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Integer> ANGER = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
 	private UUID targetUuid;
@@ -96,12 +98,12 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	private int ticksSincePollination;
 	private int cannotEnterHiveTicks;
 	private int cropsGrownSincePollination;
-	private int ticksLeftToFindHive = 0;
-	private int ticksUntilCanPollinate = 0;
+	private int ticksLeftToFindHive;
+	private int ticksUntilCanPollinate = MathHelper.nextInt(this.random, 20, 60);
 	@Nullable
-	private BlockPos flowerPos = null;
+	private BlockPos flowerPos;
 	@Nullable
-	private BlockPos hivePos = null;
+	private BlockPos hivePos;
 	private BeeEntity.PollinateGoal pollinateGoal;
 	private BeeEntity.MoveToHiveGoal moveToHiveGoal;
 	private BeeEntity.MoveToFlowerGoal moveToFlowerGoal;
@@ -121,7 +123,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(BEE_FLAGS, (byte)0);
+		this.dataTracker.startTracking(STATUS_TRACKER, (byte)0);
 		this.dataTracker.startTracking(ANGER, 0);
 	}
 
@@ -153,43 +155,43 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.hasHive()) {
-			nbt.put("HivePos", NbtHelper.fromBlockPos(this.getHivePos()));
+			tag.put("HivePos", NbtHelper.fromBlockPos(this.getHivePos()));
 		}
 
 		if (this.hasFlower()) {
-			nbt.put("FlowerPos", NbtHelper.fromBlockPos(this.getFlowerPos()));
+			tag.put("FlowerPos", NbtHelper.fromBlockPos(this.getFlowerPos()));
 		}
 
-		nbt.putBoolean("HasNectar", this.hasNectar());
-		nbt.putBoolean("HasStung", this.hasStung());
-		nbt.putInt("TicksSincePollination", this.ticksSincePollination);
-		nbt.putInt("CannotEnterHiveTicks", this.cannotEnterHiveTicks);
-		nbt.putInt("CropsGrownSincePollination", this.cropsGrownSincePollination);
-		this.writeAngerToNbt(nbt);
+		tag.putBoolean("HasNectar", this.hasNectar());
+		tag.putBoolean("HasStung", this.hasStung());
+		tag.putInt("TicksSincePollination", this.ticksSincePollination);
+		tag.putInt("CannotEnterHiveTicks", this.cannotEnterHiveTicks);
+		tag.putInt("CropsGrownSincePollination", this.cropsGrownSincePollination);
+		this.angerToTag(tag);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
+	public void readCustomDataFromTag(CompoundTag tag) {
 		this.hivePos = null;
-		if (nbt.contains("HivePos")) {
-			this.hivePos = NbtHelper.toBlockPos(nbt.getCompound("HivePos"));
+		if (tag.contains("HivePos")) {
+			this.hivePos = NbtHelper.toBlockPos(tag.getCompound("HivePos"));
 		}
 
 		this.flowerPos = null;
-		if (nbt.contains("FlowerPos")) {
-			this.flowerPos = NbtHelper.toBlockPos(nbt.getCompound("FlowerPos"));
+		if (tag.contains("FlowerPos")) {
+			this.flowerPos = NbtHelper.toBlockPos(tag.getCompound("FlowerPos"));
 		}
 
-		super.readCustomDataFromNbt(nbt);
-		this.setHasNectar(nbt.getBoolean("HasNectar"));
-		this.setHasStung(nbt.getBoolean("HasStung"));
-		this.ticksSincePollination = nbt.getInt("TicksSincePollination");
-		this.cannotEnterHiveTicks = nbt.getInt("CannotEnterHiveTicks");
-		this.cropsGrownSincePollination = nbt.getInt("CropsGrownSincePollination");
-		this.angerFromTag((ServerWorld)this.world, nbt);
+		super.readCustomDataFromTag(tag);
+		this.setHasNectar(tag.getBoolean("HasNectar"));
+		this.setHasStung(tag.getBoolean("HasStung"));
+		this.ticksSincePollination = tag.getInt("TicksSincePollination");
+		this.cannotEnterHiveTicks = tag.getInt("CannotEnterHiveTicks");
+		this.cropsGrownSincePollination = tag.getInt("CropsGrownSincePollination");
+		this.angerFromTag(this.world, tag);
 	}
 
 	@Override
@@ -256,7 +258,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			l = m / 2;
 		}
 
-		Vec3d vec3d2 = TargetFinder.findGroundTargetTowards(this, k, l, i, vec3d, (float) (Math.PI / 10));
+		Vec3d vec3d2 = class_5531.method_31508(this, k, l, i, vec3d, (float) (Math.PI / 10));
 		if (vec3d2 != null) {
 			this.navigation.setRangeMultiplier(0.5F);
 			this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.0);
@@ -473,14 +475,14 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	private void setBeeFlag(int bit, boolean value) {
 		if (value) {
-			this.dataTracker.set(BEE_FLAGS, (byte)(this.dataTracker.get(BEE_FLAGS) | bit));
+			this.dataTracker.set(STATUS_TRACKER, (byte)(this.dataTracker.get(STATUS_TRACKER) | bit));
 		} else {
-			this.dataTracker.set(BEE_FLAGS, (byte)(this.dataTracker.get(BEE_FLAGS) & ~bit));
+			this.dataTracker.set(STATUS_TRACKER, (byte)(this.dataTracker.get(STATUS_TRACKER) & ~bit));
 		}
 	}
 
 	private boolean getBeeFlag(int location) {
-		return (this.dataTracker.get(BEE_FLAGS) & location) != 0;
+		return (this.dataTracker.get(STATUS_TRACKER) & location) != 0;
 	}
 
 	public static DefaultAttributeContainer.Builder createBeeAttributes() {
@@ -515,11 +517,11 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.getItem().isIn(ItemTags.FLOWERS);
+		return stack.isIn(ItemTags.FLOWERS);
 	}
 
 	private boolean isFlowers(BlockPos pos) {
-		return this.world.canSetBlock(pos) && this.world.getBlockState(pos).getBlock().isIn(BlockTags.FLOWERS);
+		return this.world.canSetBlock(pos) && this.world.getBlockState(pos).isIn(BlockTags.FLOWERS);
 	}
 
 	@Override
@@ -705,8 +707,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			}
 
 			int i = 8;
-			Vec3d vec3d3 = TargetFinder.findAirTarget(BeeEntity.this, 8, 7, vec3d2, (float) (Math.PI / 2), 2, 1);
-			return vec3d3 != null ? vec3d3 : TargetFinder.findGroundTarget(BeeEntity.this, 8, 4, -2, vec3d2, (float) (Math.PI / 2));
+			Vec3d vec3d3 = class_5533.method_31524(BeeEntity.this, 8, 7, vec3d2.x, vec3d2.z, (float) (Math.PI / 2), 3, 1);
+			return vec3d3 != null ? vec3d3 : class_5530.method_31504(BeeEntity.this, 8, 4, -2, vec3d2.x, vec3d2.z, (float) (Math.PI / 2));
 		}
 	}
 
@@ -820,7 +822,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 					Block block = blockState.getBlock();
 					boolean bl = false;
 					IntProperty intProperty = null;
-					if (block.isIn(BlockTags.BEE_GROWABLES)) {
+					if (blockState.isIn(BlockTags.BEE_GROWABLES)) {
 						if (block instanceof CropBlock) {
 							CropBlock cropBlock = (CropBlock)block;
 							if (!cropBlock.isMature(blockState)) {
@@ -833,7 +835,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 								bl = true;
 								intProperty = StemBlock.AGE;
 							}
-						} else if (block == Blocks.SWEET_BERRY_BUSH) {
+						} else if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
 							int j = (Integer)blockState.get(SweetBerryBushBlock.AGE);
 							if (j < 3) {
 								bl = true;
@@ -909,9 +911,9 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	public class MoveToHiveGoal extends BeeEntity.NotAngryGoal {
 		private int ticks = BeeEntity.this.world.random.nextInt(10);
-		private List<BlockPos> possibleHives = Lists.<BlockPos>newArrayList();
+		private final List<BlockPos> possibleHives = Lists.<BlockPos>newArrayList();
 		@Nullable
-		private Path path = null;
+		private Path path;
 		private int ticksUntilLost;
 
 		MoveToHiveGoal() {
@@ -1050,11 +1052,11 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 				return blockState.isIn(BlockTags.SMALL_FLOWERS);
 			}
 		};
-		private int pollinationTicks = 0;
-		private int lastPollinationTick = 0;
+		private int pollinationTicks;
+		private int lastPollinationTick;
 		private boolean running;
 		private Vec3d nextTarget;
-		private int ticks = 0;
+		private int ticks;
 
 		PollinateGoal() {
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
@@ -1068,8 +1070,6 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 				return false;
 			} else if (BeeEntity.this.world.isRaining()) {
 				return false;
-			} else if (BeeEntity.this.random.nextFloat() < 0.7F) {
-				return false;
 			} else {
 				Optional<BlockPos> optional = this.getFlower();
 				if (optional.isPresent()) {
@@ -1080,6 +1080,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 						);
 					return true;
 				} else {
+					BeeEntity.this.ticksUntilCanPollinate = MathHelper.nextInt(BeeEntity.this.random, 20, 60);
 					return false;
 				}
 			}

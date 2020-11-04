@@ -31,7 +31,9 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnGroup;
@@ -46,9 +48,9 @@ import net.minecraft.util.MetricsData;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
@@ -177,7 +179,7 @@ public class DebugHud extends DrawableHelper {
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
-				this.client.world.getDebugString(),
+				this.client.world.asString(),
 				"",
 				String.format("Chunk-relative: %d %d %d", blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15)
 			);
@@ -224,7 +226,7 @@ public class DebugHud extends DrawableHelper {
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
-				this.client.world.getDebugString()
+				this.client.world.asString()
 			);
 			String string3 = this.getServerWorldDebugString();
 			if (string3 != null) {
@@ -245,9 +247,9 @@ public class DebugHud extends DrawableHelper {
 					blockPos.getX() & 15,
 					blockPos.getY() & 15,
 					blockPos.getZ() & 15,
-					blockPos.getX() >> 4,
-					blockPos.getY() >> 4,
-					blockPos.getZ() >> 4
+					ChunkSectionPos.getSectionCoord(blockPos.getX()),
+					ChunkSectionPos.getSectionCoord(blockPos.getY()),
+					ChunkSectionPos.getSectionCoord(blockPos.getZ())
 				)
 			);
 			list.add(
@@ -304,7 +306,7 @@ public class DebugHud extends DrawableHelper {
 						}
 
 						list.add(stringBuilder.toString());
-						if (blockPos.getY() >= 0 && blockPos.getY() < 256) {
+						if (blockPos.getY() >= this.client.world.getBottomHeightLimit() && blockPos.getY() < this.client.world.getTopHeightLimit()) {
 							list.add("Biome: " + this.client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(this.client.world.getBiome(blockPos)));
 							long l = 0L;
 							float h = 0.0F;
@@ -370,7 +372,7 @@ public class DebugHud extends DrawableHelper {
 	@Nullable
 	private String getServerWorldDebugString() {
 		ServerWorld serverWorld = this.getServerWorld();
-		return serverWorld != null ? serverWorld.getDebugString() : null;
+		return serverWorld != null ? serverWorld.method_31419() : null;
 	}
 
 	private World getWorld() {
@@ -512,7 +514,7 @@ public class DebugHud extends DrawableHelper {
 		RenderSystem.enableBlend();
 		RenderSystem.disableTexture();
 		RenderSystem.defaultBlendFunc();
-		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
 		for (Matrix4f matrix4f = AffineTransformation.identity().getMatrix(); k != j; k = metricsData.wrapIndex(k + 1)) {
 			int t = metricsData.method_15248(ls[k], showFps ? 30 : 60, showFps ? 60 : 20);

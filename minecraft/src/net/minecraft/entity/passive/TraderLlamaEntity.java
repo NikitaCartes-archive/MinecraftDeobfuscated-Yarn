@@ -14,7 +14,7 @@ import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -38,16 +38,16 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("DespawnDelay", this.despawnDelay);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("DespawnDelay", this.despawnDelay);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("DespawnDelay", 99)) {
-			this.despawnDelay = nbt.getInt("DespawnDelay");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("DespawnDelay", 99)) {
+			this.despawnDelay = tag.getInt("DespawnDelay");
 		}
 	}
 
@@ -79,7 +79,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 			this.despawnDelay = this.heldByTrader() ? ((WanderingTraderEntity)this.getHoldingEntity()).getDespawnDelay() - 1 : this.despawnDelay - 1;
 			if (this.despawnDelay <= 0) {
 				this.detachLeash(true, false);
-				this.remove();
+				this.discard();
 			}
 		}
 	}
@@ -99,7 +99,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason == SpawnReason.EVENT) {
 			this.setBreedingAge(0);
@@ -109,7 +109,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 			entityData = new PassiveEntity.PassiveData(false);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public class DefendTraderGoal extends TrackTargetGoal {

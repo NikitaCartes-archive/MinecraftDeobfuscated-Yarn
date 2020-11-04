@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.class_5532;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 
@@ -14,7 +14,7 @@ public class WanderAroundGoal extends Goal {
 	protected final double speed;
 	protected int chance;
 	protected boolean ignoringChance;
-	private boolean field_24463;
+	private final boolean field_24463;
 
 	public WanderAroundGoal(PathAwareEntity mob, double speed) {
 		this(mob, speed, 120);
@@ -62,7 +62,7 @@ public class WanderAroundGoal extends Goal {
 
 	@Nullable
 	protected Vec3d getWanderTarget() {
-		return TargetFinder.findTarget(this.mob, 10, 7);
+		return class_5532.method_31510(this.mob, 10, 7);
 	}
 
 	@Override

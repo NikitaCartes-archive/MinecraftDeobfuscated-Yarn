@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
@@ -31,17 +30,14 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 		BlockPos blockPos = context.<PosArgument>getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
 		if (!context.getSource().getWorld().isChunkLoaded(blockPos)) {
 			throw UNLOADED_EXCEPTION.create();
+		} else if (!context.getSource().getWorld().isInBuildLimit(blockPos)) {
+			throw OUT_OF_WORLD_EXCEPTION.create();
 		} else {
-			context.getSource().getWorld();
-			if (!ServerWorld.isInBuildLimit(blockPos)) {
-				throw OUT_OF_WORLD_EXCEPTION.create();
-			} else {
-				return blockPos;
-			}
+			return blockPos;
 		}
 	}
 
-	public static BlockPos getBlockPos(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+	public static BlockPos getBlockPos(CommandContext<ServerCommandSource> context, String name) {
 		return context.<PosArgument>getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
 	}
 

@@ -28,14 +28,14 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		for (int i = 0; i < craftingInventory.size(); i++) {
 			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem() == Blocks.BROWN_MUSHROOM.asItem() && !bl3) {
+				if (itemStack.isOf(Blocks.BROWN_MUSHROOM.asItem()) && !bl3) {
 					bl3 = true;
-				} else if (itemStack.getItem() == Blocks.RED_MUSHROOM.asItem() && !bl2) {
+				} else if (itemStack.isOf(Blocks.RED_MUSHROOM.asItem()) && !bl2) {
 					bl2 = true;
-				} else if (itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS) && !bl) {
+				} else if (itemStack.isIn(ItemTags.SMALL_FLOWERS) && !bl) {
 					bl = true;
 				} else {
-					if (itemStack.getItem() != Items.BOWL || bl4) {
+					if (!itemStack.isOf(Items.BOWL) || bl4) {
 						return false;
 					}
 
@@ -52,7 +52,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 
 		for (int i = 0; i < craftingInventory.size(); i++) {
 			ItemStack itemStack2 = craftingInventory.getStack(i);
-			if (!itemStack2.isEmpty() && itemStack2.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
+			if (!itemStack2.isEmpty() && itemStack2.isIn(ItemTags.SMALL_FLOWERS)) {
 				itemStack = itemStack2;
 				break;
 			}

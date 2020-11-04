@@ -2,20 +2,27 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5599;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.LargeTropicalFishEntityModel;
 import net.minecraft.client.render.entity.model.SmallTropicalFishEntityModel;
+import net.minecraft.client.render.entity.model.TintableCompositeModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.TropicalFishEntity;
 
 @Environment(EnvType.CLIENT)
-public class TropicalFishColorFeatureRenderer extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
-	private final SmallTropicalFishEntityModel<TropicalFishEntity> smallModel = new SmallTropicalFishEntityModel<>(0.008F);
-	private final LargeTropicalFishEntityModel<TropicalFishEntity> largeModel = new LargeTropicalFishEntityModel<>(0.008F);
+public class TropicalFishColorFeatureRenderer extends FeatureRenderer<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> {
+	private final SmallTropicalFishEntityModel<TropicalFishEntity> smallModel;
+	private final LargeTropicalFishEntityModel<TropicalFishEntity> largeModel;
 
-	public TropicalFishColorFeatureRenderer(FeatureRendererContext<TropicalFishEntity, EntityModel<TropicalFishEntity>> featureRendererContext) {
+	public TropicalFishColorFeatureRenderer(
+		FeatureRendererContext<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> featureRendererContext, class_5599 arg
+	) {
 		super(featureRendererContext);
+		this.smallModel = new SmallTropicalFishEntityModel<>(arg.method_32072(EntityModelLayers.TROPICAL_FISH_SMALL_PATTERN));
+		this.largeModel = new LargeTropicalFishEntityModel<>(arg.method_32072(EntityModelLayers.TROPICAL_FISH_LARGE_PATTERN));
 	}
 
 	public void render(

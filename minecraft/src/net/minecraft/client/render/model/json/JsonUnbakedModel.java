@@ -167,7 +167,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			}
 
 			if (unbakedModel == null) {
-				jsonUnbakedModel.parentId = ModelLoader.MISSING_ID;
+				jsonUnbakedModel.parentId = ModelLoader.MISSING;
 				unbakedModel = (UnbakedModel)unbakedModelGetter.apply(jsonUnbakedModel.parentId);
 			}
 

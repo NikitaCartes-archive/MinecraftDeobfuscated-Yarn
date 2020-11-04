@@ -12,7 +12,7 @@ import net.minecraft.item.FireworkItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
@@ -97,7 +97,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack craft(CraftingInventory craftingInventory) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_STAR);
-		NbtCompound nbtCompound = itemStack.getOrCreateSubTag("Explosion");
+		CompoundTag compoundTag = itemStack.getOrCreateSubTag("Explosion");
 		FireworkItem.Type type = FireworkItem.Type.SMALL_BALL;
 		List<Integer> list = Lists.<Integer>newArrayList();
 
@@ -107,17 +107,17 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 				if (TYPE_MODIFIER.test(itemStack2)) {
 					type = (FireworkItem.Type)TYPE_MODIFIER_MAP.get(itemStack2.getItem());
 				} else if (FLICKER_MODIFIER.test(itemStack2)) {
-					nbtCompound.putBoolean("Flicker", true);
+					compoundTag.putBoolean("Flicker", true);
 				} else if (TRAIL_MODIFIER.test(itemStack2)) {
-					nbtCompound.putBoolean("Trail", true);
+					compoundTag.putBoolean("Trail", true);
 				} else if (itemStack2.getItem() instanceof DyeItem) {
 					list.add(((DyeItem)itemStack2.getItem()).getColor().getFireworkColor());
 				}
 			}
 		}
 
-		nbtCompound.putIntArray("Colors", list);
-		nbtCompound.putByte("Type", (byte)type.getId());
+		compoundTag.putIntArray("Colors", list);
+		compoundTag.putByte("Type", (byte)type.getId());
 		return itemStack;
 	}
 

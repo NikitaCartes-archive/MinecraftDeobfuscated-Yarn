@@ -14,6 +14,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.Window;
 import org.apache.logging.log4j.LogManager;
@@ -138,7 +139,7 @@ public class GLX {
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		GL11.glLineWidth(4.0F);
-		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR);
 		if (drawX) {
 			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)size, 0.0, 0.0).color(0, 0, 0, 255).next();
@@ -156,7 +157,7 @@ public class GLX {
 
 		tessellator.draw();
 		GL11.glLineWidth(2.0F);
-		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR);
 		if (drawX) {
 			bufferBuilder.vertex(0.0, 0.0, 0.0).color(255, 0, 0, 255).next();
 			bufferBuilder.vertex((double)size, 0.0, 0.0).color(255, 0, 0, 255).next();

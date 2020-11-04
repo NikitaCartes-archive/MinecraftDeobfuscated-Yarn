@@ -25,7 +25,7 @@ import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
@@ -90,15 +90,15 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putBoolean("FromBucket", this.isFromBucket());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("FromBucket", this.isFromBucket());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setFromBucket(nbt.getBoolean("FromBucket"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setFromBucket(tag.getBoolean("FromBucket"));
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	@Override
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.WATER_BUCKET && this.isAlive()) {
+		if (itemStack.isOf(Items.WATER_BUCKET) && this.isAlive()) {
 			this.playSound(SoundEvents.ITEM_BUCKET_FILL_FISH, 1.0F, 1.0F);
 			itemStack.decrement(1);
 			ItemStack itemStack2 = this.getFishBucketItem();
@@ -156,11 +156,11 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 			if (itemStack.isEmpty()) {
 				player.setStackInHand(hand, itemStack2);
-			} else if (!player.inventory.insertStack(itemStack2)) {
+			} else if (!player.getInventory().insertStack(itemStack2)) {
 				player.dropItem(itemStack2, false);
 			}
 
-			this.remove();
+			this.discard();
 			return ActionResult.success(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
@@ -217,7 +217,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 				if (d != 0.0 || g != 0.0) {
 					float i = (float)(MathHelper.atan2(g, d) * 180.0F / (float)Math.PI) - 90.0F;
-					this.fish.yaw = this.wrapDegrees(this.fish.yaw, i, 90.0F);
+					this.fish.yaw = this.changeAngle(this.fish.yaw, i, 90.0F);
 					this.fish.bodyYaw = this.fish.yaw;
 				}
 			} else {

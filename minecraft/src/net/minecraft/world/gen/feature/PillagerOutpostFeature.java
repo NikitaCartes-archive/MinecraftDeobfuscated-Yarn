@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -35,8 +36,8 @@ public class PillagerOutpostFeature extends JigsawFeature {
 		ChunkPos chunkPos,
 		StructurePoolFeatureConfig structurePoolFeatureConfig
 	) {
-		int k = i >> 4;
-		int m = j >> 4;
+		int k = ChunkSectionPos.getSectionCoord(i);
+		int m = ChunkSectionPos.getSectionCoord(j);
 		chunkRandom.setSeed((long)(k ^ m << 4) ^ l);
 		chunkRandom.nextInt();
 		return chunkRandom.nextInt(5) != 0 ? false : !this.method_30845(chunkGenerator, l, chunkRandom, i, j);

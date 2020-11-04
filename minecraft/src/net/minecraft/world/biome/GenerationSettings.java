@@ -39,18 +39,18 @@ public class GenerationSettings {
 					ConfiguredSurfaceBuilder.REGISTRY_CODEC.fieldOf("surface_builder").forGetter(generationSettings -> generationSettings.surfaceBuilder),
 					Codec.simpleMap(
 							GenerationStep.Carver.CODEC,
-							ConfiguredCarver.field_26755.promotePartial(Util.method_29188("Carver: ", LOGGER::error)),
-							StringIdentifiable.method_28142(GenerationStep.Carver.values())
+							ConfiguredCarver.field_26755.promotePartial(Util.addPrefix("Carver: ", LOGGER::error)),
+							StringIdentifiable.toKeyable(GenerationStep.Carver.values())
 						)
 						.fieldOf("carvers")
 						.forGetter(generationSettings -> generationSettings.carvers),
 					ConfiguredFeature.field_26756
-						.promotePartial(Util.method_29188("Feature: ", LOGGER::error))
+						.promotePartial(Util.addPrefix("Feature: ", LOGGER::error))
 						.listOf()
 						.fieldOf("features")
 						.forGetter(generationSettings -> generationSettings.features),
 					ConfiguredStructureFeature.field_26757
-						.promotePartial(Util.method_29188("Structure start: ", LOGGER::error))
+						.promotePartial(Util.addPrefix("Structure start: ", LOGGER::error))
 						.fieldOf("starts")
 						.forGetter(generationSettings -> generationSettings.structureFeatures)
 				)

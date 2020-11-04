@@ -23,7 +23,7 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		WorldView world,
+		WorldView worldView,
 		BlockPos pos,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,

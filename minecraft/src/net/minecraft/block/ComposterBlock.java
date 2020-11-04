@@ -37,13 +37,13 @@ import net.minecraft.world.WorldAccess;
 public class ComposterBlock extends Block implements InventoryProvider {
 	public static final IntProperty LEVEL = Properties.LEVEL_8;
 	public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<>();
-	private static final VoxelShape RAYCAST_SHAPE = VoxelShapes.fullCube();
+	private static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
 	private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.make(
 		new VoxelShape[9],
 		voxelShapes -> {
 			for (int i = 0; i < 8; i++) {
 				voxelShapes[i] = VoxelShapes.combineAndSimplify(
-					RAYCAST_SHAPE, Block.createCuboidShape(2.0, (double)Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
+					RAY_TRACE_SHAPE, Block.createCuboidShape(2.0, (double)Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
 				);
 			}
 
@@ -189,7 +189,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	@Override
 	public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
-		return RAYCAST_SHAPE;
+		return RAY_TRACE_SHAPE;
 	}
 
 	@Override
@@ -212,7 +212,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			if (i < 7 && !world.isClient) {
 				BlockState blockState = addToComposter(state, world, pos, itemStack);
 				world.syncWorldEvent(1500, pos, state != blockState ? 1 : 0);
-				if (!player.abilities.creativeMode) {
+				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 			}
@@ -410,7 +410,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 		@Override
 		public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-			return !this.dirty && dir == Direction.DOWN && stack.getItem() == Items.BONE_MEAL;
+			return !this.dirty && dir == Direction.DOWN && stack.isOf(Items.BONE_MEAL);
 		}
 
 		@Override

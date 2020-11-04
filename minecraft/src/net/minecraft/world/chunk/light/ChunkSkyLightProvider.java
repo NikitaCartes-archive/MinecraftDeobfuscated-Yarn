@@ -23,69 +23,39 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 
 	@Override
 	protected int getPropagatedLevel(long sourceId, long targetId, int level) {
-		if (targetId == Long.MAX_VALUE) {
+		if (targetId == Long.MAX_VALUE || sourceId == Long.MAX_VALUE) {
 			return 15;
+		} else if (level >= 15) {
+			return level;
 		} else {
-			if (sourceId == Long.MAX_VALUE) {
-				if (!this.lightStorage.isTopmostBlock(targetId)) {
-					return 15;
-				}
-
-				level = 0;
-			}
-
-			if (level >= 15) {
-				return level;
+			MutableInt mutableInt = new MutableInt();
+			BlockState blockState = this.getStateForLighting(targetId, mutableInt);
+			if (mutableInt.getValue() >= 15) {
+				return 15;
 			} else {
-				MutableInt mutableInt = new MutableInt();
-				BlockState blockState = this.getStateForLighting(targetId, mutableInt);
-				if (mutableInt.getValue() >= 15) {
-					return 15;
+				int i = BlockPos.unpackLongX(sourceId);
+				int j = BlockPos.unpackLongY(sourceId);
+				int k = BlockPos.unpackLongZ(sourceId);
+				int l = BlockPos.unpackLongX(targetId);
+				int m = BlockPos.unpackLongY(targetId);
+				int n = BlockPos.unpackLongZ(targetId);
+				int o = Integer.signum(l - i);
+				int p = Integer.signum(m - j);
+				int q = Integer.signum(n - k);
+				Direction direction = Direction.fromVector(o, p, q);
+				if (direction == null) {
+					throw new IllegalStateException(String.format("Light was spread in illegal direction %d, %d, %d", o, p, q));
 				} else {
-					int i = BlockPos.unpackLongX(sourceId);
-					int j = BlockPos.unpackLongY(sourceId);
-					int k = BlockPos.unpackLongZ(sourceId);
-					int l = BlockPos.unpackLongX(targetId);
-					int m = BlockPos.unpackLongY(targetId);
-					int n = BlockPos.unpackLongZ(targetId);
-					boolean bl = i == l && k == n;
-					int o = Integer.signum(l - i);
-					int p = Integer.signum(m - j);
-					int q = Integer.signum(n - k);
-					Direction direction;
-					if (sourceId == Long.MAX_VALUE) {
-						direction = Direction.DOWN;
-					} else {
-						direction = Direction.fromVector(o, p, q);
-					}
-
 					BlockState blockState2 = this.getStateForLighting(sourceId, null);
-					if (direction != null) {
-						VoxelShape voxelShape = this.getOpaqueShape(blockState2, sourceId, direction);
-						VoxelShape voxelShape2 = this.getOpaqueShape(blockState, targetId, direction.getOpposite());
-						if (VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2)) {
-							return 15;
-						}
+					VoxelShape voxelShape = this.getOpaqueShape(blockState2, sourceId, direction);
+					VoxelShape voxelShape2 = this.getOpaqueShape(blockState, targetId, direction.getOpposite());
+					if (VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2)) {
+						return 15;
 					} else {
-						VoxelShape voxelShape = this.getOpaqueShape(blockState2, sourceId, Direction.DOWN);
-						if (VoxelShapes.unionCoversFullCube(voxelShape, VoxelShapes.empty())) {
-							return 15;
-						}
-
-						int r = bl ? -1 : 0;
-						Direction direction2 = Direction.fromVector(o, r, q);
-						if (direction2 == null) {
-							return 15;
-						}
-
-						VoxelShape voxelShape3 = this.getOpaqueShape(blockState, targetId, direction2.getOpposite());
-						if (VoxelShapes.unionCoversFullCube(VoxelShapes.empty(), voxelShape3)) {
-							return 15;
-						}
+						boolean bl = i == l && k == n;
+						boolean bl2 = bl && j > m;
+						return bl2 && level == 0 && mutableInt.getValue() == 0 ? 0 : level + Math.max(1, mutableInt.getValue());
 					}
-
-					boolean bl2 = sourceId == Long.MAX_VALUE || bl && j > m;
-					return bl2 && level == 0 && mutableInt.getValue() == 0 ? 0 : level + Math.max(1, mutableInt.getValue());
 				}
 			}
 		}
@@ -134,7 +104,8 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 				}
 
 				if (this.lightStorage.hasSection(u)) {
-					this.propagateLevel(id, t, level, decrease);
+					long v = BlockPos.add(id, 0, -s, 0);
+					this.propagateLevel(v, t, level, decrease);
 				}
 			} while (++s > m * 16);
 		}
@@ -143,65 +114,38 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 	@Override
 	protected int recalculateLevel(long id, long excludedId, int maxLevel) {
 		int i = maxLevel;
-		if (Long.MAX_VALUE != excludedId) {
-			int j = this.getPropagatedLevel(Long.MAX_VALUE, id, 0);
-			if (maxLevel > j) {
-				i = j;
-			}
-
-			if (i == 0) {
-				return i;
-			}
-		}
-
 		long l = ChunkSectionPos.fromBlockPos(id);
 		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getLightSection(l, true);
 
 		for (Direction direction : DIRECTIONS) {
 			long m = BlockPos.offset(id, direction);
-			long n = ChunkSectionPos.fromBlockPos(m);
-			ChunkNibbleArray chunkNibbleArray2;
-			if (l == n) {
-				chunkNibbleArray2 = chunkNibbleArray;
-			} else {
-				chunkNibbleArray2 = this.lightStorage.getLightSection(n, true);
-			}
-
-			if (chunkNibbleArray2 != null) {
-				if (m != excludedId) {
-					int k = this.getPropagatedLevel(m, id, this.getCurrentLevelFromSection(chunkNibbleArray2, m));
-					if (i > k) {
-						i = k;
-					}
-
-					if (i == 0) {
-						return i;
-					}
-				}
-			} else if (direction != Direction.DOWN) {
-				for (m = BlockPos.removeChunkSectionLocalY(m);
-					!this.lightStorage.hasSection(n) && !this.lightStorage.isAtOrAboveTopmostSection(n);
-					m = BlockPos.add(m, 0, 16, 0)
-				) {
-					n = ChunkSectionPos.offset(n, Direction.UP);
+			if (m != excludedId) {
+				long n = ChunkSectionPos.fromBlockPos(m);
+				ChunkNibbleArray chunkNibbleArray2;
+				if (l == n) {
+					chunkNibbleArray2 = chunkNibbleArray;
+				} else {
+					chunkNibbleArray2 = this.lightStorage.getLightSection(n, true);
 				}
 
-				ChunkNibbleArray chunkNibbleArray3 = this.lightStorage.getLightSection(n, true);
-				if (m != excludedId) {
-					int o;
-					if (chunkNibbleArray3 != null) {
-						o = this.getPropagatedLevel(m, id, this.getCurrentLevelFromSection(chunkNibbleArray3, m));
-					} else {
-						o = this.lightStorage.isSectionEnabled(n) ? 0 : 15;
+				int j;
+				if (chunkNibbleArray2 != null) {
+					j = this.getCurrentLevelFromSection(chunkNibbleArray2, m);
+				} else {
+					if (direction == Direction.DOWN) {
+						continue;
 					}
 
-					if (i > o) {
-						i = o;
-					}
+					j = 15 - this.lightStorage.method_31931(m, true);
+				}
 
-					if (i == 0) {
-						return i;
-					}
+				int k = this.getPropagatedLevel(m, id, j);
+				if (i > k) {
+					i = k;
+				}
+
+				if (i == 0) {
+					return i;
 				}
 			}
 		}

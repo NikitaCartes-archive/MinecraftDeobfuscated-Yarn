@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.class_5552;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.entity.LivingEntity;
@@ -20,27 +21,28 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CommandBlock extends BlockWithEntity {
+public class CommandBlock extends BlockWithEntity implements class_5552 {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty CONDITIONAL = Properties.CONDITIONAL;
+	private final boolean field_27192;
 
-	public CommandBlock(AbstractBlock.Settings settings) {
+	public CommandBlock(AbstractBlock.Settings settings, boolean bl) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(CONDITIONAL, Boolean.valueOf(false)));
+		this.field_27192 = bl;
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		CommandBlockBlockEntity commandBlockBlockEntity = new CommandBlockBlockEntity();
-		commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		CommandBlockBlockEntity commandBlockBlockEntity = new CommandBlockBlockEntity(pos, state);
+		commandBlockBlockEntity.setAuto(this.field_27192);
 		return commandBlockBlockEntity;
 	}
 
@@ -139,8 +141,8 @@ public class CommandBlock extends BlockWithEntity {
 
 			if (!world.isClient) {
 				if (itemStack.getSubTag("BlockEntityTag") == null) {
-					commandBlockExecutor.setTrackingOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
-					commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
+					commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
+					commandBlockBlockEntity.setAuto(this.field_27192);
 				}
 
 				if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {

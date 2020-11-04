@@ -7,7 +7,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -28,7 +27,7 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 			boolean bl4 = true;
 
 			while (structureWorldAccess.isAir(mutable)) {
-				if (World.isOutOfBuildLimitVertically(mutable)) {
+				if (structureWorldAccess.isOutOfHeightLimit(mutable)) {
 					return true;
 				}
 

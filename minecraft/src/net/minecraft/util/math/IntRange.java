@@ -24,7 +24,7 @@ public class IntRange {
 	}
 
 	public int choose(Random random) {
-		return this.min == this.max ? this.min : random.nextInt(this.max - this.min + 1) + this.min;
+		return MathHelper.nextInt(random, this.min, this.max);
 	}
 
 	public int getMin() {

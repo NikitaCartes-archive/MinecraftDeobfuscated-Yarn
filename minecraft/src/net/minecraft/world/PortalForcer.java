@@ -2,6 +2,7 @@ package net.minecraft.world;
 
 import java.util.Comparator;
 import java.util.Optional;
+import net.minecraft.class_5459;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
@@ -24,7 +25,7 @@ public class PortalForcer {
 		this.world = world;
 	}
 
-	public Optional<PortalUtil.Rectangle> method_30483(BlockPos blockPos, boolean bl) {
+	public Optional<class_5459.class_5460> method_30483(BlockPos blockPos, boolean bl) {
 		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 		int i = bl ? 16 : 128;
 		pointOfInterestStorage.preloadChunks(this.world, blockPos, i);
@@ -42,21 +43,21 @@ public class PortalForcer {
 				BlockPos blockPosx = pointOfInterest.getPos();
 				this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPosx), 3, blockPosx);
 				BlockState blockState = this.world.getBlockState(blockPosx);
-				return PortalUtil.getLargestRectangle(
+				return class_5459.method_30574(
 					blockPosx, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, blockPosxx -> this.world.getBlockState(blockPosxx) == blockState
 				);
 			}
 		);
 	}
 
-	public Optional<PortalUtil.Rectangle> method_30482(BlockPos blockPos, Direction.Axis axis) {
+	public Optional<class_5459.class_5460> method_30482(BlockPos blockPos, Direction.Axis axis) {
 		Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, axis);
 		double d = -1.0;
 		BlockPos blockPos2 = null;
 		double e = -1.0;
 		BlockPos blockPos3 = null;
 		WorldBorder worldBorder = this.world.getWorldBorder();
-		int i = this.world.getDimensionHeight() - 1;
+		int i = this.world.getBottomHeightLimit() + this.world.getDimensionHeight() - 1;
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 
 		for (BlockPos.Mutable mutable2 : BlockPos.method_30512(blockPos, 16, Direction.EAST, Direction.SOUTH)) {
@@ -65,12 +66,12 @@ public class PortalForcer {
 			if (worldBorder.contains(mutable2) && worldBorder.contains(mutable2.move(direction, 1))) {
 				mutable2.move(direction.getOpposite(), 1);
 
-				for (int l = j; l >= 0; l--) {
+				for (int l = j; l >= this.world.getBottomHeightLimit(); l--) {
 					mutable2.setY(l);
 					if (this.world.isAir(mutable2)) {
 						int m = l;
 
-						while (l > 0 && this.world.isAir(mutable2.move(Direction.DOWN))) {
+						while (l > this.world.getBottomHeightLimit() && this.world.isAir(mutable2.move(Direction.DOWN))) {
 							l--;
 						}
 
@@ -103,7 +104,10 @@ public class PortalForcer {
 		}
 
 		if (d == -1.0) {
-			blockPos2 = new BlockPos(blockPos.getX(), MathHelper.clamp(blockPos.getY(), 70, this.world.getDimensionHeight() - 10), blockPos.getZ()).toImmutable();
+			blockPos2 = new BlockPos(
+					blockPos.getX(), MathHelper.clamp(blockPos.getY(), 70, this.world.getBottomHeightLimit() + this.world.getDimensionHeight() - 10), blockPos.getZ()
+				)
+				.toImmutable();
 			Direction direction2 = direction.rotateYClockwise();
 			if (!worldBorder.contains(blockPos2)) {
 				return Optional.empty();
@@ -138,7 +142,7 @@ public class PortalForcer {
 			}
 		}
 
-		return Optional.of(new PortalUtil.Rectangle(blockPos2.toImmutable(), 2, 3));
+		return Optional.of(new class_5459.class_5460(blockPos2.toImmutable(), 2, 3));
 	}
 
 	private boolean method_30481(BlockPos blockPos, BlockPos.Mutable mutable, Direction direction, int i) {

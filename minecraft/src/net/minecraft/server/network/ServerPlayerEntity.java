@@ -11,6 +11,7 @@ import java.util.OptionalInt;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.class_5459;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -20,7 +21,7 @@ import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.client.option.ChatVisibility;
+import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -37,12 +38,11 @@ import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
@@ -77,6 +77,7 @@ import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
@@ -121,7 +122,6 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.PortalUtil;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
@@ -160,15 +160,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private boolean disconnected;
 	@Nullable
 	private Vec3d enteredNetherPos;
-	/**
-	 * A chunk section position indicating where the player's client is currently
-	 * watching chunks from. Used referentially for the game to update the chunks
-	 * watched by this player.
-	 * 
-	 * @see #getWatchedSection()
-	 * @see #setWatchedSection(ChunkSectionPos)
-	 */
-	private ChunkSectionPos watchedSection = ChunkSectionPos.from(0, 0, 0);
+	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
 	private RegistryKey<World> spawnPointDimension = World.OVERWORLD;
 	@Nullable
 	private BlockPos spawnPointPosition;
@@ -228,7 +220,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
 
 			while (!world.isSpaceEmpty(this) && this.getY() < 255.0) {
-				this.setPosition(this.getX(), this.getY() + 1.0, this.getZ());
+				this.updatePosition(this.getX(), this.getY() + 1.0, this.getZ());
 			}
 		}
 	}
@@ -238,41 +230,41 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("playerGameType", 99)) {
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("playerGameType", 99)) {
 			if (this.getServer().shouldForceGameMode()) {
 				this.interactionManager.setGameMode(this.getServer().getDefaultGameMode(), GameMode.NOT_SET);
 			} else {
 				this.interactionManager
 					.setGameMode(
-						GameMode.byId(nbt.getInt("playerGameType")),
-						nbt.contains("previousPlayerGameType", 3) ? GameMode.byId(nbt.getInt("previousPlayerGameType")) : GameMode.NOT_SET
+						GameMode.byId(tag.getInt("playerGameType")),
+						tag.contains("previousPlayerGameType", 3) ? GameMode.byId(tag.getInt("previousPlayerGameType")) : GameMode.NOT_SET
 					);
 			}
 		}
 
-		if (nbt.contains("enteredNetherPosition", 10)) {
-			NbtCompound nbtCompound = nbt.getCompound("enteredNetherPosition");
-			this.enteredNetherPos = new Vec3d(nbtCompound.getDouble("x"), nbtCompound.getDouble("y"), nbtCompound.getDouble("z"));
+		if (tag.contains("enteredNetherPosition", 10)) {
+			CompoundTag compoundTag = tag.getCompound("enteredNetherPosition");
+			this.enteredNetherPos = new Vec3d(compoundTag.getDouble("x"), compoundTag.getDouble("y"), compoundTag.getDouble("z"));
 		}
 
-		this.seenCredits = nbt.getBoolean("seenCredits");
-		if (nbt.contains("recipeBook", 10)) {
-			this.recipeBook.readNbt(nbt.getCompound("recipeBook"), this.server.getRecipeManager());
+		this.seenCredits = tag.getBoolean("seenCredits");
+		if (tag.contains("recipeBook", 10)) {
+			this.recipeBook.fromTag(tag.getCompound("recipeBook"), this.server.getRecipeManager());
 		}
 
 		if (this.isSleeping()) {
 			this.wakeUp();
 		}
 
-		if (nbt.contains("SpawnX", 99) && nbt.contains("SpawnY", 99) && nbt.contains("SpawnZ", 99)) {
-			this.spawnPointPosition = new BlockPos(nbt.getInt("SpawnX"), nbt.getInt("SpawnY"), nbt.getInt("SpawnZ"));
-			this.spawnPointSet = nbt.getBoolean("SpawnForced");
-			this.spawnAngle = nbt.getFloat("SpawnAngle");
-			if (nbt.contains("SpawnDimension")) {
+		if (tag.contains("SpawnX", 99) && tag.contains("SpawnY", 99) && tag.contains("SpawnZ", 99)) {
+			this.spawnPointPosition = new BlockPos(tag.getInt("SpawnX"), tag.getInt("SpawnY"), tag.getInt("SpawnZ"));
+			this.spawnPointSet = tag.getBoolean("SpawnForced");
+			this.spawnAngle = tag.getFloat("SpawnAngle");
+			if (tag.contains("SpawnDimension")) {
 				this.spawnPointDimension = (RegistryKey<World>)World.CODEC
-					.parse(NbtOps.INSTANCE, nbt.get("SpawnDimension"))
+					.parse(NbtOps.INSTANCE, tag.get("SpawnDimension"))
 					.resultOrPartial(LOGGER::error)
 					.orElse(World.OVERWORLD);
 			}
@@ -280,49 +272,49 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("playerGameType", this.interactionManager.getGameMode().getId());
-		nbt.putInt("previousPlayerGameType", this.interactionManager.getPreviousGameMode().getId());
-		nbt.putBoolean("seenCredits", this.seenCredits);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("playerGameType", this.interactionManager.getGameMode().getId());
+		tag.putInt("previousPlayerGameType", this.interactionManager.getPreviousGameMode().getId());
+		tag.putBoolean("seenCredits", this.seenCredits);
 		if (this.enteredNetherPos != null) {
-			NbtCompound nbtCompound = new NbtCompound();
-			nbtCompound.putDouble("x", this.enteredNetherPos.x);
-			nbtCompound.putDouble("y", this.enteredNetherPos.y);
-			nbtCompound.putDouble("z", this.enteredNetherPos.z);
-			nbt.put("enteredNetherPosition", nbtCompound);
+			CompoundTag compoundTag = new CompoundTag();
+			compoundTag.putDouble("x", this.enteredNetherPos.x);
+			compoundTag.putDouble("y", this.enteredNetherPos.y);
+			compoundTag.putDouble("z", this.enteredNetherPos.z);
+			tag.put("enteredNetherPosition", compoundTag);
 		}
 
 		Entity entity = this.getRootVehicle();
 		Entity entity2 = this.getVehicle();
 		if (entity2 != null && entity != this && entity.hasPlayerRider()) {
-			NbtCompound nbtCompound2 = new NbtCompound();
-			NbtCompound nbtCompound3 = new NbtCompound();
-			entity.saveNbt(nbtCompound3);
-			nbtCompound2.putUuid("Attach", entity2.getUuid());
-			nbtCompound2.put("Entity", nbtCompound3);
-			nbt.put("RootVehicle", nbtCompound2);
+			CompoundTag compoundTag2 = new CompoundTag();
+			CompoundTag compoundTag3 = new CompoundTag();
+			entity.saveToTag(compoundTag3);
+			compoundTag2.putUuid("Attach", entity2.getUuid());
+			compoundTag2.put("Entity", compoundTag3);
+			tag.put("RootVehicle", compoundTag2);
 		}
 
-		nbt.put("recipeBook", this.recipeBook.toNbt());
-		nbt.putString("Dimension", this.world.getRegistryKey().getValue().toString());
+		tag.put("recipeBook", this.recipeBook.toTag());
+		tag.putString("Dimension", this.world.getRegistryKey().getValue().toString());
 		if (this.spawnPointPosition != null) {
-			nbt.putInt("SpawnX", this.spawnPointPosition.getX());
-			nbt.putInt("SpawnY", this.spawnPointPosition.getY());
-			nbt.putInt("SpawnZ", this.spawnPointPosition.getZ());
-			nbt.putBoolean("SpawnForced", this.spawnPointSet);
-			nbt.putFloat("SpawnAngle", this.spawnAngle);
+			tag.putInt("SpawnX", this.spawnPointPosition.getX());
+			tag.putInt("SpawnY", this.spawnPointPosition.getY());
+			tag.putInt("SpawnZ", this.spawnPointPosition.getZ());
+			tag.putBoolean("SpawnForced", this.spawnPointSet);
+			tag.putFloat("SpawnAngle", this.spawnAngle);
 			Identifier.CODEC
 				.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue())
 				.resultOrPartial(LOGGER::error)
-				.ifPresent(nbtElement -> nbt.put("SpawnDimension", nbtElement));
+				.ifPresent(tagx -> tag.put("SpawnDimension", tagx));
 		}
 	}
 
-	public void setExperiencePoints(int points) {
+	public void setExperiencePoints(int i) {
 		float f = (float)this.getNextLevelExperience();
 		float g = (f - 1.0F) / f;
-		this.experienceProgress = MathHelper.clamp((float)points / f, 0.0F, g);
+		this.experienceProgress = MathHelper.clamp((float)i / f, 0.0F, g);
 		this.syncedExperience = -1;
 	}
 
@@ -401,7 +393,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		if (entity != this) {
 			if (entity.isAlive()) {
 				this.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
-				this.getServerWorld().getChunkManager().updatePosition(this);
+				this.getServerWorld().getChunkManager().updateCameraPosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
 				}
@@ -424,8 +416,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				super.tick();
 			}
 
-			for (int i = 0; i < this.inventory.size(); i++) {
-				ItemStack itemStack = this.inventory.getStack(i);
+			for (int i = 0; i < this.getInventory().size(); i++) {
+				ItemStack itemStack = this.getInventory().getStack(i);
 				if (itemStack.getItem().isNetworkSynced()) {
 					Packet<?> packet = ((NetworkSyncedItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, this);
 					if (packet != null) {
@@ -553,7 +545,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private void forgiveMobAnger() {
 		Box box = new Box(this.getBlockPos()).expand(32.0, 10.0, 32.0);
 		this.world
-			.getEntitiesIncludingUngeneratedChunks(MobEntity.class, box)
+			.getEntitiesByClass(MobEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR)
 			.stream()
 			.filter(mobEntity -> mobEntity instanceof Angerable)
 			.forEach(mobEntity -> ((Angerable)mobEntity).forgive(this));
@@ -648,7 +640,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		if (registryKey == World.END && destination.getRegistryKey() == World.OVERWORLD) {
 			this.detach();
-			this.getServerWorld().removePlayer(this);
+			this.getServerWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
 			if (!this.notInAnyWorld) {
 				this.notInAnyWorld = true;
 				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, this.seenCredits ? 0.0F : 1.0F));
@@ -674,8 +666,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.sendCommandTree(this);
-			serverWorld.removePlayer(this);
-			this.removed = false;
+			serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
+			this.unsetRemoved();
 			TeleportTarget teleportTarget = this.getTeleportTarget(destination);
 			if (teleportTarget != null) {
 				serverWorld.getProfiler().push("moving");
@@ -694,7 +686,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				serverWorld.getProfiler().pop();
 				this.worldChanged(serverWorld);
 				this.interactionManager.setWorld(destination);
-				this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
+				this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
 				playerManager.sendWorldInfo(this, destination);
 				playerManager.sendPlayerStatus(this);
 
@@ -726,13 +718,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	protected Optional<PortalUtil.Rectangle> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
-		Optional<PortalUtil.Rectangle> optional = super.method_30330(serverWorld, blockPos, bl);
+	protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
+		Optional<class_5459.class_5460> optional = super.method_30330(serverWorld, blockPos, bl);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
-			Direction.Axis axis = (Direction.Axis)this.world.getBlockState(this.lastNetherPortalPosition).getOrEmpty(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
-			Optional<PortalUtil.Rectangle> optional2 = serverWorld.getPortalForcer().method_30482(blockPos, axis);
+			Direction.Axis axis = (Direction.Axis)this.world.getBlockState(this.lastNetherPortalPosition).method_28500(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
+			Optional<class_5459.class_5460> optional2 = serverWorld.getPortalForcer().method_30482(blockPos, axis);
 			if (!optional2.isPresent()) {
 				LOGGER.error("Unable to create a portal, likely target out of worldborder");
 			}
@@ -878,7 +870,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return super.isInvulnerableTo(damageSource) || this.isInTeleportationState() || this.abilities.invulnerable && damageSource == DamageSource.WITHER;
+		return super.isInvulnerableTo(damageSource) || this.isInTeleportationState() || this.getAbilities().invulnerable && damageSource == DamageSource.WITHER;
 	}
 
 	@Override
@@ -919,7 +911,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			}
 
 			this.incrementScreenHandlerSyncId();
-			ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.inventory, this);
+			ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.getInventory(), this);
 			if (screenHandler == null) {
 				if (this.isSpectator()) {
 					this.sendMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
@@ -948,14 +940,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 		this.incrementScreenHandlerSyncId();
 		this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), horse.getEntityId()));
-		this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.inventory, inventory, horse);
+		this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.getInventory(), inventory, horse);
 		this.currentScreenHandler.addListener(this);
 	}
 
 	@Override
-	public void useBook(ItemStack book, Hand hand) {
-		Item item = book.getItem();
-		if (item == Items.WRITTEN_BOOK) {
+	public void openEditBookScreen(ItemStack book, Hand hand) {
+		if (book.isOf(Items.WRITTEN_BOOK)) {
 			if (WrittenBookItem.resolve(book, this.getCommandSource(), this)) {
 				this.currentScreenHandler.sendContentUpdates();
 			}
@@ -974,7 +965,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
 		if (!(handler.getSlot(slotId) instanceof CraftingResultSlot)) {
 			if (handler == this.playerScreenHandler) {
-				Criteria.INVENTORY_CHANGED.trigger(this, this.inventory, stack);
+				Criteria.INVENTORY_CHANGED.trigger(this, this.getInventory(), stack);
 			}
 
 			if (!this.skipPacketSlotUpdates) {
@@ -993,7 +984,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Override
 	public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
 		this.networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, stacks));
-		this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
+		this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.getInventory().getCursorStack()));
 	}
 
 	@Override
@@ -1009,7 +1000,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	public void updateCursorStack() {
 		if (!this.skipPacketSlotUpdates) {
-			this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
+			this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.getInventory().getCursorStack()));
 		}
 	}
 
@@ -1119,7 +1110,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	public void copyFrom(ServerPlayerEntity oldPlayer, boolean alive) {
 		if (alive) {
-			this.inventory.clone(oldPlayer.inventory);
+			this.getInventory().clone(oldPlayer.getInventory());
 			this.setHealth(oldPlayer.getHealth());
 			this.hungerManager = oldPlayer.hungerManager;
 			this.experienceLevel = oldPlayer.experienceLevel;
@@ -1128,7 +1119,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.setScore(oldPlayer.getScore());
 			this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
 		} else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
-			this.inventory.clone(oldPlayer.inventory);
+			this.getInventory().clone(oldPlayer.getInventory());
 			this.experienceLevel = oldPlayer.experienceLevel;
 			this.totalExperience = oldPlayer.totalExperience;
 			this.experienceProgress = oldPlayer.experienceProgress;
@@ -1203,7 +1194,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Override
 	public void sendAbilitiesUpdate() {
 		if (this.networkHandler != null) {
-			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
+			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
 			this.updatePotionVisibility();
 		}
 	}
@@ -1238,14 +1229,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID sender) {
-		this.sendMessage(message, MessageType.SYSTEM, sender);
+	public void sendSystemMessage(Text message, UUID senderUuid) {
+		this.sendMessage(message, MessageType.SYSTEM, senderUuid);
 	}
 
-	public void sendMessage(Text message, MessageType type, UUID sender) {
+	public void sendMessage(Text message, MessageType type, UUID senderUuid) {
 		this.networkHandler
 			.sendPacket(
-				new GameMessageS2CPacket(message, type, sender),
+				new GameMessageS2CPacket(message, type, senderUuid),
 				future -> {
 					if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM)) {
 						int i = 256;
@@ -1253,7 +1244,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 						Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
 						this.networkHandler
 							.sendPacket(
-								new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, sender)
+								new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, senderUuid)
 							);
 					}
 				}
@@ -1277,8 +1268,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		return this.clientChatVisibility;
 	}
 
-	public void sendResourcePackUrl(String url, String hash) {
-		this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(url, hash));
+	public void sendResourcePackUrl(String url, String hash, boolean required) {
+		this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(url, hash, required));
 	}
 
 	@Override
@@ -1399,8 +1390,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			this.server.getPlayerManager().sendCommandTree(this);
-			serverWorld.removePlayer(this);
-			this.removed = false;
+			serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
+			this.unsetRemoved();
 			this.refreshPositionAndAngles(x, y, z, yaw, pitch);
 			this.setWorld(targetWorld);
 			targetWorld.onPlayerTeleport(this);
@@ -1459,31 +1450,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		}
 	}
 
-	/**
-	 * Returns the chunk section position the player's client is currently watching
-	 * from. This may differ from the chunk section the player is currently in.
-	 * 
-	 * <p>This is only for chunk loading (watching) purpose. This is updated together
-	 * with entity tracking, but they are separate mechanisms.
-	 * 
-	 * @see #watchedSection
-	 * @see #setWatchedSection(ChunkSectionPos)
-	 */
-	public ChunkSectionPos getWatchedSection() {
-		return this.watchedSection;
+	public ChunkSectionPos getCameraPosition() {
+		return this.cameraPosition;
 	}
 
-	/**
-	 * Sets the chunk section position the player's client is currently watching
-	 * from. This is usually called when the player moves to a new chunk section.
-	 * 
-	 * @see #watchedSection
-	 * @see #getWatchedSection()
-	 * 
-	 * @param section the updated section position
-	 */
-	public void setWatchedSection(ChunkSectionPos section) {
-		this.watchedSection = section;
+	public void setCameraPosition(ChunkSectionPos cameraPosition) {
+		this.cameraPosition = cameraPosition;
 	}
 
 	@Override

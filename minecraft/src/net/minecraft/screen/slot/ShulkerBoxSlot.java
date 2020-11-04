@@ -1,7 +1,5 @@
 package net.minecraft.screen.slot;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 
@@ -12,6 +10,6 @@ public class ShulkerBoxSlot extends Slot {
 
 	@Override
 	public boolean canInsert(ItemStack stack) {
-		return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
+		return stack.getItem().hasStoredInventory();
 	}
 }

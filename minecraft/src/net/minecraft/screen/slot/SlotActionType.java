@@ -12,7 +12,7 @@ public enum SlotActionType {
 	/**
 	 * Exchanges items between a slot and a hotbar slot. This is usually triggered by the player pressing a 1-9 number key while hovering over a slot.
 	 * 
-	 * <p>When the action type is swap, the click data is the hotbar slot to swap with (0-8).
+	 * <p>When the action type is swap, the click data is the hotbar slot to swap with (0-8).</p>
 	 */
 	SWAP,
 	/**
@@ -22,15 +22,15 @@ public enum SlotActionType {
 	/**
 	 * Throws the item out of the inventory. This is usually triggered by the player pressing Q while hovering over a slot, or clicking outside the window.
 	 * 
-	 * <p>When the action type is throw, the click data determines whether to throw a whole stack (1) or a single item from that stack (0).
+	 * <p>When the action type is throw, the click data determines whether to throw a whole stack (1) or a single item from that stack (0).</p>
 	 */
 	THROW,
 	/**
 	 * Drags items between multiple slots. This is usually triggered by the player clicking and dragging between slots.
 	 * 
-	 * <p>This action happens in 3 stages. Stage 0 signals that the drag has begun, and stage 2 signals that the drag has ended. In between multiple stage 1s signal which slots were dragged on.
+	 * <p>This action happens in 3 stages. Stage 0 signals that the drag has begun, and stage 2 signals that the drag has ended. In between multiple stage 1s signal which slots were dragged on.</p>
 	 * 
-	 * <p>The stage is packed into the click data along with the mouse button that was clicked. See {@link net.minecraft.screen.ScreenHandler#packQuickCraftData(int, int) ScreenHandler.packQuickCraftData(int, int)} for details.
+	 * <p>The stage is packed into the click data along with the mouse button that was clicked. See {@link net.minecraft.screen.ScreenHandler#packQuickCraftData(int, int) ScreenHandler.packQuickCraftData(int, int)} for details.</p>
 	 */
 	QUICK_CRAFT,
 	/**

@@ -24,7 +24,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
@@ -92,22 +92,22 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("Size", this.getSize() - 1);
-		nbt.putBoolean("wasOnGround", this.onGroundLastTick);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("Size", this.getSize() - 1);
+		tag.putBoolean("wasOnGround", this.onGroundLastTick);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		int i = nbt.getInt("Size");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		int i = tag.getInt("Size");
 		if (i < 0) {
 			i = 0;
 		}
 
 		this.setSize(i + 1, false);
-		super.readCustomDataFromNbt(nbt);
-		this.onGroundLastTick = nbt.getBoolean("wasOnGround");
+		super.readCustomDataFromTag(tag);
+		this.onGroundLastTick = tag.getBoolean("wasOnGround");
 	}
 
 	public boolean isSmall() {
@@ -163,7 +163,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		double e = this.getY();
 		double f = this.getZ();
 		super.calculateDimensions();
-		this.setPosition(d, e, f);
+		this.updatePosition(d, e, f);
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public void remove() {
+	public void remove(Entity.RemovalReason reason) {
 		int i = this.getSize();
 		if (!this.world.isClient && i > 1 && this.isDead()) {
 			Text text = this.getCustomName();
@@ -212,7 +212,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			}
 		}
 
-		super.remove();
+		super.remove(reason);
 	}
 
 	@Override
@@ -276,7 +276,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			if (Objects.equals(world.getBiomeKey(pos), Optional.of(BiomeKeys.SWAMP))
+			if (Objects.equals(world.method_31081(pos), Optional.of(BiomeKeys.SWAMP))
 				&& pos.getY() > 50
 				&& pos.getY() < 70
 				&& random.nextFloat() < 0.5F
@@ -323,7 +323,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		int i = this.random.nextInt(3);
 		if (i < 2 && this.random.nextFloat() < 0.5F * difficulty.getClampedLocalDifficulty()) {
@@ -332,7 +332,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		int j = 1 << i;
 		this.setSize(j, true);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private float getJumpSoundPitch() {
@@ -366,7 +366,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			} else if (!livingEntity.isAlive()) {
 				return false;
 			} else {
-				return livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.invulnerable
+				return livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable
 					? false
 					: this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
 			}
@@ -386,7 +386,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			} else if (!livingEntity.isAlive()) {
 				return false;
 			} else {
-				return livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.invulnerable ? false : --this.ticksLeft > 0;
+				return livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable ? false : --this.ticksLeft > 0;
 			}
 		}
 
@@ -468,7 +468,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		@Override
 		public void tick() {
-			this.entity.yaw = this.wrapDegrees(this.entity.yaw, this.targetYaw, 90.0F);
+			this.entity.yaw = this.changeAngle(this.entity.yaw, this.targetYaw, 90.0F);
 			this.entity.headYaw = this.entity.yaw;
 			this.entity.bodyYaw = this.entity.yaw;
 			if (this.state != MoveControl.State.MOVE_TO) {

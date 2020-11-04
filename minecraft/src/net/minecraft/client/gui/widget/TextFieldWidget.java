@@ -18,6 +18,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
@@ -29,12 +30,12 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TextFieldWidget extends ClickableWidget implements Drawable, Element {
+public class TextFieldWidget extends AbstractButtonWidget implements Drawable, Element {
 	private final TextRenderer textRenderer;
 	private String text = "";
 	private int maxLength = 32;
 	private int focusedTicks;
-	private boolean drawsBackground = true;
+	private boolean focused = true;
 	private boolean focusUnlocked = true;
 	private boolean editable = true;
 	private boolean selecting;
@@ -46,7 +47,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	private String suggestion;
 	private Consumer<String> changedListener;
 	private Predicate<String> textPredicate = Objects::nonNull;
-	private BiFunction<String, Integer, OrderedText> renderTextProvider = (string, integer) -> OrderedText.styledForwardsVisitedString(string, Style.EMPTY);
+	private BiFunction<String, Integer, OrderedText> renderTextProvider = (string, integer) -> OrderedText.styledString(string, Style.EMPTY);
 
 	public TextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
 		this(textRenderer, x, y, width, height, null, text);
@@ -157,7 +158,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 			if (this.selectionEnd != this.selectionStart) {
 				this.write("");
 			} else {
-				int i = this.getCursorPosWithOffset(characterOffset);
+				int i = this.method_27537(characterOffset);
 				int j = Math.min(i, this.selectionStart);
 				int k = Math.max(i, this.selectionStart);
 				if (j != k) {
@@ -210,11 +211,11 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	}
 
 	public void moveCursor(int offset) {
-		this.setCursor(this.getCursorPosWithOffset(offset));
+		this.setCursor(this.method_27537(offset));
 	}
 
-	private int getCursorPosWithOffset(int offset) {
-		return Util.moveCursor(this.text, this.selectionStart, offset);
+	private int method_27537(int i) {
+		return Util.moveCursor(this.text, this.selectionStart, i);
 	}
 
 	public void setCursor(int cursor) {
@@ -321,7 +322,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	}
 
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
+	public boolean charTyped(char chr, int keyCode) {
 		if (!this.isActive()) {
 			return false;
 		} else if (SharedConstants.isValidChar(chr)) {
@@ -342,12 +343,12 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 		} else {
 			boolean bl = mouseX >= (double)this.x && mouseX < (double)(this.x + this.width) && mouseY >= (double)this.y && mouseY < (double)(this.y + this.height);
 			if (this.focusUnlocked) {
-				this.setTextFieldFocused(bl);
+				this.setSelected(bl);
 			}
 
 			if (this.isFocused() && bl && button == 0) {
 				int i = MathHelper.floor(mouseX) - this.x;
-				if (this.drawsBackground) {
+				if (this.focused) {
 					i -= 4;
 				}
 
@@ -360,14 +361,14 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 		}
 	}
 
-	public void setTextFieldFocused(boolean focused) {
-		super.setFocused(focused);
+	public void setSelected(boolean selected) {
+		super.setFocused(selected);
 	}
 
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.isVisible()) {
-			if (this.drawsBackground()) {
+			if (this.hasBorder()) {
 				int i = this.isFocused() ? -1 : -6250336;
 				fill(matrices, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, i);
 				fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
@@ -379,8 +380,8 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
 			boolean bl = j >= 0 && j <= string.length();
 			boolean bl2 = this.isFocused() && this.focusedTicks / 6 % 2 == 0 && bl;
-			int l = this.drawsBackground ? this.x + 4 : this.x;
-			int m = this.drawsBackground ? this.y + (this.height - 8) / 2 : this.y;
+			int l = this.focused ? this.x + 4 : this.x;
+			int m = this.focused ? this.y + (this.height - 8) / 2 : this.y;
 			int n = l;
 			if (k > string.length()) {
 				k = string.length();
@@ -450,7 +451,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-		bufferBuilder.begin(7, VertexFormats.POSITION);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)x1, (double)y2, 0.0).next();
 		bufferBuilder.vertex((double)x2, (double)y2, 0.0).next();
 		bufferBuilder.vertex((double)x2, (double)y1, 0.0).next();
@@ -476,12 +477,12 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 		return this.selectionStart;
 	}
 
-	private boolean drawsBackground() {
-		return this.drawsBackground;
+	private boolean hasBorder() {
+		return this.focused;
 	}
 
-	public void setDrawsBackground(boolean drawsBackground) {
-		this.drawsBackground = drawsBackground;
+	public void setHasBorder(boolean hasBorder) {
+		this.focused = hasBorder;
 	}
 
 	public void setEditableColor(int color) {
@@ -507,8 +508,8 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	}
 
 	@Override
-	protected void onFocusedChanged(boolean newFocused) {
-		if (newFocused) {
+	protected void onFocusedChanged(boolean bl) {
+		if (bl) {
 			this.focusedTicks = 0;
 		}
 	}
@@ -522,7 +523,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	}
 
 	public int getInnerWidth() {
-		return this.drawsBackground() ? this.width - 8 : this.width;
+		return this.hasBorder() ? this.width - 8 : this.width;
 	}
 
 	public void setSelectionEnd(int i) {

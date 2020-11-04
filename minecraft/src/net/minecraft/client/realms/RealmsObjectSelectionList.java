@@ -15,7 +15,7 @@ public abstract class RealmsObjectSelectionList<E extends AlwaysSelectedEntryLis
 	public void setSelectedItem(int index) {
 		if (index == -1) {
 			this.setSelected(null);
-		} else if (super.getEntryCount() != 0) {
+		} else if (super.getItemCount() != 0) {
 			this.setSelected(this.getEntry(index));
 		}
 	}
@@ -48,8 +48,8 @@ public abstract class RealmsObjectSelectionList<E extends AlwaysSelectedEntryLis
 	}
 
 	@Override
-	public int getEntryCount() {
-		return super.getEntryCount();
+	public int getItemCount() {
+		return super.getItemCount();
 	}
 
 	@Override

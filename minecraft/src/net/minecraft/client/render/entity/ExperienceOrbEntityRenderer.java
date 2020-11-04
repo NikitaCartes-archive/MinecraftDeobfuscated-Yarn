@@ -2,26 +2,27 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/experience_orb.png");
 	private static final RenderLayer LAYER = RenderLayer.getItemEntityTranslucentCull(TEXTURE);
 
-	public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher);
+	public ExperienceOrbEntityRenderer(class_5617.class_5618 arg) {
+		super(arg);
 		this.shadowRadius = 0.15F;
 		this.shadowOpacity = 0.75F;
 	}
@@ -41,13 +42,13 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		float o = 0.5F;
 		float p = 0.25F;
 		float q = 255.0F;
-		float r = ((float)experienceOrbEntity.renderTicks + g) / 2.0F;
+		float r = ((float)experienceOrbEntity.age + g) / 2.0F;
 		int s = (int)((MathHelper.sin(r + 0.0F) + 1.0F) * 0.5F * 255.0F);
 		int t = 255;
 		int u = (int)((MathHelper.sin(r + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
 		matrixStack.translate(0.0, 0.1F, 0.0);
 		matrixStack.multiply(this.dispatcher.getRotation());
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		float v = 0.3F;
 		matrixStack.scale(0.3F, 0.3F, 0.3F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);

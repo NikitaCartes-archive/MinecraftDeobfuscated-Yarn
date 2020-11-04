@@ -16,7 +16,7 @@ public class EndGatewayDecorator extends Decorator<NopeDecoratorConfig> {
 			int i = random.nextInt(16) + blockPos.getX();
 			int j = random.nextInt(16) + blockPos.getZ();
 			int k = decoratorContext.getTopY(Heightmap.Type.MOTION_BLOCKING, i, j);
-			if (k > 0) {
+			if (k > decoratorContext.getBottomHeightLimit()) {
 				int l = k + 3 + random.nextInt(7);
 				return Stream.of(new BlockPos(i, l, j));
 			}

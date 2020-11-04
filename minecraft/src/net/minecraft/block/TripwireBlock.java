@@ -67,12 +67,10 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction.getAxis().isHorizontal()
-			? state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(this.shouldConnectTo(neighborState, direction)))
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			? state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(this.shouldConnectTo(newState, direction)))
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -91,7 +89,7 @@ public class TripwireBlock extends Block {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && !player.getMainHandStack().isEmpty() && player.getMainHandStack().getItem() == Items.SHEARS) {
+		if (!world.isClient && !player.getMainHandStack().isEmpty() && player.getMainHandStack().isOf(Items.SHEARS)) {
 			world.setBlockState(pos, state.with(DISARMED, Boolean.valueOf(true)), 4);
 		}
 
@@ -159,8 +157,7 @@ public class TripwireBlock extends Block {
 	}
 
 	public boolean shouldConnectTo(BlockState state, Direction facing) {
-		Block block = state.getBlock();
-		return block == this.hookBlock ? state.get(TripwireHookBlock.FACING) == facing.getOpposite() : block == this;
+		return state.isOf(this.hookBlock) ? state.get(TripwireHookBlock.FACING) == facing.getOpposite() : state.isOf(this);
 	}
 
 	@Override

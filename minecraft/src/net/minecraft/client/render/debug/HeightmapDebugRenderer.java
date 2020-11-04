@@ -8,12 +8,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.Chunk;
@@ -36,21 +38,21 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
 
-		for (int i = -32; i <= 32; i += 16) {
-			for (int j = -32; j <= 32; j += 16) {
-				Chunk chunk = worldAccess.getChunk(blockPos.add(i, 0, j));
+		for (int i = -2; i <= 2; i++) {
+			for (int j = -2; j <= 2; j++) {
+				Chunk chunk = worldAccess.getChunk(blockPos.add(i * 16, 0, j * 16));
 
 				for (Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
 					Heightmap.Type type = (Heightmap.Type)entry.getKey();
 					ChunkPos chunkPos = chunk.getPos();
-					Vec3f vec3f = this.method_27037(type);
+					Vector3f vector3f = this.method_27037(type);
 
 					for (int k = 0; k < 16; k++) {
 						for (int l = 0; l < 16; l++) {
-							int m = chunkPos.x * 16 + k;
-							int n = chunkPos.z * 16 + l;
+							int m = ChunkSectionPos.method_32205(chunkPos.x, k);
+							int n = ChunkSectionPos.method_32205(chunkPos.z, l);
 							float f = (float)((double)((float)worldAccess.getTopY(type, m, n) + (float)type.ordinal() * 0.09375F) - cameraY);
 							WorldRenderer.drawBox(
 								bufferBuilder,
@@ -60,9 +62,9 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 								(double)((float)m + 0.75F) - cameraX,
 								(double)(f + 0.09375F),
 								(double)((float)n + 0.75F) - cameraZ,
-								vec3f.getX(),
-								vec3f.getY(),
-								vec3f.getZ(),
+								vector3f.getX(),
+								vector3f.getY(),
+								vector3f.getZ(),
 								1.0F
 							);
 						}
@@ -76,22 +78,22 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.popMatrix();
 	}
 
-	private Vec3f method_27037(Heightmap.Type type) {
+	private Vector3f method_27037(Heightmap.Type type) {
 		switch (type) {
 			case WORLD_SURFACE_WG:
-				return new Vec3f(1.0F, 1.0F, 0.0F);
+				return new Vector3f(1.0F, 1.0F, 0.0F);
 			case OCEAN_FLOOR_WG:
-				return new Vec3f(1.0F, 0.0F, 1.0F);
+				return new Vector3f(1.0F, 0.0F, 1.0F);
 			case WORLD_SURFACE:
-				return new Vec3f(0.0F, 0.7F, 0.0F);
+				return new Vector3f(0.0F, 0.7F, 0.0F);
 			case OCEAN_FLOOR:
-				return new Vec3f(0.0F, 0.0F, 0.5F);
+				return new Vector3f(0.0F, 0.0F, 0.5F);
 			case MOTION_BLOCKING:
-				return new Vec3f(0.0F, 0.3F, 0.3F);
+				return new Vector3f(0.0F, 0.3F, 0.3F);
 			case MOTION_BLOCKING_NO_LEAVES:
-				return new Vec3f(0.0F, 0.5F, 0.5F);
+				return new Vector3f(0.0F, 0.5F, 0.5F);
 			default:
-				return new Vec3f(0.0F, 0.0F, 0.0F);
+				return new Vector3f(0.0F, 0.0F, 0.0F);
 		}
 	}
 }

@@ -10,8 +10,8 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -71,39 +71,39 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putBoolean("ChestedHorse", this.hasChest());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("ChestedHorse", this.hasChest());
 		if (this.hasChest()) {
-			NbtList nbtList = new NbtList();
+			ListTag listTag = new ListTag();
 
 			for (int i = 2; i < this.items.size(); i++) {
 				ItemStack itemStack = this.items.getStack(i);
 				if (!itemStack.isEmpty()) {
-					NbtCompound nbtCompound = new NbtCompound();
-					nbtCompound.putByte("Slot", (byte)i);
-					itemStack.writeNbt(nbtCompound);
-					nbtList.add(nbtCompound);
+					CompoundTag compoundTag = new CompoundTag();
+					compoundTag.putByte("Slot", (byte)i);
+					itemStack.toTag(compoundTag);
+					listTag.add(compoundTag);
 				}
 			}
 
-			nbt.put("Items", nbtList);
+			tag.put("Items", listTag);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setHasChest(nbt.getBoolean("ChestedHorse"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setHasChest(tag.getBoolean("ChestedHorse"));
 		if (this.hasChest()) {
-			NbtList nbtList = nbt.getList("Items", 10);
+			ListTag listTag = tag.getList("Items", 10);
 			this.onChestedStatusChanged();
 
-			for (int i = 0; i < nbtList.size(); i++) {
-				NbtCompound nbtCompound = nbtList.getCompound(i);
-				int j = nbtCompound.getByte("Slot") & 255;
+			for (int i = 0; i < listTag.size(); i++) {
+				CompoundTag compoundTag = listTag.getCompound(i);
+				int j = compoundTag.getByte("Slot") & 255;
 				if (j >= 2 && j < this.items.size()) {
-					this.items.setStack(j, ItemStack.fromNbt(nbtCompound));
+					this.items.setStack(j, ItemStack.fromTag(compoundTag));
 				}
 			}
 		}
@@ -120,7 +120,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				return true;
 			}
 
-			if (!this.hasChest() && item.getItem() == Blocks.CHEST.asItem()) {
+			if (!this.hasChest() && item.isOf(Blocks.CHEST.asItem())) {
 				this.setHasChest(true);
 				this.onChestedStatusChanged();
 				return true;
@@ -154,10 +154,10 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				return ActionResult.success(this.world.isClient);
 			}
 
-			if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {
+			if (!this.hasChest() && itemStack.isOf(Blocks.CHEST.asItem())) {
 				this.setHasChest(true);
 				this.playAddChestSound();
-				if (!player.abilities.creativeMode) {
+				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 
@@ -165,7 +165,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				return ActionResult.success(this.world.isClient);
 			}
 
-			if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
+			if (!this.isBaby() && !this.isSaddled() && itemStack.isOf(Items.SADDLE)) {
 				this.openInventory(player);
 				return ActionResult.success(this.world.isClient);
 			}

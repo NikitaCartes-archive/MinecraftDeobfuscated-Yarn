@@ -21,26 +21,21 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
 		AbstractPlantStemBlock abstractPlantStemBlock = this.getStem();
-		if (direction == this.growthDirection) {
-			Block block = neighborState.getBlock();
-			if (block != this && block != abstractPlantStemBlock) {
-				return abstractPlantStemBlock.getRandomGrowthState(world);
+		if (direction == this.growthDirection && !newState.isOf(this) && !newState.isOf(abstractPlantStemBlock)) {
+			return abstractPlantStemBlock.getRandomGrowthState(world);
+		} else {
+			if (this.tickWater) {
+				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
-		}
 
-		if (this.tickWater) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		}
-
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -72,19 +67,19 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 	private Optional<BlockPos> method_25960(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		BlockPos blockPos2 = blockPos;
 
-		Block block;
+		BlockState blockState2;
 		do {
 			blockPos2 = blockPos2.offset(this.growthDirection);
-			block = blockView.getBlockState(blockPos2).getBlock();
-		} while (block == blockState.getBlock());
+			blockState2 = blockView.getBlockState(blockPos2);
+		} while (blockState2.isOf(blockState.getBlock()));
 
-		return block == this.getStem() ? Optional.of(blockPos2) : Optional.empty();
+		return blockState2.isOf(this.getStem()) ? Optional.of(blockPos2) : Optional.empty();
 	}
 
 	@Override
 	public boolean canReplace(BlockState state, ItemPlacementContext context) {
 		boolean bl = super.canReplace(state, context);
-		return bl && context.getStack().getItem() == this.getStem().asItem() ? false : bl;
+		return bl && context.getStack().isOf(this.getStem().asItem()) ? false : bl;
 	}
 
 	@Override

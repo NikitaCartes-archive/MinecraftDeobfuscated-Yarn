@@ -53,14 +53,13 @@ public class LookAtEntityGoal extends Goal {
 			} else {
 				this.target = this.mob
 					.world
-					.getClosestEntityIncludingUngeneratedChunks(
-						this.targetType,
+					.getClosestEntity(
+						this.mob.world.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
 						this.targetPredicate,
 						this.mob,
 						this.mob.getX(),
 						this.mob.getEyeY(),
-						this.mob.getZ(),
-						this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range)
+						this.mob.getZ()
 					);
 			}
 

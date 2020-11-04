@@ -64,7 +64,7 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
-		return dx == radius && dz == radius && radius > 0;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+		return baseHeight == dz && y == dz && dz > 0;
 	}
 }

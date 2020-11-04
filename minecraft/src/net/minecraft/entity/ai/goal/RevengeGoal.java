@@ -9,6 +9,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.GameRules;
 
@@ -68,7 +69,7 @@ public class RevengeGoal extends TrackTargetGoal {
 	protected void callSameTypeForRevenge() {
 		double d = this.getFollowRange();
 		Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0, d);
-		List<MobEntity> list = this.mob.world.getEntitiesIncludingUngeneratedChunks(this.mob.getClass(), box);
+		List<? extends MobEntity> list = this.mob.world.getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
 		Iterator var5 = list.iterator();
 
 		while (true) {

@@ -58,14 +58,12 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		Direction.Axis axis = direction.getAxis();
 		if (((Direction)state.get(FACING)).rotateYClockwise().getAxis() != axis) {
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
-			boolean bl = this.isWall(neighborState) || this.isWall(world.getBlockState(pos.offset(direction.getOpposite())));
+			boolean bl = this.isWall(newState) || this.isWall(world.getBlockState(pos.offset(direction.getOpposite())));
 			return state.with(IN_WALL, Boolean.valueOf(bl));
 		}
 	}
@@ -115,7 +113,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	private boolean isWall(BlockState state) {
-		return state.getBlock().isIn(BlockTags.WALLS);
+		return state.isIn(BlockTags.WALLS);
 	}
 
 	@Override

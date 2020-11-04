@@ -159,11 +159,9 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (direction == Direction.DOWN) {
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
 			BlockState blockState = this.getPlacementShape(state, world, pos);
 			return !this.hasAdjacentBlocks(blockState) ? Blocks.AIR.getDefaultState() : blockState;
@@ -205,7 +203,7 @@ public class VineBlock extends Block {
 					}
 				}
 			} else {
-				if (direction == Direction.UP && pos.getY() < 255) {
+				if (direction == Direction.UP && pos.getY() < world.getTopHeightLimit() - 1) {
 					if (this.shouldHaveSide(world, pos, direction)) {
 						world.setBlockState(pos, state.with(UP, Boolean.valueOf(true)), 2);
 						return;
@@ -232,7 +230,7 @@ public class VineBlock extends Block {
 					}
 				}
 
-				if (pos.getY() > 0) {
+				if (pos.getY() > world.getBottomHeightLimit()) {
 					BlockPos blockPos2 = pos.down();
 					BlockState blockState = world.getBlockState(blockPos2);
 					if (blockState.isAir() || blockState.isOf(this)) {

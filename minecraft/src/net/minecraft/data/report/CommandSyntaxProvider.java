@@ -14,15 +14,15 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public class CommandSyntaxProvider implements DataProvider {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-	private final DataGenerator generator;
+	private final DataGenerator root;
 
 	public CommandSyntaxProvider(DataGenerator dataGenerator) {
-		this.generator = dataGenerator;
+		this.root = dataGenerator;
 	}
 
 	@Override
 	public void run(DataCache cache) throws IOException {
-		Path path = this.generator.getOutput().resolve("reports/commands.json");
+		Path path = this.root.getOutput().resolve("reports/commands.json");
 		CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(CommandManager.RegistrationEnvironment.ALL).getDispatcher();
 		DataProvider.writeToPath(GSON, cache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
 	}

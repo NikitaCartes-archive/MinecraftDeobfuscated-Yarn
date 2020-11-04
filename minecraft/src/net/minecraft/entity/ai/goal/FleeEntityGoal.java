@@ -2,8 +2,8 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;
+import net.minecraft.class_5532;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
@@ -64,19 +64,22 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	public boolean canStart() {
 		this.targetEntity = this.mob
 			.world
-			.getClosestEntityIncludingUngeneratedChunks(
-				this.classToFleeFrom,
+			.getClosestEntity(
+				this.mob
+					.world
+					.getEntitiesByClass(
+						this.classToFleeFrom, this.mob.getBoundingBox().expand((double)this.fleeDistance, 3.0, (double)this.fleeDistance), livingEntity -> true
+					),
 				this.withinRangePredicate,
 				this.mob,
 				this.mob.getX(),
 				this.mob.getY(),
-				this.mob.getZ(),
-				this.mob.getBoundingBox().expand((double)this.fleeDistance, 3.0, (double)this.fleeDistance)
+				this.mob.getZ()
 			);
 		if (this.targetEntity == null) {
 			return false;
 		} else {
-			Vec3d vec3d = TargetFinder.findTargetAwayFrom(this.mob, 16, 7, this.targetEntity.getPos());
+			Vec3d vec3d = class_5532.method_31511(this.mob, 16, 7, this.targetEntity.getPos());
 			if (vec3d == null) {
 				return false;
 			} else if (this.targetEntity.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.targetEntity.squaredDistanceTo(this.mob)) {

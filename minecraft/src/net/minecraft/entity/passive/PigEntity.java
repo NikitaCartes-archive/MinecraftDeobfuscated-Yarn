@@ -33,7 +33,7 @@ import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -78,7 +78,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	@Nullable
 	@Override
 	public Entity getPrimaryPassenger() {
-		return this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
+		return this.getFirstPassenger();
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 			return false;
 		} else {
 			PlayerEntity playerEntity = (PlayerEntity)entity;
-			return playerEntity.getMainHandStack().getItem() == Items.CARROT_ON_A_STICK || playerEntity.getOffHandStack().getItem() == Items.CARROT_ON_A_STICK;
+			return playerEntity.getMainHandStack().isOf(Items.CARROT_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.CARROT_ON_A_STICK);
 		}
 	}
 
@@ -109,15 +109,15 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		this.saddledComponent.writeNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		this.saddledComponent.toTag(tag);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.saddledComponent.readNbt(nbt);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.saddledComponent.fromTag(tag);
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (!actionResult.isAccepted()) {
 				ItemStack itemStack = player.getStackInHand(hand);
-				return itemStack.getItem() == Items.SADDLE ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
+				return itemStack.isOf(Items.SADDLE) ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
 			} else {
 				return actionResult;
 			}
@@ -231,7 +231,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 			zombifiedPiglinEntity.setPersistent();
 			world.spawnEntity(zombifiedPiglinEntity);
-			this.remove();
+			this.discard();
 		} else {
 			super.onStruckByLightning(world, lightning);
 		}

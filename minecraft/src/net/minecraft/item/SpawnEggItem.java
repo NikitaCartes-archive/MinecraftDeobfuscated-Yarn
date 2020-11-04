@@ -18,7 +18,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -34,12 +34,12 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class SpawnEggItem extends Item {
-	private static final Map<EntityType<?>, SpawnEggItem> SPAWN_EGGS = Maps.<EntityType<?>, SpawnEggItem>newIdentityHashMap();
+	private static final Map<EntityType<? extends MobEntity>, SpawnEggItem> SPAWN_EGGS = Maps.<EntityType<? extends MobEntity>, SpawnEggItem>newIdentityHashMap();
 	private final int primaryColor;
 	private final int secondaryColor;
 	private final EntityType<?> type;
 
-	public SpawnEggItem(EntityType<?> type, int primaryColor, int secondaryColor, Item.Settings settings) {
+	public SpawnEggItem(EntityType<? extends MobEntity> type, int primaryColor, int secondaryColor, Item.Settings settings) {
 		super(settings);
 		this.type = type;
 		this.primaryColor = primaryColor;
@@ -113,7 +113,7 @@ public class SpawnEggItem extends Item {
 				if (entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
 					return TypedActionResult.pass(itemStack);
 				} else {
-					if (!user.abilities.creativeMode) {
+					if (!user.getAbilities().creativeMode) {
 						itemStack.decrement(1);
 					}
 
@@ -126,8 +126,8 @@ public class SpawnEggItem extends Item {
 		}
 	}
 
-	public boolean isOfSameEntityType(@Nullable NbtCompound nbt, EntityType<?> type) {
-		return Objects.equals(this.getEntityType(nbt), type);
+	public boolean isOfSameEntityType(@Nullable CompoundTag tag, EntityType<?> type) {
+		return Objects.equals(this.getEntityType(tag), type);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -145,11 +145,11 @@ public class SpawnEggItem extends Item {
 		return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
 	}
 
-	public EntityType<?> getEntityType(@Nullable NbtCompound nbt) {
-		if (nbt != null && nbt.contains("EntityTag", 10)) {
-			NbtCompound nbtCompound = nbt.getCompound("EntityTag");
-			if (nbtCompound.contains("id", 8)) {
-				return (EntityType<?>)EntityType.get(nbtCompound.getString("id")).orElse(this.type);
+	public EntityType<?> getEntityType(@Nullable CompoundTag tag) {
+		if (tag != null && tag.contains("EntityTag", 10)) {
+			CompoundTag compoundTag = tag.getCompound("EntityTag");
+			if (compoundTag.contains("id", 8)) {
+				return (EntityType<?>)EntityType.get(compoundTag.getString("id")).orElse(this.type);
 			}
 		}
 
@@ -157,36 +157,36 @@ public class SpawnEggItem extends Item {
 	}
 
 	public Optional<MobEntity> spawnBaby(
-		PlayerEntity user, MobEntity entity, EntityType<? extends MobEntity> entityType, ServerWorld world, Vec3d pos, ItemStack stack
+		PlayerEntity user, MobEntity mobEntity, EntityType<? extends MobEntity> entityType, ServerWorld serverWorld, Vec3d vec3d, ItemStack itemStack
 	) {
-		if (!this.isOfSameEntityType(stack.getTag(), entityType)) {
+		if (!this.isOfSameEntityType(itemStack.getTag(), entityType)) {
 			return Optional.empty();
 		} else {
-			MobEntity mobEntity;
-			if (entity instanceof PassiveEntity) {
-				mobEntity = ((PassiveEntity)entity).createChild(world, (PassiveEntity)entity);
+			MobEntity mobEntity2;
+			if (mobEntity instanceof PassiveEntity) {
+				mobEntity2 = ((PassiveEntity)mobEntity).createChild(serverWorld, (PassiveEntity)mobEntity);
 			} else {
-				mobEntity = entityType.create(world);
+				mobEntity2 = entityType.create(serverWorld);
 			}
 
-			if (mobEntity == null) {
+			if (mobEntity2 == null) {
 				return Optional.empty();
 			} else {
-				mobEntity.setBaby(true);
-				if (!mobEntity.isBaby()) {
+				mobEntity2.setBaby(true);
+				if (!mobEntity2.isBaby()) {
 					return Optional.empty();
 				} else {
-					mobEntity.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
-					world.spawnEntityAndPassengers(mobEntity);
-					if (stack.hasCustomName()) {
-						mobEntity.setCustomName(stack.getName());
+					mobEntity2.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0F, 0.0F);
+					serverWorld.spawnEntityAndPassengers(mobEntity2);
+					if (itemStack.hasCustomName()) {
+						mobEntity2.setCustomName(itemStack.getName());
 					}
 
-					if (!user.abilities.creativeMode) {
-						stack.decrement(1);
+					if (!user.getAbilities().creativeMode) {
+						itemStack.decrement(1);
 					}
 
-					return Optional.of(mobEntity);
+					return Optional.of(mobEntity2);
 				}
 			}
 		}

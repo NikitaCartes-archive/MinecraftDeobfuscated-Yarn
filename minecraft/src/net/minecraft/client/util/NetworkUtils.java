@@ -29,25 +29,16 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * A few client-side networking utilities.
- * 
- * @implNote This is not marked as client-only because it's used by the
- * {@code /publish} command, which is only available to integrated servers
- * yet was retained by proguard.
- */
 public class NetworkUtils {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final ListeningExecutorService EXECUTOR = MoreExecutors.listeningDecorator(
+	public static final ListeningExecutorService downloadExecutor = MoreExecutors.listeningDecorator(
 		Executors.newCachedThreadPool(
 			new ThreadFactoryBuilder().setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).setNameFormat("Downloader %d").build()
 		)
 	);
 
 	@Environment(EnvType.CLIENT)
-	public static CompletableFuture<?> downloadResourcePack(
-		File file, String string, Map<String, String> map, int i, @Nullable ProgressListener progressListener, Proxy proxy
-	) {
+	public static CompletableFuture<?> download(File file, String string, Map<String, String> map, int i, @Nullable ProgressListener progressListener, Proxy proxy) {
 		return CompletableFuture.supplyAsync(() -> {
 			HttpURLConnection httpURLConnection = null;
 			InputStream inputStream = null;
@@ -157,7 +148,7 @@ public class NetworkUtils {
 				IOUtils.closeQuietly(inputStream);
 				IOUtils.closeQuietly(outputStream);
 			}
-		}, EXECUTOR);
+		}, downloadExecutor);
 	}
 
 	public static int findLocalPort() {

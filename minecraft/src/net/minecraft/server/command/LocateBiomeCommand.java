@@ -31,11 +31,15 @@ public class LocateBiomeCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Identifier id) throws CommandSyntaxException {
-		Biome biome = (Biome)source.getMinecraftServer().getRegistryManager().get(Registry.BIOME_KEY).getOrEmpty(id).orElseThrow(() -> INVALID_EXCEPTION.create(id));
+	private static int execute(ServerCommandSource source, Identifier identifier) throws CommandSyntaxException {
+		Biome biome = (Biome)source.getMinecraftServer()
+			.getRegistryManager()
+			.get(Registry.BIOME_KEY)
+			.getOrEmpty(identifier)
+			.orElseThrow(() -> INVALID_EXCEPTION.create(identifier));
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		BlockPos blockPos2 = source.getWorld().locateBiome(biome, blockPos, 6400, 8);
-		String string = id.toString();
+		String string = identifier.toString();
 		if (blockPos2 == null) {
 			throw NOT_FOUND_EXCEPTION.create(string);
 		} else {

@@ -124,18 +124,7 @@ public abstract class VoxelShape {
 	}
 
 	protected int getCoordIndex(Direction.Axis axis, double coord) {
-		return MathHelper.binarySearch(0, this.voxels.getSize(axis) + 1, i -> {
-			if (i < 0) {
-				return false;
-			} else {
-				return i > this.voxels.getSize(axis) ? true : coord < this.getPointPosition(axis, i);
-			}
-		}) - 1;
-	}
-
-	protected boolean contains(double x, double y, double z) {
-		return this.voxels
-			.inBoundsAndContains(this.getCoordIndex(Direction.Axis.X, x), this.getCoordIndex(Direction.Axis.Y, y), this.getCoordIndex(Direction.Axis.Z, z));
+		return MathHelper.binarySearch(0, this.voxels.getSize(axis) + 1, i -> coord < this.getPointPosition(axis, i)) - 1;
 	}
 
 	@Nullable
@@ -148,7 +137,12 @@ public abstract class VoxelShape {
 				return null;
 			} else {
 				Vec3d vec3d2 = start.add(vec3d.multiply(0.001));
-				return this.contains(vec3d2.x - (double)pos.getX(), vec3d2.y - (double)pos.getY(), vec3d2.z - (double)pos.getZ())
+				return this.voxels
+						.inBoundsAndContains(
+							this.getCoordIndex(Direction.Axis.X, vec3d2.x - (double)pos.getX()),
+							this.getCoordIndex(Direction.Axis.Y, vec3d2.y - (double)pos.getY()),
+							this.getCoordIndex(Direction.Axis.Z, vec3d2.z - (double)pos.getZ())
+						)
 					? new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z).getOpposite(), pos, true)
 					: Box.raycast(this.getBoundingBoxes(), start, end, pos);
 			}
@@ -176,11 +170,11 @@ public abstract class VoxelShape {
 
 	private VoxelShape getUncachedFace(Direction direction) {
 		Direction.Axis axis = direction.getAxis();
-		Direction.AxisDirection axisDirection = direction.getDirection();
 		DoubleList doubleList = this.getPointPositions(axis);
 		if (doubleList.size() == 2 && DoubleMath.fuzzyEquals(doubleList.getDouble(0), 0.0, 1.0E-7) && DoubleMath.fuzzyEquals(doubleList.getDouble(1), 1.0, 1.0E-7)) {
 			return this;
 		} else {
+			Direction.AxisDirection axisDirection = direction.getDirection();
 			int i = this.getCoordIndex(axis, axisDirection == Direction.AxisDirection.POSITIVE ? 0.9999999 : 1.0E-7);
 			return new SlicedVoxelShape(this, axis, i);
 		}

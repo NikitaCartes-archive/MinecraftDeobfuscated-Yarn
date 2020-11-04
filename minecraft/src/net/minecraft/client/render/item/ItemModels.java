@@ -25,8 +25,8 @@ public class ItemModels {
 		this.modelManager = modelManager;
 	}
 
-	public Sprite getSprite(ItemConvertible item) {
-		return this.getSprite(new ItemStack(item));
+	public Sprite getSprite(ItemConvertible itemConvertible) {
+		return this.getSprite(new ItemStack(itemConvertible));
 	}
 
 	public Sprite getSprite(ItemStack stack) {

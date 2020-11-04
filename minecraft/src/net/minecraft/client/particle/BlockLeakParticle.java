@@ -31,8 +31,8 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public int getBrightness(float tint) {
-		return this.obsidianTear ? 240 : super.getBrightness(tint);
+	public int getColorMultiplier(float tint) {
+		return this.obsidianTear ? 240 : super.getColorMultiplier(tint);
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5459;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,9 +29,10 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -44,7 +46,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 
 public abstract class AbstractMinecartEntity extends Entity {
@@ -98,8 +99,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	protected AbstractMinecartEntity(EntityType<?> type, World world, double x, double y, double z) {
 		this(type, world);
-		this.setPosition(x, y, z);
-		this.setVelocity(Vec3d.ZERO);
+		this.updatePosition(x, y, z);
 		this.prevX = x;
 		this.prevY = y;
 		this.prevZ = z;
@@ -149,8 +149,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	protected Vec3d method_30633(Direction.Axis axis, PortalUtil.Rectangle rectangle) {
-		return LivingEntity.method_31079(super.method_30633(axis, rectangle));
+	protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
+		return LivingEntity.method_31079(super.method_30633(axis, arg));
 	}
 
 	@Override
@@ -209,7 +209,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (this.world.isClient || this.removed) {
+		if (this.world.isClient || this.isRemoved()) {
 			return true;
 		} else if (this.isInvulnerableTo(source)) {
 			return false;
@@ -218,11 +218,11 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.setDamageWobbleTicks(10);
 			this.scheduleVelocityUpdate();
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
-			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).abilities.creativeMode;
+			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
 			if (bl || this.getDamageWobbleStrength() > 40.0F) {
 				this.removeAllPassengers();
 				if (bl && !this.hasCustomName()) {
-					this.remove();
+					this.discard();
 				} else {
 					this.dropItems(source);
 				}
@@ -239,7 +239,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	public void dropItems(DamageSource damageSource) {
-		this.remove();
+		this.remove(Entity.RemovalReason.KILLED);
 		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			ItemStack itemStack = new ItemStack(Items.MINECART);
 			if (this.hasCustomName()) {
@@ -260,7 +260,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	public boolean collides() {
-		return !this.removed;
+		return !this.isRemoved();
 	}
 
 	private static Pair<Vec3i, Vec3i> getAdjacentRailPositionsByShape(RailShape shape) {
@@ -282,10 +282,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0F);
 		}
 
-		if (this.getY() < -64.0) {
-			this.tickInVoid();
-		}
-
+		this.method_31473();
 		this.tickNetherPortal();
 		if (this.world.isClient) {
 			if (this.clientInterpolationSteps > 0) {
@@ -296,7 +293,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.yaw = (float)((double)this.yaw + g / (double)this.clientInterpolationSteps);
 				this.pitch = (float)((double)this.pitch + (this.clientPitch - (double)this.pitch) / (double)this.clientInterpolationSteps);
 				this.clientInterpolationSteps--;
-				this.setPosition(d, e, f);
+				this.updatePosition(d, e, f);
 				this.setRotation(this.yaw, this.pitch);
 			} else {
 				this.refreshPosition();
@@ -304,7 +301,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 			}
 		} else {
 			if (!this.hasNoGravity()) {
-				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
+				double d = this.isTouchingWater() ? -0.005 : -0.04;
+				this.setVelocity(this.getVelocity().add(0.0, d, 0.0));
 			}
 
 			int i = MathHelper.floor(this.getX());
@@ -378,7 +376,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	protected double getMaxOffRailSpeed() {
-		return 0.4;
+		return (this.isTouchingWater() ? 4.0 : 8.0) / 20.0;
 	}
 
 	public void onActivatorRail(int x, int y, int z, boolean powered) {
@@ -407,30 +405,33 @@ public abstract class AbstractMinecartEntity extends Entity {
 		e = (double)pos.getY();
 		boolean bl = false;
 		boolean bl2 = false;
-		AbstractRailBlock abstractRailBlock = (AbstractRailBlock)state.getBlock();
-		if (abstractRailBlock == Blocks.POWERED_RAIL) {
+		if (state.isOf(Blocks.POWERED_RAIL)) {
 			bl = (Boolean)state.get(PoweredRailBlock.POWERED);
 			bl2 = !bl;
 		}
 
 		double g = 0.0078125;
+		if (this.isTouchingWater()) {
+			g *= 0.2;
+		}
+
 		Vec3d vec3d2 = this.getVelocity();
-		RailShape railShape = state.get(abstractRailBlock.getShapeProperty());
+		RailShape railShape = state.get(((AbstractRailBlock)state.getBlock()).getShapeProperty());
 		switch (railShape) {
 			case ASCENDING_EAST:
-				this.setVelocity(vec3d2.add(-0.0078125, 0.0, 0.0));
+				this.setVelocity(vec3d2.add(-g, 0.0, 0.0));
 				e++;
 				break;
 			case ASCENDING_WEST:
-				this.setVelocity(vec3d2.add(0.0078125, 0.0, 0.0));
+				this.setVelocity(vec3d2.add(g, 0.0, 0.0));
 				e++;
 				break;
 			case ASCENDING_NORTH:
-				this.setVelocity(vec3d2.add(0.0, 0.0, 0.0078125));
+				this.setVelocity(vec3d2.add(0.0, 0.0, g));
 				e++;
 				break;
 			case ASCENDING_SOUTH:
-				this.setVelocity(vec3d2.add(0.0, 0.0, -0.0078125));
+				this.setVelocity(vec3d2.add(0.0, 0.0, -g));
 				e++;
 		}
 
@@ -450,7 +451,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		double l = Math.min(2.0, Math.sqrt(squaredHorizontalLength(vec3d2)));
 		vec3d2 = new Vec3d(l * h / j, vec3d2.y, l * i / j);
 		this.setVelocity(vec3d2);
-		Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
+		Entity entity = this.getFirstPassenger();
 		if (entity instanceof PlayerEntity) {
 			Vec3d vec3d3 = entity.getVelocity();
 			double m = squaredHorizontalLength(vec3d3);
@@ -489,15 +490,15 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 		d = o + h * s;
 		f = p + i * s;
-		this.setPosition(d, e, f);
+		this.updatePosition(d, e, f);
 		double t = this.hasPassengers() ? 0.75 : 1.0;
 		double u = this.getMaxOffRailSpeed();
 		vec3d2 = this.getVelocity();
 		this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(t * vec3d2.x, -u, u), 0.0, MathHelper.clamp(t * vec3d2.z, -u, u)));
 		if (vec3i.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i.getZ()) {
-			this.setPosition(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
+			this.updatePosition(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
 		} else if (vec3i2.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i2.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i2.getZ()) {
-			this.setPosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
+			this.updatePosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
 		}
 
 		this.applySlowdown();
@@ -510,7 +511,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.setVelocity(vec3d5.multiply((w + v) / w, 1.0, (w + v) / w));
 			}
 
-			this.setPosition(this.getX(), vec3d4.y, this.getZ());
+			this.updatePosition(this.getX(), vec3d4.y, this.getZ());
 		}
 
 		int x = MathHelper.floor(this.getX());
@@ -560,7 +561,13 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	protected void applySlowdown() {
 		double d = this.hasPassengers() ? 0.997 : 0.96;
-		this.setVelocity(this.getVelocity().multiply(d, 0.0, d));
+		Vec3d vec3d = this.getVelocity();
+		vec3d = vec3d.multiply(d, 0.0, d);
+		if (this.isTouchingWater()) {
+			vec3d = vec3d.multiply(0.95F);
+		}
+
+		this.setVelocity(vec3d);
 	}
 
 	/**
@@ -664,19 +671,19 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		if (nbt.getBoolean("CustomDisplayTile")) {
-			this.setCustomBlock(NbtHelper.toBlockState(nbt.getCompound("DisplayState")));
-			this.setCustomBlockOffset(nbt.getInt("DisplayOffset"));
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		if (tag.getBoolean("CustomDisplayTile")) {
+			this.setCustomBlock(NbtHelper.toBlockState(tag.getCompound("DisplayState")));
+			this.setCustomBlockOffset(tag.getInt("DisplayOffset"));
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound nbt) {
+	protected void writeCustomDataToTag(CompoundTag tag) {
 		if (this.hasCustomBlock()) {
-			nbt.putBoolean("CustomDisplayTile", true);
-			nbt.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
-			nbt.putInt("DisplayOffset", this.getBlockOffset());
+			tag.putBoolean("CustomDisplayTile", true);
+			tag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
+			tag.putInt("DisplayOffset", this.getBlockOffset());
 		}
 	}
 
@@ -767,8 +774,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
 	}
 
-	public void setDamageWobbleStrength(float damageWobbleStrength) {
-		this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, damageWobbleStrength);
+	public void setDamageWobbleStrength(float f) {
+		this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, f);
 	}
 
 	public float getDamageWobbleStrength() {
@@ -830,6 +837,33 @@ public abstract class AbstractMinecartEntity extends Entity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public ItemStack getPickBlockStack() {
+		Item item;
+		switch (this.getMinecartType()) {
+			case FURNACE:
+				item = Items.FURNACE_MINECART;
+				break;
+			case CHEST:
+				item = Items.CHEST_MINECART;
+				break;
+			case TNT:
+				item = Items.TNT_MINECART;
+				break;
+			case HOPPER:
+				item = Items.HOPPER_MINECART;
+				break;
+			case COMMAND_BLOCK:
+				item = Items.COMMAND_BLOCK_MINECART;
+				break;
+			default:
+				item = Items.MINECART;
+		}
+
+		return new ItemStack(item);
 	}
 
 	public static enum Type {

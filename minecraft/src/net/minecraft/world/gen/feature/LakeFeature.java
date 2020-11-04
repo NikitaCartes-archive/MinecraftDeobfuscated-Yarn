@@ -22,11 +22,11 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
 	) {
-		while (blockPos.getY() > 5 && structureWorldAccess.isAir(blockPos)) {
+		while (blockPos.getY() > structureWorldAccess.getBottomHeightLimit() + 5 && structureWorldAccess.isAir(blockPos)) {
 			blockPos = blockPos.down();
 		}
 
-		if (blockPos.getY() <= 4) {
+		if (blockPos.getY() <= structureWorldAccess.getBottomHeightLimit() + 4) {
 			return false;
 		} else {
 			blockPos = blockPos.down(4);
@@ -100,7 +100,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 						for (int txx = 4; txx < 8; txx++) {
 							if (bls[(j * 16 + s) * 8 + txx]) {
 								BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
-								if (isSoil(structureWorldAccess.getBlockState(blockPos2).getBlock()) && structureWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
+								if (isSoil(structureWorldAccess.getBlockState(blockPos2)) && structureWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
 									Biome biome = structureWorldAccess.getBiome(blockPos2);
 									if (biome.getGenerationSettings().getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
 										structureWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);

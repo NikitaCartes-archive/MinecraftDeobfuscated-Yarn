@@ -6,31 +6,80 @@ import com.mojang.datafixers.util.Pair;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public class BufferRenderer {
+	private static int field_27364;
+	private static int field_27365;
+
 	public static void draw(BufferBuilder bufferBuilder) {
-		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> {
-				Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pairx = bufferBuilder.popData();
-				BufferBuilder.DrawArrayParameters drawArrayParametersx = pairx.getFirst();
-				draw(pairx.getSecond(), drawArrayParametersx.getMode(), drawArrayParametersx.getVertexFormat(), drawArrayParametersx.getCount());
-			});
+		if (!RenderSystem.isOnRenderThreadOrInit()) {
+			RenderSystem.recordRenderCall(
+				() -> {
+					Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pairx = bufferBuilder.popData();
+					BufferBuilder.DrawArrayParameters drawArrayParametersx = pairx.getFirst();
+					draw(
+						pairx.getSecond(),
+						drawArrayParametersx.getMode(),
+						drawArrayParametersx.getVertexFormat(),
+						drawArrayParametersx.getCount(),
+						drawArrayParametersx.method_31956(),
+						drawArrayParametersx.method_31955(),
+						drawArrayParametersx.method_31960()
+					);
+				}
+			);
 		} else {
 			Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
 			BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
-			draw(pair.getSecond(), drawArrayParameters.getMode(), drawArrayParameters.getVertexFormat(), drawArrayParameters.getCount());
+			draw(
+				pair.getSecond(),
+				drawArrayParameters.getMode(),
+				drawArrayParameters.getVertexFormat(),
+				drawArrayParameters.getCount(),
+				drawArrayParameters.method_31956(),
+				drawArrayParameters.method_31955(),
+				drawArrayParameters.method_31960()
+			);
 		}
 	}
 
-	private static void draw(ByteBuffer buffer, int mode, VertexFormat vertexFormat, int count) {
+	private static void draw(ByteBuffer buffer, VertexFormat.DrawMode drawMode, VertexFormat vertexFormat, int i, VertexFormat.IntType intType, int j, boolean bl) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		buffer.clear();
-		if (count > 0) {
-			vertexFormat.startDrawing(MemoryUtil.memAddress(buffer));
-			GlStateManager.drawArrays(mode, 0, count);
+		if (i > 0) {
+			if (field_27364 == 0) {
+				field_27364 = GlStateManager.genBuffers();
+			}
+
+			int k = i * vertexFormat.getVertexSize();
+			GlStateManager.bindBuffers(34962, field_27364);
+			buffer.position(0);
+			buffer.limit(k);
+			GlStateManager.bufferData(34962, buffer, 35044);
+			int l;
+			if (bl) {
+				RenderSystem.class_5590 lv = RenderSystem.getSequentialBuffer(drawMode, j);
+				GlStateManager.bindBuffers(34963, lv.method_31919());
+				l = lv.method_31924().field_27374;
+			} else {
+				if (field_27365 == 0) {
+					field_27365 = GlStateManager.genBuffers();
+				}
+
+				GlStateManager.bindBuffers(34963, field_27365);
+				buffer.position(k);
+				buffer.limit(k + j * intType.size);
+				GlStateManager.bufferData(34963, buffer, 35044);
+				l = intType.field_27374;
+			}
+
+			vertexFormat.startDrawing(0L);
+			GlStateManager.drawArrays(drawMode.mode, j, l, 0L);
 			vertexFormat.endDrawing();
+			buffer.position(0);
+			GlStateManager.bindBuffers(34963, 0);
+			GlStateManager.bindBuffers(34962, 0);
 		}
 	}
 }

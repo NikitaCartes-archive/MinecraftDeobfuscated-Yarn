@@ -20,47 +20,48 @@ import org.apache.logging.log4j.Logger;
 
 public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<Integer> {
 	protected static final Logger LOGGER = LogManager.getLogger();
-	protected final RecipeMatcher matcher = new RecipeMatcher();
+	protected final RecipeFinder recipeFinder = new RecipeFinder();
 	protected PlayerInventory inventory;
-	protected AbstractRecipeScreenHandler<C> handler;
+	protected AbstractRecipeScreenHandler<C> craftingScreenHandler;
 
 	public InputSlotFiller(AbstractRecipeScreenHandler<C> abstractRecipeScreenHandler) {
-		this.handler = abstractRecipeScreenHandler;
+		this.craftingScreenHandler = abstractRecipeScreenHandler;
 	}
 
 	public void fillInputSlots(ServerPlayerEntity entity, @Nullable Recipe<C> recipe, boolean craftAll) {
 		if (recipe != null && entity.getRecipeBook().contains(recipe)) {
-			this.inventory = entity.inventory;
+			this.inventory = entity.getInventory();
 			if (this.canReturnInputs() || entity.isCreative()) {
-				this.matcher.clear();
-				entity.inventory.populateRecipeFinder(this.matcher);
-				this.handler.populateRecipeFinder(this.matcher);
-				if (this.matcher.match(recipe, null)) {
+				this.recipeFinder.clear();
+				entity.getInventory().populateRecipeFinder(this.recipeFinder);
+				this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
+				if (this.recipeFinder.findRecipe(recipe, null)) {
 					this.fillInputSlots(recipe, craftAll);
 				} else {
 					this.returnInputs();
 					entity.networkHandler.sendPacket(new CraftFailedResponseS2CPacket(entity.currentScreenHandler.syncId, recipe));
 				}
 
-				entity.inventory.markDirty();
+				entity.getInventory().markDirty();
 			}
 		}
 	}
 
 	protected void returnInputs() {
-		for (int i = 0; i < this.handler.getCraftingWidth() * this.handler.getCraftingHeight() + 1; i++) {
-			if (i != this.handler.getCraftingResultSlotIndex() || !(this.handler instanceof CraftingScreenHandler) && !(this.handler instanceof PlayerScreenHandler)) {
+		for (int i = 0; i < this.craftingScreenHandler.getCraftingWidth() * this.craftingScreenHandler.getCraftingHeight() + 1; i++) {
+			if (i != this.craftingScreenHandler.getCraftingResultSlotIndex()
+				|| !(this.craftingScreenHandler instanceof CraftingScreenHandler) && !(this.craftingScreenHandler instanceof PlayerScreenHandler)) {
 				this.returnSlot(i);
 			}
 		}
 
-		this.handler.clearCraftingSlots();
+		this.craftingScreenHandler.clearCraftingSlots();
 	}
 
 	protected void returnSlot(int i) {
-		ItemStack itemStack = this.handler.getSlot(i).getStack();
+		ItemStack itemStack = this.craftingScreenHandler.getSlot(i).getStack();
 		if (!itemStack.isEmpty()) {
-			for (; itemStack.getCount() > 0; this.handler.getSlot(i).takeStack(1)) {
+			for (; itemStack.getCount() > 0; this.craftingScreenHandler.getSlot(i).takeStack(1)) {
 				int j = this.inventory.getOccupiedSlotWithRoomForStack(itemStack);
 				if (j == -1) {
 					j = this.inventory.getEmptySlot();
@@ -76,12 +77,12 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 	}
 
 	protected void fillInputSlots(Recipe<C> recipe, boolean craftAll) {
-		boolean bl = this.handler.matches(recipe);
-		int i = this.matcher.countCrafts(recipe, null);
+		boolean bl = this.craftingScreenHandler.matches(recipe);
+		int i = this.recipeFinder.countRecipeCrafts(recipe, null);
 		if (bl) {
-			for (int j = 0; j < this.handler.getCraftingHeight() * this.handler.getCraftingWidth() + 1; j++) {
-				if (j != this.handler.getCraftingResultSlotIndex()) {
-					ItemStack itemStack = this.handler.getSlot(j).getStack();
+			for (int j = 0; j < this.craftingScreenHandler.getCraftingHeight() * this.craftingScreenHandler.getCraftingWidth() + 1; j++) {
+				if (j != this.craftingScreenHandler.getCraftingResultSlotIndex()) {
+					ItemStack itemStack = this.craftingScreenHandler.getSlot(j).getStack();
 					if (!itemStack.isEmpty() && Math.min(i, itemStack.getMaxCount()) < itemStack.getCount() + 1) {
 						return;
 					}
@@ -91,20 +92,25 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 
 		int jx = this.getAmountToFill(craftAll, i, bl);
 		IntList intList = new IntArrayList();
-		if (this.matcher.match(recipe, intList, jx)) {
+		if (this.recipeFinder.findRecipe(recipe, intList, jx)) {
 			int k = jx;
 
 			for (int l : intList) {
-				int m = RecipeMatcher.getStackFromId(l).getMaxCount();
+				int m = RecipeFinder.getStackFromId(l).getMaxCount();
 				if (m < k) {
 					k = m;
 				}
 			}
 
-			if (this.matcher.match(recipe, intList, k)) {
+			if (this.recipeFinder.findRecipe(recipe, intList, k)) {
 				this.returnInputs();
 				this.alignRecipeToGrid(
-					this.handler.getCraftingWidth(), this.handler.getCraftingHeight(), this.handler.getCraftingResultSlotIndex(), recipe, intList.iterator(), k
+					this.craftingScreenHandler.getCraftingWidth(),
+					this.craftingScreenHandler.getCraftingHeight(),
+					this.craftingScreenHandler.getCraftingResultSlotIndex(),
+					recipe,
+					intList.iterator(),
+					k
 				);
 			}
 		}
@@ -112,8 +118,8 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 
 	@Override
 	public void acceptAlignedInput(Iterator<Integer> inputs, int slot, int amount, int gridX, int gridY) {
-		Slot slot2 = this.handler.getSlot(slot);
-		ItemStack itemStack = RecipeMatcher.getStackFromId((Integer)inputs.next());
+		Slot slot2 = this.craftingScreenHandler.getSlot(slot);
+		ItemStack itemStack = RecipeFinder.getStackFromId((Integer)inputs.next());
 		if (!itemStack.isEmpty()) {
 			for (int i = 0; i < amount; i++) {
 				this.fillInputSlot(slot2, itemStack);
@@ -128,9 +134,9 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		} else if (recipeInCraftingSlots) {
 			i = 64;
 
-			for (int j = 0; j < this.handler.getCraftingWidth() * this.handler.getCraftingHeight() + 1; j++) {
-				if (j != this.handler.getCraftingResultSlotIndex()) {
-					ItemStack itemStack = this.handler.getSlot(j).getStack();
+			for (int j = 0; j < this.craftingScreenHandler.getCraftingWidth() * this.craftingScreenHandler.getCraftingHeight() + 1; j++) {
+				if (j != this.craftingScreenHandler.getCraftingResultSlotIndex()) {
+					ItemStack itemStack = this.craftingScreenHandler.getSlot(j).getStack();
 					if (!itemStack.isEmpty() && i > itemStack.getCount()) {
 						i = itemStack.getCount();
 					}
@@ -145,20 +151,20 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		return i;
 	}
 
-	protected void fillInputSlot(Slot slot, ItemStack stack) {
-		int i = this.inventory.method_7371(stack);
+	protected void fillInputSlot(Slot slot, ItemStack itemStack) {
+		int i = this.inventory.method_7371(itemStack);
 		if (i != -1) {
-			ItemStack itemStack = this.inventory.getStack(i).copy();
-			if (!itemStack.isEmpty()) {
-				if (itemStack.getCount() > 1) {
+			ItemStack itemStack2 = this.inventory.getStack(i).copy();
+			if (!itemStack2.isEmpty()) {
+				if (itemStack2.getCount() > 1) {
 					this.inventory.removeStack(i, 1);
 				} else {
 					this.inventory.removeStack(i);
 				}
 
-				itemStack.setCount(1);
+				itemStack2.setCount(1);
 				if (slot.getStack().isEmpty()) {
-					slot.setStack(itemStack);
+					slot.setStack(itemStack2);
 				} else {
 					slot.getStack().increment(1);
 				}
@@ -170,9 +176,9 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 		int i = this.getFreeInventorySlots();
 
-		for (int j = 0; j < this.handler.getCraftingWidth() * this.handler.getCraftingHeight() + 1; j++) {
-			if (j != this.handler.getCraftingResultSlotIndex()) {
-				ItemStack itemStack = this.handler.getSlot(j).getStack().copy();
+		for (int j = 0; j < this.craftingScreenHandler.getCraftingWidth() * this.craftingScreenHandler.getCraftingHeight() + 1; j++) {
+			if (j != this.craftingScreenHandler.getCraftingResultSlotIndex()) {
+				ItemStack itemStack = this.craftingScreenHandler.getSlot(j).getStack().copy();
 				if (!itemStack.isEmpty()) {
 					int k = this.inventory.getOccupiedSlotWithRoomForStack(itemStack);
 					if (k == -1 && list.size() <= i) {

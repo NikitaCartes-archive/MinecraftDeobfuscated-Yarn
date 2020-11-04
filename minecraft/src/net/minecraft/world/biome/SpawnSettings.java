@@ -36,8 +36,8 @@ public class SpawnSettings {
 					Codec.FLOAT.optionalFieldOf("creature_spawn_probability", Float.valueOf(0.1F)).forGetter(spawnSettings -> spawnSettings.creatureSpawnProbability),
 					Codec.simpleMap(
 							SpawnGroup.CODEC,
-							SpawnSettings.SpawnEntry.CODEC.listOf().promotePartial(Util.method_29188("Spawn data: ", LOGGER::error)),
-							StringIdentifiable.method_28142(SpawnGroup.values())
+							SpawnSettings.SpawnEntry.CODEC.listOf().promotePartial(Util.addPrefix("Spawn data: ", LOGGER::error)),
+							StringIdentifiable.toKeyable(SpawnGroup.values())
 						)
 						.fieldOf("spawners")
 						.forGetter(spawnSettings -> spawnSettings.spawners),
@@ -65,7 +65,7 @@ public class SpawnSettings {
 		this.playerSpawnFriendly = playerSpawnFriendly;
 	}
 
-	public List<SpawnSettings.SpawnEntry> getSpawnEntry(SpawnGroup spawnGroup) {
+	public List<SpawnSettings.SpawnEntry> getSpawnEntries(SpawnGroup spawnGroup) {
 		return (List<SpawnSettings.SpawnEntry>)this.spawners.getOrDefault(spawnGroup, ImmutableList.of());
 	}
 

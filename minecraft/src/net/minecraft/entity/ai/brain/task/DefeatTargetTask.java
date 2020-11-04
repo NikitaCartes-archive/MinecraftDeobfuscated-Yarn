@@ -13,7 +13,7 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 	private final int duration;
 	private final BiPredicate<LivingEntity, LivingEntity> field_25157;
 
-	public DefeatTargetTask(int duration, BiPredicate<LivingEntity, LivingEntity> predicate) {
+	public DefeatTargetTask(int duration, BiPredicate<LivingEntity, LivingEntity> biPredicate) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.ATTACK_TARGET,
@@ -27,7 +27,7 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 			)
 		);
 		this.duration = duration;
-		this.field_25157 = predicate;
+		this.field_25157 = biPredicate;
 	}
 
 	@Override

@@ -19,12 +19,13 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
@@ -55,7 +56,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	protected ItemRenderer itemRenderer;
 	public int width;
 	public int height;
-	protected final List<ClickableWidget> buttons = Lists.<ClickableWidget>newArrayList();
+	protected final List<AbstractButtonWidget> buttons = Lists.<AbstractButtonWidget>newArrayList();
 	public boolean passEvents;
 	public TextRenderer textRenderer;
 	private URI clickedLink;
@@ -75,7 +76,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		for (int i = 0; i < this.buttons.size(); i++) {
-			((ClickableWidget)this.buttons.get(i)).render(matrices, mouseX, mouseY, delta);
+			((AbstractButtonWidget)this.buttons.get(i)).render(matrices, mouseX, mouseY, delta);
 		}
 	}
 
@@ -111,17 +112,17 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	 * Adds a button to this screen.
 	 * This method should be preferred over {@link Screen#addChild(Element)} since buttons are automatically rendered when added to a screen.
 	 */
-	protected <T extends ClickableWidget> T addButton(T button) {
+	protected <T extends AbstractButtonWidget> T addButton(T button) {
 		this.buttons.add(button);
 		return this.addChild(button);
 	}
 
 	/**
 	 * Adds a child element to this screen.
-	 * If the child element is an {@link net.minecraft.client.gui.widget.ClickableWidget}, you should use {@link Screen#addButton(ClickableWidget)} instead.
+	 * If the child element is an {@link net.minecraft.client.gui.widget.AbstractButtonWidget}, you should use {@link Screen#addButton(AbstractButtonWidget)} instead.
 	 * 
 	 * <p>Adding a child element to a screen does not guarantee the widget is rendered or ticked.
-	 * @see net.minecraft.client.gui.screen.Screen#addButton(ClickableWidget)
+	 * @see net.minecraft.client.gui.screen.Screen#addButton(AbstractButtonWidget)
 	 */
 	protected <T extends Element> T addChild(T child) {
 		this.children.add(child);
@@ -177,7 +178,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 			int q = 400;
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
-			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 			Matrix4f matrix4f = matrices.peek().getModel();
 			fillGradient(matrix4f, bufferBuilder, k - 3, l - 4, k + i + 3, l - 3, 400, -267386864, -267386864);
 			fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 3, k + i + 3, l + m + 4, 400, -267386864, -267386864);
@@ -331,7 +332,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	/**
 	 * Called when a screen should be initialized.
 	 * 
-	 * <p>This method is called when this screen is {@linkplain net.minecraft.client.MinecraftClient#openScreen(Screen) opened} or resized.
+	 * <p>This method is called when this screen is {@link MinecraftClient#openScreen(Screen) opened} or resized.
 	 */
 	protected void init() {
 	}
@@ -370,7 +371,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	}
 
 	/**
-	 * Renders the fullscreen {@linkplain net.minecraft.client.gui.DrawableHelper#OPTIONS_BACKGROUND_TEXTURE background texture} of this screen.
+	 * Renders the fullscreen {@linkplain #BACKGROUND_TEXTURE background texture} of this screen.
 	 * 
 	 * @param vOffset an offset applied to the V coordinate of the background texture
 	 */
@@ -380,7 +381,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 		this.client.getTextureManager().bindTexture(OPTIONS_BACKGROUND_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
 		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0F, (float)this.height / 32.0F + (float)vOffset).color(64, 64, 64, 255).next();
 		bufferBuilder.vertex((double)this.width, (double)this.height, 0.0)
 			.texture((float)this.width / 32.0F, (float)this.height / 32.0F + (float)vOffset)

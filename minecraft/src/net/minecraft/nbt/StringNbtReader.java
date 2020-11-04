@@ -33,18 +33,18 @@ public class StringNbtReader {
 	private static final Pattern INT_PATTERN = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)");
 	private final StringReader reader;
 
-	public static NbtCompound parse(String string) throws CommandSyntaxException {
-		return new StringNbtReader(new StringReader(string)).readCompound();
+	public static CompoundTag parse(String string) throws CommandSyntaxException {
+		return new StringNbtReader(new StringReader(string)).readCompoundTag();
 	}
 
 	@VisibleForTesting
-	NbtCompound readCompound() throws CommandSyntaxException {
-		NbtCompound nbtCompound = this.parseCompound();
+	CompoundTag readCompoundTag() throws CommandSyntaxException {
+		CompoundTag compoundTag = this.parseCompoundTag();
 		this.reader.skipWhitespace();
 		if (this.reader.canRead()) {
 			throw TRAILING.createWithContext(this.reader);
 		} else {
-			return nbtCompound;
+			return compoundTag;
 		}
 	}
 
@@ -61,11 +61,11 @@ public class StringNbtReader {
 		}
 	}
 
-	protected NbtElement parseElementPrimitive() throws CommandSyntaxException {
+	protected Tag parseTagPrimitive() throws CommandSyntaxException {
 		this.reader.skipWhitespace();
 		int i = this.reader.getCursor();
 		if (StringReader.isQuotedStringStart(this.reader.peek())) {
-			return NbtString.of(this.reader.readQuotedString());
+			return StringTag.of(this.reader.readQuotedString());
 		} else {
 			String string = this.reader.readUnquotedString();
 			if (string.isEmpty()) {
@@ -77,72 +77,72 @@ public class StringNbtReader {
 		}
 	}
 
-	private NbtElement parsePrimitive(String input) {
+	private Tag parsePrimitive(String input) {
 		try {
 			if (FLOAT_PATTERN.matcher(input).matches()) {
-				return NbtFloat.of(Float.parseFloat(input.substring(0, input.length() - 1)));
+				return FloatTag.of(Float.parseFloat(input.substring(0, input.length() - 1)));
 			}
 
 			if (BYTE_PATTERN.matcher(input).matches()) {
-				return NbtByte.of(Byte.parseByte(input.substring(0, input.length() - 1)));
+				return ByteTag.of(Byte.parseByte(input.substring(0, input.length() - 1)));
 			}
 
 			if (LONG_PATTERN.matcher(input).matches()) {
-				return NbtLong.of(Long.parseLong(input.substring(0, input.length() - 1)));
+				return LongTag.of(Long.parseLong(input.substring(0, input.length() - 1)));
 			}
 
 			if (SHORT_PATTERN.matcher(input).matches()) {
-				return NbtShort.of(Short.parseShort(input.substring(0, input.length() - 1)));
+				return ShortTag.of(Short.parseShort(input.substring(0, input.length() - 1)));
 			}
 
 			if (INT_PATTERN.matcher(input).matches()) {
-				return NbtInt.of(Integer.parseInt(input));
+				return IntTag.of(Integer.parseInt(input));
 			}
 
 			if (DOUBLE_PATTERN.matcher(input).matches()) {
-				return NbtDouble.of(Double.parseDouble(input.substring(0, input.length() - 1)));
+				return DoubleTag.of(Double.parseDouble(input.substring(0, input.length() - 1)));
 			}
 
 			if (DOUBLE_PATTERN_IMPLICIT.matcher(input).matches()) {
-				return NbtDouble.of(Double.parseDouble(input));
+				return DoubleTag.of(Double.parseDouble(input));
 			}
 
 			if ("true".equalsIgnoreCase(input)) {
-				return NbtByte.ONE;
+				return ByteTag.ONE;
 			}
 
 			if ("false".equalsIgnoreCase(input)) {
-				return NbtByte.ZERO;
+				return ByteTag.ZERO;
 			}
 		} catch (NumberFormatException var3) {
 		}
 
-		return NbtString.of(input);
+		return StringTag.of(input);
 	}
 
-	public NbtElement parseElement() throws CommandSyntaxException {
+	public Tag parseTag() throws CommandSyntaxException {
 		this.reader.skipWhitespace();
 		if (!this.reader.canRead()) {
 			throw EXPECTED_VALUE.createWithContext(this.reader);
 		} else {
 			char c = this.reader.peek();
 			if (c == '{') {
-				return this.parseCompound();
+				return this.parseCompoundTag();
 			} else {
-				return c == '[' ? this.parseArray() : this.parseElementPrimitive();
+				return c == '[' ? this.parseTagArray() : this.parseTagPrimitive();
 			}
 		}
 	}
 
-	protected NbtElement parseArray() throws CommandSyntaxException {
+	protected Tag parseTagArray() throws CommandSyntaxException {
 		return this.reader.canRead(3) && !StringReader.isQuotedStringStart(this.reader.peek(1)) && this.reader.peek(2) == ';'
-			? this.parseElementPrimitiveArray()
-			: this.parseList();
+			? this.parseTagPrimitiveArray()
+			: this.parseListTag();
 	}
 
-	public NbtCompound parseCompound() throws CommandSyntaxException {
+	public CompoundTag parseCompoundTag() throws CommandSyntaxException {
 		this.expect('{');
-		NbtCompound nbtCompound = new NbtCompound();
+		CompoundTag compoundTag = new CompoundTag();
 		this.reader.skipWhitespace();
 
 		while (this.reader.canRead() && this.reader.peek() != '}') {
@@ -154,7 +154,7 @@ public class StringNbtReader {
 			}
 
 			this.expect(':');
-			nbtCompound.put(string, this.parseElement());
+			compoundTag.put(string, this.parseTag());
 			if (!this.readComma()) {
 				break;
 			}
@@ -165,30 +165,30 @@ public class StringNbtReader {
 		}
 
 		this.expect('}');
-		return nbtCompound;
+		return compoundTag;
 	}
 
-	private NbtElement parseList() throws CommandSyntaxException {
+	private Tag parseListTag() throws CommandSyntaxException {
 		this.expect('[');
 		this.reader.skipWhitespace();
 		if (!this.reader.canRead()) {
 			throw EXPECTED_VALUE.createWithContext(this.reader);
 		} else {
-			NbtList nbtList = new NbtList();
-			NbtType<?> nbtType = null;
+			ListTag listTag = new ListTag();
+			TagReader<?> tagReader = null;
 
 			while (this.reader.peek() != ']') {
 				int i = this.reader.getCursor();
-				NbtElement nbtElement = this.parseElement();
-				NbtType<?> nbtType2 = nbtElement.getNbtType();
-				if (nbtType == null) {
-					nbtType = nbtType2;
-				} else if (nbtType2 != nbtType) {
+				Tag tag = this.parseTag();
+				TagReader<?> tagReader2 = tag.getReader();
+				if (tagReader == null) {
+					tagReader = tagReader2;
+				} else if (tagReader2 != tagReader) {
 					this.reader.setCursor(i);
-					throw LIST_MIXED.createWithContext(this.reader, nbtType2.getCommandFeedbackName(), nbtType.getCommandFeedbackName());
+					throw LIST_MIXED.createWithContext(this.reader, tagReader2.getCommandFeedbackName(), tagReader.getCommandFeedbackName());
 				}
 
-				nbtList.add(nbtElement);
+				listTag.add(tag);
 				if (!this.readComma()) {
 					break;
 				}
@@ -199,11 +199,11 @@ public class StringNbtReader {
 			}
 
 			this.expect(']');
-			return nbtList;
+			return listTag;
 		}
 	}
 
-	private NbtElement parseElementPrimitiveArray() throws CommandSyntaxException {
+	private Tag parseTagPrimitiveArray() throws CommandSyntaxException {
 		this.expect('[');
 		int i = this.reader.getCursor();
 		char c = this.reader.read();
@@ -212,35 +212,35 @@ public class StringNbtReader {
 		if (!this.reader.canRead()) {
 			throw EXPECTED_VALUE.createWithContext(this.reader);
 		} else if (c == 'B') {
-			return new NbtByteArray(this.readArray(NbtByteArray.TYPE, NbtByte.TYPE));
+			return new ByteArrayTag(this.readArray(ByteArrayTag.READER, ByteTag.READER));
 		} else if (c == 'L') {
-			return new NbtLongArray(this.readArray(NbtLongArray.TYPE, NbtLong.TYPE));
+			return new LongArrayTag(this.readArray(LongArrayTag.READER, LongTag.READER));
 		} else if (c == 'I') {
-			return new NbtIntArray(this.readArray(NbtIntArray.TYPE, NbtInt.TYPE));
+			return new IntArrayTag(this.readArray(IntArrayTag.READER, IntTag.READER));
 		} else {
 			this.reader.setCursor(i);
 			throw ARRAY_INVALID.createWithContext(this.reader, String.valueOf(c));
 		}
 	}
 
-	private <T extends Number> List<T> readArray(NbtType<?> arrayTypeReader, NbtType<?> typeReader) throws CommandSyntaxException {
+	private <T extends Number> List<T> readArray(TagReader<?> arrayTypeReader, TagReader<?> typeReader) throws CommandSyntaxException {
 		List<T> list = Lists.<T>newArrayList();
 
 		while (this.reader.peek() != ']') {
 			int i = this.reader.getCursor();
-			NbtElement nbtElement = this.parseElement();
-			NbtType<?> nbtType = nbtElement.getNbtType();
-			if (nbtType != typeReader) {
+			Tag tag = this.parseTag();
+			TagReader<?> tagReader = tag.getReader();
+			if (tagReader != typeReader) {
 				this.reader.setCursor(i);
-				throw ARRAY_MIXED.createWithContext(this.reader, nbtType.getCommandFeedbackName(), arrayTypeReader.getCommandFeedbackName());
+				throw ARRAY_MIXED.createWithContext(this.reader, tagReader.getCommandFeedbackName(), arrayTypeReader.getCommandFeedbackName());
 			}
 
-			if (typeReader == NbtByte.TYPE) {
-				list.add(((AbstractNbtNumber)nbtElement).byteValue());
-			} else if (typeReader == NbtLong.TYPE) {
-				list.add(((AbstractNbtNumber)nbtElement).longValue());
+			if (typeReader == ByteTag.READER) {
+				list.add(((AbstractNumberTag)tag).getByte());
+			} else if (typeReader == LongTag.READER) {
+				list.add(((AbstractNumberTag)tag).getLong());
 			} else {
-				list.add(((AbstractNbtNumber)nbtElement).intValue());
+				list.add(((AbstractNumberTag)tag).getInt());
 			}
 
 			if (!this.readComma()) {

@@ -21,7 +21,7 @@ public class VertexFormat {
 
 		for (VertexFormatElement vertexFormatElement : immutableList) {
 			this.offsets.add(i);
-			i += vertexFormatElement.getByteLength();
+			i += vertexFormatElement.getSize();
 		}
 
 		this.size = i;
@@ -77,6 +77,76 @@ public class VertexFormat {
 		} else {
 			for (VertexFormatElement vertexFormatElement : this.getElements()) {
 				vertexFormatElement.endDrawing();
+			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum DrawMode {
+		LINES(1, 2, 2),
+		LINE_STRIP(3, 2, 1),
+		TRIANGLES(4, 3, 3),
+		TRIANGLE_STRIP(5, 3, 1),
+		TRIANGLE_FAN(6, 3, 1),
+		QUADS(4, 4, 4);
+
+		public final int mode;
+		public final int field_27384;
+		public final int field_27385;
+
+		private DrawMode(int mode, int j, int k) {
+			this.mode = mode;
+			this.field_27384 = j;
+			this.field_27385 = k;
+		}
+
+		public int method_31973(int vertexCount) {
+			int i;
+			switch (this) {
+				case LINES:
+				case LINE_STRIP:
+				case TRIANGLES:
+				case TRIANGLE_STRIP:
+				case TRIANGLE_FAN:
+					i = vertexCount;
+					break;
+				case QUADS:
+					i = vertexCount / 4 * 6;
+					break;
+				default:
+					i = 0;
+			}
+
+			return i;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum IntType {
+		BYTE(5121, 1),
+		SHORT(5123, 2),
+		INT(5125, 4);
+
+		public final int field_27374;
+		public final int size;
+
+		private IntType(int j, int size) {
+			this.field_27374 = j;
+			this.size = size;
+		}
+
+		/**
+		 * Gets the smallest type in which the given number fits.
+		 * 
+		 * @return the smallest type
+		 * 
+		 * @param number a number from 8 to 32 bits of memory
+		 */
+		public static VertexFormat.IntType getSmallestTypeFor(int number) {
+			if ((number & -65536) != 0) {
+				return INT;
+			} else {
+				return (number & 0xFF00) != 0 ? SHORT : BYTE;
 			}
 		}
 	}

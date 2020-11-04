@@ -27,13 +27,13 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 		}
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		} else if (!(o instanceof ChunkTicket)) {
+		} else if (!(obj instanceof ChunkTicket)) {
 			return false;
 		} else {
-			ChunkTicket<?> chunkTicket = (ChunkTicket<?>)o;
+			ChunkTicket<?> chunkTicket = (ChunkTicket<?>)obj;
 			return this.level == chunkTicket.level && Objects.equals(this.type, chunkTicket.type) && Objects.equals(this.argument, chunkTicket.argument);
 		}
 	}

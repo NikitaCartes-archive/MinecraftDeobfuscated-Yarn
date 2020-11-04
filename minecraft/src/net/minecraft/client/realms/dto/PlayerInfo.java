@@ -42,7 +42,7 @@ public class PlayerInfo extends ValueObject implements RealmsSerializable {
 		this.operator = operator;
 	}
 
-	public boolean isAccepted() {
+	public boolean getAccepted() {
 		return this.accepted;
 	}
 
@@ -50,7 +50,7 @@ public class PlayerInfo extends ValueObject implements RealmsSerializable {
 		this.accepted = accepted;
 	}
 
-	public boolean isOnline() {
+	public boolean getOnline() {
 		return this.online;
 	}
 

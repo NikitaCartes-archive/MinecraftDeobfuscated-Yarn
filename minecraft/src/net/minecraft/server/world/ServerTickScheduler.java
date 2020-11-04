@@ -9,13 +9,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -23,6 +22,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.TickPriority;
 import net.minecraft.world.TickScheduler;
@@ -31,17 +31,17 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	protected final Predicate<T> invalidObjPredicate;
 	private final Function<T, Identifier> idToName;
 	private final Set<ScheduledTick<T>> scheduledTickActions = Sets.<ScheduledTick<T>>newHashSet();
-	private final TreeSet<ScheduledTick<T>> scheduledTickActionsInOrder = Sets.newTreeSet(ScheduledTick.getComparator());
+	private final Set<ScheduledTick<T>> scheduledTickActionsInOrder = Sets.<ScheduledTick<T>>newTreeSet(ScheduledTick.getComparator());
 	private final ServerWorld world;
 	private final Queue<ScheduledTick<T>> currentTickActions = Queues.<ScheduledTick<T>>newArrayDeque();
 	private final List<ScheduledTick<T>> consumedTickActions = Lists.<ScheduledTick<T>>newArrayList();
 	private final Consumer<ScheduledTick<T>> tickConsumer;
 
-	public ServerTickScheduler(ServerWorld world, Predicate<T> invalidObjPredicate, Function<T, Identifier> idToName, Consumer<ScheduledTick<T>> tickConsumer) {
+	public ServerTickScheduler(ServerWorld world, Predicate<T> invalidObjPredicate, Function<T, Identifier> idToName, Consumer<ScheduledTick<T>> consumer) {
 		this.invalidObjPredicate = invalidObjPredicate;
 		this.idToName = idToName;
 		this.world = world;
-		this.tickConsumer = tickConsumer;
+		this.tickConsumer = consumer;
 	}
 
 	public void tick() {
@@ -82,7 +82,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 					} catch (Throwable var8) {
 						CrashReport crashReport = CrashReport.create(var8, "Exception while ticking");
 						CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
-						CrashReportSection.addBlockInfo(crashReportSection, scheduledTickx.pos, null);
+						CrashReportSection.addBlockInfo(crashReportSection, this.world, scheduledTickx.pos, null);
 						throw new CrashException(crashReport);
 					}
 				} else {
@@ -101,12 +101,12 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		return this.currentTickActions.contains(new ScheduledTick(pos, object));
 	}
 
-	public List<ScheduledTick<T>> getScheduledTicksInChunk(ChunkPos pos, boolean updateState, boolean getStaleTicks) {
-		int i = (pos.x << 4) - 2;
+	public List<ScheduledTick<T>> getScheduledTicksInChunk(ChunkPos chunkPos, boolean updateState, boolean getStaleTicks) {
+		int i = ChunkSectionPos.getBlockCoord(chunkPos.x) - 2;
 		int j = i + 16 + 2;
-		int k = (pos.z << 4) - 2;
+		int k = ChunkSectionPos.getBlockCoord(chunkPos.z) - 2;
 		int l = k + 16 + 2;
-		return this.getScheduledTicks(new BlockBox(i, 0, k, j, 256, l), updateState, getStaleTicks);
+		return this.getScheduledTicks(new BlockBox(i, this.world.getBottomHeightLimit(), k, j, this.world.getTopHeightLimit(), l), updateState, getStaleTicks);
 	}
 
 	public List<ScheduledTick<T>> getScheduledTicks(BlockBox bounds, boolean updateState, boolean getStaleTicks) {
@@ -156,26 +156,26 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		}
 	}
 
-	public NbtList toNbt(ChunkPos chunkPos) {
+	public ListTag toTag(ChunkPos chunkPos) {
 		List<ScheduledTick<T>> list = this.getScheduledTicksInChunk(chunkPos, false, true);
 		return serializeScheduledTicks(this.idToName, list, this.world.getTime());
 	}
 
-	private static <T> NbtList serializeScheduledTicks(Function<T, Identifier> identifierProvider, Iterable<ScheduledTick<T>> scheduledTicks, long time) {
-		NbtList nbtList = new NbtList();
+	private static <T> ListTag serializeScheduledTicks(Function<T, Identifier> identifierProvider, Iterable<ScheduledTick<T>> scheduledTicks, long time) {
+		ListTag listTag = new ListTag();
 
 		for (ScheduledTick<T> scheduledTick : scheduledTicks) {
-			NbtCompound nbtCompound = new NbtCompound();
-			nbtCompound.putString("i", ((Identifier)identifierProvider.apply(scheduledTick.getObject())).toString());
-			nbtCompound.putInt("x", scheduledTick.pos.getX());
-			nbtCompound.putInt("y", scheduledTick.pos.getY());
-			nbtCompound.putInt("z", scheduledTick.pos.getZ());
-			nbtCompound.putInt("t", (int)(scheduledTick.time - time));
-			nbtCompound.putInt("p", scheduledTick.priority.getIndex());
-			nbtList.add(nbtCompound);
+			CompoundTag compoundTag = new CompoundTag();
+			compoundTag.putString("i", ((Identifier)identifierProvider.apply(scheduledTick.getObject())).toString());
+			compoundTag.putInt("x", scheduledTick.pos.getX());
+			compoundTag.putInt("y", scheduledTick.pos.getY());
+			compoundTag.putInt("z", scheduledTick.pos.getZ());
+			compoundTag.putInt("t", (int)(scheduledTick.time - time));
+			compoundTag.putInt("p", scheduledTick.priority.getIndex());
+			listTag.add(compoundTag);
 		}
 
-		return nbtList;
+		return listTag;
 	}
 
 	@Override
@@ -190,10 +190,10 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		}
 	}
 
-	private void addScheduledTick(ScheduledTick<T> tick) {
-		if (!this.scheduledTickActions.contains(tick)) {
-			this.scheduledTickActions.add(tick);
-			this.scheduledTickActionsInOrder.add(tick);
+	private void addScheduledTick(ScheduledTick<T> scheduledTick) {
+		if (!this.scheduledTickActions.contains(scheduledTick)) {
+			this.scheduledTickActions.add(scheduledTick);
+			this.scheduledTickActionsInOrder.add(scheduledTick);
 		}
 	}
 

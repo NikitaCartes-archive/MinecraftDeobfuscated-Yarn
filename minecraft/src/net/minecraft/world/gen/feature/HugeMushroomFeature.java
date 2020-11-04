@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -36,9 +35,9 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 
 	protected boolean canGenerate(WorldAccess world, BlockPos pos, int height, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
 		int i = pos.getY();
-		if (i >= 1 && i + height + 1 < 256) {
-			Block block = world.getBlockState(pos.down()).getBlock();
-			if (!isSoil(block) && !block.isIn(BlockTags.MUSHROOM_GROW_BLOCK)) {
+		if (i >= world.getBottomHeightLimit() + 1 && i + height + 1 < world.getTopHeightLimit()) {
+			BlockState blockState = world.getBlockState(pos.down());
+			if (!isSoil(blockState) && !blockState.isIn(BlockTags.MUSHROOM_GROW_BLOCK)) {
 				return false;
 			} else {
 				for (int j = 0; j <= height; j++) {
@@ -46,8 +45,8 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 
 					for (int l = -k; l <= k; l++) {
 						for (int m = -k; m <= k; m++) {
-							BlockState blockState = world.getBlockState(mutable.set(pos, l, j, m));
-							if (!blockState.isAir() && !blockState.isIn(BlockTags.LEAVES)) {
+							BlockState blockState2 = world.getBlockState(mutable.set(pos, l, j, m));
+							if (!blockState2.isAir() && !blockState2.isIn(BlockTags.LEAVES)) {
 								return false;
 							}
 						}

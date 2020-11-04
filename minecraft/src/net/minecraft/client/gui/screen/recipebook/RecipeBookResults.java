@@ -33,9 +33,9 @@ public class RecipeBookResults {
 		}
 	}
 
-	public void initialize(MinecraftClient client, int parentLeft, int parentTop) {
-		this.client = client;
-		this.recipeBook = client.player.getRecipeBook();
+	public void initialize(MinecraftClient minecraftClient, int parentLeft, int parentTop) {
+		this.client = minecraftClient;
+		this.recipeBook = minecraftClient.player.getRecipeBook();
 
 		for (int i = 0; i < this.resultButtons.size(); i++) {
 			((AnimatedResultButton)this.resultButtons.get(i)).setPos(parentLeft + 11 + 25 * (i % 5), parentTop + 31 + 25 * (i / 5));
@@ -84,30 +84,30 @@ public class RecipeBookResults {
 		this.prevPageButton.visible = this.pageCount > 1 && this.currentPage > 0;
 	}
 
-	public void draw(MatrixStack matrices, int i, int j, int k, int l, float f) {
+	public void draw(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
 		if (this.pageCount > 1) {
 			String string = this.currentPage + 1 + "/" + this.pageCount;
 			int m = this.client.textRenderer.getWidth(string);
-			this.client.textRenderer.draw(matrices, string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
+			this.client.textRenderer.draw(matrixStack, string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
 		}
 
 		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-			animatedResultButton.render(matrices, k, l, f);
+			animatedResultButton.render(matrixStack, k, l, f);
 			if (animatedResultButton.visible && animatedResultButton.isHovered()) {
 				this.hoveredResultButton = animatedResultButton;
 			}
 		}
 
-		this.prevPageButton.render(matrices, k, l, f);
-		this.nextPageButton.render(matrices, k, l, f);
-		this.alternatesWidget.render(matrices, k, l, f);
+		this.prevPageButton.render(matrixStack, k, l, f);
+		this.nextPageButton.render(matrixStack, k, l, f);
+		this.alternatesWidget.render(matrixStack, k, l, f);
 	}
 
-	public void drawTooltip(MatrixStack matrices, int i, int j) {
+	public void drawTooltip(MatrixStack matrixStack, int i, int j) {
 		if (this.client.currentScreen != null && this.hoveredResultButton != null && !this.alternatesWidget.isVisible()) {
-			this.client.currentScreen.renderTooltip(matrices, this.hoveredResultButton.getTooltip(this.client.currentScreen), i, j);
+			this.client.currentScreen.renderTooltip(matrixStack, this.hoveredResultButton.getTooltip(this.client.currentScreen), i, j);
 		}
 	}
 
@@ -172,9 +172,9 @@ public class RecipeBookResults {
 		}
 	}
 
-	public void onRecipesDisplayed(List<Recipe<?>> recipes) {
+	public void onRecipesDisplayed(List<Recipe<?>> list) {
 		for (RecipeDisplayListener recipeDisplayListener : this.recipeDisplayListeners) {
-			recipeDisplayListener.onRecipesDisplayed(recipes);
+			recipeDisplayListener.onRecipesDisplayed(list);
 		}
 	}
 

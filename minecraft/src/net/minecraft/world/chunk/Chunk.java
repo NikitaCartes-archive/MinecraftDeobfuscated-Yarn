@@ -13,7 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -32,7 +32,7 @@ public interface Chunk extends BlockView, StructureHolder {
 	@Nullable
 	BlockState setBlockState(BlockPos pos, BlockState state, boolean moved);
 
-	void setBlockEntity(BlockPos pos, BlockEntity blockEntity);
+	void setBlockEntity(BlockEntity blockEntity);
 
 	void addEntity(Entity entity);
 
@@ -52,7 +52,7 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	default int getHighestNonEmptySectionYOffset() {
 		ChunkSection chunkSection = this.getHighestNonEmptySection();
-		return chunkSection == null ? 0 : chunkSection.getYOffset();
+		return chunkSection == null ? this.getBottomHeightLimit() : chunkSection.getYOffset();
 	}
 
 	Set<BlockPos> getBlockEntityPositions();
@@ -69,23 +69,21 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	ChunkPos getPos();
 
-	void setLastSaveTime(long lastSaveTime);
-
 	Map<StructureFeature<?>, StructureStart<?>> getStructureStarts();
 
 	void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts);
 
 	default boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
-		if (lowerHeight < 0) {
-			lowerHeight = 0;
+		if (lowerHeight < this.getBottomHeightLimit()) {
+			lowerHeight = this.getBottomHeightLimit();
 		}
 
-		if (upperHeight >= 256) {
-			upperHeight = 255;
+		if (upperHeight >= this.getTopHeightLimit()) {
+			upperHeight = this.getTopHeightLimit() - 1;
 		}
 
 		for (int i = lowerHeight; i <= upperHeight; i += 16) {
-			if (!ChunkSection.isEmpty(this.getSectionArray()[i >> 4])) {
+			if (!ChunkSection.isEmpty(this.getSectionArray()[this.getSectionIndex(i)])) {
 				return false;
 			}
 		}
@@ -110,19 +108,19 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	ShortList[] getPostProcessingLists();
 
-	default void markBlockForPostProcessing(short packedPos, int index) {
-		getList(this.getPostProcessingLists(), index).add(packedPos);
+	default void markBlockForPostProcessing(short s, int i) {
+		getList(this.getPostProcessingLists(), i).add(s);
 	}
 
-	default void addPendingBlockEntityNbt(NbtCompound nbt) {
+	default void addPendingBlockEntityTag(CompoundTag tag) {
 		LogManager.getLogger().warn("Trying to set a BlockEntity, but this operation is not supported.");
 	}
 
 	@Nullable
-	NbtCompound getBlockEntityNbt(BlockPos pos);
+	CompoundTag getBlockEntityTag(BlockPos pos);
 
 	@Nullable
-	NbtCompound getPackedBlockEntityNbt(BlockPos pos);
+	CompoundTag getPackedBlockEntityTag(BlockPos pos);
 
 	Stream<BlockPos> getLightSourcesStream();
 

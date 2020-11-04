@@ -14,13 +14,14 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
@@ -59,40 +60,40 @@ public abstract class StructurePiece {
 		this.chainLength = length;
 	}
 
-	public StructurePiece(StructurePieceType type, NbtCompound nbt) {
-		this(type, nbt.getInt("GD"));
-		if (nbt.contains("BB")) {
-			this.boundingBox = new BlockBox(nbt.getIntArray("BB"));
+	public StructurePiece(StructurePieceType type, CompoundTag tag) {
+		this(type, tag.getInt("GD"));
+		if (tag.contains("BB")) {
+			this.boundingBox = new BlockBox(tag.getIntArray("BB"));
 		}
 
-		int i = nbt.getInt("O");
+		int i = tag.getInt("O");
 		this.setOrientation(i == -1 ? null : Direction.fromHorizontal(i));
 	}
 
-	public final NbtCompound getTag() {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
-		nbtCompound.put("BB", this.boundingBox.toNbt());
+	public final CompoundTag getTag() {
+		CompoundTag compoundTag = new CompoundTag();
+		compoundTag.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
+		compoundTag.put("BB", this.boundingBox.toNbt());
 		Direction direction = this.getFacing();
-		nbtCompound.putInt("O", direction == null ? -1 : direction.getHorizontal());
-		nbtCompound.putInt("GD", this.chainLength);
-		this.toNbt(nbtCompound);
-		return nbtCompound;
+		compoundTag.putInt("O", direction == null ? -1 : direction.getHorizontal());
+		compoundTag.putInt("GD", this.chainLength);
+		this.toNbt(compoundTag);
+		return compoundTag;
 	}
 
-	protected abstract void toNbt(NbtCompound tag);
+	protected abstract void toNbt(CompoundTag tag);
 
 	public void fillOpenings(StructurePiece start, List<StructurePiece> pieces, Random random) {
 	}
 
 	public abstract boolean generate(
-		StructureWorldAccess world,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockBox boundingBox,
 		ChunkPos chunkPos,
-		BlockPos pos
+		BlockPos blockPos
 	);
 
 	public BlockBox getBoundingBox() {
@@ -103,9 +104,9 @@ public abstract class StructurePiece {
 		return this.chainLength;
 	}
 
-	public boolean intersectsChunk(ChunkPos pos, int offset) {
-		int i = pos.x << 4;
-		int j = pos.z << 4;
+	public boolean intersectsChunk(ChunkPos chunkPos, int offset) {
+		int i = ChunkSectionPos.getBlockCoord(chunkPos.x);
+		int j = ChunkSectionPos.getBlockCoord(chunkPos.z);
 		return this.boundingBox.intersectsXZ(i - offset, j - offset, i + 15 + offset, j + 15 + offset);
 	}
 
@@ -209,9 +210,9 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void addBlock(StructureWorldAccess world, BlockState block, int x, int i, int j, BlockBox box) {
-		BlockPos blockPos = new BlockPos(this.applyXTransform(x, j), this.applyYTransform(i), this.applyZTransform(x, j));
-		if (box.contains(blockPos)) {
+	protected void addBlock(StructureWorldAccess structureWorldAccess, BlockState block, int x, int y, int z, BlockBox blockBox) {
+		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
+		if (blockBox.contains(blockPos)) {
 			if (this.mirror != BlockMirror.NONE) {
 				block = block.mirror(this.mirror);
 			}
@@ -220,47 +221,47 @@ public abstract class StructurePiece {
 				block = block.rotate(this.rotation);
 			}
 
-			world.setBlockState(blockPos, block, 2);
-			FluidState fluidState = world.getFluidState(blockPos);
+			structureWorldAccess.setBlockState(blockPos, block, 2);
+			FluidState fluidState = structureWorldAccess.getFluidState(blockPos);
 			if (!fluidState.isEmpty()) {
-				world.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
+				structureWorldAccess.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
 			}
 
 			if (BLOCKS_NEEDING_POST_PROCESSING.contains(block.getBlock())) {
-				world.getChunk(blockPos).markBlockForPostProcessing(blockPos);
+				structureWorldAccess.getChunk(blockPos).markBlockForPostProcessing(blockPos);
 			}
 		}
 	}
 
-	protected BlockState getBlockAt(BlockView world, int x, int i, int j, BlockBox box) {
-		int k = this.applyXTransform(x, j);
-		int l = this.applyYTransform(i);
-		int m = this.applyZTransform(x, j);
-		BlockPos blockPos = new BlockPos(k, l, m);
-		return !box.contains(blockPos) ? Blocks.AIR.getDefaultState() : world.getBlockState(blockPos);
+	protected BlockState getBlockAt(BlockView blockView, int x, int y, int z, BlockBox blockBox) {
+		int i = this.applyXTransform(x, z);
+		int j = this.applyYTransform(y);
+		int k = this.applyZTransform(x, z);
+		BlockPos blockPos = new BlockPos(i, j, k);
+		return !blockBox.contains(blockPos) ? Blocks.AIR.getDefaultState() : blockView.getBlockState(blockPos);
 	}
 
-	protected boolean isUnderSeaLevel(WorldView world, int x, int z, int y, BlockBox box) {
+	protected boolean isUnderSeaLevel(WorldView worldView, int x, int z, int y, BlockBox blockBox) {
 		int i = this.applyXTransform(x, y);
 		int j = this.applyYTransform(z + 1);
 		int k = this.applyZTransform(x, y);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		return !box.contains(blockPos) ? false : j < world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, i, k);
+		return !blockBox.contains(blockPos) ? false : j < worldView.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, i, k);
 	}
 
-	protected void fill(StructureWorldAccess world, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+	protected void fill(StructureWorldAccess structureWorldAccess, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		for (int i = minY; i <= maxY; i++) {
 			for (int j = minX; j <= maxX; j++) {
 				for (int k = minZ; k <= maxZ; k++) {
-					this.addBlock(world, Blocks.AIR.getDefaultState(), j, i, k, bounds);
+					this.addBlock(structureWorldAccess, Blocks.AIR.getDefaultState(), j, i, k, bounds);
 				}
 			}
 		}
 	}
 
 	protected void fillWithOutline(
-		StructureWorldAccess world,
-		BlockBox box,
+		StructureWorldAccess structureWorldAccess,
+		BlockBox blockBox,
 		int minX,
 		int minY,
 		int minZ,
@@ -274,11 +275,11 @@ public abstract class StructurePiece {
 		for (int i = minY; i <= maxY; i++) {
 			for (int j = minX; j <= maxX; j++) {
 				for (int k = minZ; k <= maxZ; k++) {
-					if (!cantReplaceAir || !this.getBlockAt(world, j, i, k, box).isAir()) {
+					if (!cantReplaceAir || !this.getBlockAt(structureWorldAccess, j, i, k, blockBox).isAir()) {
 						if (i != minY && i != maxY && j != minX && j != maxX && k != minZ && k != maxZ) {
-							this.addBlock(world, inside, j, i, k, box);
+							this.addBlock(structureWorldAccess, inside, j, i, k, blockBox);
 						} else {
-							this.addBlock(world, outline, j, i, k, box);
+							this.addBlock(structureWorldAccess, outline, j, i, k, blockBox);
 						}
 					}
 				}
@@ -287,8 +288,8 @@ public abstract class StructurePiece {
 	}
 
 	protected void fillWithOutline(
-		StructureWorldAccess world,
-		BlockBox box,
+		StructureWorldAccess structureWorldAccess,
+		BlockBox blockBox,
 		int minX,
 		int minY,
 		int minZ,
@@ -297,14 +298,14 @@ public abstract class StructurePiece {
 		int maxZ,
 		boolean cantReplaceAir,
 		Random random,
-		StructurePiece.BlockRandomizer randomizer
+		StructurePiece.BlockRandomizer blockRandomizer
 	) {
 		for (int i = minY; i <= maxY; i++) {
 			for (int j = minX; j <= maxX; j++) {
 				for (int k = minZ; k <= maxZ; k++) {
-					if (!cantReplaceAir || !this.getBlockAt(world, j, i, k, box).isAir()) {
-						randomizer.setBlock(random, j, i, k, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
-						this.addBlock(world, randomizer.getBlock(), j, i, k, box);
+					if (!cantReplaceAir || !this.getBlockAt(structureWorldAccess, j, i, k, blockBox).isAir()) {
+						blockRandomizer.setBlock(random, j, i, k, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
+						this.addBlock(structureWorldAccess, blockRandomizer.getBlock(), j, i, k, blockBox);
 					}
 				}
 			}
@@ -312,8 +313,8 @@ public abstract class StructurePiece {
 	}
 
 	protected void fillWithOutlineUnderSeaLevel(
-		StructureWorldAccess world,
-		BlockBox box,
+		StructureWorldAccess structureWorldAccess,
+		BlockBox blockBox,
 		Random random,
 		float blockChance,
 		int minX,
@@ -331,12 +332,12 @@ public abstract class StructurePiece {
 			for (int j = minX; j <= maxX; j++) {
 				for (int k = minZ; k <= maxZ; k++) {
 					if (!(random.nextFloat() > blockChance)
-						&& (!cantReplaceAir || !this.getBlockAt(world, j, i, k, box).isAir())
-						&& (!stayBelowSeaLevel || this.isUnderSeaLevel(world, j, i, k, box))) {
+						&& (!cantReplaceAir || !this.getBlockAt(structureWorldAccess, j, i, k, blockBox).isAir())
+						&& (!stayBelowSeaLevel || this.isUnderSeaLevel(structureWorldAccess, j, i, k, blockBox))) {
 						if (i != minY && i != maxY && j != minX && j != maxX && k != minZ && k != maxZ) {
-							this.addBlock(world, inside, j, i, k, box);
+							this.addBlock(structureWorldAccess, inside, j, i, k, blockBox);
 						} else {
-							this.addBlock(world, outline, j, i, k, box);
+							this.addBlock(structureWorldAccess, outline, j, i, k, blockBox);
 						}
 					}
 				}
@@ -344,14 +345,25 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void addBlockWithRandomThreshold(StructureWorldAccess world, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState state) {
+	protected void addBlockWithRandomThreshold(
+		StructureWorldAccess structureWorldAccess, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState blockState
+	) {
 		if (random.nextFloat() < threshold) {
-			this.addBlock(world, state, x, y, z, bounds);
+			this.addBlock(structureWorldAccess, blockState, x, y, z, bounds);
 		}
 	}
 
 	protected void fillHalfEllipsoid(
-		StructureWorldAccess world, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, BlockState block, boolean cantReplaceAir
+		StructureWorldAccess structureWorldAccess,
+		BlockBox bounds,
+		int minX,
+		int minY,
+		int minZ,
+		int maxX,
+		int maxY,
+		int maxZ,
+		BlockState block,
+		boolean cantReplaceAir
 	) {
 		float f = (float)(maxX - minX + 1);
 		float g = (float)(maxY - minY + 1);
@@ -367,10 +379,10 @@ public abstract class StructurePiece {
 
 				for (int o = minZ; o <= maxZ; o++) {
 					float p = ((float)o - j) / (h * 0.5F);
-					if (!cantReplaceAir || !this.getBlockAt(world, m, k, o, bounds).isAir()) {
+					if (!cantReplaceAir || !this.getBlockAt(structureWorldAccess, m, k, o, bounds).isAir()) {
 						float q = n * n + l * l + p * p;
 						if (q <= 1.05F) {
-							this.addBlock(world, block, m, k, o, bounds);
+							this.addBlock(structureWorldAccess, block, m, k, o, bounds);
 						}
 					}
 				}
@@ -378,34 +390,37 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void fillDownwards(StructureWorldAccess world, BlockState state, int x, int i, int j, BlockBox box) {
-		int k = this.applyXTransform(x, j);
-		int l = this.applyYTransform(i);
-		int m = this.applyZTransform(x, j);
-		if (box.contains(new BlockPos(k, l, m))) {
-			while ((world.isAir(new BlockPos(k, l, m)) || world.getBlockState(new BlockPos(k, l, m)).getMaterial().isLiquid()) && l > 1) {
-				world.setBlockState(new BlockPos(k, l, m), state, 2);
-				l--;
+	protected void fillDownwards(StructureWorldAccess structureWorldAccess, BlockState blockState, int x, int y, int z, BlockBox blockBox) {
+		int i = this.applyXTransform(x, z);
+		int j = this.applyYTransform(y);
+		int k = this.applyZTransform(x, z);
+		if (blockBox.contains(new BlockPos(i, j, k))) {
+			while (
+				(structureWorldAccess.isAir(new BlockPos(i, j, k)) || structureWorldAccess.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid())
+					&& j > structureWorldAccess.getBottomHeightLimit() + 1
+			) {
+				structureWorldAccess.setBlockState(new BlockPos(i, j, k), blockState, 2);
+				j--;
 			}
 		}
 	}
 
-	protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
+	protected boolean addChest(StructureWorldAccess structureWorldAccess, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
-		return this.addChest(world, boundingBox, random, blockPos, lootTableId, null);
+		return this.addChest(structureWorldAccess, boundingBox, random, blockPos, lootTableId, null);
 	}
 
-	public static BlockState orientateChest(BlockView world, BlockPos pos, BlockState state) {
+	public static BlockState orientateChest(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		Direction direction = null;
 
 		for (Direction direction2 : Direction.Type.HORIZONTAL) {
-			BlockPos blockPos = pos.offset(direction2);
-			BlockState blockState = world.getBlockState(blockPos);
-			if (blockState.isOf(Blocks.CHEST)) {
-				return state;
+			BlockPos blockPos2 = blockPos.offset(direction2);
+			BlockState blockState2 = blockView.getBlockState(blockPos2);
+			if (blockState2.isOf(Blocks.CHEST)) {
+				return blockState;
 			}
 
-			if (blockState.isOpaqueFullCube(world, blockPos)) {
+			if (blockState2.isOpaqueFullCube(blockView, blockPos2)) {
 				if (direction != null) {
 					direction = null;
 					break;
@@ -416,37 +431,39 @@ public abstract class StructurePiece {
 		}
 
 		if (direction != null) {
-			return state.with(HorizontalFacingBlock.FACING, direction.getOpposite());
+			return blockState.with(HorizontalFacingBlock.FACING, direction.getOpposite());
 		} else {
-			Direction direction3 = state.get(HorizontalFacingBlock.FACING);
-			BlockPos blockPos2 = pos.offset(direction3);
-			if (world.getBlockState(blockPos2).isOpaqueFullCube(world, blockPos2)) {
+			Direction direction3 = blockState.get(HorizontalFacingBlock.FACING);
+			BlockPos blockPos3 = blockPos.offset(direction3);
+			if (blockView.getBlockState(blockPos3).isOpaqueFullCube(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
-				blockPos2 = pos.offset(direction3);
+				blockPos3 = blockPos.offset(direction3);
 			}
 
-			if (world.getBlockState(blockPos2).isOpaqueFullCube(world, blockPos2)) {
+			if (blockView.getBlockState(blockPos3).isOpaqueFullCube(blockView, blockPos3)) {
 				direction3 = direction3.rotateYClockwise();
-				blockPos2 = pos.offset(direction3);
+				blockPos3 = blockPos.offset(direction3);
 			}
 
-			if (world.getBlockState(blockPos2).isOpaqueFullCube(world, blockPos2)) {
+			if (blockView.getBlockState(blockPos3).isOpaqueFullCube(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
-				blockPos2 = pos.offset(direction3);
+				blockPos3 = blockPos.offset(direction3);
 			}
 
-			return state.with(HorizontalFacingBlock.FACING, direction3);
+			return blockState.with(HorizontalFacingBlock.FACING, direction3);
 		}
 	}
 
-	protected boolean addChest(ServerWorldAccess world, BlockBox boundingBox, Random random, BlockPos pos, Identifier lootTableId, @Nullable BlockState block) {
-		if (boundingBox.contains(pos) && !world.getBlockState(pos).isOf(Blocks.CHEST)) {
+	protected boolean addChest(
+		ServerWorldAccess serverWorldAccess, BlockBox boundingBox, Random random, BlockPos pos, Identifier lootTableId, @Nullable BlockState block
+	) {
+		if (boundingBox.contains(pos) && !serverWorldAccess.getBlockState(pos).isOf(Blocks.CHEST)) {
 			if (block == null) {
-				block = orientateChest(world, pos, Blocks.CHEST.getDefaultState());
+				block = orientateChest(serverWorldAccess, pos, Blocks.CHEST.getDefaultState());
 			}
 
-			world.setBlockState(pos, block, 2);
-			BlockEntity blockEntity = world.getBlockEntity(pos);
+			serverWorldAccess.setBlockState(pos, block, 2);
+			BlockEntity blockEntity = serverWorldAccess.getBlockEntity(pos);
 			if (blockEntity instanceof ChestBlockEntity) {
 				((ChestBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
 			}
@@ -457,11 +474,13 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean addDispenser(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTableId) {
+	protected boolean addDispenser(
+		StructureWorldAccess structureWorldAccess, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTableId
+	) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
-		if (boundingBox.contains(blockPos) && !world.getBlockState(blockPos).isOf(Blocks.DISPENSER)) {
-			this.addBlock(world, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		if (boundingBox.contains(blockPos) && !structureWorldAccess.getBlockState(blockPos).isOf(Blocks.DISPENSER)) {
+			this.addBlock(structureWorldAccess, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
+			BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
 				((DispenserBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
 			}

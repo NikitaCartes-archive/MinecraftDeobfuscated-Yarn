@@ -2,8 +2,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5599;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.DrownedEntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.util.Identifier;
@@ -11,10 +13,11 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class DrownedOverlayFeatureRenderer<T extends DrownedEntity> extends FeatureRenderer<T, DrownedEntityModel<T>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/zombie/drowned_outer_layer.png");
-	private final DrownedEntityModel<T> model = new DrownedEntityModel<>(0.25F, 0.0F, 64, 64);
+	private final DrownedEntityModel<T> model;
 
-	public DrownedOverlayFeatureRenderer(FeatureRendererContext<T, DrownedEntityModel<T>> featureRendererContext) {
+	public DrownedOverlayFeatureRenderer(FeatureRendererContext<T, DrownedEntityModel<T>> featureRendererContext, class_5599 arg) {
 		super(featureRendererContext);
+		this.model = new DrownedEntityModel<>(arg.method_32072(EntityModelLayers.DROWNED_OUTER));
 	}
 
 	public void render(

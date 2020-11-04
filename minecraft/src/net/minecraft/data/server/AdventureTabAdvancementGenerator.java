@@ -452,8 +452,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		return task;
 	}
 
-	protected static Advancement.Task requireListedBiomesVisited(Advancement.Task task, List<RegistryKey<Biome>> biomes) {
-		for (RegistryKey<Biome> registryKey : biomes) {
+	protected static Advancement.Task requireListedBiomesVisited(Advancement.Task task, List<RegistryKey<Biome>> list) {
+		for (RegistryKey<Biome> registryKey : list) {
 			task.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
 		}
 

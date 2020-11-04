@@ -1,6 +1,7 @@
 package net.minecraft.block.entity;
 
 import java.util.List;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -10,7 +11,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableInt;
 
-public class BellBlockEntity extends BlockEntity implements Tickable {
+public class BellBlockEntity extends BlockEntity {
 	private long lastRingTime;
 	public int ringTicks;
 	public boolean ringing;
@@ -27,8 +27,8 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	private boolean resonating;
 	private int resonateTime;
 
-	public BellBlockEntity() {
-		super(BlockEntityType.BELL);
+	public BellBlockEntity(BlockPos blockPos, BlockState blockState) {
+		super(BlockEntityType.BELL, blockPos, blockState);
 	}
 
 	@Override
@@ -45,40 +45,39 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	@Override
-	public void tick() {
-		if (this.ringing) {
-			this.ringTicks++;
+	private static void method_31658(World world, BlockPos blockPos, BlockState blockState, BellBlockEntity bellBlockEntity, BellBlockEntity.class_5557 arg) {
+		if (bellBlockEntity.ringing) {
+			bellBlockEntity.ringTicks++;
 		}
 
-		if (this.ringTicks >= 50) {
-			this.ringing = false;
-			this.ringTicks = 0;
+		if (bellBlockEntity.ringTicks >= 50) {
+			bellBlockEntity.ringing = false;
+			bellBlockEntity.ringTicks = 0;
 		}
 
-		if (this.ringTicks >= 5 && this.resonateTime == 0 && this.raidersHearBell()) {
-			this.resonating = true;
-			this.playResonateSound();
+		if (bellBlockEntity.ringTicks >= 5 && bellBlockEntity.resonateTime == 0 && raidersHearBell(blockPos, bellBlockEntity.hearingEntities)) {
+			bellBlockEntity.resonating = true;
+			world.playSound(null, blockPos, SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 
-		if (this.resonating) {
-			if (this.resonateTime < 40) {
-				this.resonateTime++;
+		if (bellBlockEntity.resonating) {
+			if (bellBlockEntity.resonateTime < 40) {
+				bellBlockEntity.resonateTime++;
 			} else {
-				this.applyGlowToRaiders(this.world);
-				this.applyParticlesToRaiders(this.world);
-				this.resonating = false;
+				arg.run(world, blockPos, bellBlockEntity.hearingEntities);
+				bellBlockEntity.resonating = false;
 			}
 		}
 	}
 
-	private void playResonateSound() {
-		this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+	public static void clientTick(World world, BlockPos blockPos, BlockState blockState, BellBlockEntity bellBlockEntity) {
+		method_31658(world, blockPos, blockState, bellBlockEntity, BellBlockEntity::applyParticlesToRaiders);
 	}
 
-	/**
-	 * Rings the bell in a given direction.
-	 */
+	public static void serverTick(World world, BlockPos blockPos, BlockState blockState, BellBlockEntity bellBlockEntity) {
+		method_31658(world, blockPos, blockState, bellBlockEntity, BellBlockEntity::applyGlowToRaiders);
+	}
+
 	public void activate(Direction direction) {
 		BlockPos blockPos = this.getPos();
 		this.lastSideHit = direction;
@@ -91,9 +90,6 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		this.world.addSyncedBlockEvent(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
 	}
 
-	/**
-	 * Makes living entities within 48 blocks remember that they heard a bell at the current world time.
-	 */
 	private void notifyMemoriesOfBell() {
 		BlockPos blockPos = this.getPos();
 		if (this.world.getTime() > this.lastRingTime + 60L || this.hearingEntities == null) {
@@ -104,19 +100,17 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 
 		if (!this.world.isClient) {
 			for (LivingEntity livingEntity : this.hearingEntities) {
-				if (livingEntity.isAlive() && !livingEntity.removed && blockPos.isWithinDistance(livingEntity.getPos(), 32.0)) {
+				if (livingEntity.isAlive() && !livingEntity.isRemoved() && blockPos.isWithinDistance(livingEntity.getPos(), 32.0)) {
 					livingEntity.getBrain().remember(MemoryModuleType.HEARD_BELL_TIME, this.world.getTime());
 				}
 			}
 		}
 	}
 
-	private boolean raidersHearBell() {
-		BlockPos blockPos = this.getPos();
-
-		for (LivingEntity livingEntity : this.hearingEntities) {
+	private static boolean raidersHearBell(BlockPos blockPos, List<LivingEntity> list) {
+		for (LivingEntity livingEntity : list) {
 			if (livingEntity.isAlive()
-				&& !livingEntity.removed
+				&& !livingEntity.isRemoved()
 				&& blockPos.isWithinDistance(livingEntity.getPos(), 32.0)
 				&& livingEntity.getType().isIn(EntityTypeTags.RAIDERS)) {
 				return true;
@@ -126,51 +120,47 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		return false;
 	}
 
-	private void applyGlowToRaiders(World world) {
-		if (!world.isClient) {
-			this.hearingEntities.stream().filter(this::isRaiderEntity).forEach(this::applyGlowToEntity);
-		}
+	private static void applyGlowToRaiders(World world, BlockPos blockPos, List<LivingEntity> list) {
+		list.stream().filter(livingEntity -> isRaiderEntity(blockPos, livingEntity)).forEach(BellBlockEntity::applyGlowToEntity);
 	}
 
-	private void applyParticlesToRaiders(World world) {
-		if (world.isClient) {
-			BlockPos blockPos = this.getPos();
-			MutableInt mutableInt = new MutableInt(16700985);
-			int i = (int)this.hearingEntities.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
-			this.hearingEntities
-				.stream()
-				.filter(this::isRaiderEntity)
-				.forEach(
-					livingEntity -> {
-						float f = 1.0F;
-						float g = MathHelper.sqrt(
-							(livingEntity.getX() - (double)blockPos.getX()) * (livingEntity.getX() - (double)blockPos.getX())
-								+ (livingEntity.getZ() - (double)blockPos.getZ()) * (livingEntity.getZ() - (double)blockPos.getZ())
-						);
-						double d = (double)((float)blockPos.getX() + 0.5F) + (double)(1.0F / g) * (livingEntity.getX() - (double)blockPos.getX());
-						double e = (double)((float)blockPos.getZ() + 0.5F) + (double)(1.0F / g) * (livingEntity.getZ() - (double)blockPos.getZ());
-						int j = MathHelper.clamp((i - 21) / -2, 3, 15);
+	private static void applyParticlesToRaiders(World world, BlockPos blockPos, List<LivingEntity> list) {
+		MutableInt mutableInt = new MutableInt(16700985);
+		int i = (int)list.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
+		list.stream()
+			.filter(livingEntity -> isRaiderEntity(blockPos, livingEntity))
+			.forEach(
+				livingEntity -> {
+					float f = 1.0F;
+					float g = MathHelper.sqrt(
+						(livingEntity.getX() - (double)blockPos.getX()) * (livingEntity.getX() - (double)blockPos.getX())
+							+ (livingEntity.getZ() - (double)blockPos.getZ()) * (livingEntity.getZ() - (double)blockPos.getZ())
+					);
+					double d = (double)((float)blockPos.getX() + 0.5F) + (double)(1.0F / g) * (livingEntity.getX() - (double)blockPos.getX());
+					double e = (double)((float)blockPos.getZ() + 0.5F) + (double)(1.0F / g) * (livingEntity.getZ() - (double)blockPos.getZ());
+					int j = MathHelper.clamp((i - 21) / -2, 3, 15);
 
-						for (int k = 0; k < j; k++) {
-							int l = mutableInt.addAndGet(5);
-							double h = (double)BackgroundHelper.ColorMixer.getRed(l) / 255.0;
-							double m = (double)BackgroundHelper.ColorMixer.getGreen(l) / 255.0;
-							double n = (double)BackgroundHelper.ColorMixer.getBlue(l) / 255.0;
-							world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (double)((float)blockPos.getY() + 0.5F), e, h, m, n);
-						}
+					for (int k = 0; k < j; k++) {
+						int l = mutableInt.addAndGet(5);
+						double h = (double)BackgroundHelper.ColorMixer.getRed(l) / 255.0;
+						double m = (double)BackgroundHelper.ColorMixer.getGreen(l) / 255.0;
+						double n = (double)BackgroundHelper.ColorMixer.getBlue(l) / 255.0;
+						world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (double)((float)blockPos.getY() + 0.5F), e, h, m, n);
 					}
-				);
-		}
+				}
+			);
 	}
 
-	private boolean isRaiderEntity(LivingEntity entity) {
-		return entity.isAlive() && !entity.removed && this.getPos().isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
+	private static boolean isRaiderEntity(BlockPos blockPos, LivingEntity entity) {
+		return entity.isAlive() && !entity.isRemoved() && blockPos.isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
 	}
 
-	/**
-	 * Gives the {@link net.minecraft.entity.effect.StatusEffects#GLOWING} status effect to the given entity for 3 seconds (60 ticks).
-	 */
-	private void applyGlowToEntity(LivingEntity entity) {
-		entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
+	private static void applyGlowToEntity(LivingEntity livingEntity) {
+		livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
+	}
+
+	@FunctionalInterface
+	interface class_5557 {
+		void run(World world, BlockPos blockPos, List<LivingEntity> list);
 	}
 }

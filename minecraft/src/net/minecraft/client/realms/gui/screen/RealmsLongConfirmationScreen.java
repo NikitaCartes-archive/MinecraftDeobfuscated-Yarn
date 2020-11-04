@@ -18,11 +18,11 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 	protected final BooleanConsumer field_22697;
 	private final boolean yesNoQuestion;
 
-	public RealmsLongConfirmationScreen(BooleanConsumer booleanConsumer, RealmsLongConfirmationScreen.Type type, Text line2, Text line3, boolean yesNoQuestion) {
+	public RealmsLongConfirmationScreen(BooleanConsumer booleanConsumer, RealmsLongConfirmationScreen.Type type, Text text, Text text2, boolean yesNoQuestion) {
 		this.field_22697 = booleanConsumer;
 		this.type = type;
-		this.line2 = line2;
-		this.line3 = line3;
+		this.line2 = text;
+		this.line3 = text2;
 		this.yesNoQuestion = yesNoQuestion;
 	}
 
@@ -50,7 +50,7 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.type.text, this.width / 2, row(2), this.type.colorCode);
+		drawCenteredString(matrices, this.textRenderer, this.type.text, this.width / 2, row(2), this.type.colorCode);
 		drawCenteredText(matrices, this.textRenderer, this.line2, this.width / 2, row(4), 16777215);
 		drawCenteredText(matrices, this.textRenderer, this.line3, this.width / 2, row(6), 16777215);
 		super.render(matrices, mouseX, mouseY, delta);

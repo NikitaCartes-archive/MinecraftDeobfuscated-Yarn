@@ -1,5 +1,6 @@
 package net.minecraft.screen;
 
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,6 +10,8 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public abstract class ForgingScreenHandler extends ScreenHandler {
 	protected final CraftingResultInventory output = new CraftingResultInventory();
@@ -75,13 +78,13 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((world, blockPos) -> this.dropInventory(player, world, this.input));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, this.input)));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
 		return this.context
-			.get(
+			.run(
 				(world, blockPos) -> !this.canUse(world.getBlockState(blockPos))
 						? false
 						: player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,
@@ -96,7 +99,7 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(index);
+		Slot slot = this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
@@ -105,7 +108,7 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 			} else if (index != 0 && index != 1) {
 				if (index >= 3 && index < 39) {
 					int i = this.method_30025(itemStack) ? 1 : 0;

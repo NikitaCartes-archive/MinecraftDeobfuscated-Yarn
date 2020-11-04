@@ -3,7 +3,6 @@ package net.minecraft.recipe;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
@@ -24,12 +23,11 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 						return false;
 					}
 
-					Item item = itemStack.getItem();
 					if (i == 1 && j == 1) {
-						if (item != Items.LINGERING_POTION) {
+						if (!itemStack.isOf(Items.LINGERING_POTION)) {
 							return false;
 						}
-					} else if (item != Items.ARROW) {
+					} else if (!itemStack.isOf(Items.ARROW)) {
 						return false;
 					}
 				}
@@ -43,7 +41,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack craft(CraftingInventory craftingInventory) {
 		ItemStack itemStack = craftingInventory.getStack(1 + craftingInventory.getWidth());
-		if (itemStack.getItem() != Items.LINGERING_POTION) {
+		if (!itemStack.isOf(Items.LINGERING_POTION)) {
 			return ItemStack.EMPTY;
 		} else {
 			ItemStack itemStack2 = new ItemStack(Items.TIPPED_ARROW, 8);

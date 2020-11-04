@@ -22,8 +22,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
-import net.minecraft.resource.SinglePreparationResourceReloader;
+import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -39,7 +39,7 @@ public class FontManager implements AutoCloseable {
 	private final Map<Identifier, FontStorage> fontStorages = Maps.<Identifier, FontStorage>newHashMap();
 	private final TextureManager textureManager;
 	private Map<Identifier, Identifier> idOverrides = ImmutableMap.of();
-	private final ResourceReloader resourceReloadListener = new SinglePreparationResourceReloader<Map<Identifier, List<Font>>>() {
+	private final ResourceReloadListener resourceReloadListener = new SinglePreparationResourceReloadListener<Map<Identifier, List<Font>>>() {
 		protected Map<Identifier, List<Font>> prepare(ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -83,7 +83,9 @@ public class FontManager implements AutoCloseable {
 											profiler.pop();
 										} catch (RuntimeException var49) {
 											FontManager.LOGGER
-												.warn("Unable to read definition '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var49.getMessage());
+												.warn(
+													"Unable to read definition '{}' in {} in resourcepack: '{}': {}", identifier2, "fonts.json", resource.getResourcePackName(), var49.getMessage()
+												);
 										}
 									}
 
@@ -122,13 +124,13 @@ public class FontManager implements AutoCloseable {
 							}
 						} catch (RuntimeException var54) {
 							FontManager.LOGGER
-								.warn("Unable to load font '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var54.getMessage());
+								.warn("Unable to load font '{}' in {} in resourcepack: '{}': {}", identifier2, "fonts.json", resource.getResourcePackName(), var54.getMessage());
 						}
 
 						profiler.pop();
 					}
 				} catch (IOException var55) {
-					FontManager.LOGGER.warn("Unable to load font '{}' in fonts.json: {}", identifier2, var55.getMessage());
+					FontManager.LOGGER.warn("Unable to load font '{}' in {}: {}", identifier2, "fonts.json", var55.getMessage());
 				}
 
 				profiler.push("caching");
@@ -189,7 +191,7 @@ public class FontManager implements AutoCloseable {
 		return new TextRenderer(identifier -> (FontStorage)this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(identifier, identifier), this.missingStorage));
 	}
 
-	public ResourceReloader getResourceReloadListener() {
+	public ResourceReloadListener getResourceReloadListener() {
 		return this.resourceReloadListener;
 	}
 

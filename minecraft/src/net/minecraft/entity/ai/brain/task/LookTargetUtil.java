@@ -140,7 +140,7 @@ public class LookTargetUtil {
 
 	public static Optional<LivingEntity> getEntity(LivingEntity entity, MemoryModuleType<UUID> uuidMemoryModule) {
 		Optional<UUID> optional = entity.getBrain().getOptionalMemory(uuidMemoryModule);
-		return optional.map(uUID -> (LivingEntity)((ServerWorld)entity.world).getEntity(uUID));
+		return optional.map(uUID -> ((ServerWorld)entity.world).getEntity(uUID)).map(entityx -> entityx instanceof LivingEntity ? (LivingEntity)entityx : null);
 	}
 
 	public static Stream<VillagerEntity> streamSeenVillagers(VillagerEntity villager, Predicate<VillagerEntity> filter) {

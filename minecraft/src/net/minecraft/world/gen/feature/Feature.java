@@ -3,7 +3,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -23,7 +22,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"no_bonemeal_flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC)
 	);
 	public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig.CODEC));
-	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new BlockPileFeature(BlockPileFeatureConfig.CODEC));
+	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig.CODEC));
 	public static final Feature<SpringFeatureConfig> SPRING_FEATURE = register("spring_feature", new SpringFeature(SpringFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<EmeraldOreFeatureConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig.CODEC));
@@ -69,8 +68,8 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> TWISTING_VINES = register("twisting_vines", new TwistingVinesFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<BasaltColumnsFeatureConfig> BASALT_COLUMNS = register("basalt_columns", new BasaltColumnsFeature(BasaltColumnsFeatureConfig.CODEC));
 	public static final Feature<DeltaFeatureConfig> DELTA_FEATURE = register("delta_feature", new DeltaFeature(DeltaFeatureConfig.CODEC));
-	public static final Feature<ReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = register(
-		"netherrack_replace_blobs", new ReplaceBlobsFeature(ReplaceBlobsFeatureConfig.CODEC)
+	public static final Feature<NetherrackReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = register(
+		"netherrack_replace_blobs", new NetherrackReplaceBlobsFeature(NetherrackReplaceBlobsFeatureConfig.CODEC)
 	);
 	public static final Feature<FillLayerFeatureConfig> FILL_LAYER = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig.CODEC));
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
@@ -84,6 +83,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"random_boolean_selector", new RandomBooleanFeature(RandomBooleanFeatureConfig.CODEC)
 	);
 	public static final Feature<DecoratedFeatureConfig> DECORATED = register("decorated", new DecoratedFeature(DecoratedFeatureConfig.CODEC));
+	public static final Feature<GeodeFeatureConfig> GEODE = register("geode", new GeodeFeature(GeodeFeatureConfig.CODEC));
 	private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {
@@ -92,7 +92,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 
 	public Feature(Codec<FC> configCodec) {
 		this.codec = configCodec.fieldOf("config")
-			.<ConfiguredFeature<FC, Feature<FC>>>xmap(config -> new ConfiguredFeature<>(this, config), configuredFeature -> configuredFeature.config)
+			.<ConfiguredFeature<FC, Feature<FC>>>xmap(config -> new ConfiguredFeature<>(this, config), feature -> feature.config)
 			.codec();
 	}
 
@@ -110,16 +110,20 @@ public abstract class Feature<FC extends FeatureConfig> {
 
 	public abstract boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos, FC config);
 
-	protected static boolean isStone(Block block) {
-		return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
+	protected static boolean isStone(BlockState state) {
+		return state.isOf(Blocks.STONE) || state.isOf(Blocks.GRANITE) || state.isOf(Blocks.DIORITE) || state.isOf(Blocks.ANDESITE);
 	}
 
-	public static boolean isSoil(Block block) {
-		return block == Blocks.DIRT || block == Blocks.GRASS_BLOCK || block == Blocks.PODZOL || block == Blocks.COARSE_DIRT || block == Blocks.MYCELIUM;
+	public static boolean isSoil(BlockState state) {
+		return state.isOf(Blocks.DIRT)
+			|| state.isOf(Blocks.GRASS_BLOCK)
+			|| state.isOf(Blocks.PODZOL)
+			|| state.isOf(Blocks.COARSE_DIRT)
+			|| state.isOf(Blocks.MYCELIUM);
 	}
 
 	public static boolean isSoil(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> isSoil(state.getBlock()));
+		return world.testBlockState(pos, Feature::isSoil);
 	}
 
 	public static boolean isAir(TestableWorld world, BlockPos pos) {

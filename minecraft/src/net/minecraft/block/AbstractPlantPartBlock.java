@@ -30,7 +30,7 @@ public abstract class AbstractPlantPartBlock extends Block {
 		return !blockState.isOf(this.getStem()) && !blockState.isOf(this.getPlant()) ? this.getRandomGrowthState(ctx.getWorld()) : this.getPlant().getDefaultState();
 	}
 
-	public BlockState getRandomGrowthState(WorldAccess world) {
+	public BlockState getRandomGrowthState(WorldAccess worldAccess) {
 		return this.getDefaultState();
 	}
 
@@ -38,10 +38,9 @@ public abstract class AbstractPlantPartBlock extends Block {
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.offset(this.growthDirection.getOpposite());
 		BlockState blockState = world.getBlockState(blockPos);
-		Block block = blockState.getBlock();
-		return !this.canAttachTo(block)
+		return !this.canAttachTo(blockState)
 			? false
-			: block == this.getStem() || block == this.getPlant() || blockState.isSideSolidFullSquare(world, blockPos, this.growthDirection);
+			: blockState.isOf(this.getStem()) || blockState.isOf(this.getPlant()) || blockState.isSideSolidFullSquare(world, blockPos, this.growthDirection);
 	}
 
 	@Override
@@ -51,7 +50,7 @@ public abstract class AbstractPlantPartBlock extends Block {
 		}
 	}
 
-	protected boolean canAttachTo(Block block) {
+	protected boolean canAttachTo(BlockState blockState) {
 		return true;
 	}
 

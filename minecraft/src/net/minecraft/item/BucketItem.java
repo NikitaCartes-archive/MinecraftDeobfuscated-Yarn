@@ -87,7 +87,7 @@ public class BucketItem extends Item {
 	}
 
 	protected ItemStack getEmptiedStack(ItemStack stack, PlayerEntity player) {
-		return !player.abilities.creativeMode ? new ItemStack(Items.BUCKET) : stack;
+		return !player.getAbilities().creativeMode ? new ItemStack(Items.BUCKET) : stack;
 	}
 
 	public void onEmptied(World world, ItemStack stack, BlockPos pos) {

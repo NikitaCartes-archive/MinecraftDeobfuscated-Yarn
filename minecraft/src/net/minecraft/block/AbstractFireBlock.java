@@ -35,7 +35,7 @@ public abstract class AbstractFireBlock extends Block {
 	public static BlockState getState(BlockView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		return SoulFireBlock.isSoulBase(blockState.getBlock()) ? Blocks.SOUL_FIRE.getDefaultState() : ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
+		return SoulFireBlock.isSoulBase(blockState) ? Blocks.SOUL_FIRE.getDefaultState() : ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
 	}
 
 	@Override
@@ -179,14 +179,7 @@ public abstract class AbstractFireBlock extends Block {
 				}
 			}
 
-			if (!bl) {
-				return false;
-			} else {
-				Direction.Axis axis = direction.getAxis().isHorizontal()
-					? direction.rotateYCounterclockwise().getAxis()
-					: Direction.Type.HORIZONTAL.randomAxis(world.random);
-				return AreaHelper.method_30485(world, blockPos, axis).isPresent();
-			}
+			return bl && AreaHelper.method_30485(world, blockPos, direction.rotateYCounterclockwise().getAxis()).isPresent();
 		}
 	}
 }

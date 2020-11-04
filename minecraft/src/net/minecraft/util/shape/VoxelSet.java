@@ -7,14 +7,18 @@ import net.minecraft.util.math.Direction;
 
 public abstract class VoxelSet {
 	private static final Direction.Axis[] AXES = Direction.Axis.values();
-	protected final int sizeX;
-	protected final int sizeY;
-	protected final int sizeZ;
+	protected final int xSize;
+	protected final int ySize;
+	protected final int zSize;
 
-	protected VoxelSet(int sizeX, int sizeY, int sizeZ) {
-		this.sizeX = sizeX;
-		this.sizeY = sizeY;
-		this.sizeZ = sizeZ;
+	protected VoxelSet(int xSize, int ySize, int zSize) {
+		if (xSize >= 0 && ySize >= 0 && zSize >= 0) {
+			this.xSize = xSize;
+			this.ySize = ySize;
+			this.zSize = zSize;
+		} else {
+			throw new IllegalArgumentException("Need all positive sizes: x: " + xSize + ", y: " + ySize + ", z: " + zSize);
+		}
 	}
 
 	public boolean inBoundsAndContains(AxisCycleDirection cycle, int x, int y, int z) {
@@ -25,7 +29,7 @@ public abstract class VoxelSet {
 		if (x < 0 || y < 0 || z < 0) {
 			return false;
 		} else {
-			return x < this.sizeX && y < this.sizeY && z < this.sizeZ ? this.contains(x, y, z) : false;
+			return x < this.xSize && y < this.ySize && z < this.zSize ? this.contains(x, y, z) : false;
 		}
 	}
 
@@ -35,7 +39,7 @@ public abstract class VoxelSet {
 
 	public abstract boolean contains(int x, int y, int z);
 
-	public abstract void set(int x, int y, int z, boolean resize, boolean included);
+	public abstract void set(int x, int y, int z);
 
 	public boolean isEmpty() {
 		for (Direction.Axis axis : AXES) {
@@ -76,7 +80,7 @@ public abstract class VoxelSet {
 	}
 
 	public int getSize(Direction.Axis axis) {
-		return axis.choose(this.sizeX, this.sizeY, this.sizeZ);
+		return axis.choose(this.xSize, this.ySize, this.zSize);
 	}
 
 	public int getXSize() {
@@ -153,87 +157,8 @@ public abstract class VoxelSet {
 		}
 	}
 
-	protected boolean isColumnFull(int minZ, int maxZ, int x, int y) {
-		for (int i = minZ; i < maxZ; i++) {
-			if (!this.inBoundsAndContains(x, y, i)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	protected void setColumn(int minZ, int maxZ, int x, int y, boolean included) {
-		for (int i = minZ; i < maxZ; i++) {
-			this.set(x, y, i, false, included);
-		}
-	}
-
-	protected boolean isRectangleFull(int minX, int maxX, int minZ, int maxZ, int y) {
-		for (int i = minX; i < maxX; i++) {
-			if (!this.isColumnFull(minZ, maxZ, i, y)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	public void forEachBox(VoxelSet.PositionBiConsumer consumer, boolean largest) {
-		VoxelSet voxelSet = new BitSetVoxelSet(this);
-
-		for (int i = 0; i <= this.sizeX; i++) {
-			for (int j = 0; j <= this.sizeY; j++) {
-				int k = -1;
-
-				for (int l = 0; l <= this.sizeZ; l++) {
-					if (voxelSet.inBoundsAndContains(i, j, l)) {
-						if (largest) {
-							if (k == -1) {
-								k = l;
-							}
-						} else {
-							consumer.consume(i, j, l, i + 1, j + 1, l + 1);
-						}
-					} else if (k != -1) {
-						int m = i;
-						int n = i;
-						int o = j;
-						int p = j;
-						voxelSet.setColumn(k, l, i, j, false);
-
-						while (voxelSet.isColumnFull(k, l, m - 1, o)) {
-							voxelSet.setColumn(k, l, m - 1, o, false);
-							m--;
-						}
-
-						while (voxelSet.isColumnFull(k, l, n + 1, o)) {
-							voxelSet.setColumn(k, l, n + 1, o, false);
-							n++;
-						}
-
-						while (voxelSet.isRectangleFull(m, n + 1, k, l, o - 1)) {
-							for (int q = m; q <= n; q++) {
-								voxelSet.setColumn(k, l, q, o - 1, false);
-							}
-
-							o--;
-						}
-
-						while (voxelSet.isRectangleFull(m, n + 1, k, l, p + 1)) {
-							for (int q = m; q <= n; q++) {
-								voxelSet.setColumn(k, l, q, p + 1, false);
-							}
-
-							p++;
-						}
-
-						consumer.consume(m, o, k, n + 1, p + 1, l);
-						k = -1;
-					}
-				}
-			}
-		}
+		BitSetVoxelSet.method_31941(this, consumer, largest);
 	}
 
 	public void forEachDirection(VoxelSet.PositionConsumer positionConsumer) {

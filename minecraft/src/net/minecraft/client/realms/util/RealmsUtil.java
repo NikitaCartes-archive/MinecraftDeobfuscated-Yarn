@@ -48,22 +48,22 @@ public class RealmsUtil {
 		}
 	}
 
-	public static String convertToAgePresentation(long milliseconds) {
-		if (milliseconds < 0L) {
+	public static String convertToAgePresentation(long l) {
+		if (l < 0L) {
 			return "right now";
 		} else {
-			long l = milliseconds / 1000L;
-			if (l < 60L) {
-				return (l == 1L ? "1 second" : l + " seconds") + " ago";
-			} else if (l < 3600L) {
-				long m = l / 60L;
-				return (m == 1L ? "1 minute" : m + " minutes") + " ago";
-			} else if (l < 86400L) {
-				long m = l / 3600L;
-				return (m == 1L ? "1 hour" : m + " hours") + " ago";
+			long m = l / 1000L;
+			if (m < 60L) {
+				return (m == 1L ? "1 second" : m + " seconds") + " ago";
+			} else if (m < 3600L) {
+				long n = m / 60L;
+				return (n == 1L ? "1 minute" : n + " minutes") + " ago";
+			} else if (m < 86400L) {
+				long n = m / 3600L;
+				return (n == 1L ? "1 hour" : n + " hours") + " ago";
 			} else {
-				long m = l / 86400L;
-				return (m == 1L ? "1 day" : m + " days") + " ago";
+				long n = m / 86400L;
+				return (n == 1L ? "1 day" : n + " days") + " ago";
 			}
 		}
 	}

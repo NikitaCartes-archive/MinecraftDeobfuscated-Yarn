@@ -2,48 +2,54 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.PolarBearEntity;
 
 @Environment(EnvType.CLIENT)
 public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEntityModel<T> {
-	public PolarBearEntityModel() {
-		super(12, 0.0F, true, 16.0F, 4.0F, 2.25F, 2.0F, 24);
-		this.textureWidth = 128;
-		this.textureHeight = 64;
-		this.head = new ModelPart(this, 0, 0);
-		this.head.addCuboid(-3.5F, -3.0F, -3.0F, 7.0F, 7.0F, 7.0F, 0.0F);
-		this.head.setPivot(0.0F, 10.0F, -16.0F);
-		this.head.setTextureOffset(0, 44).addCuboid(-2.5F, 1.0F, -6.0F, 5.0F, 3.0F, 3.0F, 0.0F);
-		this.head.setTextureOffset(26, 0).addCuboid(-4.5F, -4.0F, -1.0F, 2.0F, 2.0F, 1.0F, 0.0F);
-		ModelPart modelPart = this.head.setTextureOffset(26, 0);
-		modelPart.mirror = true;
-		modelPart.addCuboid(2.5F, -4.0F, -1.0F, 2.0F, 2.0F, 1.0F, 0.0F);
-		this.body = new ModelPart(this);
-		this.body.setTextureOffset(0, 19).addCuboid(-5.0F, -13.0F, -7.0F, 14.0F, 14.0F, 11.0F, 0.0F);
-		this.body.setTextureOffset(39, 0).addCuboid(-4.0F, -25.0F, -7.0F, 12.0F, 12.0F, 10.0F, 0.0F);
-		this.body.setPivot(-2.0F, 9.0F, 12.0F);
+	public PolarBearEntityModel(ModelPart modelPart) {
+		super(modelPart, true, 16.0F, 4.0F, 2.25F, 2.0F, 24);
+	}
+
+	public static class_5607 method_32029() {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
+		lv2.method_32117(
+			"head",
+			class_5606.method_32108()
+				.method_32101(0, 0)
+				.method_32097(-3.5F, -3.0F, -3.0F, 7.0F, 7.0F, 7.0F)
+				.method_32101(0, 44)
+				.method_32102("mouth", -2.5F, 1.0F, -6.0F, 5.0F, 3.0F, 3.0F)
+				.method_32101(26, 0)
+				.method_32102("right_ear", -4.5F, -4.0F, -1.0F, 2.0F, 2.0F, 1.0F)
+				.method_32101(26, 0)
+				.method_32096()
+				.method_32102("left_ear", 2.5F, -4.0F, -1.0F, 2.0F, 2.0F, 1.0F),
+			class_5603.method_32090(0.0F, 10.0F, -16.0F)
+		);
+		lv2.method_32117(
+			"body",
+			class_5606.method_32108()
+				.method_32101(0, 19)
+				.method_32097(-5.0F, -13.0F, -7.0F, 14.0F, 14.0F, 11.0F)
+				.method_32101(39, 0)
+				.method_32097(-4.0F, -25.0F, -7.0F, 12.0F, 12.0F, 10.0F),
+			class_5603.method_32091(-2.0F, 9.0F, 12.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
+		);
 		int i = 10;
-		this.backRightLeg = new ModelPart(this, 50, 22);
-		this.backRightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 10.0F, 8.0F, 0.0F);
-		this.backRightLeg.setPivot(-3.5F, 14.0F, 6.0F);
-		this.backLeftLeg = new ModelPart(this, 50, 22);
-		this.backLeftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 10.0F, 8.0F, 0.0F);
-		this.backLeftLeg.setPivot(3.5F, 14.0F, 6.0F);
-		this.frontRightLeg = new ModelPart(this, 50, 40);
-		this.frontRightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 10.0F, 6.0F, 0.0F);
-		this.frontRightLeg.setPivot(-2.5F, 14.0F, -7.0F);
-		this.frontLeftLeg = new ModelPart(this, 50, 40);
-		this.frontLeftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 10.0F, 6.0F, 0.0F);
-		this.frontLeftLeg.setPivot(2.5F, 14.0F, -7.0F);
-		this.backRightLeg.pivotX--;
-		this.backLeftLeg.pivotX++;
-		this.backRightLeg.pivotZ += 0.0F;
-		this.backLeftLeg.pivotZ += 0.0F;
-		this.frontRightLeg.pivotX--;
-		this.frontLeftLeg.pivotX++;
-		this.frontRightLeg.pivotZ--;
-		this.frontLeftLeg.pivotZ--;
+		class_5606 lv3 = class_5606.method_32108().method_32101(50, 22).method_32097(-2.0F, 0.0F, -2.0F, 4.0F, 10.0F, 8.0F);
+		lv2.method_32117("right_hind_leg", lv3, class_5603.method_32090(-4.5F, 14.0F, 6.0F));
+		lv2.method_32117("left_hind_leg", lv3, class_5603.method_32090(4.5F, 14.0F, 6.0F));
+		class_5606 lv4 = class_5606.method_32108().method_32101(50, 40).method_32097(-2.0F, 0.0F, -2.0F, 4.0F, 10.0F, 6.0F);
+		lv2.method_32117("right_front_leg", lv4, class_5603.method_32090(-3.5F, 14.0F, -8.0F));
+		lv2.method_32117("left_front_leg", lv4, class_5603.method_32090(3.5F, 14.0F, -8.0F));
+		return class_5607.method_32110(lv, 128, 64);
 	}
 
 	public void setAngles(T polarBearEntity, float f, float g, float h, float i, float j) {
@@ -52,14 +58,14 @@ public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEn
 		float l = polarBearEntity.getWarningAnimationProgress(k);
 		l *= l;
 		float m = 1.0F - l;
-		this.body.pitch = (float) (Math.PI / 2) - l * (float) Math.PI * 0.35F;
-		this.body.pivotY = 9.0F * m + 11.0F * l;
-		this.frontRightLeg.pivotY = 14.0F * m - 6.0F * l;
-		this.frontRightLeg.pivotZ = -8.0F * m - 4.0F * l;
-		this.frontRightLeg.pitch -= l * (float) Math.PI * 0.45F;
-		this.frontLeftLeg.pivotY = this.frontRightLeg.pivotY;
-		this.frontLeftLeg.pivotZ = this.frontRightLeg.pivotZ;
-		this.frontLeftLeg.pitch -= l * (float) Math.PI * 0.45F;
+		this.torso.pitch = (float) (Math.PI / 2) - l * (float) Math.PI * 0.35F;
+		this.torso.pivotY = 9.0F * m + 11.0F * l;
+		this.field_27478.pivotY = 14.0F * m - 6.0F * l;
+		this.field_27478.pivotZ = -8.0F * m - 4.0F * l;
+		this.field_27478.pitch -= l * (float) Math.PI * 0.45F;
+		this.field_27479.pivotY = this.field_27478.pivotY;
+		this.field_27479.pivotZ = this.field_27478.pivotZ;
+		this.field_27479.pitch -= l * (float) Math.PI * 0.45F;
 		if (this.child) {
 			this.head.pivotY = 10.0F * m - 9.0F * l;
 			this.head.pivotZ = -16.0F * m - 7.0F * l;

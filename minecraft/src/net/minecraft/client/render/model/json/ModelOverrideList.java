@@ -28,12 +28,18 @@ public class ModelOverrideList {
 	}
 
 	public ModelOverrideList(
-		ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides
+		ModelLoader modelLoader, JsonUnbakedModel unbakedModel, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides
 	) {
-		this.models = (List<BakedModel>)overrides.stream().map(modelOverride -> {
-			UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(modelOverride.getModelId());
-			return Objects.equals(unbakedModel, parent) ? null : modelLoader.bake(modelOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
-		}).collect(Collectors.toList());
+		this.models = (List<BakedModel>)overrides.stream()
+			.map(
+				modelOverride -> {
+					UnbakedModel unbakedModelx = (UnbakedModel)unbakedModelGetter.apply(modelOverride.getModelId());
+					return Objects.equals(unbakedModelx, unbakedModel)
+						? null
+						: modelLoader.bake(modelOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
+				}
+			)
+			.collect(Collectors.toList());
 		Collections.reverse(this.models);
 
 		for (int i = overrides.size() - 1; i >= 0; i--) {

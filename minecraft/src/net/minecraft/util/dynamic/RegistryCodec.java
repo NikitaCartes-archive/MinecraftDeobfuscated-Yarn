@@ -14,7 +14,7 @@ import net.minecraft.util.registry.SimpleRegistry;
  * 
  * <p>Compared to regular codec, this codec performs additional work when
  * decoding, loading its elements from the given resource manager's JSON
- * files.
+ * files.</p>
  * 
  * @param <E> the registry's element type
  * @see RegistryElementCodec

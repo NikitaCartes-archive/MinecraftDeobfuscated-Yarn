@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.InputUtil;
@@ -25,7 +25,7 @@ import net.minecraft.util.Identifier;
 public class GameModeSelectionScreen extends Screen {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
 	private static final int UI_WIDTH = GameModeSelectionScreen.GameMode.values().length * 30 - 5;
-	private static final Text SELECT_NEXT_TEXT = new TranslatableText(
+	private static final Text field_25454 = new TranslatableText(
 		"debug.gamemodes.select_next", new TranslatableText("debug.gamemodes.press_f4").formatted(Formatting.AQUA)
 	);
 	private final Optional<GameModeSelectionScreen.GameMode> currentGameMode;
@@ -37,10 +37,10 @@ public class GameModeSelectionScreen extends Screen {
 
 	public GameModeSelectionScreen() {
 		super(NarratorManager.EMPTY);
-		this.currentGameMode = GameModeSelectionScreen.GameMode.of(this.getPreviousGameMode());
+		this.currentGameMode = GameModeSelectionScreen.GameMode.of(this.method_30106());
 	}
 
-	private net.minecraft.world.GameMode getPreviousGameMode() {
+	private net.minecraft.world.GameMode method_30106() {
 		net.minecraft.world.GameMode gameMode = MinecraftClient.getInstance().interactionManager.getCurrentGameMode();
 		net.minecraft.world.GameMode gameMode2 = MinecraftClient.getInstance().interactionManager.getPreviousGameMode();
 		if (gameMode2 == net.minecraft.world.GameMode.NOT_SET) {
@@ -79,7 +79,7 @@ public class GameModeSelectionScreen extends Screen {
 			matrices.pop();
 			super.render(matrices, mouseX, mouseY, delta);
 			this.gameMode.ifPresent(gameMode -> drawCenteredText(matrices, this.textRenderer, gameMode.getText(), this.width / 2, this.height / 2 - 30 - 20, -1));
-			drawCenteredText(matrices, this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 16777215);
+			drawCenteredText(matrices, this.textRenderer, field_25454, this.width / 2, this.height / 2 + 5, 16777215);
 			if (!this.mouseUsedForSelection) {
 				this.lastMouseX = mouseX;
 				this.lastMouseY = mouseY;
@@ -139,7 +139,7 @@ public class GameModeSelectionScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class ButtonWidget extends ClickableWidget {
+	public class ButtonWidget extends AbstractButtonWidget {
 		private final GameModeSelectionScreen.GameMode gameMode;
 		private boolean selected;
 

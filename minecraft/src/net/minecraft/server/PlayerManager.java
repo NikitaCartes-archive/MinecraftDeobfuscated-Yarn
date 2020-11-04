@@ -24,7 +24,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
@@ -39,6 +39,7 @@ import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
@@ -47,7 +48,6 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
-import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -126,9 +126,9 @@ public abstract class PlayerManager {
 		GameProfile gameProfile2 = userCache.getByUuid(gameProfile.getId());
 		String string = gameProfile2 == null ? gameProfile.getName() : gameProfile2.getName();
 		userCache.add(gameProfile);
-		NbtCompound nbtCompound = this.loadPlayerData(player);
-		RegistryKey<World> registryKey = nbtCompound != null
-			? (RegistryKey)DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, nbtCompound.get("Dimension")))
+		CompoundTag compoundTag = this.loadPlayerData(player);
+		RegistryKey<World> registryKey = compoundTag != null
+			? (RegistryKey)DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, compoundTag.get("Dimension")))
 				.resultOrPartial(LOGGER::error)
 				.orElse(World.OVERWORLD)
 			: World.OVERWORLD;
@@ -186,8 +186,8 @@ public abstract class PlayerManager {
 			new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName()))
 		);
 		serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
-		serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.abilities));
-		serverPlayNetworkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.inventory.selectedSlot));
+		serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
+		serverPlayNetworkHandler.sendPacket(new HeldItemChangeS2CPacket(player.getInventory().selectedSlot));
 		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values()));
 		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(this.server.getTagManager()));
 		this.sendCommandTree(player);
@@ -216,22 +216,22 @@ public abstract class PlayerManager {
 		this.server.getBossBarManager().onPlayerConnect(player);
 		this.sendWorldInfo(player, serverWorld2);
 		if (!this.server.getResourcePackUrl().isEmpty()) {
-			player.sendResourcePackUrl(this.server.getResourcePackUrl(), this.server.getResourcePackHash());
+			player.sendResourcePackUrl(this.server.getResourcePackUrl(), this.server.getResourcePackHash(), this.server.requireResourcePack());
 		}
 
 		for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
 			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getEntityId(), statusEffectInstance));
 		}
 
-		if (nbtCompound != null && nbtCompound.contains("RootVehicle", 10)) {
-			NbtCompound nbtCompound2 = nbtCompound.getCompound("RootVehicle");
+		if (compoundTag != null && compoundTag.contains("RootVehicle", 10)) {
+			CompoundTag compoundTag2 = compoundTag.getCompound("RootVehicle");
 			Entity entity = EntityType.loadEntityWithPassengers(
-				nbtCompound2.getCompound("Entity"), serverWorld2, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
+				compoundTag2.getCompound("Entity"), serverWorld2, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
 			);
 			if (entity != null) {
 				UUID uUID;
-				if (nbtCompound2.containsUuid("Attach")) {
-					uUID = nbtCompound2.getUuid("Attach");
+				if (compoundTag2.containsUuid("Attach")) {
+					uUID = compoundTag2.getUuid("Attach");
 				} else {
 					uUID = null;
 				}
@@ -249,10 +249,10 @@ public abstract class PlayerManager {
 
 				if (!player.hasVehicle()) {
 					LOGGER.warn("Couldn't reattach entity to player");
-					serverWorld2.removeEntity(entity);
+					entity.discard();
 
 					for (Entity entity2x : entity.getPassengersDeep()) {
-						serverWorld2.removeEntity(entity2x);
+						entity2x.discard();
 					}
 				}
 			}
@@ -318,18 +318,18 @@ public abstract class PlayerManager {
 	}
 
 	@Nullable
-	public NbtCompound loadPlayerData(ServerPlayerEntity player) {
-		NbtCompound nbtCompound = this.server.getSaveProperties().getPlayerData();
-		NbtCompound nbtCompound2;
-		if (player.getName().getString().equals(this.server.getUserName()) && nbtCompound != null) {
-			nbtCompound2 = nbtCompound;
-			player.readNbt(nbtCompound);
+	public CompoundTag loadPlayerData(ServerPlayerEntity player) {
+		CompoundTag compoundTag = this.server.getSaveProperties().getPlayerData();
+		CompoundTag compoundTag2;
+		if (player.getName().getString().equals(this.server.getUserName()) && compoundTag != null) {
+			compoundTag2 = compoundTag;
+			player.fromTag(compoundTag);
 			LOGGER.debug("loading single player");
 		} else {
-			nbtCompound2 = this.saveHandler.loadPlayerData(player);
+			compoundTag2 = this.saveHandler.loadPlayerData(player);
 		}
 
-		return nbtCompound2;
+		return compoundTag2;
 	}
 
 	protected void savePlayerData(ServerPlayerEntity player) {
@@ -354,20 +354,12 @@ public abstract class PlayerManager {
 			if (entity.hasPlayerRider()) {
 				LOGGER.debug("Removing player mount");
 				player.stopRiding();
-				serverWorld.removeEntity(entity);
-				entity.removed = true;
-
-				for (Entity entity2 : entity.getPassengersDeep()) {
-					serverWorld.removeEntity(entity2);
-					entity2.removed = true;
-				}
-
-				serverWorld.getChunk(player.chunkX, player.chunkZ).markDirty();
+				entity.method_31748().forEach(entityx -> entityx.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
 			}
 		}
 
 		player.detach();
-		serverWorld.removePlayer(player);
+		serverWorld.removePlayer(player, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
 		player.getAdvancementTracker().clearCriteria();
 		this.players.remove(player);
 		this.server.getBossBarManager().onPlayerDisconnect(player);
@@ -440,7 +432,7 @@ public abstract class PlayerManager {
 
 	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
 		this.players.remove(player);
-		player.getServerWorld().removePlayer(player);
+		player.getServerWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
 		BlockPos blockPos = player.getSpawnPointPosition();
 		float f = player.getSpawnAngle();
 		boolean bl = player.isSpawnPointSet();
@@ -491,8 +483,8 @@ public abstract class PlayerManager {
 			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, 0.0F));
 		}
 
-		while (!serverWorld2.isSpaceEmpty(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
-			serverPlayerEntity.setPosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
+		while (!serverWorld2.isSpaceEmpty(serverPlayerEntity) && serverPlayerEntity.getY() < (double)serverWorld2.getTopHeightLimit()) {
+			serverPlayerEntity.updatePosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
 		}
 
 		WorldProperties worldProperties = serverPlayerEntity.world.getLevelProperties();
@@ -713,7 +705,7 @@ public abstract class PlayerManager {
 	public void sendPlayerStatus(ServerPlayerEntity player) {
 		player.refreshScreenHandler(player.playerScreenHandler);
 		player.markHealthDirty();
-		player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.inventory.selectedSlot));
+		player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(player.getInventory().selectedSlot));
 	}
 
 	public int getCurrentPlayerCount() {
@@ -757,7 +749,7 @@ public abstract class PlayerManager {
 	 * 
 	 * @return the user data of the host of the server if the server is an integrated server, otherwise {@code null}
 	 */
-	public NbtCompound getUserData() {
+	public CompoundTag getUserData() {
 		return null;
 	}
 
@@ -787,9 +779,9 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public void broadcastChatMessage(Text message, MessageType type, UUID sender) {
-		this.server.sendSystemMessage(message, sender);
-		this.sendToAll(new GameMessageS2CPacket(message, type, sender));
+	public void broadcastChatMessage(Text message, MessageType type, UUID senderUuid) {
+		this.server.sendSystemMessage(message, senderUuid);
+		this.sendToAll(new GameMessageS2CPacket(message, type, senderUuid));
 	}
 
 	public ServerStatHandler createStatHandler(PlayerEntity player) {

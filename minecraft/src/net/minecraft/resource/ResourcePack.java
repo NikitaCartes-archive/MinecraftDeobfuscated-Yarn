@@ -11,13 +11,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 
-/**
- * A resource pack, providing resources to resource managers.
- * 
- * <p>They are single-use in each reload cycle of a reloadable resource manager.
- * {@link ResourcePackProfile} is a persistent version of the resource packs.
- */
 public interface ResourcePack extends AutoCloseable {
+	@Nullable
 	@Environment(EnvType.CLIENT)
 	InputStream openRoot(String fileName) throws IOException;
 

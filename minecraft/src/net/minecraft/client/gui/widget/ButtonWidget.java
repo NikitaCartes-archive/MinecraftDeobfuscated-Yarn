@@ -6,7 +6,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public class ButtonWidget extends PressableWidget {
+public class ButtonWidget extends AbstractPressableButtonWidget {
 	public static final ButtonWidget.TooltipSupplier EMPTY = (button, matrices, mouseX, mouseY) -> {
 	};
 	protected final ButtonWidget.PressAction onPress;

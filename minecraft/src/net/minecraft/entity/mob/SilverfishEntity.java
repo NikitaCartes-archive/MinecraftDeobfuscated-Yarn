@@ -110,9 +110,9 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public void setBodyYaw(float bodyYaw) {
-		this.yaw = bodyYaw;
-		super.setBodyYaw(bodyYaw);
+	public void setYaw(float yaw) {
+		this.yaw = yaw;
+		super.setYaw(yaw);
 	}
 
 	@Override
@@ -233,7 +233,7 @@ public class SilverfishEntity extends HostileEntity {
 				if (InfestedBlock.isInfestable(blockState)) {
 					worldAccess.setBlockState(blockPos, InfestedBlock.fromRegularBlock(blockState.getBlock()), 3);
 					this.mob.playSpawnEffects();
-					this.mob.remove();
+					this.mob.discard();
 				}
 			}
 		}

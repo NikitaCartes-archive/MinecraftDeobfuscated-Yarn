@@ -121,7 +121,7 @@ public class TagGroupLoader<T> {
 		);
 	}
 
-	public TagGroup<T> buildGroup(Map<Identifier, Tag.Builder> tags) {
+	public TagGroup<T> applyReload(Map<Identifier, Tag.Builder> tags) {
 		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMap();
 		Function<Identifier, Tag<T>> function = map::get;
 		Function<Identifier, T> function2 = identifier -> ((Optional)this.registryGetter.apply(identifier)).orElse(null);

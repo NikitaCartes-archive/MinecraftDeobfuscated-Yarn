@@ -5,6 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
@@ -32,7 +33,10 @@ public class MeleeAttackTask extends Task<MobEntity> {
 	}
 
 	private boolean method_25942(MobEntity mobEntity) {
-		return mobEntity.isHolding(item -> item instanceof RangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item));
+		return mobEntity.isHolding(itemStack -> {
+			Item item = itemStack.getItem();
+			return item instanceof RangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item);
+		});
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {

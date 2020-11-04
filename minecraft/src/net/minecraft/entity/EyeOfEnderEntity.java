@@ -10,7 +10,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -39,12 +39,11 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 
 	public EyeOfEnderEntity(World world, double x, double y, double z) {
 		this(EntityType.EYE_OF_ENDER, world);
-		this.lifespan = 0;
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 	}
 
 	public void setItem(ItemStack stack) {
-		if (stack.getItem() != Items.ENDER_EYE || stack.hasTag()) {
+		if (!stack.isOf(Items.ENDER_EYE) || stack.hasTag()) {
 			this.getDataTracker().set(ITEM, Util.make(stack.copy(), stackx -> stackx.setCount(1)));
 		}
 	}
@@ -162,11 +161,11 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		}
 
 		if (!this.world.isClient) {
-			this.setPosition(d, e, f);
+			this.updatePosition(d, e, f);
 			this.lifespan++;
 			if (this.lifespan > 80 && !this.world.isClient) {
 				this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F);
-				this.remove();
+				this.discard();
 				if (this.dropsItem) {
 					this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));
 				} else {
@@ -179,16 +178,16 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
+	public void writeCustomDataToTag(CompoundTag tag) {
 		ItemStack itemStack = this.getTrackedItem();
 		if (!itemStack.isEmpty()) {
-			nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
+			tag.put("Item", itemStack.toTag(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Item"));
 		this.setItem(itemStack);
 	}
 

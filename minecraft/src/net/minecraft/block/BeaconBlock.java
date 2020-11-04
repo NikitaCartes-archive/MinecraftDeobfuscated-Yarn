@@ -1,7 +1,10 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -11,7 +14,6 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BeaconBlock extends BlockWithEntity implements Stainable {
@@ -25,8 +27,14 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new BeaconBlockEntity();
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new BeaconBlockEntity(pos, state);
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		return checkType(type, BlockEntityType.BEACON, BeaconBlockEntity::tick);
 	}
 
 	@Override

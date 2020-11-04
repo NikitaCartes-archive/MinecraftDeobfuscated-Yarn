@@ -20,7 +20,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -70,11 +70,11 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		PiglinBruteBrain.method_30250(this);
 		this.initEquipment(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 
 	@Override
 	public boolean canGather(ItemStack stack) {
-		return stack.getItem() == Items.GOLDEN_AXE ? super.canGather(stack) : false;
+		return stack.isOf(Items.GOLDEN_AXE) ? super.canGather(stack) : false;
 	}
 
 	@Override

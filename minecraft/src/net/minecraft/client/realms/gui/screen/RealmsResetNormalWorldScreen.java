@@ -24,7 +24,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	private TextFieldWidget seedEdit;
 	private Boolean generateStructures = true;
 	private Integer levelTypeIndex = 0;
-	private Text field_24206;
+	private final Text field_24206;
 
 	public RealmsResetNormalWorldScreen(RealmsResetWorldScreen parent, Text text) {
 		this.parent = parent;

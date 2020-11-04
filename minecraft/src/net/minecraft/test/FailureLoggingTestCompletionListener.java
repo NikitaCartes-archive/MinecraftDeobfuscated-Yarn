@@ -8,11 +8,11 @@ public class FailureLoggingTestCompletionListener implements TestCompletionListe
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
-	public void onTestFailed(GameTestState test) {
-		if (test.isRequired()) {
-			LOGGER.error(test.getStructurePath() + " failed! " + Util.getInnermostMessage(test.getThrowable()));
+	public void onTestFailed(GameTest gameTest) {
+		if (gameTest.isRequired()) {
+			LOGGER.error("{} failed! {}", gameTest.getStructurePath(), Util.getInnermostMessage(gameTest.getThrowable()));
 		} else {
-			LOGGER.warn("(optional) " + test.getStructurePath() + " failed. " + Util.getInnermostMessage(test.getThrowable()));
+			LOGGER.warn("(optional) {} failed. {}", gameTest.getStructurePath(), Util.getInnermostMessage(gameTest.getThrowable()));
 		}
 	}
 }

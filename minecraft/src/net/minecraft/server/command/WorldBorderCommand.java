@@ -59,7 +59,8 @@ public class WorldBorderCommand {
 											commandContext -> executeSet(
 													commandContext.getSource(),
 													commandContext.getSource().getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"),
-													commandContext.getSource().getWorld().getWorldBorder().getSizeLerpTime() + (long)IntegerArgumentType.getInteger(commandContext, "time") * 1000L
+													commandContext.getSource().getWorld().getWorldBorder().getTargetRemainingTime()
+														+ (long)IntegerArgumentType.getInteger(commandContext, "time") * 1000L
 												)
 										)
 								)
@@ -129,10 +130,10 @@ public class WorldBorderCommand {
 
 	private static int executeBuffer(ServerCommandSource source, float distance) throws CommandSyntaxException {
 		WorldBorder worldBorder = source.getWorld().getWorldBorder();
-		if (worldBorder.getSafeZone() == (double)distance) {
+		if (worldBorder.getBuffer() == (double)distance) {
 			throw DAMAGE_BUFFER_FAILED_EXCEPTION.create();
 		} else {
-			worldBorder.setSafeZone((double)distance);
+			worldBorder.setBuffer((double)distance);
 			source.sendFeedback(new TranslatableText("commands.worldborder.damage.buffer.success", String.format(Locale.ROOT, "%.2f", distance)), true);
 			return (int)distance;
 		}

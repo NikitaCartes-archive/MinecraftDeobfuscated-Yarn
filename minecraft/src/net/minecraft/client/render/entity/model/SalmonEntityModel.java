@@ -1,58 +1,65 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SalmonEntityModel<T extends Entity> extends CompositeEntityModel<T> {
-	private final ModelPart torso;
+public class SalmonEntityModel<T extends Entity> extends class_5597<T> {
+	private final ModelPart field_27494;
 	private final ModelPart tail;
-	private final ModelPart head;
-	private final ModelPart rightFin;
-	private final ModelPart leftFin;
 
-	public SalmonEntityModel() {
-		this.textureWidth = 32;
-		this.textureHeight = 32;
+	public SalmonEntityModel(ModelPart modelPart) {
+		this.field_27494 = modelPart;
+		this.tail = modelPart.method_32086("body_back");
+	}
+
+	public static class_5607 method_32036() {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
 		int i = 20;
-		this.torso = new ModelPart(this, 0, 0);
-		this.torso.addCuboid(-1.5F, -2.5F, 0.0F, 3.0F, 5.0F, 8.0F);
-		this.torso.setPivot(0.0F, 20.0F, 0.0F);
-		this.tail = new ModelPart(this, 0, 13);
-		this.tail.addCuboid(-1.5F, -2.5F, 0.0F, 3.0F, 5.0F, 8.0F);
-		this.tail.setPivot(0.0F, 20.0F, 8.0F);
-		this.head = new ModelPart(this, 22, 0);
-		this.head.addCuboid(-1.0F, -2.0F, -3.0F, 2.0F, 4.0F, 3.0F);
-		this.head.setPivot(0.0F, 20.0F, 0.0F);
-		ModelPart modelPart = new ModelPart(this, 20, 10);
-		modelPart.addCuboid(0.0F, -2.5F, 0.0F, 0.0F, 5.0F, 6.0F);
-		modelPart.setPivot(0.0F, 0.0F, 8.0F);
-		this.tail.addChild(modelPart);
-		ModelPart modelPart2 = new ModelPart(this, 2, 1);
-		modelPart2.addCuboid(0.0F, 0.0F, 0.0F, 0.0F, 2.0F, 3.0F);
-		modelPart2.setPivot(0.0F, -4.5F, 5.0F);
-		this.torso.addChild(modelPart2);
-		ModelPart modelPart3 = new ModelPart(this, 0, 2);
-		modelPart3.addCuboid(0.0F, 0.0F, 0.0F, 0.0F, 2.0F, 4.0F);
-		modelPart3.setPivot(0.0F, -4.5F, -1.0F);
-		this.tail.addChild(modelPart3);
-		this.rightFin = new ModelPart(this, -4, 0);
-		this.rightFin.addCuboid(-2.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F);
-		this.rightFin.setPivot(-1.5F, 21.5F, 0.0F);
-		this.rightFin.roll = (float) (-Math.PI / 4);
-		this.leftFin = new ModelPart(this, 0, 0);
-		this.leftFin.addCuboid(0.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F);
-		this.leftFin.setPivot(1.5F, 21.5F, 0.0F);
-		this.leftFin.roll = (float) (Math.PI / 4);
+		class_5610 lv3 = lv2.method_32117(
+			"body_front", class_5606.method_32108().method_32101(0, 0).method_32097(-1.5F, -2.5F, 0.0F, 3.0F, 5.0F, 8.0F), class_5603.method_32090(0.0F, 20.0F, 0.0F)
+		);
+		class_5610 lv4 = lv2.method_32117(
+			"body_back", class_5606.method_32108().method_32101(0, 13).method_32097(-1.5F, -2.5F, 0.0F, 3.0F, 5.0F, 8.0F), class_5603.method_32090(0.0F, 20.0F, 8.0F)
+		);
+		lv2.method_32117(
+			"head", class_5606.method_32108().method_32101(22, 0).method_32097(-1.0F, -2.0F, -3.0F, 2.0F, 4.0F, 3.0F), class_5603.method_32090(0.0F, 20.0F, 0.0F)
+		);
+		lv4.method_32117(
+			"back_fin", class_5606.method_32108().method_32101(20, 10).method_32097(0.0F, -2.5F, 0.0F, 0.0F, 5.0F, 6.0F), class_5603.method_32090(0.0F, 0.0F, 8.0F)
+		);
+		lv3.method_32117(
+			"top_front_fin", class_5606.method_32108().method_32101(2, 1).method_32097(0.0F, 0.0F, 0.0F, 0.0F, 2.0F, 3.0F), class_5603.method_32090(0.0F, -4.5F, 5.0F)
+		);
+		lv4.method_32117(
+			"top_back_fin", class_5606.method_32108().method_32101(0, 2).method_32097(0.0F, 0.0F, 0.0F, 0.0F, 2.0F, 4.0F), class_5603.method_32090(0.0F, -4.5F, -1.0F)
+		);
+		lv2.method_32117(
+			"right_fin",
+			class_5606.method_32108().method_32101(-4, 0).method_32097(-2.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F),
+			class_5603.method_32091(-1.5F, 21.5F, 0.0F, 0.0F, 0.0F, (float) (-Math.PI / 4))
+		);
+		lv2.method_32117(
+			"left_fin",
+			class_5606.method_32108().method_32101(0, 0).method_32097(0.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F),
+			class_5603.method_32091(1.5F, 21.5F, 0.0F, 0.0F, 0.0F, (float) (Math.PI / 4))
+		);
+		return class_5607.method_32110(lv, 32, 32);
 	}
 
 	@Override
-	public Iterable<ModelPart> getParts() {
-		return ImmutableList.<ModelPart>of(this.torso, this.tail, this.head, this.rightFin, this.leftFin);
+	public ModelPart method_32008() {
+		return this.field_27494;
 	}
 
 	@Override

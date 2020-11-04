@@ -82,7 +82,7 @@ public class Path {
 	}
 
 	public BlockPos method_31031(int i) {
-		return ((PathNode)this.nodes.get(i)).getBlockPos();
+		return ((PathNode)this.nodes.get(i)).getPos();
 	}
 
 	public Vec3d getNodePosition(Entity entity) {
@@ -90,7 +90,7 @@ public class Path {
 	}
 
 	public BlockPos method_31032() {
-		return ((PathNode)this.nodes.get(this.currentNodeIndex)).getBlockPos();
+		return ((PathNode)this.nodes.get(this.currentNodeIndex)).getPos();
 	}
 
 	public PathNode method_29301() {
@@ -102,15 +102,15 @@ public class Path {
 		return this.currentNodeIndex > 0 ? (PathNode)this.nodes.get(this.currentNodeIndex - 1) : null;
 	}
 
-	public boolean equalsPath(@Nullable Path o) {
-		if (o == null) {
+	public boolean equalsPath(@Nullable Path path) {
+		if (path == null) {
 			return false;
-		} else if (o.nodes.size() != this.nodes.size()) {
+		} else if (path.nodes.size() != this.nodes.size()) {
 			return false;
 		} else {
 			for (int i = 0; i < this.nodes.size(); i++) {
 				PathNode pathNode = (PathNode)this.nodes.get(i);
-				PathNode pathNode2 = (PathNode)o.nodes.get(i);
+				PathNode pathNode2 = (PathNode)path.nodes.get(i);
 				if (pathNode.x != pathNode2.x || pathNode.y != pathNode2.y || pathNode.z != pathNode2.z) {
 					return false;
 				}
@@ -150,19 +150,19 @@ public class Path {
 		int l = buffer.readInt();
 
 		for (int m = 0; m < l; m++) {
-			list.add(PathNode.readBuf(buffer));
+			list.add(PathNode.fromBuffer(buffer));
 		}
 
 		PathNode[] pathNodes = new PathNode[buffer.readInt()];
 
 		for (int n = 0; n < pathNodes.length; n++) {
-			pathNodes[n] = PathNode.readBuf(buffer);
+			pathNodes[n] = PathNode.fromBuffer(buffer);
 		}
 
 		PathNode[] pathNodes2 = new PathNode[buffer.readInt()];
 
 		for (int o = 0; o < pathNodes2.length; o++) {
-			pathNodes2[o] = PathNode.readBuf(buffer);
+			pathNodes2[o] = PathNode.fromBuffer(buffer);
 		}
 
 		Path path = new Path(list, blockPos, bl);

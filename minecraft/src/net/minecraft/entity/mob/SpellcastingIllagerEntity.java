@@ -10,7 +10,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
@@ -32,15 +32,15 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.spellTicks = nbt.getInt("SpellTicks");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.spellTicks = tag.getInt("SpellTicks");
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("SpellTicks", this.spellTicks);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("SpellTicks", this.spellTicks);
 	}
 
 	@Environment(EnvType.CLIENT)

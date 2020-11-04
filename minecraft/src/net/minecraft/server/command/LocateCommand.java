@@ -31,13 +31,13 @@ public class LocateCommand {
 		dispatcher.register(literalArgumentBuilder);
 	}
 
-	private static int execute(ServerCommandSource source, StructureFeature<?> structure) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource source, StructureFeature<?> structureFeature) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(source.getPosition());
-		BlockPos blockPos2 = source.getWorld().locateStructure(structure, blockPos, 100, false);
+		BlockPos blockPos2 = source.getWorld().locateStructure(structureFeature, blockPos, 100, false);
 		if (blockPos2 == null) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			return sendCoordinates(source, structure.getName(), blockPos, blockPos2, "commands.locate.success");
+			return sendCoordinates(source, structureFeature.getName(), blockPos, blockPos2, "commands.locate.success");
 		}
 	}
 

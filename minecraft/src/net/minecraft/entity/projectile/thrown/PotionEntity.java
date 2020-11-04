@@ -19,7 +19,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -103,7 +103,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 
 			int i = potion.hasInstantEffect() ? 2007 : 2002;
 			this.world.syncWorldEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
-			this.remove();
+			this.discard();
 		}
 	}
 
@@ -171,16 +171,16 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
 		}
 
-		NbtCompound nbtCompound = stack.getTag();
-		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", 99)) {
-			areaEffectCloudEntity.setColor(nbtCompound.getInt("CustomPotionColor"));
+		CompoundTag compoundTag = stack.getTag();
+		if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
+			areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
 		}
 
 		this.world.spawnEntity(areaEffectCloudEntity);
 	}
 
 	private boolean isLingering() {
-		return this.getStack().getItem() == Items.LINGERING_POTION;
+		return this.getStack().isOf(Items.LINGERING_POTION);
 	}
 
 	private void extinguishFire(BlockPos pos, Direction direction) {

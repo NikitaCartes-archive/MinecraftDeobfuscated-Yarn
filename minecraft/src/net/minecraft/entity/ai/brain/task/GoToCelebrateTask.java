@@ -12,7 +12,7 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 	private final int completionRange;
 	private final float field_23130;
 
-	public GoToCelebrateTask(int completionRange, float speed) {
+	public GoToCelebrateTask(int completionRange, float f) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.CELEBRATE_LOCATION,
@@ -26,7 +26,7 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 			)
 		);
 		this.completionRange = completionRange;
-		this.field_23130 = speed;
+		this.field_23130 = f;
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {

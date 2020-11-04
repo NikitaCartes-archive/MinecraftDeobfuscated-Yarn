@@ -2,7 +2,9 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5599;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SheepEntityModel;
 import net.minecraft.client.render.entity.model.SheepWoolEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -13,10 +15,11 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
-	private final SheepWoolEntityModel<SheepEntity> model = new SheepWoolEntityModel<>();
+	private final SheepWoolEntityModel<SheepEntity> model;
 
-	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> featureRendererContext) {
+	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> featureRendererContext, class_5599 arg) {
 		super(featureRendererContext);
+		this.model = new SheepWoolEntityModel<>(arg.method_32072(EntityModelLayers.SHEEP_FUR));
 	}
 
 	public void render(

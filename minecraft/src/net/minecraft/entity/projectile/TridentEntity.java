@@ -15,7 +15,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -43,11 +43,6 @@ public class TridentEntity extends PersistentProjectileEntity {
 		this.dataTracker.set(ENCHANTED, stack.hasGlint());
 	}
 
-	@Environment(EnvType.CLIENT)
-	public TridentEntity(World world, double x, double y, double z) {
-		super(EntityType.TRIDENT, x, y, z, world);
-	}
-
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
@@ -69,7 +64,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
-				this.remove();
+				this.discard();
 			} else if (i > 0) {
 				this.setNoClip(true);
 				Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.getEyeY() - this.getY(), entity.getZ() - this.getZ());
@@ -143,7 +138,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 
 		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
 		float g = 1.0F;
-		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
+		if (this.world instanceof ServerWorld && this.world.isThundering() && this.method_31551()) {
 			BlockPos blockPos = entity.getBlockPos();
 			if (this.world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);
@@ -156,6 +151,10 @@ public class TridentEntity extends PersistentProjectileEntity {
 		}
 
 		this.playSound(soundEvent, g, 1.0F);
+	}
+
+	public boolean method_31551() {
+		return EnchantmentHelper.hasChanneling(this.tridentStack);
 	}
 
 	@Override
@@ -172,21 +171,21 @@ public class TridentEntity extends PersistentProjectileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("Trident", 10)) {
-			this.tridentStack = ItemStack.fromNbt(nbt.getCompound("Trident"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("Trident", 10)) {
+			this.tridentStack = ItemStack.fromTag(tag.getCompound("Trident"));
 		}
 
-		this.dealtDamage = nbt.getBoolean("DealtDamage");
+		this.dealtDamage = tag.getBoolean("DealtDamage");
 		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(this.tridentStack));
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.put("Trident", this.tridentStack.writeNbt(new NbtCompound()));
-		nbt.putBoolean("DealtDamage", this.dealtDamage);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.put("Trident", this.tridentStack.toTag(new CompoundTag()));
+		tag.putBoolean("DealtDamage", this.dealtDamage);
 	}
 
 	@Override

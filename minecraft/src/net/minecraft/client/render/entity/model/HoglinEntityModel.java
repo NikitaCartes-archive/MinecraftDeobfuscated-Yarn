@@ -3,6 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5605;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.mob.Hoglin;
 import net.minecraft.entity.mob.MobEntity;
@@ -13,60 +19,85 @@ public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel
 	private final ModelPart head;
 	private final ModelPart rightEar;
 	private final ModelPart leftEar;
-	private final ModelPart body;
-	private final ModelPart field_22231;
-	private final ModelPart field_22232;
-	private final ModelPart field_22233;
-	private final ModelPart field_22234;
+	private final ModelPart torso;
+	private final ModelPart field_27421;
+	private final ModelPart field_27422;
+	private final ModelPart field_27423;
+	private final ModelPart field_27424;
 	private final ModelPart field_25484;
 
-	public HoglinEntityModel() {
+	public HoglinEntityModel(ModelPart modelPart) {
 		super(true, 8.0F, 6.0F, 1.9F, 2.0F, 24.0F);
-		this.textureWidth = 128;
-		this.textureHeight = 64;
-		this.body = new ModelPart(this);
-		this.body.setPivot(0.0F, 7.0F, 0.0F);
-		this.body.setTextureOffset(1, 1).addCuboid(-8.0F, -7.0F, -13.0F, 16.0F, 14.0F, 26.0F);
-		this.field_25484 = new ModelPart(this);
-		this.field_25484.setPivot(0.0F, -14.0F, -5.0F);
-		this.field_25484.setTextureOffset(90, 33).addCuboid(0.0F, 0.0F, -9.0F, 0.0F, 10.0F, 19.0F, 0.001F);
-		this.body.addChild(this.field_25484);
-		this.head = new ModelPart(this);
-		this.head.setPivot(0.0F, 2.0F, -12.0F);
-		this.head.setTextureOffset(61, 1).addCuboid(-7.0F, -3.0F, -19.0F, 14.0F, 6.0F, 19.0F);
-		this.rightEar = new ModelPart(this);
-		this.rightEar.setPivot(-6.0F, -2.0F, -3.0F);
-		this.rightEar.setTextureOffset(1, 1).addCuboid(-6.0F, -1.0F, -2.0F, 6.0F, 1.0F, 4.0F);
-		this.rightEar.roll = (float) (-Math.PI * 2.0 / 9.0);
-		this.head.addChild(this.rightEar);
-		this.leftEar = new ModelPart(this);
-		this.leftEar.setPivot(6.0F, -2.0F, -3.0F);
-		this.leftEar.setTextureOffset(1, 6).addCuboid(0.0F, -1.0F, -2.0F, 6.0F, 1.0F, 4.0F);
-		this.leftEar.roll = (float) (Math.PI * 2.0 / 9.0);
-		this.head.addChild(this.leftEar);
-		ModelPart modelPart = new ModelPart(this);
-		modelPart.setPivot(-7.0F, 2.0F, -12.0F);
-		modelPart.setTextureOffset(10, 13).addCuboid(-1.0F, -11.0F, -1.0F, 2.0F, 11.0F, 2.0F);
-		this.head.addChild(modelPart);
-		ModelPart modelPart2 = new ModelPart(this);
-		modelPart2.setPivot(7.0F, 2.0F, -12.0F);
-		modelPart2.setTextureOffset(1, 13).addCuboid(-1.0F, -11.0F, -1.0F, 2.0F, 11.0F, 2.0F);
-		this.head.addChild(modelPart2);
-		this.head.pitch = 0.87266463F;
+		this.torso = modelPart.method_32086("body");
+		this.field_25484 = this.torso.method_32086("mane");
+		this.head = modelPart.method_32086("head");
+		this.rightEar = this.head.method_32086("right_ear");
+		this.leftEar = this.head.method_32086("left_ear");
+		this.field_27421 = modelPart.method_32086("right_front_leg");
+		this.field_27422 = modelPart.method_32086("left_front_leg");
+		this.field_27423 = modelPart.method_32086("right_hind_leg");
+		this.field_27424 = modelPart.method_32086("left_hind_leg");
+	}
+
+	public static class_5607 method_32009() {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
+		class_5610 lv3 = lv2.method_32117(
+			"body", class_5606.method_32108().method_32101(1, 1).method_32097(-8.0F, -7.0F, -13.0F, 16.0F, 14.0F, 26.0F), class_5603.method_32090(0.0F, 7.0F, 0.0F)
+		);
+		lv3.method_32117(
+			"mane",
+			class_5606.method_32108().method_32101(90, 33).method_32098(0.0F, 0.0F, -9.0F, 0.0F, 10.0F, 19.0F, new class_5605(0.001F)),
+			class_5603.method_32090(0.0F, -14.0F, -5.0F)
+		);
+		class_5610 lv4 = lv2.method_32117(
+			"head",
+			class_5606.method_32108().method_32101(61, 1).method_32097(-7.0F, -3.0F, -19.0F, 14.0F, 6.0F, 19.0F),
+			class_5603.method_32091(0.0F, 2.0F, -12.0F, 0.87266463F, 0.0F, 0.0F)
+		);
+		lv4.method_32117(
+			"right_ear",
+			class_5606.method_32108().method_32101(1, 1).method_32097(-6.0F, -1.0F, -2.0F, 6.0F, 1.0F, 4.0F),
+			class_5603.method_32091(-6.0F, -2.0F, -3.0F, 0.0F, 0.0F, (float) (-Math.PI * 2.0 / 9.0))
+		);
+		lv4.method_32117(
+			"left_ear",
+			class_5606.method_32108().method_32101(1, 6).method_32097(0.0F, -1.0F, -2.0F, 6.0F, 1.0F, 4.0F),
+			class_5603.method_32091(6.0F, -2.0F, -3.0F, 0.0F, 0.0F, (float) (Math.PI * 2.0 / 9.0))
+		);
+		lv4.method_32117(
+			"right_horn",
+			class_5606.method_32108().method_32101(10, 13).method_32097(-1.0F, -11.0F, -1.0F, 2.0F, 11.0F, 2.0F),
+			class_5603.method_32090(-7.0F, 2.0F, -12.0F)
+		);
+		lv4.method_32117(
+			"left_horn",
+			class_5606.method_32108().method_32101(1, 13).method_32097(-1.0F, -11.0F, -1.0F, 2.0F, 11.0F, 2.0F),
+			class_5603.method_32090(7.0F, 2.0F, -12.0F)
+		);
 		int i = 14;
 		int j = 11;
-		this.field_22231 = new ModelPart(this);
-		this.field_22231.setPivot(-4.0F, 10.0F, -8.5F);
-		this.field_22231.setTextureOffset(66, 42).addCuboid(-3.0F, 0.0F, -3.0F, 6.0F, 14.0F, 6.0F);
-		this.field_22232 = new ModelPart(this);
-		this.field_22232.setPivot(4.0F, 10.0F, -8.5F);
-		this.field_22232.setTextureOffset(41, 42).addCuboid(-3.0F, 0.0F, -3.0F, 6.0F, 14.0F, 6.0F);
-		this.field_22233 = new ModelPart(this);
-		this.field_22233.setPivot(-5.0F, 13.0F, 10.0F);
-		this.field_22233.setTextureOffset(21, 45).addCuboid(-2.5F, 0.0F, -2.5F, 5.0F, 11.0F, 5.0F);
-		this.field_22234 = new ModelPart(this);
-		this.field_22234.setPivot(5.0F, 13.0F, 10.0F);
-		this.field_22234.setTextureOffset(0, 45).addCuboid(-2.5F, 0.0F, -2.5F, 5.0F, 11.0F, 5.0F);
+		lv2.method_32117(
+			"right_front_leg",
+			class_5606.method_32108().method_32101(66, 42).method_32097(-3.0F, 0.0F, -3.0F, 6.0F, 14.0F, 6.0F),
+			class_5603.method_32090(-4.0F, 10.0F, -8.5F)
+		);
+		lv2.method_32117(
+			"left_front_leg",
+			class_5606.method_32108().method_32101(41, 42).method_32097(-3.0F, 0.0F, -3.0F, 6.0F, 14.0F, 6.0F),
+			class_5603.method_32090(4.0F, 10.0F, -8.5F)
+		);
+		lv2.method_32117(
+			"right_hind_leg",
+			class_5606.method_32108().method_32101(21, 45).method_32097(-2.5F, 0.0F, -2.5F, 5.0F, 11.0F, 5.0F),
+			class_5603.method_32090(-5.0F, 13.0F, 10.0F)
+		);
+		lv2.method_32117(
+			"left_hind_leg",
+			class_5606.method_32108().method_32101(0, 45).method_32097(-2.5F, 0.0F, -2.5F, 5.0F, 11.0F, 5.0F),
+			class_5603.method_32090(5.0F, 13.0F, 10.0F)
+		);
+		return class_5607.method_32110(lv, 128, 64);
 	}
 
 	@Override
@@ -76,7 +107,7 @@ public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.body, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
+		return ImmutableList.<ModelPart>of(this.torso, this.field_27421, this.field_27422, this.field_27423, this.field_27424);
 	}
 
 	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
@@ -95,9 +126,9 @@ public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel
 		}
 
 		float m = 1.2F;
-		this.field_22231.pitch = MathHelper.cos(f) * 1.2F * g;
-		this.field_22232.pitch = MathHelper.cos(f + (float) Math.PI) * 1.2F * g;
-		this.field_22233.pitch = this.field_22232.pitch;
-		this.field_22234.pitch = this.field_22231.pitch;
+		this.field_27421.pitch = MathHelper.cos(f) * 1.2F * g;
+		this.field_27422.pitch = MathHelper.cos(f + (float) Math.PI) * 1.2F * g;
+		this.field_27423.pitch = this.field_27422.pitch;
+		this.field_27424.pitch = this.field_27421.pitch;
 	}
 }

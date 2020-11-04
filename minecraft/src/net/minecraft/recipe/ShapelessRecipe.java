@@ -48,23 +48,23 @@ public class ShapelessRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public DefaultedList<Ingredient> getIngredients() {
+	public DefaultedList<Ingredient> getPreviewInputs() {
 		return this.input;
 	}
 
 	public boolean matches(CraftingInventory craftingInventory, World world) {
-		RecipeMatcher recipeMatcher = new RecipeMatcher();
+		RecipeFinder recipeFinder = new RecipeFinder();
 		int i = 0;
 
 		for (int j = 0; j < craftingInventory.size(); j++) {
 			ItemStack itemStack = craftingInventory.getStack(j);
 			if (!itemStack.isEmpty()) {
 				i++;
-				recipeMatcher.method_20478(itemStack, 1);
+				recipeFinder.method_20478(itemStack, 1);
 			}
 		}
 
-		return i == this.input.size() && recipeMatcher.match(this, null);
+		return i == this.input.size() && recipeFinder.findRecipe(this, null);
 	}
 
 	public ItemStack craft(CraftingInventory craftingInventory) {

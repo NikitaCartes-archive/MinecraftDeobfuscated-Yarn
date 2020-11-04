@@ -17,8 +17,10 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.SelectionManager;
@@ -28,15 +30,17 @@ import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.SignType;
 import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class SignEditScreen extends Screen {
-	private final SignBlockEntityRenderer.SignModel model = new SignBlockEntityRenderer.SignModel();
 	private final SignBlockEntity sign;
 	private int ticksSinceOpened;
 	private int currentRow;
 	private SelectionManager selectionManager;
+	private SignType field_27390;
+	private SignBlockEntityRenderer.SignModel model;
 	private final String[] text;
 
 	public SignEditScreen(SignBlockEntity sign) {
@@ -60,6 +64,9 @@ public class SignEditScreen extends Screen {
 			SelectionManager.makeClipboardSetter(this.client),
 			string -> this.client.textRenderer.getWidth(string) <= 90
 		);
+		BlockState blockState = this.sign.getCachedState();
+		this.field_27390 = SignBlockEntityRenderer.method_32155(blockState.getBlock());
+		this.model = SignBlockEntityRenderer.method_32157(this.client.method_31974(), this.field_27390);
 	}
 
 	@Override
@@ -76,7 +83,7 @@ public class SignEditScreen extends Screen {
 	@Override
 	public void tick() {
 		this.ticksSinceOpened++;
-		if (!this.sign.getType().supports(this.sign.getCachedState().getBlock())) {
+		if (!this.sign.getType().supports(this.sign.getCachedState())) {
 			this.finishEditing();
 		}
 	}
@@ -87,7 +94,7 @@ public class SignEditScreen extends Screen {
 	}
 
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
+	public boolean charTyped(char chr, int keyCode) {
 		this.selectionManager.insert(chr);
 		return true;
 	}
@@ -101,11 +108,11 @@ public class SignEditScreen extends Screen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == 265) {
 			this.currentRow = this.currentRow - 1 & 3;
-			this.selectionManager.putCursorAtEnd();
+			this.selectionManager.moveCaretToEnd();
 			return true;
 		} else if (keyCode == 264 || keyCode == 257 || keyCode == 335) {
 			this.currentRow = this.currentRow + 1 & 3;
-			this.selectionManager.putCursorAtEnd();
+			this.selectionManager.moveCaretToEnd();
 			return true;
 		} else {
 			return this.selectionManager.handleSpecialKey(keyCode) ? true : super.keyPressed(keyCode, scanCode, modifiers);
@@ -133,13 +140,10 @@ public class SignEditScreen extends Screen {
 		matrices.push();
 		matrices.scale(0.6666667F, -0.6666667F, -0.6666667F);
 		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-		SpriteIdentifier spriteIdentifier = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
+		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.field_27390);
 		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.model::getLayer);
-		this.model.field.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
-		if (bl) {
-			this.model.foot.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
-		}
-
+		this.model.foot.visible = bl;
+		this.model.field_27756.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
 		matrices.pop();
 		float h = 0.010416667F;
 		matrices.translate(0.0, 0.33333334F, 0.046666667F);
@@ -192,7 +196,7 @@ public class SignEditScreen extends Screen {
 					RenderSystem.disableTexture();
 					RenderSystem.enableColorLogicOp();
 					RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-					bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+					bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 					bufferBuilder.vertex(matrix4f, (float)u, (float)(l + 9), 0.0F).color(0, 0, 255, 255).next();
 					bufferBuilder.vertex(matrix4f, (float)v, (float)(l + 9), 0.0F).color(0, 0, 255, 255).next();
 					bufferBuilder.vertex(matrix4f, (float)v, (float)l, 0.0F).color(0, 0, 255, 255).next();

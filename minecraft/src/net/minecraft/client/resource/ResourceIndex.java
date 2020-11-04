@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ResourceIndex {
 	protected static final Logger LOGGER = LogManager.getLogger();
-	private final Map<String, File> rootIndex = Maps.<String, File>newHashMap();
+	private final Map<String, File> index = Maps.<String, File>newHashMap();
 	private final Map<Identifier, File> field_21556 = Maps.<Identifier, File>newHashMap();
 
 	protected ResourceIndex() {
@@ -49,7 +49,7 @@ public class ResourceIndex {
 					String string2 = JsonHelper.getString(jsonObject3, "hash");
 					File file3 = new File(file, string2.substring(0, 2) + "/" + string2);
 					if (strings.length == 1) {
-						this.rootIndex.put(strings[0], file3);
+						this.index.put(strings[0], file3);
 					} else {
 						this.field_21556.put(new Identifier(strings[0], strings[1]), file3);
 					}
@@ -71,7 +71,7 @@ public class ResourceIndex {
 
 	@Nullable
 	public File findFile(String path) {
-		return (File)this.rootIndex.get(path);
+		return (File)this.index.get(path);
 	}
 
 	public Collection<Identifier> getFilesRecursively(String string, String string2, int i, Predicate<String> predicate) {

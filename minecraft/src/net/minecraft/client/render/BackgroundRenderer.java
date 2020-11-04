@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -16,7 +17,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 
@@ -81,8 +81,8 @@ public class BackgroundRenderer {
 			blue = (float)vec3d3.getZ();
 			if (i >= 4) {
 				float g = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) > 0.0F ? -1.0F : 1.0F;
-				Vec3f vec3f = new Vec3f(g, 0.0F, 0.0F);
-				float r = camera.getHorizontalPlane().dot(vec3f);
+				Vector3f vector3f = new Vector3f(g, 0.0F, 0.0F);
+				float r = camera.getHorizontalPlane().dot(vector3f);
 				if (r < 0.0F) {
 					r = 0.0F;
 				}
@@ -121,7 +121,7 @@ public class BackgroundRenderer {
 			lastWaterFogColorUpdateTime = -1L;
 		}
 
-		double d = camera.getPos().y * world.getLevelProperties().getHorizonShadingRatio();
+		double d = (camera.getPos().y - (double)world.getBottomHeightLimit()) * world.getLevelProperties().getHorizonShadingRatio();
 		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
 			int jx = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
 			if (jx < 20) {

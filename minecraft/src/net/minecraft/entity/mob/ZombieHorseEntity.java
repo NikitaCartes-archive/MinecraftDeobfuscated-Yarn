@@ -75,7 +75,7 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 			return super.interactMob(player, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem() == Items.SADDLE && !this.isSaddled()) {
+				if (itemStack.isOf(Items.SADDLE) && !this.isSaddled()) {
 					this.openInventory(player);
 					return ActionResult.success(this.world.isClient);
 				}

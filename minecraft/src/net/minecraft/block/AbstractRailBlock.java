@@ -2,7 +2,11 @@ package net.minecraft.block;
 
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -10,11 +14,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public abstract class AbstractRailBlock extends Block {
+public abstract class AbstractRailBlock extends Block implements Waterloggable {
 	protected static final VoxelShape STRAIGHT_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
 	protected static final VoxelShape ASCENDING_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+	public static final BooleanProperty field_27096 = Properties.WATERLOGGED;
 	private final boolean allowCurves;
 
 	public static boolean isRail(World world, BlockPos pos) {
@@ -134,11 +140,27 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
+		boolean bl = fluidState.getFluid() == Fluids.WATER;
 		BlockState blockState = super.getDefaultState();
 		Direction direction = ctx.getPlayerFacing();
-		boolean bl = direction == Direction.EAST || direction == Direction.WEST;
-		return blockState.with(this.getShapeProperty(), bl ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH);
+		boolean bl2 = direction == Direction.EAST || direction == Direction.WEST;
+		return blockState.with(this.getShapeProperty(), bl2 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).with(field_27096, Boolean.valueOf(bl));
 	}
 
 	public abstract Property<RailShape> getShapeProperty();
+
+	@Override
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		if ((Boolean)state.get(field_27096)) {
+			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+		}
+
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+	}
+
+	@Override
+	public FluidState getFluidState(BlockState state) {
+		return state.get(field_27096) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+	}
 }

@@ -123,7 +123,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					this.setDrinking(false);
 					ItemStack itemStack = this.getMainHandStack();
 					this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-					if (itemStack.getItem() == Items.POTION) {
+					if (itemStack.isOf(Items.POTION)) {
 						List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
 						if (list != null) {
 							for (StatusEffectInstance statusEffectInstance : list) {
@@ -209,7 +209,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			amount = 0.0F;
 		}
 
-		if (source.isMagic()) {
+		if (source.getMagic()) {
 			amount = (float)((double)amount * 0.15);
 		}
 

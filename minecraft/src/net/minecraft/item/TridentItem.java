@@ -71,14 +71,14 @@ public class TridentItem extends Item implements Vanishable {
 						if (j == 0) {
 							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, stack);
 							tridentEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 2.5F + (float)j * 0.5F, 1.0F);
-							if (playerEntity.abilities.creativeMode) {
+							if (playerEntity.getAbilities().creativeMode) {
 								tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 							}
 
 							world.spawnEntity(tridentEntity);
 							world.playSoundFromEntity(null, tridentEntity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0F, 1.0F);
-							if (!playerEntity.abilities.creativeMode) {
-								playerEntity.inventory.removeOne(stack);
+							if (!playerEntity.getAbilities().creativeMode) {
+								playerEntity.getInventory().removeOne(stack);
 							}
 						}
 					}

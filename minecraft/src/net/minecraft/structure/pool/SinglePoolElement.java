@@ -68,11 +68,11 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	public List<Structure.StructureBlockInfo> getDataStructureBlocks(
-		StructureManager structureManager, BlockPos pos, BlockRotation rotation, boolean mirroredAndRotated
+		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, boolean mirroredAndRotated
 	) {
 		Structure structure = this.method_27233(structureManager);
 		List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(
-			pos, new StructurePlacementData().setRotation(rotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated
+			blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated
 		);
 		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 
@@ -105,35 +105,35 @@ public class SinglePoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		StructureWorldAccess world,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		BlockPos pos,
 		BlockPos blockPos,
-		BlockRotation rotation,
-		BlockBox box,
+		BlockPos blockPos2,
+		BlockRotation blockRotation,
+		BlockBox blockBox,
 		Random random,
 		boolean keepJigsaws
 	) {
 		Structure structure = this.method_27233(structureManager);
-		StructurePlacementData structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws);
-		if (!structure.place(world, pos, blockPos, structurePlacementData, random, 18)) {
+		StructurePlacementData structurePlacementData = this.createPlacementData(blockRotation, blockBox, keepJigsaws);
+		if (!structure.place(structureWorldAccess, blockPos, blockPos2, structurePlacementData, random, 18)) {
 			return false;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(
-				world, pos, blockPos, structurePlacementData, this.getDataStructureBlocks(structureManager, pos, rotation, false)
+				structureWorldAccess, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false)
 			)) {
-				this.method_16756(world, structureBlockInfo, pos, rotation, random, box);
+				this.method_16756(structureWorldAccess, structureBlockInfo, blockPos, blockRotation, random, blockBox);
 			}
 
 			return true;
 		}
 	}
 
-	protected StructurePlacementData createPlacementData(BlockRotation rotation, BlockBox box, boolean keepJigsaws) {
+	protected StructurePlacementData createPlacementData(BlockRotation blockRotation, BlockBox blockBox, boolean keepJigsaws) {
 		StructurePlacementData structurePlacementData = new StructurePlacementData();
-		structurePlacementData.setBoundingBox(box);
-		structurePlacementData.setRotation(rotation);
+		structurePlacementData.setBoundingBox(blockBox);
+		structurePlacementData.setRotation(blockRotation);
 		structurePlacementData.setUpdateNeighbors(true);
 		structurePlacementData.setIgnoreEntities(false);
 		structurePlacementData.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);

@@ -126,14 +126,14 @@ public final class ProjectileUtil {
 	}
 
 	public static Hand getHandPossiblyHolding(LivingEntity entity, Item item) {
-		return entity.getMainHandStack().getItem() == item ? Hand.MAIN_HAND : Hand.OFF_HAND;
+		return entity.getMainHandStack().isOf(item) ? Hand.MAIN_HAND : Hand.OFF_HAND;
 	}
 
 	public static PersistentProjectileEntity createArrowProjectile(LivingEntity entity, ItemStack stack, float damageModifier) {
 		ArrowItem arrowItem = (ArrowItem)(stack.getItem() instanceof ArrowItem ? stack.getItem() : Items.ARROW);
 		PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(entity.world, stack, entity);
 		persistentProjectileEntity.applyEnchantmentEffects(entity, damageModifier);
-		if (stack.getItem() == Items.TIPPED_ARROW && persistentProjectileEntity instanceof ArrowEntity) {
+		if (stack.isOf(Items.TIPPED_ARROW) && persistentProjectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)persistentProjectileEntity).initFromStack(stack);
 		}
 

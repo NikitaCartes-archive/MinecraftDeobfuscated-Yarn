@@ -14,13 +14,13 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 	private final File packsFolder;
 	private final ResourcePackSource field_25345;
 
-	public FileResourcePackProvider(File packsFolder, ResourcePackSource source) {
+	public FileResourcePackProvider(File packsFolder, ResourcePackSource resourcePackSource) {
 		this.packsFolder = packsFolder;
-		this.field_25345 = source;
+		this.field_25345 = resourcePackSource;
 	}
 
 	@Override
-	public void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory) {
+	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
 		if (!this.packsFolder.isDirectory()) {
 			this.packsFolder.mkdirs();
 		}
@@ -33,7 +33,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 					string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.field_25345
 				);
 				if (resourcePackProfile != null) {
-					profileAdder.accept(resourcePackProfile);
+					consumer.accept(resourcePackProfile);
 				}
 			}
 		}

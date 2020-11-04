@@ -48,11 +48,11 @@ import net.minecraft.world.WorldView;
 public class GuardianEntity extends HostileEntity {
 	private static final TrackedData<Boolean> SPIKES_RETRACTED = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> BEAM_TARGET_ID = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private float tailAngle;
-	private float prevTailAngle;
-	private float spikesExtensionRate;
 	private float spikesExtension;
 	private float prevSpikesExtension;
+	private float spikesExtensionRate;
+	private float tailAngle;
+	private float prevTailAngle;
 	private LivingEntity cachedBeamTarget;
 	private int beamTicks;
 	private boolean flopping;
@@ -63,8 +63,8 @@ public class GuardianEntity extends HostileEntity {
 		this.experiencePoints = 10;
 		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 		this.moveControl = new GuardianEntity.GuardianMoveControl(this);
-		this.tailAngle = this.random.nextFloat();
-		this.prevTailAngle = this.tailAngle;
+		this.spikesExtension = this.random.nextFloat();
+		this.prevSpikesExtension = this.spikesExtension;
 	}
 
 	@Override
@@ -201,7 +201,7 @@ public class GuardianEntity extends HostileEntity {
 	public void tickMovement() {
 		if (this.isAlive()) {
 			if (this.world.isClient) {
-				this.prevTailAngle = this.tailAngle;
+				this.prevSpikesExtension = this.spikesExtension;
 				if (!this.isTouchingWater()) {
 					this.spikesExtensionRate = 2.0F;
 					Vec3d vec3d = this.getVelocity();
@@ -220,14 +220,14 @@ public class GuardianEntity extends HostileEntity {
 					this.spikesExtensionRate = this.spikesExtensionRate + (0.125F - this.spikesExtensionRate) * 0.2F;
 				}
 
-				this.tailAngle = this.tailAngle + this.spikesExtensionRate;
-				this.prevSpikesExtension = this.spikesExtension;
+				this.spikesExtension = this.spikesExtension + this.spikesExtensionRate;
+				this.prevTailAngle = this.tailAngle;
 				if (!this.isInsideWaterOrBubbleColumn()) {
-					this.spikesExtension = this.random.nextFloat();
+					this.tailAngle = this.random.nextFloat();
 				} else if (this.areSpikesRetracted()) {
-					this.spikesExtension = this.spikesExtension + (0.0F - this.spikesExtension) * 0.25F;
+					this.tailAngle = this.tailAngle + (0.0F - this.tailAngle) * 0.25F;
 				} else {
-					this.spikesExtension = this.spikesExtension + (1.0F - this.spikesExtension) * 0.06F;
+					this.tailAngle = this.tailAngle + (1.0F - this.tailAngle) * 0.06F;
 				}
 
 				if (this.areSpikesRetracted() && this.isTouchingWater()) {
@@ -298,13 +298,13 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getTailAngle(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.prevTailAngle, this.tailAngle);
+	public float getSpikesExtension(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.prevSpikesExtension, this.spikesExtension);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getSpikesExtension(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.prevSpikesExtension, this.spikesExtension);
+	public float getTailAngle(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.prevTailAngle, this.tailAngle);
 	}
 
 	public float getBeamProgress(float tickDelta) {
@@ -324,7 +324,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (!this.areSpikesRetracted() && !source.isMagic() && source.getSource() instanceof LivingEntity) {
+		if (!this.areSpikesRetracted() && !source.getMagic() && source.getSource() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)source.getSource();
 			if (!source.isExplosive()) {
 				livingEntity.damage(DamageSource.thorns(this), 2.0F);
@@ -445,7 +445,7 @@ public class GuardianEntity extends HostileEntity {
 				double f = vec3d.y / d;
 				double g = vec3d.z / d;
 				float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) - 90.0F;
-				this.guardian.yaw = this.wrapDegrees(this.guardian.yaw, h, 90.0F);
+				this.guardian.yaw = this.changeAngle(this.guardian.yaw, h, 90.0F);
 				this.guardian.bodyYaw = this.guardian.yaw;
 				float i = (float)(this.speed * this.guardian.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				float j = MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i);

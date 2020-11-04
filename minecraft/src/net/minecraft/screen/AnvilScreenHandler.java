@@ -1,6 +1,7 @@
 package net.minecraft.screen;
 
 import java.util.Map;
+import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AnvilBlock;
@@ -14,6 +15,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,12 +43,12 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	protected boolean canTakeOutput(PlayerEntity player, boolean present) {
-		return (player.abilities.creativeMode || player.experienceLevel >= this.levelCost.get()) && this.levelCost.get() > 0;
+		return (player.getAbilities().creativeMode || player.experienceLevel >= this.levelCost.get()) && this.levelCost.get() > 0;
 	}
 
 	@Override
 	protected ItemStack onTakeOutput(PlayerEntity player, ItemStack stack) {
-		if (!player.abilities.creativeMode) {
+		if (!player.getAbilities().creativeMode) {
 			player.addExperienceLevels(-this.levelCost.get());
 		}
 
@@ -63,9 +66,9 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		}
 
 		this.levelCost.set(0);
-		this.context.run((world, blockPos) -> {
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 			BlockState blockState = world.getBlockState(blockPos);
-			if (!player.abilities.creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
+			if (!player.getAbilities().creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
 				BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 				if (blockState2 == null) {
 					world.removeBlock(blockPos, false);
@@ -77,7 +80,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			} else {
 				world.syncWorldEvent(1030, blockPos, 0);
 			}
-		});
+		}));
 		return stack;
 	}
 
@@ -98,7 +101,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			j += itemStack.getRepairCost() + (itemStack3.isEmpty() ? 0 : itemStack3.getRepairCost());
 			this.repairItemUsage = 0;
 			if (!itemStack3.isEmpty()) {
-				boolean bl = itemStack3.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantmentNbt(itemStack3).isEmpty();
+				boolean bl = itemStack3.isOf(Items.ENCHANTED_BOOK) && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
 				if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
 					int l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					if (l <= 0) {
@@ -117,7 +120,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 					this.repairItemUsage = m;
 				} else {
-					if (!bl && (itemStack2.getItem() != itemStack3.getItem() || !itemStack2.isDamageable())) {
+					if (!bl && (!itemStack2.isOf(itemStack3.getItem()) || !itemStack2.isDamageable())) {
 						this.output.setStack(0, ItemStack.EMPTY);
 						this.levelCost.set(0);
 						return;
@@ -149,7 +152,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 							int r = (Integer)map2.get(enchantment);
 							r = q == r ? r + 1 : Math.max(r, q);
 							boolean bl4 = enchantment.isAcceptableItem(itemStack);
-							if (this.player.abilities.creativeMode || itemStack.getItem() == Items.ENCHANTED_BOOK) {
+							if (this.player.getAbilities().creativeMode || itemStack.isOf(Items.ENCHANTED_BOOK)) {
 								bl4 = true;
 							}
 
@@ -225,7 +228,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 				this.levelCost.set(39);
 			}
 
-			if (this.levelCost.get() >= 40 && !this.player.abilities.creativeMode) {
+			if (this.levelCost.get() >= 40 && !this.player.getAbilities().creativeMode) {
 				itemStack2 = ItemStack.EMPTY;
 			}
 
@@ -252,11 +255,11 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		return cost * 2 + 1;
 	}
 
-	public void setNewItemName(String newItemName) {
-		this.newItemName = newItemName;
+	public void setNewItemName(String string) {
+		this.newItemName = string;
 		if (this.getSlot(2).hasStack()) {
 			ItemStack itemStack = this.getSlot(2).getStack();
-			if (StringUtils.isBlank(newItemName)) {
+			if (StringUtils.isBlank(string)) {
 				itemStack.removeCustomName();
 			} else {
 				itemStack.setCustomName(new LiteralText(this.newItemName));

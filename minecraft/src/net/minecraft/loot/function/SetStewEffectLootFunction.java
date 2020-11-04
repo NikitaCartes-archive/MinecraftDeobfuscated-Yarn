@@ -39,7 +39,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		if (stack.getItem() == Items.SUSPICIOUS_STEW && !this.effects.isEmpty()) {
+		if (stack.isOf(Items.SUSPICIOUS_STEW) && !this.effects.isEmpty()) {
 			Random random = context.getRandom();
 			int i = random.nextInt(this.effects.size());
 			Entry<StatusEffect, UniformLootTableRange> entry = Iterables.get(this.effects.entrySet(), i);

@@ -33,7 +33,7 @@ public abstract class AbstractBeeSoundInstance extends MovingSoundInstance {
 			this.replaced = true;
 		}
 
-		if (!this.bee.removed && !this.replaced) {
+		if (!this.bee.isRemoved() && !this.replaced) {
 			this.x = (double)((float)this.bee.getX());
 			this.y = (double)((float)this.bee.getY());
 			this.z = (double)((float)this.bee.getZ());

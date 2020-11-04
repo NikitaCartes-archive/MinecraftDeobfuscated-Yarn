@@ -59,7 +59,7 @@ public class DyingPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d getPathTarget() {
+	public Vec3d getTarget() {
 		return this.target;
 	}
 

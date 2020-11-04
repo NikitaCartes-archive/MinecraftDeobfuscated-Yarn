@@ -2,51 +2,46 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5605;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 
 @Environment(EnvType.CLIENT)
 public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEntityModel<T> {
-	private final ModelPart leftChest = new ModelPart(this, 26, 21);
-	private final ModelPart rightChest;
+	private final ModelPart field_27399 = this.torso.method_32086("left_chest");
+	private final ModelPart field_27400 = this.torso.method_32086("right_chest");
 
-	public DonkeyEntityModel(float f) {
-		super(f);
-		this.leftChest.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 8.0F, 3.0F);
-		this.rightChest = new ModelPart(this, 26, 21);
-		this.rightChest.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 8.0F, 3.0F);
-		this.leftChest.yaw = (float) (-Math.PI / 2);
-		this.rightChest.yaw = (float) (Math.PI / 2);
-		this.leftChest.setPivot(6.0F, -8.0F, 0.0F);
-		this.rightChest.setPivot(-6.0F, -8.0F, 0.0F);
-		this.body.addChild(this.leftChest);
-		this.body.addChild(this.rightChest);
+	public DonkeyEntityModel(ModelPart modelPart) {
+		super(modelPart);
 	}
 
-	@Override
-	protected void method_2789(ModelPart modelPart) {
-		ModelPart modelPart2 = new ModelPart(this, 0, 12);
-		modelPart2.addCuboid(-1.0F, -7.0F, 0.0F, 2.0F, 7.0F, 1.0F);
-		modelPart2.setPivot(1.25F, -10.0F, 4.0F);
-		ModelPart modelPart3 = new ModelPart(this, 0, 12);
-		modelPart3.addCuboid(-1.0F, -7.0F, 0.0F, 2.0F, 7.0F, 1.0F);
-		modelPart3.setPivot(-1.25F, -10.0F, 4.0F);
-		modelPart2.pitch = (float) (Math.PI / 12);
-		modelPart2.roll = (float) (Math.PI / 12);
-		modelPart3.pitch = (float) (Math.PI / 12);
-		modelPart3.roll = (float) (-Math.PI / 12);
-		modelPart.addChild(modelPart2);
-		modelPart.addChild(modelPart3);
+	public static class_5607 method_31987() {
+		class_5609 lv = HorseEntityModel.method_32010(class_5605.field_27715);
+		class_5610 lv2 = lv.method_32111();
+		class_5610 lv3 = lv2.method_32116("body");
+		class_5606 lv4 = class_5606.method_32108().method_32101(26, 21).method_32097(-4.0F, 0.0F, -2.0F, 8.0F, 8.0F, 3.0F);
+		lv3.method_32117("left_chest", lv4, class_5603.method_32091(6.0F, -8.0F, 0.0F, 0.0F, (float) (-Math.PI / 2), 0.0F));
+		lv3.method_32117("right_chest", lv4, class_5603.method_32091(-6.0F, -8.0F, 0.0F, 0.0F, (float) (Math.PI / 2), 0.0F));
+		class_5610 lv5 = lv2.method_32116("head_parts").method_32116("head");
+		class_5606 lv6 = class_5606.method_32108().method_32101(0, 12).method_32097(-1.0F, -7.0F, 0.0F, 2.0F, 7.0F, 1.0F);
+		lv5.method_32117("left_ear", lv6, class_5603.method_32091(1.25F, -10.0F, 4.0F, (float) (Math.PI / 12), 0.0F, (float) (Math.PI / 12)));
+		lv5.method_32117("right_ear", lv6, class_5603.method_32091(-1.25F, -10.0F, 4.0F, (float) (Math.PI / 12), 0.0F, (float) (-Math.PI / 12)));
+		return class_5607.method_32110(lv, 64, 64);
 	}
 
 	public void setAngles(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(abstractDonkeyEntity, f, g, h, i, j);
 		if (abstractDonkeyEntity.hasChest()) {
-			this.leftChest.visible = true;
-			this.rightChest.visible = true;
+			this.field_27399.visible = true;
+			this.field_27400.visible = true;
 		} else {
-			this.leftChest.visible = false;
-			this.rightChest.visible = false;
+			this.field_27399.visible = false;
+			this.field_27400.visible = false;
 		}
 	}
 }

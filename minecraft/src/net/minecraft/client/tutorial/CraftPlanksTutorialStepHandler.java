@@ -34,7 +34,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 			if (this.ticks == 1) {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
-					if (clientPlayerEntity.inventory.contains(ItemTags.PLANKS)) {
+					if (clientPlayerEntity.getInventory().contains(ItemTags.PLANKS)) {
 						this.manager.setStep(TutorialStep.NONE);
 						return;
 					}
@@ -63,8 +63,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onSlotUpdate(ItemStack stack) {
-		Item item = stack.getItem();
-		if (ItemTags.PLANKS.contains(item)) {
+		if (stack.isIn(ItemTags.PLANKS)) {
 			this.manager.setStep(TutorialStep.NONE);
 		}
 	}

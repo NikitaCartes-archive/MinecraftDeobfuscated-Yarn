@@ -6,7 +6,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -19,12 +19,12 @@ import net.minecraft.util.shape.VoxelShapes;
 public class WorldBorder {
 	private final List<WorldBorderListener> listeners = Lists.<WorldBorderListener>newArrayList();
 	private double damagePerBlock = 0.2;
-	private double safeZone = 5.0;
+	private double buffer = 5.0;
 	private int warningTime = 15;
 	private int warningBlocks = 5;
 	private double centerX;
 	private double centerZ;
-	private int maxRadius = 29999984;
+	private int maxWorldBorderRadius = 29999984;
 	private WorldBorder.Area area = new WorldBorder.StaticArea(6.0E7);
 	public static final WorldBorder.Properties DEFAULT_BORDER = new WorldBorder.Properties(0.0, 0.0, 0.2, 5.0, 5, 15, 6.0E7, 0L, 0.0);
 
@@ -93,10 +93,6 @@ public class WorldBorder {
 		return this.centerZ;
 	}
 
-	/**
-	 * Sets the {@code x} and {@code z} coordinates of the center of this border,
-	 * and notifies its area and all listeners.
-	 */
 	public void setCenter(double x, double z) {
 		this.centerX = x;
 		this.centerZ = z;
@@ -111,18 +107,14 @@ public class WorldBorder {
 		return this.area.getSize();
 	}
 
-	public long getSizeLerpTime() {
+	public long getTargetRemainingTime() {
 		return this.area.getTargetRemainingTime();
 	}
 
-	public double getSizeLerpTarget() {
+	public double getTargetSize() {
 		return this.area.getTargetSize();
 	}
 
-	/**
-	 * Sets the area of this border to a static area with the given {@code size},
-	 * and notifies all listeners.
-	 */
 	public void setSize(double size) {
 		this.area = new WorldBorder.StaticArea(size);
 
@@ -147,59 +139,31 @@ public class WorldBorder {
 		this.listeners.add(listener);
 	}
 
-	/**
-	 * Sets the maximum radius of this border and notifies its area.
-	 */
-	public void setMaxRadius(int maxRadius) {
-		this.maxRadius = maxRadius;
+	public void setMaxWorldBorderRadius(int radius) {
+		this.maxWorldBorderRadius = radius;
 		this.area.onMaxWorldBorderRadiusChanged();
 	}
 
-	/**
-	 * Returns the maximum radius of this border, in blocks.
-	 * 
-	 * <p>The default value is 29999984.
-	 */
-	public int getMaxRadius() {
-		return this.maxRadius;
+	public int getMaxWorldBorderRadius() {
+		return this.maxWorldBorderRadius;
 	}
 
-	/**
-	 * Returns the safe zone of this border.
-	 * 
-	 * <p>The default value is 5.0.
-	 */
-	public double getSafeZone() {
-		return this.safeZone;
+	public double getBuffer() {
+		return this.buffer;
 	}
 
-	/**
-	 * Sets the safe zone of this border and notifies all listeners.
-	 */
-	public void setSafeZone(double safeZone) {
-		this.safeZone = safeZone;
+	public void setBuffer(double buffer) {
+		this.buffer = buffer;
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
-			worldBorderListener.onSafeZoneChanged(this, safeZone);
+			worldBorderListener.onSafeZoneChanged(this, buffer);
 		}
 	}
 
-	/**
-	 * Returns the damage increase per block beyond this border, in hearts.
-	 * <p>Once an entity goes beyond the border and the safe zone, damage will be
-	 * applied depending on the distance traveled multiplied by this damage increase.
-	 * 
-	 * <p>The default value is 0.2.
-	 * 
-	 * @see net.minecraft.entity.LivingEntity#baseTick()
-	 */
 	public double getDamagePerBlock() {
 		return this.damagePerBlock;
 	}
 
-	/**
-	 * Sets the damage per block of this border and notifies all listeners.
-	 */
 	public void setDamagePerBlock(double damagePerBlock) {
 		this.damagePerBlock = damagePerBlock;
 
@@ -213,20 +177,10 @@ public class WorldBorder {
 		return this.area.getShrinkingSpeed();
 	}
 
-	/**
-	 * Returns the warning time of this border, in ticks.
-	 * <p>Once a player goes beyond the border, this is the time before a message
-	 * is displayed to them.
-	 * 
-	 * <p>The default value is 15.
-	 */
 	public int getWarningTime() {
 		return this.warningTime;
 	}
 
-	/**
-	 * Sets the warning time of this border and notifies all listeners.
-	 */
 	public void setWarningTime(int warningTime) {
 		this.warningTime = warningTime;
 
@@ -235,20 +189,10 @@ public class WorldBorder {
 		}
 	}
 
-	/**
-	 * Returns the warning distance of this border, in blocks.
-	 * <p>When an entity approaches the border, this is the distance from which
-	 * a warning will be displayed.
-	 * 
-	 * <p>The default value is 5.
-	 */
 	public int getWarningBlocks() {
 		return this.warningBlocks;
 	}
 
-	/**
-	 * Sets the warning blocks of this border and notifies all listeners.
-	 */
 	public void setWarningBlocks(int warningBlocks) {
 		this.warningBlocks = warningBlocks;
 
@@ -268,7 +212,7 @@ public class WorldBorder {
 	public void load(WorldBorder.Properties properties) {
 		this.setCenter(properties.getCenterX(), properties.getCenterZ());
 		this.setDamagePerBlock(properties.getDamagePerBlock());
-		this.setSafeZone(properties.getBuffer());
+		this.setBuffer(properties.getBuffer());
 		this.setWarningBlocks(properties.getWarningBlocks());
 		this.setWarningTime(properties.getWarningTime());
 		if (properties.getTargetRemainingTime() > 0L) {
@@ -325,22 +269,22 @@ public class WorldBorder {
 
 		@Override
 		public double getBoundWest() {
-			return Math.max(WorldBorder.this.getCenterX() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius));
+			return Math.max(WorldBorder.this.getCenterX() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
 		}
 
 		@Override
 		public double getBoundNorth() {
-			return Math.max(WorldBorder.this.getCenterZ() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius));
+			return Math.max(WorldBorder.this.getCenterZ() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
 		}
 
 		@Override
 		public double getBoundEast() {
-			return Math.min(WorldBorder.this.getCenterX() + this.getSize() / 2.0, (double)WorldBorder.this.maxRadius);
+			return Math.min(WorldBorder.this.getCenterX() + this.getSize() / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
 		}
 
 		@Override
 		public double getBoundSouth() {
-			return Math.min(WorldBorder.this.getCenterZ() + this.getSize() / 2.0, (double)WorldBorder.this.maxRadius);
+			return Math.min(WorldBorder.this.getCenterZ() + this.getSize() / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
 		}
 
 		@Override
@@ -438,12 +382,12 @@ public class WorldBorder {
 			this.centerX = worldBorder.getCenterX();
 			this.centerZ = worldBorder.getCenterZ();
 			this.damagePerBlock = worldBorder.getDamagePerBlock();
-			this.buffer = worldBorder.getSafeZone();
+			this.buffer = worldBorder.getBuffer();
 			this.warningBlocks = worldBorder.getWarningBlocks();
 			this.warningTime = worldBorder.getWarningTime();
 			this.size = worldBorder.getSize();
-			this.targetRemainingTime = worldBorder.getSizeLerpTime();
-			this.targetSize = worldBorder.getSizeLerpTarget();
+			this.targetRemainingTime = worldBorder.getTargetRemainingTime();
+			this.targetSize = worldBorder.getTargetSize();
 		}
 
 		public double getCenterX() {
@@ -495,7 +439,7 @@ public class WorldBorder {
 			return new WorldBorder.Properties(d, e, i, h, j, k, f, l, g);
 		}
 
-		public void toTag(NbtCompound tag) {
+		public void toTag(CompoundTag tag) {
 			tag.putDouble("BorderCenterX", this.centerX);
 			tag.putDouble("BorderCenterZ", this.centerZ);
 			tag.putDouble("BorderSize", this.size);
@@ -569,10 +513,10 @@ public class WorldBorder {
 		}
 
 		private void recalculateBounds() {
-			this.boundWest = Math.max(WorldBorder.this.getCenterX() - this.size / 2.0, (double)(-WorldBorder.this.maxRadius));
-			this.boundNorth = Math.max(WorldBorder.this.getCenterZ() - this.size / 2.0, (double)(-WorldBorder.this.maxRadius));
-			this.boundEast = Math.min(WorldBorder.this.getCenterX() + this.size / 2.0, (double)WorldBorder.this.maxRadius);
-			this.boundSouth = Math.min(WorldBorder.this.getCenterZ() + this.size / 2.0, (double)WorldBorder.this.maxRadius);
+			this.boundWest = Math.max(WorldBorder.this.getCenterX() - this.size / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
+			this.boundNorth = Math.max(WorldBorder.this.getCenterZ() - this.size / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
+			this.boundEast = Math.min(WorldBorder.this.getCenterX() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
+			this.boundSouth = Math.min(WorldBorder.this.getCenterZ() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
 			this.shape = VoxelShapes.combineAndSimplify(
 				VoxelShapes.UNBOUNDED,
 				VoxelShapes.cuboid(

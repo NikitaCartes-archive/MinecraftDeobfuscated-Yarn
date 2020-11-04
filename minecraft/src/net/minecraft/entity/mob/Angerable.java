@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.GameRules;
@@ -25,28 +25,30 @@ public interface Angerable {
 
 	void chooseRandomAngerTime();
 
-	default void writeAngerToNbt(NbtCompound nbt) {
-		nbt.putInt("AngerTime", this.getAngerTime());
+	default void angerToTag(CompoundTag tag) {
+		tag.putInt("AngerTime", this.getAngerTime());
 		if (this.getAngryAt() != null) {
-			nbt.putUuid("AngryAt", this.getAngryAt());
+			tag.putUuid("AngryAt", this.getAngryAt());
 		}
 	}
 
-	default void angerFromTag(ServerWorld world, NbtCompound tag) {
-		this.setAngerTime(tag.getInt("AngerTime"));
-		if (!tag.containsUuid("AngryAt")) {
-			this.setAngryAt(null);
-		} else {
-			UUID uUID = tag.getUuid("AngryAt");
-			this.setAngryAt(uUID);
-			Entity entity = world.getEntity(uUID);
-			if (entity != null) {
-				if (entity instanceof MobEntity) {
-					this.setAttacker((MobEntity)entity);
-				}
+	default void angerFromTag(World world, CompoundTag compoundTag) {
+		this.setAngerTime(compoundTag.getInt("AngerTime"));
+		if (world instanceof ServerWorld) {
+			if (!compoundTag.containsUuid("AngryAt")) {
+				this.setAngryAt(null);
+			} else {
+				UUID uUID = compoundTag.getUuid("AngryAt");
+				this.setAngryAt(uUID);
+				Entity entity = ((ServerWorld)world).getEntity(uUID);
+				if (entity != null) {
+					if (entity instanceof MobEntity) {
+						this.setAttacker((MobEntity)entity);
+					}
 
-				if (entity.getType() == EntityType.PLAYER) {
-					this.setAttacking((PlayerEntity)entity);
+					if (entity.getType() == EntityType.PLAYER) {
+						this.setAttacking((PlayerEntity)entity);
+					}
 				}
 			}
 		}

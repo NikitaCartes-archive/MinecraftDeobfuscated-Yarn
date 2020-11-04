@@ -2,6 +2,7 @@ package net.minecraft.screen;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -16,6 +17,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class GrindstoneScreenHandler extends ScreenHandler {
@@ -39,13 +43,13 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 		this.addSlot(new Slot(this.input, 0, 49, 19) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.hasEnchantments();
+				return stack.isDamageable() || stack.isOf(Items.ENCHANTED_BOOK) || stack.hasEnchantments();
 			}
 		});
 		this.addSlot(new Slot(this.input, 1, 49, 40) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.hasEnchantments();
+				return stack.isDamageable() || stack.isOf(Items.ENCHANTED_BOOK) || stack.hasEnchantments();
 			}
 		});
 		this.addSlot(new Slot(this.result, 2, 129, 34) {
@@ -56,17 +60,13 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 
 			@Override
 			public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-				context.run((world, blockPos) -> {
-					int i = this.getExperience(world);
-
-					while (i > 0) {
-						int j = ExperienceOrbEntity.roundToOrbSize(i);
-						i -= j;
-						world.spawnEntity(new ExperienceOrbEntity(world, (double)blockPos.getX(), (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, j));
+				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+					if (world instanceof ServerWorld) {
+						ExperienceOrbEntity.method_31493((ServerWorld)world, Vec3d.ofCenter(blockPos), this.getExperience(world));
 					}
 
 					world.syncWorldEvent(1042, blockPos, 0);
-				});
+				}));
 				GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
 				GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);
 				return stack;
@@ -127,8 +127,8 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 		if (!bl) {
 			this.result.setStack(0, ItemStack.EMPTY);
 		} else {
-			boolean bl3 = !itemStack.isEmpty() && itemStack.getItem() != Items.ENCHANTED_BOOK && !itemStack.hasEnchantments()
-				|| !itemStack2.isEmpty() && itemStack2.getItem() != Items.ENCHANTED_BOOK && !itemStack2.hasEnchantments();
+			boolean bl3 = !itemStack.isEmpty() && !itemStack.isOf(Items.ENCHANTED_BOOK) && !itemStack.hasEnchantments()
+				|| !itemStack2.isEmpty() && !itemStack2.isOf(Items.ENCHANTED_BOOK) && !itemStack2.hasEnchantments();
 			if (itemStack.getCount() > 1 || itemStack2.getCount() > 1 || !bl2 && bl3) {
 				this.result.setStack(0, ItemStack.EMPTY);
 				this.sendContentUpdates();
@@ -139,7 +139,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			int m;
 			ItemStack itemStack3;
 			if (bl2) {
-				if (itemStack.getItem() != itemStack2.getItem()) {
+				if (!itemStack.isOf(itemStack2.getItem())) {
 					this.result.setStack(0, ItemStack.EMPTY);
 					this.sendContentUpdates();
 					return;
@@ -204,7 +204,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		EnchantmentHelper.set(map, itemStack);
 		itemStack.setRepairCost(0);
-		if (itemStack.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
+		if (itemStack.isOf(Items.ENCHANTED_BOOK) && map.size() == 0) {
 			itemStack = new ItemStack(Items.BOOK);
 			if (item.hasCustomName()) {
 				itemStack.setCustomName(item.getName());
@@ -221,7 +221,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((world, blockPos) -> this.dropInventory(player, world, this.input));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, this.input)));
 	}
 
 	@Override
@@ -232,7 +232,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(index);
+		Slot slot = this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
@@ -243,7 +243,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 			} else if (index != 0 && index != 1) {
 				if (!itemStack3.isEmpty() && !itemStack4.isEmpty()) {
 					if (index >= 3 && index < 30) {

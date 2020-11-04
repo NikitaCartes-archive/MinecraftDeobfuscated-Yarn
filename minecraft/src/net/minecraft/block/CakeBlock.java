@@ -2,11 +2,15 @@ package net.minecraft.block;
 
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -20,6 +24,7 @@ import net.minecraft.world.WorldView;
 
 public class CakeBlock extends Block {
 	public static final IntProperty BITES = Properties.BITES;
+	public static final int DEFAULT_COMPARATOR_OUTPUT = getComparatorOutput(0);
 	protected static final VoxelShape[] BITES_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 8.0, 15.0),
 		Block.createCuboidShape(3.0, 0.0, 1.0, 15.0, 8.0, 15.0),
@@ -42,9 +47,19 @@ public class CakeBlock extends Block {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		ItemStack itemStack = player.getStackInHand(hand);
+		Item item = itemStack.getItem();
+		if (!world.isClient && itemStack.isIn(ItemTags.CANDLES) && (Integer)state.get(BITES) == 0) {
+			Block block = Block.getBlockFromItem(item);
+			if (block instanceof CandleBlock) {
+				world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				world.setBlockState(pos, CandleCakeBlock.getCandleCakeFromCandle(block));
+				return ActionResult.SUCCESS;
+			}
+		}
+
 		if (world.isClient) {
-			ItemStack itemStack = player.getStackInHand(hand);
-			if (this.tryEat(world, pos, state, player).isAccepted()) {
+			if (tryEat(world, pos, state, player).isAccepted()) {
 				return ActionResult.SUCCESS;
 			}
 
@@ -53,10 +68,10 @@ public class CakeBlock extends Block {
 			}
 		}
 
-		return this.tryEat(world, pos, state, player);
+		return tryEat(world, pos, state, player);
 	}
 
-	private ActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
+	protected static ActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!player.canConsume(false)) {
 			return ActionResult.PASS;
 		} else {
@@ -74,12 +89,10 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction == Direction.DOWN && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -94,7 +107,11 @@ public class CakeBlock extends Block {
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return (7 - (Integer)state.get(BITES)) * 2;
+		return getComparatorOutput((Integer)state.get(BITES));
+	}
+
+	public static int getComparatorOutput(int bites) {
+		return (7 - bites) * 2;
 	}
 
 	@Override

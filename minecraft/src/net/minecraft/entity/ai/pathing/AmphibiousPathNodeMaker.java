@@ -185,7 +185,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 					int i = 0;
 
-					while (y > 0 && pathNodeType == PathNodeType.OPEN) {
+					while (y > this.cachedWorld.getBottomHeightLimit() && pathNodeType == PathNodeType.OPEN) {
 						y--;
 						if (i++ >= this.entity.getSafeFallDistance()) {
 							return null;

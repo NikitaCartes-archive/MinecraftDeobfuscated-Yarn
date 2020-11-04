@@ -25,10 +25,10 @@ import org.apache.logging.log4j.Logger;
 public class ReloadableResourceManagerImpl implements ReloadableResourceManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<String, NamespaceResourceManager> namespaceManagers = Maps.<String, NamespaceResourceManager>newHashMap();
-	private final List<ResourceReloader> reloaders = Lists.<ResourceReloader>newArrayList();
-	private final List<ResourceReloader> initialListeners = Lists.<ResourceReloader>newArrayList();
+	private final List<ResourceReloadListener> listeners = Lists.<ResourceReloadListener>newArrayList();
+	private final List<ResourceReloadListener> initialListeners = Lists.<ResourceReloadListener>newArrayList();
 	private final Set<String> namespaces = Sets.<String>newLinkedHashSet();
-	private final List<ResourcePack> field_25145 = Lists.<ResourcePack>newArrayList();
+	private final List<ResourcePack> packs = Lists.<ResourcePack>newArrayList();
 	private final ResourceType type;
 
 	public ReloadableResourceManagerImpl(ResourceType type) {
@@ -36,7 +36,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	public void addPack(ResourcePack pack) {
-		this.field_25145.add(pack);
+		this.packs.add(pack);
 
 		for (String string : pack.getNamespaces(this.type)) {
 			this.namespaces.add(string);
@@ -84,11 +84,11 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
-	public Collection<Identifier> findResources(String startingPath, Predicate<String> pathPredicate) {
+	public Collection<Identifier> findResources(String resourceType, Predicate<String> pathPredicate) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for (NamespaceResourceManager namespaceResourceManager : this.namespaceManagers.values()) {
-			set.addAll(namespaceResourceManager.findResources(startingPath, pathPredicate));
+			set.addAll(namespaceResourceManager.findResources(resourceType, pathPredicate));
 		}
 
 		List<Identifier> list = Lists.<Identifier>newArrayList(set);
@@ -99,8 +99,8 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	private void clear() {
 		this.namespaceManagers.clear();
 		this.namespaces.clear();
-		this.field_25145.forEach(ResourcePack::close);
-		this.field_25145.clear();
+		this.packs.forEach(ResourcePack::close);
+		this.packs.clear();
 	}
 
 	@Override
@@ -109,27 +109,31 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
-	public void registerReloader(ResourceReloader reloader) {
-		this.reloaders.add(reloader);
-		this.initialListeners.add(reloader);
+	public void registerListener(ResourceReloadListener listener) {
+		this.listeners.add(listener);
+		this.initialListeners.add(listener);
 	}
 
-	protected ResourceReload beginReloadInner(
-		Executor prepareExecutor, Executor applyExecutor, List<ResourceReloader> listeners, CompletableFuture<Unit> initialStage
+	protected ResourceReloadMonitor beginReloadInner(
+		Executor prepareExecutor, Executor applyExecutor, List<ResourceReloadListener> listeners, CompletableFuture<Unit> initialStage
 	) {
-		ResourceReload resourceReload;
+		ResourceReloadMonitor resourceReloadMonitor;
 		if (LOGGER.isDebugEnabled()) {
-			resourceReload = new ProfiledResourceReload(this, Lists.<ResourceReloader>newArrayList(listeners), prepareExecutor, applyExecutor, initialStage);
+			resourceReloadMonitor = new ProfilingResourceReloader(
+				this, Lists.<ResourceReloadListener>newArrayList(listeners), prepareExecutor, applyExecutor, initialStage
+			);
 		} else {
-			resourceReload = SimpleResourceReload.create(this, Lists.<ResourceReloader>newArrayList(listeners), prepareExecutor, applyExecutor, initialStage);
+			resourceReloadMonitor = ResourceReloader.create(this, Lists.<ResourceReloadListener>newArrayList(listeners), prepareExecutor, applyExecutor, initialStage);
 		}
 
 		this.initialListeners.clear();
-		return resourceReload;
+		return resourceReloadMonitor;
 	}
 
 	@Override
-	public ResourceReload reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs) {
+	public ResourceReloadMonitor beginMonitoredReload(
+		Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs
+	) {
 		this.clear();
 		LOGGER.info("Reloading ResourceManager: {}", () -> (String)packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
 
@@ -142,16 +146,16 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 			}
 		}
 
-		return this.beginReloadInner(prepareExecutor, applyExecutor, this.reloaders, initialStage);
+		return this.beginReloadInner(prepareExecutor, applyExecutor, this.listeners, initialStage);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public Stream<ResourcePack> streamResourcePacks() {
-		return this.field_25145.stream();
+		return this.packs.stream();
 	}
 
-	static class FailedResourceReloadMonitor implements ResourceReload {
+	static class FailedResourceReloadMonitor implements ResourceReloadMonitor {
 		private final ReloadableResourceManagerImpl.PackAdditionFailedException exception;
 		private final CompletableFuture<Unit> future;
 
@@ -180,13 +184,13 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public boolean isComplete() {
+		public boolean isApplyStageComplete() {
 			return true;
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public void throwException() {
+		public void throwExceptions() {
 			throw this.exception;
 		}
 	}

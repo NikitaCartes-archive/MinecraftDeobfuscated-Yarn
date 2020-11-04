@@ -36,9 +36,9 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.command.argument.NumberRangeArgumentType;
+import net.minecraft.command.argument.ObjectiveArgumentType;
 import net.minecraft.command.argument.RotationArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
-import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.command.argument.SwizzleArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
@@ -48,14 +48,14 @@ import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtByte;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtFloat;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtLong;
-import net.minecraft.nbt.NbtShort;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.ShortTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -222,13 +222,13 @@ public class ExecuteCommand {
 					CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
 						.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 						.then(
-							CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+							CommandManager.argument("objective", ObjectiveArgumentType.objective())
 								.redirect(
 									node,
 									commandContext -> executeStoreScore(
 											commandContext.getSource(),
 											ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
-											ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"),
+											ObjectiveArgumentType.getObjective(commandContext, "objective"),
 											requestResult
 										)
 								)
@@ -266,7 +266,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> NbtInt.of((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
+														i -> IntTag.of((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
 														requestResult
 													)
 											)
@@ -282,7 +282,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> NbtFloat.of((float)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
+														i -> FloatTag.of((float)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
 														requestResult
 													)
 											)
@@ -298,7 +298,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> NbtShort.of((short)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
+														i -> ShortTag.of((short)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
 														requestResult
 													)
 											)
@@ -314,7 +314,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> NbtLong.of((long)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
+														i -> LongTag.of((long)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
 														requestResult
 													)
 											)
@@ -330,7 +330,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> NbtDouble.of((double)i * DoubleArgumentType.getDouble(commandContext, "scale")),
+														i -> DoubleTag.of((double)i * DoubleArgumentType.getDouble(commandContext, "scale")),
 														requestResult
 													)
 											)
@@ -346,7 +346,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> NbtByte.of((byte)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
+														i -> ByteTag.of((byte)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
 														requestResult
 													)
 											)
@@ -384,14 +384,14 @@ public class ExecuteCommand {
 	}
 
 	private static ServerCommandSource executeStoreData(
-		ServerCommandSource source, DataCommandObject object, NbtPathArgumentType.NbtPath path, IntFunction<NbtElement> nbtSetter, boolean requestResult
+		ServerCommandSource source, DataCommandObject object, NbtPathArgumentType.NbtPath path, IntFunction<Tag> tagSetter, boolean requestResult
 	) {
 		return source.mergeConsumers((commandContext, bl2, i) -> {
 			try {
-				NbtCompound nbtCompound = object.getNbt();
+				CompoundTag compoundTag = object.getTag();
 				int j = requestResult ? i : (bl2 ? 1 : 0);
-				path.put(nbtCompound, () -> (NbtElement)nbtSetter.apply(j));
-				object.setNbt(nbtCompound);
+				path.put(compoundTag, () -> (Tag)tagSetter.apply(j));
+				object.setTag(compoundTag);
 			} catch (CommandSyntaxException var9) {
 			}
 		}, BINARY_RESULT_CONSUMER);
@@ -421,7 +421,7 @@ public class ExecuteCommand {
 						CommandManager.argument("target", ScoreHolderArgumentType.scoreHolder())
 							.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 							.then(
-								CommandManager.argument("targetObjective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+								CommandManager.argument("targetObjective", ObjectiveArgumentType.objective())
 									.then(
 										CommandManager.literal("=")
 											.then(
@@ -430,7 +430,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
+															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, Integer::equals)
 														)
@@ -445,7 +445,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
+															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer < integer2)
 														)
@@ -460,7 +460,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
+															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer <= integer2)
 														)
@@ -475,7 +475,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
+															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer > integer2)
 														)
@@ -490,7 +490,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
+															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer >= integer2)
 														)
@@ -502,7 +502,7 @@ public class ExecuteCommand {
 											.then(
 												addConditionLogic(
 													root,
-													CommandManager.argument("range", NumberRangeArgumentType.intRange()),
+													CommandManager.argument("range", NumberRangeArgumentType.numberRange()),
 													positive,
 													commandContext -> testScoreMatch(commandContext, NumberRangeArgumentType.IntRangeArgumentType.getRangeArgument(commandContext, "range"))
 												)
@@ -596,14 +596,14 @@ public class ExecuteCommand {
 	}
 
 	private static int countPathMatches(DataCommandObject object, NbtPathArgumentType.NbtPath path) throws CommandSyntaxException {
-		return path.count(object.getNbt());
+		return path.count(object.getTag());
 	}
 
 	private static boolean testScoreCondition(CommandContext<ServerCommandSource> context, BiPredicate<Integer, Integer> condition) throws CommandSyntaxException {
 		String string = ScoreHolderArgumentType.getScoreHolder(context, "target");
-		ScoreboardObjective scoreboardObjective = ScoreboardObjectiveArgumentType.getObjective(context, "targetObjective");
+		ScoreboardObjective scoreboardObjective = ObjectiveArgumentType.getObjective(context, "targetObjective");
 		String string2 = ScoreHolderArgumentType.getScoreHolder(context, "source");
-		ScoreboardObjective scoreboardObjective2 = ScoreboardObjectiveArgumentType.getObjective(context, "sourceObjective");
+		ScoreboardObjective scoreboardObjective2 = ObjectiveArgumentType.getObjective(context, "sourceObjective");
 		Scoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
 		if (scoreboard.playerHasObjective(string, scoreboardObjective) && scoreboard.playerHasObjective(string2, scoreboardObjective2)) {
 			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
@@ -616,17 +616,17 @@ public class ExecuteCommand {
 
 	private static boolean testScoreMatch(CommandContext<ServerCommandSource> context, NumberRange.IntRange range) throws CommandSyntaxException {
 		String string = ScoreHolderArgumentType.getScoreHolder(context, "target");
-		ScoreboardObjective scoreboardObjective = ScoreboardObjectiveArgumentType.getObjective(context, "targetObjective");
+		ScoreboardObjective scoreboardObjective = ObjectiveArgumentType.getObjective(context, "targetObjective");
 		Scoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
 		return !scoreboard.playerHasObjective(string, scoreboardObjective) ? false : range.test(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
 	}
 
-	private static boolean testLootCondition(ServerCommandSource source, LootCondition condition) {
-		ServerWorld serverWorld = source.getWorld();
+	private static boolean testLootCondition(ServerCommandSource serverCommandSource, LootCondition lootCondition) {
+		ServerWorld serverWorld = serverCommandSource.getWorld();
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
-			.parameter(LootContextParameters.ORIGIN, source.getPosition())
-			.optionalParameter(LootContextParameters.THIS_ENTITY, source.getEntity());
-		return condition.test(builder.build(LootContextTypes.COMMAND));
+			.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition())
+			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity());
+		return lootCondition.test(builder.build(LootContextTypes.COMMAND));
 	}
 
 	private static Collection<ServerCommandSource> getSourceOrEmptyForConditionFork(CommandContext<ServerCommandSource> context, boolean positive, boolean value) {
@@ -718,15 +718,15 @@ public class ExecuteCommand {
 									return OptionalInt.empty();
 								}
 
-								NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
-								nbtCompound.remove("x");
-								nbtCompound.remove("y");
-								nbtCompound.remove("z");
-								NbtCompound nbtCompound2 = blockEntity2.writeNbt(new NbtCompound());
-								nbtCompound2.remove("x");
-								nbtCompound2.remove("y");
-								nbtCompound2.remove("z");
-								if (!nbtCompound.equals(nbtCompound2)) {
+								CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+								compoundTag.remove("x");
+								compoundTag.remove("y");
+								compoundTag.remove("z");
+								CompoundTag compoundTag2 = blockEntity2.toTag(new CompoundTag());
+								compoundTag2.remove("x");
+								compoundTag2.remove("y");
+								compoundTag2.remove("z");
+								if (!compoundTag.equals(compoundTag2)) {
 									return OptionalInt.empty();
 								}
 							}

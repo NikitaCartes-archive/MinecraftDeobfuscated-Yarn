@@ -112,16 +112,16 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 						ItemStack itemStack = simpleInventory.getStack(i);
 						boolean bl = false;
 						if (!itemStack.isEmpty()) {
-							if (itemStack.getItem() == Items.WHEAT_SEEDS) {
+							if (itemStack.isOf(Items.WHEAT_SEEDS)) {
 								serverWorld.setBlockState(this.currentTarget, Blocks.WHEAT.getDefaultState(), 3);
 								bl = true;
-							} else if (itemStack.getItem() == Items.POTATO) {
+							} else if (itemStack.isOf(Items.POTATO)) {
 								serverWorld.setBlockState(this.currentTarget, Blocks.POTATOES.getDefaultState(), 3);
 								bl = true;
-							} else if (itemStack.getItem() == Items.CARROT) {
+							} else if (itemStack.isOf(Items.CARROT)) {
 								serverWorld.setBlockState(this.currentTarget, Blocks.CARROTS.getDefaultState(), 3);
 								bl = true;
-							} else if (itemStack.getItem() == Items.BEETROOT_SEEDS) {
+							} else if (itemStack.isOf(Items.BEETROOT_SEEDS)) {
 								serverWorld.setBlockState(this.currentTarget, Blocks.BEETROOTS.getDefaultState(), 3);
 								bl = true;
 							}

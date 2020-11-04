@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -60,10 +61,12 @@ public class DefaultResourcePack implements ResourcePack {
 			}
 		}
 	});
+	public final PackResourceMetadata field_26938;
 	public final Set<String> namespaces;
 
-	public DefaultResourcePack(String... namespaces) {
-		this.namespaces = ImmutableSet.copyOf(namespaces);
+	public DefaultResourcePack(PackResourceMetadata packResourceMetadata, String... strings) {
+		this.field_26938 = packResourceMetadata;
+		this.namespaces = ImmutableSet.copyOf(strings);
 	}
 
 	@Override
@@ -147,15 +150,17 @@ public class DefaultResourcePack implements ResourcePack {
 		return set;
 	}
 
-	private static void getIdentifiers(Collection<Identifier> results, int maxDepth, String namespace, Path root, String prefix, Predicate<String> pathFilter) throws IOException {
-		Path path = root.resolve(namespace);
-		Stream<Path> stream = Files.walk(path.resolve(prefix), maxDepth, new FileVisitOption[0]);
+	private static void getIdentifiers(
+		Collection<Identifier> collection, int maxDepth, String namespace, Path path, String searchLocation, Predicate<String> predicate
+	) throws IOException {
+		Path path2 = path.resolve(namespace);
+		Stream<Path> stream = Files.walk(path2.resolve(searchLocation), maxDepth, new FileVisitOption[0]);
 		Throwable var8 = null;
 
 		try {
-			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]) && pathFilter.test(pathx.getFileName().toString()))
-				.map(path2 -> new Identifier(namespace, path.relativize(path2).toString().replaceAll("\\\\", "/")))
-				.forEach(results::add);
+			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]) && predicate.test(pathx.getFileName().toString()))
+				.map(path2x -> new Identifier(namespace, path2.relativize(path2x).toString().replaceAll("\\\\", "/")))
+				.forEach(collection::add);
 		} catch (Throwable var17) {
 			var8 = var17;
 			throw var17;
@@ -238,19 +243,28 @@ public class DefaultResourcePack implements ResourcePack {
 			InputStream inputStream = this.openRoot("pack.mcmeta");
 			Throwable var3 = null;
 
-			Object var4;
+			Object var5;
 			try {
-				var4 = AbstractFileResourcePack.parseMetadata(metaReader, inputStream);
-			} catch (Throwable var14) {
-				var3 = var14;
-				throw var14;
+				if (inputStream == null) {
+					return (T)(metaReader == PackResourceMetadata.READER ? this.field_26938 : null);
+				}
+
+				T object = AbstractFileResourcePack.parseMetadata(metaReader, inputStream);
+				if (object == null) {
+					return (T)(metaReader == PackResourceMetadata.READER ? this.field_26938 : null);
+				}
+
+				var5 = object;
+			} catch (Throwable var16) {
+				var3 = var16;
+				throw var16;
 			} finally {
 				if (inputStream != null) {
 					if (var3 != null) {
 						try {
 							inputStream.close();
-						} catch (Throwable var13) {
-							var3.addSuppressed(var13);
+						} catch (Throwable var15) {
+							var3.addSuppressed(var15);
 						}
 					} else {
 						inputStream.close();
@@ -258,9 +272,9 @@ public class DefaultResourcePack implements ResourcePack {
 				}
 			}
 
-			return (T)var4;
-		} catch (FileNotFoundException | RuntimeException var16) {
-			return null;
+			return (T)var5;
+		} catch (FileNotFoundException | RuntimeException var18) {
+			return (T)(metaReader == PackResourceMetadata.READER ? this.field_26938 : null);
 		}
 	}
 

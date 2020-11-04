@@ -14,11 +14,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
-/**
- * A resource pack manager manages a list of {@link ResourcePackProfile}s and
- * builds {@linkplain #createResourcePacks() a list of resource packs} when the
- * resource manager reloads.
- */
 public class ResourcePackManager implements AutoCloseable {
 	private final Set<ResourcePackProvider> providers;
 	private Map<String, ResourcePackProfile> profiles = ImmutableMap.of();
@@ -30,8 +25,13 @@ public class ResourcePackManager implements AutoCloseable {
 		this.providers = ImmutableSet.copyOf(providers);
 	}
 
-	public ResourcePackManager(ResourcePackProvider... resourcePackProviders) {
-		this(ResourcePackProfile::new, resourcePackProviders);
+	public ResourcePackManager(ResourceType type, ResourcePackProvider... providers) {
+		this(
+			(string, text, bl, supplier, packResourceMetadata, insertionPosition, resourcePackSource) -> new ResourcePackProfile(
+					string, text, bl, supplier, packResourceMetadata, type, insertionPosition, resourcePackSource
+				),
+			providers
+		);
 	}
 
 	public void scanPacks() {

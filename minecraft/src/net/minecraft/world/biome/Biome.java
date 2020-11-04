@@ -180,7 +180,7 @@ public final class Biome {
 		if (this.getTemperature(pos) >= 0.15F) {
 			return false;
 		} else {
-			if (pos.getY() >= 0 && pos.getY() < 256 && world.getLightLevel(LightType.BLOCK, pos) < 10) {
+			if (pos.getY() >= world.getBottomHeightLimit() && pos.getY() < world.getTopHeightLimit() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
 				BlockState blockState = world.getBlockState(pos);
 				FluidState fluidState = world.getFluidState(pos);
 				if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
@@ -203,7 +203,7 @@ public final class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && world.getLightLevel(LightType.BLOCK, blockPos) < 10) {
+			if (blockPos.getY() >= world.getBottomHeightLimit() && blockPos.getY() < world.getTopHeightLimit() && world.getLightLevel(LightType.BLOCK, blockPos) < 10) {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos)) {
 					return true;
@@ -219,7 +219,7 @@ public final class Biome {
 	}
 
 	public void generateFeatureStep(
-		StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos origin
+		StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos pos
 	) {
 		List<List<Supplier<ConfiguredFeature<?, ?>>>> list = this.generationSettings.getFeatures();
 		int i = GenerationStep.Feature.values().length;
@@ -229,16 +229,21 @@ public final class Biome {
 			if (structureAccessor.shouldGenerateStructures()) {
 				for (StructureFeature<?> structureFeature : (List)this.structures.getOrDefault(j, Collections.emptyList())) {
 					random.setDecoratorSeed(populationSeed, k, j);
-					int l = origin.getX() >> 4;
-					int m = origin.getZ() >> 4;
-					int n = l << 4;
-					int o = m << 4;
+					int l = ChunkSectionPos.getSectionCoord(pos.getX());
+					int m = ChunkSectionPos.getSectionCoord(pos.getZ());
+					int n = ChunkSectionPos.getBlockCoord(l);
+					int o = ChunkSectionPos.getBlockCoord(m);
 
 					try {
-						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature)
+						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature)
 							.forEach(
 								structureStart -> structureStart.generateStructure(
-										region, structureAccessor, chunkGenerator, random, new BlockBox(n, o, n + 15, o + 15), new ChunkPos(l, m)
+										region,
+										structureAccessor,
+										chunkGenerator,
+										random,
+										new BlockBox(n, region.getBottomHeightLimit() + 1, o, n + 15, region.getTopHeightLimit(), o + 15),
+										new ChunkPos(l, m)
 									)
 							);
 					} catch (Exception var21) {
@@ -259,7 +264,7 @@ public final class Biome {
 					random.setDecoratorSeed(populationSeed, k, j);
 
 					try {
-						configuredFeature.generate(region, chunkGenerator, random, origin);
+						configuredFeature.generate(region, chunkGenerator, random, pos);
 					} catch (Exception var22) {
 						CrashReport crashReport2 = CrashReport.create(var22, "Feature placement");
 						crashReport2.addElement("Feature")

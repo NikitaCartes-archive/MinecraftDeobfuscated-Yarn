@@ -4,11 +4,12 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -110,26 +111,26 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		}
 	}
 
-	public NbtCompound toTag(int chunkX, int chunkZ) {
-		NbtCompound nbtCompound = new NbtCompound();
+	public CompoundTag toTag(int chunkX, int chunkZ) {
+		CompoundTag compoundTag = new CompoundTag();
 		if (this.hasChildren()) {
-			nbtCompound.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
-			nbtCompound.putInt("ChunkX", chunkX);
-			nbtCompound.putInt("ChunkZ", chunkZ);
-			nbtCompound.putInt("references", this.references);
-			nbtCompound.put("BB", this.boundingBox.toNbt());
-			NbtList nbtList = new NbtList();
+			compoundTag.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
+			compoundTag.putInt("ChunkX", chunkX);
+			compoundTag.putInt("ChunkZ", chunkZ);
+			compoundTag.putInt("references", this.references);
+			compoundTag.put("BB", this.boundingBox.toNbt());
+			ListTag listTag = new ListTag();
 			synchronized (this.children) {
 				for (StructurePiece structurePiece : this.children) {
-					nbtList.add(structurePiece.getTag());
+					listTag.add(structurePiece.getTag());
 				}
 			}
 
-			nbtCompound.put("Children", nbtList);
-			return nbtCompound;
+			compoundTag.put("Children", listTag);
+			return compoundTag;
 		} else {
-			nbtCompound.putString("id", "INVALID");
-			return nbtCompound;
+			compoundTag.putString("id", "INVALID");
+			return compoundTag;
 		}
 	}
 
@@ -177,8 +178,8 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		return this.chunkZ;
 	}
 
-	public BlockPos getBlockPos() {
-		return new BlockPos(this.chunkX << 4, 0, this.chunkZ << 4);
+	public BlockPos getPos() {
+		return new BlockPos(ChunkSectionPos.getBlockCoord(this.chunkX), 0, ChunkSectionPos.getBlockCoord(this.chunkZ));
 	}
 
 	public boolean isInExistingChunk() {

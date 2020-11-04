@@ -29,7 +29,7 @@ public class AdmireItemTask<E extends PiglinEntity> extends Task<E> {
 
 	protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
 		ItemEntity itemEntity = (ItemEntity)piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM).get();
-		return PiglinBrain.isGoldenItem(itemEntity.getStack().getItem());
+		return PiglinBrain.isGoldenItem(itemEntity.getStack());
 	}
 
 	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {

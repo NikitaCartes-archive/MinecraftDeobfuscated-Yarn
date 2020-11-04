@@ -8,10 +8,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
@@ -74,8 +75,8 @@ public class DebugChunkGenerator extends ChunkGenerator {
 
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
-				int m = (i << 4) + k;
-				int n = (j << 4) + l;
+				int m = ChunkSectionPos.method_32205(i, k);
+				int n = ChunkSectionPos.method_32205(j, l);
 				region.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
 				BlockState blockState = getBlockState(m, n);
 				if (blockState != null) {

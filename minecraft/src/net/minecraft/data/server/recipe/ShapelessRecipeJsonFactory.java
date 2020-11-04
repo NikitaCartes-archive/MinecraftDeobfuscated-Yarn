@@ -29,8 +29,8 @@ public class ShapelessRecipeJsonFactory {
 	private final Advancement.Task builder = Advancement.Task.create();
 	private String group;
 
-	public ShapelessRecipeJsonFactory(ItemConvertible output, int outputCount) {
-		this.output = output.asItem();
+	public ShapelessRecipeJsonFactory(ItemConvertible itemProvider, int outputCount) {
+		this.output = itemProvider.asItem();
 		this.outputCount = outputCount;
 	}
 

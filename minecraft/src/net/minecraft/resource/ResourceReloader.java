@@ -1,89 +1,130 @@
 package net.minecraft.resource;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import net.minecraft.util.profiler.Profiler;
+import java.util.concurrent.atomic.AtomicInteger;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
+import net.minecraft.util.profiler.DummyProfiler;
 
-/**
- * A resource reloader performs actual reloading in its {@linkplain #reload
- * reload} in a reloadable resource manager it is registered to.
- * 
- * @see ReloadableResourceManager
- * @see SinglePreparationResourceReloader SinglePreparationResourceReloader
- * (completes preparation in one method)
- * @see SynchronousResourceReloader SynchronousResourceReloader
- * (performs all reloading in the apply executor)
- */
-public interface ResourceReloader {
-	/**
-	 * Performs a reload. Returns a future that is completed when the reload
-	 * is completed.
-	 * 
-	 * <p>In a reload, there is a prepare stage and an apply stage. For the
-	 * prepare stage, you should create completable futures with {@linkplain
-	 * CompletableFuture#supplyAsync(Supplier, Executor)
-	 * CompletableFuture.supplyAsync(..., prepareExecutor)}
-	 * to ensure the prepare actions are done with the prepare executor. Then,
-	 * you should have a completable future for all the prepared actions, and
-	 * call {@linkplain CompletableFuture#thenCompose(Function)
-	 * combinedPrepare.thenCompose(synchronizer::waitFor)}
-	 * to notify the {@code synchronizer}. Finally, you should run {@linkplain
-	 * CompletableFuture#thenAcceptAsync(Consumer, Executor)
-	 * CompletableFuture.thenAcceptAsync(..., applyExecutor)} for apply actions.
-	 * In the end, returns the result of {@code thenAcceptAsync}.
-	 * 
-	 * @return a future for the reload
-	 * @see net.minecraft.resource.ReloadableResourceManager#reload(Executor, Executor,
-	 * CompletableFuture, List)
-	 * 
-	 * @param synchronizer the synchronizer
-	 * @param manager the resource manager
-	 * @param prepareProfiler the profiler for prepare stage
-	 * @param applyProfiler the profiler for apply stage
-	 * @param prepareExecutor the executor for prepare stage
-	 * @param applyExecutor the executor for apply stage
-	 */
-	CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
-	);
+public class ResourceReloader<S> implements ResourceReloadMonitor {
+	protected final ResourceManager manager;
+	protected final CompletableFuture<Unit> prepareStageFuture = new CompletableFuture();
+	protected final CompletableFuture<List<S>> applyStageFuture;
+	private final Set<ResourceReloadListener> waitingListeners;
+	private final int listenerCount;
+	private int applyingCount;
+	private int appliedCount;
+	private final AtomicInteger preparingCount = new AtomicInteger();
+	private final AtomicInteger preparedCount = new AtomicInteger();
 
-	/**
-	 * Returns a user-friendly name for logging.
-	 */
-	default String getName() {
-		return this.getClass().getSimpleName();
+	public static ResourceReloader<Void> create(
+		ResourceManager manager, List<ResourceReloadListener> listeners, Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage
+	) {
+		return new ResourceReloader<>(
+			prepareExecutor,
+			applyExecutor,
+			manager,
+			listeners,
+			(synchronizer, resourceManager, resourceReloadListener, executor2, executor3) -> resourceReloadListener.reload(
+					synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, prepareExecutor, executor3
+				),
+			initialStage
+		);
 	}
 
-	/**
-	 * A synchronizer to indicate completion of a reloader's prepare stage and
-	 * to allow start of the apply stage only if all reloaders have finished
-	 * the prepare stage.
-	 */
-	public interface Synchronizer {
-		/**
-		 * Indicates, to the ongoing reload, that this reloader has finished its
-		 * preparation stage with the {@code preparedObject} as its result.
-		 * 
-		 * <p>Returns a completable future that the apply stage depends on. This
-		 * returned future is completed when all the reloaders have completed their
-		 * prepare stages in the reload.
-		 * 
-		 * <p>Example:
-		 * {@code
-		 * CompletableFuture<SomeObject> prepareStage = ...;
-		 * prepareStage.thenCompose(synchronizer::whenPrepared)
-		 *         .thenAcceptAsync(..., applyExecutor);
-		 * }
-		 * 
-		 * @return a completable future as the precondition for the apply stage
-		 * 
-		 * @param preparedObject the result of the prepare stage
-		 */
-		<T> CompletableFuture<T> whenPrepared(T preparedObject);
+	protected ResourceReloader(
+		Executor prepareExecutor,
+		Executor applyExecutor,
+		ResourceManager manager,
+		List<ResourceReloadListener> listeners,
+		ResourceReloader.Factory<S> creator,
+		CompletableFuture<Unit> initialStage
+	) {
+		this.manager = manager;
+		this.listenerCount = listeners.size();
+		this.preparingCount.incrementAndGet();
+		initialStage.thenRun(this.preparedCount::incrementAndGet);
+		List<CompletableFuture<S>> list = Lists.<CompletableFuture<S>>newArrayList();
+		CompletableFuture<?> completableFuture = initialStage;
+		this.waitingListeners = Sets.<ResourceReloadListener>newHashSet(listeners);
+
+		for (final ResourceReloadListener resourceReloadListener : listeners) {
+			final CompletableFuture<?> completableFuture2 = completableFuture;
+			CompletableFuture<S> completableFuture3 = creator.create(new ResourceReloadListener.Synchronizer() {
+				@Override
+				public <T> CompletableFuture<T> whenPrepared(T preparedObject) {
+					applyExecutor.execute(() -> {
+						ResourceReloader.this.waitingListeners.remove(resourceReloadListener);
+						if (ResourceReloader.this.waitingListeners.isEmpty()) {
+							ResourceReloader.this.prepareStageFuture.complete(Unit.INSTANCE);
+						}
+					});
+					return ResourceReloader.this.prepareStageFuture.thenCombine(completableFuture2, (unit, object2) -> preparedObject);
+				}
+			}, manager, resourceReloadListener, runnable -> {
+				this.preparingCount.incrementAndGet();
+				prepareExecutor.execute(() -> {
+					runnable.run();
+					this.preparedCount.incrementAndGet();
+				});
+			}, runnable -> {
+				this.applyingCount++;
+				applyExecutor.execute(() -> {
+					runnable.run();
+					this.appliedCount++;
+				});
+			});
+			list.add(completableFuture3);
+			completableFuture = completableFuture3;
+		}
+
+		this.applyStageFuture = Util.combine(list);
+	}
+
+	@Override
+	public CompletableFuture<Unit> whenComplete() {
+		return this.applyStageFuture.thenApply(list -> Unit.INSTANCE);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public float getProgress() {
+		int i = this.listenerCount - this.waitingListeners.size();
+		float f = (float)(this.preparedCount.get() * 2 + this.appliedCount * 2 + i * 1);
+		float g = (float)(this.preparingCount.get() * 2 + this.applyingCount * 2 + this.listenerCount * 1);
+		return f / g;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean isPrepareStageComplete() {
+		return this.prepareStageFuture.isDone();
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean isApplyStageComplete() {
+		return this.applyStageFuture.isDone();
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public void throwExceptions() {
+		if (this.applyStageFuture.isCompletedExceptionally()) {
+			this.applyStageFuture.join();
+		}
+	}
+
+	public interface Factory<S> {
+		CompletableFuture<S> create(
+			ResourceReloadListener.Synchronizer helper, ResourceManager manager, ResourceReloadListener listener, Executor prepareExecutor, Executor applyExecutor
+		);
 	}
 }

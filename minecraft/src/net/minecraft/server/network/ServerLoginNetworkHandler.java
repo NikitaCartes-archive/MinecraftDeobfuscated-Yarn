@@ -16,8 +16,8 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.NetworkEncryptionException;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
@@ -34,22 +34,8 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * The server login network handler.
- * 
- * <p>It listens to packets on the netty event loop and is ticked on the
- * server thread simultaneously.
- * 
- * @implSpec The vanilla implementation is created by a handshake network
- * handler. It first receives a hello packet from the client. If it's in
- * online mode, it goes through an additional authentication process. Then
- * it optionally sends a network compression packet next. Finally, when it
- * can accept the player (no player UUID conflicts), it will accept the
- * player by sending a login success packet and then transitions the
- * connection's packet listener to a server play network handler.
- */
 public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
-	private static final AtomicInteger NEXT_AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
+	private static final AtomicInteger authenticatorThreadId = new AtomicInteger(0);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Random RANDOM = new Random();
 	private final byte[] nonce = new byte[4];
@@ -60,14 +46,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private GameProfile profile;
 	private final String serverId = "";
 	private SecretKey secretKey;
-	/**
-	 * The delayed player, waiting to join the server once the existing player
-	 * with the same UUID is gone.
-	 * 
-	 * <p>This will only be non-{@code null} if the state is delay-accept, and is reset
-	 * to {@code null} once the player is accepted.
-	 */
-	private ServerPlayerEntity delayedPlayer;
+	private ServerPlayerEntity player;
 
 	public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
 		this.server = server;
@@ -75,15 +54,6 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		RANDOM.nextBytes(this.nonce);
 	}
 
-	/**
-	 * Ticks this login network handler.
-	 * 
-	 * <p>This accepts the player to the server if ready. If the state is delay
-	 * accept, it checks if the old player with the same UUID is gone and
-	 * admits the player.
-	 * 
-	 * @apiNote This should only be called on the server thread.
-	 */
 	public void tick() {
 		if (this.state == ServerLoginNetworkHandler.State.READY_TO_ACCEPT) {
 			this.acceptPlayer();
@@ -91,8 +61,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity == null) {
 				this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
-				this.server.getPlayerManager().onPlayerConnect(this.connection, this.delayedPlayer);
-				this.delayedPlayer = null;
+				this.server.getPlayerManager().onPlayerConnect(this.connection, this.player);
+				this.player = null;
 			}
 		}
 
@@ -116,14 +86,6 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		}
 	}
 
-	/**
-	 * Creates the player to be added to the server and adds it to the server.
-	 * 
-	 * <p>If a player with the same UUID is in the world, it will create the
-	 * player and transition to the delay accept state.
-	 * 
-	 * @apiNote This method should only be called on the server thread.
-	 */
 	public void acceptPlayer() {
 		if (!this.profile.isComplete()) {
 			this.profile = this.toOfflineProfile(this.profile);
@@ -146,7 +108,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity != null) {
 				this.state = ServerLoginNetworkHandler.State.DELAY_ACCEPT;
-				this.delayedPlayer = this.server.getPlayerManager().createPlayer(this.profile);
+				this.player = this.server.getPlayerManager().createPlayer(this.profile);
 			} else {
 				this.server.getPlayerManager().onPlayerConnect(this.connection, this.server.getPlayerManager().createPlayer(this.profile));
 			}
@@ -195,7 +157,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			throw new IllegalStateException("Protocol error", var6);
 		}
 
-		Thread thread = new Thread("User Authenticator #" + NEXT_AUTHENTICATOR_THREAD_ID.incrementAndGet()) {
+		Thread thread = new Thread("User Authenticator #" + authenticatorThreadId.incrementAndGet()) {
 			public void run() {
 				GameProfile gameProfile = ServerLoginNetworkHandler.this.profile;
 

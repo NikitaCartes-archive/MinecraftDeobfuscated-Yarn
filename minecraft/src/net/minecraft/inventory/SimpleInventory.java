@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
-import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.util.collection.DefaultedList;
 
 public class SimpleInventory implements Inventory, RecipeInputProvider {
@@ -105,7 +105,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		boolean bl = false;
 
 		for (ItemStack itemStack : this.stacks) {
-			if (itemStack.isEmpty() || this.canCombine(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
+			if (itemStack.isEmpty() || ItemStack.method_31577(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
 				bl = true;
 				break;
 			}
@@ -172,9 +172,9 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public void provideRecipeInputs(RecipeMatcher finder) {
+	public void provideRecipeInputs(RecipeFinder finder) {
 		for (ItemStack itemStack : this.stacks) {
-			finder.addInput(itemStack);
+			finder.addItem(itemStack);
 		}
 	}
 
@@ -196,17 +196,13 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	private void addToExistingSlot(ItemStack stack) {
 		for (int i = 0; i < this.size; i++) {
 			ItemStack itemStack = this.getStack(i);
-			if (this.canCombine(itemStack, stack)) {
+			if (ItemStack.method_31577(itemStack, stack)) {
 				this.transfer(stack, itemStack);
 				if (stack.isEmpty()) {
 					return;
 				}
 			}
 		}
-	}
-
-	private boolean canCombine(ItemStack one, ItemStack two) {
-		return one.getItem() == two.getItem() && ItemStack.areTagsEqual(one, two);
 	}
 
 	private void transfer(ItemStack source, ItemStack target) {
@@ -219,25 +215,25 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
-	public void readNbtList(NbtList nbtList) {
-		for (int i = 0; i < nbtList.size(); i++) {
-			ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
+	public void readTags(ListTag tags) {
+		for (int i = 0; i < tags.size(); i++) {
+			ItemStack itemStack = ItemStack.fromTag(tags.getCompound(i));
 			if (!itemStack.isEmpty()) {
 				this.addStack(itemStack);
 			}
 		}
 	}
 
-	public NbtList toNbtList() {
-		NbtList nbtList = new NbtList();
+	public ListTag getTags() {
+		ListTag listTag = new ListTag();
 
 		for (int i = 0; i < this.size(); i++) {
 			ItemStack itemStack = this.getStack(i);
 			if (!itemStack.isEmpty()) {
-				nbtList.add(itemStack.writeNbt(new NbtCompound()));
+				listTag.add(itemStack.toTag(new CompoundTag()));
 			}
 		}
 
-		return nbtList;
+		return listTag;
 	}
 }

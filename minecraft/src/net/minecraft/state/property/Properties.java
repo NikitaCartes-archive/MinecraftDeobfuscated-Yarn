@@ -303,6 +303,10 @@ public class Properties {
 	 */
 	public static final IntProperty BITES = IntProperty.of("bites", 0, 6);
 	/**
+	 * A property that specifies the amount of candles in a candle block.
+	 */
+	public static final IntProperty CANDLES = IntProperty.of("candles", 1, 4);
+	/**
 	 * A property that specifies the delay a repeater will apply.
 	 */
 	public static final IntProperty DELAY = IntProperty.of("delay", 1, 4);
@@ -325,7 +329,7 @@ public class Properties {
 	/**
 	 * A property that specifies how many levels of water there are in a cauldron.
 	 */
-	public static final IntProperty LEVEL_3 = IntProperty.of("level", 0, 3);
+	public static final IntProperty LEVEL_3 = IntProperty.of("level", 1, 3);
 	/**
 	 * A property that specifies the level of a composter.
 	 */

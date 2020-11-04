@@ -77,8 +77,8 @@ public interface ParentElement extends Element {
 	}
 
 	@Override
-	default boolean charTyped(char chr, int modifiers) {
-		return this.getFocused() != null && this.getFocused().charTyped(chr, modifiers);
+	default boolean charTyped(char chr, int keyCode) {
+		return this.getFocused() != null && this.getFocused().charTyped(chr, keyCode);
 	}
 
 	@Nullable

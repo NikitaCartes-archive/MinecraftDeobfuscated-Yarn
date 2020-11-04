@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 public class BlockPos extends Vec3i {
 	public static final Codec<BlockPos> CODEC = Codec.INT_STREAM
 		.<BlockPos>comapFlatMap(
-			stream -> Util.toArray(stream, 3).map(values -> new BlockPos(values[0], values[1], values[2])),
+			stream -> Util.toIntArray(stream, 3).map(values -> new BlockPos(values[0], values[1], values[2])),
 			pos -> IntStream.of(new int[]{pos.getX(), pos.getY(), pos.getZ()})
 		)
 		.stable();
@@ -281,12 +281,12 @@ public class BlockPos extends Vec3i {
 	 * negative z offset.
 	 * 
 	 * @param center the center of iteration
-	 * @param rangeX the maximum x difference from the center
-	 * @param rangeY the maximum y difference from the center
-	 * @param rangeZ the maximum z difference from the center
+	 * @param xRange the maximum x difference from the center
+	 * @param yRange the maximum y difference from the center
+	 * @param zRange the maximum z difference from the center
 	 */
-	public static Iterable<BlockPos> iterateOutwards(BlockPos center, int rangeX, int rangeY, int rangeZ) {
-		int i = rangeX + rangeY + rangeZ;
+	public static Iterable<BlockPos> iterateOutwards(BlockPos center, int xRange, int yRange, int zRange) {
+		int i = xRange + yRange + zRange;
 		int j = center.getX();
 		int k = center.getY();
 		int l = center.getZ();
@@ -315,18 +315,18 @@ public class BlockPos extends Vec3i {
 										return this.endOfData();
 									}
 
-									this.limitX = Math.min(rangeX, this.manhattanDistance);
+									this.limitX = Math.min(xRange, this.manhattanDistance);
 									this.dx = -this.limitX;
 								}
 
-								this.limitY = Math.min(rangeY, this.manhattanDistance - Math.abs(this.dx));
+								this.limitY = Math.min(yRange, this.manhattanDistance - Math.abs(this.dx));
 								this.dy = -this.limitY;
 							}
 
 							int i = this.dx;
 							int j = this.dy;
 							int k = this.manhattanDistance - Math.abs(i) - Math.abs(j);
-							if (k <= rangeZ) {
+							if (k <= zRange) {
 								this.field_23379 = k != 0;
 								blockPos = this.pos.set(j + i, k + j, l + k);
 							}

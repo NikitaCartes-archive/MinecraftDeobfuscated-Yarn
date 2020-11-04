@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import javax.annotation.Nullable;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.StatusEffectArgumentType;
+import net.minecraft.command.argument.MobEffectArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -36,12 +36,12 @@ public class EffectCommand {
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.executes(commandContext -> executeClear(commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets")))
 								.then(
-									CommandManager.argument("effect", StatusEffectArgumentType.statusEffect())
+									CommandManager.argument("effect", MobEffectArgumentType.mobEffect())
 										.executes(
 											commandContext -> executeClear(
 													commandContext.getSource(),
 													EntityArgumentType.getEntities(commandContext, "targets"),
-													StatusEffectArgumentType.getStatusEffect(commandContext, "effect")
+													MobEffectArgumentType.getMobEffect(commandContext, "effect")
 												)
 										)
 								)
@@ -52,12 +52,12 @@ public class EffectCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									CommandManager.argument("effect", StatusEffectArgumentType.statusEffect())
+									CommandManager.argument("effect", MobEffectArgumentType.mobEffect())
 										.executes(
 											commandContext -> executeGive(
 													commandContext.getSource(),
 													EntityArgumentType.getEntities(commandContext, "targets"),
-													StatusEffectArgumentType.getStatusEffect(commandContext, "effect"),
+													MobEffectArgumentType.getMobEffect(commandContext, "effect"),
 													null,
 													0,
 													true
@@ -69,7 +69,7 @@ public class EffectCommand {
 													commandContext -> executeGive(
 															commandContext.getSource(),
 															EntityArgumentType.getEntities(commandContext, "targets"),
-															StatusEffectArgumentType.getStatusEffect(commandContext, "effect"),
+															MobEffectArgumentType.getMobEffect(commandContext, "effect"),
 															IntegerArgumentType.getInteger(commandContext, "seconds"),
 															0,
 															true
@@ -81,7 +81,7 @@ public class EffectCommand {
 															commandContext -> executeGive(
 																	commandContext.getSource(),
 																	EntityArgumentType.getEntities(commandContext, "targets"),
-																	StatusEffectArgumentType.getStatusEffect(commandContext, "effect"),
+																	MobEffectArgumentType.getMobEffect(commandContext, "effect"),
 																	IntegerArgumentType.getInteger(commandContext, "seconds"),
 																	IntegerArgumentType.getInteger(commandContext, "amplifier"),
 																	true
@@ -93,7 +93,7 @@ public class EffectCommand {
 																	commandContext -> executeGive(
 																			commandContext.getSource(),
 																			EntityArgumentType.getEntities(commandContext, "targets"),
-																			StatusEffectArgumentType.getStatusEffect(commandContext, "effect"),
+																			MobEffectArgumentType.getMobEffect(commandContext, "effect"),
 																			IntegerArgumentType.getInteger(commandContext, "seconds"),
 																			IntegerArgumentType.getInteger(commandContext, "amplifier"),
 																			!BoolArgumentType.getBool(commandContext, "hideParticles")

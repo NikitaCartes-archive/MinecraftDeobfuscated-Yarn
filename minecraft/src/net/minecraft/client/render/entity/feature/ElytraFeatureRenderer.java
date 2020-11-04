@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5599;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -10,6 +11,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.model.ElytraEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
@@ -21,17 +23,18 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
 	private static final Identifier SKIN = new Identifier("textures/entity/elytra.png");
-	private final ElytraEntityModel<T> elytra = new ElytraEntityModel<>();
+	private final ElytraEntityModel<T> elytra;
 
-	public ElytraFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+	public ElytraFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, class_5599 arg) {
 		super(featureRendererContext);
+		this.elytra = new ElytraEntityModel<>(arg.method_32072(EntityModelLayers.ELYTRA));
 	}
 
 	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
-		if (itemStack.getItem() == Items.ELYTRA) {
+		if (itemStack.isOf(Items.ELYTRA)) {
 			Identifier identifier;
 			if (livingEntity instanceof AbstractClientPlayerEntity) {
 				AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;

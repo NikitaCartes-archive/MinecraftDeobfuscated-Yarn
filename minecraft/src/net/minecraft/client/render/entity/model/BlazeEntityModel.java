@@ -1,38 +1,76 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BlazeEntityModel<T extends Entity> extends CompositeEntityModel<T> {
+public class BlazeEntityModel<T extends Entity> extends class_5597<T> {
+	private final ModelPart field_27394;
 	private final ModelPart[] rods;
-	private final ModelPart head = new ModelPart(this, 0, 0);
-	private final ImmutableList<ModelPart> parts;
+	private final ModelPart field_27395;
 
-	public BlazeEntityModel() {
-		this.head.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
+	public BlazeEntityModel(ModelPart modelPart) {
+		this.field_27394 = modelPart;
+		this.field_27395 = modelPart.method_32086("head");
 		this.rods = new ModelPart[12];
+		Arrays.setAll(this.rods, i -> modelPart.method_32086(method_31983(i)));
+	}
 
-		for (int i = 0; i < this.rods.length; i++) {
-			this.rods[i] = new ModelPart(this, 0, 16);
-			this.rods[i].addCuboid(0.0F, 0.0F, 0.0F, 2.0F, 8.0F, 2.0F);
+	private static String method_31983(int i) {
+		return "part" + i;
+	}
+
+	public static class_5607 method_31982() {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
+		lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32097(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), class_5603.field_27701);
+		float f = 0.0F;
+		class_5606 lv3 = class_5606.method_32108().method_32101(0, 16).method_32097(0.0F, 0.0F, 0.0F, 2.0F, 8.0F, 2.0F);
+
+		for (int i = 0; i < 4; i++) {
+			float g = MathHelper.cos(f) * 9.0F;
+			float h = -2.0F + MathHelper.cos((float)(i * 2) * 0.25F);
+			float j = MathHelper.sin(f) * 9.0F;
+			lv2.method_32117(method_31983(i), lv3, class_5603.method_32090(g, h, j));
+			f++;
 		}
 
-		Builder<ModelPart> builder = ImmutableList.builder();
-		builder.add(this.head);
-		builder.addAll(Arrays.asList(this.rods));
-		this.parts = builder.build();
+		f = (float) (Math.PI / 4);
+
+		for (int i = 4; i < 8; i++) {
+			float g = MathHelper.cos(f) * 7.0F;
+			float h = 2.0F + MathHelper.cos((float)(i * 2) * 0.25F);
+			float j = MathHelper.sin(f) * 7.0F;
+			lv2.method_32117(method_31983(i), lv3, class_5603.method_32090(g, h, j));
+			f++;
+		}
+
+		f = 0.47123894F;
+
+		for (int i = 8; i < 12; i++) {
+			float g = MathHelper.cos(f) * 5.0F;
+			float h = 11.0F + MathHelper.cos((float)i * 1.5F * 0.5F);
+			float j = MathHelper.sin(f) * 5.0F;
+			lv2.method_32117(method_31983(i), lv3, class_5603.method_32090(g, h, j));
+			f++;
+		}
+
+		return class_5607.method_32110(lv, 64, 32);
 	}
 
 	@Override
-	public Iterable<ModelPart> getParts() {
-		return this.parts;
+	public ModelPart method_32008() {
+		return this.field_27394;
 	}
 
 	@Override
@@ -64,7 +102,7 @@ public class BlazeEntityModel<T extends Entity> extends CompositeEntityModel<T> 
 			f++;
 		}
 
-		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
+		this.field_27395.yaw = headYaw * (float) (Math.PI / 180.0);
+		this.field_27395.pitch = headPitch * (float) (Math.PI / 180.0);
 	}
 }

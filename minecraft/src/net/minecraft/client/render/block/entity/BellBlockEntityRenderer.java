@@ -2,11 +2,17 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
@@ -15,18 +21,25 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity> {
+public class BellBlockEntityRenderer implements BlockEntityRenderer<BellBlockEntity> {
 	public static final SpriteIdentifier BELL_BODY_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/bell/bell_body"));
-	private final ModelPart field_20816 = new ModelPart(32, 32, 0, 0);
+	private final ModelPart field_20816;
 
-	public BellBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-		super(blockEntityRenderDispatcher);
-		this.field_20816.addCuboid(-3.0F, -6.0F, -3.0F, 6.0F, 7.0F, 6.0F);
-		this.field_20816.setPivot(8.0F, 12.0F, 8.0F);
-		ModelPart modelPart = new ModelPart(32, 32, 0, 13);
-		modelPart.addCuboid(4.0F, 4.0F, 4.0F, 8.0F, 2.0F, 8.0F);
-		modelPart.setPivot(-8.0F, -12.0F, -8.0F);
-		this.field_20816.addChild(modelPart);
+	public BellBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+		ModelPart modelPart = context.getLayerModelPart(EntityModelLayers.BELL);
+		this.field_20816 = modelPart.method_32086("bell_body");
+	}
+
+	public static class_5607 method_32138() {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
+		class_5610 lv3 = lv2.method_32117(
+			"bell_body", class_5606.method_32108().method_32101(0, 0).method_32097(-3.0F, -6.0F, -3.0F, 6.0F, 7.0F, 6.0F), class_5603.method_32090(8.0F, 12.0F, 8.0F)
+		);
+		lv3.method_32117(
+			"bell_base", class_5606.method_32108().method_32101(0, 13).method_32097(4.0F, 4.0F, 4.0F, 8.0F, 2.0F, 8.0F), class_5603.method_32090(-8.0F, -12.0F, -8.0F)
+		);
+		return class_5607.method_32110(lv, 32, 32);
 	}
 
 	public void render(BellBlockEntity bellBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

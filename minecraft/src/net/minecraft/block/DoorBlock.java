@@ -74,20 +74,15 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y || doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP)) {
 			return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)
 				? Blocks.AIR.getDefaultState()
-				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+				: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
-			return neighborState.isOf(this) && neighborState.get(HALF) != doubleBlockHalf
-				? state.with(FACING, neighborState.get(FACING))
-					.with(OPEN, neighborState.get(OPEN))
-					.with(HINGE, neighborState.get(HINGE))
-					.with(POWERED, neighborState.get(POWERED))
+			return newState.isOf(this) && newState.get(HALF) != doubleBlockHalf
+				? state.with(FACING, newState.get(FACING)).with(OPEN, newState.get(OPEN)).with(HINGE, newState.get(HINGE)).with(POWERED, newState.get(POWERED))
 				: Blocks.AIR.getDefaultState();
 		}
 	}
@@ -127,8 +122,8 @@ public class DoorBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockPos blockPos = ctx.getBlockPos();
-		if (blockPos.getY() < 255 && ctx.getWorld().getBlockState(blockPos.up()).canReplace(ctx)) {
-			World world = ctx.getWorld();
+		World world = ctx.getWorld();
+		if (blockPos.getY() < world.getTopHeightLimit() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx)) {
 			boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
 			return this.getDefaultState()
 				.with(FACING, ctx.getPlayerFacing())
@@ -210,7 +205,7 @@ public class DoorBlock extends Block {
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos)
 			|| world.isReceivingRedstonePower(pos.offset(state.get(HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN));
-		if (block != this && bl != (Boolean)state.get(POWERED)) {
+		if (!this.getDefaultState().isOf(block) && bl != (Boolean)state.get(POWERED)) {
 			if (bl != (Boolean)state.get(OPEN)) {
 				this.playOpenCloseSound(world, pos, bl);
 			}

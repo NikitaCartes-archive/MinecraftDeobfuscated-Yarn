@@ -52,7 +52,14 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
 		Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
 		ChunkPos chunkPos = new ChunkPos(blockPos);
-		BlockBox blockBox = new BlockBox(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 256, chunkPos.getEndZ());
+		BlockBox blockBox = new BlockBox(
+			chunkPos.getStartX(),
+			structureWorldAccess.getBottomHeightLimit(),
+			chunkPos.getStartZ(),
+			chunkPos.getEndX(),
+			structureWorldAccess.getTopHeightLimit(),
+			chunkPos.getEndZ()
+		);
 		StructurePlacementData structurePlacementData = new StructurePlacementData()
 			.setRotation(blockRotation)
 			.setBoundingBox(blockBox)
@@ -61,7 +68,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		BlockPos blockPos2 = structure.getRotatedSize(blockRotation);
 		int j = random.nextInt(16 - blockPos2.getX());
 		int k = random.nextInt(16 - blockPos2.getZ());
-		int l = 256;
+		int l = structureWorldAccess.getTopHeightLimit();
 
 		for (int m = 0; m < blockPos2.getX(); m++) {
 			for (int n = 0; n < blockPos2.getZ(); n++) {
@@ -69,7 +76,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 			}
 		}
 
-		int m = Math.max(l - 15 - random.nextInt(10), 10);
+		int m = Math.max(l - structureWorldAccess.getBottomHeightLimit() - 15 - random.nextInt(10), 10);
 		BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);

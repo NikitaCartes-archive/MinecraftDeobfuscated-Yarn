@@ -7,47 +7,48 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.timer.Timer;
 
 public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	private final SaveProperties field_24179;
-	private final ServerWorldProperties worldProperties;
+	private final ServerWorldProperties properties;
 
 	public UnmodifiableLevelProperties(SaveProperties saveProperties, ServerWorldProperties serverWorldProperties) {
 		this.field_24179 = saveProperties;
-		this.worldProperties = serverWorldProperties;
+		this.properties = serverWorldProperties;
 	}
 
 	@Override
 	public int getSpawnX() {
-		return this.worldProperties.getSpawnX();
+		return this.properties.getSpawnX();
 	}
 
 	@Override
 	public int getSpawnY() {
-		return this.worldProperties.getSpawnY();
+		return this.properties.getSpawnY();
 	}
 
 	@Override
 	public int getSpawnZ() {
-		return this.worldProperties.getSpawnZ();
+		return this.properties.getSpawnZ();
 	}
 
 	@Override
 	public float getSpawnAngle() {
-		return this.worldProperties.getSpawnAngle();
+		return this.properties.getSpawnAngle();
 	}
 
 	@Override
 	public long getTime() {
-		return this.worldProperties.getTime();
+		return this.properties.getTime();
 	}
 
 	@Override
 	public long getTimeOfDay() {
-		return this.worldProperties.getTimeOfDay();
+		return this.properties.getTimeOfDay();
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public int getClearWeatherTime() {
-		return this.worldProperties.getClearWeatherTime();
+		return this.properties.getClearWeatherTime();
 	}
 
 	@Override
@@ -66,22 +67,22 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public boolean isThundering() {
-		return this.worldProperties.isThundering();
+		return this.properties.isThundering();
 	}
 
 	@Override
 	public int getThunderTime() {
-		return this.worldProperties.getThunderTime();
+		return this.properties.getThunderTime();
 	}
 
 	@Override
 	public boolean isRaining() {
-		return this.worldProperties.isRaining();
+		return this.properties.isRaining();
 	}
 
 	@Override
 	public int getRainTime() {
-		return this.worldProperties.getRainTime();
+		return this.properties.getRainTime();
 	}
 
 	@Override
@@ -149,7 +150,7 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public boolean isInitialized() {
-		return this.worldProperties.isInitialized();
+		return this.properties.isInitialized();
 	}
 
 	@Override
@@ -163,7 +164,7 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public WorldBorder.Properties getWorldBorder() {
-		return this.worldProperties.getWorldBorder();
+		return this.properties.getWorldBorder();
 	}
 
 	@Override
@@ -182,7 +183,7 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public Timer<MinecraftServer> getScheduledEvents() {
-		return this.worldProperties.getScheduledEvents();
+		return this.properties.getScheduledEvents();
 	}
 
 	@Override
@@ -208,8 +209,8 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection reportSection) {
+	public void populateCrashReport(CrashReportSection reportSection, HeightLimitView heightLimitView) {
 		reportSection.add("Derived", true);
-		this.worldProperties.populateCrashReport(reportSection);
+		this.properties.populateCrashReport(reportSection, heightLimitView);
 	}
 }

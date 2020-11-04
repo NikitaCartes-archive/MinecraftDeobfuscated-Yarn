@@ -5,6 +5,7 @@ import net.minecraft.structure.DesertTempleGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -33,7 +34,7 @@ public class DesertPyramidFeature extends StructureFeature<DefaultFeatureConfig>
 			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig
 		) {
-			DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, i * 16, j * 16);
+			DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, ChunkSectionPos.getBlockCoord(i), ChunkSectionPos.getBlockCoord(j));
 			this.children.add(desertTempleGenerator);
 			this.setBoundingBoxFromChildren();
 		}

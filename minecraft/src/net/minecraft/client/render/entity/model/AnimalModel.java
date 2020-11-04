@@ -30,7 +30,7 @@ public abstract class AnimalModel<E extends Entity> extends EntityModel<E> {
 	}
 
 	protected AnimalModel(
-		Function<Identifier, RenderLayer> renderLayerFactory,
+		Function<Identifier, RenderLayer> function,
 		boolean headScaled,
 		float childHeadYOffset,
 		float childHeadZOffset,
@@ -38,7 +38,7 @@ public abstract class AnimalModel<E extends Entity> extends EntityModel<E> {
 		float invertedChildBodyScale,
 		float childBodyYOffset
 	) {
-		super(renderLayerFactory);
+		super(function);
 		this.headScaled = headScaled;
 		this.childHeadYOffset = childHeadYOffset;
 		this.childHeadZOffset = childHeadZOffset;

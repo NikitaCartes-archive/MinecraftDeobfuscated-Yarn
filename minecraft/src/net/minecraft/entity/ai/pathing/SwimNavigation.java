@@ -48,9 +48,9 @@ public class SwimNavigation extends EntityNavigation {
 				this.continueFollowingPath();
 			} else if (this.currentPath != null && !this.currentPath.isFinished()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
-				if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x)
-					&& MathHelper.floor(this.entity.getY()) == MathHelper.floor(vec3d.y)
-					&& MathHelper.floor(this.entity.getZ()) == MathHelper.floor(vec3d.z)) {
+				if (this.entity.getBlockX() == MathHelper.floor(vec3d.x)
+					&& this.entity.getBlockY() == MathHelper.floor(vec3d.y)
+					&& this.entity.getBlockZ() == MathHelper.floor(vec3d.z)) {
 					this.currentPath.next();
 				}
 			}

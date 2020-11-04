@@ -4,11 +4,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public abstract class BillboardParticle extends Particle {
@@ -34,42 +34,44 @@ public abstract class BillboardParticle extends Particle {
 		} else {
 			quaternion = new Quaternion(camera.getRotation());
 			float i = MathHelper.lerp(tickDelta, this.prevAngle, this.angle);
-			quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getRadialQuaternion(i));
+			quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRadialQuaternion(i));
 		}
 
-		Vec3f vec3f = new Vec3f(-1.0F, -1.0F, 0.0F);
-		vec3f.rotate(quaternion);
-		Vec3f[] vec3fs = new Vec3f[]{new Vec3f(-1.0F, -1.0F, 0.0F), new Vec3f(-1.0F, 1.0F, 0.0F), new Vec3f(1.0F, 1.0F, 0.0F), new Vec3f(1.0F, -1.0F, 0.0F)};
+		Vector3f vector3f = new Vector3f(-1.0F, -1.0F, 0.0F);
+		vector3f.rotate(quaternion);
+		Vector3f[] vector3fs = new Vector3f[]{
+			new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)
+		};
 		float j = this.getSize(tickDelta);
 
 		for (int k = 0; k < 4; k++) {
-			Vec3f vec3f2 = vec3fs[k];
-			vec3f2.rotate(quaternion);
-			vec3f2.scale(j);
-			vec3f2.add(f, g, h);
+			Vector3f vector3f2 = vector3fs[k];
+			vector3f2.rotate(quaternion);
+			vector3f2.scale(j);
+			vector3f2.add(f, g, h);
 		}
 
 		float l = this.getMinU();
 		float m = this.getMaxU();
 		float n = this.getMinV();
 		float o = this.getMaxV();
-		int p = this.getBrightness(tickDelta);
-		vertexConsumer.vertex((double)vec3fs[0].getX(), (double)vec3fs[0].getY(), (double)vec3fs[0].getZ())
+		int p = this.getColorMultiplier(tickDelta);
+		vertexConsumer.vertex((double)vector3fs[0].getX(), (double)vector3fs[0].getY(), (double)vector3fs[0].getZ())
 			.texture(m, o)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.light(p)
 			.next();
-		vertexConsumer.vertex((double)vec3fs[1].getX(), (double)vec3fs[1].getY(), (double)vec3fs[1].getZ())
+		vertexConsumer.vertex((double)vector3fs[1].getX(), (double)vector3fs[1].getY(), (double)vector3fs[1].getZ())
 			.texture(m, n)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.light(p)
 			.next();
-		vertexConsumer.vertex((double)vec3fs[2].getX(), (double)vec3fs[2].getY(), (double)vec3fs[2].getZ())
+		vertexConsumer.vertex((double)vector3fs[2].getX(), (double)vector3fs[2].getY(), (double)vector3fs[2].getZ())
 			.texture(l, n)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.light(p)
 			.next();
-		vertexConsumer.vertex((double)vec3fs[3].getX(), (double)vec3fs[3].getY(), (double)vec3fs[3].getZ())
+		vertexConsumer.vertex((double)vector3fs[3].getX(), (double)vector3fs[3].getY(), (double)vector3fs[3].getZ())
 			.texture(l, o)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.light(p)

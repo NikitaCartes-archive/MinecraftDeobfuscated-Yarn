@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
@@ -60,7 +61,8 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		int i = spike.getRadius();
 
 		for (BlockPos blockPos : BlockPos.iterate(
-			new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i)
+			new BlockPos(spike.getCenterX() - i, world.getBottomHeightLimit(), spike.getCenterZ() - i),
+			new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i)
 		)) {
 			if (blockPos.getSquaredDistance((double)spike.getCenterX(), (double)blockPos.getY(), (double)spike.getCenterZ(), false) <= (double)(i * i + 1)
 				&& blockPos.getY() < spike.getHeight()) {
@@ -136,7 +138,8 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		}
 
 		public boolean isInChunk(BlockPos pos) {
-			return pos.getX() >> 4 == this.centerX >> 4 && pos.getZ() >> 4 == this.centerZ >> 4;
+			return ChunkSectionPos.getSectionCoord(pos.getX()) == ChunkSectionPos.getSectionCoord(this.centerX)
+				&& ChunkSectionPos.getSectionCoord(pos.getZ()) == ChunkSectionPos.getSectionCoord(this.centerZ);
 		}
 
 		public int getCenterX() {

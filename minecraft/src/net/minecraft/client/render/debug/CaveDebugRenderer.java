@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -40,7 +41,7 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 		BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
 
 		for (Entry<BlockPos, BlockPos> entry : this.field_4507.entrySet()) {
 			BlockPos blockPos2 = (BlockPos)entry.getKey();

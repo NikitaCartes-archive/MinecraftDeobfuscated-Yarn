@@ -36,7 +36,7 @@ public class StructurePool {
 					Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.INT.fieldOf("weight"))
 						.codec()
 						.listOf()
-						.promotePartial(Util.method_29188("Pool element: ", LOGGER::error))
+						.promotePartial(Util.addPrefix("Pool element: ", LOGGER::error))
 						.fieldOf("elements")
 						.forGetter(structurePool -> structurePool.elementCounts)
 				)

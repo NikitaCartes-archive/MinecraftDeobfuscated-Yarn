@@ -19,12 +19,13 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.minecraft.Bootstrap;
 import net.minecraft.datafixer.Schemas;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.command.CommandManager;
@@ -116,7 +117,9 @@ public class Main {
 			}
 
 			ResourcePackManager resourcePackManager = new ResourcePackManager(
-				new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
+				ResourceType.SERVER_DATA,
+				new VanillaDataPackProvider(),
+				new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
 			);
 			DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(
 				resourcePackManager, dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings, bl
@@ -141,7 +144,7 @@ public class Main {
 			}
 
 			serverResourceManager.loadRegistryTags();
-			RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+			RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 			SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
 			if (saveProperties == null) {
 				LevelInfo levelInfo;

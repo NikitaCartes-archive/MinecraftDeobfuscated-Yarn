@@ -11,6 +11,7 @@ import net.minecraft.command.argument.ColumnPosArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.ColumnPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -96,7 +97,7 @@ public class ForceLoadCommand {
 	}
 
 	private static int executeQuery(ServerCommandSource source, ColumnPos pos) throws CommandSyntaxException {
-		ChunkPos chunkPos = new ChunkPos(pos.x >> 4, pos.z >> 4);
+		ChunkPos chunkPos = new ChunkPos(ChunkSectionPos.getSectionCoord(pos.x), ChunkSectionPos.getSectionCoord(pos.z));
 		ServerWorld serverWorld = source.getWorld();
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		boolean bl = serverWorld.getForcedChunks().contains(chunkPos.toLong());
@@ -142,10 +143,10 @@ public class ForceLoadCommand {
 		int k = Math.max(from.x, to.x);
 		int l = Math.max(from.z, to.z);
 		if (i >= -30000000 && j >= -30000000 && k < 30000000 && l < 30000000) {
-			int m = i >> 4;
-			int n = j >> 4;
-			int o = k >> 4;
-			int p = l >> 4;
+			int m = ChunkSectionPos.getSectionCoord(i);
+			int n = ChunkSectionPos.getSectionCoord(j);
+			int o = ChunkSectionPos.getSectionCoord(k);
+			int p = ChunkSectionPos.getSectionCoord(l);
 			long q = ((long)(o - m) + 1L) * ((long)(p - n) + 1L);
 			if (q > 256L) {
 				throw TOO_BIG_EXCEPTION.create(256, q);

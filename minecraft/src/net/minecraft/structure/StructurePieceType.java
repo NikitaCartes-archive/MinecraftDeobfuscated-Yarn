@@ -1,7 +1,7 @@
 package net.minecraft.structure;
 
 import java.util.Locale;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.registry.Registry;
 
 public interface StructurePieceType {
@@ -62,7 +62,7 @@ public interface StructurePieceType {
 	StructurePieceType NETHER_FOSSIL = register(NetherFossilGenerator.Piece::new, "NeFos");
 	StructurePieceType JIGSAW = register(PoolStructurePiece::new, "jigsaw");
 
-	StructurePiece load(StructureManager structureManager, NbtCompound tag);
+	StructurePiece load(StructureManager structureManager, CompoundTag tag);
 
 	static StructurePieceType register(StructurePieceType pieceType, String id) {
 		return Registry.register(Registry.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), pieceType);

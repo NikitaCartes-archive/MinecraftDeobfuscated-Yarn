@@ -60,7 +60,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 				return itemStack.isEmpty();
 			} else {
 				for (ItemStack itemStack2 : this.matchingStacks) {
-					if (itemStack2.getItem() == itemStack.getItem()) {
+					if (itemStack2.isOf(itemStack.getItem())) {
 						return true;
 					}
 				}
@@ -70,13 +70,13 @@ public final class Ingredient implements Predicate<ItemStack> {
 		}
 	}
 
-	public IntList getMatchingItemIds() {
+	public IntList getIds() {
 		if (this.ids == null) {
 			this.cacheMatchingStacks();
 			this.ids = new IntArrayList(this.matchingStacks.length);
 
 			for (ItemStack itemStack : this.matchingStacks) {
-				this.ids.add(RecipeMatcher.getItemId(itemStack));
+				this.ids.add(RecipeFinder.getItemId(itemStack));
 			}
 
 			this.ids.sort(IntComparators.NATURAL_COMPARATOR);

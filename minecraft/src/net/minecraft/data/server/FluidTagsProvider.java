@@ -20,8 +20,8 @@ public class FluidTagsProvider extends AbstractTagProvider<Fluid> {
 	}
 
 	@Override
-	protected Path getOutput(Identifier id) {
-		return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/fluids/" + id.getPath() + ".json");
+	protected Path getOutput(Identifier identifier) {
+		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/fluids/" + identifier.getPath() + ".json");
 	}
 
 	@Override

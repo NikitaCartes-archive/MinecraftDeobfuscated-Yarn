@@ -25,8 +25,8 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		return new PositionedSoundInstance(sound.getId(), SoundCategory.MUSIC, 1.0F, 1.0F, false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true);
 	}
 
-	public static PositionedSoundInstance record(SoundEvent sound, double x, double y, double z) {
-		return new PositionedSoundInstance(sound, SoundCategory.RECORDS, 4.0F, 1.0F, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
+	public static PositionedSoundInstance record(SoundEvent sound, double d, double e, double f) {
+		return new PositionedSoundInstance(sound, SoundCategory.RECORDS, 4.0F, 1.0F, false, 0, SoundInstance.AttenuationType.LINEAR, d, e, f);
 	}
 
 	public static PositionedSoundInstance ambient(SoundEvent sound, float pitch, float volume) {
@@ -37,12 +37,12 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		return ambient(sound, 1.0F, 1.0F);
 	}
 
-	public static PositionedSoundInstance ambient(SoundEvent sound, double x, double y, double z) {
-		return new PositionedSoundInstance(sound, SoundCategory.AMBIENT, 1.0F, 1.0F, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
+	public static PositionedSoundInstance ambient(SoundEvent sound, double d, double e, double f) {
+		return new PositionedSoundInstance(sound, SoundCategory.AMBIENT, 1.0F, 1.0F, false, 0, SoundInstance.AttenuationType.LINEAR, d, e, f);
 	}
 
-	public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, double x, double y, double z) {
-		this(sound, category, volume, pitch, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
+	public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, double d, double e, double f) {
+		this(sound, category, volume, pitch, false, 0, SoundInstance.AttenuationType.LINEAR, d, e, f);
 	}
 
 	private PositionedSoundInstance(
@@ -53,11 +53,11 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		boolean repeat,
 		int repeatDelay,
 		SoundInstance.AttenuationType attenuationType,
-		double x,
-		double y,
-		double z
+		double d,
+		double e,
+		double f
 	) {
-		this(sound.getId(), category, volume, pitch, repeat, repeatDelay, attenuationType, x, y, z, false);
+		this(sound.getId(), category, volume, pitch, repeat, repeatDelay, attenuationType, d, e, f, false);
 	}
 
 	public PositionedSoundInstance(
@@ -68,20 +68,20 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		boolean repeat,
 		int repeatDelay,
 		SoundInstance.AttenuationType attenuationType,
-		double x,
-		double y,
-		double z,
-		boolean looping
+		double d,
+		double e,
+		double f,
+		boolean bl
 	) {
 		super(id, category);
 		this.volume = volume;
 		this.pitch = pitch;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x = d;
+		this.y = e;
+		this.z = f;
 		this.repeat = repeat;
 		this.repeatDelay = repeatDelay;
 		this.attenuationType = attenuationType;
-		this.looping = looping;
+		this.looping = bl;
 	}
 }

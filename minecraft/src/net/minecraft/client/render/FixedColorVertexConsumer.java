@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public abstract class FixedColorVertexConsumer implements VertexConsumer {
-	protected boolean colorFixed = false;
+	protected boolean colorFixed;
 	protected int fixedRed = 255;
 	protected int fixedGreen = 255;
 	protected int fixedBlue = 255;

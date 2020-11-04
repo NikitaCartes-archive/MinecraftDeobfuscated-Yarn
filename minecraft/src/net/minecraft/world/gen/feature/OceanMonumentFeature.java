@@ -10,6 +10,7 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.StructureWorldAccess;
@@ -43,13 +44,13 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		ChunkPos chunkPos,
 		DefaultFeatureConfig defaultFeatureConfig
 	) {
-		for (Biome biome2 : biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 16)) {
+		for (Biome biome2 : biomeSource.getBiomesInArea(ChunkSectionPos.method_32205(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.method_32205(j, 9), 16)) {
 			if (!biome2.getGenerationSettings().hasStructureFeature(this)) {
 				return false;
 			}
 		}
 
-		for (Biome biome3 : biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 29)) {
+		for (Biome biome3 : biomeSource.getBiomesInArea(ChunkSectionPos.method_32205(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.method_32205(j, 9), 29)) {
 			if (biome3.getCategory() != Biome.Category.OCEAN && biome3.getCategory() != Biome.Category.RIVER) {
 				return false;
 			}
@@ -88,8 +89,8 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		}
 
 		private void method_16588(int chunkX, int chunkZ) {
-			int i = chunkX * 16 - 29;
-			int j = chunkZ * 16 - 29;
+			int i = ChunkSectionPos.getBlockCoord(chunkX) - 29;
+			int j = ChunkSectionPos.getBlockCoord(chunkZ) - 29;
 			Direction direction = Direction.Type.HORIZONTAL.random(this.random);
 			this.children.add(new OceanMonumentGenerator.Base(this.random, i, j, direction));
 			this.setBoundingBoxFromChildren();

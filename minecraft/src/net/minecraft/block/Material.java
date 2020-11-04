@@ -12,21 +12,21 @@ public final class Material {
 	 * Material for the various portal blocks.
 	 */
 	public static final Material PORTAL = new Material.Builder(MapColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().blocksPistons().build();
-	public static final Material CARPET = new Material.Builder(MapColor.WHITE_GRAY).allowsMovement().lightPassesThrough().notSolid().burnable().build();
+	public static final Material CARPET = new Material.Builder(MapColor.WEB).allowsMovement().lightPassesThrough().notSolid().burnable().build();
 	/**
 	 * Material for plants such as flowers and crops
 	 */
-	public static final Material PLANT = new Material.Builder(MapColor.DARK_GREEN).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
+	public static final Material PLANT = new Material.Builder(MapColor.FOLIAGE).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
 	/**
 	 * Material for underwater plants without the replaceable property.
 	 */
-	public static final Material UNDERWATER_PLANT = new Material.Builder(MapColor.WATER_BLUE)
+	public static final Material UNDERWATER_PLANT = new Material.Builder(MapColor.WATER)
 		.allowsMovement()
 		.lightPassesThrough()
 		.notSolid()
 		.destroyedByPiston()
 		.build();
-	public static final Material REPLACEABLE_PLANT = new Material.Builder(MapColor.DARK_GREEN)
+	public static final Material REPLACEABLE_PLANT = new Material.Builder(MapColor.FOLIAGE)
 		.allowsMovement()
 		.lightPassesThrough()
 		.notSolid()
@@ -37,29 +37,21 @@ public final class Material {
 	/**
 	 * Material for crimson and warped roots, as well as Nether sprouts.
 	 */
-	public static final Material NETHER_SHOOTS = new Material.Builder(MapColor.DARK_GREEN)
+	public static final Material NETHER_SHOOTS = new Material.Builder(MapColor.FOLIAGE)
 		.allowsMovement()
 		.lightPassesThrough()
 		.notSolid()
 		.destroyedByPiston()
 		.replaceable()
 		.build();
-	public static final Material REPLACEABLE_UNDERWATER_PLANT = new Material.Builder(MapColor.WATER_BLUE)
+	public static final Material REPLACEABLE_UNDERWATER_PLANT = new Material.Builder(MapColor.WATER)
 		.allowsMovement()
 		.lightPassesThrough()
 		.notSolid()
 		.destroyedByPiston()
 		.replaceable()
 		.build();
-	public static final Material WATER = new Material.Builder(MapColor.WATER_BLUE)
-		.allowsMovement()
-		.lightPassesThrough()
-		.notSolid()
-		.destroyedByPiston()
-		.replaceable()
-		.liquid()
-		.build();
-	public static final Material BUBBLE_COLUMN = new Material.Builder(MapColor.WATER_BLUE)
+	public static final Material WATER = new Material.Builder(MapColor.WATER)
 		.allowsMovement()
 		.lightPassesThrough()
 		.notSolid()
@@ -67,7 +59,15 @@ public final class Material {
 		.replaceable()
 		.liquid()
 		.build();
-	public static final Material LAVA = new Material.Builder(MapColor.BRIGHT_RED)
+	public static final Material BUBBLE_COLUMN = new Material.Builder(MapColor.WATER)
+		.allowsMovement()
+		.lightPassesThrough()
+		.notSolid()
+		.destroyedByPiston()
+		.replaceable()
+		.liquid()
+		.build();
+	public static final Material LAVA = new Material.Builder(MapColor.LAVA)
 		.allowsMovement()
 		.lightPassesThrough()
 		.notSolid()
@@ -93,49 +93,49 @@ public final class Material {
 		.replaceable()
 		.build();
 	/**
-	 * Material for decoration blocks such as redstone components, torches, flower pots, rails, buttons, and skulls.
+	 * Material for blocks that require a supporting block such as redstone components, torches, flower pots, and skulls.
 	 */
-	public static final Material DECORATION = new Material.Builder(MapColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
-	public static final Material COBWEB = new Material.Builder(MapColor.WHITE_GRAY).allowsMovement().lightPassesThrough().destroyedByPiston().build();
+	public static final Material SUPPORTED = new Material.Builder(MapColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
+	public static final Material COBWEB = new Material.Builder(MapColor.WEB).allowsMovement().lightPassesThrough().destroyedByPiston().build();
 	public static final Material REDSTONE_LAMP = new Material.Builder(MapColor.CLEAR).build();
 	/**
 	 * Material for blocks that come from mobs such as honey, slime, or infested blocks. Includes clay but not bone blocks.
 	 */
-	public static final Material ORGANIC_PRODUCT = new Material.Builder(MapColor.LIGHT_BLUE_GRAY).build();
+	public static final Material ORGANIC_PRODUCT = new Material.Builder(MapColor.CLAY).build();
 	/**
 	 * Material for the top layer of soil. Path, dirt, podzol, soul soil, farmland and similar.
 	 */
-	public static final Material SOIL = new Material.Builder(MapColor.DIRT_BROWN).build();
+	public static final Material SOIL = new Material.Builder(MapColor.DIRT).build();
 	/**
 	 * Organic blocks that are solid, including hay, target, and grass blocks.
 	 */
-	public static final Material SOLID_ORGANIC = new Material.Builder(MapColor.PALE_GREEN).build();
+	public static final Material SOLID_ORGANIC = new Material.Builder(MapColor.GRASS).build();
 	/**
 	 * Material for ice blocks that do not melt. See {@link #ICE} for meltable ice.
 	 */
-	public static final Material DENSE_ICE = new Material.Builder(MapColor.PALE_PURPLE).build();
+	public static final Material DENSE_ICE = new Material.Builder(MapColor.ICE).build();
 	/**
 	 * A material or structure formed from a loosely compacted mass of fragments or particles.
 	 */
-	public static final Material AGGREGATE = new Material.Builder(MapColor.PALE_YELLOW).build();
+	public static final Material AGGREGATE = new Material.Builder(MapColor.SAND).build();
 	public static final Material SPONGE = new Material.Builder(MapColor.YELLOW).build();
 	public static final Material SHULKER_BOX = new Material.Builder(MapColor.PURPLE).build();
 	/**
 	 * Material for wood logs, and things crafted from them.
 	 */
-	public static final Material WOOD = new Material.Builder(MapColor.OAK_TAN).burnable().build();
+	public static final Material WOOD = new Material.Builder(MapColor.WOOD).burnable().build();
 	/**
 	 * Material for blocks crafted from Nether stems and hyphae.
 	 */
-	public static final Material NETHER_WOOD = new Material.Builder(MapColor.OAK_TAN).build();
-	public static final Material BAMBOO_SAPLING = new Material.Builder(MapColor.OAK_TAN).burnable().destroyedByPiston().allowsMovement().build();
-	public static final Material BAMBOO = new Material.Builder(MapColor.OAK_TAN).burnable().destroyedByPiston().build();
+	public static final Material NETHER_WOOD = new Material.Builder(MapColor.WOOD).build();
+	public static final Material BAMBOO_SAPLING = new Material.Builder(MapColor.WOOD).burnable().destroyedByPiston().allowsMovement().build();
+	public static final Material BAMBOO = new Material.Builder(MapColor.WOOD).burnable().destroyedByPiston().build();
 	/**
 	 * Material for wool and bed blocks.
 	 */
-	public static final Material WOOL = new Material.Builder(MapColor.WHITE_GRAY).burnable().build();
-	public static final Material TNT = new Material.Builder(MapColor.BRIGHT_RED).burnable().lightPassesThrough().build();
-	public static final Material LEAVES = new Material.Builder(MapColor.DARK_GREEN).burnable().lightPassesThrough().destroyedByPiston().build();
+	public static final Material WOOL = new Material.Builder(MapColor.WEB).burnable().build();
+	public static final Material TNT = new Material.Builder(MapColor.LAVA).burnable().lightPassesThrough().build();
+	public static final Material LEAVES = new Material.Builder(MapColor.FOLIAGE).burnable().lightPassesThrough().destroyedByPiston().build();
 	/**
 	 * Material for glass and glass-like blocks (includes sea lanterns and conduits).
 	 */
@@ -143,16 +143,16 @@ public final class Material {
 	/**
 	 * Material for ice that can melt. See {@link #DENSE_ICE} for unmeltable ice.
 	 */
-	public static final Material ICE = new Material.Builder(MapColor.PALE_PURPLE).lightPassesThrough().build();
-	public static final Material CACTUS = new Material.Builder(MapColor.DARK_GREEN).lightPassesThrough().destroyedByPiston().build();
+	public static final Material ICE = new Material.Builder(MapColor.ICE).lightPassesThrough().build();
+	public static final Material CACTUS = new Material.Builder(MapColor.FOLIAGE).lightPassesThrough().destroyedByPiston().build();
 	/**
 	 * Material for blocks that are stone or made from it, and generally prefer to be broken by a pickaxe.
 	 */
-	public static final Material STONE = new Material.Builder(MapColor.STONE_GRAY).build();
+	public static final Material STONE = new Material.Builder(MapColor.STONE).build();
 	/**
 	 * Material for blocks metallic in nature, such as cauldrons, bells, iron doors, and iron trapdoors. It also includes non-obvious blocks such as brewing stands and compressed ore blocks, including diamond, redstone, and lapis blocks.
 	 */
-	public static final Material METAL = new Material.Builder(MapColor.IRON_GRAY).build();
+	public static final Material METAL = new Material.Builder(MapColor.IRON).build();
 	/**
 	 * Material for full sized snow blocks.
 	 */
@@ -160,22 +160,23 @@ public final class Material {
 	/**
 	 * Material for blocks that can repair tools, including grindstone and anvils.
 	 */
-	public static final Material REPAIR_STATION = new Material.Builder(MapColor.IRON_GRAY).blocksPistons().build();
+	public static final Material REPAIR_STATION = new Material.Builder(MapColor.IRON).blocksPistons().build();
 	public static final Material BARRIER = new Material.Builder(MapColor.CLEAR).blocksPistons().build();
-	public static final Material PISTON = new Material.Builder(MapColor.STONE_GRAY).blocksPistons().build();
+	public static final Material PISTON = new Material.Builder(MapColor.STONE).blocksPistons().build();
 	/**
-	 * Material for full sized moss blocks. Unused in this version.
+	 * Not in use, but has foliage color.
 	 */
-	public static final Material MOSS_BLOCK = new Material.Builder(MapColor.DARK_GREEN).destroyedByPiston().build();
+	public static final Material UNUSED_PLANT = new Material.Builder(MapColor.FOLIAGE).destroyedByPiston().build();
 	/**
 	 * Material for gourds. Includes the carved pumpkin and jack o' lantern.
 	 */
-	public static final Material GOURD = new Material.Builder(MapColor.DARK_GREEN).destroyedByPiston().build();
+	public static final Material GOURD = new Material.Builder(MapColor.FOLIAGE).destroyedByPiston().build();
 	/**
 	 * Material for egg blocks, such as dragon and turtle eggs.
 	 */
-	public static final Material EGG = new Material.Builder(MapColor.DARK_GREEN).destroyedByPiston().build();
+	public static final Material EGG = new Material.Builder(MapColor.FOLIAGE).destroyedByPiston().build();
 	public static final Material CAKE = new Material.Builder(MapColor.CLEAR).destroyedByPiston().build();
+	public static final Material AMETHYST = new Material.Builder(MapColor.PURPLE).lightPassesThrough().destroyedByPiston().build();
 	private final MapColor color;
 	private final PistonBehavior pistonBehavior;
 	private final boolean blocksMovement;

@@ -5,23 +5,24 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 
 public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	private static final Random RANDOM = new Random();
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
 
-	protected DispenserBlockEntity(BlockEntityType<?> blockEntityType) {
-		super(blockEntityType);
+	protected DispenserBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
+		super(blockEntityType, blockPos, blockState);
 	}
 
-	public DispenserBlockEntity() {
-		this(BlockEntityType.DISPENSER);
+	public DispenserBlockEntity(BlockPos blockPos, BlockState blockState) {
+		this(BlockEntityType.DISPENSER, blockPos, blockState);
 	}
 
 	@Override
@@ -60,22 +61,22 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void fromTag(BlockState state, NbtCompound tag) {
-		super.fromTag(state, tag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(tag)) {
-			Inventories.readNbt(tag, this.inventory);
+		if (!this.deserializeLootTable(compoundTag)) {
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
-		if (!this.serializeLootTable(nbt)) {
-			Inventories.writeNbt(nbt, this.inventory);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		if (!this.serializeLootTable(tag)) {
+			Inventories.toTag(tag, this.inventory);
 		}
 
-		return nbt;
+		return tag;
 	}
 
 	@Override

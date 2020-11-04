@@ -2,11 +2,11 @@ package net.minecraft.client.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.Vector4f;
 
 @Environment(EnvType.CLIENT)
 public class OverlayVertexConsumer extends FixedColorVertexConsumer {
@@ -46,13 +46,13 @@ public class OverlayVertexConsumer extends FixedColorVertexConsumer {
 
 	@Override
 	public void next() {
-		Vec3f vec3f = new Vec3f(this.normalX, this.normalY, this.normalZ);
-		vec3f.transform(this.normalMatrix);
-		Direction direction = Direction.getFacing(vec3f.getX(), vec3f.getY(), vec3f.getZ());
+		Vector3f vector3f = new Vector3f(this.normalX, this.normalY, this.normalZ);
+		vector3f.transform(this.normalMatrix);
+		Direction direction = Direction.getFacing(vector3f.getX(), vector3f.getY(), vector3f.getZ());
 		Vector4f vector4f = new Vector4f(this.x, this.y, this.z, 1.0F);
 		vector4f.transform(this.textureMatrix);
-		vector4f.rotate(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-		vector4f.rotate(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+		vector4f.rotate(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		vector4f.rotate(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
 		vector4f.rotate(direction.getRotationQuaternion());
 		float f = -vector4f.getX();
 		float g = -vector4f.getY();

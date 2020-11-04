@@ -16,10 +16,10 @@ public class BiomeMoodSound {
 				.apply(instance, BiomeMoodSound::new)
 	);
 	public static final BiomeMoodSound CAVE = new BiomeMoodSound(SoundEvents.AMBIENT_CAVE, 6000, 8, 2.0);
-	private SoundEvent sound;
-	private int cultivationTicks;
-	private int spawnRange;
-	private double extraDistance;
+	private final SoundEvent sound;
+	private final int cultivationTicks;
+	private final int spawnRange;
+	private final double extraDistance;
 
 	public BiomeMoodSound(SoundEvent sound, int cultivationTicks, int spawnRange, double extraDistance) {
 		this.sound = sound;

@@ -1,7 +1,5 @@
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -32,11 +30,6 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 
 	public WitherSkullEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
 		super(EntityType.WITHER_SKULL, owner, directionX, directionY, directionZ, world);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public WitherSkullEntity(World world, double x, double y, double z, double directionX, double directionY, double directionZ) {
-		super(EntityType.WITHER_SKULL, x, y, z, directionX, directionY, directionZ, world);
 	}
 
 	@Override
@@ -98,7 +91,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 				? Explosion.DestructionType.DESTROY
 				: Explosion.DestructionType.NONE;
 			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, destructionType);
-			this.remove();
+			this.discard();
 		}
 	}
 

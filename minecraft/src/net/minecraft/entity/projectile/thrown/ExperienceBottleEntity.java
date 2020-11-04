@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
@@ -36,17 +37,11 @@ public class ExperienceBottleEntity extends ThrownItemEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (!this.world.isClient) {
+		if (this.world instanceof ServerWorld) {
 			this.world.syncWorldEvent(2002, this.getBlockPos(), PotionUtil.getColor(Potions.WATER));
 			int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5);
-
-			while (i > 0) {
-				int j = ExperienceOrbEntity.roundToOrbSize(i);
-				i -= j;
-				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));
-			}
-
-			this.remove();
+			ExperienceOrbEntity.method_31493((ServerWorld)this.world, this.getPos(), i);
+			this.discard();
 		}
 	}
 }

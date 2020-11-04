@@ -1,63 +1,88 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SilverfishEntityModel<T extends Entity> extends CompositeEntityModel<T> {
-	private final ModelPart[] body;
-	private final ModelPart[] scales;
-	private final ImmutableList<ModelPart> parts;
-	private final float[] scaleSizes = new float[7];
+public class SilverfishEntityModel<T extends Entity> extends class_5597<T> {
+	private final ModelPart field_27497;
+	private final ModelPart[] body = new ModelPart[7];
+	private final ModelPart[] scales = new ModelPart[3];
 	private static final int[][] segmentLocations = new int[][]{{3, 2, 2}, {4, 3, 2}, {6, 4, 3}, {3, 3, 3}, {2, 2, 3}, {2, 1, 2}, {1, 1, 2}};
 	private static final int[][] segmentSizes = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
 
-	public SilverfishEntityModel() {
-		this.body = new ModelPart[7];
+	public SilverfishEntityModel(ModelPart modelPart) {
+		this.field_27497 = modelPart;
+		Arrays.setAll(this.body, i -> modelPart.method_32086(method_32045(i)));
+		Arrays.setAll(this.scales, i -> modelPart.method_32086(method_32043(i)));
+	}
+
+	private static String method_32043(int i) {
+		return "layer" + i;
+	}
+
+	private static String method_32045(int i) {
+		return "segment" + i;
+	}
+
+	public static class_5607 method_32042() {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
+		float[] fs = new float[7];
 		float f = -3.5F;
 
-		for (int i = 0; i < this.body.length; i++) {
-			this.body[i] = new ModelPart(this, segmentSizes[i][0], segmentSizes[i][1]);
-			this.body[i]
-				.addCuboid(
-					(float)segmentLocations[i][0] * -0.5F,
-					0.0F,
-					(float)segmentLocations[i][2] * -0.5F,
-					(float)segmentLocations[i][0],
-					(float)segmentLocations[i][1],
-					(float)segmentLocations[i][2]
-				);
-			this.body[i].setPivot(0.0F, (float)(24 - segmentLocations[i][1]), f);
-			this.scaleSizes[i] = f;
-			if (i < this.body.length - 1) {
+		for (int i = 0; i < 7; i++) {
+			lv2.method_32117(
+				method_32045(i),
+				class_5606.method_32108()
+					.method_32101(segmentSizes[i][0], segmentSizes[i][1])
+					.method_32097(
+						(float)segmentLocations[i][0] * -0.5F,
+						0.0F,
+						(float)segmentLocations[i][2] * -0.5F,
+						(float)segmentLocations[i][0],
+						(float)segmentLocations[i][1],
+						(float)segmentLocations[i][2]
+					),
+				class_5603.method_32090(0.0F, (float)(24 - segmentLocations[i][1]), f)
+			);
+			fs[i] = f;
+			if (i < 6) {
 				f += (float)(segmentLocations[i][2] + segmentLocations[i + 1][2]) * 0.5F;
 			}
 		}
 
-		this.scales = new ModelPart[3];
-		this.scales[0] = new ModelPart(this, 20, 0);
-		this.scales[0].addCuboid(-5.0F, 0.0F, (float)segmentLocations[2][2] * -0.5F, 10.0F, 8.0F, (float)segmentLocations[2][2]);
-		this.scales[0].setPivot(0.0F, 16.0F, this.scaleSizes[2]);
-		this.scales[1] = new ModelPart(this, 20, 11);
-		this.scales[1].addCuboid(-3.0F, 0.0F, (float)segmentLocations[4][2] * -0.5F, 6.0F, 4.0F, (float)segmentLocations[4][2]);
-		this.scales[1].setPivot(0.0F, 20.0F, this.scaleSizes[4]);
-		this.scales[2] = new ModelPart(this, 20, 18);
-		this.scales[2].addCuboid(-3.0F, 0.0F, (float)segmentLocations[4][2] * -0.5F, 6.0F, 5.0F, (float)segmentLocations[1][2]);
-		this.scales[2].setPivot(0.0F, 19.0F, this.scaleSizes[1]);
-		Builder<ModelPart> builder = ImmutableList.builder();
-		builder.addAll(Arrays.asList(this.body));
-		builder.addAll(Arrays.asList(this.scales));
-		this.parts = builder.build();
+		lv2.method_32117(
+			method_32043(0),
+			class_5606.method_32108().method_32101(20, 0).method_32097(-5.0F, 0.0F, (float)segmentLocations[2][2] * -0.5F, 10.0F, 8.0F, (float)segmentLocations[2][2]),
+			class_5603.method_32090(0.0F, 16.0F, fs[2])
+		);
+		lv2.method_32117(
+			method_32043(1),
+			class_5606.method_32108().method_32101(20, 11).method_32097(-3.0F, 0.0F, (float)segmentLocations[4][2] * -0.5F, 6.0F, 4.0F, (float)segmentLocations[4][2]),
+			class_5603.method_32090(0.0F, 20.0F, fs[4])
+		);
+		lv2.method_32117(
+			method_32043(2),
+			class_5606.method_32108().method_32101(20, 18).method_32097(-3.0F, 0.0F, (float)segmentLocations[4][2] * -0.5F, 6.0F, 5.0F, (float)segmentLocations[1][2]),
+			class_5603.method_32090(0.0F, 19.0F, fs[1])
+		);
+		return class_5607.method_32110(lv, 64, 32);
 	}
 
-	public ImmutableList<ModelPart> getParts() {
-		return this.parts;
+	@Override
+	public ModelPart method_32008() {
+		return this.field_27497;
 	}
 
 	@Override

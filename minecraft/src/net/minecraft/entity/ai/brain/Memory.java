@@ -39,7 +39,7 @@ public class Memory<T> {
 	}
 
 	public String toString() {
-		return this.value.toString() + (this.method_24914() ? " (ttl: " + this.expiry + ")" : "");
+		return this.value + (this.method_24914() ? " (ttl: " + this.expiry + ")" : "");
 	}
 
 	public boolean method_24914() {

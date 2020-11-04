@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.recipe.InputSlotFiller;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -18,7 +18,7 @@ public abstract class AbstractRecipeScreenHandler<C extends Inventory> extends S
 		new InputSlotFiller<>(this).fillInputSlots(player, (Recipe<C>)recipe, craftAll);
 	}
 
-	public abstract void populateRecipeFinder(RecipeMatcher finder);
+	public abstract void populateRecipeFinder(RecipeFinder finder);
 
 	public abstract void clearCraftingSlots();
 

@@ -4,14 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.argument.EntitySummonArgumentType;
-import net.minecraft.command.argument.NbtCompoundArgumentType;
+import net.minecraft.command.argument.NbtCompoundTagArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -38,7 +38,7 @@ public class SummonCommand {
 									commandContext.getSource(),
 									EntitySummonArgumentType.getEntitySummon(commandContext, "entity"),
 									commandContext.getSource().getPosition(),
-									new NbtCompound(),
+									new CompoundTag(),
 									true
 								)
 						)
@@ -49,18 +49,18 @@ public class SummonCommand {
 											commandContext.getSource(),
 											EntitySummonArgumentType.getEntitySummon(commandContext, "entity"),
 											Vec3ArgumentType.getVec3(commandContext, "pos"),
-											new NbtCompound(),
+											new CompoundTag(),
 											true
 										)
 								)
 								.then(
-									CommandManager.argument("nbt", NbtCompoundArgumentType.nbtCompound())
+									CommandManager.argument("nbt", NbtCompoundTagArgumentType.nbtCompound())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
 													EntitySummonArgumentType.getEntitySummon(commandContext, "entity"),
 													Vec3ArgumentType.getVec3(commandContext, "pos"),
-													NbtCompoundArgumentType.getNbtCompound(commandContext, "nbt"),
+													NbtCompoundTagArgumentType.getCompoundTag(commandContext, "nbt"),
 													false
 												)
 										)
@@ -70,15 +70,15 @@ public class SummonCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Identifier entity, Vec3d pos, NbtCompound nbt, boolean initialize) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(pos);
 		if (!World.isValid(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
-			NbtCompound nbtCompound = nbt.copy();
-			nbtCompound.putString("id", entity.toString());
+			CompoundTag compoundTag = nbt.copy();
+			compoundTag.putString("id", entity.toString());
 			ServerWorld serverWorld = source.getWorld();
-			Entity entity2 = EntityType.loadEntityWithPassengers(nbtCompound, serverWorld, entityx -> {
+			Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
 				entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
 				return entityx;
 			});

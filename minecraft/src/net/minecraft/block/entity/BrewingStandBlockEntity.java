@@ -11,7 +11,7 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.screen.BrewingStandScreenHandler;
 import net.minecraft.screen.PropertyDelegate;
@@ -19,12 +19,12 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
-public class BrewingStandBlockEntity extends LockableContainerBlockEntity implements SidedInventory, Tickable {
+public class BrewingStandBlockEntity extends LockableContainerBlockEntity implements SidedInventory {
 	private static final int[] TOP_SLOTS = new int[]{3};
 	private static final int[] BOTTOM_SLOTS = new int[]{0, 1, 2, 3};
 	private static final int[] SIDE_SLOTS = new int[]{0, 1, 2, 4};
@@ -63,8 +63,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 	};
 
-	public BrewingStandBlockEntity() {
-		super(BlockEntityType.BREWING_STAND);
+	public BrewingStandBlockEntity(BlockPos blockPos, BlockState blockState) {
+		super(BlockEntityType.BREWING_STAND, blockPos, blockState);
 	}
 
 	@Override
@@ -88,57 +88,51 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		return true;
 	}
 
-	@Override
-	public void tick() {
-		ItemStack itemStack = this.inventory.get(4);
-		if (this.fuel <= 0 && itemStack.getItem() == Items.BLAZE_POWDER) {
-			this.fuel = 20;
+	public static void tick(World world, BlockPos blockPos, BlockState blockState, BrewingStandBlockEntity brewingStandBlockEntity) {
+		ItemStack itemStack = brewingStandBlockEntity.inventory.get(4);
+		if (brewingStandBlockEntity.fuel <= 0 && itemStack.isOf(Items.BLAZE_POWDER)) {
+			brewingStandBlockEntity.fuel = 20;
 			itemStack.decrement(1);
-			this.markDirty();
+			markDirty(world, blockPos, blockState);
 		}
 
-		boolean bl = this.canCraft();
-		boolean bl2 = this.brewTime > 0;
-		ItemStack itemStack2 = this.inventory.get(3);
+		boolean bl = canCraft(brewingStandBlockEntity.inventory);
+		boolean bl2 = brewingStandBlockEntity.brewTime > 0;
+		ItemStack itemStack2 = brewingStandBlockEntity.inventory.get(3);
 		if (bl2) {
-			this.brewTime--;
-			boolean bl3 = this.brewTime == 0;
+			brewingStandBlockEntity.brewTime--;
+			boolean bl3 = brewingStandBlockEntity.brewTime == 0;
 			if (bl3 && bl) {
-				this.craft();
-				this.markDirty();
-			} else if (!bl) {
-				this.brewTime = 0;
-				this.markDirty();
-			} else if (this.itemBrewing != itemStack2.getItem()) {
-				this.brewTime = 0;
-				this.markDirty();
+				craft(world, blockPos, brewingStandBlockEntity.inventory);
+				markDirty(world, blockPos, blockState);
+			} else if (!bl || !itemStack2.isOf(brewingStandBlockEntity.itemBrewing)) {
+				brewingStandBlockEntity.brewTime = 0;
+				markDirty(world, blockPos, blockState);
 			}
-		} else if (bl && this.fuel > 0) {
-			this.fuel--;
-			this.brewTime = 400;
-			this.itemBrewing = itemStack2.getItem();
-			this.markDirty();
+		} else if (bl && brewingStandBlockEntity.fuel > 0) {
+			brewingStandBlockEntity.fuel--;
+			brewingStandBlockEntity.brewTime = 400;
+			brewingStandBlockEntity.itemBrewing = itemStack2.getItem();
+			markDirty(world, blockPos, blockState);
 		}
 
-		if (!this.world.isClient) {
-			boolean[] bls = this.getSlotsEmpty();
-			if (!Arrays.equals(bls, this.slotsEmptyLastTick)) {
-				this.slotsEmptyLastTick = bls;
-				BlockState blockState = this.world.getBlockState(this.getPos());
-				if (!(blockState.getBlock() instanceof BrewingStandBlock)) {
-					return;
-				}
-
-				for (int i = 0; i < BrewingStandBlock.BOTTLE_PROPERTIES.length; i++) {
-					blockState = blockState.with(BrewingStandBlock.BOTTLE_PROPERTIES[i], Boolean.valueOf(bls[i]));
-				}
-
-				this.world.setBlockState(this.pos, blockState, 2);
+		boolean[] bls = brewingStandBlockEntity.getSlotsEmpty();
+		if (!Arrays.equals(bls, brewingStandBlockEntity.slotsEmptyLastTick)) {
+			brewingStandBlockEntity.slotsEmptyLastTick = bls;
+			BlockState blockState2 = blockState;
+			if (!(blockState.getBlock() instanceof BrewingStandBlock)) {
+				return;
 			}
+
+			for (int i = 0; i < BrewingStandBlock.BOTTLE_PROPERTIES.length; i++) {
+				blockState2 = blockState2.with(BrewingStandBlock.BOTTLE_PROPERTIES[i], Boolean.valueOf(bls[i]));
+			}
+
+			world.setBlockState(blockPos, blockState2, 2);
 		}
 	}
 
-	public boolean[] getSlotsEmpty() {
+	private boolean[] getSlotsEmpty() {
 		boolean[] bls = new boolean[3];
 
 		for (int i = 0; i < 3; i++) {
@@ -150,15 +144,15 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		return bls;
 	}
 
-	private boolean canCraft() {
-		ItemStack itemStack = this.inventory.get(3);
+	private static boolean canCraft(DefaultedList<ItemStack> defaultedList) {
+		ItemStack itemStack = defaultedList.get(3);
 		if (itemStack.isEmpty()) {
 			return false;
 		} else if (!BrewingRecipeRegistry.isValidIngredient(itemStack)) {
 			return false;
 		} else {
 			for (int i = 0; i < 3; i++) {
-				ItemStack itemStack2 = this.inventory.get(i);
+				ItemStack itemStack2 = defaultedList.get(i);
 				if (!itemStack2.isEmpty() && BrewingRecipeRegistry.hasRecipe(itemStack2, itemStack)) {
 					return true;
 				}
@@ -168,44 +162,43 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 	}
 
-	private void craft() {
-		ItemStack itemStack = this.inventory.get(3);
+	private static void craft(World world, BlockPos blockPos, DefaultedList<ItemStack> defaultedList) {
+		ItemStack itemStack = defaultedList.get(3);
 
 		for (int i = 0; i < 3; i++) {
-			this.inventory.set(i, BrewingRecipeRegistry.craft(itemStack, this.inventory.get(i)));
+			defaultedList.set(i, BrewingRecipeRegistry.craft(itemStack, defaultedList.get(i)));
 		}
 
 		itemStack.decrement(1);
-		BlockPos blockPos = this.getPos();
 		if (itemStack.getItem().hasRecipeRemainder()) {
 			ItemStack itemStack2 = new ItemStack(itemStack.getItem().getRecipeRemainder());
 			if (itemStack.isEmpty()) {
 				itemStack = itemStack2;
-			} else if (!this.world.isClient) {
-				ItemScatterer.spawn(this.world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
+			} else {
+				ItemScatterer.spawn(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
 			}
 		}
 
-		this.inventory.set(3, itemStack);
-		this.world.syncWorldEvent(1035, blockPos, 0);
+		defaultedList.set(3, itemStack);
+		world.syncWorldEvent(1035, blockPos, 0);
 	}
 
 	@Override
-	public void fromTag(BlockState state, NbtCompound tag) {
-		super.fromTag(state, tag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		Inventories.readNbt(tag, this.inventory);
-		this.brewTime = tag.getShort("BrewTime");
-		this.fuel = tag.getByte("Fuel");
+		Inventories.fromTag(compoundTag, this.inventory);
+		this.brewTime = compoundTag.getShort("BrewTime");
+		this.fuel = compoundTag.getByte("Fuel");
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
-		nbt.putShort("BrewTime", (short)this.brewTime);
-		Inventories.writeNbt(nbt, this.inventory);
-		nbt.putByte("Fuel", (byte)this.fuel);
-		return nbt;
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putShort("BrewTime", (short)this.brewTime);
+		Inventories.toTag(tag, this.inventory);
+		tag.putByte("Fuel", (byte)this.fuel);
+		return tag;
 	}
 
 	@Override
@@ -242,10 +235,10 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		if (slot == 3) {
 			return BrewingRecipeRegistry.isValidIngredient(stack);
 		} else {
-			Item item = stack.getItem();
 			return slot == 4
-				? item == Items.BLAZE_POWDER
-				: (item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE) && this.getStack(slot).isEmpty();
+				? stack.isOf(Items.BLAZE_POWDER)
+				: (stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE))
+					&& this.getStack(slot).isEmpty();
 		}
 	}
 
@@ -265,7 +258,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 
 	@Override
 	public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-		return slot == 3 ? stack.getItem() == Items.GLASS_BOTTLE : true;
+		return slot == 3 ? stack.isOf(Items.GLASS_BOTTLE) : true;
 	}
 
 	@Override

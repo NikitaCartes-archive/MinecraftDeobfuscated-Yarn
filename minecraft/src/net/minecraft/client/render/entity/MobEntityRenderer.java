@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
@@ -19,8 +20,8 @@ import net.minecraft.world.LightType;
 
 @Environment(EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
-	public MobEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
-		super(entityRenderDispatcher, entityModel, f);
+	public MobEntityRenderer(class_5617.class_5618 arg, M entityModel, float f) {
+		super(arg, entityModel, f);
 	}
 
 	protected boolean hasLabel(T mobEntity) {
@@ -70,49 +71,47 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		int s = this.dispatcher.getRenderer(entity).getBlockLight(entity, blockPos2);
 		int t = mobEntity.world.getLightLevel(LightType.SKY, blockPos);
 		int u = mobEntity.world.getLightLevel(LightType.SKY, blockPos2);
-		method_23186(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025F, 0.025F, p, q);
-		method_23186(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025F, 0.0F, p, q);
+
+		for (int v = 0; v <= 24; v++) {
+			method_23187(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025F, 0.025F, p, q, v, false);
+		}
+
+		for (int v = 24; v >= 0; v--) {
+			method_23187(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025F, 0.0F, p, q, v, true);
+		}
+
 		matrixStack.pop();
 	}
 
-	public static void method_23186(
-		VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, int l, float m, float n, float o, float p
+	private static void method_23187(
+		VertexConsumer vertexConsumer,
+		Matrix4f matrix4f,
+		float f,
+		float g,
+		float h,
+		int i,
+		int j,
+		int k,
+		int l,
+		float m,
+		float n,
+		float o,
+		float p,
+		int q,
+		boolean bl
 	) {
-		int q = 24;
-
-		for (int r = 0; r < 24; r++) {
-			float s = (float)r / 23.0F;
-			int t = (int)MathHelper.lerp(s, (float)i, (float)j);
-			int u = (int)MathHelper.lerp(s, (float)k, (float)l);
-			int v = LightmapTextureManager.pack(t, u);
-			method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r, false, o, p);
-			method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r + 1, true, o, p);
-		}
-	}
-
-	public static void method_23187(
-		VertexConsumer vertexConsumer, Matrix4f matrix4f, int i, float f, float g, float h, float j, float k, int l, int m, boolean bl, float n, float o
-	) {
-		float p = 0.5F;
-		float q = 0.4F;
-		float r = 0.3F;
-		if (m % 2 == 0) {
-			p *= 0.7F;
-			q *= 0.7F;
-			r *= 0.7F;
-		}
-
-		float s = (float)m / (float)l;
-		float t = f * s;
-		float u = g > 0.0F ? g * s * s : g - g * (1.0F - s) * (1.0F - s);
-		float v = h * s;
-		if (!bl) {
-			vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0F).light(i).next();
-		}
-
-		vertexConsumer.vertex(matrix4f, t - n, u + k, v + o).color(p, q, r, 1.0F).light(i).next();
-		if (bl) {
-			vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0F).light(i).next();
-		}
+		float r = (float)q / 24.0F;
+		int s = (int)MathHelper.lerp(r, (float)i, (float)j);
+		int t = (int)MathHelper.lerp(r, (float)k, (float)l);
+		int u = LightmapTextureManager.pack(s, t);
+		float v = q % 2 == (bl ? 1 : 0) ? 0.7F : 1.0F;
+		float w = 0.5F * v;
+		float x = 0.4F * v;
+		float y = 0.3F * v;
+		float z = f * r;
+		float aa = g > 0.0F ? g * r * r : g - g * (1.0F - r) * (1.0F - r);
+		float ab = h * r;
+		vertexConsumer.vertex(matrix4f, z - o, aa + n, ab + p).color(w, x, y, 1.0F).light(u).next();
+		vertexConsumer.vertex(matrix4f, z + o, aa + m - n, ab - p).color(w, x, y, 1.0F).light(u).next();
 	}
 }

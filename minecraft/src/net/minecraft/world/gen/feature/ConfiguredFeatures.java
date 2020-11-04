@@ -48,11 +48,11 @@ import net.minecraft.world.gen.stateprovider.PillarBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.PlainsFlowerBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
-import net.minecraft.world.gen.treedecorator.AlterGroundTreeDecorator;
-import net.minecraft.world.gen.treedecorator.BeehiveTreeDecorator;
-import net.minecraft.world.gen.treedecorator.CocoaBeansTreeDecorator;
-import net.minecraft.world.gen.treedecorator.LeavesVineTreeDecorator;
-import net.minecraft.world.gen.treedecorator.TrunkVineTreeDecorator;
+import net.minecraft.world.gen.tree.AlterGroundTreeDecorator;
+import net.minecraft.world.gen.tree.BeehiveTreeDecorator;
+import net.minecraft.world.gen.tree.CocoaBeansTreeDecorator;
+import net.minecraft.world.gen.tree.LeaveVineTreeDecorator;
+import net.minecraft.world.gen.tree.TrunkVineTreeDecorator;
 import net.minecraft.world.gen.trunk.DarkOakTrunkPlacer;
 import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
 import net.minecraft.world.gen.trunk.GiantTrunkPlacer;
@@ -105,7 +105,7 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> BASALT_BLOBS = register(
 		"basalt_blobs",
 		Feature.NETHERRACK_REPLACE_BLOBS
-			.configure(new ReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BASALT, UniformIntDistribution.of(3, 4)))
+			.configure(new NetherrackReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BASALT, UniformIntDistribution.of(3, 4)))
 			.rangeOf(128)
 			.spreadHorizontally()
 			.repeat(75)
@@ -113,7 +113,9 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> BLACKSTONE_BLOBS = register(
 		"blackstone_blobs",
 		Feature.NETHERRACK_REPLACE_BLOBS
-			.configure(new ReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BLACKSTONE, UniformIntDistribution.of(3, 4)))
+			.configure(
+				new NetherrackReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BLACKSTONE, UniformIntDistribution.of(3, 4))
+			)
 			.rangeOf(128)
 			.spreadHorizontally()
 			.repeat(25)
@@ -869,6 +871,14 @@ public class ConfiguredFeatures {
 			.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(8, 16, 128)))
 			.spreadHorizontally()
 	);
+	public static final ConfiguredFeature<?, ?> ORE_COPPER = register(
+		"ore_copper",
+		Feature.ORE
+			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COPPER_ORE, 10))
+			.rangeOf(64)
+			.spreadHorizontally()
+			.repeat(10)
+	);
 	public static final ConfiguredFeature<?, ?> CRIMSON_FUNGI = register(
 		"crimson_fungi",
 		Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.CRIMSON_FUNGUS_NOT_PLANTED_CONFIG).decorate(Decorator.COUNT_MULTILAYER.configure(new CountConfig(8)))
@@ -1004,7 +1014,7 @@ public class ConfiguredFeatures {
 						new StraightTrunkPlacer(4, 8, 0),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
-					.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.INSTANCE, LeavesVineTreeDecorator.INSTANCE))
+					.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.INSTANCE, LeaveVineTreeDecorator.INSTANCE))
 					.ignoreVines()
 					.build()
 			)
@@ -1051,7 +1061,7 @@ public class ConfiguredFeatures {
 						new MegaJungleTrunkPlacer(10, 2, 19),
 						new TwoLayersFeatureSize(1, 1, 2)
 					)
-					.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, LeavesVineTreeDecorator.INSTANCE))
+					.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, LeaveVineTreeDecorator.INSTANCE))
 					.build()
 			)
 	);
@@ -1113,7 +1123,7 @@ public class ConfiguredFeatures {
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
 					.maxWaterDepth(1)
-					.decorators(ImmutableList.of(LeavesVineTreeDecorator.INSTANCE))
+					.decorators(ImmutableList.of(LeaveVineTreeDecorator.INSTANCE))
 					.build()
 			)
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
@@ -1436,6 +1446,44 @@ public class ConfiguredFeatures {
 			.configure(new RandomBooleanFeatureConfig(() -> HUGE_RED_MUSHROOM, () -> HUGE_BROWN_MUSHROOM))
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 	);
+	public static final ConfiguredFeature<?, ?> AMETHYST_GEODE = register(
+		"amethyst_geode",
+		Feature.GEODE
+			.configure(
+				new GeodeFeatureConfig(
+					new GeodeLayerConfig(
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.AIR),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.AMETHYST_BLOCK),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.BUDDING_AMETHYST),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.CALCITE),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.TUFF),
+						ImmutableList.of(
+							Blocks.SMALL_AMETHYST_BUD.getDefaultState(),
+							Blocks.MEDIUM_AMETHYST_BUD.getDefaultState(),
+							Blocks.LARGE_AMETHYST_BUD.getDefaultState(),
+							Blocks.AMETHYST_CLUSTER.getDefaultState()
+						)
+					),
+					new GeodeLayerThicknessConfig(1.7, 2.2, 3.2, 4.2),
+					new GeodeCrackConfig(0.95, 2.0, 2),
+					0.35,
+					0.083,
+					true,
+					4,
+					7,
+					3,
+					5,
+					1,
+					3,
+					-16,
+					16,
+					0.05
+				)
+			)
+			.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(6, 0, 47)))
+			.spreadHorizontally()
+			.applyChance(48)
+	);
 
 	private static <FC extends FeatureConfig> ConfiguredFeature<FC, ?> register(String id, ConfiguredFeature<FC, ?> configuredFeature) {
 		return Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id, configuredFeature);
@@ -1600,6 +1648,7 @@ public class ConfiguredFeatures {
 		protected static final BlockState DIORITE = Blocks.DIORITE.getDefaultState();
 		protected static final BlockState ANDESITE = Blocks.ANDESITE.getDefaultState();
 		protected static final BlockState COAL_ORE = Blocks.COAL_ORE.getDefaultState();
+		protected static final BlockState COPPER_ORE = Blocks.COPPER_ORE.getDefaultState();
 		protected static final BlockState IRON_ORE = Blocks.IRON_ORE.getDefaultState();
 		protected static final BlockState GOLD_ORE = Blocks.GOLD_ORE.getDefaultState();
 		protected static final BlockState REDSTONE_ORE = Blocks.REDSTONE_ORE.getDefaultState();
@@ -1623,5 +1672,10 @@ public class ConfiguredFeatures {
 		protected static final BlockState WARPED_FUNGUS = Blocks.WARPED_FUNGUS.getDefaultState();
 		protected static final BlockState WARPED_ROOTS = Blocks.WARPED_ROOTS.getDefaultState();
 		protected static final BlockState NETHER_SPROUTS = Blocks.NETHER_SPROUTS.getDefaultState();
+		protected static final BlockState AIR = Blocks.AIR.getDefaultState();
+		protected static final BlockState AMETHYST_BLOCK = Blocks.AMETHYST_BLOCK.getDefaultState();
+		protected static final BlockState BUDDING_AMETHYST = Blocks.BUDDING_AMETHYST.getDefaultState();
+		protected static final BlockState CALCITE = Blocks.CALCITE.getDefaultState();
+		protected static final BlockState TUFF = Blocks.TUFF.getDefaultState();
 	}
 }

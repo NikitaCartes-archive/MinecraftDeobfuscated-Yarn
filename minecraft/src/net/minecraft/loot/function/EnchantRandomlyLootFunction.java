@@ -48,7 +48,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		Random random = context.getRandom();
 		Enchantment enchantment;
 		if (this.enchantments.isEmpty()) {
-			boolean bl = stack.getItem() == Items.BOOK;
+			boolean bl = stack.isOf(Items.BOOK);
 			List<Enchantment> list = (List<Enchantment>)Registry.ENCHANTMENT
 				.stream()
 				.filter(Enchantment::isAvailableForRandomSelection)
@@ -69,7 +69,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 
 	private static ItemStack method_26266(ItemStack itemStack, Enchantment enchantment, Random random) {
 		int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
-		if (itemStack.getItem() == Items.BOOK) {
+		if (itemStack.isOf(Items.BOOK)) {
 			itemStack = new ItemStack(Items.ENCHANTED_BOOK);
 			EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry(enchantment, i));
 		} else {

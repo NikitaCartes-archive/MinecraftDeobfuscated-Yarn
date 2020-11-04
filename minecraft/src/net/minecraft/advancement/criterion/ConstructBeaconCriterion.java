@@ -1,7 +1,6 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
-import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
@@ -24,8 +23,8 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 		return new ConstructBeaconCriterion.Conditions(extended, intRange);
 	}
 
-	public void trigger(ServerPlayerEntity player, BeaconBlockEntity beacon) {
-		this.test(player, conditions -> conditions.matches(beacon));
+	public void trigger(ServerPlayerEntity player, int i) {
+		this.test(player, conditions -> conditions.matches(i));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -40,8 +39,8 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 			return new ConstructBeaconCriterion.Conditions(EntityPredicate.Extended.EMPTY, level);
 		}
 
-		public boolean matches(BeaconBlockEntity beacon) {
-			return this.level.test(beacon.getLevel());
+		public boolean matches(int i) {
+			return this.level.test(i);
 		}
 
 		@Override

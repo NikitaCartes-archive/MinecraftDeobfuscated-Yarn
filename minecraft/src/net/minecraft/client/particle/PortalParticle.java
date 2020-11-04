@@ -51,8 +51,8 @@ public class PortalParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public int getBrightness(float tint) {
-		int i = super.getBrightness(tint);
+	public int getColorMultiplier(float tint) {
+		int i = super.getColorMultiplier(tint);
 		float f = (float)this.age / (float)this.maxAge;
 		f *= f;
 		f *= f;

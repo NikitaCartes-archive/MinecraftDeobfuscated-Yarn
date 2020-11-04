@@ -31,7 +31,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -42,10 +42,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class SpiderEntity extends HostileEntity {
-	/**
-	 * The tracked flags of spiders. Only has the {@code 1} bit for {@linkplain
-	 * #isClimbingWall() wall climbing}.
-	 */
 	private static final TrackedData<Byte> SPIDER_FLAGS = DataTracker.registerData(SpiderEntity.class, TrackedDataHandlerRegistry.BYTE);
 
 	public SpiderEntity(EntityType<? extends SpiderEntity> entityType, World world) {
@@ -153,9 +149,9 @@ public class SpiderEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		if (world.getRandom().nextInt(100) == 0) {
 			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);

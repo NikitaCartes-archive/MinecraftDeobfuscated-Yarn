@@ -343,7 +343,7 @@ public class LootCommand {
 	}
 
 	private static boolean itemsMatch(ItemStack first, ItemStack second) {
-		return first.getItem() == second.getItem()
+		return first.isOf(second.getItem())
 			&& first.getDamage() == second.getDamage()
 			&& first.getCount() <= first.getMaxCount()
 			&& Objects.equals(first.getTag(), second.getTag());
@@ -354,7 +354,7 @@ public class LootCommand {
 
 		for (ItemStack itemStack : stacks) {
 			for (ServerPlayerEntity serverPlayerEntity : players) {
-				if (serverPlayerEntity.inventory.insertStack(itemStack.copy())) {
+				if (serverPlayerEntity.getInventory().insertStack(itemStack.copy())) {
 					list.add(itemStack);
 				}
 			}

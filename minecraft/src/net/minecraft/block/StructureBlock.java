@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_5552;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
@@ -16,10 +17,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class StructureBlock extends BlockWithEntity {
+public class StructureBlock extends BlockWithEntity implements class_5552 {
 	public static final EnumProperty<StructureBlockMode> MODE = Properties.STRUCTURE_BLOCK_MODE;
 
 	protected StructureBlock(AbstractBlock.Settings settings) {
@@ -27,8 +27,8 @@ public class StructureBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new StructureBlockBlockEntity();
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new StructureBlockBlockEntity(pos, state);
 	}
 
 	@Override
@@ -86,16 +86,16 @@ public class StructureBlock extends BlockWithEntity {
 		}
 	}
 
-	private void doAction(ServerWorld world, StructureBlockBlockEntity blockEntity) {
-		switch (blockEntity.getMode()) {
+	private void doAction(ServerWorld serverWorld, StructureBlockBlockEntity structureBlockBlockEntity) {
+		switch (structureBlockBlockEntity.getMode()) {
 			case SAVE:
-				blockEntity.saveStructure(false);
+				structureBlockBlockEntity.saveStructure(false);
 				break;
 			case LOAD:
-				blockEntity.loadStructure(world, false);
+				structureBlockBlockEntity.loadStructure(serverWorld, false);
 				break;
 			case CORNER:
-				blockEntity.unloadStructure();
+				structureBlockBlockEntity.unloadStructure();
 			case DATA:
 		}
 	}

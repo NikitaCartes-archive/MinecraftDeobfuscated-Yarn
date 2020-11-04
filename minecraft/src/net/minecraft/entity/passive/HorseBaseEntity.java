@@ -42,10 +42,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
@@ -408,7 +407,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	public ActionResult method_30009(PlayerEntity playerEntity, ItemStack itemStack) {
 		boolean bl = this.receiveFood(playerEntity, itemStack);
-		if (!playerEntity.abilities.creativeMode) {
+		if (!playerEntity.getAbilities().creativeMode) {
 			itemStack.decrement(1);
 		}
 
@@ -424,23 +423,22 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		float f = 0.0F;
 		int i = 0;
 		int j = 0;
-		Item item2 = item.getItem();
-		if (item2 == Items.WHEAT) {
+		if (item.isOf(Items.WHEAT)) {
 			f = 2.0F;
 			i = 20;
 			j = 3;
-		} else if (item2 == Items.SUGAR) {
+		} else if (item.isOf(Items.SUGAR)) {
 			f = 1.0F;
 			i = 30;
 			j = 3;
-		} else if (item2 == Blocks.HAY_BLOCK.asItem()) {
+		} else if (item.isOf(Blocks.HAY_BLOCK.asItem())) {
 			f = 20.0F;
 			i = 180;
-		} else if (item2 == Items.APPLE) {
+		} else if (item.isOf(Items.APPLE)) {
 			f = 3.0F;
 			i = 60;
 			j = 3;
-		} else if (item2 == Items.GOLDEN_CARROT) {
+		} else if (item.isOf(Items.GOLDEN_CARROT)) {
 			f = 4.0F;
 			i = 60;
 			j = 5;
@@ -448,7 +446,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 				bl = true;
 				this.lovePlayer(player);
 			}
-		} else if (item2 == Items.GOLDEN_APPLE || item2 == Items.ENCHANTED_GOLDEN_APPLE) {
+		} else if (item.isOf(Items.GOLDEN_APPLE) || item.isOf(Items.ENCHANTED_GOLDEN_APPLE)) {
 			f = 10.0F;
 			i = 240;
 			j = 10;
@@ -753,33 +751,33 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putBoolean("EatingHaystack", this.isEatingGrass());
-		nbt.putBoolean("Bred", this.isBred());
-		nbt.putInt("Temper", this.getTemper());
-		nbt.putBoolean("Tame", this.isTame());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("EatingHaystack", this.isEatingGrass());
+		tag.putBoolean("Bred", this.isBred());
+		tag.putInt("Temper", this.getTemper());
+		tag.putBoolean("Tame", this.isTame());
 		if (this.getOwnerUuid() != null) {
-			nbt.putUuid("Owner", this.getOwnerUuid());
+			tag.putUuid("Owner", this.getOwnerUuid());
 		}
 
 		if (!this.items.getStack(0).isEmpty()) {
-			nbt.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
+			tag.put("SaddleItem", this.items.getStack(0).toTag(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setEatingGrass(nbt.getBoolean("EatingHaystack"));
-		this.setBred(nbt.getBoolean("Bred"));
-		this.setTemper(nbt.getInt("Temper"));
-		this.setTame(nbt.getBoolean("Tame"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setEatingGrass(tag.getBoolean("EatingHaystack"));
+		this.setBred(tag.getBoolean("Bred"));
+		this.setTemper(tag.getInt("Temper"));
+		this.setTame(tag.getBoolean("Tame"));
 		UUID uUID;
-		if (nbt.containsUuid("Owner")) {
-			uUID = nbt.getUuid("Owner");
+		if (tag.containsUuid("Owner")) {
+			uUID = tag.getUuid("Owner");
 		} else {
-			String string = nbt.getString("Owner");
+			String string = tag.getString("Owner");
 			uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
 		}
 
@@ -787,9 +785,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			this.setOwnerUuid(uUID);
 		}
 
-		if (nbt.contains("SaddleItem", 10)) {
-			ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("SaddleItem"));
-			if (itemStack.getItem() == Items.SADDLE) {
+		if (tag.contains("SaddleItem", 10)) {
+			ItemStack itemStack = ItemStack.fromTag(tag.getCompound("SaddleItem"));
+			if (itemStack.isOf(Items.SADDLE)) {
 				this.items.setStack(0, itemStack);
 			}
 		}
@@ -919,7 +917,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 			float h = 0.7F * this.lastAngryAnimationProgress;
 			float i = 0.15F * this.lastAngryAnimationProgress;
-			passenger.setPosition(
+			passenger.updatePosition(
 				this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g)
 			);
 			if (passenger instanceof LivingEntity) {
@@ -956,10 +954,10 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	 * <p>In the item slot argument type, the slot is referred to as <code>
 	 * horse.armor</code>. In this horse's screen, it appears in the middle of
 	 * the left side, and right below the saddle slot if this horse has a saddle
-	 * slot.
+	 * slot.</p>
 	 * 
 	 * <p>This is used by horse armors and llama carpets, but can be
-	 * refitted to any purpose.
+	 * refitted to any purpose.</p>
 	 */
 	public boolean hasArmorSlot() {
 		return false;
@@ -986,17 +984,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	@Override
 	public boolean equip(int slot, ItemStack item) {
 		int i = slot - 400;
-		if (i >= 0 && i < 2 && i < this.items.size()) {
-			if (i == 0 && item.getItem() != Items.SADDLE) {
-				return false;
-			} else if (i != 1 || this.hasArmorSlot() && this.isHorseArmor(item)) {
-				this.items.setStack(i, item);
-				this.updateSaddle();
-				return true;
-			} else {
-				return false;
-			}
-		} else {
+		if (i < 0 || i >= 2 || i >= this.items.size()) {
 			int j = slot - 500 + 2;
 			if (j >= 2 && j < this.items.size()) {
 				this.items.setStack(j, item);
@@ -1004,13 +992,21 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			} else {
 				return false;
 			}
+		} else if (i == 0 && !item.isOf(Items.SADDLE)) {
+			return false;
+		} else if (i != 1 || this.hasArmorSlot() && this.isHorseArmor(item)) {
+			this.items.setStack(i, item);
+			this.updateSaddle();
+			return true;
+		} else {
+			return false;
 		}
 	}
 
 	@Nullable
 	@Override
 	public Entity getPrimaryPassenger() {
-		return this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
+		return this.getFirstPassenger();
 	}
 
 	@Nullable
@@ -1069,13 +1065,13 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(0.2F);
 		}
 
 		this.initAttributes();
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 }

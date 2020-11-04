@@ -60,13 +60,13 @@ public class ArgumentTypes {
 		register("color", ColorArgumentType.class, new ConstantArgumentSerializer(ColorArgumentType::color));
 		register("component", TextArgumentType.class, new ConstantArgumentSerializer(TextArgumentType::text));
 		register("message", MessageArgumentType.class, new ConstantArgumentSerializer(MessageArgumentType::message));
-		register("nbt_compound_tag", NbtCompoundArgumentType.class, new ConstantArgumentSerializer(NbtCompoundArgumentType::nbtCompound));
-		register("nbt_tag", NbtElementArgumentType.class, new ConstantArgumentSerializer(NbtElementArgumentType::nbtElement));
+		register("nbt_compound_tag", NbtCompoundTagArgumentType.class, new ConstantArgumentSerializer(NbtCompoundTagArgumentType::nbtCompound));
+		register("nbt_tag", NbtTagArgumentType.class, new ConstantArgumentSerializer(NbtTagArgumentType::nbtTag));
 		register("nbt_path", NbtPathArgumentType.class, new ConstantArgumentSerializer(NbtPathArgumentType::nbtPath));
-		register("objective", ScoreboardObjectiveArgumentType.class, new ConstantArgumentSerializer(ScoreboardObjectiveArgumentType::scoreboardObjective));
-		register("objective_criteria", ScoreboardCriterionArgumentType.class, new ConstantArgumentSerializer(ScoreboardCriterionArgumentType::scoreboardCriterion));
+		register("objective", ObjectiveArgumentType.class, new ConstantArgumentSerializer(ObjectiveArgumentType::objective));
+		register("objective_criteria", ObjectiveCriteriaArgumentType.class, new ConstantArgumentSerializer(ObjectiveCriteriaArgumentType::objectiveCriteria));
 		register("operation", OperationArgumentType.class, new ConstantArgumentSerializer(OperationArgumentType::operation));
-		register("particle", ParticleEffectArgumentType.class, new ConstantArgumentSerializer(ParticleEffectArgumentType::particleEffect));
+		register("particle", ParticleArgumentType.class, new ConstantArgumentSerializer(ParticleArgumentType::particle));
 		register("angle", AngleArgumentType.class, new ConstantArgumentSerializer(AngleArgumentType::angle));
 		register("rotation", RotationArgumentType.class, new ConstantArgumentSerializer(RotationArgumentType::rotation));
 		register("scoreboard_slot", ScoreboardSlotArgumentType.class, new ConstantArgumentSerializer(ScoreboardSlotArgumentType::scoreboardSlot));
@@ -75,12 +75,12 @@ public class ArgumentTypes {
 		register("team", TeamArgumentType.class, new ConstantArgumentSerializer(TeamArgumentType::team));
 		register("item_slot", ItemSlotArgumentType.class, new ConstantArgumentSerializer(ItemSlotArgumentType::itemSlot));
 		register("resource_location", IdentifierArgumentType.class, new ConstantArgumentSerializer(IdentifierArgumentType::identifier));
-		register("mob_effect", StatusEffectArgumentType.class, new ConstantArgumentSerializer(StatusEffectArgumentType::statusEffect));
-		register("function", CommandFunctionArgumentType.class, new ConstantArgumentSerializer(CommandFunctionArgumentType::commandFunction));
+		register("mob_effect", MobEffectArgumentType.class, new ConstantArgumentSerializer(MobEffectArgumentType::mobEffect));
+		register("function", FunctionArgumentType.class, new ConstantArgumentSerializer(FunctionArgumentType::function));
 		register("entity_anchor", EntityAnchorArgumentType.class, new ConstantArgumentSerializer(EntityAnchorArgumentType::entityAnchor));
-		register("int_range", NumberRangeArgumentType.IntRangeArgumentType.class, new ConstantArgumentSerializer(NumberRangeArgumentType::intRange));
+		register("int_range", NumberRangeArgumentType.IntRangeArgumentType.class, new ConstantArgumentSerializer(NumberRangeArgumentType::numberRange));
 		register("float_range", NumberRangeArgumentType.FloatRangeArgumentType.class, new ConstantArgumentSerializer(NumberRangeArgumentType::method_30918));
-		register("item_enchantment", EnchantmentArgumentType.class, new ConstantArgumentSerializer(EnchantmentArgumentType::enchantment));
+		register("item_enchantment", ItemEnchantmentArgumentType.class, new ConstantArgumentSerializer(ItemEnchantmentArgumentType::itemEnchantment));
 		register("entity_summon", EntitySummonArgumentType.class, new ConstantArgumentSerializer(EntitySummonArgumentType::entitySummon));
 		register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer(DimensionArgumentType::dimension));
 		register("time", TimeArgumentType.class, new ConstantArgumentSerializer(TimeArgumentType::time));
@@ -92,8 +92,8 @@ public class ArgumentTypes {
 	}
 
 	@Nullable
-	private static ArgumentTypes.Entry<?> byId(Identifier id) {
-		return (ArgumentTypes.Entry<?>)idMap.get(id);
+	private static ArgumentTypes.Entry<?> byId(Identifier identifier) {
+		return (ArgumentTypes.Entry<?>)idMap.get(identifier);
 	}
 
 	@Nullable

@@ -12,6 +12,9 @@ import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -58,9 +61,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class AbstractBlock {
-	protected static final Direction[] DIRECTIONS = new Direction[]{
-		Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP
-	};
+	protected static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
 	protected final Material material;
 	protected final boolean collidable;
 	protected final float resistance;
@@ -106,22 +107,8 @@ public abstract class AbstractBlock {
 		}
 	}
 
-	/**
-	 * Gets the possibly updated block state of this block when a neighboring block is updated.
-	 * 
-	 * @return the new state of this block
-	 * 
-	 * @param state the state of this block
-	 * @param direction the direction from this block to the neighbor
-	 * @param neighborState the state of the updated neighbor block
-	 * @param world the world
-	 * @param pos the position of this block
-	 * @param neighborPos the position of the neighbor block
-	 */
 	@Deprecated
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return state;
 	}
 
@@ -145,7 +132,7 @@ public abstract class AbstractBlock {
 	 */
 	@Deprecated
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (this.hasBlockEntity() && !state.isOf(newState.getBlock())) {
+		if (state.hasBlockEntity() && !state.isOf(newState.getBlock())) {
 			world.removeBlockEntity(pos);
 		}
 	}
@@ -224,7 +211,7 @@ public abstract class AbstractBlock {
 
 	@Deprecated
 	public boolean canReplace(BlockState state, ItemPlacementContext context) {
-		return this.material.isReplaceable() && (context.getStack().isEmpty() || context.getStack().getItem() != this.asItem());
+		return this.material.isReplaceable() && (context.getStack().isEmpty() || !context.getStack().isOf(this.asItem()));
 	}
 
 	@Deprecated
@@ -308,7 +295,7 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.getCollisionShape(state, world, pos, context);
 	}
 
@@ -327,7 +314,7 @@ public abstract class AbstractBlock {
 		if (f == -1.0F) {
 			return 0.0F;
 		} else {
-			int i = player.canHarvest(state) ? 30 : 100;
+			int i = player.isUsingEffectiveTool(state) ? 30 : 100;
 			return player.getBlockBreakingSpeed(state) / f / (float)i;
 		}
 	}
@@ -354,10 +341,6 @@ public abstract class AbstractBlock {
 		return 0;
 	}
 
-	public final boolean hasBlockEntity() {
-		return this instanceof BlockEntityProvider;
-	}
-
 	public final Identifier getLootTableId() {
 		if (this.lootTableId == null) {
 			Identifier identifier = Registry.BLOCK.getId(this.asBlock());
@@ -376,7 +359,7 @@ public abstract class AbstractBlock {
 	protected abstract Block asBlock();
 
 	public MapColor getDefaultMapColor() {
-		return (MapColor)this.settings.materialColorFactory.apply(this.asBlock().getDefaultState());
+		return (MapColor)this.settings.mapColorProvider.apply(this.asBlock().getDefaultState());
 	}
 
 	public abstract static class AbstractBlockState extends State<Block, BlockState> {
@@ -384,7 +367,7 @@ public abstract class AbstractBlock {
 		private final boolean hasSidedTransparency;
 		private final boolean isAir;
 		private final Material material;
-		private final MapColor materialColor;
+		private final MapColor mapColor;
 		private final float hardness;
 		private final boolean toolRequired;
 		private final boolean opaque;
@@ -403,7 +386,7 @@ public abstract class AbstractBlock {
 			this.hasSidedTransparency = block.hasSidedTransparency(this.asBlockState());
 			this.isAir = settings.isAir;
 			this.material = settings.material;
-			this.materialColor = (MapColor)settings.materialColorFactory.apply(this.asBlockState());
+			this.mapColor = (MapColor)settings.mapColorProvider.apply(this.asBlockState());
 			this.hardness = settings.hardness;
 			this.toolRequired = settings.toolRequired;
 			this.opaque = settings.opaque;
@@ -469,8 +452,8 @@ public abstract class AbstractBlock {
 			return this.isAir;
 		}
 
-		public MapColor getTopMaterialColor(BlockView world, BlockPos pos) {
-			return this.materialColor;
+		public MapColor getMapColor(BlockView world, BlockPos pos) {
+			return this.mapColor;
 		}
 
 		public BlockState rotate(BlockRotation rotation) {
@@ -570,7 +553,7 @@ public abstract class AbstractBlock {
 		}
 
 		public VoxelShape getVisualShape(BlockView world, BlockPos pos, ShapeContext context) {
-			return this.getBlock().getCameraCollisionShape(this.asBlockState(), world, pos, context);
+			return this.getBlock().getVisualShape(this.asBlockState(), world, pos, context);
 		}
 
 		public VoxelShape getRaycastShape(BlockView world, BlockPos pos) {
@@ -615,7 +598,7 @@ public abstract class AbstractBlock {
 			this.getBlock();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (Direction direction : AbstractBlock.DIRECTIONS) {
+			for (Direction direction : AbstractBlock.FACINGS) {
 				mutable.set(pos, direction);
 				BlockState blockState = world.getBlockState(mutable);
 				BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), world, mutable, pos);
@@ -706,15 +689,24 @@ public abstract class AbstractBlock {
 		}
 
 		public boolean isIn(Tag<Block> tag) {
-			return this.getBlock().isIn(tag);
+			return tag.contains(this.getBlock());
 		}
 
-		public boolean method_27851(Tag<Block> tag, Predicate<AbstractBlock.AbstractBlockState> predicate) {
-			return this.getBlock().isIn(tag) && predicate.test(this);
+		public boolean isIn(Tag<Block> tag, Predicate<AbstractBlock.AbstractBlockState> predicate) {
+			return this.isIn(tag) && predicate.test(this);
+		}
+
+		public boolean hasBlockEntity() {
+			return this.getBlock() instanceof BlockEntityProvider;
+		}
+
+		@Nullable
+		public <T extends BlockEntity> BlockEntityTicker<T> getBlockEntityTicker(World world, BlockEntityType<T> blockEntityType) {
+			return this.getBlock() instanceof BlockEntityProvider ? ((BlockEntityProvider)this.getBlock()).getTicker(world, this.asBlockState(), blockEntityType) : null;
 		}
 
 		public boolean isOf(Block block) {
-			return this.getBlock().is(block);
+			return this.getBlock() == block;
 		}
 
 		public FluidState getFluidState() {
@@ -821,7 +813,7 @@ public abstract class AbstractBlock {
 
 	public static class Settings {
 		private Material material;
-		private Function<BlockState, MapColor> materialColorFactory;
+		private Function<BlockState, MapColor> mapColorProvider;
 		private boolean collidable = true;
 		private BlockSoundGroup soundGroup = BlockSoundGroup.STONE;
 		private ToIntFunction<BlockState> luminance = state -> 0;
@@ -846,13 +838,13 @@ public abstract class AbstractBlock {
 		private AbstractBlock.ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
 		private boolean dynamicBounds;
 
-		private Settings(Material material, MapColor materialColorFactory) {
-			this(material, state -> materialColorFactory);
+		private Settings(Material material, MapColor mapColorProvider) {
+			this(material, state -> mapColorProvider);
 		}
 
-		private Settings(Material material, Function<BlockState, MapColor> materialColorFactory) {
+		private Settings(Material material, Function<BlockState, MapColor> mapColorProvider) {
 			this.material = material;
-			this.materialColorFactory = materialColorFactory;
+			this.mapColorProvider = mapColorProvider;
 		}
 
 		public static AbstractBlock.Settings of(Material material) {
@@ -867,19 +859,19 @@ public abstract class AbstractBlock {
 			return new AbstractBlock.Settings(material, color);
 		}
 
-		public static AbstractBlock.Settings of(Material material, Function<BlockState, MapColor> materialColor) {
-			return new AbstractBlock.Settings(material, materialColor);
+		public static AbstractBlock.Settings of(Material material, Function<BlockState, MapColor> mapColor) {
+			return new AbstractBlock.Settings(material, mapColor);
 		}
 
 		public static AbstractBlock.Settings copy(AbstractBlock block) {
-			AbstractBlock.Settings settings = new AbstractBlock.Settings(block.material, block.settings.materialColorFactory);
+			AbstractBlock.Settings settings = new AbstractBlock.Settings(block.material, block.settings.mapColorProvider);
 			settings.material = block.settings.material;
 			settings.hardness = block.settings.hardness;
 			settings.resistance = block.settings.resistance;
 			settings.collidable = block.settings.collidable;
 			settings.randomTicks = block.settings.randomTicks;
 			settings.luminance = block.settings.luminance;
-			settings.materialColorFactory = block.settings.materialColorFactory;
+			settings.mapColorProvider = block.settings.mapColorProvider;
 			settings.soundGroup = block.settings.soundGroup;
 			settings.slipperiness = block.settings.slipperiness;
 			settings.velocityMultiplier = block.settings.velocityMultiplier;
@@ -1035,6 +1027,11 @@ public abstract class AbstractBlock {
 
 		public AbstractBlock.Settings requiresTool() {
 			this.toolRequired = true;
+			return this;
+		}
+
+		public AbstractBlock.Settings mapColor(MapColor mapColor) {
+			this.mapColorProvider = blockState -> mapColor;
 			return this;
 		}
 	}

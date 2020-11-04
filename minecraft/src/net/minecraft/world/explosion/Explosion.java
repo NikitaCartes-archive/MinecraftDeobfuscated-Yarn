@@ -82,8 +82,10 @@ public class Explosion {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
-		this(world, entity, null, null, d, e, f, g, bl, destructionType);
+	public Explosion(
+		World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType
+	) {
+		this(world, entity, null, null, x, y, z, power, createFire, destructionType);
 	}
 
 	public Explosion(
@@ -225,7 +227,7 @@ public class Explosion {
 						entity.setVelocity(entity.getVelocity().add(x * ad, y * ad, z * ad));
 						if (entity instanceof PlayerEntity) {
 							PlayerEntity playerEntity = (PlayerEntity)entity;
-							if (!playerEntity.isSpectator() && (!playerEntity.isCreative() || !playerEntity.abilities.flying)) {
+							if (!playerEntity.isSpectator() && (!playerEntity.isCreative() || !playerEntity.getAbilities().flying)) {
 								this.affectedPlayers.put(playerEntity, new Vec3d(x * ac, y * ac, z * ac));
 							}
 						}
@@ -235,10 +237,7 @@ public class Explosion {
 		}
 	}
 
-	/**
-	 * @param particles whether this explosion should emit explosion or explosion emitter particles around the source of the explosion
-	 */
-	public void affectWorld(boolean particles) {
+	public void affectWorld(boolean bl) {
 		if (this.world.isClient) {
 			this.world
 				.playSound(
@@ -253,16 +252,16 @@ public class Explosion {
 				);
 		}
 
-		boolean bl = this.destructionType != Explosion.DestructionType.NONE;
-		if (particles) {
-			if (!(this.power < 2.0F) && bl) {
+		boolean bl2 = this.destructionType != Explosion.DestructionType.NONE;
+		if (bl) {
+			if (!(this.power < 2.0F) && bl2) {
 				this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 			} else {
 				this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 			}
 		}
 
-		if (bl) {
+		if (bl2) {
 			ObjectArrayList<Pair<ItemStack, BlockPos>> objectArrayList = new ObjectArrayList<>();
 			Collections.shuffle(this.affectedBlocks, this.world.random);
 
@@ -273,7 +272,7 @@ public class Explosion {
 					BlockPos blockPos2 = blockPos.toImmutable();
 					this.world.getProfiler().push("explosion_blocks");
 					if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
-						BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
+						BlockEntity blockEntity = blockState.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
 						LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 							.random(this.world.random)
 							.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos))

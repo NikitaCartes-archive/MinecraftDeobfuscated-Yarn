@@ -276,8 +276,8 @@ public class Brain<E extends LivingEntity> {
 		}
 	}
 
-	public void resetPossibleActivities(List<Activity> activities) {
-		for (Activity activity : activities) {
+	public void resetPossibleActivities(List<Activity> list) {
+		for (Activity activity : list) {
 			if (this.canDoActivity(activity)) {
 				this.resetPossibleActivities(activity);
 				break;
@@ -424,7 +424,7 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	/**
-	 * @param begin the beginning of the index of tasks, exclusive
+	 * @param begin The beginning of the index of tasks, exclusive
 	 */
 	ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexTaskList(int begin, ImmutableList<? extends Task<? super E>> tasks) {
 		int i = begin;

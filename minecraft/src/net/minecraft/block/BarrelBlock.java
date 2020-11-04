@@ -25,7 +25,6 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithEntity {
@@ -76,8 +75,8 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new BarrelBlockEntity();
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new BarrelBlockEntity(pos, state);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class BreatheAirGoal extends Goal {
 	private void moveToAir() {
 		Iterable<BlockPos> iterable = BlockPos.iterate(
 			MathHelper.floor(this.mob.getX() - 1.0),
-			MathHelper.floor(this.mob.getY()),
+			this.mob.getBlockY(),
 			MathHelper.floor(this.mob.getZ() - 1.0),
 			MathHelper.floor(this.mob.getX() + 1.0),
 			MathHelper.floor(this.mob.getY() + 8.0),

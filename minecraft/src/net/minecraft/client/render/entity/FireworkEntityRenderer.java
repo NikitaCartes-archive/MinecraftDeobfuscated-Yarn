@@ -2,33 +2,34 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class FireworkEntityRenderer extends EntityRenderer<FireworkRocketEntity> {
 	private final ItemRenderer itemRenderer;
 
-	public FireworkEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer itemRenderer) {
-		super(dispatcher);
-		this.itemRenderer = itemRenderer;
+	public FireworkEntityRenderer(class_5617.class_5618 arg) {
+		super(arg);
+		this.itemRenderer = arg.method_32168();
 	}
 
 	public void render(FireworkRocketEntity fireworkRocketEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(this.dispatcher.getRotation());
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		if (fireworkRocketEntity.wasShotAtAngle()) {
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 		}
 
 		this.itemRenderer

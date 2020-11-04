@@ -60,8 +60,8 @@ import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
+import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.NetworkEncryptionException;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.recipe.RecipeManager;
@@ -289,10 +289,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				}
 
 				@Override
-				public void progressStagePercentage(int percentage) {
+				public void progressStagePercentage(int i) {
 					if (Util.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
 						this.lastProgressUpdate = Util.getMeasuringTimeMs();
-						MinecraftServer.LOGGER.info("Converting... {}%", percentage);
+						MinecraftServer.LOGGER.info("Converting... {}%", i);
 					}
 				}
 
@@ -386,13 +386,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		this.getPlayerManager().setMainWorld(serverWorld);
 		if (this.saveProperties.getCustomBossEvents() != null) {
-			this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
+			this.getBossBarManager().fromTag(this.saveProperties.getCustomBossEvents());
 		}
 
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
-				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());
+				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.DIMENSION, registryKey.getValue());
 				DimensionType dimensionType2 = ((DimensionOptions)entry.getValue()).getDimensionType();
 				ChunkGenerator chunkGenerator2 = ((DimensionOptions)entry.getValue()).getChunkGenerator();
 				UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
@@ -566,7 +566,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ServerWorld serverWorld2 = this.getOverworld();
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
-		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt());
+		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
 		this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
 		return bl3;
 	}
@@ -993,7 +993,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public abstract Optional<String> getModdedStatusMessage();
 
 	@Override
-	public void sendSystemMessage(Text message, UUID sender) {
+	public void sendSystemMessage(Text message, UUID senderUuid) {
 		LOGGER.info(message.getString());
 	}
 
@@ -1620,7 +1620,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			GameRules.accept(new GameRules.Visitor() {
 				@Override
 				public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
-					list.add(String.format("%s=%s\n", key.getName(), gameRules.<T>get(key).toString()));
+					list.add(String.format("%s=%s\n", key.getName(), gameRules.get(key)));
 				}
 			});
 
@@ -1759,5 +1759,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Nullable
 	public TextStream createFilterer(ServerPlayerEntity player) {
 		return null;
+	}
+
+	public boolean requireResourcePack() {
+		return false;
 	}
 }

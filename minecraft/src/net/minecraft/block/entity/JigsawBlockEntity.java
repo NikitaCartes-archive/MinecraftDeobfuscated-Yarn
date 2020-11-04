@@ -10,7 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.PoolStructurePiece;
@@ -34,12 +34,8 @@ public class JigsawBlockEntity extends BlockEntity {
 	private JigsawBlockEntity.Joint joint = JigsawBlockEntity.Joint.ROLLABLE;
 	private String finalState = "minecraft:air";
 
-	public JigsawBlockEntity(BlockEntityType<?> blockEntityType) {
-		super(blockEntityType);
-	}
-
-	public JigsawBlockEntity() {
-		this(BlockEntityType.JIGSAW);
+	public JigsawBlockEntity(BlockPos blockPos, BlockState blockState) {
+		super(BlockEntityType.JIGSAW, blockPos, blockState);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -88,36 +84,36 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
-		nbt.putString("name", this.name.toString());
-		nbt.putString("target", this.target.toString());
-		nbt.putString("pool", this.pool.toString());
-		nbt.putString("final_state", this.finalState);
-		nbt.putString("joint", this.joint.asString());
-		return nbt;
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putString("name", this.name.toString());
+		tag.putString("target", this.target.toString());
+		tag.putString("pool", this.pool.toString());
+		tag.putString("final_state", this.finalState);
+		tag.putString("joint", this.joint.asString());
+		return tag;
 	}
 
 	@Override
-	public void fromTag(BlockState state, NbtCompound tag) {
-		super.fromTag(state, tag);
-		this.name = new Identifier(tag.getString("name"));
-		this.target = new Identifier(tag.getString("target"));
-		this.pool = new Identifier(tag.getString("pool"));
-		this.finalState = tag.getString("final_state");
-		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(tag.getString("joint"))
-			.orElseGet(() -> JigsawBlock.getFacing(state).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		this.name = new Identifier(compoundTag.getString("name"));
+		this.target = new Identifier(compoundTag.getString("target"));
+		this.pool = new Identifier(compoundTag.getString("pool"));
+		this.finalState = compoundTag.getString("final_state");
+		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(compoundTag.getString("joint"))
+			.orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
 	}
 
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 12, this.toInitialChunkDataNbt());
+		return new BlockEntityUpdateS2CPacket(this.pos, 12, this.toInitialChunkDataTag());
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		return this.writeNbt(new NbtCompound());
+	public CompoundTag toInitialChunkDataTag() {
+		return this.toTag(new CompoundTag());
 	}
 
 	public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {
@@ -138,7 +134,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		);
 
 		for (PoolStructurePiece poolStructurePiece2 : list) {
-			poolStructurePiece2.generate(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
+			poolStructurePiece2.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
 		}
 	}
 

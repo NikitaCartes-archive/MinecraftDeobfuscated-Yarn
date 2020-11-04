@@ -54,7 +54,7 @@ public class BoatItem extends Item {
 				} else {
 					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
-						if (!user.abilities.creativeMode) {
+						if (!user.getAbilities().creativeMode) {
 							itemStack.decrement(1);
 						}
 					}

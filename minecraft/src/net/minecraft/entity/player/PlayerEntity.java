@@ -67,8 +67,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -97,6 +97,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -124,10 +125,10 @@ public abstract class PlayerEntity extends LivingEntity {
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Byte> MAIN_ARM = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
-	protected static final TrackedData<NbtCompound> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
-	protected static final TrackedData<NbtCompound> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+	protected static final TrackedData<CompoundTag> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+	protected static final TrackedData<CompoundTag> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
 	private long shoulderEntityAddedTime;
-	public final PlayerInventory inventory = new PlayerInventory(this);
+	private final PlayerInventory inventory = new PlayerInventory(this);
 	protected EnderChestInventory enderChestInventory = new EnderChestInventory();
 	public final PlayerScreenHandler playerScreenHandler;
 	public ScreenHandler currentScreenHandler;
@@ -144,7 +145,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public double capeZ;
 	private int sleepTimer;
 	protected boolean isSubmergedInWater;
-	public final PlayerAbilities abilities = new PlayerAbilities();
+	private final PlayerAbilities abilities = new PlayerAbilities();
 	public int experienceLevel;
 	public int totalExperience;
 	public float experienceProgress;
@@ -197,8 +198,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.dataTracker.startTracking(SCORE, 0);
 		this.dataTracker.startTracking(PLAYER_MODEL_PARTS, (byte)0);
 		this.dataTracker.startTracking(MAIN_ARM, (byte)1);
-		this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new NbtCompound());
-		this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new NbtCompound());
+		this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new CompoundTag());
+		this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new CompoundTag());
 	}
 
 	@Override
@@ -256,7 +257,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		double d = MathHelper.clamp(this.getX(), -2.9999999E7, 2.9999999E7);
 		double e = MathHelper.clamp(this.getZ(), -2.9999999E7, 2.9999999E7);
 		if (d != this.getX() || e != this.getZ()) {
-			this.setPosition(d, this.getY(), e);
+			this.updatePosition(d, this.getY(), e);
 		}
 
 		this.lastAttackedTicks++;
@@ -271,7 +272,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.updateTurtleHelmet();
 		this.itemCooldownManager.update();
-		this.updatePose();
+		this.updateSize();
 	}
 
 	public boolean shouldCancelInteraction() {
@@ -293,7 +294,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	private void updateTurtleHelmet() {
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
-		if (itemStack.getItem() == Items.TURTLE_HELMET && !this.isSubmergedIn(FluidTags.WATER)) {
+		if (itemStack.isOf(Items.TURTLE_HELMET) && !this.isSubmergedIn(FluidTags.WATER)) {
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.WATER_BREATHING, 200, 0, false, false, true));
 		}
 	}
@@ -345,7 +346,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.capeY += e * 0.25;
 	}
 
-	protected void updatePose() {
+	protected void updateSize() {
 		if (this.wouldPoseNotCollide(EntityPose.SWIMMING)) {
 			EntityPose entityPose;
 			if (this.isFallFlying()) {
@@ -515,19 +516,26 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.strideDistance = this.strideDistance + (f - this.strideDistance) * 0.4F;
 		if (this.getHealth() > 0.0F && !this.isSpectator()) {
 			Box box;
-			if (this.hasVehicle() && !this.getVehicle().removed) {
+			if (this.hasVehicle() && !this.getVehicle().isRemoved()) {
 				box = this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0);
 			} else {
 				box = this.getBoundingBox().expand(1.0, 0.5, 1.0);
 			}
 
 			List<Entity> list = this.world.getOtherEntities(this, box);
+			List<Entity> list2 = Lists.<Entity>newArrayList();
 
 			for (int i = 0; i < list.size(); i++) {
 				Entity entity = (Entity)list.get(i);
-				if (!entity.removed) {
+				if (entity.getType() == EntityType.EXPERIENCE_ORB) {
+					list2.add(entity);
+				} else if (!entity.isRemoved()) {
 					this.collideWithEntity(entity);
 				}
+			}
+
+			if (!list2.isEmpty()) {
+				this.collideWithEntity(Util.method_32309(list2, this.random));
 			}
 		}
 
@@ -538,9 +546,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	private void updateShoulderEntity(@Nullable NbtCompound entityNbt) {
-		if (entityNbt != null && (!entityNbt.contains("Silent") || !entityNbt.getBoolean("Silent")) && this.world.random.nextInt(200) == 0) {
-			String string = entityNbt.getString("id");
+	private void updateShoulderEntity(@Nullable CompoundTag compoundTag) {
+		if (compoundTag != null && (!compoundTag.contains("Silent") || !compoundTag.getBoolean("Silent")) && this.world.random.nextInt(200) == 0) {
+			String string = compoundTag.getString("id");
 			EntityType.get(string)
 				.filter(entityType -> entityType == EntityType.PARROT)
 				.ifPresent(
@@ -657,7 +665,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	/**
-	 * @param throwRandomly if true, the item will be thrown in a random direction from the entity regardless of which direction the entity is facing
+	 * @param throwRandomly If true, the item will be thrown in a random direction from the entity regardless of which direction the entity is facing
 	 */
 	@Nullable
 	public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
@@ -743,72 +751,64 @@ public abstract class PlayerEntity extends LivingEntity {
 		return f;
 	}
 
-	/**
-	 * Determines whether the player is able to harvest drops from the specified block state.
-	 * If a block requires a special tool, it will check
-	 * whether the held item is effective for that block, otherwise
-	 * it returns {@code true}.
-	 * 
-	 * @see net.minecraft.item.Item#isSuitableFor(BlockState)
-	 */
-	public boolean canHarvest(BlockState state) {
-		return !state.isToolRequired() || this.inventory.getMainHandStack().isSuitableFor(state);
+	public boolean isUsingEffectiveTool(BlockState block) {
+		return !block.isToolRequired() || this.inventory.getMainHandStack().isEffectiveOn(block);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
 		this.setUuid(getUuidFromProfile(this.gameProfile));
-		NbtList nbtList = nbt.getList("Inventory", 10);
-		this.inventory.readNbt(nbtList);
-		this.inventory.selectedSlot = nbt.getInt("SelectedItemSlot");
-		this.sleepTimer = nbt.getShort("SleepTimer");
-		this.experienceProgress = nbt.getFloat("XpP");
-		this.experienceLevel = nbt.getInt("XpLevel");
-		this.totalExperience = nbt.getInt("XpTotal");
-		this.enchantmentTableSeed = nbt.getInt("XpSeed");
+		ListTag listTag = tag.getList("Inventory", 10);
+		this.inventory.deserialize(listTag);
+		this.inventory.selectedSlot = tag.getInt("SelectedItemSlot");
+		this.sleepTimer = tag.getShort("SleepTimer");
+		this.experienceProgress = tag.getFloat("XpP");
+		this.experienceLevel = tag.getInt("XpLevel");
+		this.totalExperience = tag.getInt("XpTotal");
+		this.enchantmentTableSeed = tag.getInt("XpSeed");
 		if (this.enchantmentTableSeed == 0) {
 			this.enchantmentTableSeed = this.random.nextInt();
 		}
 
-		this.setScore(nbt.getInt("Score"));
-		this.hungerManager.readNbt(nbt);
-		this.abilities.readNbt(nbt);
+		this.setScore(tag.getInt("Score"));
+		this.hungerManager.fromTag(tag);
+		this.abilities.deserialize(tag);
 		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)this.abilities.getWalkSpeed());
-		if (nbt.contains("EnderItems", 9)) {
-			this.enderChestInventory.readNbtList(nbt.getList("EnderItems", 10));
+		if (tag.contains("EnderItems", 9)) {
+			this.enderChestInventory.readTags(tag.getList("EnderItems", 10));
 		}
 
-		if (nbt.contains("ShoulderEntityLeft", 10)) {
-			this.setShoulderEntityLeft(nbt.getCompound("ShoulderEntityLeft"));
+		if (tag.contains("ShoulderEntityLeft", 10)) {
+			this.setShoulderEntityLeft(tag.getCompound("ShoulderEntityLeft"));
 		}
 
-		if (nbt.contains("ShoulderEntityRight", 10)) {
-			this.setShoulderEntityRight(nbt.getCompound("ShoulderEntityRight"));
+		if (tag.contains("ShoulderEntityRight", 10)) {
+			this.setShoulderEntityRight(tag.getCompound("ShoulderEntityRight"));
 		}
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-		nbt.put("Inventory", this.inventory.writeNbt(new NbtList()));
-		nbt.putInt("SelectedItemSlot", this.inventory.selectedSlot);
-		nbt.putShort("SleepTimer", (short)this.sleepTimer);
-		nbt.putFloat("XpP", this.experienceProgress);
-		nbt.putInt("XpLevel", this.experienceLevel);
-		nbt.putInt("XpTotal", this.totalExperience);
-		nbt.putInt("XpSeed", this.enchantmentTableSeed);
-		nbt.putInt("Score", this.getScore());
-		this.hungerManager.writeNbt(nbt);
-		this.abilities.writeNbt(nbt);
-		nbt.put("EnderItems", this.enderChestInventory.toNbtList());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		tag.put("Inventory", this.inventory.serialize(new ListTag()));
+		tag.putInt("SelectedItemSlot", this.inventory.selectedSlot);
+		tag.putShort("SleepTimer", (short)this.sleepTimer);
+		tag.putFloat("XpP", this.experienceProgress);
+		tag.putInt("XpLevel", this.experienceLevel);
+		tag.putInt("XpTotal", this.totalExperience);
+		tag.putInt("XpSeed", this.enchantmentTableSeed);
+		tag.putInt("Score", this.getScore());
+		this.hungerManager.toTag(tag);
+		this.abilities.serialize(tag);
+		tag.put("EnderItems", this.enderChestInventory.getTags());
 		if (!this.getShoulderEntityLeft().isEmpty()) {
-			nbt.put("ShoulderEntityLeft", this.getShoulderEntityLeft());
+			tag.put("ShoulderEntityLeft", this.getShoulderEntityLeft());
 		}
 
 		if (!this.getShoulderEntityRight().isEmpty()) {
-			nbt.put("ShoulderEntityRight", this.getShoulderEntityRight());
+			tag.put("ShoulderEntityRight", this.getShoulderEntityRight());
 		}
 	}
 
@@ -881,7 +881,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected void damageShield(float amount) {
-		if (this.activeItemStack.getItem() == Items.SHIELD) {
+		if (this.activeItemStack.isOf(Items.SHIELD)) {
 			if (!this.world.isClient) {
 				this.incrementStat(Stats.USED.getOrCreateStat(this.activeItemStack.getItem()));
 			}
@@ -958,25 +958,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void sendTradeOffers(int syncId, TradeOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
 	}
 
-	/**
-	 * Called when the player uses (defaults to right click) a writable or written
-	 * book item.
-	 * 
-	 * <p>This can be called either on the client or the server player. Check {@code
-	 * book} for whether this is a written or a writable book.
-	 * 
-	 * @implNote The writing of a writable book in vanilla is totally controlled by
-	 * the client; the server cannot make the client open a book edit screen by
-	 * making a server player use a writable book. Only when the client finishes
-	 * writing a book it will send a {@linkplain net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket book update C2S packet}.
-	 * 
-	 * <p>Meanwhile, the reading of a written book is totally controlled and initiated
-	 * by the server.
-	 * 
-	 * @param book the book
-	 * @param hand the hand holding the book
-	 */
-	public void useBook(ItemStack book, Hand hand) {
+	public void openEditBookScreen(ItemStack book, Hand hand) {
 	}
 
 	public ActionResult interact(Entity entity, Hand hand) {
@@ -1023,8 +1005,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_29239() {
-		super.method_29239();
+	public void dismountVehicle() {
+		super.dismountVehicle();
 		this.ridingCooldown = 0;
 	}
 
@@ -1034,7 +1016,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean method_29920() {
+	public boolean shouldSwimInFluids() {
 		return !this.abilities.flying;
 	}
 
@@ -1300,8 +1282,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void remove() {
-		super.remove();
+	public void remove(Entity.RemovalReason reason) {
+		super.remove(reason);
 		this.playerScreenHandler.close(this);
 		if (this.currentScreenHandler != null) {
 			this.currentScreenHandler.close(this);
@@ -1314,6 +1296,14 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public GameProfile getGameProfile() {
 		return this.gameProfile;
+	}
+
+	public PlayerInventory getInventory() {
+		return this.inventory;
+	}
+
+	public PlayerAbilities getAbilities() {
+		return this.abilities;
 	}
 
 	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos pos) {
@@ -1547,7 +1537,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public boolean checkFallFlying() {
 		if (!this.onGround && !this.isFallFlying() && !this.isTouchingWater() && !this.hasStatusEffect(StatusEffects.LEVITATION)) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
-			if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack)) {
+			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
 				this.startFallFlying();
 				return true;
 			}
@@ -1578,8 +1568,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void onKilledOther(ServerWorld world, LivingEntity other) {
-		this.incrementStat(Stats.KILLED.getOrCreateStat(other.getType()));
+	public void onKilledOther(ServerWorld serverWorld, LivingEntity livingEntity) {
+		this.incrementStat(Stats.KILLED.getOrCreateStat(livingEntity.getType()));
 	}
 
 	@Override
@@ -1685,7 +1675,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected int getXpToDrop(PlayerEntity player) {
+	protected int getCurrentExperience(PlayerEntity player) {
 		if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !this.isSpectator()) {
 			int i = this.experienceLevel * 7;
 			return i > 100 ? 100 : i;
@@ -1765,15 +1755,15 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.inventory.armor;
 	}
 
-	public boolean addShoulderEntity(NbtCompound entityNbt) {
+	public boolean addShoulderEntity(CompoundTag tag) {
 		if (this.hasVehicle() || !this.onGround || this.isTouchingWater()) {
 			return false;
 		} else if (this.getShoulderEntityLeft().isEmpty()) {
-			this.setShoulderEntityLeft(entityNbt);
+			this.setShoulderEntityLeft(tag);
 			this.shoulderEntityAddedTime = this.world.getTime();
 			return true;
 		} else if (this.getShoulderEntityRight().isEmpty()) {
-			this.setShoulderEntityRight(entityNbt);
+			this.setShoulderEntityRight(tag);
 			this.shoulderEntityAddedTime = this.world.getTime();
 			return true;
 		} else {
@@ -1784,20 +1774,20 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected void dropShoulderEntities() {
 		if (this.shoulderEntityAddedTime + 20L < this.world.getTime()) {
 			this.dropShoulderEntity(this.getShoulderEntityLeft());
-			this.setShoulderEntityLeft(new NbtCompound());
+			this.setShoulderEntityLeft(new CompoundTag());
 			this.dropShoulderEntity(this.getShoulderEntityRight());
-			this.setShoulderEntityRight(new NbtCompound());
+			this.setShoulderEntityRight(new CompoundTag());
 		}
 	}
 
-	private void dropShoulderEntity(NbtCompound entityNbt) {
+	private void dropShoulderEntity(CompoundTag entityNbt) {
 		if (!this.world.isClient && !entityNbt.isEmpty()) {
-			EntityType.getEntityFromNbt(entityNbt, this.world).ifPresent(entity -> {
+			EntityType.getEntityFromTag(entityNbt, this.world).ifPresent(entity -> {
 				if (entity instanceof TameableEntity) {
 					((TameableEntity)entity).setOwnerUuid(this.uuid);
 				}
 
-				entity.setPosition(this.getX(), this.getY() + 0.7F, this.getZ());
+				entity.updatePosition(this.getX(), this.getY() + 0.7F, this.getZ());
 				((ServerWorld)this.world).tryLoadEntity(entity);
 			});
 		}
@@ -1817,7 +1807,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public abstract boolean isCreative();
 
 	@Override
-	public boolean isPushedByFluids() {
+	public boolean canFly() {
 		return !this.abilities.flying;
 	}
 
@@ -1827,7 +1817,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public Text getDisplayName() {
-		MutableText mutableText = Team.decorateName(this.getScoreboardTeam(), this.getName());
+		MutableText mutableText = Team.modifyText(this.getScoreboardTeam(), this.getName());
 		return this.addTellClickEvent(mutableText);
 	}
 
@@ -1942,7 +1932,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean hasReducedDebugInfo() {
+	public boolean getReducedDebugInfo() {
 		return this.reducedDebugInfo;
 	}
 
@@ -1965,20 +1955,20 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.dataTracker.set(MAIN_ARM, (byte)(arm == Arm.LEFT ? 0 : 1));
 	}
 
-	public NbtCompound getShoulderEntityLeft() {
+	public CompoundTag getShoulderEntityLeft() {
 		return this.dataTracker.get(LEFT_SHOULDER_ENTITY);
 	}
 
-	protected void setShoulderEntityLeft(NbtCompound entityNbt) {
-		this.dataTracker.set(LEFT_SHOULDER_ENTITY, entityNbt);
+	protected void setShoulderEntityLeft(CompoundTag entityTag) {
+		this.dataTracker.set(LEFT_SHOULDER_ENTITY, entityTag);
 	}
 
-	public NbtCompound getShoulderEntityRight() {
+	public CompoundTag getShoulderEntityRight() {
 		return this.dataTracker.get(RIGHT_SHOULDER_ENTITY);
 	}
 
-	protected void setShoulderEntityRight(NbtCompound entityNbt) {
-		this.dataTracker.set(RIGHT_SHOULDER_ENTITY, entityNbt);
+	protected void setShoulderEntityRight(CompoundTag entityTag) {
+		this.dataTracker.set(RIGHT_SHOULDER_ENTITY, entityTag);
 	}
 
 	public float getAttackCooldownProgressPerTick() {
@@ -2097,6 +2087,16 @@ public abstract class PlayerEntity extends LivingEntity {
 			double e = this.isInSneakingPose() ? -0.2 : 0.07;
 			return this.method_30950(f).add(new Vec3d(d, m, e).rotateY(-h));
 		}
+	}
+
+	@Override
+	public boolean isPlayer() {
+		return true;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean isUsingSpyglass() {
+		return this.isUsingItem() && this.getActiveItem().isOf(Items.SPYGLASS);
 	}
 
 	public static enum SleepFailureReason {

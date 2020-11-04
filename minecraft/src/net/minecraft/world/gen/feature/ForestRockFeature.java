@@ -2,7 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -15,10 +15,10 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
 	) {
-		while (blockPos.getY() > 3) {
+		while (blockPos.getY() > structureWorldAccess.getBottomHeightLimit() + 3) {
 			if (!structureWorldAccess.isAir(blockPos.down())) {
-				Block block = structureWorldAccess.getBlockState(blockPos.down()).getBlock();
-				if (isSoil(block) || isStone(block)) {
+				BlockState blockState = structureWorldAccess.getBlockState(blockPos.down());
+				if (isSoil(blockState) || isStone(blockState)) {
 					break;
 				}
 			}
@@ -26,7 +26,7 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 			blockPos = blockPos.down();
 		}
 
-		if (blockPos.getY() <= 3) {
+		if (blockPos.getY() <= structureWorldAccess.getBottomHeightLimit() + 3) {
 			return false;
 		} else {
 			for (int i = 0; i < 3; i++) {

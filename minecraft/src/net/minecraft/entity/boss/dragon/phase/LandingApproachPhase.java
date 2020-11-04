@@ -15,7 +15,7 @@ import net.minecraft.world.gen.feature.EndPortalFeature;
 public class LandingApproachPhase extends AbstractPhase {
 	private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(128.0);
 	private Path field_7047;
-	private Vec3d pathTarget;
+	private Vec3d target;
 
 	public LandingApproachPhase(EnderDragonEntity enderDragonEntity) {
 		super(enderDragonEntity);
@@ -29,12 +29,12 @@ public class LandingApproachPhase extends AbstractPhase {
 	@Override
 	public void beginPhase() {
 		this.field_7047 = null;
-		this.pathTarget = null;
+		this.target = null;
 	}
 
 	@Override
 	public void serverTick() {
-		double d = this.pathTarget == null ? 0.0 : this.pathTarget.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+		double d = this.target == null ? 0.0 : this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 		if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
 			this.method_6844();
 		}
@@ -42,8 +42,8 @@ public class LandingApproachPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d getPathTarget() {
-		return this.pathTarget;
+	public Vec3d getTarget() {
+		return this.target;
 	}
 
 	private void method_6844() {
@@ -86,7 +86,7 @@ public class LandingApproachPhase extends AbstractPhase {
 				f = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0F);
 			} while (f < (double)vec3i.getY());
 
-			this.pathTarget = new Vec3d(d, f, e);
+			this.target = new Vec3d(d, f, e);
 		}
 	}
 }

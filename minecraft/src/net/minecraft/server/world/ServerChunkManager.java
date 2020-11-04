@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5567;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -28,7 +29,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.BlockView;
@@ -75,6 +75,7 @@ public class ServerChunkManager extends ChunkManager {
 		int viewDistance,
 		boolean bl,
 		WorldGenerationProgressListener worldGenerationProgressListener,
+		class_5567 arg,
 		Supplier<PersistentStateManager> supplier
 	) {
 		this.world = serverWorld;
@@ -95,6 +96,7 @@ public class ServerChunkManager extends ChunkManager {
 			this,
 			this.getChunkGenerator(),
 			worldGenerationProgressListener,
+			arg,
 			supplier,
 			viewDistance,
 			bl
@@ -300,19 +302,13 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public boolean shouldTickEntity(Entity entity) {
-		long l = ChunkPos.toLong(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4);
-		return this.isFutureReady(l, ChunkHolder::getEntityTickingFuture);
-	}
-
-	@Override
 	public boolean shouldTickChunk(ChunkPos pos) {
 		return this.isFutureReady(pos.toLong(), ChunkHolder::getEntityTickingFuture);
 	}
 
 	@Override
 	public boolean shouldTickBlock(BlockPos pos) {
-		long l = ChunkPos.toLong(pos.getX() >> 4, pos.getZ() >> 4);
+		long l = ChunkPos.toLong(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 		return this.isFutureReady(l, ChunkHolder::getTickingFuture);
 	}
 
@@ -399,7 +395,7 @@ public class ServerChunkManager extends ChunkManager {
 			this.world.getProfiler().pop();
 		}
 
-		this.threadedAnvilChunkStorage.tickEntityMovement();
+		this.threadedAnvilChunkStorage.tickPlayerMovement();
 	}
 
 	private void ifChunkLoaded(long pos, Consumer<WorldChunk> chunkConsumer) {
@@ -411,7 +407,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	@Override
 	public String getDebugString() {
-		return "ServerChunkCache: " + this.getLoadedChunkCount();
+		return Integer.toString(this.getLoadedChunkCount());
 	}
 
 	@VisibleForTesting
@@ -428,8 +424,8 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	public void markForUpdate(BlockPos pos) {
-		int i = pos.getX() >> 4;
-		int j = pos.getZ() >> 4;
+		int i = ChunkSectionPos.getSectionCoord(pos.getX());
+		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
 		ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, j));
 		if (chunkHolder != null) {
 			chunkHolder.markForBlockUpdate(pos);
@@ -469,15 +465,8 @@ public class ServerChunkManager extends ChunkManager {
 		this.ticketManager.setChunkForced(pos, forced);
 	}
 
-	/**
-	 * Updates the chunk section position of the {@code player}. This can either be a
-	 * result of the player's movement or its camera entity's movement.
-	 * 
-	 * <p>This updates the section position player's client is currently watching and
-	 * the player's position in its entity tracker.
-	 */
-	public void updatePosition(ServerPlayerEntity player) {
-		this.threadedAnvilChunkStorage.updatePosition(player);
+	public void updateCameraPosition(ServerPlayerEntity player) {
+		this.threadedAnvilChunkStorage.updateCameraPosition(player);
 	}
 
 	public void unloadEntity(Entity entity) {
@@ -507,8 +496,8 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String getChunkLoadingDebugInfo(ChunkPos pos) {
-		return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(pos);
+	public String getChunkLoadingDebugInfo(ChunkPos chunkPos) {
+		return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(chunkPos);
 	}
 
 	public PersistentStateManager getPersistentStateManager() {

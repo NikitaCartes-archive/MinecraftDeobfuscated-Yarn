@@ -60,12 +60,12 @@ public class PackScreen extends Screen {
 	private PackListWidget selectedPackList;
 	private final File file;
 	private ButtonWidget doneButton;
-	private final Map<String, Identifier> iconTextures = Maps.<String, Identifier>newHashMap();
+	private final Map<String, Identifier> field_25789 = Maps.<String, Identifier>newHashMap();
 
 	public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> consumer, File file, Text title) {
 		super(title);
 		this.parent = parent;
-		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::getPackIconTexture, packManager, consumer);
+		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, packManager, consumer);
 		this.file = file;
 		this.directoryWatcher = PackScreen.DirectoryWatcher.create(file);
 	}
@@ -143,7 +143,7 @@ public class PackScreen extends Screen {
 		this.organizer.refresh();
 		this.updatePackLists();
 		this.field_25788 = 0L;
-		this.iconTextures.clear();
+		this.field_25789.clear();
 	}
 
 	@Override
@@ -156,9 +156,9 @@ public class PackScreen extends Screen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	protected static void copyPacks(MinecraftClient client, List<Path> srcPaths, Path destPath) {
+	protected static void method_29669(MinecraftClient minecraftClient, List<Path> list, Path path) {
 		MutableBoolean mutableBoolean = new MutableBoolean();
-		srcPaths.forEach(path2 -> {
+		list.forEach(path2 -> {
 			try {
 				Stream<Path> stream = Files.walk(path2);
 				Throwable var4 = null;
@@ -166,9 +166,9 @@ public class PackScreen extends Screen {
 				try {
 					stream.forEach(path3 -> {
 						try {
-							Util.relativeCopy(path2.getParent(), destPath, path3);
+							Util.relativeCopy(path2.getParent(), path, path3);
 						} catch (IOException var5) {
-							LOGGER.warn("Failed to copy datapack file  from {} to {}", path3, destPath, var5);
+							LOGGER.warn("Failed to copy datapack file  from {} to {}", path3, path, var5);
 							mutableBoolean.setTrue();
 						}
 					});
@@ -189,12 +189,12 @@ public class PackScreen extends Screen {
 					}
 				}
 			} catch (IOException var16) {
-				LOGGER.warn("Failed to copy datapack file from {} to {}", path2, destPath);
+				LOGGER.warn("Failed to copy datapack file from {} to {}", path2, path);
 				mutableBoolean.setTrue();
 			}
 		});
 		if (mutableBoolean.isTrue()) {
-			SystemToast.addPackCopyFailure(client, destPath.toString());
+			SystemToast.addPackCopyFailure(minecraftClient, path.toString());
 		}
 	}
 
@@ -203,7 +203,7 @@ public class PackScreen extends Screen {
 		String string = (String)paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
 		this.client.openScreen(new ConfirmScreen(bl -> {
 			if (bl) {
-				copyPacks(this.client, paths, this.file.toPath());
+				method_29669(this.client, paths, this.file.toPath());
 				this.refresh();
 			}
 
@@ -211,30 +211,34 @@ public class PackScreen extends Screen {
 		}, new TranslatableText("pack.dropConfirm"), new LiteralText(string)));
 	}
 
-	private Identifier loadPackIcon(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {
+	private Identifier method_30289(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {
 		try (ResourcePack resourcePack = resourcePackProfile.createResourcePack()) {
 			InputStream inputStream = resourcePack.openRoot("pack.png");
 			Throwable var6 = null;
 
-			Identifier var10;
+			Identifier string;
 			try {
-				String string = resourcePackProfile.getName();
-				Identifier identifier = new Identifier(
-					"minecraft", "pack/" + Util.replaceInvalidChars(string, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon"
-				);
-				NativeImage nativeImage = NativeImage.read(inputStream);
-				textureManager.registerTexture(identifier, new NativeImageBackedTexture(nativeImage));
-				var10 = identifier;
-			} catch (Throwable var37) {
-				var6 = var37;
-				throw var37;
+				if (inputStream != null) {
+					String stringx = resourcePackProfile.getName();
+					Identifier identifier = new Identifier(
+						"minecraft", "pack/" + Util.replaceInvalidChars(stringx, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(stringx) + "/icon"
+					);
+					NativeImage nativeImage = NativeImage.read(inputStream);
+					textureManager.registerTexture(identifier, new NativeImageBackedTexture(nativeImage));
+					return identifier;
+				}
+
+				string = UNKNOWN_PACK;
+			} catch (Throwable var40) {
+				var6 = var40;
+				throw var40;
 			} finally {
 				if (inputStream != null) {
 					if (var6 != null) {
 						try {
 							inputStream.close();
-						} catch (Throwable var36) {
-							var6.addSuppressed(var36);
+						} catch (Throwable var39) {
+							var6.addSuppressed(var39);
 						}
 					} else {
 						inputStream.close();
@@ -242,18 +246,18 @@ public class PackScreen extends Screen {
 				}
 			}
 
-			return var10;
-		} catch (FileNotFoundException var41) {
-		} catch (Exception var42) {
-			LOGGER.warn("Failed to load icon from pack {}", resourcePackProfile.getName(), var42);
+			return string;
+		} catch (FileNotFoundException var44) {
+		} catch (Exception var45) {
+			LOGGER.warn("Failed to load icon from pack {}", resourcePackProfile.getName(), var45);
 		}
 
 		return UNKNOWN_PACK;
 	}
 
-	private Identifier getPackIconTexture(ResourcePackProfile resourcePackProfile) {
-		return (Identifier)this.iconTextures
-			.computeIfAbsent(resourcePackProfile.getName(), string -> this.loadPackIcon(this.client.getTextureManager(), resourcePackProfile));
+	private Identifier method_30287(ResourcePackProfile resourcePackProfile) {
+		return (Identifier)this.field_25789
+			.computeIfAbsent(resourcePackProfile.getName(), string -> this.method_30289(this.client.getTextureManager(), resourcePackProfile));
 	}
 
 	@Environment(EnvType.CLIENT)

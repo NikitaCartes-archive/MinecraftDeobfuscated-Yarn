@@ -21,15 +21,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 
 public class Heightmap {
-	private static final Predicate<BlockState> NOT_AIR = blockState -> !blockState.isAir();
+	private static final Predicate<BlockState> ALWAYS_TRUE = blockState -> !blockState.isAir();
 	private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().blocksMovement();
-	private final PackedIntegerArray storage = new PackedIntegerArray(9, 256);
+	private final PackedIntegerArray storage;
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;
 
 	public Heightmap(Chunk chunk, Heightmap.Type type) {
 		this.blockPredicate = type.getBlockPredicate();
 		this.chunk = chunk;
+		int i = (int)Math.ceil(Math.log((double)(chunk.getHeight() + 1)) / Math.log(2.0));
+		this.storage = new PackedIntegerArray(i, 256);
 	}
 
 	public static void populateHeightmaps(Chunk chunk, Set<Heightmap.Type> types) {
@@ -45,7 +47,7 @@ public class Heightmap {
 					objectList.add(chunk.getHeightmap(type));
 				}
 
-				for (int m = j - 1; m >= 0; m--) {
+				for (int m = j - 1; m >= chunk.getBottomHeightLimit(); m--) {
 					mutable.set(k, m, l);
 					BlockState blockState = chunk.getBlockState(mutable);
 					if (!blockState.isOf(Blocks.AIR)) {
@@ -81,7 +83,7 @@ public class Heightmap {
 			} else if (i - 1 == y) {
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-				for (int j = y - 1; j >= 0; j--) {
+				for (int j = y - 1; j >= this.chunk.getBottomHeightLimit(); j--) {
 					mutable.set(x, j, z);
 					if (this.blockPredicate.test(this.chunk.getBlockState(mutable))) {
 						this.set(x, z, j + 1);
@@ -89,7 +91,7 @@ public class Heightmap {
 					}
 				}
 
-				this.set(x, z, 0);
+				this.set(x, z, this.chunk.getBottomHeightLimit());
 				return true;
 			}
 
@@ -102,11 +104,11 @@ public class Heightmap {
 	}
 
 	private int get(int index) {
-		return this.storage.get(index);
+		return this.storage.get(index) + this.chunk.getBottomHeightLimit();
 	}
 
 	private void set(int x, int z, int height) {
-		this.storage.set(toIndex(x, z), height);
+		this.storage.set(toIndex(x, z), height - this.chunk.getBottomHeightLimit());
 	}
 
 	public void setTo(long[] heightmap) {
@@ -128,8 +130,8 @@ public class Heightmap {
 	}
 
 	public static enum Type implements StringIdentifiable {
-		WORLD_SURFACE_WG("WORLD_SURFACE_WG", Heightmap.Purpose.WORLDGEN, Heightmap.NOT_AIR),
-		WORLD_SURFACE("WORLD_SURFACE", Heightmap.Purpose.CLIENT, Heightmap.NOT_AIR),
+		WORLD_SURFACE_WG("WORLD_SURFACE_WG", Heightmap.Purpose.WORLDGEN, Heightmap.ALWAYS_TRUE),
+		WORLD_SURFACE("WORLD_SURFACE", Heightmap.Purpose.CLIENT, Heightmap.ALWAYS_TRUE),
 		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Purpose.WORLDGEN, Heightmap.SUFFOCATES),
 		OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.Purpose.LIVE_WORLD, Heightmap.SUFFOCATES),
 		MOTION_BLOCKING("MOTION_BLOCKING", Heightmap.Purpose.CLIENT, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()),

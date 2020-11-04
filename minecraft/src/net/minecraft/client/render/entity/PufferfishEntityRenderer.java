@@ -2,8 +2,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.LargePufferfishEntityModel;
 import net.minecraft.client.render.entity.model.MediumPufferfishEntityModel;
 import net.minecraft.client.render.entity.model.SmallPufferfishEntityModel;
@@ -15,14 +17,15 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity, EntityModel<PufferfishEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/fish/pufferfish.png");
-	private int modelSize;
-	private final SmallPufferfishEntityModel<PufferfishEntity> smallModel = new SmallPufferfishEntityModel<>();
-	private final MediumPufferfishEntityModel<PufferfishEntity> mediumModel = new MediumPufferfishEntityModel<>();
-	private final LargePufferfishEntityModel<PufferfishEntity> largeModel = new LargePufferfishEntityModel<>();
+	private int modelSize = 3;
+	private final EntityModel<PufferfishEntity> smallModel;
+	private final EntityModel<PufferfishEntity> mediumModel;
+	private final EntityModel<PufferfishEntity> largeModel = this.getModel();
 
-	public PufferfishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new LargePufferfishEntityModel<>(), 0.2F);
-		this.modelSize = 3;
+	public PufferfishEntityRenderer(class_5617.class_5618 arg) {
+		super(arg, new LargePufferfishEntityModel<>(arg.method_32167(EntityModelLayers.PUFFERFISH_BIG)), 0.2F);
+		this.mediumModel = new MediumPufferfishEntityModel<>(arg.method_32167(EntityModelLayers.PUFFERFISH_MEDIUM));
+		this.smallModel = new SmallPufferfishEntityModel<>(arg.method_32167(EntityModelLayers.PUFFERFISH_SMALL));
 	}
 
 	public Identifier getTexture(PufferfishEntity pufferfishEntity) {

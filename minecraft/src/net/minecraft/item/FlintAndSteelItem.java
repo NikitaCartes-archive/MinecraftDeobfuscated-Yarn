@@ -4,6 +4,8 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.block.CandleBlock;
+import net.minecraft.block.CandleCakeBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -24,18 +26,10 @@ public class FlintAndSteelItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (CampfireBlock.method_30035(blockState)) {
-			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
-			world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
-			if (playerEntity != null) {
-				context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
-			}
-
-			return ActionResult.success(world.isClient());
-		} else {
+		if (!CampfireBlock.method_30035(blockState) && !CandleBlock.canBeLit(blockState) && !CandleCakeBlock.canBeLit(blockState)) {
 			BlockPos blockPos2 = blockPos.offset(context.getSide());
 			if (AbstractFireBlock.method_30032(world, blockPos2, context.getPlayerFacing())) {
-				world.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
+				world.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
 				BlockState blockState2 = AbstractFireBlock.getState(world, blockPos2);
 				world.setBlockState(blockPos2, blockState2, 11);
 				ItemStack itemStack = context.getStack();
@@ -48,6 +42,14 @@ public class FlintAndSteelItem extends Item {
 			} else {
 				return ActionResult.FAIL;
 			}
+		} else {
+			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
+			world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
+			if (playerEntity != null) {
+				context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+			}
+
+			return ActionResult.success(world.isClient());
 		}
 	}
 }

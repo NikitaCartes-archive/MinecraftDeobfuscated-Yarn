@@ -29,6 +29,7 @@ import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.util.UploadTokenCache;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -65,7 +66,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	private int animTick;
 	private Long previousWrittenBytes;
 	private Long previousTimeSnapshot;
-	private long bytesPerSecond;
+	private long bytesPersSecond;
 	private final Runnable field_22728;
 
 	public RealmsUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, LevelSummary levelSummary, Runnable runnable) {
@@ -155,12 +156,12 @@ public class RealmsUploadScreen extends RealmsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private void drawDots(MatrixStack matrices) {
+	private void drawDots(MatrixStack matrixStack) {
 		int i = this.textRenderer.getWidth(this.status);
-		this.textRenderer.draw(matrices, DOTS[this.animTick / 10 % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0F, 16777215);
+		this.textRenderer.draw(matrixStack, DOTS[this.animTick / 10 % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0F, 16777215);
 	}
 
-	private void drawProgressBar(MatrixStack matrices) {
+	private void drawProgressBar(MatrixStack matrixStack) {
 		double d = Math.min((double)this.uploadStatus.bytesWritten / (double)this.uploadStatus.totalBytes, 1.0);
 		this.progress = String.format(Locale.ROOT, "%.1f", d * 100.0);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -169,7 +170,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 		double f = 0.5;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(e - 0.5, 95.5, 0.0).color(217, 210, 210, 255).next();
 		bufferBuilder.vertex(e + 200.0 * d + 0.5, 95.5, 0.0).color(217, 210, 210, 255).next();
 		bufferBuilder.vertex(e + 200.0 * d + 0.5, 79.5, 0.0).color(217, 210, 210, 255).next();
@@ -180,10 +181,10 @@ public class RealmsUploadScreen extends RealmsScreen {
 		bufferBuilder.vertex(e, 80.0, 0.0).color(128, 128, 128, 255).next();
 		tessellator.draw();
 		RenderSystem.enableTexture();
-		drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
+		drawCenteredString(matrixStack, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
 	}
 
-	private void drawUploadSpeed(MatrixStack matrices) {
+	private void drawUploadSpeed(MatrixStack matrixStack) {
 		if (this.animTick % 20 == 0) {
 			if (this.previousWrittenBytes != null) {
 				long l = Util.getMeasuringTimeMs() - this.previousTimeSnapshot;
@@ -191,22 +192,22 @@ public class RealmsUploadScreen extends RealmsScreen {
 					l = 1L;
 				}
 
-				this.bytesPerSecond = 1000L * (this.uploadStatus.bytesWritten - this.previousWrittenBytes) / l;
-				this.drawUploadSpeed0(matrices, this.bytesPerSecond);
+				this.bytesPersSecond = 1000L * (this.uploadStatus.bytesWritten - this.previousWrittenBytes) / l;
+				this.drawUploadSpeed0(matrixStack, this.bytesPersSecond);
 			}
 
 			this.previousWrittenBytes = this.uploadStatus.bytesWritten;
 			this.previousTimeSnapshot = Util.getMeasuringTimeMs();
 		} else {
-			this.drawUploadSpeed0(matrices, this.bytesPerSecond);
+			this.drawUploadSpeed0(matrixStack, this.bytesPersSecond);
 		}
 	}
 
-	private void drawUploadSpeed0(MatrixStack matrices, long l) {
+	private void drawUploadSpeed0(MatrixStack matrixStack, long l) {
 		if (l > 0L) {
 			int i = this.textRenderer.getWidth(this.progress);
 			String string = "(" + SizeUnit.getUserFriendlyString(l) + "/s)";
-			this.textRenderer.draw(matrices, string, (float)(this.width / 2 + i / 2 + 15), 84.0F, 16777215);
+			this.textRenderer.draw(matrixStack, string, (float)(this.width / 2 + i / 2 + 15), 84.0F, 16777215);
 		}
 	}
 
@@ -337,7 +338,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 							this.backButton.visible = true;
 							this.cancelButton.visible = false;
 							if (file != null) {
-								LOGGER.debug("Deleting file " + file.getAbsolutePath());
+								LOGGER.debug("Deleting file {}", file.getAbsolutePath());
 								file.delete();
 							}
 						} else {

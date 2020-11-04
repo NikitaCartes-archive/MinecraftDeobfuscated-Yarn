@@ -59,7 +59,7 @@ public class VariantsBlockStateSupplier implements BlockStateSupplier {
 		for (BlockStateVariantMap blockStateVariantMap : this.variantMaps) {
 			Map<PropertiesMap, List<BlockStateVariant>> map = blockStateVariantMap.getVariants();
 			stream = stream.flatMap(pair -> map.entrySet().stream().map(entry -> {
-					PropertiesMap propertiesMap = ((PropertiesMap)pair.getFirst()).copyOf((PropertiesMap)entry.getKey());
+					PropertiesMap propertiesMap = ((PropertiesMap)pair.getFirst()).with((PropertiesMap)entry.getKey());
 					List<BlockStateVariant> list = intersect((List<BlockStateVariant>)pair.getSecond(), (List<BlockStateVariant>)entry.getValue());
 					return Pair.of(propertiesMap, list);
 				}));
@@ -78,9 +78,9 @@ public class VariantsBlockStateSupplier implements BlockStateSupplier {
 		return jsonObject;
 	}
 
-	private static List<BlockStateVariant> intersect(List<BlockStateVariant> left, List<BlockStateVariant> right) {
+	private static List<BlockStateVariant> intersect(List<BlockStateVariant> list, List<BlockStateVariant> list2) {
 		Builder<BlockStateVariant> builder = ImmutableList.builder();
-		left.forEach(blockStateVariant -> right.forEach(blockStateVariant2 -> builder.add(BlockStateVariant.union(blockStateVariant, blockStateVariant2))));
+		list.forEach(blockStateVariant -> list2.forEach(blockStateVariant2 -> builder.add(BlockStateVariant.union(blockStateVariant, blockStateVariant2))));
 		return builder.build();
 	}
 

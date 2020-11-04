@@ -5,26 +5,26 @@ import java.util.BitSet;
 public class SectorMap {
 	private final BitSet field_20433 = new BitSet();
 
-	public void allocate(int start, int size) {
-		this.field_20433.set(start, start + size);
+	public void allocate(int i, int j) {
+		this.field_20433.set(i, i + j);
 	}
 
-	public void free(int start, int size) {
-		this.field_20433.clear(start, start + size);
+	public void free(int i, int j) {
+		this.field_20433.clear(i, i + j);
 	}
 
-	public int allocate(int size) {
-		int i = 0;
+	public int allocate(int i) {
+		int j = 0;
 
 		while (true) {
-			int j = this.field_20433.nextClearBit(i);
-			int k = this.field_20433.nextSetBit(j);
-			if (k == -1 || k - j >= size) {
-				this.allocate(j, size);
-				return j;
+			int k = this.field_20433.nextClearBit(j);
+			int l = this.field_20433.nextSetBit(k);
+			if (l == -1 || l - k >= i) {
+				this.allocate(k, i);
+				return k;
 			}
 
-			i = k;
+			j = l;
 		}
 	}
 }

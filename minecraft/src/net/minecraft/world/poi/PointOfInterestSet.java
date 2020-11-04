@@ -15,7 +15,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -41,16 +40,16 @@ public class PointOfInterestSet {
 						)
 						.apply(instance, PointOfInterestSet::new)
 			)
-			.orElseGet(Util.method_29188("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(updateListener, false, ImmutableList.of()));
+			.orElseGet(Util.addPrefix("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(updateListener, false, ImmutableList.of()));
 	}
 
 	public PointOfInterestSet(Runnable updateListener) {
 		this(updateListener, true, ImmutableList.of());
 	}
 
-	private PointOfInterestSet(Runnable updateListener, boolean valid, List<PointOfInterest> list) {
+	private PointOfInterestSet(Runnable updateListener, boolean bl, List<PointOfInterest> list) {
 		this.updateListener = updateListener;
-		this.valid = valid;
+		this.valid = bl;
 		list.forEach(this::add);
 	}
 
@@ -78,25 +77,20 @@ public class PointOfInterestSet {
 		if (pointOfInterest != null) {
 			if (pointOfInterestType.equals(pointOfInterest.getType())) {
 				return false;
+			} else {
+				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("POI data mismatch: already registered at " + blockPos));
 			}
-
-			String string = "POI data mismatch: already registered at " + blockPos;
-			if (SharedConstants.isDevelopment) {
-				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException(string));
-			}
-
-			LOGGER.error(string);
+		} else {
+			this.pointsOfInterestByPos.put(s, poi);
+			((Set)this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType, pointOfInterestTypex -> Sets.newHashSet())).add(poi);
+			return true;
 		}
-
-		this.pointsOfInterestByPos.put(s, poi);
-		((Set)this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType, pointOfInterestTypex -> Sets.newHashSet())).add(poi);
-		return true;
 	}
 
 	public void remove(BlockPos pos) {
 		PointOfInterest pointOfInterest = this.pointsOfInterestByPos.remove(ChunkSectionPos.packLocal(pos));
 		if (pointOfInterest == null) {
-			LOGGER.error("POI data mismatch: never registered at " + pos);
+			LOGGER.error("POI data mismatch: never registered at {}", pos);
 		} else {
 			((Set)this.pointsOfInterestByType.get(pointOfInterest.getType())).remove(pointOfInterest);
 			LOGGER.debug("Removed POI of type {} @ {}", pointOfInterest::getType, pointOfInterest::getPos);

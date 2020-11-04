@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.class_5534;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -15,13 +15,13 @@ public class GoToIfNearbyTask extends Task<PathAwareEntity> {
 	private final MemoryModuleType<GlobalPos> target;
 	private long nextUpdateTime;
 	private final int maxDistance;
-	private float field_25752;
+	private final float field_25752;
 
-	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float walkSpeed, int maxDistance) {
+	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float f, int i) {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, target, MemoryModuleState.VALUE_PRESENT));
 		this.target = target;
-		this.field_25752 = walkSpeed;
-		this.maxDistance = maxDistance;
+		this.field_25752 = f;
+		this.maxDistance = i;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
@@ -33,7 +33,7 @@ public class GoToIfNearbyTask extends Task<PathAwareEntity> {
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		if (l > this.nextUpdateTime) {
-			Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(pathAwareEntity, 8, 6));
+			Optional<Vec3d> optional = Optional.ofNullable(class_5534.method_31527(pathAwareEntity, 8, 6));
 			pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.field_25752, 1)));
 			this.nextUpdateTime = l + 180L;
 		}

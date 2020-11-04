@@ -17,7 +17,7 @@ import net.minecraft.world.GameMode;
 @Environment(EnvType.CLIENT)
 public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final Text TITLE = new TranslatableText("tutorial.punch_tree.title");
-	private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.keyToText("attack"));
+	private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;
@@ -36,7 +36,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 			if (this.ticks == 1) {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
-					if (clientPlayerEntity.inventory.contains(ItemTags.LOGS)) {
+					if (clientPlayerEntity.getInventory().contains(ItemTags.LOGS)) {
 						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 						return;
 					}
@@ -64,14 +64,14 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	}
 
 	@Override
-	public void onBlockBreaking(ClientWorld client, BlockPos pos, BlockState state, float progress) {
+	public void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
 		boolean bl = state.isIn(BlockTags.LOGS);
-		if (bl && progress > 0.0F) {
+		if (bl && f > 0.0F) {
 			if (this.toast != null) {
-				this.toast.setProgress(progress);
+				this.toast.setProgress(f);
 			}
 
-			if (progress >= 1.0F) {
+			if (f >= 1.0F) {
 				this.manager.setStep(TutorialStep.OPEN_INVENTORY);
 			}
 		} else if (this.toast != null) {
@@ -83,7 +83,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onSlotUpdate(ItemStack stack) {
-		if (ItemTags.LOGS.contains(stack.getItem())) {
+		if (stack.isIn(ItemTags.LOGS)) {
 			this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 		}
 	}

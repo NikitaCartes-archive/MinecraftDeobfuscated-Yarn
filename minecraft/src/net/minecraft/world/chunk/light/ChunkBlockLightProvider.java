@@ -24,7 +24,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 		int i = BlockPos.unpackLongX(blockPos);
 		int j = BlockPos.unpackLongY(blockPos);
 		int k = BlockPos.unpackLongZ(blockPos);
-		BlockView blockView = this.chunkProvider.getChunk(i >> 4, k >> 4);
+		BlockView blockView = this.chunkProvider.getChunk(ChunkSectionPos.getSectionCoord(i), ChunkSectionPos.getSectionCoord(k));
 		return blockView != null ? blockView.getLuminance(this.mutablePos.set(i, j, k)) : 0;
 	}
 

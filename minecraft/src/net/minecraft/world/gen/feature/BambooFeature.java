@@ -45,7 +45,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 							int o = m - blockPos.getZ();
 							if (n * n + o * o <= k * k) {
 								mutable2.set(l, structureWorldAccess.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
-								if (isSoil(structureWorldAccess.getBlockState(mutable2).getBlock())) {
+								if (isSoil(structureWorldAccess.getBlockState(mutable2))) {
 									structureWorldAccess.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
 								}
 							}

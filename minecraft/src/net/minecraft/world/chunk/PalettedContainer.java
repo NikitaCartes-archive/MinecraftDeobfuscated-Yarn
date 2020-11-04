@@ -10,8 +10,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.collection.PackedIntegerArray;
@@ -24,8 +24,8 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	private final Palette<T> fallbackPalette;
 	private final PaletteResizeListener<T> noOpPaletteResizeHandler = (newSize, added) -> 0;
 	private final IdList<T> idList;
-	private final Function<NbtCompound, T> elementDeserializer;
-	private final Function<T, NbtCompound> elementSerializer;
+	private final Function<CompoundTag, T> elementDeserializer;
+	private final Function<T, CompoundTag> elementSerializer;
 	private final T defaultValue;
 	protected PackedIntegerArray data;
 	private Palette<T> palette;
@@ -54,7 +54,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	public PalettedContainer(
-		Palette<T> fallbackPalette, IdList<T> idList, Function<NbtCompound, T> elementDeserializer, Function<T, NbtCompound> elementSerializer, T defaultElement
+		Palette<T> fallbackPalette, IdList<T> idList, Function<CompoundTag, T> elementDeserializer, Function<T, CompoundTag> elementSerializer, T defaultElement
 	) {
 		this.fallbackPalette = fallbackPalette;
 		this.idList = idList;
@@ -123,9 +123,9 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		return object == null ? this.defaultValue : object;
 	}
 
-	protected void set(int index, T object) {
-		int i = this.palette.getIndex(object);
-		this.data.set(index, i);
+	protected void set(int i, T object) {
+		int j = this.palette.getIndex(object);
+		this.data.set(i, j);
 	}
 
 	public T get(int x, int y, int z) {
@@ -158,18 +158,18 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		this.unlock();
 	}
 
-	public void read(NbtList paletteNbt, long[] data) {
+	public void read(ListTag paletteTag, long[] data) {
 		this.lock();
-		int i = Math.max(4, MathHelper.log2DeBruijn(paletteNbt.size()));
+		int i = Math.max(4, MathHelper.log2DeBruijn(paletteTag.size()));
 		if (i != this.paletteSize) {
 			this.setPaletteSize(i);
 		}
 
-		this.palette.readNbt(paletteNbt);
+		this.palette.fromTag(paletteTag);
 		int j = data.length * 64 / 4096;
 		if (this.palette == this.fallbackPalette) {
 			Palette<T> palette = new BiMapPalette<>(this.idList, i, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer);
-			palette.readNbt(paletteNbt);
+			palette.fromTag(paletteTag);
 			PackedIntegerArray packedIntegerArray = new PackedIntegerArray(i, 4096, data);
 
 			for (int k = 0; k < 4096; k++) {
@@ -188,7 +188,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		this.unlock();
 	}
 
-	public void write(NbtCompound nbt, String paletteKey, String dataKey) {
+	public void write(CompoundTag compoundTag, String string, String string2) {
 		this.lock();
 		BiMapPalette<T> biMapPalette = new BiMapPalette<>(
 			this.idList, this.paletteSize, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer
@@ -207,22 +207,22 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 			is[j] = i;
 		}
 
-		NbtList nbtList = new NbtList();
-		biMapPalette.writeNbt(nbtList);
-		nbt.put(paletteKey, nbtList);
-		int k = Math.max(4, MathHelper.log2DeBruijn(nbtList.size()));
+		ListTag listTag = new ListTag();
+		biMapPalette.toTag(listTag);
+		compoundTag.put(string, listTag);
+		int k = Math.max(4, MathHelper.log2DeBruijn(listTag.size()));
 		PackedIntegerArray packedIntegerArray = new PackedIntegerArray(k, 4096);
 
 		for (int l = 0; l < is.length; l++) {
 			packedIntegerArray.set(l, is[l]);
 		}
 
-		nbt.putLongArray(dataKey, packedIntegerArray.getStorage());
+		compoundTag.putLongArray(string2, packedIntegerArray.getStorage());
 		this.unlock();
 	}
 
 	public int getPacketSize() {
-		return 1 + this.palette.getPacketSize() + PacketByteBuf.getVarIntLength(this.data.getSize()) + this.data.getStorage().length * 8;
+		return 1 + this.palette.getPacketSize() + PacketByteBuf.getVarIntSizeBytes(this.data.getSize()) + this.data.getStorage().length * 8;
 	}
 
 	public boolean hasAny(Predicate<T> predicate) {

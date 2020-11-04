@@ -8,9 +8,9 @@ import net.minecraft.tag.FluidTags;
 public class StayAboveWaterTask extends Task<MobEntity> {
 	private final float chance;
 
-	public StayAboveWaterTask(float chance) {
+	public StayAboveWaterTask(float minWaterHeight) {
 		super(ImmutableMap.of());
-		this.chance = chance;
+		this.chance = minWaterHeight;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {

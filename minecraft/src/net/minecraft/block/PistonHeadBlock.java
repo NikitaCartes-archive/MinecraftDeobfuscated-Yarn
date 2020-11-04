@@ -50,21 +50,21 @@ public class PistonHeadBlock extends FacingBlock {
 		return (VoxelShape[])Arrays.stream(Direction.values()).map(direction -> getHeadShape(direction, bl)).toArray(VoxelShape[]::new);
 	}
 
-	private static VoxelShape getHeadShape(Direction direction, boolean shortHead) {
+	private static VoxelShape getHeadShape(Direction direction, boolean bl) {
 		switch (direction) {
 			case DOWN:
 			default:
-				return VoxelShapes.union(DOWN_HEAD_SHAPE, shortHead ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE);
+				return VoxelShapes.union(DOWN_HEAD_SHAPE, bl ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE);
 			case UP:
-				return VoxelShapes.union(UP_HEAD_SHAPE, shortHead ? SHORT_UP_ARM_SHAPE : UP_ARM_SHAPE);
+				return VoxelShapes.union(UP_HEAD_SHAPE, bl ? SHORT_UP_ARM_SHAPE : UP_ARM_SHAPE);
 			case NORTH:
-				return VoxelShapes.union(NORTH_HEAD_SHAPE, shortHead ? SHORT_NORTH_ARM_SHAPE : NORTH_ARM_SHAPE);
+				return VoxelShapes.union(NORTH_HEAD_SHAPE, bl ? SHORT_NORTH_ARM_SHAPE : NORTH_ARM_SHAPE);
 			case SOUTH:
-				return VoxelShapes.union(SOUTH_HEAD_SHAPE, shortHead ? SHORT_SOUTH_ARM_SHAPE : SOUTH_ARM_SHAPE);
+				return VoxelShapes.union(SOUTH_HEAD_SHAPE, bl ? SHORT_SOUTH_ARM_SHAPE : SOUTH_ARM_SHAPE);
 			case WEST:
-				return VoxelShapes.union(WEST_HEAD_SHAPE, shortHead ? SHORT_WEST_ARM_SHAPE : WEST_ARM_SHAPE);
+				return VoxelShapes.union(WEST_HEAD_SHAPE, bl ? SHORT_WEST_ARM_SHAPE : WEST_ARM_SHAPE);
 			case EAST:
-				return VoxelShapes.union(EAST_HEAD_SHAPE, shortHead ? SHORT_EAST_ARM_SHAPE : EAST_ARM_SHAPE);
+				return VoxelShapes.union(EAST_HEAD_SHAPE, bl ? SHORT_EAST_ARM_SHAPE : EAST_ARM_SHAPE);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && player.abilities.creativeMode) {
+		if (!world.isClient && player.getAbilities().creativeMode) {
 			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 			if (this.method_26980(state, world.getBlockState(blockPos))) {
 				world.breakBlock(blockPos, false);
@@ -112,12 +112,10 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override

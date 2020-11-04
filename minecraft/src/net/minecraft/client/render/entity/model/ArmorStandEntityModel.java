@@ -4,6 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
+import net.minecraft.class_5605;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -12,81 +18,78 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
-	private final ModelPart rightTorso;
-	private final ModelPart leftTorso;
-	private final ModelPart shoulderStick;
-	private final ModelPart basePlate;
+	private final ModelPart field_27391;
+	private final ModelPart field_27392;
+	private final ModelPart hip;
+	private final ModelPart plate;
 
-	public ArmorStandEntityModel() {
-		this(0.0F);
+	public ArmorStandEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.field_27391 = modelPart.method_32086("right_body_stick");
+		this.field_27392 = modelPart.method_32086("left_body_stick");
+		this.hip = modelPart.method_32086("shoulder_stick");
+		this.plate = modelPart.method_32086("base_plate");
+		this.helmet.visible = false;
 	}
 
-	public ArmorStandEntityModel(float f) {
-		super(f, 64, 64);
-		this.head = new ModelPart(this, 0, 0);
-		this.head.addCuboid(-1.0F, -7.0F, -1.0F, 2.0F, 7.0F, 2.0F, f);
-		this.head.setPivot(0.0F, 0.0F, 0.0F);
-		this.body = new ModelPart(this, 0, 26);
-		this.body.addCuboid(-6.0F, 0.0F, -1.5F, 12.0F, 3.0F, 3.0F, f);
-		this.body.setPivot(0.0F, 0.0F, 0.0F);
-		this.rightArm = new ModelPart(this, 24, 0);
-		this.rightArm.addCuboid(-2.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
-		this.rightArm.setPivot(-5.0F, 2.0F, 0.0F);
-		this.leftArm = new ModelPart(this, 32, 16);
-		this.leftArm.mirror = true;
-		this.leftArm.addCuboid(0.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
-		this.leftArm.setPivot(5.0F, 2.0F, 0.0F);
-		this.rightLeg = new ModelPart(this, 8, 0);
-		this.rightLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 11.0F, 2.0F, f);
-		this.rightLeg.setPivot(-1.9F, 12.0F, 0.0F);
-		this.leftLeg = new ModelPart(this, 40, 16);
-		this.leftLeg.mirror = true;
-		this.leftLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 11.0F, 2.0F, f);
-		this.leftLeg.setPivot(1.9F, 12.0F, 0.0F);
-		this.rightTorso = new ModelPart(this, 16, 0);
-		this.rightTorso.addCuboid(-3.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F, f);
-		this.rightTorso.setPivot(0.0F, 0.0F, 0.0F);
-		this.rightTorso.visible = true;
-		this.leftTorso = new ModelPart(this, 48, 16);
-		this.leftTorso.addCuboid(1.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F, f);
-		this.leftTorso.setPivot(0.0F, 0.0F, 0.0F);
-		this.shoulderStick = new ModelPart(this, 0, 48);
-		this.shoulderStick.addCuboid(-4.0F, 10.0F, -1.0F, 8.0F, 2.0F, 2.0F, f);
-		this.shoulderStick.setPivot(0.0F, 0.0F, 0.0F);
-		this.basePlate = new ModelPart(this, 0, 32);
-		this.basePlate.addCuboid(-6.0F, 11.0F, -6.0F, 12.0F, 1.0F, 12.0F, f);
-		this.basePlate.setPivot(0.0F, 12.0F, 0.0F);
-		this.hat.visible = false;
+	public static class_5607 method_31979() {
+		class_5609 lv = BipedEntityModel.method_32011(class_5605.field_27715, 0.0F);
+		class_5610 lv2 = lv.method_32111();
+		lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32097(-1.0F, -7.0F, -1.0F, 2.0F, 7.0F, 2.0F), class_5603.field_27701);
+		lv2.method_32117("body", class_5606.method_32108().method_32101(0, 26).method_32097(-6.0F, 0.0F, -1.5F, 12.0F, 3.0F, 3.0F), class_5603.field_27701);
+		lv2.method_32117(
+			"right_arm", class_5606.method_32108().method_32101(24, 0).method_32097(-2.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F), class_5603.method_32090(-5.0F, 2.0F, 0.0F)
+		);
+		lv2.method_32117(
+			"left_arm",
+			class_5606.method_32108().method_32101(32, 16).method_32096().method_32097(0.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F),
+			class_5603.method_32090(5.0F, 2.0F, 0.0F)
+		);
+		lv2.method_32117(
+			"right_leg", class_5606.method_32108().method_32101(8, 0).method_32097(-1.0F, 0.0F, -1.0F, 2.0F, 11.0F, 2.0F), class_5603.method_32090(-1.9F, 12.0F, 0.0F)
+		);
+		lv2.method_32117(
+			"left_leg",
+			class_5606.method_32108().method_32101(40, 16).method_32096().method_32097(-1.0F, 0.0F, -1.0F, 2.0F, 11.0F, 2.0F),
+			class_5603.method_32090(1.9F, 12.0F, 0.0F)
+		);
+		lv2.method_32117("right_body_stick", class_5606.method_32108().method_32101(16, 0).method_32097(-3.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F), class_5603.field_27701);
+		lv2.method_32117("left_body_stick", class_5606.method_32108().method_32101(48, 16).method_32097(1.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F), class_5603.field_27701);
+		lv2.method_32117("shoulder_stick", class_5606.method_32108().method_32101(0, 48).method_32097(-4.0F, 10.0F, -1.0F, 8.0F, 2.0F, 2.0F), class_5603.field_27701);
+		lv2.method_32117(
+			"base_plate",
+			class_5606.method_32108().method_32101(0, 32).method_32097(-6.0F, 11.0F, -6.0F, 12.0F, 1.0F, 12.0F),
+			class_5603.method_32090(0.0F, 12.0F, 0.0F)
+		);
+		return class_5607.method_32110(lv, 64, 64);
 	}
 
 	public void animateModel(ArmorStandEntity armorStandEntity, float f, float g, float h) {
-		this.basePlate.pitch = 0.0F;
-		this.basePlate.yaw = (float) (Math.PI / 180.0) * -MathHelper.lerpAngleDegrees(h, armorStandEntity.prevYaw, armorStandEntity.yaw);
-		this.basePlate.roll = 0.0F;
+		this.plate.pitch = 0.0F;
+		this.plate.yaw = (float) (Math.PI / 180.0) * -MathHelper.lerpAngleDegrees(h, armorStandEntity.prevYaw, armorStandEntity.yaw);
+		this.plate.roll = 0.0F;
 	}
 
 	@Override
 	public void setAngles(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(armorStandEntity, f, g, h, i, j);
-		this.leftArm.visible = armorStandEntity.shouldShowArms();
+		this.field_27433.visible = armorStandEntity.shouldShowArms();
 		this.rightArm.visible = armorStandEntity.shouldShowArms();
-		this.basePlate.visible = !armorStandEntity.shouldHideBasePlate();
-		this.leftLeg.setPivot(1.9F, 12.0F, 0.0F);
-		this.rightLeg.setPivot(-1.9F, 12.0F, 0.0F);
-		this.rightTorso.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
-		this.rightTorso.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
-		this.rightTorso.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
-		this.leftTorso.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
-		this.leftTorso.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
-		this.leftTorso.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
-		this.shoulderStick.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
-		this.shoulderStick.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
-		this.shoulderStick.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
+		this.plate.visible = !armorStandEntity.shouldHideBasePlate();
+		this.field_27391.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
+		this.field_27391.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
+		this.field_27391.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
+		this.field_27392.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
+		this.field_27392.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
+		this.field_27392.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
+		this.hip.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
+		this.hip.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
+		this.hip.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
 	}
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.rightTorso, this.leftTorso, this.shoulderStick, this.basePlate));
+		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.field_27391, this.field_27392, this.hip, this.plate));
 	}
 
 	@Override

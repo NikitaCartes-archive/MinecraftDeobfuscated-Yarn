@@ -268,7 +268,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		return this.field_20492 != null && this.field_20492.worldType == RealmsServer.WorldType.MINIGAME;
 	}
 
-	private void drawSlotFrame(MatrixStack matrices, int y, int xm, int ym, int i, boolean bl, String string, int j, long l, String string2, boolean bl2) {
+	private void drawSlotFrame(MatrixStack matrixStack, int y, int xm, int ym, int i, boolean bl, String string, int j, long l, String string2, boolean bl2) {
 		if (bl2) {
 			this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.EMPTY_FRAME);
 		} else if (string2 != null && l != -1L) {
@@ -290,7 +290,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			RenderSystem.color4f(f, f, f, 1.0F);
 		}
 
-		DrawableHelper.drawTexture(matrices, y + 3, xm + 3, 0.0F, 0.0F, 74, 74, 74, 74);
+		DrawableHelper.drawTexture(matrixStack, y + 3, xm + 3, 0.0F, 0.0F, 74, 74, 74, 74);
 		this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.SLOT_FRAME);
 		if (bl) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -298,7 +298,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		DrawableHelper.drawTexture(matrices, y, xm, 0.0F, 0.0F, 80, 80, 80, 80);
-		drawCenteredText(matrices, this.textRenderer, string, y + 40, xm + 66, 16777215);
+		DrawableHelper.drawTexture(matrixStack, y, xm, 0.0F, 0.0F, 80, 80, 80, 80);
+		drawCenteredString(matrixStack, this.textRenderer, string, y + 40, xm + 66, 16777215);
 	}
 }

@@ -195,8 +195,8 @@ public class EntityTrackerEntry {
 	}
 
 	public void sendPackets(Consumer<Packet<?>> sender) {
-		if (this.entity.removed) {
-			LOGGER.warn("Fetching packet for removed entity " + this.entity);
+		if (this.entity.isRemoved()) {
+			LOGGER.warn("Fetching packet for removed entity {}", this.entity);
 		}
 
 		Packet<?> packet = this.entity.createSpawnPacket();

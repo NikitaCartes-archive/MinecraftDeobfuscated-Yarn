@@ -45,13 +45,13 @@ public abstract class StructurePoolElement {
 
 	public abstract boolean generate(
 		StructureManager structureManager,
-		StructureWorldAccess world,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		BlockPos pos,
 		BlockPos blockPos,
-		BlockRotation rotation,
-		BlockBox box,
+		BlockPos blockPos2,
+		BlockRotation blockRotation,
+		BlockBox blockBox,
 		Random random,
 		boolean keepJigsaws
 	);

@@ -68,8 +68,8 @@ public abstract class Carver<C extends CarverConfig> {
 	private final Codec<ConfiguredCarver<C>> codec;
 	protected final int heightLimit;
 
-	private static <C extends CarverConfig, F extends Carver<C>> F register(String name, F carver) {
-		return Registry.register(Registry.CARVER, name, carver);
+	private static <C extends CarverConfig, F extends Carver<C>> F register(String string, F carver) {
+		return Registry.register(Registry.CARVER, string, carver);
 	}
 
 	public Carver(Codec<C> configCodec, int heightLimit) {

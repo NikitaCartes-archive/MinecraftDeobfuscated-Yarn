@@ -7,9 +7,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.ChunkPos;
 
 @Environment(EnvType.CLIENT)
 public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
@@ -28,14 +30,15 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 		Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		double d = 0.0 - cameraY;
-		double e = 256.0 - cameraY;
+		double d = (double)this.client.world.getBottomHeightLimit() - cameraY;
+		double e = (double)this.client.world.getTopHeightLimit() - cameraY;
 		RenderSystem.disableTexture();
 		RenderSystem.disableBlend();
-		double f = (double)(entity.chunkX << 4) - cameraX;
-		double g = (double)(entity.chunkZ << 4) - cameraZ;
+		ChunkPos chunkPos = entity.getChunkPos();
+		double f = (double)chunkPos.getStartX() - cameraX;
+		double g = (double)chunkPos.getStartZ() - cameraZ;
 		RenderSystem.lineWidth(1.0F);
-		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.LINE_STRIP, VertexFormats.POSITION_COLOR);
 
 		for (int i = -16; i <= 32; i += 16) {
 			for (int j = -16; j <= 32; j += 16) {
@@ -68,7 +71,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 			bufferBuilder.vertex(f + 16.0, e, g + (double)i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 		}
 
-		for (int i = 0; i <= 256; i += 2) {
+		for (int i = this.client.world.getBottomHeightLimit(); i <= this.client.world.getTopHeightLimit(); i += 2) {
 			double h = (double)i - cameraY;
 			bufferBuilder.vertex(f, h, g).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 			bufferBuilder.vertex(f, h, g).color(1.0F, 1.0F, 0.0F, 1.0F).next();
@@ -81,7 +84,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 
 		tessellator.draw();
 		RenderSystem.lineWidth(2.0F);
-		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.LINE_STRIP, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i <= 16; i += 16) {
 			for (int j = 0; j <= 16; j += 16) {
@@ -92,7 +95,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		for (int i = 0; i <= 256; i += 16) {
+		for (int i = this.client.world.getBottomHeightLimit(); i <= this.client.world.getTopHeightLimit(); i += 16) {
 			double h = (double)i - cameraY;
 			bufferBuilder.vertex(f, h, g).color(0.25F, 0.25F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(f, h, g).color(0.25F, 0.25F, 1.0F, 1.0F).next();

@@ -13,6 +13,7 @@ import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -34,12 +35,12 @@ public class BlockCollisionSpliterator extends AbstractSpliterator<VoxelShape> {
 		this(world, entity, box, (blockState, blockPos) -> true);
 	}
 
-	public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> blockPredicate) {
+	public BlockCollisionSpliterator(CollisionView collisionView, @Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> blockPredicate) {
 		super(Long.MAX_VALUE, 1280);
 		this.context = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
 		this.pos = new BlockPos.Mutable();
 		this.boxShape = VoxelShapes.cuboid(box);
-		this.world = world;
+		this.world = collisionView;
 		this.checkEntity = entity != null;
 		this.entity = entity;
 		this.box = box;
@@ -92,9 +93,9 @@ public class BlockCollisionSpliterator extends AbstractSpliterator<VoxelShape> {
 
 	@Nullable
 	private BlockView getChunk(int x, int z) {
-		int i = x >> 4;
-		int j = z >> 4;
-		return this.world.getChunkAsView(i, j);
+		int i = ChunkSectionPos.getSectionCoord(x);
+		int j = ChunkSectionPos.getSectionCoord(z);
+		return this.world.getExistingChunk(i, j);
 	}
 
 	boolean offerEntityShape(Consumer<? super VoxelShape> consumer) {

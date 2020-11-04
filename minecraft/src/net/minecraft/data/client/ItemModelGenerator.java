@@ -32,6 +32,7 @@ public class ItemModelGenerator {
 
 	public void register() {
 		this.register(Items.ACACIA_BOAT, Models.GENERATED);
+		this.register(Items.AMETHYST_SHARD, Models.GENERATED);
 		this.register(Items.APPLE, Models.GENERATED);
 		this.register(Items.ARMOR_STAND, Models.GENERATED);
 		this.register(Items.ARROW, Models.GENERATED);
@@ -86,6 +87,7 @@ public class ItemModelGenerator {
 		this.register(Items.COOKED_RABBIT, Models.GENERATED);
 		this.register(Items.COOKED_SALMON, Models.GENERATED);
 		this.register(Items.COOKIE, Models.GENERATED);
+		this.register(Items.COPPER_INGOT, Models.GENERATED);
 		this.register(Items.CREEPER_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.CYAN_DYE, Models.GENERATED);
 		this.register(Items.DARK_OAK_BOAT, Models.GENERATED);

@@ -66,7 +66,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
 					for (Block block : TREE_BLOCKS) {
-						if (clientPlayerEntity.inventory.contains(new ItemStack(block))) {
+						if (clientPlayerEntity.getInventory().contains(new ItemStack(block))) {
 							this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 							return;
 						}
@@ -107,7 +107,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void onSlotUpdate(ItemStack stack) {
 		for (Block block : TREE_BLOCKS) {
-			if (stack.getItem() == block.asItem()) {
+			if (stack.isOf(block.asItem())) {
 				this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 				return;
 			}

@@ -26,7 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -51,8 +51,8 @@ public class VexEntity extends HostileEntity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d movement) {
-		super.move(movementType, movement);
+	public void move(MovementType type, Vec3d movement) {
+		super.move(type, movement);
 		this.checkBlockCollision();
 	}
 
@@ -92,28 +92,28 @@ public class VexEntity extends HostileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("BoundX")) {
-			this.bounds = new BlockPos(nbt.getInt("BoundX"), nbt.getInt("BoundY"), nbt.getInt("BoundZ"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("BoundX")) {
+			this.bounds = new BlockPos(tag.getInt("BoundX"), tag.getInt("BoundY"), tag.getInt("BoundZ"));
 		}
 
-		if (nbt.contains("LifeTicks")) {
-			this.setLifeTicks(nbt.getInt("LifeTicks"));
+		if (tag.contains("LifeTicks")) {
+			this.setLifeTicks(tag.getInt("LifeTicks"));
 		}
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.bounds != null) {
-			nbt.putInt("BoundX", this.bounds.getX());
-			nbt.putInt("BoundY", this.bounds.getY());
-			nbt.putInt("BoundZ", this.bounds.getZ());
+			tag.putInt("BoundX", this.bounds.getX());
+			tag.putInt("BoundY", this.bounds.getY());
+			tag.putInt("BoundZ", this.bounds.getZ());
 		}
 
 		if (this.alive) {
-			nbt.putInt("LifeTicks", this.lifeTicks);
+			tag.putInt("LifeTicks", this.lifeTicks);
 		}
 	}
 
@@ -186,11 +186,11 @@ public class VexEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override

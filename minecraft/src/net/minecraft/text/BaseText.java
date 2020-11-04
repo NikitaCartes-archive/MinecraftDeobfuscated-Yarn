@@ -65,13 +65,13 @@ public abstract class BaseText implements MutableText {
 		return this.orderedText;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		} else if (!(o instanceof BaseText)) {
+		} else if (!(obj instanceof BaseText)) {
 			return false;
 		} else {
-			BaseText baseText = (BaseText)o;
+			BaseText baseText = (BaseText)obj;
 			return this.siblings.equals(baseText.siblings) && Objects.equals(this.getStyle(), baseText.getStyle());
 		}
 	}

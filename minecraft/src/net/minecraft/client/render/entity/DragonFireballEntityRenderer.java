@@ -2,25 +2,26 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(TEXTURE);
 
-	public DragonFireballEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher);
+	public DragonFireballEntityRenderer(class_5617.class_5618 arg) {
+		super(arg);
 	}
 
 	protected int getBlockLight(DragonFireballEntity dragonFireballEntity, BlockPos blockPos) {
@@ -31,7 +32,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
 		matrixStack.multiply(this.dispatcher.getRotation());
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		MatrixStack.Entry entry = matrixStack.peek();
 		Matrix4f matrix4f = entry.getModel();
 		Matrix3f matrix3f = entry.getNormal();

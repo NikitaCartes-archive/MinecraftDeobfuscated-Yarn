@@ -1,110 +1,67 @@
 package net.minecraft.client.model;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5603;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.Vector4f;
 
 @Environment(EnvType.CLIENT)
-public class ModelPart {
-	private float textureWidth = 64.0F;
-	private float textureHeight = 32.0F;
-	private int textureOffsetU;
-	private int textureOffsetV;
+public final class ModelPart {
 	public float pivotX;
 	public float pivotY;
 	public float pivotZ;
 	public float pitch;
 	public float yaw;
 	public float roll;
-	public boolean mirror;
 	public boolean visible = true;
-	private final ObjectList<ModelPart.Cuboid> cuboids = new ObjectArrayList<>();
-	private final ObjectList<ModelPart> children = new ObjectArrayList<>();
+	private final List<ModelPart.Cuboid> cuboids;
+	private final Map<String, ModelPart> children;
 
-	public ModelPart(Model model) {
-		model.accept(this);
-		this.setTextureSize(model.textureWidth, model.textureHeight);
+	public ModelPart(List<ModelPart.Cuboid> list, Map<String, ModelPart> map) {
+		this.cuboids = list;
+		this.children = map;
 	}
 
-	public ModelPart(Model model, int textureOffsetU, int textureOffsetV) {
-		this(model.textureWidth, model.textureHeight, textureOffsetU, textureOffsetV);
-		model.accept(this);
+	public class_5603 method_32084() {
+		return class_5603.method_32091(this.pivotX, this.pivotY, this.pivotZ, this.pitch, this.yaw, this.roll);
 	}
 
-	public ModelPart(int textureWidth, int textureHeight, int textureOffsetU, int textureOffsetV) {
-		this.setTextureSize(textureWidth, textureHeight);
-		this.setTextureOffset(textureOffsetU, textureOffsetV);
+	public void method_32085(class_5603 arg) {
+		this.pivotX = arg.field_27702;
+		this.pivotY = arg.field_27703;
+		this.pivotZ = arg.field_27704;
+		this.pitch = arg.field_27705;
+		this.yaw = arg.field_27706;
+		this.roll = arg.field_27707;
 	}
 
-	private ModelPart() {
+	public void copyPositionAndRotation(ModelPart modelPart) {
+		this.pitch = modelPart.pitch;
+		this.yaw = modelPart.yaw;
+		this.roll = modelPart.roll;
+		this.pivotX = modelPart.pivotX;
+		this.pivotY = modelPart.pivotY;
+		this.pivotZ = modelPart.pivotZ;
 	}
 
-	public ModelPart method_29991() {
-		ModelPart modelPart = new ModelPart();
-		modelPart.copyTransform(this);
-		return modelPart;
-	}
-
-	public void copyTransform(ModelPart part) {
-		this.pitch = part.pitch;
-		this.yaw = part.yaw;
-		this.roll = part.roll;
-		this.pivotX = part.pivotX;
-		this.pivotY = part.pivotY;
-		this.pivotZ = part.pivotZ;
-	}
-
-	public void addChild(ModelPart part) {
-		this.children.add(part);
-	}
-
-	public ModelPart setTextureOffset(int textureOffsetU, int textureOffsetV) {
-		this.textureOffsetU = textureOffsetU;
-		this.textureOffsetV = textureOffsetV;
-		return this;
-	}
-
-	public ModelPart addCuboid(String name, float x, float y, float z, int sizeX, int sizeY, int sizeZ, float extra, int textureOffsetU, int textureOffsetV) {
-		this.setTextureOffset(textureOffsetU, textureOffsetV);
-		this.addCuboid(this.textureOffsetU, this.textureOffsetV, x, y, z, (float)sizeX, (float)sizeY, (float)sizeZ, extra, extra, extra, this.mirror, false);
-		return this;
-	}
-
-	public ModelPart addCuboid(float x, float y, float z, float sizeX, float sizeY, float sizeZ) {
-		this.addCuboid(this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, 0.0F, 0.0F, 0.0F, this.mirror, false);
-		return this;
-	}
-
-	public ModelPart addCuboid(float x, float y, float z, float sizeX, float sizeY, float sizeZ, boolean mirror) {
-		this.addCuboid(this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, 0.0F, 0.0F, 0.0F, mirror, false);
-		return this;
-	}
-
-	public void addCuboid(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extra) {
-		this.addCuboid(this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, extra, extra, extra, this.mirror, false);
-	}
-
-	public void addCuboid(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extraX, float extraY, float extraZ) {
-		this.addCuboid(this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, extraX, extraY, extraZ, this.mirror, false);
-	}
-
-	public void addCuboid(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extra, boolean mirror) {
-		this.addCuboid(this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, extra, extra, extra, mirror, false);
-	}
-
-	private void addCuboid(
-		int u, int v, float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extraX, float extraY, float extraZ, boolean mirror, boolean bl
-	) {
-		this.cuboids.add(new ModelPart.Cuboid(u, v, x, y, z, sizeX, sizeY, sizeZ, extraX, extraY, extraZ, mirror, this.textureWidth, this.textureHeight));
+	public ModelPart method_32086(String string) {
+		ModelPart modelPart = (ModelPart)this.children.get(string);
+		if (modelPart == null) {
+			throw new NoSuchElementException("Can't find part " + string);
+		} else {
+			return modelPart;
+		}
 	}
 
 	public void setPivot(float x, float y, float z) {
@@ -124,7 +81,7 @@ public class ModelPart {
 				this.rotate(matrices);
 				this.renderCuboids(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
 
-				for (ModelPart modelPart : this.children) {
+				for (ModelPart modelPart : this.children.values()) {
 					modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 				}
 
@@ -136,51 +93,34 @@ public class ModelPart {
 	public void rotate(MatrixStack matrix) {
 		matrix.translate((double)(this.pivotX / 16.0F), (double)(this.pivotY / 16.0F), (double)(this.pivotZ / 16.0F));
 		if (this.roll != 0.0F) {
-			matrix.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(this.roll));
+			matrix.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(this.roll));
 		}
 
 		if (this.yaw != 0.0F) {
-			matrix.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
+			matrix.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
 		}
 
 		if (this.pitch != 0.0F) {
-			matrix.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.pitch));
+			matrix.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(this.pitch));
 		}
 	}
 
 	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-		Matrix4f matrix4f = entry.getModel();
-		Matrix3f matrix3f = entry.getNormal();
-
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
-			for (ModelPart.Quad quad : cuboid.sides) {
-				Vec3f vec3f = quad.direction.copy();
-				vec3f.transform(matrix3f);
-				float f = vec3f.getX();
-				float g = vec3f.getY();
-				float h = vec3f.getZ();
-
-				for (int i = 0; i < 4; i++) {
-					ModelPart.Vertex vertex = quad.vertices[i];
-					float j = vertex.pos.getX() / 16.0F;
-					float k = vertex.pos.getY() / 16.0F;
-					float l = vertex.pos.getZ() / 16.0F;
-					Vector4f vector4f = new Vector4f(j, k, l, 1.0F);
-					vector4f.transform(matrix4f);
-					vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), red, green, blue, alpha, vertex.u, vertex.v, overlay, light, f, g, h);
-				}
-			}
+			cuboid.method_32089(entry, vertexConsumer, light, overlay, red, green, blue, alpha);
 		}
-	}
-
-	public ModelPart setTextureSize(int width, int height) {
-		this.textureWidth = (float)width;
-		this.textureHeight = (float)height;
-		return this;
 	}
 
 	public ModelPart.Cuboid getRandomCuboid(Random random) {
 		return (ModelPart.Cuboid)this.cuboids.get(random.nextInt(this.cuboids.size()));
+	}
+
+	public boolean method_32087() {
+		return this.cuboids.isEmpty();
+	}
+
+	public Stream<ModelPart> method_32088() {
+		return Stream.concat(Stream.of(this), this.children.values().stream().flatMap(ModelPart::method_32088));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -265,12 +205,34 @@ public class ModelPart {
 				new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, n, q, o, r, textureWidth, textureHeight, mirror, Direction.SOUTH
 			);
 		}
+
+		public void method_32089(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+			Matrix4f matrix4f = entry.getModel();
+			Matrix3f matrix3f = entry.getNormal();
+
+			for (ModelPart.Quad quad : this.sides) {
+				Vector3f vector3f = quad.direction.copy();
+				vector3f.transform(matrix3f);
+				float l = vector3f.getX();
+				float m = vector3f.getY();
+				float n = vector3f.getZ();
+
+				for (ModelPart.Vertex vertex : quad.vertices) {
+					float o = vertex.pos.getX() / 16.0F;
+					float p = vertex.pos.getY() / 16.0F;
+					float q = vertex.pos.getZ() / 16.0F;
+					Vector4f vector4f = new Vector4f(o, p, q, 1.0F);
+					vector4f.transform(matrix4f);
+					vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, k, vertex.u, vertex.v, j, i, l, m, n);
+				}
+			}
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class Quad {
 		public final ModelPart.Vertex[] vertices;
-		public final Vec3f direction;
+		public final Vector3f direction;
 
 		public Quad(ModelPart.Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV, boolean flip, Direction direction) {
 			this.vertices = vertices;
@@ -299,19 +261,19 @@ public class ModelPart {
 
 	@Environment(EnvType.CLIENT)
 	static class Vertex {
-		public final Vec3f pos;
+		public final Vector3f pos;
 		public final float u;
 		public final float v;
 
 		public Vertex(float x, float y, float z, float u, float v) {
-			this(new Vec3f(x, y, z), u, v);
+			this(new Vector3f(x, y, z), u, v);
 		}
 
 		public ModelPart.Vertex remap(float u, float v) {
 			return new ModelPart.Vertex(this.pos, u, v);
 		}
 
-		public Vertex(Vec3f pos, float u, float v) {
+		public Vertex(Vector3f pos, float u, float v) {
 			this.pos = pos;
 			this.u = u;
 			this.v = v;

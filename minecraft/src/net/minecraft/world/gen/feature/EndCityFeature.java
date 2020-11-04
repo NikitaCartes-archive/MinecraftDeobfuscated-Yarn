@@ -9,6 +9,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -59,8 +60,8 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 			j = -5;
 		}
 
-		int k = (chunkX << 4) + 7;
-		int l = (chunkZ << 4) + 7;
+		int k = ChunkSectionPos.method_32205(chunkX, 7);
+		int l = ChunkSectionPos.method_32205(chunkZ, 7);
 		int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG);
 		int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG);
 		int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG);
@@ -85,7 +86,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 			BlockRotation blockRotation = BlockRotation.random(this.random);
 			int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator);
 			if (k >= 60) {
-				BlockPos blockPos = new BlockPos(i * 16 + 8, k, j * 16 + 8);
+				BlockPos blockPos = new BlockPos(ChunkSectionPos.method_32205(i, 8), k, ChunkSectionPos.method_32205(j, 8));
 				EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);
 				this.setBoundingBoxFromChildren();
 			}

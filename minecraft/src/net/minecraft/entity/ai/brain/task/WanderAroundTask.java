@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.class_5532;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -111,12 +111,12 @@ public class WanderAroundTask extends Task<MobEntity> {
 		}
 	}
 
-	private boolean hasFinishedPath(MobEntity entity, WalkTarget walkTarget, long time) {
+	private boolean hasFinishedPath(MobEntity mobEntity, WalkTarget walkTarget, long time) {
 		BlockPos blockPos = walkTarget.getLookTarget().getBlockPos();
-		this.path = entity.getNavigation().findPathTo(blockPos, 0);
+		this.path = mobEntity.getNavigation().findPathTo(blockPos, 0);
 		this.speed = walkTarget.getSpeed();
-		Brain<?> brain = entity.getBrain();
-		if (this.hasReached(entity, walkTarget)) {
+		Brain<?> brain = mobEntity.getBrain();
+		if (this.hasReached(mobEntity, walkTarget)) {
 			brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 		} else {
 			boolean bl = this.path != null && this.path.reachesTarget();
@@ -130,9 +130,9 @@ public class WanderAroundTask extends Task<MobEntity> {
 				return true;
 			}
 
-			Vec3d vec3d = TargetFinder.findTargetTowards((PathAwareEntity)entity, 10, 7, Vec3d.ofBottomCenter(blockPos));
+			Vec3d vec3d = class_5532.method_31512((PathAwareEntity)mobEntity, 10, 7, Vec3d.ofBottomCenter(blockPos), (float) (Math.PI / 2));
 			if (vec3d != null) {
-				this.path = entity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
+				this.path = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
 				return this.path != null;
 			}
 		}

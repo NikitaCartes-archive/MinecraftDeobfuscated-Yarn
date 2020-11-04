@@ -1,6 +1,7 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -37,6 +38,7 @@ public class EntityStatusS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onEntityStatus(this);
 	}
 
+	@Nullable
 	@Environment(EnvType.CLIENT)
 	public Entity getEntity(World world) {
 		return world.getEntityById(this.id);

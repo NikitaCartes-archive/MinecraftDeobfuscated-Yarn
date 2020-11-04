@@ -20,8 +20,8 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.WeightedPicker;
@@ -39,13 +39,13 @@ public class EnchantmentHelper {
 			return 0;
 		} else {
 			Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
-			NbtList nbtList = stack.getEnchantments();
+			ListTag listTag = stack.getEnchantments();
 
-			for (int i = 0; i < nbtList.size(); i++) {
-				NbtCompound nbtCompound = nbtList.getCompound(i);
-				Identifier identifier2 = Identifier.tryParse(nbtCompound.getString("id"));
+			for (int i = 0; i < listTag.size(); i++) {
+				CompoundTag compoundTag = listTag.getCompound(i);
+				Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
 				if (identifier2 != null && identifier2.equals(identifier)) {
-					return MathHelper.clamp(nbtCompound.getInt("lvl"), 0, 255);
+					return MathHelper.clamp(compoundTag.getInt("lvl"), 0, 255);
 				}
 			}
 
@@ -59,24 +59,24 @@ public class EnchantmentHelper {
 	 * <p>For enchanted books, it retrieves from the item stack's stored than
 	 * regular enchantments.
 	 * 
-	 * @see ItemStack#getEnchantments()
-	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentNbt(ItemStack)
+	 * @see net.minecraft.item.ItemStack#getEnchantments()
+	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentTag(net.minecraft.item.ItemStack)
 	 */
 	public static Map<Enchantment, Integer> get(ItemStack stack) {
-		NbtList nbtList = stack.getItem() == Items.ENCHANTED_BOOK ? EnchantedBookItem.getEnchantmentNbt(stack) : stack.getEnchantments();
-		return fromNbt(nbtList);
+		ListTag listTag = stack.isOf(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantmentTag(stack) : stack.getEnchantments();
+		return fromTag(listTag);
 	}
 
 	/**
 	 * Loads enchantments from an NBT list.
 	 */
-	public static Map<Enchantment, Integer> fromNbt(NbtList list) {
+	public static Map<Enchantment, Integer> fromTag(ListTag tag) {
 		Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
 
-		for (int i = 0; i < list.size(); i++) {
-			NbtCompound nbtCompound = list.getCompound(i);
-			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString("id"))).ifPresent(enchantment -> {
-				Integer var10000 = (Integer)map.put(enchantment, nbtCompound.getInt("lvl"));
+		for (int i = 0; i < tag.size(); i++) {
+			CompoundTag compoundTag = tag.getCompound(i);
+			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(compoundTag.getString("id"))).ifPresent(enchantment -> {
+				Integer var10000 = (Integer)map.put(enchantment, compoundTag.getInt("lvl"));
 			});
 		}
 
@@ -89,40 +89,40 @@ public class EnchantmentHelper {
 	 * <p>For enchanted books, it sets the enchantments to the item stack's
 	 * stored enchantments than regular enchantments.
 	 * 
-	 * @see ItemStack#getEnchantments()
-	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentNbt(ItemStack)
+	 * @see net.minecraft.item.ItemStack#getEnchantments()
+	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentTag(net.minecraft.item.ItemStack)
 	 */
 	public static void set(Map<Enchantment, Integer> enchantments, ItemStack stack) {
-		NbtList nbtList = new NbtList();
+		ListTag listTag = new ListTag();
 
 		for (Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
 			Enchantment enchantment = (Enchantment)entry.getKey();
 			if (enchantment != null) {
 				int i = (Integer)entry.getValue();
-				NbtCompound nbtCompound = new NbtCompound();
-				nbtCompound.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
-				nbtCompound.putShort("lvl", (short)i);
-				nbtList.add(nbtCompound);
-				if (stack.getItem() == Items.ENCHANTED_BOOK) {
+				CompoundTag compoundTag = new CompoundTag();
+				compoundTag.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
+				compoundTag.putShort("lvl", (short)i);
+				listTag.add(compoundTag);
+				if (stack.isOf(Items.ENCHANTED_BOOK)) {
 					EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment, i));
 				}
 			}
 		}
 
-		if (nbtList.isEmpty()) {
+		if (listTag.isEmpty()) {
 			stack.removeSubTag("Enchantments");
-		} else if (stack.getItem() != Items.ENCHANTED_BOOK) {
-			stack.putSubTag("Enchantments", nbtList);
+		} else if (!stack.isOf(Items.ENCHANTED_BOOK)) {
+			stack.putSubTag("Enchantments", listTag);
 		}
 	}
 
 	private static void forEachEnchantment(EnchantmentHelper.Consumer consumer, ItemStack stack) {
 		if (!stack.isEmpty()) {
-			NbtList nbtList = stack.getEnchantments();
+			ListTag listTag = stack.getEnchantments();
 
-			for (int i = 0; i < nbtList.size(); i++) {
-				String string = nbtList.getCompound(i).getString("id");
-				int j = nbtList.getCompound(i).getInt("lvl");
+			for (int i = 0; i < listTag.size(); i++) {
+				String string = listTag.getCompound(i).getString("id");
+				int j = listTag.getCompound(i).getInt("lvl");
 				Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
 			}
 		}
@@ -346,7 +346,7 @@ public class EnchantmentHelper {
 	 */
 	public static ItemStack enchant(Random random, ItemStack target, int level, boolean treasureAllowed) {
 		List<EnchantmentLevelEntry> list = generateEnchantments(random, target, level, treasureAllowed);
-		boolean bl = target.getItem() == Items.BOOK;
+		boolean bl = target.isOf(Items.BOOK);
 		if (bl) {
 			target = new ItemStack(Items.ENCHANTED_BOOK);
 		}
@@ -432,7 +432,7 @@ public class EnchantmentHelper {
 	public static List<EnchantmentLevelEntry> getPossibleEntries(int power, ItemStack stack, boolean treasureAllowed) {
 		List<EnchantmentLevelEntry> list = Lists.<EnchantmentLevelEntry>newArrayList();
 		Item item = stack.getItem();
-		boolean bl = stack.getItem() == Items.BOOK;
+		boolean bl = stack.isOf(Items.BOOK);
 
 		for (Enchantment enchantment : Registry.ENCHANTMENT) {
 			if ((!enchantment.isTreasure() || treasureAllowed) && enchantment.isAvailableForRandomSelection() && (enchantment.type.isAcceptableItem(item) || bl)) {

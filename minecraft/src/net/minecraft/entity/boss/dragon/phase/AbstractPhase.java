@@ -49,13 +49,13 @@ public abstract class AbstractPhase implements Phase {
 
 	@Nullable
 	@Override
-	public Vec3d getPathTarget() {
+	public Vec3d getTarget() {
 		return null;
 	}
 
 	@Override
-	public float modifyDamageTaken(DamageSource damageSource, float damage) {
-		return damage;
+	public float modifyDamageTaken(DamageSource damageSource, float f) {
+		return f;
 	}
 
 	@Override

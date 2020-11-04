@@ -12,6 +12,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -70,8 +71,8 @@ public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 			Biome biome,
 			OceanRuinFeatureConfig oceanRuinFeatureConfig
 		) {
-			int k = i * 16;
-			int l = j * 16;
+			int k = ChunkSectionPos.getBlockCoord(i);
+			int l = ChunkSectionPos.getBlockCoord(j);
 			BlockPos blockPos = new BlockPos(k, 90, l);
 			BlockRotation blockRotation = BlockRotation.random(this.random);
 			OceanRuinGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random, oceanRuinFeatureConfig);

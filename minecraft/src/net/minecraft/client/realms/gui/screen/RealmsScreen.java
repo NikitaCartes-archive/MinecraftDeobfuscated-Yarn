@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TickableElement;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.util.NarratorManager;
@@ -26,9 +26,9 @@ public abstract class RealmsScreen extends Screen {
 
 	@Override
 	public void tick() {
-		for (ClickableWidget clickableWidget : this.buttons) {
-			if (clickableWidget instanceof TickableElement) {
-				((TickableElement)clickableWidget).tick();
+		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+			if (abstractButtonWidget instanceof TickableElement) {
+				((TickableElement)abstractButtonWidget).tick();
 			}
 		}
 	}

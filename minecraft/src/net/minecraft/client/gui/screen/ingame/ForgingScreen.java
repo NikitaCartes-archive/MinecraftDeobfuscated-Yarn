@@ -15,7 +15,7 @@ import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class ForgingScreen<T extends ForgingScreenHandler> extends HandledScreen<T> implements ScreenHandlerListener {
-	private Identifier texture;
+	private final Identifier texture;
 
 	public ForgingScreen(T handler, PlayerInventory playerInventory, Text title, Identifier texture) {
 		super(handler, playerInventory, title);
@@ -47,7 +47,7 @@ public class ForgingScreen<T extends ForgingScreenHandler> extends HandledScreen
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
-	protected void renderForeground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void renderForeground(MatrixStack matrixStack, int mouseY, int i, float f) {
 	}
 
 	@Override

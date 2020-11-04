@@ -1,63 +1,65 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5605;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class CreeperEntityModel<T extends Entity> extends CompositeEntityModel<T> {
+public class CreeperEntityModel<T extends Entity> extends class_5597<T> {
+	private final ModelPart field_27406;
 	private final ModelPart head;
-	private final ModelPart helmet;
-	private final ModelPart torso;
-	private final ModelPart rightBackLeg;
-	private final ModelPart leftBackLeg;
-	private final ModelPart rightFrontLeg;
-	private final ModelPart leftFrontLeg;
+	private final ModelPart field_27407;
+	private final ModelPart field_27408;
+	private final ModelPart field_27409;
+	private final ModelPart field_27410;
 
-	public CreeperEntityModel() {
-		this(0.0F);
+	public CreeperEntityModel(ModelPart modelPart) {
+		this.field_27406 = modelPart;
+		this.head = modelPart.method_32086("head");
+		this.field_27408 = modelPart.method_32086("right_hind_leg");
+		this.field_27407 = modelPart.method_32086("left_hind_leg");
+		this.field_27410 = modelPart.method_32086("right_front_leg");
+		this.field_27409 = modelPart.method_32086("left_front_leg");
 	}
 
-	public CreeperEntityModel(float scale) {
-		int i = 6;
-		this.head = new ModelPart(this, 0, 0);
-		this.head.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, scale);
-		this.head.setPivot(0.0F, 6.0F, 0.0F);
-		this.helmet = new ModelPart(this, 32, 0);
-		this.helmet.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, scale + 0.5F);
-		this.helmet.setPivot(0.0F, 6.0F, 0.0F);
-		this.torso = new ModelPart(this, 16, 16);
-		this.torso.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, scale);
-		this.torso.setPivot(0.0F, 6.0F, 0.0F);
-		this.rightBackLeg = new ModelPart(this, 0, 16);
-		this.rightBackLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, scale);
-		this.rightBackLeg.setPivot(-2.0F, 18.0F, 4.0F);
-		this.leftBackLeg = new ModelPart(this, 0, 16);
-		this.leftBackLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, scale);
-		this.leftBackLeg.setPivot(2.0F, 18.0F, 4.0F);
-		this.rightFrontLeg = new ModelPart(this, 0, 16);
-		this.rightFrontLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, scale);
-		this.rightFrontLeg.setPivot(-2.0F, 18.0F, -4.0F);
-		this.leftFrontLeg = new ModelPart(this, 0, 16);
-		this.leftFrontLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, scale);
-		this.leftFrontLeg.setPivot(2.0F, 18.0F, -4.0F);
+	public static class_5607 method_31991(class_5605 arg) {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
+		lv2.method_32117(
+			"head", class_5606.method_32108().method_32101(0, 0).method_32098(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, arg), class_5603.method_32090(0.0F, 6.0F, 0.0F)
+		);
+		lv2.method_32117(
+			"body", class_5606.method_32108().method_32101(16, 16).method_32098(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, arg), class_5603.method_32090(0.0F, 6.0F, 0.0F)
+		);
+		class_5606 lv3 = class_5606.method_32108().method_32101(0, 16).method_32098(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, arg);
+		lv2.method_32117("right_hind_leg", lv3, class_5603.method_32090(-2.0F, 18.0F, 4.0F));
+		lv2.method_32117("left_hind_leg", lv3, class_5603.method_32090(2.0F, 18.0F, 4.0F));
+		lv2.method_32117("right_front_leg", lv3, class_5603.method_32090(-2.0F, 18.0F, -4.0F));
+		lv2.method_32117("left_front_leg", lv3, class_5603.method_32090(2.0F, 18.0F, -4.0F));
+		return class_5607.method_32110(lv, 64, 32);
 	}
 
 	@Override
-	public Iterable<ModelPart> getParts() {
-		return ImmutableList.<ModelPart>of(this.head, this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg);
+	public ModelPart method_32008() {
+		return this.field_27406;
 	}
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
 		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
-		this.rightBackLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
-		this.leftBackLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-		this.rightFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-		this.leftFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+		this.field_27407.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+		this.field_27408.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
+		this.field_27409.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
+		this.field_27410.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
 	}
 }

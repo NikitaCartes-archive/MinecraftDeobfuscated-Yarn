@@ -17,49 +17,51 @@ public class PoweredRailBlock extends AbstractRailBlock {
 
 	protected PoweredRailBlock(AbstractBlock.Settings settings) {
 		super(true, settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(SHAPE, RailShape.NORTH_SOUTH).with(POWERED, Boolean.valueOf(false)));
+		this.setDefaultState(
+			this.stateManager.getDefaultState().with(SHAPE, RailShape.NORTH_SOUTH).with(POWERED, Boolean.valueOf(false)).with(field_27096, Boolean.valueOf(false))
+		);
 	}
 
-	protected boolean isPoweredByOtherRails(World world, BlockPos pos, BlockState state, boolean bl, int distance) {
+	protected boolean isPoweredByOtherRails(World world, BlockPos pos, BlockState state, boolean boolean4, int distance) {
 		if (distance >= 8) {
 			return false;
 		} else {
 			int i = pos.getX();
 			int j = pos.getY();
 			int k = pos.getZ();
-			boolean bl2 = true;
+			boolean bl = true;
 			RailShape railShape = state.get(SHAPE);
 			switch (railShape) {
 				case NORTH_SOUTH:
-					if (bl) {
+					if (boolean4) {
 						k++;
 					} else {
 						k--;
 					}
 					break;
 				case EAST_WEST:
-					if (bl) {
+					if (boolean4) {
 						i--;
 					} else {
 						i++;
 					}
 					break;
 				case ASCENDING_EAST:
-					if (bl) {
+					if (boolean4) {
 						i--;
 					} else {
 						i++;
 						j++;
-						bl2 = false;
+						bl = false;
 					}
 
 					railShape = RailShape.EAST_WEST;
 					break;
 				case ASCENDING_WEST:
-					if (bl) {
+					if (boolean4) {
 						i--;
 						j++;
-						bl2 = false;
+						bl = false;
 					} else {
 						i++;
 					}
@@ -67,21 +69,21 @@ public class PoweredRailBlock extends AbstractRailBlock {
 					railShape = RailShape.EAST_WEST;
 					break;
 				case ASCENDING_NORTH:
-					if (bl) {
+					if (boolean4) {
 						k++;
 					} else {
 						k--;
 						j++;
-						bl2 = false;
+						bl = false;
 					}
 
 					railShape = RailShape.NORTH_SOUTH;
 					break;
 				case ASCENDING_SOUTH:
-					if (bl) {
+					if (boolean4) {
 						k++;
 						j++;
-						bl2 = false;
+						bl = false;
 					} else {
 						k--;
 					}
@@ -89,9 +91,9 @@ public class PoweredRailBlock extends AbstractRailBlock {
 					railShape = RailShape.NORTH_SOUTH;
 			}
 
-			return this.isPoweredByOtherRails(world, new BlockPos(i, j, k), bl, distance, railShape)
+			return this.isPoweredByOtherRails(world, new BlockPos(i, j, k), boolean4, distance, railShape)
 				? true
-				: bl2 && this.isPoweredByOtherRails(world, new BlockPos(i, j - 1, k), bl, distance, railShape);
+				: bl && this.isPoweredByOtherRails(world, new BlockPos(i, j - 1, k), boolean4, distance, railShape);
 		}
 	}
 
@@ -257,6 +259,6 @@ public class PoweredRailBlock extends AbstractRailBlock {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(SHAPE, POWERED);
+		builder.add(SHAPE, POWERED, field_27096);
 	}
 }

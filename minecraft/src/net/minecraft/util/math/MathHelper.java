@@ -23,58 +23,58 @@ public class MathHelper {
 	private static final double[] ARCSINE_TABLE = new double[257];
 	private static final double[] COSINE_TABLE = new double[257];
 
-	public static float sin(float value) {
-		return SINE_TABLE[(int)(value * 10430.378F) & 65535];
+	public static float sin(float f) {
+		return SINE_TABLE[(int)(f * 10430.378F) & 65535];
 	}
 
-	public static float cos(float value) {
-		return SINE_TABLE[(int)(value * 10430.378F + 16384.0F) & 65535];
+	public static float cos(float f) {
+		return SINE_TABLE[(int)(f * 10430.378F + 16384.0F) & 65535];
 	}
 
-	public static float sqrt(float value) {
-		return (float)Math.sqrt((double)value);
+	public static float sqrt(float f) {
+		return (float)Math.sqrt((double)f);
 	}
 
-	public static float sqrt(double value) {
-		return (float)Math.sqrt(value);
+	public static float sqrt(double d) {
+		return (float)Math.sqrt(d);
 	}
 
-	public static int floor(float value) {
-		int i = (int)value;
-		return value < (float)i ? i - 1 : i;
+	public static int floor(float f) {
+		int i = (int)f;
+		return f < (float)i ? i - 1 : i;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int fastFloor(double value) {
-		return (int)(value + 1024.0) - 1024;
+	public static int fastFloor(double d) {
+		return (int)(d + 1024.0) - 1024;
 	}
 
-	public static int floor(double value) {
-		int i = (int)value;
-		return value < (double)i ? i - 1 : i;
+	public static int floor(double d) {
+		int i = (int)d;
+		return d < (double)i ? i - 1 : i;
 	}
 
-	public static long lfloor(double value) {
-		long l = (long)value;
-		return value < (double)l ? l - 1L : l;
+	public static long lfloor(double d) {
+		long l = (long)d;
+		return d < (double)l ? l - 1L : l;
 	}
 
-	public static float abs(float value) {
-		return Math.abs(value);
+	public static float abs(float f) {
+		return Math.abs(f);
 	}
 
-	public static int abs(int value) {
-		return Math.abs(value);
+	public static int abs(int i) {
+		return Math.abs(i);
 	}
 
-	public static int ceil(float value) {
-		int i = (int)value;
-		return value > (float)i ? i + 1 : i;
+	public static int ceil(float f) {
+		int i = (int)f;
+		return f > (float)i ? i + 1 : i;
 	}
 
-	public static int ceil(double value) {
-		int i = (int)value;
-		return value > (double)i ? i + 1 : i;
+	public static int ceil(double d) {
+		int i = (int)d;
+		return d > (double)i ? i + 1 : i;
 	}
 
 	public static int clamp(int value, int min, int max) {
@@ -118,20 +118,20 @@ public class MathHelper {
 		}
 	}
 
-	public static double absMax(double a, double b) {
-		if (a < 0.0) {
-			a = -a;
+	public static double absMax(double d, double e) {
+		if (d < 0.0) {
+			d = -d;
 		}
 
-		if (b < 0.0) {
-			b = -b;
+		if (e < 0.0) {
+			e = -e;
 		}
 
-		return a > b ? a : b;
+		return d > e ? d : e;
 	}
 
-	public static int floorDiv(int dividend, int divisor) {
-		return Math.floorDiv(dividend, divisor);
+	public static int floorDiv(int i, int j) {
+		return Math.floorDiv(i, j);
 	}
 
 	public static int nextInt(Random random, int min, int max) {
@@ -165,67 +165,58 @@ public class MathHelper {
 		return Math.abs(b - a) < 1.0E-5F;
 	}
 
-	public static int floorMod(int dividend, int divisor) {
-		return Math.floorMod(dividend, divisor);
+	public static int floorMod(int i, int j) {
+		return Math.floorMod(i, j);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static float floorMod(float dividend, float divisor) {
-		return (dividend % divisor + divisor) % divisor;
+	public static float floorMod(float f, float g) {
+		return (f % g + g) % g;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static double floorMod(double dividend, double divisor) {
-		return (dividend % divisor + divisor) % divisor;
+	public static double floorMod(double d, double e) {
+		return (d % e + e) % e;
 	}
 
-	/**
-	 * Wraps an angle in degrees to the interval {@code [-180, 180)}.
-	 */
 	@Environment(EnvType.CLIENT)
-	public static int wrapDegrees(int degrees) {
-		int i = degrees % 360;
-		if (i >= 180) {
-			i -= 360;
+	public static int wrapDegrees(int i) {
+		int j = i % 360;
+		if (j >= 180) {
+			j -= 360;
 		}
 
-		if (i < -180) {
-			i += 360;
+		if (j < -180) {
+			j += 360;
 		}
 
-		return i;
+		return j;
 	}
 
-	/**
-	 * Wraps an angle in degrees to the interval {@code [-180, 180)}.
-	 */
-	public static float wrapDegrees(float degrees) {
-		float f = degrees % 360.0F;
-		if (f >= 180.0F) {
-			f -= 360.0F;
+	public static float wrapDegrees(float f) {
+		float g = f % 360.0F;
+		if (g >= 180.0F) {
+			g -= 360.0F;
 		}
 
-		if (f < -180.0F) {
-			f += 360.0F;
+		if (g < -180.0F) {
+			g += 360.0F;
 		}
 
-		return f;
+		return g;
 	}
 
-	/**
-	 * Wraps an angle in degrees to the interval {@code [-180, 180)}.
-	 */
-	public static double wrapDegrees(double degrees) {
-		double d = degrees % 360.0;
-		if (d >= 180.0) {
-			d -= 360.0;
+	public static double wrapDegrees(double d) {
+		double e = d % 360.0;
+		if (e >= 180.0) {
+			e -= 360.0;
 		}
 
-		if (d < -180.0) {
-			d += 360.0;
+		if (e < -180.0) {
+			e += 360.0;
 		}
 
-		return d;
+		return e;
 	}
 
 	public static float subtractAngles(float start, float end) {
@@ -256,7 +247,7 @@ public class MathHelper {
 	/**
 	 * Steps from {@code from} degrees towards {@code to} degrees, changing the value by at most {@code step} degrees.
 	 * 
-	 * <p>This method does not wrap the resulting angle, so {@link #stepAngleTowards(float, float, float)} should be used in preference.
+	 * <p>This method does not wrap the resulting angle, so {@link #stepAngleTowards(float, float, float)} should be used in preference.</p>
 	 */
 	public static float stepUnwrappedAngleTowards(float from, float to, float step) {
 		float f = subtractAngles(from, to);
@@ -278,44 +269,23 @@ public class MathHelper {
 		return i + 1;
 	}
 
-	public static boolean isPowerOfTwo(int value) {
-		return value != 0 && (value & value - 1) == 0;
+	public static boolean isPowerOfTwo(int i) {
+		return i != 0 && (i & i - 1) == 0;
 	}
 
-	public static int log2DeBruijn(int value) {
-		value = isPowerOfTwo(value) ? value : smallestEncompassingPowerOfTwo(value);
-		return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int)((long)value * 125613361L >> 27) & 31];
+	public static int log2DeBruijn(int i) {
+		i = isPowerOfTwo(i) ? i : smallestEncompassingPowerOfTwo(i);
+		return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int)((long)i * 125613361L >> 27) & 31];
 	}
 
-	public static int log2(int value) {
-		return log2DeBruijn(value) - (isPowerOfTwo(value) ? 0 : 1);
+	public static int log2(int i) {
+		return log2DeBruijn(i) - (isPowerOfTwo(i) ? 0 : 1);
 	}
 
-	/**
-	 * Returns a value farther than or as far as {@code value} from zero that
-	 * is a multiple of {@code divisor}.
-	 */
-	public static int roundUpToMultiple(int value, int divisor) {
-		if (divisor == 0) {
-			return 0;
-		} else if (value == 0) {
-			return divisor;
-		} else {
-			if (value < 0) {
-				divisor *= -1;
-			}
-
-			int i = value % divisor;
-			return i == 0 ? value : value + divisor - i;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
 	public static int packRgb(float r, float g, float b) {
 		return packRgb(floor(r * 255.0F), floor(g * 255.0F), floor(b * 255.0F));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static int packRgb(int r, int g, int b) {
 		int i = (r << 8) + g;
 		return (i << 8) + b;
@@ -354,9 +324,9 @@ public class MathHelper {
 	 * This is the delta value needed to lerp between {@code start} and {@code end} to get {@code value}.
 	 * In other words, {@code getLerpProgress(lerp(delta, start, end), start, end) == delta}.
 	 * 
-	 * @param value the result of the lerp function
-	 * @param start the value interpolated from
-	 * @param end the value interpolated to
+	 * @param value The result of the lerp function
+	 * @param start The value interpolated from
+	 * @param end The value interpolated to
 	 */
 	public static double getLerpProgress(double value, double start, double end) {
 		return (value - start) / (end - start);
@@ -487,12 +457,12 @@ public class MathHelper {
 		return n << 16 | o << 8 | p;
 	}
 
-	public static int idealHash(int value) {
-		value ^= value >>> 16;
-		value *= -2048144789;
-		value ^= value >>> 13;
-		value *= -1028477387;
-		return value ^ value >>> 16;
+	public static int idealHash(int i) {
+		i ^= i >>> 16;
+		i *= -2048144789;
+		i ^= i >>> 13;
+		i *= -1028477387;
+		return i ^ i >>> 16;
 	}
 
 	public static int binarySearch(int start, int end, IntPredicate leftPredicate) {
@@ -523,57 +493,57 @@ public class MathHelper {
 	/**
 	 * A two-dimensional lerp between values on the 4 corners of the unit square. Arbitrary values are specified for the corners and the output is interpolated between them.
 	 * 
-	 * @param deltaX the x-coordinate on the unit square
-	 * @param deltaY the y-coordinate on the unit square
-	 * @param x0y0 the output if {@code deltaX} is 0 and {@code deltaY} is 0
-	 * @param x1y0 the output if {@code deltaX} is 1 and {@code deltaY} is 0
-	 * @param x0y1 the output if {@code deltaX} is 0 and {@code deltaY} is 1
-	 * @param x1y1 the output if {@code deltaX} is 1 and {@code deltaY} is 1
+	 * @param deltaX The x-coordinate on the unit square
+	 * @param deltaY The y-coordinate on the unit square
+	 * @param val00 The output if {@code deltaX} is 0 and {@code deltaY} is 0
+	 * @param val10 The output if {@code deltaX} is 1 and {@code deltaY} is 0
+	 * @param val01 The output if {@code deltaX} is 0 and {@code deltaY} is 1
+	 * @param val11 The output if {@code deltaX} is 1 and {@code deltaY} is 1
 	 */
-	public static double lerp2(double deltaX, double deltaY, double x0y0, double x1y0, double x0y1, double x1y1) {
-		return lerp(deltaY, lerp(deltaX, x0y0, x1y0), lerp(deltaX, x0y1, x1y1));
+	public static double lerp2(double deltaX, double deltaY, double val00, double val10, double val01, double val11) {
+		return lerp(deltaY, lerp(deltaX, val00, val10), lerp(deltaX, val01, val11));
 	}
 
 	/**
 	 * A three-dimensional lerp between values on the 8 corners of the unit cube. Arbitrary values are specified for the corners and the output is interpolated between them.
 	 * 
-	 * @param deltaX the x-coordinate on the unit cube
-	 * @param deltaY the y-coordinate on the unit cube
-	 * @param deltaZ the z-coordinate on the unit cube
-	 * @param x0y0z0 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
-	 * @param x1y0z0 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
-	 * @param x0y1z0 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
-	 * @param x1y1z0 the output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 0
-	 * @param x0y0z1 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
-	 * @param x1y0z1 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
-	 * @param x0y1z1 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
-	 * @param x1y1z1 the output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 1
+	 * @param deltaX The x-coordinate on the unit cube
+	 * @param deltaY The y-coordinate on the unit cube
+	 * @param deltaZ The z-coordinate on the unit cube
+	 * @param val000 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
+	 * @param val100 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
+	 * @param val010 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
+	 * @param val110 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 0
+	 * @param val001 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
+	 * @param val101 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
+	 * @param val011 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
+	 * @param val111 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 1
 	 */
 	public static double lerp3(
 		double deltaX,
 		double deltaY,
 		double deltaZ,
-		double x0y0z0,
-		double x1y0z0,
-		double x0y1z0,
-		double x1y1z0,
-		double x0y0z1,
-		double x1y0z1,
-		double x0y1z1,
-		double x1y1z1
+		double val000,
+		double val100,
+		double val010,
+		double val110,
+		double val001,
+		double val101,
+		double val011,
+		double val111
 	) {
-		return lerp(deltaZ, lerp2(deltaX, deltaY, x0y0z0, x1y0z0, x0y1z0, x1y1z0), lerp2(deltaX, deltaY, x0y0z1, x1y0z1, x0y1z1, x1y1z1));
+		return lerp(deltaZ, lerp2(deltaX, deltaY, val000, val100, val010, val110), lerp2(deltaX, deltaY, val001, val101, val011, val111));
 	}
 
-	public static double perlinFade(double value) {
-		return value * value * value * (value * (value * 6.0 - 15.0) + 10.0);
+	public static double perlinFade(double d) {
+		return d * d * d * (d * (d * 6.0 - 15.0) + 10.0);
 	}
 
-	public static int sign(double value) {
-		if (value == 0.0) {
+	public static int sign(double d) {
+		if (d == 0.0) {
 			return 0;
 		} else {
-			return value > 0.0 ? 1 : -1;
+			return d > 0.0 ? 1 : -1;
 		}
 	}
 
@@ -618,6 +588,14 @@ public class MathHelper {
 
 	public static float square(float n) {
 		return n * n;
+	}
+
+	/**
+	 * Returns a value farther than or as far as {@code value} from zero that
+	 * is a multiple of {@code divisor}.
+	 */
+	public static int roundUpToMultiple(int i, int j) {
+		return (i + j - 1) / j * j;
 	}
 
 	static {

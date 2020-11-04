@@ -19,19 +19,19 @@ public class BiomeLayerSampler {
 		this.sampler = layerFactory.make();
 	}
 
-	public Biome sample(Registry<Biome> biomeRegistry, int x, int z) {
-		int i = this.sampler.sample(x, z);
-		RegistryKey<Biome> registryKey = BuiltinBiomes.fromRawId(i);
+	public Biome sample(Registry<Biome> registry, int i, int j) {
+		int k = this.sampler.sample(i, j);
+		RegistryKey<Biome> registryKey = BuiltinBiomes.fromRawId(k);
 		if (registryKey == null) {
-			throw new IllegalStateException("Unknown biome id emitted by layers: " + i);
+			throw new IllegalStateException("Unknown biome id emitted by layers: " + k);
 		} else {
-			Biome biome = biomeRegistry.get(registryKey);
+			Biome biome = registry.get(registryKey);
 			if (biome == null) {
 				if (SharedConstants.isDevelopment) {
-					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Unknown biome id: " + i));
+					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Unknown biome id: " + k));
 				} else {
-					LOGGER.warn("Unknown biome id: ", i);
-					return biomeRegistry.get(BuiltinBiomes.fromRawId(0));
+					LOGGER.warn("Unknown biome id: {}", k);
+					return registry.get(BuiltinBiomes.fromRawId(0));
 				}
 			} else {
 				return biome;

@@ -3,6 +3,7 @@ package net.minecraft.util.math;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.Vector3f;
 import org.apache.commons.lang3.tuple.Triple;
 
 public final class Matrix3f {
@@ -10,15 +11,15 @@ public final class Matrix3f {
 	private static final float COS_PI_OVER_EIGHT = (float)Math.cos(Math.PI / 8);
 	private static final float SIN_PI_OVER_EIGHT = (float)Math.sin(Math.PI / 8);
 	private static final float SQRT_HALF = 1.0F / (float)Math.sqrt(2.0);
-	protected float a00;
-	protected float a01;
-	protected float a02;
-	protected float a10;
-	protected float a11;
-	protected float a12;
-	protected float a20;
-	protected float a21;
-	protected float a22;
+	public float a00;
+	public float a01;
+	public float a02;
+	public float a10;
+	public float a11;
+	public float a12;
+	public float a20;
+	public float a21;
+	public float a22;
 
 	public Matrix3f() {
 	}
@@ -57,16 +58,16 @@ public final class Matrix3f {
 		return matrix3f;
 	}
 
-	public Matrix3f(Matrix4f matrix) {
-		this.a00 = matrix.a00;
-		this.a01 = matrix.a01;
-		this.a02 = matrix.a02;
-		this.a10 = matrix.a10;
-		this.a11 = matrix.a11;
-		this.a12 = matrix.a12;
-		this.a20 = matrix.a20;
-		this.a21 = matrix.a21;
-		this.a22 = matrix.a22;
+	public Matrix3f(Matrix4f source) {
+		this.a00 = source.a00;
+		this.a01 = source.a01;
+		this.a02 = source.a02;
+		this.a10 = source.a10;
+		this.a11 = source.a11;
+		this.a12 = source.a12;
+		this.a20 = source.a20;
+		this.a21 = source.a21;
+		this.a22 = source.a22;
 	}
 
 	public Matrix3f(Matrix3f source) {
@@ -193,7 +194,7 @@ public final class Matrix3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Triple<Quaternion, Vec3f, Quaternion> decomposeLinearTransformation() {
+	public Triple<Quaternion, Vector3f, Quaternion> decomposeLinearTransformation() {
 		Quaternion quaternion = Quaternion.IDENTITY.copy();
 		Quaternion quaternion2 = Quaternion.IDENTITY.copy();
 		Matrix3f matrix3f = this.copy();
@@ -261,8 +262,8 @@ public final class Matrix3f {
 		matrix3f5.multiply(matrix3f4);
 		f = 1.0F / f;
 		quaternion.scale((float)Math.sqrt((double)f));
-		Vec3f vec3f = new Vec3f(matrix3f5.a00 * f, matrix3f5.a11 * f, matrix3f5.a22 * f);
-		return Triple.of(quaternion, vec3f, quaternion2);
+		Vector3f vector3f = new Vector3f(matrix3f5.a00 * f, matrix3f5.a11 * f, matrix3f5.a22 * f);
+		return Triple.of(quaternion, vector3f, quaternion2);
 	}
 
 	public boolean equals(Object object) {

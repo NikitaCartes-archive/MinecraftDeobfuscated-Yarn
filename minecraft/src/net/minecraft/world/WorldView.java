@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
@@ -113,7 +114,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	}
 
 	default Chunk getChunk(BlockPos pos) {
-		return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
+		return this.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 	}
 
 	default Chunk getChunk(int chunkX, int chunkZ) {
@@ -126,7 +127,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Nullable
 	@Override
-	default BlockView getChunkAsView(int chunkX, int chunkZ) {
+	default BlockView getExistingChunk(int chunkX, int chunkZ) {
 		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
 	}
 
@@ -169,7 +170,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Deprecated
 	default boolean isChunkLoaded(BlockPos pos) {
-		return this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
+		return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 	}
 
 	@Deprecated
@@ -179,7 +180,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Deprecated
 	default boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		if (maxY >= 0 && minY < 256) {
+		if (maxY >= this.getBottomHeightLimit() && minY < this.getTopHeightLimit()) {
 			minX >>= 4;
 			minZ >>= 4;
 			maxX >>= 4;

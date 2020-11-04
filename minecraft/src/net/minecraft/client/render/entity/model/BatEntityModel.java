@@ -1,14 +1,20 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5597;
+import net.minecraft.class_5603;
+import net.minecraft.class_5606;
+import net.minecraft.class_5607;
+import net.minecraft.class_5609;
+import net.minecraft.class_5610;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BatEntityModel extends CompositeEntityModel<BatEntity> {
+public class BatEntityModel extends class_5597<BatEntity> {
+	private final ModelPart field_27393;
 	private final ModelPart head;
 	private final ModelPart body;
 	private final ModelPart rightWing;
@@ -16,42 +22,57 @@ public class BatEntityModel extends CompositeEntityModel<BatEntity> {
 	private final ModelPart rightWingTip;
 	private final ModelPart leftWingTip;
 
-	public BatEntityModel() {
-		this.textureWidth = 64;
-		this.textureHeight = 64;
-		this.head = new ModelPart(this, 0, 0);
-		this.head.addCuboid(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F);
-		ModelPart modelPart = new ModelPart(this, 24, 0);
-		modelPart.addCuboid(-4.0F, -6.0F, -2.0F, 3.0F, 4.0F, 1.0F);
-		this.head.addChild(modelPart);
-		ModelPart modelPart2 = new ModelPart(this, 24, 0);
-		modelPart2.mirror = true;
-		modelPart2.addCuboid(1.0F, -6.0F, -2.0F, 3.0F, 4.0F, 1.0F);
-		this.head.addChild(modelPart2);
-		this.body = new ModelPart(this, 0, 16);
-		this.body.addCuboid(-3.0F, 4.0F, -3.0F, 6.0F, 12.0F, 6.0F);
-		this.body.setTextureOffset(0, 34).addCuboid(-5.0F, 16.0F, 0.0F, 10.0F, 6.0F, 1.0F);
-		this.rightWing = new ModelPart(this, 42, 0);
-		this.rightWing.addCuboid(-12.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F);
-		this.rightWingTip = new ModelPart(this, 24, 16);
-		this.rightWingTip.setPivot(-12.0F, 1.0F, 1.5F);
-		this.rightWingTip.addCuboid(-8.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F);
-		this.leftWing = new ModelPart(this, 42, 0);
-		this.leftWing.mirror = true;
-		this.leftWing.addCuboid(2.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F);
-		this.leftWingTip = new ModelPart(this, 24, 16);
-		this.leftWingTip.mirror = true;
-		this.leftWingTip.setPivot(12.0F, 1.0F, 1.5F);
-		this.leftWingTip.addCuboid(0.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F);
-		this.body.addChild(this.rightWing);
-		this.body.addChild(this.leftWing);
-		this.rightWing.addChild(this.rightWingTip);
-		this.leftWing.addChild(this.leftWingTip);
+	public BatEntityModel(ModelPart modelPart) {
+		this.field_27393 = modelPart;
+		this.head = modelPart.method_32086("head");
+		this.body = modelPart.method_32086("body");
+		this.rightWing = this.body.method_32086("right_wing");
+		this.rightWingTip = this.rightWing.method_32086("right_wing_tip");
+		this.leftWing = this.body.method_32086("left_wing");
+		this.leftWingTip = this.leftWing.method_32086("left_wing_tip");
+	}
+
+	public static class_5607 method_31980() {
+		class_5609 lv = new class_5609();
+		class_5610 lv2 = lv.method_32111();
+		class_5610 lv3 = lv2.method_32117(
+			"head", class_5606.method_32108().method_32101(0, 0).method_32097(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F), class_5603.field_27701
+		);
+		lv3.method_32117("right_ear", class_5606.method_32108().method_32101(24, 0).method_32097(-4.0F, -6.0F, -2.0F, 3.0F, 4.0F, 1.0F), class_5603.field_27701);
+		lv3.method_32117(
+			"left_ear", class_5606.method_32108().method_32101(24, 0).method_32096().method_32097(1.0F, -6.0F, -2.0F, 3.0F, 4.0F, 1.0F), class_5603.field_27701
+		);
+		class_5610 lv4 = lv2.method_32117(
+			"body",
+			class_5606.method_32108()
+				.method_32101(0, 16)
+				.method_32097(-3.0F, 4.0F, -3.0F, 6.0F, 12.0F, 6.0F)
+				.method_32101(0, 34)
+				.method_32097(-5.0F, 16.0F, 0.0F, 10.0F, 6.0F, 1.0F),
+			class_5603.field_27701
+		);
+		class_5610 lv5 = lv4.method_32117(
+			"right_wing", class_5606.method_32108().method_32101(42, 0).method_32097(-12.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F), class_5603.field_27701
+		);
+		lv5.method_32117(
+			"right_wing_tip",
+			class_5606.method_32108().method_32101(24, 16).method_32097(-8.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F),
+			class_5603.method_32090(-12.0F, 1.0F, 1.5F)
+		);
+		class_5610 lv6 = lv4.method_32117(
+			"left_wing", class_5606.method_32108().method_32101(42, 0).method_32096().method_32097(2.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F), class_5603.field_27701
+		);
+		lv6.method_32117(
+			"left_wing_tip",
+			class_5606.method_32108().method_32101(24, 16).method_32096().method_32097(0.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F),
+			class_5603.method_32090(12.0F, 1.0F, 1.5F)
+		);
+		return class_5607.method_32110(lv, 64, 64);
 	}
 
 	@Override
-	public Iterable<ModelPart> getParts() {
-		return ImmutableList.<ModelPart>of(this.head, this.body);
+	public ModelPart method_32008() {
+		return this.field_27393;
 	}
 
 	public void setAngles(BatEntity batEntity, float f, float g, float h, float i, float j) {

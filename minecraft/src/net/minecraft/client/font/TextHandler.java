@@ -102,12 +102,12 @@ public class TextHandler {
 	public String trimToWidthBackwards(String text, int maxWidth, Style style) {
 		MutableFloat mutableFloat = new MutableFloat();
 		MutableInt mutableInt = new MutableInt(text.length());
-		TextVisitFactory.visitBackwards(text, style, (index, stylex, codePoint) -> {
+		TextVisitFactory.visitBackwards(text, style, (j, stylex, codePoint) -> {
 			float f = mutableFloat.addAndGet(this.widthRetriever.getWidth(codePoint, stylex));
 			if (f > (float)maxWidth) {
 				return false;
 			} else {
-				mutableInt.setValue(index);
+				mutableInt.setValue(j);
 				return true;
 			}
 		});
@@ -247,9 +247,9 @@ public class TextHandler {
 		return list;
 	}
 
-	public List<StringVisitable> wrapLines(StringVisitable text, int maxWidth, Style style) {
+	public List<StringVisitable> wrapLines(StringVisitable stringVisitable, int maxWidth, Style style) {
 		List<StringVisitable> list = Lists.<StringVisitable>newArrayList();
-		this.method_29971(text, maxWidth, style, (stringVisitable, boolean_) -> list.add(stringVisitable));
+		this.method_29971(stringVisitable, maxWidth, style, (stringVisitablex, boolean_) -> list.add(stringVisitablex));
 		return list;
 	}
 

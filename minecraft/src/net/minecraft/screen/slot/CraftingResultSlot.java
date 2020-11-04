@@ -76,7 +76,7 @@ public class CraftingResultSlot extends Slot {
 				} else if (ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2)) {
 					itemStack2.increment(itemStack.getCount());
 					this.input.setStack(i, itemStack2);
-				} else if (!this.player.inventory.insertStack(itemStack2)) {
+				} else if (!this.player.getInventory().insertStack(itemStack2)) {
 					this.player.dropItem(itemStack2, false);
 				}
 			}

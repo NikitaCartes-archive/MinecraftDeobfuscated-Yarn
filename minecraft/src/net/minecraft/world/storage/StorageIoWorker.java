@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -29,12 +29,12 @@ public class StorageIoWorker implements AutoCloseable {
 	private final RegionBasedStorage storage;
 	private final Map<ChunkPos, StorageIoWorker.Result> results = Maps.<ChunkPos, StorageIoWorker.Result>newLinkedHashMap();
 
-	protected StorageIoWorker(File file, boolean bl, String string) {
+	public StorageIoWorker(File file, boolean bl, String string) {
 		this.storage = new RegionBasedStorage(file, bl);
 		this.field_24468 = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + string);
 	}
 
-	public CompletableFuture<Void> setResult(ChunkPos pos, NbtCompound nbt) {
+	public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable CompoundTag nbt) {
 		return this.run(() -> {
 			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.computeIfAbsent(pos, chunkPosx -> new StorageIoWorker.Result(nbt));
 			result.nbt = nbt;
@@ -43,24 +43,11 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	@Nullable
-	public NbtCompound getNbt(ChunkPos pos) throws IOException {
-		CompletableFuture<NbtCompound> completableFuture = this.run(() -> {
-			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(pos);
-			if (result != null) {
-				return Either.left(result.nbt);
-			} else {
-				try {
-					NbtCompound nbtCompound = this.storage.getTagAt(pos);
-					return Either.left(nbtCompound);
-				} catch (Exception var4x) {
-					LOGGER.warn("Failed to read chunk {}", pos, var4x);
-					return Either.right(var4x);
-				}
-			}
-		});
+	public CompoundTag getNbt(ChunkPos pos) throws IOException {
+		CompletableFuture<CompoundTag> completableFuture = this.method_31738(pos);
 
 		try {
-			return (NbtCompound)completableFuture.join();
+			return (CompoundTag)completableFuture.join();
 		} catch (CompletionException var4) {
 			if (var4.getCause() instanceof IOException) {
 				throw (IOException)var4.getCause();
@@ -68,6 +55,23 @@ public class StorageIoWorker implements AutoCloseable {
 				throw var4;
 			}
 		}
+	}
+
+	public CompletableFuture<CompoundTag> method_31738(ChunkPos chunkPos) {
+		return this.run(() -> {
+			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(chunkPos);
+			if (result != null) {
+				return Either.left(result.nbt);
+			} else {
+				try {
+					CompoundTag compoundTag = this.storage.getTagAt(chunkPos);
+					return Either.left(compoundTag);
+				} catch (Exception var4) {
+					LOGGER.warn("Failed to read chunk {}", chunkPos, var4);
+					return Either.right(var4);
+				}
+			}
+		});
 	}
 
 	public CompletableFuture<Void> completeAll() {
@@ -88,10 +92,10 @@ public class StorageIoWorker implements AutoCloseable {
 			}));
 	}
 
-	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> task) {
-		return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.HIGH.ordinal(), () -> {
+	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> supplier) {
+		return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.FOREGROUND.ordinal(), () -> {
 				if (!this.closed.get()) {
-					messageListener.send(task.get());
+					messageListener.send(supplier.get());
 				}
 
 				this.method_27945();
@@ -109,7 +113,7 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	private void method_27945() {
-		this.field_24468.send(new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.LOW.ordinal(), this::writeResult));
+		this.field_24468.send(new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.BACKGROUND.ordinal(), this::writeResult));
 	}
 
 	private void write(ChunkPos pos, StorageIoWorker.Result result) {
@@ -124,42 +128,32 @@ public class StorageIoWorker implements AutoCloseable {
 
 	public void close() throws IOException {
 		if (this.closed.compareAndSet(false, true)) {
-			CompletableFuture<Unit> completableFuture = this.field_24468
-				.ask(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.HIGH.ordinal(), () -> messageListener.send(Unit.INSTANCE)));
-
-			try {
-				completableFuture.join();
-			} catch (CompletionException var4) {
-				if (var4.getCause() instanceof IOException) {
-					throw (IOException)var4.getCause();
-				}
-
-				throw var4;
-			}
-
+			this.field_24468
+				.ask(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.SHUTDOWN.ordinal(), () -> messageListener.send(Unit.INSTANCE)))
+				.join();
 			this.field_24468.close();
-			this.results.forEach(this::write);
-			this.results.clear();
 
 			try {
 				this.storage.close();
-			} catch (Exception var3) {
-				LOGGER.error("Failed to close storage", (Throwable)var3);
+			} catch (Exception var2) {
+				LOGGER.error("Failed to close storage", (Throwable)var2);
 			}
 		}
 	}
 
 	static enum Priority {
-		HIGH,
-		LOW;
+		FOREGROUND,
+		BACKGROUND,
+		SHUTDOWN;
 	}
 
 	static class Result {
-		private NbtCompound nbt;
+		@Nullable
+		private CompoundTag nbt;
 		private final CompletableFuture<Void> future = new CompletableFuture();
 
-		public Result(NbtCompound nbtCompound) {
-			this.nbt = nbtCompound;
+		public Result(@Nullable CompoundTag compoundTag) {
+			this.nbt = compoundTag;
 		}
 	}
 }

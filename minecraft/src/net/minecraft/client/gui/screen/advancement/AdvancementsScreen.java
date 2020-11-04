@@ -22,9 +22,9 @@ import net.minecraft.util.Identifier;
 public class AdvancementsScreen extends Screen implements ClientAdvancementManager.Listener {
 	private static final Identifier WINDOW_TEXTURE = new Identifier("textures/gui/advancements/window.png");
 	private static final Identifier TABS_TEXTURE = new Identifier("textures/gui/advancements/tabs.png");
-	private static final Text SAD_LABEL_TEXT = new TranslatableText("advancements.sad_label");
-	private static final Text EMPTY_TEXT = new TranslatableText("advancements.empty");
-	private static final Text ADVANCEMENTS_TEXT = new TranslatableText("gui.advancements");
+	private static final Text field_26553 = new TranslatableText("advancements.sad_label");
+	private static final Text field_26554 = new TranslatableText("advancements.empty");
+	private static final Text field_26555 = new TranslatableText("gui.advancements");
 	private final ClientAdvancementManager advancementHandler;
 	private final Map<Advancement, AdvancementTab> tabs = Maps.<Advancement, AdvancementTab>newLinkedHashMap();
 	private AdvancementTab selectedTab;
@@ -110,33 +110,33 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		}
 	}
 
-	private void drawAdvancementTree(MatrixStack matrices, int mouseY, int i, int j, int k) {
+	private void drawAdvancementTree(MatrixStack matrixStack, int mouseY, int i, int j, int k) {
 		AdvancementTab advancementTab = this.selectedTab;
 		if (advancementTab == null) {
-			fill(matrices, j + 9, k + 18, j + 9 + 234, k + 18 + 113, -16777216);
+			fill(matrixStack, j + 9, k + 18, j + 9 + 234, k + 18 + 113, -16777216);
 			int l = j + 9 + 117;
-			drawCenteredText(matrices, this.textRenderer, EMPTY_TEXT, l, k + 18 + 56 - 9 / 2, -1);
-			drawCenteredText(matrices, this.textRenderer, SAD_LABEL_TEXT, l, k + 18 + 113 - 9, -1);
+			drawCenteredText(matrixStack, this.textRenderer, field_26554, l, k + 18 + 56 - 9 / 2, -1);
+			drawCenteredText(matrixStack, this.textRenderer, field_26553, l, k + 18 + 113 - 9, -1);
 		} else {
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef((float)(j + 9), (float)(k + 18), 0.0F);
-			advancementTab.render(matrices);
+			advancementTab.render(matrixStack);
 			RenderSystem.popMatrix();
 			RenderSystem.depthFunc(515);
 			RenderSystem.disableDepthTest();
 		}
 	}
 
-	public void drawWidgets(MatrixStack matrices, int i, int j) {
+	public void drawWidgets(MatrixStack matrixStack, int i, int j) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		this.client.getTextureManager().bindTexture(WINDOW_TEXTURE);
-		this.drawTexture(matrices, i, j, 0, 0, 252, 140);
+		this.drawTexture(matrixStack, i, j, 0, 0, 252, 140);
 		if (this.tabs.size() > 1) {
 			this.client.getTextureManager().bindTexture(TABS_TEXTURE);
 
 			for (AdvancementTab advancementTab : this.tabs.values()) {
-				advancementTab.drawBackground(matrices, i, j, advancementTab == this.selectedTab);
+				advancementTab.drawBackground(matrixStack, i, j, advancementTab == this.selectedTab);
 			}
 
 			RenderSystem.enableRescaleNormal();
@@ -149,16 +149,16 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			RenderSystem.disableBlend();
 		}
 
-		this.textRenderer.draw(matrices, ADVANCEMENTS_TEXT, (float)(i + 8), (float)(j + 6), 4210752);
+		this.textRenderer.draw(matrixStack, field_26555, (float)(i + 8), (float)(j + 6), 4210752);
 	}
 
-	private void drawWidgetTooltip(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawWidgetTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.selectedTab != null) {
 			RenderSystem.pushMatrix();
 			RenderSystem.enableDepthTest();
 			RenderSystem.translatef((float)(k + 9), (float)(l + 18), 400.0F);
-			this.selectedTab.drawWidgetTooltip(matrices, i - k - 9, j - l - 18, k, l);
+			this.selectedTab.drawWidgetTooltip(matrixStack, i - k - 9, j - l - 18, k, l);
 			RenderSystem.disableDepthTest();
 			RenderSystem.popMatrix();
 		}
@@ -166,7 +166,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		if (this.tabs.size() > 1) {
 			for (AdvancementTab advancementTab : this.tabs.values()) {
 				if (advancementTab.isClickOnTab(k, l, (double)i, (double)j)) {
-					this.renderTooltip(matrices, advancementTab.getTitle(), i, j);
+					this.renderTooltip(matrixStack, advancementTab.getTitle(), i, j);
 				}
 			}
 		}

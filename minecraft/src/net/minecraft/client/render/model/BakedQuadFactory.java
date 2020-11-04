@@ -6,17 +6,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.util.math.AffineTransformations;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.AffineTransformation;
-import net.minecraft.util.math.AffineTransformations;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.Vector4f;
 
 @Environment(EnvType.CLIENT)
 public class BakedQuadFactory {
@@ -24,8 +24,8 @@ public class BakedQuadFactory {
 	private static final float MAX_SCALE = 1.0F / (float)Math.cos((float) (Math.PI / 4)) - 1.0F;
 
 	public BakedQuad bake(
-		Vec3f from,
-		Vec3f to,
+		Vector3f from,
+		Vector3f to,
 		ModelElementFace face,
 		Sprite texture,
 		Direction side,
@@ -35,7 +35,7 @@ public class BakedQuadFactory {
 		Identifier modelId
 	) {
 		ModelElementTexture modelElementTexture = face.textureData;
-		if (settings.isUvLocked()) {
+		if (settings.isShaded()) {
 			modelElementTexture = uvLock(face.textureData, side, settings.getRotation(), modelId);
 		}
 
@@ -93,10 +93,10 @@ public class BakedQuadFactory {
 		}
 
 		float r = (float)Math.toRadians((double)texture.rotation);
-		Vec3f vec3f = new Vec3f(MathHelper.cos(r), MathHelper.sin(r), 0.0F);
+		Vector3f vector3f = new Vector3f(MathHelper.cos(r), MathHelper.sin(r), 0.0F);
 		Matrix3f matrix3f = new Matrix3f(matrix4f);
-		vec3f.transform(matrix3f);
-		int s = Math.floorMod(-((int)Math.round(Math.toDegrees(Math.atan2((double)vec3f.getY(), (double)vec3f.getX())) / 90.0)) * 90, 360);
+		vector3f.transform(matrix3f);
+		int s = Math.floorMod(-((int)Math.round(Math.toDegrees(Math.atan2((double)vector3f.getY(), (double)vector3f.getX())) / 90.0)) * 90, 360);
 		return new ModelElementTexture(new float[]{n, p, o, q}, s);
 	}
 
@@ -118,7 +118,7 @@ public class BakedQuadFactory {
 		return is;
 	}
 
-	private float[] getPositionMatrix(Vec3f from, Vec3f to) {
+	private float[] getPositionMatrix(Vector3f from, Vector3f to) {
 		float[] fs = new float[Direction.values().length];
 		fs[CubeFace.DirectionIds.WEST] = from.getX() / 16.0F;
 		fs[CubeFace.DirectionIds.DOWN] = from.getY() / 16.0F;
@@ -141,13 +141,13 @@ public class BakedQuadFactory {
 		boolean shaded
 	) {
 		CubeFace.Corner corner = CubeFace.getFace(direction).getCorner(cornerIndex);
-		Vec3f vec3f = new Vec3f(positionMatrix[corner.xSide], positionMatrix[corner.ySide], positionMatrix[corner.zSide]);
-		this.rotateVertex(vec3f, rotation);
-		this.transformVertex(vec3f, orientation);
-		this.packVertexData(vertices, cornerIndex, vec3f, sprite, texture);
+		Vector3f vector3f = new Vector3f(positionMatrix[corner.xSide], positionMatrix[corner.ySide], positionMatrix[corner.zSide]);
+		this.rotateVertex(vector3f, rotation);
+		this.transformVertex(vector3f, orientation);
+		this.packVertexData(vertices, cornerIndex, vector3f, sprite, texture);
 	}
 
-	private void packVertexData(int[] vertices, int cornerIndex, Vec3f position, Sprite sprite, ModelElementTexture modelElementTexture) {
+	private void packVertexData(int[] vertices, int cornerIndex, Vector3f position, Sprite sprite, ModelElementTexture modelElementTexture) {
 		int i = cornerIndex * 8;
 		vertices[i] = Float.floatToRawIntBits(position.getX());
 		vertices[i + 1] = Float.floatToRawIntBits(position.getY());
@@ -157,51 +157,51 @@ public class BakedQuadFactory {
 		vertices[i + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV((double)modelElementTexture.getV(cornerIndex)));
 	}
 
-	private void rotateVertex(Vec3f vector, @Nullable net.minecraft.client.render.model.json.ModelRotation rotation) {
+	private void rotateVertex(Vector3f vector, @Nullable net.minecraft.client.render.model.json.ModelRotation rotation) {
 		if (rotation != null) {
-			Vec3f vec3f;
-			Vec3f vec3f2;
+			Vector3f vector3f;
+			Vector3f vector3f2;
 			switch (rotation.axis) {
 				case X:
-					vec3f = new Vec3f(1.0F, 0.0F, 0.0F);
-					vec3f2 = new Vec3f(0.0F, 1.0F, 1.0F);
+					vector3f = new Vector3f(1.0F, 0.0F, 0.0F);
+					vector3f2 = new Vector3f(0.0F, 1.0F, 1.0F);
 					break;
 				case Y:
-					vec3f = new Vec3f(0.0F, 1.0F, 0.0F);
-					vec3f2 = new Vec3f(1.0F, 0.0F, 1.0F);
+					vector3f = new Vector3f(0.0F, 1.0F, 0.0F);
+					vector3f2 = new Vector3f(1.0F, 0.0F, 1.0F);
 					break;
 				case Z:
-					vec3f = new Vec3f(0.0F, 0.0F, 1.0F);
-					vec3f2 = new Vec3f(1.0F, 1.0F, 0.0F);
+					vector3f = new Vector3f(0.0F, 0.0F, 1.0F);
+					vector3f2 = new Vector3f(1.0F, 1.0F, 0.0F);
 					break;
 				default:
 					throw new IllegalArgumentException("There are only 3 axes");
 			}
 
-			Quaternion quaternion = new Quaternion(vec3f, rotation.angle, true);
+			Quaternion quaternion = new Quaternion(vector3f, rotation.angle, true);
 			if (rotation.rescale) {
 				if (Math.abs(rotation.angle) == 22.5F) {
-					vec3f2.scale(MIN_SCALE);
+					vector3f2.scale(MIN_SCALE);
 				} else {
-					vec3f2.scale(MAX_SCALE);
+					vector3f2.scale(MAX_SCALE);
 				}
 
-				vec3f2.add(1.0F, 1.0F, 1.0F);
+				vector3f2.add(1.0F, 1.0F, 1.0F);
 			} else {
-				vec3f2.set(1.0F, 1.0F, 1.0F);
+				vector3f2.set(1.0F, 1.0F, 1.0F);
 			}
 
-			this.transformVertex(vector, rotation.origin.copy(), new Matrix4f(quaternion), vec3f2);
+			this.transformVertex(vector, rotation.origin.copy(), new Matrix4f(quaternion), vector3f2);
 		}
 	}
 
-	public void transformVertex(Vec3f vertex, AffineTransformation transformation) {
+	public void transformVertex(Vector3f vertex, AffineTransformation transformation) {
 		if (transformation != AffineTransformation.identity()) {
-			this.transformVertex(vertex, new Vec3f(0.5F, 0.5F, 0.5F), transformation.getMatrix(), new Vec3f(1.0F, 1.0F, 1.0F));
+			this.transformVertex(vertex, new Vector3f(0.5F, 0.5F, 0.5F), transformation.getMatrix(), new Vector3f(1.0F, 1.0F, 1.0F));
 		}
 	}
 
-	private void transformVertex(Vec3f vertex, Vec3f origin, Matrix4f transformationMatrix, Vec3f scale) {
+	private void transformVertex(Vector3f vertex, Vector3f origin, Matrix4f transformationMatrix, Vector3f scale) {
 		Vector4f vector4f = new Vector4f(vertex.getX() - origin.getX(), vertex.getY() - origin.getY(), vertex.getZ() - origin.getZ(), 1.0F);
 		vector4f.transform(transformationMatrix);
 		vector4f.multiplyComponentwise(scale);
@@ -209,23 +209,25 @@ public class BakedQuadFactory {
 	}
 
 	public static Direction decodeDirection(int[] rotationMatrix) {
-		Vec3f vec3f = new Vec3f(Float.intBitsToFloat(rotationMatrix[0]), Float.intBitsToFloat(rotationMatrix[1]), Float.intBitsToFloat(rotationMatrix[2]));
-		Vec3f vec3f2 = new Vec3f(Float.intBitsToFloat(rotationMatrix[8]), Float.intBitsToFloat(rotationMatrix[9]), Float.intBitsToFloat(rotationMatrix[10]));
-		Vec3f vec3f3 = new Vec3f(Float.intBitsToFloat(rotationMatrix[16]), Float.intBitsToFloat(rotationMatrix[17]), Float.intBitsToFloat(rotationMatrix[18]));
-		Vec3f vec3f4 = vec3f.copy();
-		vec3f4.subtract(vec3f2);
-		Vec3f vec3f5 = vec3f3.copy();
-		vec3f5.subtract(vec3f2);
-		Vec3f vec3f6 = vec3f5.copy();
-		vec3f6.cross(vec3f4);
-		vec3f6.normalize();
+		Vector3f vector3f = new Vector3f(Float.intBitsToFloat(rotationMatrix[0]), Float.intBitsToFloat(rotationMatrix[1]), Float.intBitsToFloat(rotationMatrix[2]));
+		Vector3f vector3f2 = new Vector3f(Float.intBitsToFloat(rotationMatrix[8]), Float.intBitsToFloat(rotationMatrix[9]), Float.intBitsToFloat(rotationMatrix[10]));
+		Vector3f vector3f3 = new Vector3f(
+			Float.intBitsToFloat(rotationMatrix[16]), Float.intBitsToFloat(rotationMatrix[17]), Float.intBitsToFloat(rotationMatrix[18])
+		);
+		Vector3f vector3f4 = vector3f.copy();
+		vector3f4.subtract(vector3f2);
+		Vector3f vector3f5 = vector3f3.copy();
+		vector3f5.subtract(vector3f2);
+		Vector3f vector3f6 = vector3f5.copy();
+		vector3f6.cross(vector3f4);
+		vector3f6.normalize();
 		Direction direction = null;
 		float f = 0.0F;
 
 		for (Direction direction2 : Direction.values()) {
 			Vec3i vec3i = direction2.getVector();
-			Vec3f vec3f7 = new Vec3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
-			float g = vec3f6.dot(vec3f7);
+			Vector3f vector3f7 = new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
+			float g = vector3f6.dot(vector3f7);
 			if (g >= 0.0F && g > f) {
 				f = g;
 				direction = direction2;

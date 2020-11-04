@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -9,13 +10,14 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
 public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
+	private final Supplier<ConfiguredFeature<?, ?>> field_27194;
 
-	public MushroomPlantBlock(AbstractBlock.Settings settings) {
+	public MushroomPlantBlock(AbstractBlock.Settings settings, Supplier<ConfiguredFeature<?, ?>> supplier) {
 		super(settings);
+		this.field_27194 = supplier;
 	}
 
 	@Override
@@ -65,24 +67,12 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 		return blockState.isIn(BlockTags.MUSHROOM_GROW_BLOCK) ? true : world.getBaseLightLevel(pos, 0) < 13 && this.canPlantOnTop(blockState, world, blockPos);
 	}
 
-	public boolean trySpawningBigMushroom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
-		world.removeBlock(pos, false);
-		ConfiguredFeature<?, ?> configuredFeature;
-		if (this == Blocks.BROWN_MUSHROOM) {
-			configuredFeature = ConfiguredFeatures.HUGE_BROWN_MUSHROOM;
-		} else {
-			if (this != Blocks.RED_MUSHROOM) {
-				world.setBlockState(pos, state, 3);
-				return false;
-			}
-
-			configuredFeature = ConfiguredFeatures.HUGE_RED_MUSHROOM;
-		}
-
-		if (configuredFeature.generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
+	public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos pos, BlockState state, Random random) {
+		serverWorld.removeBlock(pos, false);
+		if (((ConfiguredFeature)this.field_27194.get()).generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
 			return true;
 		} else {
-			world.setBlockState(pos, state, 3);
+			serverWorld.setBlockState(pos, state, 3);
 			return false;
 		}
 	}

@@ -23,7 +23,7 @@ public class ElytraSoundInstance extends MovingSoundInstance {
 	@Override
 	public void tick() {
 		this.tickCount++;
-		if (!this.player.removed && (this.tickCount <= 20 || this.player.isFallFlying())) {
+		if (!this.player.isRemoved() && (this.tickCount <= 20 || this.player.isFallFlying())) {
 			this.x = (double)((float)this.player.getX());
 			this.y = (double)((float)this.player.getY());
 			this.z = (double)((float)this.player.getZ());

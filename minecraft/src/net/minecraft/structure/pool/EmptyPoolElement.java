@@ -35,13 +35,13 @@ public class EmptyPoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		StructureWorldAccess world,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		BlockPos pos,
 		BlockPos blockPos,
-		BlockRotation rotation,
-		BlockBox box,
+		BlockPos blockPos2,
+		BlockRotation blockRotation,
+		BlockBox blockBox,
 		Random random,
 		boolean keepJigsaws
 	) {

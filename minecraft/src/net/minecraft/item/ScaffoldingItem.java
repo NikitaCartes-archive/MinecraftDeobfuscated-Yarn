@@ -41,9 +41,9 @@ public class ScaffoldingItem extends BlockItem {
 			BlockPos.Mutable mutable = blockPos.mutableCopy().move(direction);
 
 			while (i < 7) {
-				if (!world.isClient && !World.isInBuildLimit(mutable)) {
+				if (!world.isClient && !world.isInBuildLimit(mutable)) {
 					PlayerEntity playerEntity = context.getPlayer();
-					int j = world.getHeight();
+					int j = world.getTopHeightLimit();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
 						GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(
 							new TranslatableText("build.tooHigh", j).formatted(Formatting.RED), MessageType.GAME_INFO, Util.NIL_UUID

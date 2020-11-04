@@ -19,7 +19,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +30,7 @@ import net.minecraft.world.WorldAccess;
 
 public class BatEntity extends AmbientEntity {
 	/**
-	 * The tracked flags of bats. Only has the {@code 1} bit for {@linkplain
-	 * #isRoosting() roosting}.
+	 * Equals 0 when the bat is flying, and 1 when it's roosting.
 	 */
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(4.0).includeTeammates();
@@ -143,7 +142,7 @@ public class BatEntity extends AmbientEntity {
 				}
 			}
 		} else {
-			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() < 1)) {
+			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() <= this.world.getBottomHeightLimit())) {
 				this.hangingPosition = null;
 			}
 
@@ -204,15 +203,15 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.dataTracker.set(BAT_FLAGS, nbt.getByte("BatFlags"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.dataTracker.set(BAT_FLAGS, tag.getByte("BatFlags"));
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
 	}
 
 	public static boolean canSpawn(EntityType<BatEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

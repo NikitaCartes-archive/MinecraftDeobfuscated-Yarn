@@ -20,7 +20,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -126,16 +126,16 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("ExplosionPower", this.fireballStrength);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("ExplosionPower", this.fireballStrength);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("ExplosionPower", 99)) {
-			this.fireballStrength = nbt.getInt("ExplosionPower");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("ExplosionPower", 99)) {
+			this.fireballStrength = tag.getInt("ExplosionPower");
 		}
 	}
 
@@ -299,7 +299,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 					FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h);
 					fireballEntity.explosionPower = this.ghast.getFireballStrength();
-					fireballEntity.setPosition(this.ghast.getX() + vec3d.x * 4.0, this.ghast.getBodyY(0.5) + 0.5, fireballEntity.getZ() + vec3d.z * 4.0);
+					fireballEntity.updatePosition(this.ghast.getX() + vec3d.x * 4.0, this.ghast.getBodyY(0.5) + 0.5, fireballEntity.getZ() + vec3d.z * 4.0);
 					world.spawnEntity(fireballEntity);
 					this.cooldown = -40;
 				}

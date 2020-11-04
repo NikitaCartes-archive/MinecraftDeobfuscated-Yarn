@@ -24,11 +24,12 @@ import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.option.AttackIndicator;
-import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.options.AttackIndicator;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.Sprite;
@@ -76,6 +77,7 @@ public class InGameHud extends DrawableHelper {
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	private static final Identifier PUMPKIN_BLUR = new Identifier("textures/misc/pumpkinblur.png");
+	private static final Identifier SPYGLASS_SCOPE = new Identifier("textures/misc/spyglass_scope.png");
 	private static final Text DEMO_EXPIRED_MESSAGE = new TranslatableText("demo.demoExpired");
 	private final Random random = new Random();
 	private final MinecraftClient client;
@@ -151,9 +153,13 @@ public class InGameHud extends DrawableHelper {
 			RenderSystem.defaultBlendFunc();
 		}
 
-		ItemStack itemStack = this.client.player.inventory.getArmorStack(3);
-		if (this.client.options.getPerspective().isFirstPerson() && itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
-			this.renderPumpkinOverlay();
+		ItemStack itemStack = this.client.player.getInventory().getArmorStack(3);
+		if (this.client.options.getPerspective().isFirstPerson()) {
+			if (this.client.player.isUsingSpyglass()) {
+				this.renderOverlay(SPYGLASS_SCOPE, 0.5F, -16777216);
+			} else if (itemStack.isOf(Blocks.CARVED_PUMPKIN.asItem())) {
+				this.renderOverlay(PUMPKIN_BLUR);
+			}
 		}
 
 		float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
@@ -349,7 +355,7 @@ public class InGameHud extends DrawableHelper {
 		GameOptions gameOptions = this.client.options;
 		if (gameOptions.getPerspective().isFirstPerson()) {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
-				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.hasReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
+				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.getZOffset());
 					Camera camera = this.client.gameRenderer.getCamera();
@@ -471,7 +477,7 @@ public class InGameHud extends DrawableHelper {
 			int l = 91;
 			this.setZOffset(-90);
 			this.drawTexture(matrices, i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
-			this.drawTexture(matrices, i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
+			this.drawTexture(matrices, i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
 			if (!itemStack.isEmpty()) {
 				if (arm == Arm.LEFT) {
 					this.drawTexture(matrices, i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
@@ -488,7 +494,7 @@ public class InGameHud extends DrawableHelper {
 			for (int m = 0; m < 9; m++) {
 				int n = i - 90 + m * 20 + 2;
 				int o = this.scaledHeight - 16 - 3;
-				this.renderHotbarItem(n, o, tickDelta, playerEntity, playerEntity.inventory.main.get(m));
+				this.renderHotbarItem(n, o, tickDelta, playerEntity, playerEntity.getInventory().main.get(m));
 			}
 
 			if (!itemStack.isEmpty()) {
@@ -634,7 +640,7 @@ public class InGameHud extends DrawableHelper {
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
 			Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-			Text text2 = Team.decorateName(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
+			Text text2 = Team.modifyText(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
 			list2.add(Pair.of(scoreboardPlayerScore, text2));
 			j = Math.max(j, this.getFontRenderer().getWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
 		}
@@ -914,21 +920,72 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	private void renderPumpkinOverlay() {
+	private void renderOverlay(Identifier texture) {
+		this.renderOverlay(texture, 0.0F, 0);
+	}
+
+	private void renderOverlay(Identifier texture, float scale, int color) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.disableAlphaTest();
-		this.client.getTextureManager().bindTexture(PUMPKIN_BLUR);
+		this.client.getTextureManager().bindTexture(texture);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0F, 1.0F).next();
-		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0F, 0.0F).next();
-		bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0F, 0.0F).next();
-		tessellator.draw();
+		if (scale == 0.0F) {
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+			bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0F, 1.0F).next();
+			bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0F, 1.0F).next();
+			bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0F, 0.0F).next();
+			bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0F, 0.0F).next();
+			tessellator.draw();
+		} else {
+			float f = (float)Math.min(this.scaledWidth, this.scaledHeight);
+			float g = f * scale;
+			float h = Math.min((float)this.scaledWidth / f, (float)this.scaledHeight / g);
+			float i = f * h;
+			float j = g * h;
+			float k = ((float)this.scaledWidth - i) / 2.0F;
+			float l = ((float)this.scaledHeight - j) / 2.0F;
+			float m = k + i;
+			float n = l + j;
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+			bufferBuilder.vertex((double)k, (double)n, -90.0).texture(0.0F, 1.0F).next();
+			bufferBuilder.vertex((double)m, (double)n, -90.0).texture(1.0F, 1.0F).next();
+			bufferBuilder.vertex((double)m, (double)l, -90.0).texture(1.0F, 0.0F).next();
+			bufferBuilder.vertex((double)k, (double)l, -90.0).texture(0.0F, 0.0F).next();
+			tessellator.draw();
+			int o = BackgroundHelper.ColorMixer.getRed(color);
+			int p = BackgroundHelper.ColorMixer.getGreen(color);
+			int q = BackgroundHelper.ColorMixer.getBlue(color);
+			int r = BackgroundHelper.ColorMixer.getAlpha(color);
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+			bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex((double)this.scaledWidth, (double)n, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex(0.0, (double)n, -90.0).color(o, p, q, r).next();
+			tessellator.draw();
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+			bufferBuilder.vertex(0.0, (double)l, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex((double)this.scaledWidth, (double)l, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex(0.0, 0.0, -90.0).color(o, p, q, r).next();
+			tessellator.draw();
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+			bufferBuilder.vertex(0.0, (double)n, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex((double)k, (double)n, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex((double)k, (double)l, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex(0.0, (double)l, -90.0).color(o, p, q, r).next();
+			tessellator.draw();
+			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+			bufferBuilder.vertex((double)m, (double)n, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex((double)this.scaledWidth, (double)n, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex((double)this.scaledWidth, (double)l, -90.0).color(o, p, q, r).next();
+			bufferBuilder.vertex((double)m, (double)l, -90.0).color(o, p, q, r).next();
+			tessellator.draw();
+		}
+
 		RenderSystem.depthMask(true);
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableAlphaTest();
@@ -946,7 +1003,7 @@ public class InGameHud extends DrawableHelper {
 		WorldBorder worldBorder = this.client.world.getWorldBorder();
 		float f = (float)worldBorder.getDistanceInsideBorder(entity);
 		double d = Math.min(
-			worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getSizeLerpTarget() - worldBorder.getSize())
+			worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getTargetSize() - worldBorder.getSize())
 		);
 		double e = Math.max((double)worldBorder.getWarningBlocks(), d);
 		if ((double)f < e) {
@@ -969,7 +1026,7 @@ public class InGameHud extends DrawableHelper {
 		this.client.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0F, 1.0F).next();
 		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0F, 1.0F).next();
 		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0F, 0.0F).next();
@@ -1001,7 +1058,7 @@ public class InGameHud extends DrawableHelper {
 		float i = sprite.getMaxV();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(f, i).next();
 		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(h, i).next();
 		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(h, g).next();
@@ -1053,10 +1110,10 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		if (this.client.player != null) {
-			ItemStack itemStack = this.client.player.inventory.getMainHandStack();
+			ItemStack itemStack = this.client.player.getInventory().getMainHandStack();
 			if (itemStack.isEmpty()) {
 				this.heldItemTooltipFade = 0;
-			} else if (this.currentStack.isEmpty() || itemStack.getItem() != this.currentStack.getItem() || !itemStack.getName().equals(this.currentStack.getName())) {
+			} else if (this.currentStack.isEmpty() || !itemStack.isOf(this.currentStack.getItem()) || !itemStack.getName().equals(this.currentStack.getName())) {
 				this.heldItemTooltipFade = 40;
 			} else if (this.heldItemTooltipFade > 0) {
 				this.heldItemTooltipFade--;
@@ -1106,16 +1163,16 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	public UUID extractSender(Text message) {
-		String string = TextVisitFactory.method_31402(message);
+		String string = TextVisitFactory.removeFormattingCodes(message);
 		String string2 = StringUtils.substringBetween(string, "<", ">");
-		return string2 == null ? Util.NIL_UUID : this.client.getSocialInteractionsManager().method_31407(string2);
+		return string2 == null ? Util.NIL_UUID : this.client.getSocialInteractionsManager().getUuid(string2);
 	}
 
-	public void addChatMessage(MessageType type, Text message, UUID sender) {
-		if (!this.client.shouldBlockMessages(sender)) {
-			if (!this.client.options.field_26926 || !this.client.shouldBlockMessages(this.extractSender(message))) {
+	public void addChatMessage(MessageType type, Text message, UUID senderUuid) {
+		if (!this.client.shouldBlockMessages(senderUuid)) {
+			if (!this.client.options.hideMatchedNames || !this.client.shouldBlockMessages(this.extractSender(message))) {
 				for (ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
-					clientChatListener.onChatMessage(type, message, sender);
+					clientChatListener.onChatMessage(type, message, senderUuid);
 				}
 			}
 		}
@@ -1137,7 +1194,7 @@ public class InGameHud extends DrawableHelper {
 		return this.spectatorHud;
 	}
 
-	public PlayerListHud getPlayerListHud() {
+	public PlayerListHud getPlayerListWidget() {
 		return this.playerListHud;
 	}
 
@@ -1145,6 +1202,8 @@ public class InGameHud extends DrawableHelper {
 		this.playerListHud.clear();
 		this.bossBarHud.clear();
 		this.client.getToastManager().clear();
+		this.client.options.debugEnabled = false;
+		this.chatHud.clear(true);
 	}
 
 	public BossBarHud getBossBarHud() {

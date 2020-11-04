@@ -5,14 +5,16 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntConsumer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.util.BitSet;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.GlAllocationUtils;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,25 +23,31 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private static final Logger LOGGER = LogManager.getLogger();
 	private ByteBuffer buffer;
 	private final List<BufferBuilder.DrawArrayParameters> parameters = Lists.<BufferBuilder.DrawArrayParameters>newArrayList();
-	private int lastParameterIndex = 0;
-	private int buildStart = 0;
-	private int elementOffset = 0;
-	private int nextDrawStart = 0;
+	private int lastParameterIndex;
+	private int buildStart;
+	private int elementOffset;
+	private int nextDrawStart;
 	private int vertexCount;
 	@Nullable
 	private VertexFormatElement currentElement;
 	private int currentElementId;
-	private int drawMode;
 	private VertexFormat format;
+	private VertexFormat.DrawMode drawMode;
 	private boolean field_21594;
 	private boolean field_21595;
 	private boolean building;
+	@Nullable
+	private Vector3f[] field_27348;
+	private float field_27349 = Float.NaN;
+	private float field_27350 = Float.NaN;
+	private float field_27351 = Float.NaN;
+	private boolean field_27352;
 
 	public BufferBuilder(int initialCapacity) {
-		this.buffer = GlAllocationUtils.allocateByteBuffer(initialCapacity * 4);
+		this.buffer = GlAllocationUtils.allocateByteBuffer(initialCapacity * 6);
 	}
 
-	protected void grow() {
+	private void grow() {
 		this.grow(this.format.getVertexSize());
 	}
 
@@ -70,121 +78,116 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		}
 	}
 
-	public void sortQuads(float cameraX, float cameraY, float cameraZ) {
-		this.buffer.clear();
-		FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
-		int i = this.vertexCount / 4;
-		float[] fs = new float[i];
-
-		for (int j = 0; j < i; j++) {
-			fs[j] = getDistanceSq(floatBuffer, cameraX, cameraY, cameraZ, this.format.getVertexSizeInteger(), this.buildStart / 4 + j * this.format.getVertexSize());
-		}
-
-		int[] is = new int[i];
-		int k = 0;
-
-		while (k < is.length) {
-			is[k] = k++;
-		}
-
-		IntArrays.mergeSort(is, (ix, j) -> Floats.compare(fs[j], fs[ix]));
-		BitSet bitSet = new BitSet();
-		FloatBuffer floatBuffer2 = GlAllocationUtils.allocateFloatBuffer(this.format.getVertexSizeInteger() * 4);
-
-		for (int l = bitSet.nextClearBit(0); l < is.length; l = bitSet.nextClearBit(l + 1)) {
-			int m = is[l];
-			if (m != l) {
-				this.method_22628(floatBuffer, m);
-				floatBuffer2.clear();
-				floatBuffer2.put(floatBuffer);
-				int n = m;
-
-				for (int o = is[m]; n != l; o = is[o]) {
-					this.method_22628(floatBuffer, o);
-					FloatBuffer floatBuffer3 = floatBuffer.slice();
-					this.method_22628(floatBuffer, n);
-					floatBuffer.put(floatBuffer3);
-					bitSet.set(n);
-					n = o;
+	public void method_31948(float f, float g, float h) {
+		if (this.drawMode == VertexFormat.DrawMode.QUADS) {
+			if (this.field_27349 != f || this.field_27350 != g || this.field_27351 != h) {
+				this.field_27349 = f;
+				this.field_27350 = g;
+				this.field_27351 = h;
+				if (this.field_27348 == null) {
+					this.field_27348 = this.method_31954();
 				}
-
-				this.method_22628(floatBuffer, l);
-				floatBuffer2.flip();
-				floatBuffer.put(floatBuffer2);
 			}
-
-			bitSet.set(l);
 		}
 	}
 
-	private void method_22628(FloatBuffer floatBuffer, int i) {
-		int j = this.format.getVertexSizeInteger() * 4;
-		floatBuffer.limit(this.buildStart / 4 + (i + 1) * j);
-		floatBuffer.position(this.buildStart / 4 + i * j);
+	public BufferBuilder.class_5594 popState() {
+		return new BufferBuilder.class_5594(this.drawMode, this.vertexCount, this.field_27348, this.field_27349, this.field_27350, this.field_27351);
 	}
 
-	public BufferBuilder.State popState() {
-		this.buffer.limit(this.elementOffset);
-		this.buffer.position(this.buildStart);
-		ByteBuffer byteBuffer = ByteBuffer.allocate(this.vertexCount * this.format.getVertexSize());
-		byteBuffer.put(this.buffer);
+	public void restoreState(BufferBuilder.class_5594 arg) {
 		this.buffer.clear();
-		return new BufferBuilder.State(byteBuffer, this.format);
+		this.drawMode = arg.field_27358;
+		this.vertexCount = arg.field_27359;
+		this.elementOffset = this.buildStart;
+		this.field_27348 = arg.field_27360;
+		this.field_27349 = arg.field_27361;
+		this.field_27350 = arg.field_27362;
+		this.field_27351 = arg.field_27363;
+		this.field_27352 = true;
 	}
 
-	private static float getDistanceSq(FloatBuffer buffer, float x, float y, float z, int i, int j) {
-		float f = buffer.get(j + i * 0 + 0);
-		float g = buffer.get(j + i * 0 + 1);
-		float h = buffer.get(j + i * 0 + 2);
-		float k = buffer.get(j + i * 1 + 0);
-		float l = buffer.get(j + i * 1 + 1);
-		float m = buffer.get(j + i * 1 + 2);
-		float n = buffer.get(j + i * 2 + 0);
-		float o = buffer.get(j + i * 2 + 1);
-		float p = buffer.get(j + i * 2 + 2);
-		float q = buffer.get(j + i * 3 + 0);
-		float r = buffer.get(j + i * 3 + 1);
-		float s = buffer.get(j + i * 3 + 2);
-		float t = (f + k + n + q) * 0.25F - x;
-		float u = (g + l + o + r) * 0.25F - y;
-		float v = (h + m + p + s) * 0.25F - z;
-		return t * t + u * u + v * v;
-	}
-
-	public void restoreState(BufferBuilder.State state) {
-		state.buffer.clear();
-		int i = state.buffer.capacity();
-		this.grow(i);
-		this.buffer.limit(this.buffer.capacity());
-		this.buffer.position(this.buildStart);
-		this.buffer.put(state.buffer);
-		this.buffer.clear();
-		VertexFormat vertexFormat = state.format;
-		this.method_23918(vertexFormat);
-		this.vertexCount = i / vertexFormat.getVertexSize();
-		this.elementOffset = this.buildStart + this.vertexCount * vertexFormat.getVertexSize();
-	}
-
-	public void begin(int drawMode, VertexFormat format) {
+	public void begin(VertexFormat.DrawMode drawMode, VertexFormat format) {
 		if (this.building) {
 			throw new IllegalStateException("Already building!");
 		} else {
 			this.building = true;
 			this.drawMode = drawMode;
-			this.method_23918(format);
+			this.setFormat(format);
 			this.currentElement = (VertexFormatElement)format.getElements().get(0);
 			this.currentElementId = 0;
 			this.buffer.clear();
 		}
 	}
 
-	private void method_23918(VertexFormat vertexFormat) {
-		if (this.format != vertexFormat) {
-			this.format = vertexFormat;
-			boolean bl = vertexFormat == VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL;
-			boolean bl2 = vertexFormat == VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
+	private void setFormat(VertexFormat format) {
+		if (this.format != format) {
+			this.format = format;
+			boolean bl = format == VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL;
+			boolean bl2 = format == VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
 			this.field_21594 = bl || bl2;
 			this.field_21595 = bl;
+		}
+	}
+
+	private IntConsumer method_31949(VertexFormat.IntType intType) {
+		switch (intType) {
+			case BYTE:
+				return i -> this.buffer.put((byte)i);
+			case SHORT:
+				return i -> this.buffer.putShort((short)i);
+			case INT:
+			default:
+				return i -> this.buffer.putInt(i);
+		}
+	}
+
+	private Vector3f[] method_31954() {
+		FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
+		int i = this.buildStart / 4;
+		int j = this.format.getVertexSizeInteger();
+		int k = j * this.drawMode.field_27385;
+		int l = this.vertexCount / this.drawMode.field_27385;
+		Vector3f[] vector3fs = new Vector3f[l];
+
+		for (int m = 0; m < l; m++) {
+			float f = floatBuffer.get(i + m * k + 0);
+			float g = floatBuffer.get(i + m * k + 1);
+			float h = floatBuffer.get(i + m * k + 2);
+			float n = floatBuffer.get(i + m * k + j * 2 + 0);
+			float o = floatBuffer.get(i + m * k + j * 2 + 1);
+			float p = floatBuffer.get(i + m * k + j * 2 + 2);
+			float q = (f + n) / 2.0F;
+			float r = (g + o) / 2.0F;
+			float s = (h + p) / 2.0F;
+			vector3fs[m] = new Vector3f(q, r, s);
+		}
+
+		return vector3fs;
+	}
+
+	private void method_31950(VertexFormat.IntType intType) {
+		float[] fs = new float[this.field_27348.length];
+		int[] is = new int[this.field_27348.length];
+
+		for (int i = 0; i < this.field_27348.length; is[i] = i++) {
+			float f = this.field_27348[i].getX() - this.field_27349;
+			float g = this.field_27348[i].getY() - this.field_27350;
+			float h = this.field_27348[i].getZ() - this.field_27351;
+			fs[i] = f * f + g * g + h * h;
+		}
+
+		IntArrays.mergeSort(is, (i, jx) -> Floats.compare(fs[jx], fs[i]));
+		IntConsumer intConsumer = this.method_31949(intType);
+		this.buffer.position(this.elementOffset);
+
+		for (int j : is) {
+			intConsumer.accept(j * this.drawMode.field_27385 + 0);
+			intConsumer.accept(j * this.drawMode.field_27385 + 1);
+			intConsumer.accept(j * this.drawMode.field_27385 + 2);
+			intConsumer.accept(j * this.drawMode.field_27385 + 2);
+			intConsumer.accept(j * this.drawMode.field_27385 + 3);
+			intConsumer.accept(j * this.drawMode.field_27385 + 0);
 		}
 	}
 
@@ -192,12 +195,31 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		if (!this.building) {
 			throw new IllegalStateException("Not building!");
 		} else {
+			int i = this.drawMode.method_31973(this.vertexCount);
+			VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(i);
+			boolean bl;
+			if (this.field_27348 != null) {
+				int j = MathHelper.roundUpToMultiple(i * intType.size, 4);
+				this.grow(j);
+				this.method_31950(intType);
+				bl = false;
+				this.elementOffset += j;
+				this.buildStart = this.buildStart + this.vertexCount * this.format.getVertexSize() + j;
+			} else {
+				bl = true;
+				this.buildStart = this.buildStart + this.vertexCount * this.format.getVertexSize();
+			}
+
 			this.building = false;
-			this.parameters.add(new BufferBuilder.DrawArrayParameters(this.format, this.vertexCount, this.drawMode));
-			this.buildStart = this.buildStart + this.vertexCount * this.format.getVertexSize();
+			this.parameters.add(new BufferBuilder.DrawArrayParameters(this.format, this.vertexCount, i, this.drawMode, intType, this.field_27352, bl));
 			this.vertexCount = 0;
 			this.currentElement = null;
 			this.currentElementId = 0;
+			this.field_27348 = null;
+			this.field_27349 = Float.NaN;
+			this.field_27350 = Float.NaN;
+			this.field_27351 = Float.NaN;
+			this.field_27352 = false;
 		}
 	}
 
@@ -230,7 +252,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	public void nextElement() {
 		ImmutableList<VertexFormatElement> immutableList = this.format.getElements();
 		this.currentElementId = (this.currentElementId + 1) % immutableList.size();
-		this.elementOffset = this.elementOffset + this.currentElement.getByteLength();
+		this.elementOffset = this.elementOffset + this.currentElement.getSize();
 		VertexFormatElement vertexFormatElement = (VertexFormatElement)immutableList.get(this.currentElementId);
 		this.currentElement = vertexFormatElement;
 		if (vertexFormatElement.getType() == VertexFormatElement.Type.PADDING) {
@@ -304,7 +326,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	public Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> popData() {
 		BufferBuilder.DrawArrayParameters drawArrayParameters = (BufferBuilder.DrawArrayParameters)this.parameters.get(this.lastParameterIndex++);
 		this.buffer.position(this.nextDrawStart);
-		this.nextDrawStart = this.nextDrawStart + drawArrayParameters.getCount() * drawArrayParameters.getVertexFormat().getVertexSize();
+		this.nextDrawStart = this.nextDrawStart + MathHelper.roundUpToMultiple(drawArrayParameters.method_31958(), 4);
 		this.buffer.limit(this.nextDrawStart);
 		if (this.lastParameterIndex == this.parameters.size() && this.vertexCount == 0) {
 			this.clear();
@@ -317,7 +339,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 
 	public void clear() {
 		if (this.buildStart != this.nextDrawStart) {
-			LOGGER.warn("Bytes mismatch " + this.buildStart + " " + this.nextDrawStart);
+			LOGGER.warn("Bytes mismatch {} {}", this.buildStart, this.nextDrawStart);
 		}
 
 		this.reset();
@@ -348,12 +370,22 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	public static final class DrawArrayParameters {
 		private final VertexFormat vertexFormat;
 		private final int count;
-		private final int mode;
+		private final int field_27354;
+		private final VertexFormat.DrawMode mode;
+		private final VertexFormat.IntType field_27355;
+		private final boolean field_27356;
+		private final boolean field_27357;
 
-		private DrawArrayParameters(VertexFormat vertexFormat, int count, int mode) {
+		private DrawArrayParameters(
+			VertexFormat vertexFormat, int count, int mode, VertexFormat.DrawMode drawMode, VertexFormat.IntType intType, boolean bl, boolean bl2
+		) {
 			this.vertexFormat = vertexFormat;
 			this.count = count;
-			this.mode = mode;
+			this.field_27354 = mode;
+			this.mode = drawMode;
+			this.field_27355 = intType;
+			this.field_27356 = bl;
+			this.field_27357 = bl2;
 		}
 
 		public VertexFormat getVertexFormat() {
@@ -364,19 +396,56 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			return this.count;
 		}
 
-		public int getMode() {
+		public int method_31955() {
+			return this.field_27354;
+		}
+
+		public VertexFormat.DrawMode getMode() {
 			return this.mode;
+		}
+
+		public VertexFormat.IntType method_31956() {
+			return this.field_27355;
+		}
+
+		public int method_31957() {
+			return this.count * this.vertexFormat.getVertexSize();
+		}
+
+		private int method_31961() {
+			return this.field_27357 ? 0 : this.field_27354 * this.field_27355.size;
+		}
+
+		public int method_31958() {
+			return this.method_31957() + this.method_31961();
+		}
+
+		public boolean method_31959() {
+			return this.field_27356;
+		}
+
+		public boolean method_31960() {
+			return this.field_27357;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class State {
-		private final ByteBuffer buffer;
-		private final VertexFormat format;
+	public static class class_5594 {
+		private final VertexFormat.DrawMode field_27358;
+		private final int field_27359;
+		@Nullable
+		private final Vector3f[] field_27360;
+		private final float field_27361;
+		private final float field_27362;
+		private final float field_27363;
 
-		private State(ByteBuffer buffer, VertexFormat format) {
-			this.buffer = buffer;
-			this.format = format;
+		private class_5594(VertexFormat.DrawMode drawMode, int i, @Nullable Vector3f[] vector3fs, float f, float g, float h) {
+			this.field_27358 = drawMode;
+			this.field_27359 = i;
+			this.field_27360 = vector3fs;
+			this.field_27361 = f;
+			this.field_27362 = g;
+			this.field_27363 = h;
 		}
 	}
 }

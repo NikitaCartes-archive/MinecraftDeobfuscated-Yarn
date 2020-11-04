@@ -61,7 +61,7 @@ public class BlockColors {
 			(state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getWaterColor(world, pos) : -1,
 			Blocks.WATER,
 			Blocks.BUBBLE_COLUMN,
-			Blocks.CAULDRON
+			Blocks.WATER_CAULDRON
 		);
 		blockColors.registerColorProvider(
 			(state, world, pos, tintIndex) -> RedstoneWireBlock.getWireColor((Integer)state.get(RedstoneWireBlock.POWER)), Blocks.REDSTONE_WIRE
@@ -88,7 +88,7 @@ public class BlockColors {
 		if (blockColorProvider != null) {
 			return blockColorProvider.getColor(state, null, null, 0);
 		} else {
-			MapColor mapColor = state.getTopMaterialColor(world, pos);
+			MapColor mapColor = state.getMapColor(world, pos);
 			return mapColor != null ? mapColor.color : -1;
 		}
 	}

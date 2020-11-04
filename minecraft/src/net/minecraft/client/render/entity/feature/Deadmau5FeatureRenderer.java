@@ -9,8 +9,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
@@ -41,12 +41,12 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 					- MathHelper.lerp(h, abstractClientPlayerEntity.prevBodyYaw, abstractClientPlayerEntity.bodyYaw);
 				float p = MathHelper.lerp(h, abstractClientPlayerEntity.prevPitch, abstractClientPlayerEntity.pitch);
 				matrixStack.push();
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(o));
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(p));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(o));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(p));
 				matrixStack.translate((double)(0.375F * (float)(n * 2 - 1)), 0.0, 0.0);
 				matrixStack.translate(0.0, -0.375, 0.0);
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-p));
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-o));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-p));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-o));
 				float q = 1.3333334F;
 				matrixStack.scale(1.3333334F, 1.3333334F, 1.3333334F);
 				this.getContextModel().renderEars(matrixStack, vertexConsumer, i, m);

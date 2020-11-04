@@ -1,10 +1,12 @@
 package net.minecraft.client.render.block.entity;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5599;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.font.TextRenderer;
@@ -13,9 +15,10 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.entity.model.ShulkerEntityModel;
-import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -24,40 +27,20 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class BlockEntityRenderDispatcher {
-	private final Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = Maps.<BlockEntityType<?>, BlockEntityRenderer<?>>newHashMap();
-	public static final BlockEntityRenderDispatcher INSTANCE = new BlockEntityRenderDispatcher();
+public class BlockEntityRenderDispatcher implements SynchronousResourceReloadListener {
+	private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = ImmutableMap.of();
 	private final BufferBuilder bufferBuilder = new BufferBuilder(256);
-	private TextRenderer textRenderer;
-	public TextureManager textureManager;
+	private final TextRenderer textRenderer;
+	private final class_5599 field_27746;
 	public World world;
 	public Camera camera;
 	public HitResult crosshairTarget;
+	private final Supplier<BlockRenderManager> field_27747;
 
-	private BlockEntityRenderDispatcher() {
-		this.register(BlockEntityType.SIGN, new SignBlockEntityRenderer(this));
-		this.register(BlockEntityType.MOB_SPAWNER, new MobSpawnerBlockEntityRenderer(this));
-		this.register(BlockEntityType.PISTON, new PistonBlockEntityRenderer(this));
-		this.register(BlockEntityType.CHEST, new ChestBlockEntityRenderer<>(this));
-		this.register(BlockEntityType.ENDER_CHEST, new ChestBlockEntityRenderer<>(this));
-		this.register(BlockEntityType.TRAPPED_CHEST, new ChestBlockEntityRenderer<>(this));
-		this.register(BlockEntityType.ENCHANTING_TABLE, new EnchantingTableBlockEntityRenderer(this));
-		this.register(BlockEntityType.LECTERN, new LecternBlockEntityRenderer(this));
-		this.register(BlockEntityType.END_PORTAL, new EndPortalBlockEntityRenderer<>(this));
-		this.register(BlockEntityType.END_GATEWAY, new EndGatewayBlockEntityRenderer(this));
-		this.register(BlockEntityType.BEACON, new BeaconBlockEntityRenderer(this));
-		this.register(BlockEntityType.SKULL, new SkullBlockEntityRenderer(this));
-		this.register(BlockEntityType.BANNER, new BannerBlockEntityRenderer(this));
-		this.register(BlockEntityType.STRUCTURE_BLOCK, new StructureBlockBlockEntityRenderer(this));
-		this.register(BlockEntityType.SHULKER_BOX, new ShulkerBoxBlockEntityRenderer(new ShulkerEntityModel(), this));
-		this.register(BlockEntityType.BED, new BedBlockEntityRenderer(this));
-		this.register(BlockEntityType.CONDUIT, new ConduitBlockEntityRenderer(this));
-		this.register(BlockEntityType.BELL, new BellBlockEntityRenderer(this));
-		this.register(BlockEntityType.CAMPFIRE, new CampfireBlockEntityRenderer(this));
-	}
-
-	private <E extends BlockEntity> void register(BlockEntityType<E> blockEntityType, BlockEntityRenderer<E> blockEntityRenderer) {
-		this.renderers.put(blockEntityType, blockEntityRenderer);
+	public BlockEntityRenderDispatcher(TextRenderer textRenderer, class_5599 arg, Supplier<BlockRenderManager> supplier) {
+		this.textRenderer = textRenderer;
+		this.field_27746 = arg;
+		this.field_27747 = supplier;
 	}
 
 	@Nullable
@@ -65,22 +48,20 @@ public class BlockEntityRenderDispatcher {
 		return (BlockEntityRenderer<E>)this.renderers.get(blockEntity.getType());
 	}
 
-	public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult crosshairTarget) {
+	public void configure(World world, Camera camera, HitResult hitResult) {
 		if (this.world != world) {
 			this.setWorld(world);
 		}
 
-		this.textureManager = textureManager;
 		this.camera = camera;
-		this.textRenderer = textRenderer;
-		this.crosshairTarget = crosshairTarget;
+		this.crosshairTarget = hitResult;
 	}
 
 	public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
-		if (Vec3d.ofCenter(blockEntity.getPos()).isInRange(this.camera.getPos(), blockEntity.getRenderDistance())) {
+		if (Vec3d.ofCenter(blockEntity.getPos()).isInRange(this.camera.getPos(), blockEntity.getSquaredRenderDistance())) {
 			BlockEntityRenderer<E> blockEntityRenderer = this.get(blockEntity);
 			if (blockEntityRenderer != null) {
-				if (blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
+				if (blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState())) {
 					runReported(blockEntity, () -> render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider));
 				}
 			}
@@ -129,7 +110,11 @@ public class BlockEntityRenderDispatcher {
 		}
 	}
 
-	public TextRenderer getTextRenderer() {
-		return this.textRenderer;
+	@Override
+	public void apply(ResourceManager manager) {
+		BlockEntityRendererFactory.Context context = new BlockEntityRendererFactory.Context(
+			this, (BlockRenderManager)this.field_27747.get(), this.field_27746, this.textRenderer
+		);
+		this.renderers = BlockEntityRendererFactories.reload(context);
 	}
 }

@@ -26,9 +26,9 @@ public class ChunkRandom extends Random {
 		}
 	}
 
-	protected int next(int count) {
+	protected int next(int bound) {
 		this.sampleCount++;
-		return super.next(count);
+		return super.next(bound);
 	}
 
 	/**
@@ -36,7 +36,7 @@ public class ChunkRandom extends Random {
 	 * and the bedrock patterns.
 	 * 
 	 * <p>Note that the terrain seed does not depend on the world seed and only gets affected by
-	 * chunk coordinates.
+	 * chunk coordinates.</p>
 	 */
 	public long setTerrainSeed(int chunkX, int chunkZ) {
 		long l = (long)chunkX * 341873128712L + (long)chunkZ * 132897987541L;
@@ -50,12 +50,12 @@ public class ChunkRandom extends Random {
 	 * <p>This method takes in the world seed and the negative-most block coordinates of the
 	 * chunk. The coordinate pair provided is equivalent to (chunkX * 16, chunkZ * 16). The
 	 * three values are mixed together through some layers of hashing to produce the
-	 * population seed.
+	 * population seed.</p>
 	 * 
 	 * <p>This function has been proved to be reversible through some exploitation of the underlying
 	 * nextLong() weaknesses. It is also important to remember that since setSeed()
 	 * truncates the 16 upper bits of world seed, only the 48 lowest bits affect the population
-	 * seed output.
+	 * seed output.</p>
 	 */
 	public long setPopulationSeed(long worldSeed, int blockX, int blockZ) {
 		this.setSeed(worldSeed);
@@ -74,9 +74,9 @@ public class ChunkRandom extends Random {
 	 * at doing so, many entropy issues arise from the salt being so small and result in
 	 * weird alignments between features that have an index close apart.
 	 * 
-	 * @param populationSeed the population seed computed in {@link #setPopulationSeed(long, int, int)}
-	 * @param index the index of the feature in the feature list
-	 * @param step the generation step's ordinal for this feature
+	 * @param populationSeed The population seed computed in setPopulationSeed().
+	 * @param index The index of the feature in the feature list.
+	 * @param step The generation step's ordinal for this feature.
 	 */
 	public long setDecoratorSeed(long populationSeed, int index, int step) {
 		long l = populationSeed + (long)index + (long)(10000 * step);
@@ -89,7 +89,7 @@ public class ChunkRandom extends Random {
 	 * and strongholds. It is also used to initiate structure start behavior such as rotation.
 	 * 
 	 * <p>Similar to the population seed, only the 48 lowest bits of the world seed affect the
-	 * output since it the upper 16 bits are truncated in the setSeed() call.
+	 * output since it the upper 16 bits are truncated in the setSeed() call.</p>
 	 */
 	public long setCarverSeed(long worldSeed, int chunkX, int chunkZ) {
 		this.setSeed(worldSeed);
@@ -106,10 +106,10 @@ public class ChunkRandom extends Random {
 	 * 
 	 * <p>The region coordinates pair corresponds to the coordinates of the region the seeded
 	 * chunk lies in. For example, a swamp hut region is 32 by 32 chunks meaning that all
-	 * chunks that lie within that region get seeded the same way.
+	 * chunks that lie within that region get seeded the same way.</p>
 	 * 
 	 * <p>Similarly, the upper 16 bits of world seed also do not affect the region seed because
-	 * they get truncated in the setSeed() call.
+	 * they get truncated in the setSeed() call.</p>
 	 */
 	public long setRegionSeed(long worldSeed, int regionX, int regionZ, int salt) {
 		long l = (long)regionX * 341873128712L + (long)regionZ * 132897987541L + worldSeed + (long)salt;

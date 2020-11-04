@@ -110,7 +110,7 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 		private int spreadZ = 7;
 		private boolean canReplace;
 		private boolean project = true;
-		private boolean needsWater = false;
+		private boolean needsWater;
 
 		public Builder(BlockStateProvider stateProvider, BlockPlacer blockPlacer) {
 			this.stateProvider = stateProvider;

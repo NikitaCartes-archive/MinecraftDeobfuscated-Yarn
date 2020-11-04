@@ -15,12 +15,12 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloader;
+import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -32,7 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class SoundManager extends SinglePreparationResourceReloader<SoundManager.SoundList> {
+public class SoundManager extends SinglePreparationResourceReloadListener<SoundManager.SoundList> {
 	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
@@ -110,7 +110,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 							}
 						}
 					} catch (RuntimeException var45) {
-						LOGGER.warn("Invalid sounds.json in resourcepack: '{}'", resource.getResourcePackName(), var45);
+						LOGGER.warn("Invalid {} in resourcepack: '{}'", "sounds.json", resource.getResourcePackName(), var45);
 					}
 
 					profiler.pop();
@@ -149,10 +149,10 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 		this.soundSystem.reloadSounds();
 	}
 
-	private static boolean isSoundResourcePresent(Sound sound, Identifier id, ResourceManager resourceManager) {
-		Identifier identifier = sound.getLocation();
-		if (!resourceManager.containsResource(identifier)) {
-			LOGGER.warn("File {} does not exist, cannot add it to event {}", identifier, id);
+	private static boolean isSoundResourcePresent(Sound sound, Identifier identifier, ResourceManager resourceManager) {
+		Identifier identifier2 = sound.getLocation();
+		if (!resourceManager.containsResource(identifier2)) {
+			LOGGER.warn("File {} does not exist, cannot add it to event {}", identifier2, identifier);
 			return false;
 		} else {
 			return true;
@@ -160,8 +160,8 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 	}
 
 	@Nullable
-	public WeightedSoundSet get(Identifier id) {
-		return (WeightedSoundSet)this.sounds.get(id);
+	public WeightedSoundSet get(Identifier identifier) {
+		return (WeightedSoundSet)this.sounds.get(identifier);
 	}
 
 	public Collection<Identifier> getKeys() {
@@ -212,24 +212,24 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 		this.soundSystem.updateSoundVolume(category, volume);
 	}
 
-	public void stop(SoundInstance sound) {
-		this.soundSystem.stop(sound);
+	public void stop(SoundInstance soundInstance) {
+		this.soundSystem.stop(soundInstance);
 	}
 
-	public boolean isPlaying(SoundInstance sound) {
-		return this.soundSystem.isPlaying(sound);
+	public boolean isPlaying(SoundInstance soundInstance) {
+		return this.soundSystem.isPlaying(soundInstance);
 	}
 
-	public void registerListener(SoundInstanceListener listener) {
-		this.soundSystem.registerListener(listener);
+	public void registerListener(SoundInstanceListener soundInstanceListener) {
+		this.soundSystem.registerListener(soundInstanceListener);
 	}
 
-	public void unregisterListener(SoundInstanceListener listener) {
-		this.soundSystem.unregisterListener(listener);
+	public void unregisterListener(SoundInstanceListener soundInstanceListener) {
+		this.soundSystem.unregisterListener(soundInstanceListener);
 	}
 
-	public void stopSounds(@Nullable Identifier id, @Nullable SoundCategory soundCategory) {
-		this.soundSystem.stopSounds(id, soundCategory);
+	public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
+		this.soundSystem.stopSounds(identifier, soundCategory);
 	}
 
 	public String getDebugString() {

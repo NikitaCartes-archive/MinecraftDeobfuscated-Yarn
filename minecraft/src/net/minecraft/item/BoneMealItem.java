@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -77,30 +78,32 @@ public class BoneMealItem extends Item {
 			if (!(world instanceof ServerWorld)) {
 				return true;
 			} else {
+				Random random = world.getRandom();
+
 				label80:
 				for (int i = 0; i < 128; i++) {
 					BlockPos blockPos2 = blockPos;
 					BlockState blockState = Blocks.SEAGRASS.getDefaultState();
 
 					for (int j = 0; j < i / 16; j++) {
-						blockPos2 = blockPos2.add(RANDOM.nextInt(3) - 1, (RANDOM.nextInt(3) - 1) * RANDOM.nextInt(3) / 2, RANDOM.nextInt(3) - 1);
+						blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
 						if (world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
 							continue label80;
 						}
 					}
 
-					Optional<RegistryKey<Biome>> optional = world.getBiomeKey(blockPos2);
+					Optional<RegistryKey<Biome>> optional = world.method_31081(blockPos2);
 					if (Objects.equals(optional, Optional.of(BiomeKeys.WARM_OCEAN)) || Objects.equals(optional, Optional.of(BiomeKeys.DEEP_WARM_OCEAN))) {
 						if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
 							blockState = BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, facing);
-						} else if (RANDOM.nextInt(4) == 0) {
-							blockState = BlockTags.UNDERWATER_BONEMEALS.getRandom(RANDOM).getDefaultState();
+						} else if (random.nextInt(4) == 0) {
+							blockState = BlockTags.UNDERWATER_BONEMEALS.getRandom(random).getDefaultState();
 						}
 					}
 
-					if (blockState.getBlock().isIn(BlockTags.WALL_CORALS)) {
+					if (blockState.isIn(BlockTags.WALL_CORALS)) {
 						for (int k = 0; !blockState.canPlaceAt(world, blockPos2) && k < 4; k++) {
-							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(RANDOM));
+							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(random));
 						}
 					}
 
@@ -108,8 +111,8 @@ public class BoneMealItem extends Item {
 						BlockState blockState2 = world.getBlockState(blockPos2);
 						if (blockState2.isOf(Blocks.WATER) && world.getFluidState(blockPos2).getLevel() == 8) {
 							world.setBlockState(blockPos2, blockState, 3);
-						} else if (blockState2.isOf(Blocks.SEAGRASS) && RANDOM.nextInt(10) == 0) {
-							((Fertilizable)Blocks.SEAGRASS).grow((ServerWorld)world, RANDOM, blockPos2, blockState2);
+						} else if (blockState2.isOf(Blocks.SEAGRASS) && random.nextInt(10) == 0) {
+							((Fertilizable)Blocks.SEAGRASS).grow((ServerWorld)world, random, blockPos2, blockState2);
 						}
 					}
 				}
@@ -146,15 +149,16 @@ public class BoneMealItem extends Item {
 			}
 
 			world.addParticle(ParticleTypes.HAPPY_VILLAGER, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
+			Random random = world.getRandom();
 
 			for (int i = 0; i < count; i++) {
-				double f = RANDOM.nextGaussian() * 0.02;
-				double g = RANDOM.nextGaussian() * 0.02;
-				double h = RANDOM.nextGaussian() * 0.02;
+				double f = random.nextGaussian() * 0.02;
+				double g = random.nextGaussian() * 0.02;
+				double h = random.nextGaussian() * 0.02;
 				double j = 0.5 - d;
-				double k = (double)pos.getX() + j + RANDOM.nextDouble() * d * 2.0;
-				double l = (double)pos.getY() + RANDOM.nextDouble() * e;
-				double m = (double)pos.getZ() + j + RANDOM.nextDouble() * d * 2.0;
+				double k = (double)pos.getX() + j + random.nextDouble() * d * 2.0;
+				double l = (double)pos.getY() + random.nextDouble() * e;
+				double m = (double)pos.getZ() + j + random.nextDouble() * d * 2.0;
 				if (!world.getBlockState(new BlockPos(k, l, m).down()).isAir()) {
 					world.addParticle(ParticleTypes.HAPPY_VILLAGER, k, l, m, f, g, h);
 				}

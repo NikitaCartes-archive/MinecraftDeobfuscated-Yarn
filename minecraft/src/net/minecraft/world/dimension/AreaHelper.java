@@ -3,6 +3,7 @@ package net.minecraft.world.dimension;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_5459;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.PortalUtil;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 
@@ -28,7 +28,7 @@ public class AreaHelper {
 	@Nullable
 	private BlockPos lowerCorner;
 	private int height;
-	private int width;
+	private final int width;
 
 	public static Optional<AreaHelper> method_30485(WorldAccess worldAccess, BlockPos blockPos, Direction.Axis axis) {
 		return method_30486(worldAccess, blockPos, areaHelper -> areaHelper.isValid() && areaHelper.foundPortalBlocks == 0, axis);
@@ -44,13 +44,13 @@ public class AreaHelper {
 		}
 	}
 
-	public AreaHelper(WorldAccess world, BlockPos pos, Direction.Axis axis) {
+	public AreaHelper(WorldAccess world, BlockPos blockPos, Direction.Axis axis) {
 		this.world = world;
 		this.axis = axis;
 		this.negativeDir = axis == Direction.Axis.X ? Direction.WEST : Direction.SOUTH;
-		this.lowerCorner = this.method_30492(pos);
+		this.lowerCorner = this.method_30492(blockPos);
 		if (this.lowerCorner == null) {
-			this.lowerCorner = pos;
+			this.lowerCorner = blockPos;
 			this.width = 1;
 			this.height = 1;
 		} else {
@@ -63,7 +63,7 @@ public class AreaHelper {
 
 	@Nullable
 	private BlockPos method_30492(BlockPos blockPos) {
-		int i = Math.max(0, blockPos.getY() - 21);
+		int i = Math.max(this.world.getBottomHeightLimit(), blockPos.getY() - 21);
 
 		while (blockPos.getY() > i && validStateInsidePortal(this.world.getBlockState(blockPos.down()))) {
 			blockPos = blockPos.down();
@@ -146,8 +146,8 @@ public class AreaHelper {
 		return 21;
 	}
 
-	private static boolean validStateInsidePortal(BlockState state) {
-		return state.isAir() || state.isIn(BlockTags.FIRE) || state.isOf(Blocks.NETHER_PORTAL);
+	private static boolean validStateInsidePortal(BlockState blockState) {
+		return blockState.isAir() || blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.NETHER_PORTAL);
 	}
 
 	public boolean isValid() {
@@ -164,10 +164,10 @@ public class AreaHelper {
 		return this.isValid() && this.foundPortalBlocks == this.width * this.height;
 	}
 
-	public static Vec3d method_30494(PortalUtil.Rectangle rectangle, Direction.Axis axis, Vec3d vec3d, EntityDimensions entityDimensions) {
-		double d = (double)rectangle.width - (double)entityDimensions.width;
-		double e = (double)rectangle.height - (double)entityDimensions.height;
-		BlockPos blockPos = rectangle.lowerLeft;
+	public static Vec3d method_30494(class_5459.class_5460 arg, Direction.Axis axis, Vec3d vec3d, EntityDimensions entityDimensions) {
+		double d = (double)arg.field_25937 - (double)entityDimensions.width;
+		double e = (double)arg.field_25938 - (double)entityDimensions.height;
+		BlockPos blockPos = arg.field_25936;
 		double g;
 		if (d > 0.0) {
 			float f = (float)blockPos.getComponentAlongAxis(axis) + entityDimensions.width / 2.0F;
@@ -190,13 +190,13 @@ public class AreaHelper {
 	}
 
 	public static TeleportTarget method_30484(
-		ServerWorld serverWorld, PortalUtil.Rectangle rectangle, Direction.Axis axis, Vec3d vec3d, EntityDimensions entityDimensions, Vec3d vec3d2, float f, float g
+		ServerWorld serverWorld, class_5459.class_5460 arg, Direction.Axis axis, Vec3d vec3d, EntityDimensions entityDimensions, Vec3d vec3d2, float f, float g
 	) {
-		BlockPos blockPos = rectangle.lowerLeft;
+		BlockPos blockPos = arg.field_25936;
 		BlockState blockState = serverWorld.getBlockState(blockPos);
 		Direction.Axis axis2 = blockState.get(Properties.HORIZONTAL_AXIS);
-		double d = (double)rectangle.width;
-		double e = (double)rectangle.height;
+		double d = (double)arg.field_25937;
+		double e = (double)arg.field_25938;
 		int i = axis == axis2 ? 0 : 90;
 		Vec3d vec3d3 = axis == axis2 ? vec3d2 : new Vec3d(vec3d2.z, vec3d2.y, -vec3d2.x);
 		double h = (double)entityDimensions.width / 2.0 + (d - (double)entityDimensions.width) * vec3d.getX();

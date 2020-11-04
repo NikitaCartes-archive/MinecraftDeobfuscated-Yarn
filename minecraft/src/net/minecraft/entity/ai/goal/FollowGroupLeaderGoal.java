@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import com.mojang.datafixers.DataFixUtils;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.entity.passive.SchoolingFishEntity;
@@ -30,8 +31,10 @@ public class FollowGroupLeaderGoal extends Goal {
 		} else {
 			this.checkSurroundingDelay = this.getSurroundingSearchDelay(this.fish);
 			Predicate<SchoolingFishEntity> predicate = schoolingFishEntityx -> schoolingFishEntityx.canHaveMoreFishInGroup() || !schoolingFishEntityx.hasLeader();
-			List<SchoolingFishEntity> list = this.fish.world.getEntitiesByClass(this.fish.getClass(), this.fish.getBoundingBox().expand(8.0, 8.0, 8.0), predicate);
-			SchoolingFishEntity schoolingFishEntity = (SchoolingFishEntity)list.stream().filter(SchoolingFishEntity::canHaveMoreFishInGroup).findAny().orElse(this.fish);
+			List<? extends SchoolingFishEntity> list = this.fish
+				.world
+				.getEntitiesByClass(this.fish.getClass(), this.fish.getBoundingBox().expand(8.0, 8.0, 8.0), predicate);
+			SchoolingFishEntity schoolingFishEntity = DataFixUtils.orElse(list.stream().filter(SchoolingFishEntity::canHaveMoreFishInGroup).findAny(), this.fish);
 			schoolingFishEntity.pullInOtherFish(list.stream().filter(schoolingFishEntityx -> !schoolingFishEntityx.hasLeader()));
 			return this.fish.hasLeader();
 		}

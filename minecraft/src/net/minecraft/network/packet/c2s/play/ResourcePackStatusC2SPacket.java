@@ -29,6 +29,10 @@ public class ResourcePackStatusC2SPacket implements Packet<ServerPlayPacketListe
 		serverPlayPacketListener.onResourcePackStatus(this);
 	}
 
+	public ResourcePackStatusC2SPacket.Status getStatus() {
+		return this.status;
+	}
+
 	public static enum Status {
 		SUCCESSFULLY_LOADED,
 		DECLINED,

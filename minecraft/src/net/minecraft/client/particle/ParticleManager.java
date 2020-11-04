@@ -43,7 +43,7 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
+import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.crash.CrashException;
@@ -58,7 +58,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 
 @Environment(EnvType.CLIENT)
-public class ParticleManager implements ResourceReloader {
+public class ParticleManager implements ResourceReloadListener {
 	private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(
 		ParticleTextureSheet.TERRAIN_SHEET,
 		ParticleTextureSheet.PARTICLE_SHEET_OPAQUE,
@@ -156,21 +156,22 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.LANDING_OBSIDIAN_TEAR, BlockLeakParticle.LandingObsidianTearFactory::new);
 		this.registerFactory(ParticleTypes.REVERSE_PORTAL, ReversePortalParticle.Factory::new);
 		this.registerFactory(ParticleTypes.WHITE_ASH, WhiteAshParticle.Factory::new);
+		this.registerFactory(ParticleTypes.SMALL_FLAME, FlameParticle.class_5613::new);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {
 		this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), factory);
 	}
 
-	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleManager.SpriteAwareFactory<T> factory) {
+	private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, ParticleManager.SpriteAwareFactory<T> spriteAwareFactory) {
 		ParticleManager.SimpleSpriteProvider simpleSpriteProvider = new ParticleManager.SimpleSpriteProvider();
-		this.spriteAwareFactories.put(Registry.PARTICLE_TYPE.getId(type), simpleSpriteProvider);
-		this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), factory.create(simpleSpriteProvider));
+		this.spriteAwareFactories.put(Registry.PARTICLE_TYPE.getId(particleType), simpleSpriteProvider);
+		this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), spriteAwareFactory.create(simpleSpriteProvider));
 	}
 
 	@Override
 	public CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
+		ResourceReloadListener.Synchronizer synchronizer,
 		ResourceManager manager,
 		Profiler prepareProfiler,
 		Profiler applyProfiler,
@@ -341,14 +342,9 @@ public class ParticleManager implements ResourceReloader {
 		}
 	}
 
-	/**
-	 * Ticks all particles belonging to the same texture sheet.
-	 * 
-	 * @param particles a collection of particles from the same sheet
-	 */
-	private void tickParticles(Collection<Particle> particles) {
-		if (!particles.isEmpty()) {
-			Iterator<Particle> iterator = particles.iterator();
+	private void tickParticles(Collection<Particle> collection) {
+		if (!collection.isEmpty()) {
+			Iterator<Particle> iterator = collection.iterator();
 
 			while (iterator.hasNext()) {
 				Particle particle = (Particle)iterator.next();
@@ -373,7 +369,7 @@ public class ParticleManager implements ResourceReloader {
 	}
 
 	public void renderParticles(
-		MatrixStack matrices, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f
+		MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f
 	) {
 		lightmapTextureManager.enable();
 		RenderSystem.enableAlphaTest();
@@ -381,7 +377,7 @@ public class ParticleManager implements ResourceReloader {
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableFog();
 		RenderSystem.pushMatrix();
-		RenderSystem.multMatrix(matrices.peek().getModel());
+		RenderSystem.multMatrix(matrixStack.peek().getModel());
 
 		for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
 			Iterable<Particle> iterable = (Iterable<Particle>)this.particles.get(particleTextureSheet);

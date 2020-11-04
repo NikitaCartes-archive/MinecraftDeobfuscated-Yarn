@@ -37,7 +37,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -174,34 +174,34 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
-			nbt.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
+			tag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
 		}
 
-		this.writeAngerToNbt(nbt);
+		this.angerToTag(tag);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
 		BlockState blockState = null;
-		if (nbt.contains("carriedBlockState", 10)) {
-			blockState = NbtHelper.toBlockState(nbt.getCompound("carriedBlockState"));
+		if (tag.contains("carriedBlockState", 10)) {
+			blockState = NbtHelper.toBlockState(tag.getCompound("carriedBlockState"));
 			if (blockState.isAir()) {
 				blockState = null;
 			}
 		}
 
 		this.setCarriedBlock(blockState);
-		this.angerFromTag((ServerWorld)this.world, nbt);
+		this.angerFromTag(this.world, tag);
 	}
 
 	private boolean isPlayerStaring(PlayerEntity player) {
-		ItemStack itemStack = player.inventory.armor.get(3);
-		if (itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
+		ItemStack itemStack = player.getInventory().armor.get(3);
+		if (itemStack.isOf(Blocks.CARVED_PUMPKIN.asItem())) {
 			return false;
 		} else {
 			Vec3d vec3d = player.getRotationVec(1.0F).normalize();
@@ -285,7 +285,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private boolean teleportTo(double x, double y, double z) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
 
-		while (mutable.getY() > 0 && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+		while (mutable.getY() > this.world.getBottomHeightLimit() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
 			mutable.move(Direction.DOWN);
 		}
 
@@ -433,14 +433,13 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			int k = MathHelper.floor(this.enderman.getZ() - 2.0 + random.nextDouble() * 4.0);
 			BlockPos blockPos = new BlockPos(i, j, k);
 			BlockState blockState = world.getBlockState(blockPos);
-			Block block = blockState.getBlock();
-			Vec3d vec3d = new Vec3d((double)MathHelper.floor(this.enderman.getX()) + 0.5, (double)j + 0.5, (double)MathHelper.floor(this.enderman.getZ()) + 0.5);
+			Vec3d vec3d = new Vec3d((double)this.enderman.getBlockX() + 0.5, (double)j + 0.5, (double)this.enderman.getBlockZ() + 0.5);
 			Vec3d vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5);
 			BlockHitResult blockHitResult = world.raycast(
 				new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, this.enderman)
 			);
 			boolean bl = blockHitResult.getBlockPos().equals(blockPos);
-			if (block.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
+			if (blockState.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
 				world.removeBlock(blockPos, false);
 				this.enderman.setCarriedBlock(blockState.getBlock().getDefaultState());
 			}

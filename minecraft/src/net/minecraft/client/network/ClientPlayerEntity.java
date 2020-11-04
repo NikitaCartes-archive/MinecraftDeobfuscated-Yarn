@@ -45,7 +45,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ElytraItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -117,7 +116,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean riding;
 	private boolean autoJumpEnabled = true;
 	private int ticksToNextAutojump;
-	private boolean field_3939;
+	private boolean falling;
 	private int underwaterVisibilityTicks;
 	private boolean showsDeathScreen = true;
 
@@ -157,7 +156,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			return false;
 		} else {
 			if (entity instanceof AbstractMinecartEntity) {
-				this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity));
+				this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity, true));
+				this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity, false));
 			}
 
 			if (entity instanceof BoatEntity) {
@@ -171,8 +171,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void method_29239() {
-		super.method_29239();
+	public void dismountVehicle() {
+		super.dismountVehicle();
 		this.riding = false;
 	}
 
@@ -280,9 +280,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public boolean dropSelectedItem(boolean dropEntireStack) {
 		PlayerActionC2SPacket.Action action = dropEntireStack ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
 		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
-		return this.inventory
+		return this.getInventory()
 				.removeStack(
-					this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1
+					this.getInventory().selectedSlot,
+					dropEntireStack && !this.getInventory().getMainHandStack().isEmpty() ? this.getInventory().getMainHandStack().getCount() : 1
 				)
 			!= ItemStack.EMPTY;
 	}
@@ -316,7 +317,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	public void closeScreen() {
-		this.inventory.setCursorStack(ItemStack.EMPTY);
+		this.getInventory().setCursorStack(ItemStack.EMPTY);
 		super.closeHandledScreen();
 		this.client.openScreen(null);
 	}
@@ -345,7 +346,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void sendAbilitiesUpdate() {
-		this.networkHandler.sendPacket(new UpdatePlayerAbilitiesC2SPacket(this.abilities));
+		this.networkHandler.sendPacket(new UpdatePlayerAbilitiesC2SPacket(this.getAbilities()));
 	}
 
 	@Override
@@ -355,17 +356,17 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public boolean isHoldingOntoLadder() {
-		return !this.abilities.flying && super.isHoldingOntoLadder();
+		return !this.getAbilities().flying && super.isHoldingOntoLadder();
 	}
 
 	@Override
 	public boolean shouldSpawnSprintingParticles() {
-		return !this.abilities.flying && super.shouldSpawnSprintingParticles();
+		return !this.getAbilities().flying && super.shouldSpawnSprintingParticles();
 	}
 
 	@Override
 	public boolean shouldDisplaySoulSpeedEffects() {
-		return !this.abilities.flying && super.shouldDisplaySoulSpeedEffects();
+		return !this.getAbilities().flying && super.shouldDisplaySoulSpeedEffects();
 	}
 
 	protected void startRidingJump() {
@@ -466,7 +467,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID sender) {
+	public void sendSystemMessage(Text message, UUID senderUuid) {
 		this.client.inGameHud.getChatHud().addMessage(message);
 	}
 
@@ -541,7 +542,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		if (FLAGS.equals(data) && this.isFallFlying() && !this.field_3939) {
+		if (FLAGS.equals(data) && this.isFallFlying() && !this.falling) {
 			this.client.getSoundManager().play(new ElytraSoundInstance(this));
 		}
 	}
@@ -581,9 +582,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void useBook(ItemStack book, Hand hand) {
-		Item item = book.getItem();
-		if (item == Items.WRITABLE_BOOK) {
+	public void openEditBookScreen(ItemStack book, Hand hand) {
+		if (book.isOf(Items.WRITABLE_BOOK)) {
 			this.client.openScreen(new BookEditScreen(this, book, hand));
 		}
 	}
@@ -641,7 +641,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl = this.input.jumping;
 		boolean bl2 = this.input.sneaking;
 		boolean bl3 = this.isWalking();
-		this.inSneakingPose = !this.abilities.flying
+		this.inSneakingPose = !this.getAbilities().flying
 			&& !this.isSwimming()
 			&& this.wouldPoseNotCollide(EntityPose.CROUCHING)
 			&& (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
@@ -671,7 +671,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.ticksLeftToDoubleTapSprint = 0;
 		}
 
-		boolean bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0F || this.abilities.allowFlying;
+		boolean bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0F || this.getAbilities().allowFlying;
 		if ((this.onGround || this.isSubmergedInWater())
 			&& !bl2
 			&& !bl3
@@ -710,10 +710,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		boolean bl6 = false;
-		if (this.abilities.allowFlying) {
+		if (this.getAbilities().allowFlying) {
 			if (this.client.interactionManager.isFlyingLocked()) {
-				if (!this.abilities.flying) {
-					this.abilities.flying = true;
+				if (!this.getAbilities().flying) {
+					this.getAbilities().flying = true;
 					bl6 = true;
 					this.sendAbilitiesUpdate();
 				}
@@ -721,7 +721,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				if (this.abilityResyncCountdown == 0) {
 					this.abilityResyncCountdown = 7;
 				} else if (!this.isSwimming()) {
-					this.abilities.flying = !this.abilities.flying;
+					this.getAbilities().flying = !this.getAbilities().flying;
 					bl6 = true;
 					this.sendAbilitiesUpdate();
 					this.abilityResyncCountdown = 0;
@@ -729,15 +729,15 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && !this.hasVehicle() && !this.isClimbing()) {
+		if (this.input.jumping && !bl6 && !bl && !this.getAbilities().flying && !this.hasVehicle() && !this.isClimbing()) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
-			if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.checkFallFlying()) {
+			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack) && this.checkFallFlying()) {
 				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
 			}
 		}
 
-		this.field_3939 = this.isFallFlying();
-		if (this.isTouchingWater() && this.input.sneaking && this.method_29920()) {
+		this.falling = this.isFallFlying();
+		if (this.isTouchingWater() && this.input.sneaking && this.shouldSwimInFluids()) {
 			this.knockDownwards();
 		}
 
@@ -749,7 +749,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.underwaterVisibilityTicks = MathHelper.clamp(this.underwaterVisibilityTicks - 10, 0, 600);
 		}
 
-		if (this.abilities.flying && this.isCamera()) {
+		if (this.getAbilities().flying && this.isCamera()) {
 			int i = 0;
 			if (this.input.sneaking) {
 				i--;
@@ -760,7 +760,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			if (i != 0) {
-				this.setVelocity(this.getVelocity().add(0.0, (double)((float)i * this.abilities.getFlySpeed() * 3.0F), 0.0));
+				this.setVelocity(this.getVelocity().add(0.0, (double)((float)i * this.getAbilities().getFlySpeed() * 3.0F), 0.0));
 			}
 		}
 
@@ -793,8 +793,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		super.tickMovement();
-		if (this.onGround && this.abilities.flying && !this.client.interactionManager.isFlyingLocked()) {
-			this.abilities.flying = false;
+		if (this.onGround && this.getAbilities().flying && !this.client.interactionManager.isFlyingLocked()) {
+			this.getAbilities().flying = false;
 			this.sendAbilitiesUpdate();
 		}
 	}
@@ -865,10 +865,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d movement) {
+	public void move(MovementType type, Vec3d movement) {
 		double d = this.getX();
 		double e = this.getZ();
-		super.move(movementType, movement);
+		super.move(type, movement);
 		this.autoJump((float)(this.getX() - d), (float)(this.getZ() - e));
 	}
 

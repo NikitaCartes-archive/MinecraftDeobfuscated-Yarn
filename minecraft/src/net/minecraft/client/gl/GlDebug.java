@@ -41,7 +41,7 @@ public class GlDebug {
 		return "Unknown (0x" + Integer.toHexString(opcode).toUpperCase() + ")";
 	}
 
-	private static String getSource(int opcode) {
+	public static String getSource(int opcode) {
 		switch (opcode) {
 			case 33350:
 				return "API";
@@ -60,7 +60,7 @@ public class GlDebug {
 		}
 	}
 
-	private static String getType(int opcode) {
+	public static String getType(int opcode) {
 		switch (opcode) {
 			case 33356:
 				return "ERROR";
@@ -81,7 +81,7 @@ public class GlDebug {
 		}
 	}
 
-	private static String getSeverity(int opcode) {
+	public static String getSeverity(int opcode) {
 		switch (opcode) {
 			case 33387:
 				return "NOTIFICATION";
@@ -96,14 +96,14 @@ public class GlDebug {
 		}
 	}
 
-	private static void info(int source, int type, int id, int severity, int messageLength, long message, long l) {
+	private static void info(int source, int type, int id, int severity, int i, long l, long m) {
 		LOGGER.info(
 			"OpenGL debug message, id={}, source={}, type={}, severity={}, message={}",
 			id,
 			getSource(source),
 			getType(type),
 			getSeverity(severity),
-			GLDebugMessageCallback.getMessage(messageLength, message)
+			GLDebugMessageCallback.getMessage(i, l)
 		);
 	}
 
@@ -163,9 +163,6 @@ public class GlDebug {
 		registerConstant(4, "GL11.GL_TRIANGLES");
 		registerConstant(5, "GL11.GL_TRIANGLE_STRIP");
 		registerConstant(6, "GL11.GL_TRIANGLE_FAN");
-		registerConstant(7, "GL11.GL_QUADS");
-		registerConstant(8, "GL11.GL_QUAD_STRIP");
-		registerConstant(9, "GL11.GL_POLYGON");
 		registerConstant(0, "GL11.GL_ZERO");
 		registerConstant(1, "GL11.GL_ONE");
 		registerConstant(768, "GL11.GL_SRC_COLOR");
