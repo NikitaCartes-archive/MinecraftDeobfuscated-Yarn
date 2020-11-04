@@ -32,7 +32,7 @@ public class ShovelItem extends MiningToolItem {
 		Blocks.SNOW_BLOCK,
 		Blocks.SNOW,
 		Blocks.SOUL_SAND,
-		Blocks.GRASS_PATH,
+		Blocks.DIRT_PATH,
 		Blocks.WHITE_CONCRETE_POWDER,
 		Blocks.ORANGE_CONCRETE_POWDER,
 		Blocks.MAGENTA_CONCRETE_POWDER,
@@ -52,7 +52,18 @@ public class ShovelItem extends MiningToolItem {
 		Blocks.SOUL_SOIL
 	);
 	protected static final Map<Block, BlockState> PATH_STATES = Maps.<Block, BlockState>newHashMap(
-		ImmutableMap.of(Blocks.GRASS_BLOCK, Blocks.GRASS_PATH.getDefaultState())
+		ImmutableMap.of(
+			Blocks.GRASS_BLOCK,
+			Blocks.DIRT_PATH.getDefaultState(),
+			Blocks.DIRT,
+			Blocks.DIRT_PATH.getDefaultState(),
+			Blocks.PODZOL,
+			Blocks.DIRT_PATH.getDefaultState(),
+			Blocks.COARSE_DIRT,
+			Blocks.DIRT_PATH.getDefaultState(),
+			Blocks.MYCELIUM,
+			Blocks.DIRT_PATH.getDefaultState()
+		)
 	);
 
 	public ShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
@@ -60,7 +71,7 @@ public class ShovelItem extends MiningToolItem {
 	}
 
 	@Override
-	public boolean isSuitableFor(BlockState state) {
+	public boolean isEffectiveOn(BlockState state) {
 		return state.isOf(Blocks.SNOW) || state.isOf(Blocks.SNOW_BLOCK);
 	}
 

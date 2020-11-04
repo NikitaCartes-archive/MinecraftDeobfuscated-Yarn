@@ -2,8 +2,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.WolfCollarFeatureRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.WolfEntity;
@@ -15,8 +17,8 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 	private static final Identifier TAMED_TEXTURE = new Identifier("textures/entity/wolf/wolf_tame.png");
 	private static final Identifier ANGRY_TEXTURE = new Identifier("textures/entity/wolf/wolf_angry.png");
 
-	public WolfEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new WolfEntityModel<>(), 0.5F);
+	public WolfEntityRenderer(class_5617.class_5618 arg) {
+		super(arg, new WolfEntityModel<>(arg.method_32167(EntityModelLayers.WOLF)), 0.5F);
 		this.addFeature(new WolfCollarFeatureRenderer(this));
 	}
 

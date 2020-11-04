@@ -22,7 +22,7 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public int getBrightness(float tint) {
+	public int getColorMultiplier(float tint) {
 		return 15728880;
 	}
 

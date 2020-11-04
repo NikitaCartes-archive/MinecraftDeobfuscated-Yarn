@@ -14,7 +14,7 @@ public class RemoveOffHandItemTask<E extends PiglinEntity> extends Task<E> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
-		return !piglinEntity.getOffHandStack().isEmpty() && piglinEntity.getOffHandStack().getItem() != Items.SHIELD;
+		return !piglinEntity.getOffHandStack().isEmpty() && !piglinEntity.getOffHandStack().isOf(Items.SHIELD);
 	}
 
 	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {

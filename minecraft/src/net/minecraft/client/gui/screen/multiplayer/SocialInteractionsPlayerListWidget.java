@@ -95,7 +95,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 			}
 		}
 
-		if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().method_31391(uUID))
+		if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().isPlayerMuted(uUID))
 			&& (Strings.isNullOrEmpty(this.currentSearch) || player.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
 			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry2 = new SocialInteractionsPlayerListEntry(
 				this.minecraftClient, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTexture

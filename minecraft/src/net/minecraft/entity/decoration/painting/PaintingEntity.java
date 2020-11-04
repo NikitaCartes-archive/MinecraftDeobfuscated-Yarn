@@ -10,8 +10,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
@@ -70,17 +71,17 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		nbt.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
-		nbt.putByte("Facing", (byte)this.facing.getHorizontal());
-		super.writeCustomDataToNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		tag.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
+		tag.putByte("Facing", (byte)this.facing.getHorizontal());
+		super.writeCustomDataToTag(tag);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(nbt.getString("Motive")));
-		this.facing = Direction.fromHorizontal(nbt.getByte("Facing"));
-		super.readCustomDataFromNbt(nbt);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
+		this.facing = Direction.fromHorizontal(tag.getByte("Facing"));
+		super.readCustomDataFromTag(tag);
 		this.setFacing(this.facing);
 	}
 
@@ -100,7 +101,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
-				if (playerEntity.abilities.creativeMode) {
+				if (playerEntity.getAbilities().creativeMode) {
 					return;
 				}
 			}
@@ -116,18 +117,24 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
 		BlockPos blockPos = this.attachmentPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
-		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+		this.updatePosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}
 
 	@Override
 	public Packet<?> createSpawnPacket() {
 		return new PaintingSpawnS2CPacket(this);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public ItemStack getPickBlockStack() {
+		return new ItemStack(Items.PAINTING);
 	}
 }

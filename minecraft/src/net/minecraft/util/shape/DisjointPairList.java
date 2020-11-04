@@ -8,12 +8,13 @@ public class DisjointPairList extends AbstractDoubleList implements PairList {
 	private final DoubleList second;
 	private final boolean inverted;
 
-	public DisjointPairList(DoubleList first, DoubleList second, boolean inverted) {
+	protected DisjointPairList(DoubleList first, DoubleList second, boolean inverted) {
 		this.first = first;
 		this.second = second;
 		this.inverted = inverted;
 	}
 
+	@Override
 	public int size() {
 		return this.first.size() + this.second.size();
 	}
@@ -24,7 +25,7 @@ public class DisjointPairList extends AbstractDoubleList implements PairList {
 	}
 
 	private boolean iterateSections(PairList.Consumer consumer) {
-		int i = this.first.size() - 1;
+		int i = this.first.size();
 
 		for(int j = 0; j < i; ++j) {
 			if (!consumer.merge(j, -1, j)) {
@@ -32,17 +33,15 @@ public class DisjointPairList extends AbstractDoubleList implements PairList {
 			}
 		}
 
-		if (!consumer.merge(i, -1, i)) {
-			return false;
-		} else {
-			for(int j = 0; j < this.second.size(); ++j) {
-				if (!consumer.merge(i, j, i + 1 + j)) {
-					return false;
-				}
-			}
+		int j = this.second.size() - 1;
 
-			return true;
+		for(int k = 0; k < j; ++k) {
+			if (!consumer.merge(i - 1, k, i + k)) {
+				return false;
+			}
 		}
+
+		return true;
 	}
 
 	@Override

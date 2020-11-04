@@ -18,10 +18,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.ObjectiveArgumentType;
+import net.minecraft.command.argument.ObjectiveCriteriaArgumentType;
 import net.minecraft.command.argument.OperationArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
-import net.minecraft.command.argument.ScoreboardCriterionArgumentType;
-import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.command.argument.ScoreboardSlotArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.scoreboard.Scoreboard;
@@ -65,12 +65,12 @@ public class ScoreboardCommand {
 								.then(
 									CommandManager.argument("objective", StringArgumentType.word())
 										.then(
-											CommandManager.argument("criteria", ScoreboardCriterionArgumentType.scoreboardCriterion())
+											CommandManager.argument("criteria", ObjectiveCriteriaArgumentType.objectiveCriteria())
 												.executes(
 													commandContext -> executeAddObjective(
 															commandContext.getSource(),
 															StringArgumentType.getString(commandContext, "objective"),
-															ScoreboardCriterionArgumentType.getCriterion(commandContext, "criteria"),
+															ObjectiveCriteriaArgumentType.getCriteria(commandContext, "criteria"),
 															new LiteralText(StringArgumentType.getString(commandContext, "objective"))
 														)
 												)
@@ -80,7 +80,7 @@ public class ScoreboardCommand {
 															commandContext -> executeAddObjective(
 																	commandContext.getSource(),
 																	StringArgumentType.getString(commandContext, "objective"),
-																	ScoreboardCriterionArgumentType.getCriterion(commandContext, "criteria"),
+																	ObjectiveCriteriaArgumentType.getCriteria(commandContext, "criteria"),
 																	TextArgumentType.getTextArgument(commandContext, "displayName")
 																)
 														)
@@ -91,7 +91,7 @@ public class ScoreboardCommand {
 						.then(
 							CommandManager.literal("modify")
 								.then(
-									((RequiredArgumentBuilder)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+									((RequiredArgumentBuilder)CommandManager.argument("objective", ObjectiveArgumentType.objective())
 											.then(
 												CommandManager.literal("displayname")
 													.then(
@@ -99,7 +99,7 @@ public class ScoreboardCommand {
 															.executes(
 																commandContext -> executeModifyObjective(
 																		commandContext.getSource(),
-																		ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"),
+																		ObjectiveArgumentType.getObjective(commandContext, "objective"),
 																		TextArgumentType.getTextArgument(commandContext, "displayName")
 																	)
 															)
@@ -111,10 +111,8 @@ public class ScoreboardCommand {
 						.then(
 							CommandManager.literal("remove")
 								.then(
-									CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
-										.executes(
-											commandContext -> executeRemoveObjective(commandContext.getSource(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"))
-										)
+									CommandManager.argument("objective", ObjectiveArgumentType.objective())
+										.executes(commandContext -> executeRemoveObjective(commandContext.getSource(), ObjectiveArgumentType.getObjective(commandContext, "objective")))
 								)
 						)
 						.then(
@@ -123,12 +121,12 @@ public class ScoreboardCommand {
 									CommandManager.argument("slot", ScoreboardSlotArgumentType.scoreboardSlot())
 										.executes(commandContext -> executeClearDisplay(commandContext.getSource(), ScoreboardSlotArgumentType.getScoreboardSlot(commandContext, "slot")))
 										.then(
-											CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+											CommandManager.argument("objective", ObjectiveArgumentType.objective())
 												.executes(
 													commandContext -> executeSetDisplay(
 															commandContext.getSource(),
 															ScoreboardSlotArgumentType.getScoreboardSlot(commandContext, "slot"),
-															ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective")
+															ObjectiveArgumentType.getObjective(commandContext, "objective")
 														)
 												)
 										)
@@ -152,14 +150,14 @@ public class ScoreboardCommand {
 									CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
 										.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 										.then(
-											CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+											CommandManager.argument("objective", ObjectiveArgumentType.objective())
 												.then(
 													CommandManager.argument("score", IntegerArgumentType.integer())
 														.executes(
 															commandContext -> executeSet(
 																	commandContext.getSource(),
 																	ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
-																	ScoreboardObjectiveArgumentType.getWritableObjective(commandContext, "objective"),
+																	ObjectiveArgumentType.getWritableObjective(commandContext, "objective"),
 																	IntegerArgumentType.getInteger(commandContext, "score")
 																)
 														)
@@ -173,12 +171,12 @@ public class ScoreboardCommand {
 									CommandManager.argument("target", ScoreHolderArgumentType.scoreHolder())
 										.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 										.then(
-											CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+											CommandManager.argument("objective", ObjectiveArgumentType.objective())
 												.executes(
 													commandContext -> executeGet(
 															commandContext.getSource(),
 															ScoreHolderArgumentType.getScoreHolder(commandContext, "target"),
-															ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective")
+															ObjectiveArgumentType.getObjective(commandContext, "objective")
 														)
 												)
 										)
@@ -190,14 +188,14 @@ public class ScoreboardCommand {
 									CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
 										.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 										.then(
-											CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+											CommandManager.argument("objective", ObjectiveArgumentType.objective())
 												.then(
 													CommandManager.argument("score", IntegerArgumentType.integer(0))
 														.executes(
 															commandContext -> executeAdd(
 																	commandContext.getSource(),
 																	ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
-																	ScoreboardObjectiveArgumentType.getWritableObjective(commandContext, "objective"),
+																	ObjectiveArgumentType.getWritableObjective(commandContext, "objective"),
 																	IntegerArgumentType.getInteger(commandContext, "score")
 																)
 														)
@@ -211,14 +209,14 @@ public class ScoreboardCommand {
 									CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
 										.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 										.then(
-											CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+											CommandManager.argument("objective", ObjectiveArgumentType.objective())
 												.then(
 													CommandManager.argument("score", IntegerArgumentType.integer(0))
 														.executes(
 															commandContext -> executeRemove(
 																	commandContext.getSource(),
 																	ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
-																	ScoreboardObjectiveArgumentType.getWritableObjective(commandContext, "objective"),
+																	ObjectiveArgumentType.getWritableObjective(commandContext, "objective"),
 																	IntegerArgumentType.getInteger(commandContext, "score")
 																)
 														)
@@ -233,12 +231,12 @@ public class ScoreboardCommand {
 										.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 										.executes(commandContext -> executeReset(commandContext.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets")))
 										.then(
-											CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+											CommandManager.argument("objective", ObjectiveArgumentType.objective())
 												.executes(
 													commandContext -> executeReset(
 															commandContext.getSource(),
 															ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
-															ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective")
+															ObjectiveArgumentType.getObjective(commandContext, "objective")
 														)
 												)
 										)
@@ -250,7 +248,7 @@ public class ScoreboardCommand {
 									CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
 										.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 										.then(
-											CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+											CommandManager.argument("objective", ObjectiveArgumentType.objective())
 												.suggests(
 													(commandContext, suggestionsBuilder) -> suggestDisabled(
 															commandContext.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"), suggestionsBuilder
@@ -260,7 +258,7 @@ public class ScoreboardCommand {
 													commandContext -> executeEnable(
 															commandContext.getSource(),
 															ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
-															ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective")
+															ObjectiveArgumentType.getObjective(commandContext, "objective")
 														)
 												)
 										)
@@ -272,22 +270,22 @@ public class ScoreboardCommand {
 									CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
 										.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 										.then(
-											CommandManager.argument("targetObjective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+											CommandManager.argument("targetObjective", ObjectiveArgumentType.objective())
 												.then(
 													CommandManager.argument("operation", OperationArgumentType.operation())
 														.then(
 															CommandManager.argument("source", ScoreHolderArgumentType.scoreHolders())
 																.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 																.then(
-																	CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+																	CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective())
 																		.executes(
 																			commandContext -> executeOperation(
 																					commandContext.getSource(),
 																					ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
-																					ScoreboardObjectiveArgumentType.getWritableObjective(commandContext, "targetObjective"),
+																					ObjectiveArgumentType.getWritableObjective(commandContext, "targetObjective"),
 																					OperationArgumentType.getOperation(commandContext, "operation"),
 																					ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "source"),
-																					ScoreboardObjectiveArgumentType.getObjective(commandContext, "sourceObjective")
+																					ObjectiveArgumentType.getObjective(commandContext, "sourceObjective")
 																				)
 																		)
 																)
@@ -307,9 +305,7 @@ public class ScoreboardCommand {
 			literalArgumentBuilder.then(
 				CommandManager.literal(renderType.getName())
 					.executes(
-						commandContext -> executeModifyRenderType(
-								commandContext.getSource(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"), renderType
-							)
+						commandContext -> executeModifyRenderType(commandContext.getSource(), ObjectiveArgumentType.getObjective(commandContext, "objective"), renderType)
 					)
 			);
 		}
@@ -598,9 +594,9 @@ public class ScoreboardCommand {
 		if (scoreboard.getNullableObjective(objective) != null) {
 			throw OBJECTIVES_ADD_DUPLICATE_EXCEPTION.create();
 		} else if (objective.length() > 16) {
-			throw ScoreboardObjectiveArgumentType.LONG_NAME_EXCEPTION.create(16);
+			throw ObjectiveArgumentType.LONG_NAME_EXCEPTION.create(16);
 		} else {
-			scoreboard.addObjective(objective, criteria, displayName, criteria.getDefaultRenderType());
+			scoreboard.addObjective(objective, criteria, displayName, criteria.getCriterionType());
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objective);
 			source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.add.success", scoreboardObjective.toHoverableText()), true);
 			return scoreboard.getObjectives().size();

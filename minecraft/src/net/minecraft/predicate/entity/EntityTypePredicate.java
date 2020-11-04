@@ -86,7 +86,7 @@ public abstract class EntityTypePredicate {
 
 		@Override
 		public boolean matches(EntityType<?> type) {
-			return this.tag.contains(type);
+			return type.isIn(this.tag);
 		}
 
 		@Override

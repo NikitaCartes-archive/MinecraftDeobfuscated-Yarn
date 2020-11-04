@@ -15,11 +15,11 @@ public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Condit
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditions) {
+	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer) {
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditions) {
+	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer) {
 	}
 
 	@Override

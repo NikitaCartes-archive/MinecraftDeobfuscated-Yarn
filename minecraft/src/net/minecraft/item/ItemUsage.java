@@ -12,10 +12,10 @@ public class ItemUsage {
 	}
 
 	public static ItemStack method_30270(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2, boolean bl) {
-		boolean bl2 = playerEntity.abilities.creativeMode;
+		boolean bl2 = playerEntity.getAbilities().creativeMode;
 		if (bl && bl2) {
-			if (!playerEntity.inventory.contains(itemStack2)) {
-				playerEntity.inventory.insertStack(itemStack2);
+			if (!playerEntity.getInventory().contains(itemStack2)) {
+				playerEntity.getInventory().insertStack(itemStack2);
 			}
 
 			return itemStack;
@@ -27,7 +27,7 @@ public class ItemUsage {
 			if (itemStack.isEmpty()) {
 				return itemStack2;
 			} else {
-				if (!playerEntity.inventory.insertStack(itemStack2)) {
+				if (!playerEntity.getInventory().insertStack(itemStack2)) {
 					playerEntity.dropItem(itemStack2, false);
 				}
 

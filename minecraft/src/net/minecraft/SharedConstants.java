@@ -42,8 +42,8 @@ public class SharedConstants {
 		return gameVersion;
 	}
 
-	public static int method_31372() {
-		return 754;
+	public static int getProtocolVersion() {
+		return 1073741829;
 	}
 
 	static {

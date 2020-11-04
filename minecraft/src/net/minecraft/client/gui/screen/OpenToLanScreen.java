@@ -12,9 +12,9 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class OpenToLanScreen extends Screen {
-	private static final Text ALLOW_COMMANDS_TEXT = new TranslatableText("selectWorld.allowCommands");
-	private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
-	private static final Text OTHER_PLAYERS_TEXT = new TranslatableText("lanServer.otherPlayers");
+	private static final Text field_25889 = new TranslatableText("selectWorld.allowCommands");
+	private static final Text field_25890 = new TranslatableText("selectWorld.gameMode");
+	private static final Text field_26545 = new TranslatableText("lanServer.otherPlayers");
 	private final Screen parent;
 	private ButtonWidget buttonAllowCommands;
 	private ButtonWidget buttonGameMode;
@@ -55,7 +55,7 @@ public class OpenToLanScreen extends Screen {
 
 			this.updateButtonText();
 		}));
-		this.buttonAllowCommands = this.addButton(new ButtonWidget(this.width / 2 + 5, 100, 150, 20, ALLOW_COMMANDS_TEXT, buttonWidget -> {
+		this.buttonAllowCommands = this.addButton(new ButtonWidget(this.width / 2 + 5, 100, 150, 20, field_25889, buttonWidget -> {
 			this.allowCommands = !this.allowCommands;
 			this.updateButtonText();
 		}));
@@ -63,15 +63,15 @@ public class OpenToLanScreen extends Screen {
 	}
 
 	private void updateButtonText() {
-		this.buttonGameMode.setMessage(new TranslatableText("options.generic_value", GAME_MODE_TEXT, new TranslatableText("selectWorld.gameMode." + this.gameMode)));
-		this.buttonAllowCommands.setMessage(ScreenTexts.composeToggleText(ALLOW_COMMANDS_TEXT, this.allowCommands));
+		this.buttonGameMode.setMessage(new TranslatableText("options.generic_value", field_25890, new TranslatableText("selectWorld.gameMode." + this.gameMode)));
+		this.buttonAllowCommands.setMessage(ScreenTexts.composeToggleText(field_25889, this.allowCommands));
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
-		drawCenteredText(matrices, this.textRenderer, OTHER_PLAYERS_TEXT, this.width / 2, 82, 16777215);
+		drawCenteredText(matrices, this.textRenderer, field_26545, this.width / 2, 82, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

@@ -35,7 +35,7 @@ public class LingeringPotionItem extends ThrowablePotionItem {
 			SoundEvents.ENTITY_LINGERING_POTION_THROW,
 			SoundCategory.NEUTRAL,
 			0.5F,
-			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+			0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 		);
 		return super.use(world, user, hand);
 	}

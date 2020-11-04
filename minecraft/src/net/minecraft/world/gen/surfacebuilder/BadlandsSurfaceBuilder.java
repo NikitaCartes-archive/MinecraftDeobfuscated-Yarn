@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -100,23 +99,22 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 							}
 						} else {
 							chunk.setBlockState(mutable, blockState6, false);
-							Block block = blockState6.getBlock();
-							if (block == Blocks.WHITE_TERRACOTTA
-								|| block == Blocks.ORANGE_TERRACOTTA
-								|| block == Blocks.MAGENTA_TERRACOTTA
-								|| block == Blocks.LIGHT_BLUE_TERRACOTTA
-								|| block == Blocks.YELLOW_TERRACOTTA
-								|| block == Blocks.LIME_TERRACOTTA
-								|| block == Blocks.PINK_TERRACOTTA
-								|| block == Blocks.GRAY_TERRACOTTA
-								|| block == Blocks.LIGHT_GRAY_TERRACOTTA
-								|| block == Blocks.CYAN_TERRACOTTA
-								|| block == Blocks.PURPLE_TERRACOTTA
-								|| block == Blocks.BLUE_TERRACOTTA
-								|| block == Blocks.BROWN_TERRACOTTA
-								|| block == Blocks.GREEN_TERRACOTTA
-								|| block == Blocks.RED_TERRACOTTA
-								|| block == Blocks.BLACK_TERRACOTTA) {
+							if (blockState6.isOf(Blocks.WHITE_TERRACOTTA)
+								|| blockState6.isOf(Blocks.ORANGE_TERRACOTTA)
+								|| blockState6.isOf(Blocks.MAGENTA_TERRACOTTA)
+								|| blockState6.isOf(Blocks.LIGHT_BLUE_TERRACOTTA)
+								|| blockState6.isOf(Blocks.YELLOW_TERRACOTTA)
+								|| blockState6.isOf(Blocks.LIME_TERRACOTTA)
+								|| blockState6.isOf(Blocks.PINK_TERRACOTTA)
+								|| blockState6.isOf(Blocks.GRAY_TERRACOTTA)
+								|| blockState6.isOf(Blocks.LIGHT_GRAY_TERRACOTTA)
+								|| blockState6.isOf(Blocks.CYAN_TERRACOTTA)
+								|| blockState6.isOf(Blocks.PURPLE_TERRACOTTA)
+								|| blockState6.isOf(Blocks.BLUE_TERRACOTTA)
+								|| blockState6.isOf(Blocks.BROWN_TERRACOTTA)
+								|| blockState6.isOf(Blocks.GREEN_TERRACOTTA)
+								|| blockState6.isOf(Blocks.RED_TERRACOTTA)
+								|| blockState6.isOf(Blocks.BLACK_TERRACOTTA)) {
 								chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 							}
 						}

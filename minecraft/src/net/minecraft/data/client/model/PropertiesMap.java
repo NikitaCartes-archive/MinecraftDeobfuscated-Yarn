@@ -15,18 +15,18 @@ import net.minecraft.state.property.Property;
 public final class PropertiesMap {
 	private static final PropertiesMap EMPTY = new PropertiesMap(ImmutableList.of());
 	private static final Comparator<Property.Value<?>> COMPARATOR = Comparator.comparing(value -> value.getProperty().getName());
-	private final List<Property.Value<?>> values;
+	private final List<Property.Value<?>> propertyValues;
 
 	public PropertiesMap method_25819(Property.Value<?> value) {
-		return new PropertiesMap(ImmutableList.<Property.Value<?>>builder().addAll(this.values).add(value).build());
+		return new PropertiesMap(ImmutableList.<Property.Value<?>>builder().addAll(this.propertyValues).add(value).build());
 	}
 
-	public PropertiesMap copyOf(PropertiesMap propertiesMap) {
-		return new PropertiesMap(ImmutableList.<Property.Value<?>>builder().addAll(this.values).addAll(propertiesMap.values).build());
+	public PropertiesMap with(PropertiesMap propertiesMap) {
+		return new PropertiesMap(ImmutableList.<Property.Value<?>>builder().addAll(this.propertyValues).addAll(propertiesMap.propertyValues).build());
 	}
 
 	private PropertiesMap(List<Property.Value<?>> list) {
-		this.values = list;
+		this.propertyValues = list;
 	}
 
 	public static PropertiesMap empty() {
@@ -38,15 +38,15 @@ public final class PropertiesMap {
 	}
 
 	public boolean equals(Object object) {
-		return this == object || object instanceof PropertiesMap && this.values.equals(((PropertiesMap)object).values);
+		return this == object || object instanceof PropertiesMap && this.propertyValues.equals(((PropertiesMap)object).propertyValues);
 	}
 
 	public int hashCode() {
-		return this.values.hashCode();
+		return this.propertyValues.hashCode();
 	}
 
 	public String asString() {
-		return (String)this.values.stream().sorted(COMPARATOR).map(Property.Value::toString).collect(Collectors.joining(","));
+		return (String)this.propertyValues.stream().sorted(COMPARATOR).map(Property.Value::toString).collect(Collectors.joining(","));
 	}
 
 	public String toString() {

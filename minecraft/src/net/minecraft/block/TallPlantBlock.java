@@ -28,16 +28,14 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y
 			|| doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP)
-			|| neighborState.isOf(this) && neighborState.get(HALF) != doubleBlockHalf) {
+			|| newState.isOf(this) && newState.get(HALF) != doubleBlockHalf) {
 			return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)
 				? Blocks.AIR.getDefaultState()
-				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+				: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
 			return Blocks.AIR.getDefaultState();
 		}
@@ -47,7 +45,8 @@ public class TallPlantBlock extends PlantBlock {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockPos blockPos = ctx.getBlockPos();
-		return blockPos.getY() < 255 && ctx.getWorld().getBlockState(blockPos.up()).canReplace(ctx) ? super.getPlacementState(ctx) : null;
+		World world = ctx.getWorld();
+		return blockPos.getY() < world.getTopHeightLimit() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx) ? super.getPlacementState(ctx) : null;
 	}
 
 	@Override
@@ -99,7 +98,7 @@ public class TallPlantBlock extends PlantBlock {
 		if (doubleBlockHalf == DoubleBlockHalf.UPPER) {
 			BlockPos blockPos = pos.down();
 			BlockState blockState = world.getBlockState(blockPos);
-			if (blockState.getBlock() == state.getBlock() && blockState.get(HALF) == DoubleBlockHalf.LOWER) {
+			if (blockState.isOf(state.getBlock()) && blockState.get(HALF) == DoubleBlockHalf.LOWER) {
 				world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
 				world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
 			}

@@ -12,7 +12,7 @@ public interface ProgressListener {
 
 	void method_15414(Text text);
 
-	void progressStagePercentage(int percentage);
+	void progressStagePercentage(int i);
 
 	@Environment(EnvType.CLIENT)
 	void setDone();

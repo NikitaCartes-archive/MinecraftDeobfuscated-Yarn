@@ -51,7 +51,7 @@ public class ShieldItem extends Item {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return ItemTags.PLANKS.contains(ingredient.getItem()) || super.canRepair(stack, ingredient);
+		return ingredient.isIn(ItemTags.PLANKS) || super.canRepair(stack, ingredient);
 	}
 
 	public static DyeColor getColor(ItemStack stack) {

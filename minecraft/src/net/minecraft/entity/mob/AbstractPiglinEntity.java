@@ -3,9 +3,9 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5493;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -15,14 +15,14 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ToolItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractPiglinEntity extends HostileEntity {
 	protected static final TrackedData<Boolean> IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(AbstractPiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	protected int timeInOverworld = 0;
+	protected int timeInOverworld;
 
 	public AbstractPiglinEntity(EntityType<? extends AbstractPiglinEntity> entityType, World world) {
 		super(entityType, world);
@@ -33,7 +33,7 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	}
 
 	private void setCanPathThroughDoors() {
-		if (NavigationConditions.hasMobNavigation(this)) {
+		if (class_5493.method_30955(this)) {
 			((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		}
 	}
@@ -55,13 +55,13 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.isImmuneToZombification()) {
-			nbt.putBoolean("IsImmuneToZombification", true);
+			tag.putBoolean("IsImmuneToZombification", true);
 		}
 
-		nbt.putInt("TimeInOverworld", this.timeInOverworld);
+		tag.putInt("TimeInOverworld", this.timeInOverworld);
 	}
 
 	@Override
@@ -70,10 +70,10 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setImmuneToZombification(nbt.getBoolean("IsImmuneToZombification"));
-		this.timeInOverworld = nbt.getInt("TimeInOverworld");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
+		this.timeInOverworld = tag.getInt("TimeInOverworld");
 	}
 
 	@Override

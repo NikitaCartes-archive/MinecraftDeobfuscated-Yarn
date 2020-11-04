@@ -50,17 +50,15 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (!state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			if (direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO)) {
+			if (direction == Direction.UP && newState.isOf(Blocks.BAMBOO)) {
 				world.setBlockState(pos, Blocks.BAMBOO.getDefaultState(), 2);
 			}
 
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		}
 	}
 

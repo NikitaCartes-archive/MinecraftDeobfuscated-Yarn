@@ -9,7 +9,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.util.math.MathHelper;
 
 public abstract class TrackTargetGoal extends Goal {
 	protected final MobEntity mob;
@@ -60,7 +59,7 @@ public abstract class TrackTargetGoal extends Goal {
 						}
 					}
 
-					if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.invulnerable) {
+					if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable) {
 						return false;
 					} else {
 						this.mob.setTarget(livingEntity);
@@ -124,8 +123,8 @@ public abstract class TrackTargetGoal extends Goal {
 			if (pathNode == null) {
 				return false;
 			} else {
-				int i = pathNode.x - MathHelper.floor(entity.getX());
-				int j = pathNode.z - MathHelper.floor(entity.getZ());
+				int i = pathNode.x - entity.getBlockX();
+				int j = pathNode.z - entity.getBlockZ();
 				return (double)(i * i + j * j) <= 2.25;
 			}
 		}

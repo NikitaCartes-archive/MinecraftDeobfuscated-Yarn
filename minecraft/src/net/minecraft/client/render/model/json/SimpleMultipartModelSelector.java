@@ -28,7 +28,7 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
 		Property<?> property = stateManager.getProperty(this.key);
 		if (property == null) {
-			throw new RuntimeException(String.format("Unknown property '%s' on '%s'", this.key, stateManager.getOwner().toString()));
+			throw new RuntimeException(String.format("Unknown property '%s' on '%s'", this.key, stateManager.getOwner()));
 		} else {
 			String string = this.valueString;
 			boolean bl = !string.isEmpty() && string.charAt(0) == '!';
@@ -38,7 +38,7 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 
 			List<String> list = VALUE_SPLITTER.splitToList(string);
 			if (list.isEmpty()) {
-				throw new RuntimeException(String.format("Empty value '%s' for property '%s' on '%s'", this.valueString, this.key, stateManager.getOwner().toString()));
+				throw new RuntimeException(String.format("Empty value '%s' for property '%s' on '%s'", this.valueString, this.key, stateManager.getOwner()));
 			} else {
 				Predicate<BlockState> predicate;
 				if (list.size() == 1) {
@@ -59,7 +59,7 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 		Optional<?> optional = property.parse(valueString);
 		if (!optional.isPresent()) {
 			throw new RuntimeException(
-				String.format("Unknown value '%s' for property '%s' on '%s' in '%s'", valueString, this.key, stateFactory.getOwner().toString(), this.valueString)
+				String.format("Unknown value '%s' for property '%s' on '%s' in '%s'", valueString, this.key, stateFactory.getOwner(), this.valueString)
 			);
 		} else {
 			return blockState -> blockState.get(property).equals(optional.get());

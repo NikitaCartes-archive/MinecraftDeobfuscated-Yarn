@@ -17,7 +17,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -25,15 +25,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
-public class BlockRenderManager implements SynchronousResourceReloader {
+public class BlockRenderManager implements SynchronousResourceReloadListener {
 	private final BlockModels models;
 	private final BlockModelRenderer blockModelRenderer;
+	private final BuiltinModelItemRenderer field_27742;
 	private final FluidRenderer fluidRenderer;
 	private final Random random = new Random();
 	private final BlockColors blockColors;
 
-	public BlockRenderManager(BlockModels models, BlockColors blockColors) {
+	public BlockRenderManager(BlockModels models, BuiltinModelItemRenderer builtinModelItemRenderer, BlockColors blockColors) {
 		this.models = models;
+		this.field_27742 = builtinModelItemRenderer;
 		this.blockColors = blockColors;
 		this.blockModelRenderer = new BlockModelRenderer(this.blockColors);
 		this.fluidRenderer = new FluidRenderer();
@@ -63,18 +65,18 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 		} catch (Throwable var11) {
 			CrashReport crashReport = CrashReport.create(var11, "Tesselating block in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
-			CrashReportSection.addBlockInfo(crashReportSection, pos, state);
+			CrashReportSection.addBlockInfo(crashReportSection, world, pos, state);
 			throw new CrashException(crashReport);
 		}
 	}
 
-	public boolean renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer, FluidState state) {
+	public boolean renderFluid(BlockPos pos, BlockRenderView blockRenderView, VertexConsumer vertexConsumer, FluidState fluidState) {
 		try {
-			return this.fluidRenderer.render(world, pos, vertexConsumer, state);
+			return this.fluidRenderer.render(blockRenderView, pos, vertexConsumer, fluidState);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Tesselating liquid in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
-			CrashReportSection.addBlockInfo(crashReportSection, pos, null);
+			CrashReportSection.addBlockInfo(crashReportSection, blockRenderView, pos, null);
 			throw new CrashException(crashReport);
 		}
 	}
@@ -101,13 +103,13 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 						.render(matrices.peek(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state, false)), state, bakedModel, f, g, h, light, overlay);
 					break;
 				case ENTITYBLOCK_ANIMATED:
-					BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(state.getBlock()), ModelTransformation.Mode.NONE, matrices, vertexConsumer, light, overlay);
+					this.field_27742.render(new ItemStack(state.getBlock()), ModelTransformation.Mode.NONE, matrices, vertexConsumer, light, overlay);
 			}
 		}
 	}
 
 	@Override
-	public void reload(ResourceManager manager) {
+	public void apply(ResourceManager manager) {
 		this.fluidRenderer.onResourceReload();
 	}
 }

@@ -67,7 +67,7 @@ public class RespawnAnchorBlock extends Block {
 			return ActionResult.PASS;
 		} else if (isChargeItem(itemStack) && canCharge(state)) {
 			charge(world, pos, state);
-			if (!player.abilities.creativeMode) {
+			if (!player.getAbilities().creativeMode) {
 				itemStack.decrement(1);
 			}
 
@@ -104,7 +104,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	private static boolean isChargeItem(ItemStack stack) {
-		return stack.getItem() == Items.GLOWSTONE;
+		return stack.isOf(Items.GLOWSTONE);
 	}
 
 	private static boolean canCharge(BlockState state) {
@@ -215,9 +215,9 @@ public class RespawnAnchorBlock extends Block {
 		return getLightLevel(state, 15);
 	}
 
-	public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView world, BlockPos pos) {
-		Optional<Vec3d> optional = method_30842(entity, world, pos, true);
-		return optional.isPresent() ? optional : method_30842(entity, world, pos, false);
+	public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView collisionView, BlockPos pos) {
+		Optional<Vec3d> optional = method_30842(entity, collisionView, pos, true);
+		return optional.isPresent() ? optional : method_30842(entity, collisionView, pos, false);
 	}
 
 	private static Optional<Vec3d> method_30842(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, boolean bl) {

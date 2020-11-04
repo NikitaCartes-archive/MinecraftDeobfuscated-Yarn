@@ -4,18 +4,13 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
-/**
- * Represents a banner marker in world.
- * <p>
- * Used to track banners in a map state.
- */
 public class MapBannerMarker {
 	private final BlockPos pos;
 	private final DyeColor color;
@@ -28,10 +23,10 @@ public class MapBannerMarker {
 		this.name = name;
 	}
 
-	public static MapBannerMarker fromNbt(NbtCompound nbt) {
-		BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("Pos"));
-		DyeColor dyeColor = DyeColor.byName(nbt.getString("Color"), DyeColor.WHITE);
-		Text text = nbt.contains("Name") ? Text.Serializer.fromJson(nbt.getString("Name")) : null;
+	public static MapBannerMarker fromNbt(CompoundTag tag) {
+		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
+		DyeColor dyeColor = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
+		Text text = tag.contains("Name") ? Text.Serializer.fromJson(tag.getString("Name")) : null;
 		return new MapBannerMarker(blockPos, dyeColor, text);
 	}
 
@@ -40,7 +35,7 @@ public class MapBannerMarker {
 		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 		if (blockEntity instanceof BannerBlockEntity) {
 			BannerBlockEntity bannerBlockEntity = (BannerBlockEntity)blockEntity;
-			DyeColor dyeColor = bannerBlockEntity.getColorForState(() -> blockView.getBlockState(blockPos));
+			DyeColor dyeColor = bannerBlockEntity.getColorForState();
 			Text text = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.getCustomName() : null;
 			return new MapBannerMarker(blockPos, dyeColor, text);
 		} else {
@@ -110,15 +105,15 @@ public class MapBannerMarker {
 		return Objects.hash(new Object[]{this.pos, this.color, this.name});
 	}
 
-	public NbtCompound getNbt() {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.put("Pos", NbtHelper.fromBlockPos(this.pos));
-		nbtCompound.putString("Color", this.color.getName());
+	public CompoundTag getNbt() {
+		CompoundTag compoundTag = new CompoundTag();
+		compoundTag.put("Pos", NbtHelper.fromBlockPos(this.pos));
+		compoundTag.putString("Color", this.color.getName());
 		if (this.name != null) {
-			nbtCompound.putString("Name", Text.Serializer.toJson(this.name));
+			compoundTag.putString("Name", Text.Serializer.toJson(this.name));
 		}
 
-		return nbtCompound;
+		return compoundTag;
 	}
 
 	public String getKey() {

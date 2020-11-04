@@ -5,19 +5,19 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public interface ResourcePackSource {
-	ResourcePackSource field_25347 = method_29485();
-	ResourcePackSource PACK_SOURCE_BUILTIN = method_29486("pack.source.builtin");
-	ResourcePackSource PACK_SOURCE_WORLD = method_29486("pack.source.world");
-	ResourcePackSource PACK_SOURCE_SERVER = method_29486("pack.source.server");
+	ResourcePackSource PACK_SOURCE_NONE = onlyName();
+	ResourcePackSource PACK_SOURCE_BUILTIN = nameAndSource("pack.source.builtin");
+	ResourcePackSource PACK_SOURCE_WORLD = nameAndSource("pack.source.world");
+	ResourcePackSource PACK_SOURCE_SERVER = nameAndSource("pack.source.server");
 
-	Text decorate(Text text);
+	Text decorate(Text packName);
 
-	static ResourcePackSource method_29485() {
+	static ResourcePackSource onlyName() {
 		return text -> text;
 	}
 
-	static ResourcePackSource method_29486(String string) {
-		Text text = new TranslatableText(string);
+	static ResourcePackSource nameAndSource(String source) {
+		Text text = new TranslatableText(source);
 		return text2 -> new TranslatableText("pack.nameAndSource", text2, text).formatted(Formatting.GRAY);
 	}
 }

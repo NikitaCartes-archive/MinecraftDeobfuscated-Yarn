@@ -9,7 +9,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
@@ -40,15 +39,15 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 		int i = this.x;
 		int j = this.y;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		Item item = this.handler.getSlot(1).getStack().getItem();
-		boolean bl = item == Items.MAP;
-		boolean bl2 = item == Items.PAPER;
-		boolean bl3 = item == Items.GLASS_PANE;
-		ItemStack itemStack = this.handler.getSlot(0).getStack();
+		ItemStack itemStack = this.handler.getSlot(1).getStack();
+		boolean bl = itemStack.isOf(Items.MAP);
+		boolean bl2 = itemStack.isOf(Items.PAPER);
+		boolean bl3 = itemStack.isOf(Items.GLASS_PANE);
+		ItemStack itemStack2 = this.handler.getSlot(0).getStack();
 		boolean bl4 = false;
 		MapState mapState;
-		if (itemStack.getItem() == Items.FILLED_MAP) {
-			mapState = FilledMapItem.getMapState(itemStack, this.client.world);
+		if (itemStack2.isOf(Items.FILLED_MAP)) {
+			mapState = FilledMapItem.getMapState(itemStack2, this.client.world);
 			if (mapState != null) {
 				if (mapState.locked) {
 					bl4 = true;

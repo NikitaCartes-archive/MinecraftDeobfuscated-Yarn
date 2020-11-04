@@ -34,6 +34,10 @@ public class TypeReferences {
 	 */
 	public static final TypeReference POI_CHUNK = () -> "poi_chunk";
 	/**
+	 * A type reference which refers to the entity data in a chunk.
+	 */
+	public static final TypeReference ENTITY_CHUNK = () -> "entity_chunk";
+	/**
 	 * A type reference which refers to a block entity.
 	 */
 	public static final TypeReference BLOCK_ENTITY = () -> "block_entity";

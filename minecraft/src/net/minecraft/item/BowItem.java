@@ -23,7 +23,7 @@ public class BowItem extends RangedWeaponItem implements Vanishable {
 	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
 		if (user instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)user;
-			boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
+			boolean bl = playerEntity.getAbilities().creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
 			ItemStack itemStack = playerEntity.getArrowType(stack);
 			if (!itemStack.isEmpty() || bl) {
 				if (itemStack.isEmpty()) {
@@ -33,7 +33,7 @@ public class BowItem extends RangedWeaponItem implements Vanishable {
 				int i = this.getMaxUseTime(stack) - remainingUseTicks;
 				float f = getPullProgress(i);
 				if (!((double)f < 0.1)) {
-					boolean bl2 = bl && itemStack.getItem() == Items.ARROW;
+					boolean bl2 = bl && itemStack.isOf(Items.ARROW);
 					if (!world.isClient) {
 						ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
 						PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(world, itemStack, playerEntity);
@@ -57,7 +57,7 @@ public class BowItem extends RangedWeaponItem implements Vanishable {
 						}
 
 						stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
-						if (bl2 || playerEntity.abilities.creativeMode && (itemStack.getItem() == Items.SPECTRAL_ARROW || itemStack.getItem() == Items.TIPPED_ARROW)) {
+						if (bl2 || playerEntity.getAbilities().creativeMode && (itemStack.isOf(Items.SPECTRAL_ARROW) || itemStack.isOf(Items.TIPPED_ARROW))) {
 							persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 						}
 
@@ -72,12 +72,12 @@ public class BowItem extends RangedWeaponItem implements Vanishable {
 						SoundEvents.ENTITY_ARROW_SHOOT,
 						SoundCategory.PLAYERS,
 						1.0F,
-						1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F
+						1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F
 					);
-					if (!bl2 && !playerEntity.abilities.creativeMode) {
+					if (!bl2 && !playerEntity.getAbilities().creativeMode) {
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
-							playerEntity.inventory.removeOne(itemStack);
+							playerEntity.getInventory().removeOne(itemStack);
 						}
 					}
 
@@ -111,7 +111,7 @@ public class BowItem extends RangedWeaponItem implements Vanishable {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		boolean bl = !user.getArrowType(itemStack).isEmpty();
-		if (!user.abilities.creativeMode && !bl) {
+		if (!user.getAbilities().creativeMode && !bl) {
 			return TypedActionResult.fail(itemStack);
 		} else {
 			user.setCurrentHand(hand);

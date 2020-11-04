@@ -26,7 +26,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -149,30 +149,30 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.circlingCenter = this.getBlockPos().up(5);
 		this.setPhantomSize(0);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("AX")) {
-			this.circlingCenter = new BlockPos(nbt.getInt("AX"), nbt.getInt("AY"), nbt.getInt("AZ"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("AX")) {
+			this.circlingCenter = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
 		}
 
-		this.setPhantomSize(nbt.getInt("Size"));
+		this.setPhantomSize(tag.getInt("Size"));
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("AX", this.circlingCenter.getX());
-		nbt.putInt("AY", this.circlingCenter.getY());
-		nbt.putInt("AZ", this.circlingCenter.getZ());
-		nbt.putInt("Size", this.getPhantomSize());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("AX", this.circlingCenter.getX());
+		tag.putInt("AY", this.circlingCenter.getY());
+		tag.putInt("AZ", this.circlingCenter.getZ());
+		tag.putInt("Size", this.getPhantomSize());
 	}
 
 	@Environment(EnvType.CLIENT)

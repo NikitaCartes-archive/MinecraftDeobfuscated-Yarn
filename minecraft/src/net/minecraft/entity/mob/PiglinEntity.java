@@ -37,7 +37,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -59,7 +59,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		BABY_SPEED_BOOST_ID, "Baby speed boost", 0.2F, EntityAttributeModifier.Operation.MULTIPLY_BASE
 	);
 	private final SimpleInventory inventory = new SimpleInventory(8);
-	private boolean cannotHunt = false;
+	private boolean cannotHunt;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_SPECIFIC_SENSOR
 	);
@@ -110,25 +110,25 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.isBaby()) {
-			nbt.putBoolean("IsBaby", true);
+			tag.putBoolean("IsBaby", true);
 		}
 
 		if (this.cannotHunt) {
-			nbt.putBoolean("CannotHunt", true);
+			tag.putBoolean("CannotHunt", true);
 		}
 
-		nbt.put("Inventory", this.inventory.toNbtList());
+		tag.put("Inventory", this.inventory.getTags());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setBaby(nbt.getBoolean("IsBaby"));
-		this.setCannotHunt(nbt.getBoolean("CannotHunt"));
-		this.inventory.readNbtList(nbt.getList("Inventory", 10));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setBaby(tag.getBoolean("IsBaby"));
+		this.setCannotHunt(tag.getBoolean("CannotHunt"));
+		this.inventory.readTags(tag.getList("Inventory", 10));
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason != SpawnReason.STRUCTURE) {
 			if (world.getRandom().nextFloat() < 0.2F) {
@@ -188,7 +188,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		PiglinBrain.setHuntedRecently(this);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -291,7 +291,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	@Override
-	protected int getXpToDrop(PlayerEntity player) {
+	protected int getCurrentExperience(PlayerEntity player) {
 		return this.experiencePoints;
 	}
 
@@ -324,7 +324,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	public PiglinActivity getActivity() {
 		if (this.isDancing()) {
 			return PiglinActivity.DANCING;
-		} else if (PiglinBrain.isGoldenItem(this.getOffHandStack().getItem())) {
+		} else if (PiglinBrain.isGoldenItem(this.getOffHandStack())) {
 			return PiglinActivity.ADMIRING_ITEM;
 		} else if (this.isAttacking() && this.isHoldingTool()) {
 			return PiglinActivity.ATTACKING_WITH_MELEE_WEAPON;
@@ -377,7 +377,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	protected void equipToOffHand(ItemStack stack) {
-		if (stack.getItem() == PiglinBrain.BARTERING_ITEM) {
+		if (stack.isOf(PiglinBrain.BARTERING_ITEM)) {
 			this.equipStack(EquipmentSlot.OFFHAND, stack);
 			this.updateDropChances(EquipmentSlot.OFFHAND);
 		} else {
@@ -404,38 +404,43 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		if (EnchantmentHelper.hasBindingCurse(oldStack)) {
 			return false;
 		} else {
-			boolean bl = PiglinBrain.isGoldenItem(newStack.getItem()) || newStack.getItem() == Items.CROSSBOW;
-			boolean bl2 = PiglinBrain.isGoldenItem(oldStack.getItem()) || oldStack.getItem() == Items.CROSSBOW;
+			boolean bl = PiglinBrain.isGoldenItem(newStack) || newStack.isOf(Items.CROSSBOW);
+			boolean bl2 = PiglinBrain.isGoldenItem(oldStack) || oldStack.isOf(Items.CROSSBOW);
 			if (bl && !bl2) {
 				return true;
 			} else if (!bl && bl2) {
 				return false;
 			} else {
-				return this.isAdult() && newStack.getItem() != Items.CROSSBOW && oldStack.getItem() == Items.CROSSBOW
-					? false
-					: super.prefersNewEquipment(newStack, oldStack);
+				return this.isAdult() && !newStack.isOf(Items.CROSSBOW) && oldStack.isOf(Items.CROSSBOW) ? false : super.prefersNewEquipment(newStack, oldStack);
 			}
 		}
 	}
 
 	@Override
 	protected void loot(ItemEntity item) {
-		this.method_29499(item);
+		this.triggerItemPickedUpByEntityCriteria(item);
 		PiglinBrain.loot(this, item);
 	}
 
 	@Override
 	public boolean startRiding(Entity entity, boolean force) {
 		if (this.isBaby() && entity.getType() == EntityType.HOGLIN) {
-			entity = this.method_26089(entity, 3);
+			entity = this.getTopMostPassenger(entity, 3);
 		}
 
 		return super.startRiding(entity, force);
 	}
 
-	private Entity method_26089(Entity entity, int i) {
+	/**
+	 * Returns the passenger entity at {@code maxLevel} in a stacked riding (riding on
+	 * an entity that is riding on another entity, etc).
+	 * 
+	 * <p>If the number of stacked entities is less than {@code maxLevel}, returns the
+	 * top most passenger entity.
+	 */
+	private Entity getTopMostPassenger(Entity entity, int maxLevel) {
 		List<Entity> list = entity.getPassengerList();
-		return i != 1 && !list.isEmpty() ? this.method_26089((Entity)list.get(0), i - 1) : entity;
+		return maxLevel != 1 && !list.isEmpty() ? this.getTopMostPassenger((Entity)list.get(0), maxLevel - 1) : entity;
 	}
 
 	@Override

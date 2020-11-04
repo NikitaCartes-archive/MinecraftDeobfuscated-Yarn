@@ -18,11 +18,11 @@ import org.apache.logging.log4j.Logger;
  * <p>A running goal will always be replaced with a goal with a <i>lower</i> priority, if
  * such a goal exists, it's competing for the same control and its
  * {@link Goal#canStart() canStart()} method returns true. (Note that some goals randomize
- * this method.)
+ * this method.)</p>
  * 
  * <p>If two goals have the same priority and are competing for the same control, then one
  * goal cannot replace the other if it's running. The goal selector tries to run goals in the order
- * they were added.
+ * they were added.</p>
  */
 public class GoalSelector {
 	private static final Logger LOGGER = LogManager.getLogger();

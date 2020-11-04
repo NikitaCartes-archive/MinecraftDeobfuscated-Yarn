@@ -8,8 +8,8 @@ public enum ScaleLayer implements ParentedLayer {
 	NORMAL,
 	FUZZY {
 		@Override
-		protected int sample(LayerSampleContext<?> context, int tl, int tr, int bl, int br) {
-			return context.choose(tl, tr, bl, br);
+		protected int sample(LayerSampleContext<?> context, int i, int j, int k, int l) {
+			return context.choose(i, j, k, l);
 		}
 	};
 
@@ -52,27 +52,27 @@ public enum ScaleLayer implements ParentedLayer {
 		}
 	}
 
-	protected int sample(LayerSampleContext<?> context, int tl, int tr, int bl, int br) {
-		if (tr == bl && bl == br) {
-			return tr;
-		} else if (tl == tr && tl == bl) {
-			return tl;
-		} else if (tl == tr && tl == br) {
-			return tl;
-		} else if (tl == bl && tl == br) {
-			return tl;
-		} else if (tl == tr && bl != br) {
-			return tl;
-		} else if (tl == bl && tr != br) {
-			return tl;
-		} else if (tl == br && tr != bl) {
-			return tl;
-		} else if (tr == bl && tl != br) {
-			return tr;
-		} else if (tr == br && tl != bl) {
-			return tr;
+	protected int sample(LayerSampleContext<?> context, int i, int j, int k, int l) {
+		if (j == k && k == l) {
+			return j;
+		} else if (i == j && i == k) {
+			return i;
+		} else if (i == j && i == l) {
+			return i;
+		} else if (i == k && i == l) {
+			return i;
+		} else if (i == j && k != l) {
+			return i;
+		} else if (i == k && j != l) {
+			return i;
+		} else if (i == l && j != k) {
+			return i;
+		} else if (j == k && i != l) {
+			return j;
+		} else if (j == l && i != k) {
+			return j;
 		} else {
-			return bl == br && tl != tr ? bl : context.choose(tl, tr, bl, br);
+			return k == l && i != j ? k : context.choose(i, j, k, l);
 		}
 	}
 }

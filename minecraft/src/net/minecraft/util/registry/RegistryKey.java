@@ -33,7 +33,7 @@ public class RegistryKey<T> {
 	 * value.
 	 * 
 	 * <p>You can call it like {@code RegistryKey.of(Registry.ITEM_KEY, new Identifier("iron_ingot"))}
-	 * to create a registry key for iron ingot.
+	 * to create a registry key for iron ingot.</p>
 	 * 
 	 * @param <T> the type of the value
 	 * 
@@ -49,7 +49,7 @@ public class RegistryKey<T> {
 	 * all registries) with an identifier for the registry.
 	 * 
 	 * <p>You can call it like {@code RegistryKey.of(new Identifier("block"))}
-	 * to create a registry key for the block registry.
+	 * to create a registry key for the block registry.</p>
 	 * 
 	 * @param <T> the element type of the registry
 	 * 

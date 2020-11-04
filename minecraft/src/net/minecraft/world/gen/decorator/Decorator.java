@@ -19,7 +19,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<NopeDecoratorConfig> SQUARE = register("square", new SquareDecorator(NopeDecoratorConfig.CODEC));
 	public static final Decorator<NopeDecoratorConfig> HEIGHTMAP = register("heightmap", new MotionBlockingHeightmapDecorator<>(NopeDecoratorConfig.CODEC));
 	public static final Decorator<NopeDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = register(
-		"heightmap_spread_double", new SpreadDoubleHeightmapDecorator<>(NopeDecoratorConfig.CODEC)
+		"heightmap_spread_double", new HeightmapSpreadDoubleDecorator<>(NopeDecoratorConfig.CODEC)
 	);
 	public static final Decorator<NopeDecoratorConfig> TOP_SOLID_HEIGHTMAP = register(
 		"top_solid_heightmap", new TopSolidHeightmapDecorator(NopeDecoratorConfig.CODEC)

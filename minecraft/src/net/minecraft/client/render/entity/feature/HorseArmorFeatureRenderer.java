@@ -2,10 +2,12 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5599;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.HorseEntity;
@@ -15,10 +17,11 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
-	private final HorseEntityModel<HorseEntity> model = new HorseEntityModel<>(0.1F);
+	private final HorseEntityModel<HorseEntity> model;
 
-	public HorseArmorFeatureRenderer(FeatureRendererContext<HorseEntity, HorseEntityModel<HorseEntity>> featureRendererContext) {
+	public HorseArmorFeatureRenderer(FeatureRendererContext<HorseEntity, HorseEntityModel<HorseEntity>> featureRendererContext, class_5599 arg) {
 		super(featureRendererContext);
+		this.model = new HorseEntityModel<>(arg.method_32072(EntityModelLayers.HORSE_ARMOR));
 	}
 
 	public void render(

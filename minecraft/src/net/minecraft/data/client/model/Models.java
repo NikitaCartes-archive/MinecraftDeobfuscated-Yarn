@@ -99,6 +99,9 @@ public class Models {
 	public static final Model TEMPLATE_THREE_TURTLE_EGGS = block("template_three_turtle_eggs", TextureKey.ALL);
 	public static final Model TEMPLATE_FOUR_TURTLE_EGGS = block("template_four_turtle_eggs", TextureKey.ALL);
 	public static final Model TEMPLATE_SINGLE_FACE = block("template_single_face", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_CAULDRON_FULL = block(
+		"template_cauldron_full", TextureKey.CONTENT, TextureKey.INSIDE, TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE
+	);
 	public static final Model GENERATED = item("generated", TextureKey.LAYER0);
 	public static final Model HANDHELD = item("handheld", TextureKey.LAYER0);
 	public static final Model HANDHELD_ROD = item("handheld_rod", TextureKey.LAYER0);
@@ -106,6 +109,13 @@ public class Models {
 	public static final Model TEMPLATE_BED = item("template_bed", TextureKey.PARTICLE);
 	public static final Model TEMPLATE_BANNER = item("template_banner");
 	public static final Model TEMPLATE_SKULL = item("template_skull");
+	public static final Model TEMPLATE_CANDLE = block("template_candle", TextureKey.ALL, TextureKey.PARTICLE);
+	public static final Model TEMPLATE_TWO_CANDLES = block("template_two_candles", TextureKey.ALL, TextureKey.PARTICLE);
+	public static final Model TEMPLATE_THREE_CANDLES = block("template_three_candles", TextureKey.ALL, TextureKey.PARTICLE);
+	public static final Model TEMPLATE_FOUR_CANDLES = block("template_four_candles", TextureKey.ALL, TextureKey.PARTICLE);
+	public static final Model TEMPLATE_CAKE_WITH_CANDLE = block(
+		"template_cake_with_candle", TextureKey.CANDLE, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP, TextureKey.PARTICLE
+	);
 
 	private static Model make(TextureKey... requiredTextures) {
 		return new Model(Optional.empty(), Optional.empty(), requiredTextures);

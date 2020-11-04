@@ -63,6 +63,7 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_REDSTONE);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_DIAMOND);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_LAPIS);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_COPPER);
 	}
 
 	public static void addExtraGoldOre(GenerationSettings.Builder builder) {
@@ -83,7 +84,7 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.DISK_GRAVEL);
 	}
 
-	public static void addClayDisk(GenerationSettings.Builder builder) {
+	public static void addClay(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.DISK_CLAY);
 	}
 
@@ -331,6 +332,10 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_DEBRIS_SMALL);
 	}
 
+	public static void method_32236(GenerationSettings.Builder builder) {
+		builder.feature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, ConfiguredFeatures.AMETHYST_GEODE);
+	}
+
 	public static void addFarmAnimals(SpawnSettings.Builder builder) {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.SHEEP, 12, 4, 4));
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PIG, 10, 4, 4));
@@ -338,12 +343,12 @@ public class DefaultBiomeFeatures {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.COW, 8, 4, 4));
 	}
 
-	public static void addCaveMobs(SpawnSettings.Builder builder) {
+	public static void addBats(SpawnSettings.Builder builder) {
 		builder.spawn(SpawnGroup.AMBIENT, new SpawnSettings.SpawnEntry(EntityType.BAT, 10, 8, 8));
 	}
 
 	public static void addBatsAndMonsters(SpawnSettings.Builder builder) {
-		addCaveMobs(builder);
+		addBats(builder);
 		addMonsters(builder, 95, 5, 100);
 	}
 
@@ -371,14 +376,14 @@ public class DefaultBiomeFeatures {
 	public static void addSnowyMobs(SpawnSettings.Builder builder) {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 10, 2, 3));
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.POLAR_BEAR, 1, 1, 2));
-		addCaveMobs(builder);
+		addBats(builder);
 		addMonsters(builder, 95, 5, 20);
 		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.STRAY, 80, 4, 4));
 	}
 
 	public static void addDesertMobs(SpawnSettings.Builder builder) {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
-		addCaveMobs(builder);
+		addBats(builder);
 		addMonsters(builder, 19, 1, 100);
 		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.HUSK, 80, 4, 4));
 	}
@@ -396,7 +401,7 @@ public class DefaultBiomeFeatures {
 
 	public static void addMushroomMobs(SpawnSettings.Builder builder) {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.MOOSHROOM, 8, 4, 8));
-		addCaveMobs(builder);
+		addBats(builder);
 	}
 
 	public static void addJungleMobs(SpawnSettings.Builder builder) {

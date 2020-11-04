@@ -29,8 +29,8 @@ public class TemptGoal extends Goal {
 	private final Ingredient food;
 	private final boolean canBeScared;
 
-	public TemptGoal(PathAwareEntity entity, double speed, Ingredient food, boolean canBeScared) {
-		this(entity, speed, canBeScared, food);
+	public TemptGoal(PathAwareEntity mob, double speed, Ingredient food, boolean canBeScared) {
+		this(mob, speed, canBeScared, food);
 	}
 
 	public TemptGoal(PathAwareEntity mob, double speed, boolean canBeScared, Ingredient food) {

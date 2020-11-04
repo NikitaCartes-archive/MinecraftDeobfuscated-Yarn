@@ -1,12 +1,10 @@
 package net.minecraft.server.network;
 
 import java.util.Objects;
+import net.minecraft.class_5552;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.CommandBlock;
-import net.minecraft.block.JigsawBlock;
-import net.minecraft.block.StructureBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -52,7 +50,7 @@ public class ServerPlayerInteractionManager {
 	public void setGameMode(GameMode gameMode, GameMode previousGameMode) {
 		this.previousGameMode = previousGameMode;
 		this.gameMode = gameMode;
-		gameMode.setAbilities(this.player.abilities);
+		gameMode.setAbilities(this.player.getAbilities());
 		this.player.sendAbilitiesUpdate();
 		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, this.player));
 		this.world.updateSleepingPlayers();
@@ -203,7 +201,7 @@ public class ServerPlayerInteractionManager {
 			} else if (action == PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK) {
 				this.mining = false;
 				if (!Objects.equals(this.miningPos, pos)) {
-					LOGGER.warn("Mismatch in destroy block pos: " + this.miningPos + " " + pos);
+					LOGGER.warn("Mismatch in destroy block pos: {} {}", this.miningPos, pos);
 					this.world.setBlockBreakingInfo(this.player.getEntityId(), this.miningPos, -1);
 					this.player
 						.networkHandler
@@ -231,7 +229,7 @@ public class ServerPlayerInteractionManager {
 		} else {
 			BlockEntity blockEntity = this.world.getBlockEntity(pos);
 			Block block = blockState.getBlock();
-			if ((block instanceof CommandBlock || block instanceof StructureBlock || block instanceof JigsawBlock) && !this.player.isCreativeLevelTwoOp()) {
+			if (block instanceof class_5552 && !this.player.isCreativeLevelTwoOp()) {
 				this.world.updateListeners(pos, blockState, blockState, 3);
 				return false;
 			} else if (this.player.isBlockBreakingRestricted(this.world, pos, this.gameMode)) {
@@ -248,7 +246,7 @@ public class ServerPlayerInteractionManager {
 				} else {
 					ItemStack itemStack = this.player.getMainHandStack();
 					ItemStack itemStack2 = itemStack.copy();
-					boolean bl2 = this.player.canHarvest(blockState);
+					boolean bl2 = this.player.isUsingEffectiveTool(blockState);
 					itemStack.postMine(this.world, blockState, pos, this.player);
 					if (bl && bl2) {
 						block.afterBreak(this.world, this.player, pos, blockState, blockEntity, itemStack2);

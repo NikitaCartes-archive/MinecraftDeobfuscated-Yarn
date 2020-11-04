@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.ParticleEffectArgumentType;
+import net.minecraft.command.argument.ParticleArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,11 +25,11 @@ public class ParticleCommand {
 			CommandManager.literal("particle")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("name", ParticleEffectArgumentType.particleEffect())
+					CommandManager.argument("name", ParticleArgumentType.particle())
 						.executes(
 							commandContext -> execute(
 									commandContext.getSource(),
-									ParticleEffectArgumentType.getParticle(commandContext, "name"),
+									ParticleArgumentType.getParticle(commandContext, "name"),
 									commandContext.getSource().getPosition(),
 									Vec3d.ZERO,
 									0.0F,
@@ -43,7 +43,7 @@ public class ParticleCommand {
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
-											ParticleEffectArgumentType.getParticle(commandContext, "name"),
+											ParticleArgumentType.getParticle(commandContext, "name"),
 											Vec3ArgumentType.getVec3(commandContext, "pos"),
 											Vec3d.ZERO,
 											0.0F,
@@ -61,7 +61,7 @@ public class ParticleCommand {
 																.executes(
 																	commandContext -> execute(
 																			(ServerCommandSource)commandContext.getSource(),
-																			ParticleEffectArgumentType.getParticle(commandContext, "name"),
+																			ParticleArgumentType.getParticle(commandContext, "name"),
 																			Vec3ArgumentType.getVec3(commandContext, "pos"),
 																			Vec3ArgumentType.getVec3(commandContext, "delta"),
 																			FloatArgumentType.getFloat(commandContext, "speed"),
@@ -75,7 +75,7 @@ public class ParticleCommand {
 																	.executes(
 																		commandContext -> execute(
 																				commandContext.getSource(),
-																				ParticleEffectArgumentType.getParticle(commandContext, "name"),
+																				ParticleArgumentType.getParticle(commandContext, "name"),
 																				Vec3ArgumentType.getVec3(commandContext, "pos"),
 																				Vec3ArgumentType.getVec3(commandContext, "delta"),
 																				FloatArgumentType.getFloat(commandContext, "speed"),
@@ -89,7 +89,7 @@ public class ParticleCommand {
 																			.executes(
 																				commandContext -> execute(
 																						commandContext.getSource(),
-																						ParticleEffectArgumentType.getParticle(commandContext, "name"),
+																						ParticleArgumentType.getParticle(commandContext, "name"),
 																						Vec3ArgumentType.getVec3(commandContext, "pos"),
 																						Vec3ArgumentType.getVec3(commandContext, "delta"),
 																						FloatArgumentType.getFloat(commandContext, "speed"),
@@ -105,7 +105,7 @@ public class ParticleCommand {
 																.executes(
 																	commandContext -> execute(
 																			commandContext.getSource(),
-																			ParticleEffectArgumentType.getParticle(commandContext, "name"),
+																			ParticleArgumentType.getParticle(commandContext, "name"),
 																			Vec3ArgumentType.getVec3(commandContext, "pos"),
 																			Vec3ArgumentType.getVec3(commandContext, "delta"),
 																			FloatArgumentType.getFloat(commandContext, "speed"),
@@ -119,7 +119,7 @@ public class ParticleCommand {
 																		.executes(
 																			commandContext -> execute(
 																					commandContext.getSource(),
-																					ParticleEffectArgumentType.getParticle(commandContext, "name"),
+																					ParticleArgumentType.getParticle(commandContext, "name"),
 																					Vec3ArgumentType.getVec3(commandContext, "pos"),
 																					Vec3ArgumentType.getVec3(commandContext, "delta"),
 																					FloatArgumentType.getFloat(commandContext, "speed"),

@@ -1,41 +1,41 @@
 package net.minecraft.world;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.WeightedPicker;
 
 public class MobSpawnerEntry extends WeightedPicker.Entry {
-	private final NbtCompound entityNbt;
+	private final CompoundTag entityTag;
 
 	public MobSpawnerEntry() {
 		super(1);
-		this.entityNbt = new NbtCompound();
-		this.entityNbt.putString("id", "minecraft:pig");
+		this.entityTag = new CompoundTag();
+		this.entityTag.putString("id", "minecraft:pig");
 	}
 
-	public MobSpawnerEntry(NbtCompound nbt) {
-		this(nbt.contains("Weight", 99) ? nbt.getInt("Weight") : 1, nbt.getCompound("Entity"));
+	public MobSpawnerEntry(CompoundTag tag) {
+		this(tag.contains("Weight", 99) ? tag.getInt("Weight") : 1, tag.getCompound("Entity"));
 	}
 
-	public MobSpawnerEntry(int weight, NbtCompound entityNbt) {
+	public MobSpawnerEntry(int weight, CompoundTag entityTag) {
 		super(weight);
-		this.entityNbt = entityNbt;
-		Identifier identifier = Identifier.tryParse(entityNbt.getString("id"));
+		this.entityTag = entityTag;
+		Identifier identifier = Identifier.tryParse(entityTag.getString("id"));
 		if (identifier != null) {
-			entityNbt.putString("id", identifier.toString());
+			entityTag.putString("id", identifier.toString());
 		} else {
-			entityNbt.putString("id", "minecraft:pig");
+			entityTag.putString("id", "minecraft:pig");
 		}
 	}
 
-	public NbtCompound toNbt() {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.put("Entity", this.entityNbt);
-		nbtCompound.putInt("Weight", this.weight);
-		return nbtCompound;
+	public CompoundTag serialize() {
+		CompoundTag compoundTag = new CompoundTag();
+		compoundTag.put("Entity", this.entityTag);
+		compoundTag.putInt("Weight", this.weight);
+		return compoundTag;
 	}
 
-	public NbtCompound getEntityNbt() {
-		return this.entityNbt;
+	public CompoundTag getEntityTag() {
+		return this.entityTag;
 	}
 }

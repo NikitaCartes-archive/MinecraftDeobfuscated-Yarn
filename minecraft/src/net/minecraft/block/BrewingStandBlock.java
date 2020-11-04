@@ -1,9 +1,12 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -48,8 +51,14 @@ public class BrewingStandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new BrewingStandBlockEntity();
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new BrewingStandBlockEntity(pos, state);
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		return world.isClient ? null : checkType(type, BlockEntityType.BREWING_STAND, BrewingStandBlockEntity::tick);
 	}
 
 	@Override

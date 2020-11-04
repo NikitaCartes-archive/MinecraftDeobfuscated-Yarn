@@ -61,6 +61,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.copy(BlockTags.FLOWERS, ItemTags.FLOWERS);
 		this.copy(BlockTags.GOLD_ORES, ItemTags.GOLD_ORES);
 		this.copy(BlockTags.SOUL_FIRE_BASE_BLOCKS, ItemTags.SOUL_FIRE_BASE_BLOCKS);
+		this.copy(BlockTags.CANDLES, ItemTags.CANDLES);
 		this.getOrCreateTagBuilder(ItemTags.BANNERS)
 			.add(
 				Items.WHITE_BANNER,
@@ -129,6 +130,8 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.GOLDEN_AXE,
 				Items.GOLDEN_HOE
 			);
+		this.getOrCreateTagBuilder(ItemTags.IGNORED_BY_PIGLIN_BABIES).add(Items.LEATHER);
+		this.getOrCreateTagBuilder(ItemTags.PIGLIN_FOOD).add(Items.PORKCHOP, Items.COOKED_PORKCHOP);
 		this.getOrCreateTagBuilder(ItemTags.NON_FLAMMABLE_WOOD)
 			.add(
 				Items.WARPED_STEM,
@@ -164,15 +167,15 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
 	}
 
-	protected void copy(Tag.Identified<Block> blockTag, Tag.Identified<Item> itemTag) {
-		Tag.Builder builder = this.method_27169(itemTag);
-		Tag.Builder builder2 = (Tag.Builder)this.field_23783.apply(blockTag);
+	protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {
+		Tag.Builder builder = this.method_27169(identified2);
+		Tag.Builder builder2 = (Tag.Builder)this.field_23783.apply(identified);
 		builder2.streamEntries().forEach(builder::add);
 	}
 
 	@Override
-	protected Path getOutput(Identifier id) {
-		return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/items/" + id.getPath() + ".json");
+	protected Path getOutput(Identifier identifier) {
+		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/items/" + identifier.getPath() + ".json");
 	}
 
 	@Override

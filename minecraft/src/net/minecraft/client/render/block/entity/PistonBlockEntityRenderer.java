@@ -9,7 +9,6 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -21,11 +20,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEntity> {
-	private final BlockRenderManager manager = MinecraftClient.getInstance().getBlockRenderManager();
+public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBlockEntity> {
+	private final BlockRenderManager manager;
 
-	public PistonBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-		super(blockEntityRenderDispatcher);
+	public PistonBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+		this.manager = context.getRenderManager();
 	}
 
 	public void render(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

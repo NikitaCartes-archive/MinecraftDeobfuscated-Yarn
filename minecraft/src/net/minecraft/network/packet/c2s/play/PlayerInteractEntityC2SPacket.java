@@ -8,9 +8,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketListener> {
 	private int entityId;
@@ -83,8 +83,8 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	@Nullable
-	public Entity getEntity(World world) {
-		return world.getEntityById(this.entityId);
+	public Entity getEntity(ServerWorld serverWorld) {
+		return serverWorld.method_31424(this.entityId);
 	}
 
 	public PlayerInteractEntityC2SPacket.InteractionType getType() {

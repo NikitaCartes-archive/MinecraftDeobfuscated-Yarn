@@ -9,11 +9,11 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 public class OakSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	@Override
-	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bees) {
+	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
 		if (random.nextInt(10) == 0) {
-			return bees ? ConfiguredFeatures.FANCY_OAK_BEES_005 : ConfiguredFeatures.FANCY_OAK;
+			return bl ? ConfiguredFeatures.FANCY_OAK_BEES_005 : ConfiguredFeatures.FANCY_OAK;
 		} else {
-			return bees ? ConfiguredFeatures.OAK_BEES_005 : ConfiguredFeatures.OAK;
+			return bl ? ConfiguredFeatures.OAK_BEES_005 : ConfiguredFeatures.OAK;
 		}
 	}
 }

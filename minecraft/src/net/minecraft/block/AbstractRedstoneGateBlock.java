@@ -69,7 +69,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 		if (state.canPlaceAt(world, pos)) {
 			this.updatePowered(world, pos, state);
 		} else {
-			BlockEntity blockEntity = this.hasBlockEntity() ? world.getBlockEntity(pos) : null;
+			BlockEntity blockEntity = state.hasBlockEntity() ? world.getBlockEntity(pos) : null;
 			dropStacks(state, world, pos, blockEntity);
 			world.removeBlock(pos, false);
 
@@ -96,7 +96,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 		}
 	}
 
-	public boolean isLocked(WorldView world, BlockPos pos, BlockState state) {
+	public boolean isLocked(WorldView worldView, BlockPos pos, BlockState state) {
 		return false;
 	}
 

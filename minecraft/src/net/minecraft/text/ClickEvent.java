@@ -21,11 +21,11 @@ public class ClickEvent {
 		return this.value;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			ClickEvent clickEvent = (ClickEvent)o;
+		} else if (obj != null && this.getClass() == obj.getClass()) {
+			ClickEvent clickEvent = (ClickEvent)obj;
 			if (this.action != clickEvent.action) {
 				return false;
 			} else {

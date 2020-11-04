@@ -23,7 +23,7 @@ public class ThrowablePotionItem extends PotionItem {
 		}
 
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
-		if (!user.abilities.creativeMode) {
+		if (!user.getAbilities().creativeMode) {
 			itemStack.decrement(1);
 		}
 

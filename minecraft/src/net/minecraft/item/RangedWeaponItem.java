@@ -6,8 +6,8 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
 
 public abstract class RangedWeaponItem extends Item {
-	public static final Predicate<ItemStack> BOW_PROJECTILES = stack -> stack.getItem().isIn(ItemTags.ARROWS);
-	public static final Predicate<ItemStack> CROSSBOW_HELD_PROJECTILES = BOW_PROJECTILES.or(stack -> stack.getItem() == Items.FIREWORK_ROCKET);
+	public static final Predicate<ItemStack> BOW_PROJECTILES = stack -> stack.isIn(ItemTags.ARROWS);
+	public static final Predicate<ItemStack> CROSSBOW_HELD_PROJECTILES = BOW_PROJECTILES.or(stack -> stack.isOf(Items.FIREWORK_ROCKET));
 
 	public RangedWeaponItem(Item.Settings settings) {
 		super(settings);

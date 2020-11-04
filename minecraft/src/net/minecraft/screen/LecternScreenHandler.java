@@ -57,7 +57,7 @@ public class LecternScreenHandler extends ScreenHandler {
 
 					ItemStack itemStack = this.inventory.removeStack(0);
 					this.inventory.markDirty();
-					if (!player.inventory.insertStack(itemStack)) {
+					if (!player.getInventory().insertStack(itemStack)) {
 						player.dropItem(itemStack, false);
 					}
 

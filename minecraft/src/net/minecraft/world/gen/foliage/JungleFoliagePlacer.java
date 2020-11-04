@@ -56,11 +56,11 @@ public class JungleFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
-		if (dx + dz >= 7) {
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
+		if (baseHeight + y >= 7) {
 			return true;
 		} else {
-			return dx * dx + dz * dz > radius * radius;
+			return baseHeight * baseHeight + y * y > dz * dz;
 		}
 	}
 }

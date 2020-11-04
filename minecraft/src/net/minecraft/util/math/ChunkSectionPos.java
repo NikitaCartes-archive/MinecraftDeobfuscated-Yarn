@@ -31,9 +31,7 @@ public class ChunkSectionPos extends Vec3i {
 	}
 
 	public static ChunkSectionPos from(Entity entity) {
-		return new ChunkSectionPos(
-			getSectionCoord(MathHelper.floor(entity.getX())), getSectionCoord(MathHelper.floor(entity.getY())), getSectionCoord(MathHelper.floor(entity.getZ()))
-		);
+		return new ChunkSectionPos(getSectionCoord(entity.getBlockX()), getSectionCoord(entity.getBlockY()), getSectionCoord(entity.getBlockZ()));
 	}
 
 	/**
@@ -60,10 +58,12 @@ public class ChunkSectionPos extends Vec3i {
 		return asLong(unpackX(packed) + x, unpackY(packed) + y, unpackZ(packed) + z);
 	}
 
+	public static int method_32204(double d) {
+		return getSectionCoord(MathHelper.floor(d));
+	}
+
 	/**
 	 * Converts a world coordinate to the corresponding chunk-section coordinate.
-	 * 
-	 * @implNote This implementation returns {@code coord / 16}.
 	 */
 	public static int getSectionCoord(int coord) {
 		return coord >> 4;
@@ -151,6 +151,10 @@ public class ChunkSectionPos extends Vec3i {
 		return sectionCoord << 4;
 	}
 
+	public static int method_32205(int i, int j) {
+		return getBlockCoord(i) + j;
+	}
+
 	/**
 	 * Gets the chunk section x-coordinate from the given packed chunk section coordinate.
 	 * @see #asLong
@@ -188,27 +192,27 @@ public class ChunkSectionPos extends Vec3i {
 	}
 
 	public int getMinX() {
-		return this.getSectionX() << 4;
+		return getBlockCoord(this.getSectionX());
 	}
 
 	public int getMinY() {
-		return this.getSectionY() << 4;
+		return getBlockCoord(this.getSectionY());
 	}
 
 	public int getMinZ() {
-		return this.getSectionZ() << 4;
+		return getBlockCoord(this.getSectionZ());
 	}
 
 	public int getMaxX() {
-		return (this.getSectionX() << 4) + 15;
+		return method_32205(this.getSectionX(), 15);
 	}
 
 	public int getMaxY() {
-		return (this.getSectionY() << 4) + 15;
+		return method_32205(this.getSectionY(), 15);
 	}
 
 	public int getMaxZ() {
-		return (this.getSectionZ() << 4) + 15;
+		return method_32205(this.getSectionZ(), 15);
 	}
 
 	/**
@@ -266,10 +270,10 @@ public class ChunkSectionPos extends Vec3i {
 		return stream(i - radius, j - radius, k - radius, i + radius, j + radius, k + radius);
 	}
 
-	public static Stream<ChunkSectionPos> stream(ChunkPos center, int radius) {
-		int i = center.x;
-		int j = center.z;
-		return stream(i - radius, 0, j - radius, i + radius, 15, j + radius);
+	public static Stream<ChunkSectionPos> stream(ChunkPos center, int radius, int i, int j) {
+		int k = center.x;
+		int l = center.z;
+		return stream(k - radius, i, l - radius, k + radius, j - 1, l + radius);
 	}
 
 	public static Stream<ChunkSectionPos> stream(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {

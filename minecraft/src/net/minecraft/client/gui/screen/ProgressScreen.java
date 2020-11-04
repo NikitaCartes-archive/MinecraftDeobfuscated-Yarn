@@ -46,8 +46,8 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	}
 
 	@Override
-	public void progressStagePercentage(int percentage) {
-		this.progress = percentage;
+	public void progressStagePercentage(int i) {
+		this.progress = i;
 	}
 
 	@Override

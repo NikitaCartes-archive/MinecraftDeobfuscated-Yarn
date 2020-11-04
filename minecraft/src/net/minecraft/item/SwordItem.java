@@ -52,7 +52,7 @@ public class SwordItem extends ToolItem implements Vanishable {
 			Material material = state.getMaterial();
 			return material != Material.PLANT
 					&& material != Material.REPLACEABLE_PLANT
-					&& material != Material.MOSS_BLOCK
+					&& material != Material.UNUSED_PLANT
 					&& !state.isIn(BlockTags.LEAVES)
 					&& material != Material.GOURD
 				? 1.0F
@@ -76,7 +76,7 @@ public class SwordItem extends ToolItem implements Vanishable {
 	}
 
 	@Override
-	public boolean isSuitableFor(BlockState state) {
+	public boolean isEffectiveOn(BlockState state) {
 		return state.isOf(Blocks.COBWEB);
 	}
 

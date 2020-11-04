@@ -33,9 +33,9 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		return new IdentifierArgumentType();
 	}
 
-	public static Advancement getAdvancementArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-		Identifier identifier = context.getArgument(argumentName, Identifier.class);
-		Advancement advancement = context.getSource().getMinecraftServer().getAdvancementLoader().get(identifier);
+	public static Advancement getAdvancementArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		Identifier identifier = commandContext.getArgument(string, Identifier.class);
+		Advancement advancement = commandContext.getSource().getMinecraftServer().getAdvancementLoader().get(identifier);
 		if (advancement == null) {
 			throw UNKNOWN_ADVANCEMENT_EXCEPTION.create(identifier);
 		} else {
@@ -43,9 +43,9 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		}
 	}
 
-	public static Recipe<?> getRecipeArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-		RecipeManager recipeManager = context.getSource().getMinecraftServer().getRecipeManager();
-		Identifier identifier = context.getArgument(argumentName, Identifier.class);
+	public static Recipe<?> getRecipeArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		RecipeManager recipeManager = commandContext.getSource().getMinecraftServer().getRecipeManager();
+		Identifier identifier = commandContext.getArgument(string, Identifier.class);
 		return (Recipe<?>)recipeManager.get(identifier).orElseThrow(() -> UNKNOWN_RECIPE_EXCEPTION.create(identifier));
 	}
 

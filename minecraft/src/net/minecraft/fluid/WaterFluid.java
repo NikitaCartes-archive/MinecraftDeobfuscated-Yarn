@@ -83,7 +83,7 @@ public abstract class WaterFluid extends FlowableFluid {
 
 	@Override
 	protected void beforeBreakingBlock(WorldAccess world, BlockPos pos, BlockState state) {
-		BlockEntity blockEntity = state.getBlock().hasBlockEntity() ? world.getBlockEntity(pos) : null;
+		BlockEntity blockEntity = state.hasBlockEntity() ? world.getBlockEntity(pos) : null;
 		Block.dropStacks(state, world, pos, blockEntity);
 	}
 
@@ -94,7 +94,7 @@ public abstract class WaterFluid extends FlowableFluid {
 
 	@Override
 	public BlockState toBlockState(FluidState state) {
-		return Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(getBlockStateLevel(state)));
+		return Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(state)));
 	}
 
 	@Override

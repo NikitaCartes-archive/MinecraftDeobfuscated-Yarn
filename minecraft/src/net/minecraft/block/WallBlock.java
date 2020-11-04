@@ -129,7 +129,7 @@ public class WallBlock extends Block implements Waterloggable {
 	private boolean shouldConnectTo(BlockState state, boolean faceFullSquare, Direction side) {
 		Block block = state.getBlock();
 		boolean bl = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, side);
-		return state.isIn(BlockTags.WALLS) || !cannotConnect(block) && faceFullSquare || block instanceof PaneBlock || bl;
+		return state.isIn(BlockTags.WALLS) || !cannotConnect(state) && faceFullSquare || block instanceof PaneBlock || bl;
 	}
 
 	@Override
@@ -156,19 +156,15 @@ public class WallBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		if (direction == Direction.DOWN) {
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
-			return direction == Direction.UP
-				? this.method_24421(world, state, neighborPos, neighborState)
-				: this.method_24423(world, pos, state, neighborPos, neighborState, direction);
+			return direction == Direction.UP ? this.method_24421(world, state, posFrom, newState) : this.method_24423(world, pos, state, posFrom, newState, direction);
 		}
 	}
 
@@ -238,7 +234,7 @@ public class WallBlock extends Block implements Waterloggable {
 				if (bl7) {
 					return false;
 				} else {
-					return blockState2.getBlock().isIn(BlockTags.WALL_POST_OVERRIDE) || method_24427(voxelShape, TALL_POST_SHAPE);
+					return blockState2.isIn(BlockTags.WALL_POST_OVERRIDE) || method_24427(voxelShape, TALL_POST_SHAPE);
 				}
 			}
 		}

@@ -26,6 +26,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.ServerAddress;
 import net.minecraft.network.listener.ClientQueryPacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
@@ -165,7 +166,7 @@ public class MultiplayerServerListPinger {
 		final ServerAddress serverAddress = ServerAddress.parse(serverInfo.address);
 		new Bootstrap().group(ClientConnection.CLIENT_IO_GROUP.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
-			protected void initChannel(Channel channel) throws Exception {
+			protected void initChannel(Channel channel) {
 				try {
 					channel.config().setOption(ChannelOption.TCP_NODELAY, true);
 				} catch (ChannelException var3) {
@@ -204,7 +205,7 @@ public class MultiplayerServerListPinger {
 						}
 					}
 
-					protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+					protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) {
 						short s = byteBuf.readUnsignedByte();
 						if (s == 255) {
 							String string = new String(byteBuf.readBytes(byteBuf.readShort() * 2).array(), StandardCharsets.UTF_16BE);
@@ -226,7 +227,7 @@ public class MultiplayerServerListPinger {
 					}
 
 					@Override
-					public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable throwable) throws Exception {
+					public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable throwable) {
 						channelHandlerContext.close();
 					}
 				});

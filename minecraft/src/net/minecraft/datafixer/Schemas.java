@@ -34,6 +34,7 @@ import net.minecraft.datafixer.fix.BlockNameFix;
 import net.minecraft.datafixer.fix.BlockNameFlatteningFix;
 import net.minecraft.datafixer.fix.BlockStateStructureTemplateFix;
 import net.minecraft.datafixer.fix.CatTypeFix;
+import net.minecraft.datafixer.fix.CauldronRenameFix;
 import net.minecraft.datafixer.fix.ChoiceFix;
 import net.minecraft.datafixer.fix.ChoiceTypesFix;
 import net.minecraft.datafixer.fix.ChunkLightRemoveFix;
@@ -43,6 +44,7 @@ import net.minecraft.datafixer.fix.ChunkStatusFix2;
 import net.minecraft.datafixer.fix.ChunkStructuresTemplateRenameFix;
 import net.minecraft.datafixer.fix.ChunkToProtoChunkFix;
 import net.minecraft.datafixer.fix.ColorlessShulkerEntityFix;
+import net.minecraft.datafixer.fix.DirtPathRenameFix;
 import net.minecraft.datafixer.fix.EntityArmorStandSilentFix;
 import net.minecraft.datafixer.fix.EntityBlockStateFix;
 import net.minecraft.datafixer.fix.EntityCatSplitFix;
@@ -651,6 +653,13 @@ public class Schemas {
 		builder.addFixer(new OptionFix(schema124, false, "Rename swapHands setting", "key_key.swapHands", "key_key.swapOffhand"));
 		Schema schema125 = builder.addSchema(2568, Schema2568::new);
 		builder.addFixer(new ChoiceTypesFix(schema125, "Added Piglin Brute", TypeReferences.ENTITY));
+		Schema schema126 = builder.addSchema(2679, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new CauldronRenameFix(schema126, false));
+		Schema schema127 = builder.addSchema(2680, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(ItemNameFix.create(schema127, "Renamed grass path item to dirt path", method_30068("minecraft:grass_path", "minecraft:dirt_path")));
+		builder.addFixer(
+			DirtPathRenameFix.createDirtPathRenameFix(schema127, "Renamed grass path block to dirt path", method_30068("minecraft:grass_path", "minecraft:dirt_path"))
+		);
 	}
 
 	private static UnaryOperator<String> method_30070(Map<String, String> map) {

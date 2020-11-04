@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -62,7 +62,7 @@ public class BlockArgumentParser {
 	private StateManager<Block, BlockState> stateFactory;
 	private BlockState blockState;
 	@Nullable
-	private NbtCompound data;
+	private CompoundTag data;
 	private Identifier tagId = new Identifier("");
 	private int cursorPos;
 	private BiFunction<SuggestionsBuilder, TagGroup<Block>, CompletableFuture<Suggestions>> suggestions = SUGGEST_DEFAULT;
@@ -82,7 +82,7 @@ public class BlockArgumentParser {
 	}
 
 	@Nullable
-	public NbtCompound getNbtData() {
+	public CompoundTag getNbtData() {
 		return this.data;
 	}
 
@@ -173,13 +173,13 @@ public class BlockArgumentParser {
 
 	private boolean hasBlockEntity(TagGroup<Block> tagGroup) {
 		if (this.blockState != null) {
-			return this.blockState.getBlock().hasBlockEntity();
+			return this.blockState.hasBlockEntity();
 		} else {
 			if (this.tagId != null) {
 				Tag<Block> tag = tagGroup.getTag(this.tagId);
 				if (tag != null) {
 					for(Block block : tag.values()) {
-						if (block.hasBlockEntity()) {
+						if (block.getDefaultState().hasBlockEntity()) {
 							return true;
 						}
 					}
@@ -262,7 +262,7 @@ public class BlockArgumentParser {
 
 				for(Block block : tag.values()) {
 					bl |= !block.getStateManager().getProperties().isEmpty();
-					bl2 |= block.hasBlockEntity();
+					bl2 |= block.getDefaultState().hasBlockEntity();
 					if (bl && bl2) {
 						break;
 					}
@@ -287,7 +287,7 @@ public class BlockArgumentParser {
 				suggestionsBuilder.suggest(String.valueOf('['));
 			}
 
-			if (this.blockState.getBlock().hasBlockEntity()) {
+			if (this.blockState.hasBlockEntity()) {
 				suggestionsBuilder.suggest(String.valueOf('{'));
 			}
 		}
@@ -437,7 +437,7 @@ public class BlockArgumentParser {
 	}
 
 	public void parseSnbt() throws CommandSyntaxException {
-		this.data = new StringNbtReader(this.reader).parseCompound();
+		this.data = new StringNbtReader(this.reader).parseCompoundTag();
 	}
 
 	private <T extends Comparable<T>> void parsePropertyValue(Property<T> property, String string, int i) throws CommandSyntaxException {

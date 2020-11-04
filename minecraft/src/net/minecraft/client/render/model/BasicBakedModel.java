@@ -33,8 +33,8 @@ public class BasicBakedModel implements BakedModel {
 		boolean isSideLit,
 		boolean hasDepth,
 		Sprite sprite,
-		ModelTransformation transformation,
-		ModelOverrideList itemPropertyOverrides
+		ModelTransformation modelTransformation,
+		ModelOverrideList modelOverrideList
 	) {
 		this.quads = quads;
 		this.faceQuads = faceQuads;
@@ -42,8 +42,8 @@ public class BasicBakedModel implements BakedModel {
 		this.hasDepth = hasDepth;
 		this.isSideLit = isSideLit;
 		this.sprite = sprite;
-		this.transformation = transformation;
-		this.itemPropertyOverrides = itemPropertyOverrides;
+		this.transformation = modelTransformation;
+		this.itemPropertyOverrides = modelOverrideList;
 	}
 
 	@Override

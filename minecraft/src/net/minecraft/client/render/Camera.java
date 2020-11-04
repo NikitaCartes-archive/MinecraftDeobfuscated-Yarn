@@ -2,6 +2,7 @@ package net.minecraft.client.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FluidState;
@@ -12,7 +13,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
 
@@ -23,9 +23,9 @@ public class Camera {
 	private Entity focusedEntity;
 	private Vec3d pos = Vec3d.ZERO;
 	private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-	private final Vec3f horizontalPlane = new Vec3f(0.0F, 0.0F, 1.0F);
-	private final Vec3f verticalPlane = new Vec3f(0.0F, 1.0F, 0.0F);
-	private final Vec3f diagonalPlane = new Vec3f(1.0F, 0.0F, 0.0F);
+	private final Vector3f horizontalPlane = new Vector3f(0.0F, 0.0F, 1.0F);
+	private final Vector3f verticalPlane = new Vector3f(0.0F, 1.0F, 0.0F);
+	private final Vector3f diagonalPlane = new Vector3f(1.0F, 0.0F, 0.0F);
 	private float pitch;
 	private float yaw;
 	private final Quaternion rotation = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
@@ -104,8 +104,8 @@ public class Camera {
 		this.pitch = pitch;
 		this.yaw = yaw;
 		this.rotation.set(0.0F, 0.0F, 0.0F, 1.0F);
-		this.rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
-		this.rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(pitch));
+		this.rotation.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
+		this.rotation.hamiltonProduct(Vector3f.POSITIVE_X.getDegreesQuaternion(pitch));
 		this.horizontalPlane.set(0.0F, 0.0F, 1.0F);
 		this.horizontalPlane.rotate(this.rotation);
 		this.verticalPlane.set(0.0F, 1.0F, 0.0F);
@@ -166,11 +166,11 @@ public class Camera {
 		}
 	}
 
-	public final Vec3f getHorizontalPlane() {
+	public final Vector3f getHorizontalPlane() {
 		return this.horizontalPlane;
 	}
 
-	public final Vec3f getVerticalPlane() {
+	public final Vector3f getVerticalPlane() {
 		return this.verticalPlane;
 	}
 

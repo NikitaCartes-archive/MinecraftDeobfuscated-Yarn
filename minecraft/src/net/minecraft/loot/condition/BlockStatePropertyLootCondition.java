@@ -38,7 +38,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 
 	public boolean test(LootContext lootContext) {
 		BlockState blockState = lootContext.get(LootContextParameters.BLOCK_STATE);
-		return blockState != null && this.block == blockState.getBlock() && this.properties.test(blockState);
+		return blockState != null && blockState.isOf(this.block) && this.properties.test(blockState);
 	}
 
 	public static BlockStatePropertyLootCondition.Builder builder(Block block) {

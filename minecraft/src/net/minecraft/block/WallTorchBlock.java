@@ -86,9 +86,7 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : state;
 	}
 

@@ -2,12 +2,14 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
@@ -18,15 +20,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/fishing_hook.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutout(TEXTURE);
 
-	public FishingBobberEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher);
+	public FishingBobberEntityRenderer(class_5617.class_5618 arg) {
+		super(arg);
 	}
 
 	public void render(FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -36,7 +37,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			matrixStack.push();
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			matrixStack.multiply(this.dispatcher.getRotation());
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			MatrixStack.Entry entry = matrixStack.peek();
 			Matrix4f matrix4f = entry.getModel();
 			Matrix3f matrix3f = entry.getNormal();
@@ -48,7 +49,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			matrixStack.pop();
 			int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
 			ItemStack itemStack = playerEntity.getMainHandStack();
-			if (itemStack.getItem() != Items.FISHING_ROD) {
+			if (!itemStack.isOf(Items.FISHING_ROD)) {
 				j = -j;
 			}
 

@@ -87,7 +87,7 @@ public class Dismounting {
 				return null;
 			} else {
 				Vec3d vec3d = Vec3d.ofCenter(blockPos, d);
-				return collisionView.getBlockCollisions(null, entityType.getDimensions().getBoxAt(vec3d)).allMatch(VoxelShape::isEmpty) ? vec3d : null;
+				return collisionView.getBlockCollisions(null, entityType.getDimensions().method_30757(vec3d)).allMatch(VoxelShape::isEmpty) ? vec3d : null;
 			}
 		}
 	}

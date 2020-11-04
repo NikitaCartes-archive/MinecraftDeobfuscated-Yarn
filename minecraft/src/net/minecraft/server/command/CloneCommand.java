@@ -16,7 +16,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
@@ -247,8 +247,8 @@ public class CloneCommand {
 								if (filter.test(cachedBlockPosition)) {
 									BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos3);
 									if (blockEntity != null) {
-										NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
-										list2.add(new CloneCommand.BlockInfo(blockPos4, blockState, nbtCompound));
+										CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+										list2.add(new CloneCommand.BlockInfo(blockPos4, blockState, compoundTag));
 										deque.addLast(blockPos3);
 									} else if (!blockState.isOpaqueFullCube(serverWorld, blockPos3) && !blockState.isFullCube(serverWorld, blockPos3)) {
 										list3.add(new CloneCommand.BlockInfo(blockPos4, blockState, null));
@@ -300,7 +300,7 @@ public class CloneCommand {
 							blockInfo2.blockEntityTag.putInt("x", blockInfo2.pos.getX());
 							blockInfo2.blockEntityTag.putInt("y", blockInfo2.pos.getY());
 							blockInfo2.blockEntityTag.putInt("z", blockInfo2.pos.getZ());
-							blockEntity4.fromTag(blockInfo2.state, blockInfo2.blockEntityTag);
+							blockEntity4.fromTag(blockInfo2.blockEntityTag);
 							blockEntity4.markDirty();
 						}
 
@@ -329,9 +329,9 @@ public class CloneCommand {
 		public final BlockPos pos;
 		public final BlockState state;
 		@Nullable
-		public final NbtCompound blockEntityTag;
+		public final CompoundTag blockEntityTag;
 
-		public BlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound blockEntityTag) {
+		public BlockInfo(BlockPos pos, BlockState state, @Nullable CompoundTag blockEntityTag) {
 			this.pos = pos;
 			this.state = state;
 			this.blockEntityTag = blockEntityTag;

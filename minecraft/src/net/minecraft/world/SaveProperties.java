@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
@@ -25,10 +25,10 @@ public interface SaveProperties {
 
 	void addServerBrand(String brand, boolean modded);
 
-	default void populateCrashReport(CrashReportSection reportSection) {
-		reportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.getServerBrands())));
-		reportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.isModded())));
-		reportSection.add("Level storage version", (CrashCallable<String>)(() -> {
+	default void populateCrashReport(CrashReportSection crashReportSection) {
+		crashReportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.getServerBrands())));
+		crashReportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.isModded())));
+		crashReportSection.add("Level storage version", (CrashCallable<String>)(() -> {
 			int i = this.getVersion();
 			return String.format("0x%05X - %s", i, this.getFormatName(i));
 		}));
@@ -46,16 +46,16 @@ public interface SaveProperties {
 	}
 
 	@Nullable
-	NbtCompound getCustomBossEvents();
+	CompoundTag getCustomBossEvents();
 
-	void setCustomBossEvents(@Nullable NbtCompound nbt);
+	void setCustomBossEvents(@Nullable CompoundTag tag);
 
 	ServerWorldProperties getMainWorldProperties();
 
 	@Environment(EnvType.CLIENT)
 	LevelInfo getLevelInfo();
 
-	NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerNbt);
+	CompoundTag cloneWorldTag(DynamicRegistryManager dynamicRegistryManager, @Nullable CompoundTag compoundTag);
 
 	boolean isHardcore();
 
@@ -79,11 +79,11 @@ public interface SaveProperties {
 
 	GameRules getGameRules();
 
-	NbtCompound getPlayerData();
+	CompoundTag getPlayerData();
 
-	NbtCompound getDragonFight();
+	CompoundTag getDragonFight();
 
-	void setDragonFight(NbtCompound nbt);
+	void setDragonFight(CompoundTag tag);
 
 	GeneratorOptions getGeneratorOptions();
 

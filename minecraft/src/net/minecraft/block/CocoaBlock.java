@@ -62,8 +62,8 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		Block block = world.getBlockState(pos.offset(state.get(FACING))).getBlock();
-		return block.isIn(BlockTags.JUNGLE_LOGS);
+		BlockState blockState = world.getBlockState(pos.offset(state.get(FACING)));
+		return blockState.isIn(BlockTags.JUNGLE_LOGS);
 	}
 
 	@Override
@@ -102,12 +102,10 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction == state.get(FACING) && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override

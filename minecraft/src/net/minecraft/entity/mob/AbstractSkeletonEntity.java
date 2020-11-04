@@ -35,7 +35,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -139,9 +139,9 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
 		this.updateAttackType();
@@ -164,7 +164,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 			this.goalSelector.remove(this.meleeAttackGoal);
 			this.goalSelector.remove(this.bowAttackGoal);
 			ItemStack itemStack = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW));
-			if (itemStack.getItem() == Items.BOW) {
+			if (itemStack.isOf(Items.BOW)) {
 				int i = 20;
 				if (this.world.getDifficulty() != Difficulty.HARD) {
 					i = 40;
@@ -201,8 +201,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
 		this.updateAttackType();
 	}
 

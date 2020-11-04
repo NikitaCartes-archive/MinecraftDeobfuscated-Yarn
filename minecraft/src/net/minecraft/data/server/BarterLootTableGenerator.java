@@ -13,7 +13,7 @@ import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.EnchantRandomlyLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetNbtLootFunction;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -30,17 +30,17 @@ public class BarterLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.with(
 							ItemEntry.builder(Items.POTION)
 								.weight(8)
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:fire_resistance"))))
+								.apply(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:fire_resistance"))))
 						)
 						.with(
 							ItemEntry.builder(Items.SPLASH_POTION)
 								.weight(8)
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:fire_resistance"))))
+								.apply(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:fire_resistance"))))
 						)
 						.with(
 							ItemEntry.builder(Items.POTION)
 								.weight(10)
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:water"))))
+								.apply(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
 						)
 						.with(ItemEntry.builder(Items.IRON_NUGGET).weight(10).apply(SetCountLootFunction.builder(UniformLootTableRange.between(10.0F, 36.0F))))
 						.with(ItemEntry.builder(Items.ENDER_PEARL).weight(10).apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F))))

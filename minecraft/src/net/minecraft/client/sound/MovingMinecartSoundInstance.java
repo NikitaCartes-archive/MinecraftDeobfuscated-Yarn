@@ -39,7 +39,7 @@ public class MovingMinecartSoundInstance extends MovingSoundInstance {
 
 	@Override
 	public void tick() {
-		if (this.minecart.removed) {
+		if (this.minecart.isRemoved()) {
 			this.setDone();
 		} else {
 			this.x = (double)((float)this.minecart.getX());

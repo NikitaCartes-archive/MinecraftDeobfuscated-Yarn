@@ -9,7 +9,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 public class DarkOakSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bees) {
+	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
 		return null;
 	}
 

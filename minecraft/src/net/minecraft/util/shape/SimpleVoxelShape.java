@@ -17,6 +17,6 @@ public final class SimpleVoxelShape extends VoxelShape {
 	@Override
 	protected int getCoordIndex(Direction.Axis axis, double coord) {
 		int i = this.voxels.getSize(axis);
-		return MathHelper.clamp(MathHelper.floor(coord * (double)i), -1, i);
+		return MathHelper.floor(MathHelper.clamp(coord * (double)i, -1.0, (double)i));
 	}
 }

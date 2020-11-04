@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
@@ -108,23 +110,23 @@ public enum Direction implements StringIdentifiable {
 
 	@Environment(EnvType.CLIENT)
 	public Quaternion getRotationQuaternion() {
-		Quaternion quaternion = Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F);
+		Quaternion quaternion = Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F);
 		switch(this) {
 			case DOWN:
-				return Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F);
+				return Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F);
 			case UP:
 				return Quaternion.IDENTITY.copy();
 			case NORTH:
-				quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 				return quaternion;
 			case SOUTH:
 				return quaternion;
 			case WEST:
-				quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 				return quaternion;
 			case EAST:
 			default:
-				quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
+				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
 				return quaternion;
 		}
 	}
@@ -188,8 +190,8 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vec3f getUnitVector() {
-		return new Vec3f((float)this.getOffsetX(), (float)this.getOffsetY(), (float)this.getOffsetZ());
+	public Vector3f getUnitVector() {
+		return new Vector3f((float)this.getOffsetX(), (float)this.getOffsetY(), (float)this.getOffsetZ());
 	}
 
 	public String getName() {
@@ -427,10 +429,6 @@ public enum Direction implements StringIdentifiable {
 
 		public Direction random(Random random) {
 			return Util.getRandom(this.facingArray, random);
-		}
-
-		public Direction.Axis randomAxis(Random random) {
-			return Util.getRandom(this.axisArray, random);
 		}
 
 		public boolean test(@Nullable Direction direction) {

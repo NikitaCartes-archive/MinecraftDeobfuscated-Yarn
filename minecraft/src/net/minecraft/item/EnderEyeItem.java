@@ -84,10 +84,17 @@ public class EnderEyeItem extends Item {
 					}
 
 					world.playSound(
-						null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+						null,
+						user.getX(),
+						user.getY(),
+						user.getZ(),
+						SoundEvents.ENTITY_ENDER_EYE_LAUNCH,
+						SoundCategory.NEUTRAL,
+						0.5F,
+						0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 					);
 					world.syncWorldEvent(null, 1003, user.getBlockPos(), 0);
-					if (!user.abilities.creativeMode) {
+					if (!user.getAbilities().creativeMode) {
 						itemStack.decrement(1);
 					}
 

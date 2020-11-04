@@ -30,14 +30,12 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (direction == Direction.UP && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override

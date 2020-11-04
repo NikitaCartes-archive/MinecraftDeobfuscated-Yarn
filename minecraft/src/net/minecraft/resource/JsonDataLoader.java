@@ -17,11 +17,7 @@ import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * An abstract implementation of resource reloader that reads JSON files
- * into Gson representations in the prepare stage.
- */
-public abstract class JsonDataLoader extends SinglePreparationResourceReloader<Map<Identifier, JsonElement>> {
+public abstract class JsonDataLoader extends SinglePreparationResourceReloadListener<Map<Identifier, JsonElement>> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int FILE_SUFFIX_LENGTH = ".json".length();
 	private final Gson gson;

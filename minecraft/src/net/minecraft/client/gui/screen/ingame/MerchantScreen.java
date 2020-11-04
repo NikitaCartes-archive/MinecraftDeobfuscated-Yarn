@@ -22,7 +22,7 @@ import net.minecraft.village.VillagerData;
 public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
 	private static final Text TRADES_TEXT = new TranslatableText("merchant.trades");
-	private static final Text SEPARATOR_TEXT = new LiteralText(" - ");
+	private static final Text SEPARATOR = new LiteralText(" - ");
 	private static final Text DEPRECATED_TEXT = new TranslatableText("merchant.deprecated");
 	private int selectedIndex;
 	private final MerchantScreen.WidgetButtonPage[] offers = new MerchantScreen.WidgetButtonPage[7];
@@ -63,7 +63,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		int i = this.handler.getLevelProgress();
 		if (i > 0 && i <= 5 && this.handler.isLeveled()) {
-			Text text = this.title.shallowCopy().append(SEPARATOR_TEXT).append(new TranslatableText("merchant.level." + i));
+			Text text = this.title.shallowCopy().append(SEPARATOR).append(new TranslatableText("merchant.level." + i));
 			int j = this.textRenderer.getWidth(text);
 			int k = 49 + this.backgroundWidth / 2 - j / 2;
 			this.textRenderer.draw(matrices, text, (float)k, 6.0F, 4210752);
@@ -158,7 +158,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 					ItemStack itemStack = tradeOffer.getOriginalFirstBuyItem();
 					ItemStack itemStack2 = tradeOffer.getAdjustedFirstBuyItem();
 					ItemStack itemStack3 = tradeOffer.getSecondBuyItem();
-					ItemStack itemStack4 = tradeOffer.getSellItem();
+					ItemStack itemStack4 = tradeOffer.getMutableSellItem();
 					this.itemRenderer.zOffset = 100.0F;
 					int n = k + 2;
 					this.renderFirstBuyItem(matrices, itemStack2, itemStack, l, n);
@@ -302,7 +302,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 						MerchantScreen.this.renderTooltip(matrices, itemStack, mouseX, mouseY);
 					}
 				} else if (mouseX > this.x + 65) {
-					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getSellItem();
+					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getMutableSellItem();
 					MerchantScreen.this.renderTooltip(matrices, itemStack, mouseX, mouseY);
 				}
 			}

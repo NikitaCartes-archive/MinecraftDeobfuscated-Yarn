@@ -55,7 +55,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public DefaultedList<Ingredient> getIngredients() {
+	public DefaultedList<Ingredient> getPreviewInputs() {
 		DefaultedList<Ingredient> defaultedList = DefaultedList.of();
 		defaultedList.add(this.input);
 		return defaultedList;
@@ -68,7 +68,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public ItemStack craft(Inventory inventory) {
+	public ItemStack craft(Inventory inv) {
 		return this.output.copy();
 	}
 

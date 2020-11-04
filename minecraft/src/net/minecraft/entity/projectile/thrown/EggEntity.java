@@ -73,7 +73,7 @@ public class EggEntity extends ThrownItemEntity {
 			}
 
 			this.world.sendEntityStatus(this, (byte)3);
-			this.remove();
+			this.discard();
 		}
 	}
 

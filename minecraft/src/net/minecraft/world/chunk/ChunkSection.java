@@ -24,11 +24,15 @@ public class ChunkSection {
 	}
 
 	public ChunkSection(int yOffset, short nonEmptyBlockCount, short randomTickableBlockCount, short nonEmptyFluidCount) {
-		this.yOffset = yOffset;
+		this.yOffset = method_31729(yOffset);
 		this.nonEmptyBlockCount = nonEmptyBlockCount;
 		this.randomTickableBlockCount = randomTickableBlockCount;
 		this.nonEmptyFluidCount = nonEmptyFluidCount;
 		this.container = new PalettedContainer<>(PALETTE, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
+	}
+
+	public static int method_31729(int i) {
+		return i << 4;
 	}
 
 	public BlockState getBlockState(int x, int y, int z) {
@@ -137,14 +141,14 @@ public class ChunkSection {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void fromPacket(PacketByteBuf buf) {
-		this.nonEmptyBlockCount = buf.readShort();
-		this.container.fromPacket(buf);
+	public void fromPacket(PacketByteBuf packetByteBuf) {
+		this.nonEmptyBlockCount = packetByteBuf.readShort();
+		this.container.fromPacket(packetByteBuf);
 	}
 
-	public void toPacket(PacketByteBuf buf) {
-		buf.writeShort(this.nonEmptyBlockCount);
-		this.container.toPacket(buf);
+	public void toPacket(PacketByteBuf packetByteBuf) {
+		packetByteBuf.writeShort(this.nonEmptyBlockCount);
+		this.container.toPacket(packetByteBuf);
 	}
 
 	public int getPacketSize() {

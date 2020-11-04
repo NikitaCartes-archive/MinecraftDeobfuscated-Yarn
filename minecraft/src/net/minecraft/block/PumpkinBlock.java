@@ -21,7 +21,7 @@ public class PumpkinBlock extends GourdBlock {
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.SHEARS) {
+		if (itemStack.isOf(Items.SHEARS)) {
 			if (!world.isClient) {
 				Direction direction = hit.getSide();
 				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? player.getHorizontalFacing().getOpposite() : direction;

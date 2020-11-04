@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5493;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -17,7 +18,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -35,7 +35,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -75,7 +75,7 @@ public class VindicatorEntity extends IllagerEntity {
 
 	@Override
 	protected void mobTick() {
-		if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
+		if (!this.isAiDisabled() && class_5493.method_30955(this)) {
 			boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getBlockPos());
 			((MobNavigation)this.getNavigation()).setCanPathThroughDoors(bl);
 		}
@@ -92,10 +92,10 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.johnny) {
-			nbt.putBoolean("Johnny", true);
+			tag.putBoolean("Johnny", true);
 		}
 	}
 
@@ -110,10 +110,10 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("Johnny", 99)) {
-			this.johnny = nbt.getBoolean("Johnny");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("Johnny", 99)) {
+			this.johnny = tag.getBoolean("Johnny");
 		}
 	}
 
@@ -125,9 +125,9 @@ public class VindicatorEntity extends IllagerEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);

@@ -2,8 +2,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.CreeperChargeFeatureRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.util.Identifier;
@@ -13,9 +15,9 @@ import net.minecraft.util.math.MathHelper;
 public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/creeper/creeper.png");
 
-	public CreeperEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new CreeperEntityModel<>(), 0.5F);
-		this.addFeature(new CreeperChargeFeatureRenderer(this));
+	public CreeperEntityRenderer(class_5617.class_5618 arg) {
+		super(arg, new CreeperEntityModel<>(arg.method_32167(EntityModelLayers.CREEPER)), 0.5F);
+		this.addFeature(new CreeperChargeFeatureRenderer(this, arg.method_32170()));
 	}
 
 	protected void scale(CreeperEntity creeperEntity, MatrixStack matrixStack, float f) {

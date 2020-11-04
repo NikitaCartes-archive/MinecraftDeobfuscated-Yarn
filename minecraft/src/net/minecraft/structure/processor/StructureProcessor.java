@@ -9,7 +9,7 @@ import net.minecraft.world.WorldView;
 public abstract class StructureProcessor {
 	@Nullable
 	public abstract Structure.StructureBlockInfo process(
-		WorldView world,
+		WorldView worldView,
 		BlockPos pos,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,

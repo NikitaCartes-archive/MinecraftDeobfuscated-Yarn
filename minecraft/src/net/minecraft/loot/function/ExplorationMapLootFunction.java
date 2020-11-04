@@ -57,7 +57,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		if (stack.getItem() != Items.MAP) {
+		if (!stack.isOf(Items.MAP)) {
 			return stack;
 		} else {
 			Vec3d vec3d = context.get(LootContextParameters.ORIGIN);
@@ -67,7 +67,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 				if (blockPos != null) {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), this.zoom, true, true);
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
-					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.decoration);
+					MapState.addDecorationsTag(itemStack, blockPos, "+", this.decoration);
 					itemStack.setCustomName(new TranslatableText("filled_map." + this.destination.getName().toLowerCase(Locale.ROOT)));
 					return itemStack;
 				}
@@ -151,7 +151,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 				type = MapIcon.Type.valueOf(string.toUpperCase(Locale.ROOT));
 			} catch (IllegalArgumentException var10) {
 				ExplorationMapLootFunction.LOGGER
-					.error("Error while parsing loot table decoration entry. Found {}. Defaulting to " + ExplorationMapLootFunction.DEFAULT_DECORATION, string);
+					.error("Error while parsing loot table decoration entry. Found {}. Defaulting to {}", string, ExplorationMapLootFunction.DEFAULT_DECORATION);
 			}
 
 			byte b = JsonHelper.getByte(jsonObject, "zoom", (byte)2);

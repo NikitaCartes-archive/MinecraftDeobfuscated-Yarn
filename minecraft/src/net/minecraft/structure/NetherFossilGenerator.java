@@ -2,7 +2,7 @@ package net.minecraft.structure;
 
 import java.util.List;
 import java.util.Random;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -51,7 +51,7 @@ public class NetherFossilGenerator {
 			this.initializeStructureData(manager);
 		}
 
-		public Piece(StructureManager manager, NbtCompound tag) {
+		public Piece(StructureManager manager, CompoundTag tag) {
 			super(StructurePieceType.NETHER_FOSSIL, tag);
 			this.template = new Identifier(tag.getString("Template"));
 			this.structureRotation = BlockRotation.valueOf(tag.getString("Rot"));
@@ -68,28 +68,28 @@ public class NetherFossilGenerator {
 		}
 
 		@Override
-		protected void toNbt(NbtCompound tag) {
+		protected void toNbt(CompoundTag tag) {
 			super.toNbt(tag);
 			tag.putString("Template", this.template.toString());
 			tag.putString("Rot", this.structureRotation.name());
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
 		}
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess world,
+			StructureWorldAccess structureWorldAccess,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos blockPos
 		) {
 			boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-			return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			return super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
 		}
 	}
 }

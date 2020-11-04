@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
@@ -40,17 +40,16 @@ public class BlockPredicate {
 			return false;
 		} else {
 			BlockState blockState = world.getBlockState(pos);
-			Block block = blockState.getBlock();
-			if (this.tag != null && !this.tag.contains(block)) {
+			if (this.tag != null && !blockState.isIn(this.tag)) {
 				return false;
-			} else if (this.block != null && block != this.block) {
+			} else if (this.block != null && !blockState.isOf(this.block)) {
 				return false;
 			} else if (!this.state.test(blockState)) {
 				return false;
 			} else {
 				if (this.nbt != NbtPredicate.ANY) {
 					BlockEntity blockEntity = world.getBlockEntity(pos);
-					if (blockEntity == null || !this.nbt.test(blockEntity.writeNbt(new NbtCompound()))) {
+					if (blockEntity == null || !this.nbt.test(blockEntity.toTag(new CompoundTag()))) {
 						return false;
 					}
 				}

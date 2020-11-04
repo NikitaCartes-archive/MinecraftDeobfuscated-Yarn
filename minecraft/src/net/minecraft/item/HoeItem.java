@@ -37,7 +37,7 @@ public class HoeItem extends MiningToolItem {
 		ImmutableMap.of(
 			Blocks.GRASS_BLOCK,
 			Blocks.FARMLAND.getDefaultState(),
-			Blocks.GRASS_PATH,
+			Blocks.DIRT_PATH,
 			Blocks.FARMLAND.getDefaultState(),
 			Blocks.DIRT,
 			Blocks.FARMLAND.getDefaultState(),

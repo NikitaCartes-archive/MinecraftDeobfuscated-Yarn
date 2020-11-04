@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +31,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	private final WorldChunk wrapped;
 
 	public ReadOnlyChunk(WorldChunk wrapped) {
-		super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA);
+		super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped);
 		this.wrapped = wrapped;
 	}
 
@@ -64,7 +64,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
+	public void setBlockEntity(BlockEntity blockEntity) {
 	}
 
 	@Override
@@ -106,10 +106,6 @@ public class ReadOnlyChunk extends ProtoChunk {
 	@Override
 	public ChunkPos getPos() {
 		return this.wrapped.getPos();
-	}
-
-	@Override
-	public void setLastSaveTime(long lastSaveTime) {
 	}
 
 	@Nullable
@@ -177,19 +173,19 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void addPendingBlockEntityNbt(NbtCompound nbt) {
+	public void addPendingBlockEntityTag(CompoundTag tag) {
 	}
 
 	@Nullable
 	@Override
-	public NbtCompound getBlockEntityNbt(BlockPos pos) {
-		return this.wrapped.getBlockEntityNbt(pos);
+	public CompoundTag getBlockEntityTag(BlockPos pos) {
+		return this.wrapped.getBlockEntityTag(pos);
 	}
 
 	@Nullable
 	@Override
-	public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
-		return this.wrapped.getPackedBlockEntityNbt(pos);
+	public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+		return this.wrapped.getPackedBlockEntityTag(pos);
 	}
 
 	@Override
@@ -203,12 +199,12 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public ChunkTickScheduler<Block> getBlockTickScheduler() {
-		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), this.getPos());
+		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), this.getPos(), this);
 	}
 
 	@Override
 	public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
-		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, this.getPos());
+		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, this.getPos(), this);
 	}
 
 	@Override

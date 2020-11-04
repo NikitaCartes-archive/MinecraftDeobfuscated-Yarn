@@ -30,10 +30,10 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.dynamic.GlobalPos;
 
 public class PiglinBruteBrain {
-	protected static Brain<?> create(PiglinBruteEntity piglinBrute, Brain<PiglinBruteEntity> brain) {
-		method_30257(piglinBrute, brain);
-		method_30260(piglinBrute, brain);
-		method_30262(piglinBrute, brain);
+	protected static Brain<?> create(PiglinBruteEntity piglinBruteEntity, Brain<PiglinBruteEntity> brain) {
+		method_30257(piglinBruteEntity, brain);
+		method_30260(piglinBruteEntity, brain);
+		method_30262(piglinBruteEntity, brain);
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
 		brain.resetPossibleActivities();

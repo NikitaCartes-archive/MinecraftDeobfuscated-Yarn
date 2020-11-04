@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -96,7 +96,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 			}
 
 			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * d), Explosion.DestructionType.BREAK);
-			this.remove();
+			this.discard();
 		}
 	}
 
@@ -161,16 +161,16 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("TNTFuse", 99)) {
-			this.fuseTicks = nbt.getInt("TNTFuse");
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("TNTFuse", 99)) {
+			this.fuseTicks = tag.getInt("TNTFuse");
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("TNTFuse", this.fuseTicks);
+	protected void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("TNTFuse", this.fuseTicks);
 	}
 }

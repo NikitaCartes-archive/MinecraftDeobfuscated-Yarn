@@ -26,4 +26,14 @@ public enum EmptyBlockView implements BlockView {
 	public FluidState getFluidState(BlockPos pos) {
 		return Fluids.EMPTY.getDefaultState();
 	}
+
+	@Override
+	public int getSectionCount() {
+		return 0;
+	}
+
+	@Override
+	public int getBottomSectionLimit() {
+		return 0;
+	}
 }

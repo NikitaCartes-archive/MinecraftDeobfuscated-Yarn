@@ -12,10 +12,8 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -28,8 +26,7 @@ import net.minecraft.village.VillagerType;
 
 @Environment(EnvType.CLIENT)
 public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDataContainer, M extends EntityModel<T> & ModelWithHat>
-	extends FeatureRenderer<T, M>
-	implements SynchronousResourceReloader {
+	extends FeatureRenderer<T, M> {
 	private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.make(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
 		int2ObjectOpenHashMap.put(1, new Identifier("stone"));
 		int2ObjectOpenHashMap.put(2, new Identifier("iron"));
@@ -39,14 +36,13 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	});
 	private final Object2ObjectMap<VillagerType, VillagerResourceMetadata.HatType> villagerTypeToHat = new Object2ObjectOpenHashMap<>();
 	private final Object2ObjectMap<VillagerProfession, VillagerResourceMetadata.HatType> professionToHat = new Object2ObjectOpenHashMap<>();
-	private final ReloadableResourceManager resourceManager;
+	private final ResourceManager resourceManager;
 	private final String entityType;
 
-	public VillagerClothingFeatureRenderer(FeatureRendererContext<T, M> context, ReloadableResourceManager resourceManager, String entityType) {
+	public VillagerClothingFeatureRenderer(FeatureRendererContext<T, M> context, ResourceManager resourceManager, String entityType) {
 		super(context);
 		this.resourceManager = resourceManager;
 		this.entityType = entityType;
-		resourceManager.registerReloader(this);
 	}
 
 	public void render(
@@ -119,11 +115,5 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 				return VillagerResourceMetadata.HatType.NONE;
 			}
 		});
-	}
-
-	@Override
-	public void reload(ResourceManager manager) {
-		this.professionToHat.clear();
-		this.villagerTypeToHat.clear();
 	}
 }

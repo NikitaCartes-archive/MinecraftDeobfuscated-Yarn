@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.class_5534;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -38,7 +38,7 @@ public class GoToVillageGoal extends Goal {
 			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {
-				Vec3d vec3d = TargetFinder.findGroundTarget(
+				Vec3d vec3d = class_5534.method_31530(
 					this.mob, 15, 7, blockPosx -> (double)(-serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPosx)))
 				);
 				this.targetPosition = vec3d == null ? null : new BlockPos(vec3d);

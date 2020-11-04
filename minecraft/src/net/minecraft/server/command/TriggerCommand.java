@@ -12,7 +12,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
+import net.minecraft.command.argument.ObjectiveArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
@@ -33,12 +33,12 @@ public class TriggerCommand {
 		dispatcher.register(
 			CommandManager.literal("trigger")
 				.then(
-					((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+					((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("objective", ObjectiveArgumentType.objective())
 								.suggests((commandContext, suggestionsBuilder) -> suggestObjectives((ServerCommandSource)commandContext.getSource(), suggestionsBuilder))
 								.executes(
 									commandContext -> executeSimple(
 											(ServerCommandSource)commandContext.getSource(),
-											getScore(((ServerCommandSource)commandContext.getSource()).getPlayer(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"))
+											getScore(((ServerCommandSource)commandContext.getSource()).getPlayer(), ObjectiveArgumentType.getObjective(commandContext, "objective"))
 										)
 								))
 							.then(
@@ -48,7 +48,7 @@ public class TriggerCommand {
 											.executes(
 												commandContext -> executeAdd(
 														commandContext.getSource(),
-														getScore(commandContext.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective")),
+														getScore(commandContext.getSource().getPlayer(), ObjectiveArgumentType.getObjective(commandContext, "objective")),
 														IntegerArgumentType.getInteger(commandContext, "value")
 													)
 											)
@@ -61,7 +61,7 @@ public class TriggerCommand {
 										.executes(
 											commandContext -> executeSet(
 													commandContext.getSource(),
-													getScore(commandContext.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective")),
+													getScore(commandContext.getSource().getPlayer(), ObjectiveArgumentType.getObjective(commandContext, "objective")),
 													IntegerArgumentType.getInteger(commandContext, "value")
 												)
 										)

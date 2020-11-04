@@ -247,7 +247,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			super.setSelected(worldListEntry);
 			RealmsSelectFileToUploadScreen.this.selectedWorld = this.children().indexOf(worldListEntry);
 			RealmsSelectFileToUploadScreen.this.uploadButton.active = RealmsSelectFileToUploadScreen.this.selectedWorld >= 0
-				&& RealmsSelectFileToUploadScreen.this.selectedWorld < this.getEntryCount()
+				&& RealmsSelectFileToUploadScreen.this.selectedWorld < this.getItemCount()
 				&& !((LevelSummary)RealmsSelectFileToUploadScreen.this.levelList.get(RealmsSelectFileToUploadScreen.this.selectedWorld)).isHardcore();
 		}
 	}

@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 public class Model {
 	private final Optional<Identifier> parent;
 	private final Set<TextureKey> requiredTextures;
-	private Optional<String> variant;
+	private final Optional<String> variant;
 
 	public Model(Optional<Identifier> parent, Optional<String> variant, TextureKey... requiredTextures) {
 		this.parent = parent;

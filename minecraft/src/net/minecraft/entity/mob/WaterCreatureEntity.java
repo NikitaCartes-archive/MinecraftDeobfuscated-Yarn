@@ -35,7 +35,7 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 	}
 
 	@Override
-	protected int getXpToDrop(PlayerEntity player) {
+	protected int getCurrentExperience(PlayerEntity player) {
 		return 1 + this.world.random.nextInt(3);
 	}
 
@@ -59,7 +59,7 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 	}
 
 	@Override
-	public boolean isPushedByFluids() {
+	public boolean canFly() {
 		return false;
 	}
 

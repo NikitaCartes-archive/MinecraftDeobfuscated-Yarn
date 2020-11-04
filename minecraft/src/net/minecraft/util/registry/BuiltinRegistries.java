@@ -74,8 +74,8 @@ public class BuiltinRegistries {
 		return ((MutableRegistry)registry).add(RegistryKey.of(registry.getKey(), id), object, Lifecycle.stable());
 	}
 
-	public static <V, T extends V> T set(Registry<V> registry, int rawId, RegistryKey<V> key, T object) {
-		return ((MutableRegistry)registry).set(rawId, key, object, Lifecycle.stable());
+	public static <V, T extends V> T set(Registry<V> registry, int rawId, RegistryKey<V> registryKey, T object) {
+		return ((MutableRegistry)registry).set(rawId, registryKey, object, Lifecycle.stable());
 	}
 
 	public static void init() {

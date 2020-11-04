@@ -41,10 +41,8 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
-		BlockState blockState = super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		BlockState blockState = super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		if (!blockState.isAir()) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}

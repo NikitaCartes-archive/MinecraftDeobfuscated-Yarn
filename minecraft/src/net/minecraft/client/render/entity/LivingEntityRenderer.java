@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -15,6 +16,7 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +25,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,8 +34,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	protected M model;
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
 
-	public LivingEntityRenderer(EntityRenderDispatcher dispatcher, M model, float shadowRadius) {
-		super(dispatcher);
+	public LivingEntityRenderer(class_5617.class_5618 arg, M model, float shadowRadius) {
+		super(arg);
 		this.model = model;
 		this.shadowRadius = shadowRadius;
 	}
@@ -185,7 +186,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 		EntityPose entityPose = entity.getPose();
 		if (entityPose != EntityPose.SLEEPING) {
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - bodyYaw));
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - bodyYaw));
 		}
 
 		if (entity.deathTime > 0) {
@@ -195,22 +196,22 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 				f = 1.0F;
 			}
 
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
+			matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
 		} else if (entity.isUsingRiptide()) {
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.pitch));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + tickDelta) * -75.0F));
+			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.pitch));
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + tickDelta) * -75.0F));
 		} else if (entityPose == EntityPose.SLEEPING) {
 			Direction direction = entity.getSleepingDirection();
 			float g = direction != null ? getYaw(direction) : bodyYaw;
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(g));
+			matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
 		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
 			String string = Formatting.strip(entity.getName().getString());
 			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
 				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
 				matrices.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
-				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			}
 		}
 	}

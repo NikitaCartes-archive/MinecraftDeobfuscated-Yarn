@@ -1,7 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_5493;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.mob.PathAwareEntity;
 
@@ -14,7 +14,7 @@ public class AvoidSunlightGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.world.isDay() && this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && NavigationConditions.hasMobNavigation(this.mob);
+		return this.mob.world.isDay() && this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && class_5493.method_30955(this.mob);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class AvoidSunlightGoal extends Goal {
 
 	@Override
 	public void stop() {
-		if (NavigationConditions.hasMobNavigation(this.mob)) {
+		if (class_5493.method_30955(this.mob)) {
 			((MobNavigation)this.mob.getNavigation()).setAvoidSunlight(false);
 		}
 	}

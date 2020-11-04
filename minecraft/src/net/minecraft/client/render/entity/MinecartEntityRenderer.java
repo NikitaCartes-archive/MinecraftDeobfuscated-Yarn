@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5617;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -9,22 +10,24 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.MinecartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends EntityRenderer<T> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/minecart.png");
-	protected final EntityModel<T> model = new MinecartEntityModel<>();
+	protected final EntityModel<T> model;
 
-	public MinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher);
+	public MinecartEntityRenderer(class_5617.class_5618 arg, EntityModelLayer entityModelLayer) {
+		super(arg);
 		this.shadowRadius = 0.7F;
+		this.model = new MinecartEntityModel<>(arg.method_32167(entityModelLayer));
 	}
 
 	public void render(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -63,8 +66,8 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		matrixStack.translate(0.0, 0.375, 0.0);
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
-		matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-o));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-o));
 		float p = (float)abstractMinecartEntity.getDamageWobbleTicks() - g;
 		float q = abstractMinecartEntity.getDamageWobbleStrength() - g;
 		if (q < 0.0F) {
@@ -72,7 +75,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		if (p > 0.0F) {
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.sin(p) * p * q / 10.0F * (float)abstractMinecartEntity.getDamageWobbleSide()));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(MathHelper.sin(p) * p * q / 10.0F * (float)abstractMinecartEntity.getDamageWobbleSide()));
 		}
 
 		int r = abstractMinecartEntity.getBlockOffset();
@@ -82,7 +85,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			float s = 0.75F;
 			matrixStack.scale(0.75F, 0.75F, 0.75F);
 			matrixStack.translate(-0.5, (double)((float)(r - 8) / 16.0F), 0.5);
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
 			this.renderBlock(abstractMinecartEntity, g, blockState, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}

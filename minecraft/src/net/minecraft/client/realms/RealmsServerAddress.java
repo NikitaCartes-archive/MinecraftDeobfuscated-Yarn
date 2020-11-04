@@ -2,7 +2,7 @@ package net.minecraft.client.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.ServerAddress;
+import net.minecraft.network.ServerAddress;
 
 @Environment(EnvType.CLIENT)
 public class RealmsServerAddress {

@@ -37,12 +37,10 @@ public class SignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction == Direction.DOWN && !this.canPlaceAt(state, world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override

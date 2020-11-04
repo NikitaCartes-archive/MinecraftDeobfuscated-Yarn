@@ -20,6 +20,7 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 		.fieldOf("mossiness")
 		.<BlockAgeStructureProcessor>xmap(BlockAgeStructureProcessor::new, blockAgeStructureProcessor -> blockAgeStructureProcessor.mossiness)
 		.codec();
+	private static final BlockState[] field_27338 = new BlockState[]{Blocks.STONE_SLAB.getDefaultState(), Blocks.STONE_BRICK_SLAB.getDefaultState()};
 	private final float mossiness;
 
 	public BlockAgeStructureProcessor(float mossiness) {
@@ -29,7 +30,7 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		WorldView world,
+		WorldView worldView,
 		BlockPos pos,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
@@ -73,12 +74,11 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 		if (random.nextFloat() >= 0.5F) {
 			return null;
 		} else {
-			BlockState[] blockStates = new BlockState[]{Blocks.STONE_SLAB.getDefaultState(), Blocks.STONE_BRICK_SLAB.getDefaultState()};
-			BlockState[] blockStates2 = new BlockState[]{
+			BlockState[] blockStates = new BlockState[]{
 				Blocks.MOSSY_STONE_BRICK_STAIRS.getDefaultState().with(StairsBlock.FACING, direction).with(StairsBlock.HALF, blockHalf),
 				Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState()
 			};
-			return this.process(random, blockStates, blockStates2);
+			return this.process(random, field_27338, blockStates);
 		}
 	}
 

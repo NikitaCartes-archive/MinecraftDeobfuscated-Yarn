@@ -5,9 +5,9 @@ import java.util.Collection;
 
 public class TestManager {
 	public static final TestManager INSTANCE = new TestManager();
-	private final Collection<GameTestState> tests = Lists.<GameTestState>newCopyOnWriteArrayList();
+	private final Collection<GameTest> tests = Lists.<GameTest>newCopyOnWriteArrayList();
 
-	public void start(GameTestState test) {
+	public void start(GameTest test) {
 		this.tests.add(test);
 	}
 
@@ -16,7 +16,7 @@ public class TestManager {
 	}
 
 	public void tick() {
-		this.tests.forEach(GameTestState::tick);
-		this.tests.removeIf(GameTestState::isCompleted);
+		this.tests.forEach(GameTest::tick);
+		this.tests.removeIf(GameTest::isCompleted);
 	}
 }

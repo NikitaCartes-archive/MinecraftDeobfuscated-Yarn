@@ -236,7 +236,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 			int j = this.server.state == RealmsServer.State.CLOSED ? 10526880 : 8388479;
 			int k = this.textRenderer.getWidth(field_26480);
 			drawCenteredText(matrices, this.textRenderer, field_26480, this.width / 2, 12, 16777215);
-			drawCenteredText(matrices, this.textRenderer, string, this.width / 2, 24, j);
+			drawCenteredString(matrices, this.textRenderer, string, this.width / 2, 24, j);
 			int l = Math.min(this.buttonCenter(2, 3) + 80 - 11, this.width / 2 + i / 2 + k / 2 + 10);
 			this.drawServerStatus(matrices, l, 7, mouseX, mouseY);
 			if (this.isMinigame()) {
@@ -379,7 +379,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 			);
 	}
 
-	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int i, int j) {
+	protected void renderMousehoverTooltip(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
 		int k = i + 12;
 		int l = j - 12;
 		int m = this.textRenderer.getWidth(text);
@@ -387,40 +387,40 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 			k = k - m - 20;
 		}
 
-		this.fillGradient(matrices, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-		this.textRenderer.drawWithShadow(matrices, text, (float)k, (float)l, 16777215);
+		this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
+		this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 16777215);
 	}
 
-	private void drawServerStatus(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawServerStatus(MatrixStack matrixStack, int i, int j, int k, int l) {
 		if (this.server.expired) {
-			this.drawExpired(matrices, i, j, k, l);
+			this.drawExpired(matrixStack, i, j, k, l);
 		} else if (this.server.state == RealmsServer.State.CLOSED) {
-			this.drawClosed(matrices, i, j, k, l);
+			this.drawClosed(matrixStack, i, j, k, l);
 		} else if (this.server.state == RealmsServer.State.OPEN) {
 			if (this.server.daysLeft < 7) {
-				this.drawExpiring(matrices, i, j, k, l, this.server.daysLeft);
+				this.drawExpiring(matrixStack, i, j, k, l, this.server.daysLeft);
 			} else {
-				this.drawOpen(matrices, i, j, k, l);
+				this.drawOpen(matrixStack, i, j, k, l);
 			}
 		}
 	}
 
-	private void drawExpired(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawExpired(MatrixStack matrixStack, int i, int j, int k, int l) {
 		this.client.getTextureManager().bindTexture(EXPIRED_ICON);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
+		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
 			this.toolTip = field_26482;
 		}
 	}
 
-	private void drawExpiring(MatrixStack matrices, int i, int j, int k, int l, int m) {
+	private void drawExpiring(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
 		this.client.getTextureManager().bindTexture(EXPIRES_SOON_ICON);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.animTick % 20 < 10) {
-			DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 20, 28);
+			DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 20, 28);
 		} else {
-			DrawableHelper.drawTexture(matrices, i, j, 10.0F, 0.0F, 10, 28, 20, 28);
+			DrawableHelper.drawTexture(matrixStack, i, j, 10.0F, 0.0F, 10, 28, 20, 28);
 		}
 
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
@@ -434,19 +434,19 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 		}
 	}
 
-	private void drawOpen(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawOpen(MatrixStack matrixStack, int i, int j, int k, int l) {
 		this.client.getTextureManager().bindTexture(ON_ICON);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
+		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
 			this.toolTip = field_26485;
 		}
 	}
 
-	private void drawClosed(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawClosed(MatrixStack matrixStack, int i, int j, int k, int l) {
 		this.client.getTextureManager().bindTexture(OFF_ICON);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
+		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
 			this.toolTip = field_26486;
 		}

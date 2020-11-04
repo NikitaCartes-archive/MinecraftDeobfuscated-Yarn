@@ -1,12 +1,10 @@
 package net.minecraft.entity.projectile;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameRules;
@@ -18,11 +16,6 @@ public class FireballEntity extends AbstractFireballEntity {
 
 	public FireballEntity(EntityType<? extends FireballEntity> entityType, World world) {
 		super(entityType, world);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public FireballEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.FIREBALL, x, y, z, velocityX, velocityY, velocityZ, world);
 	}
 
 	public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
@@ -38,7 +31,7 @@ public class FireballEntity extends AbstractFireballEntity {
 				.createExplosion(
 					null, this.getX(), this.getY(), this.getZ(), (float)this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE
 				);
-			this.remove();
+			this.discard();
 		}
 	}
 
@@ -56,16 +49,16 @@ public class FireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("ExplosionPower", this.explosionPower);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("ExplosionPower", this.explosionPower);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("ExplosionPower", 99)) {
-			this.explosionPower = nbt.getInt("ExplosionPower");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("ExplosionPower", 99)) {
+			this.explosionPower = tag.getInt("ExplosionPower");
 		}
 	}
 }

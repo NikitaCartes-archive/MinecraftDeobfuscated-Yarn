@@ -16,9 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
 @Environment(EnvType.CLIENT)
-public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<StructureBlockBlockEntity> {
-	public StructureBlockBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-		super(blockEntityRenderDispatcher);
+public class StructureBlockBlockEntityRenderer implements BlockEntityRenderer<StructureBlockBlockEntity> {
+	public StructureBlockBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 	}
 
 	public void render(

@@ -33,10 +33,10 @@ import net.minecraft.util.Util;
  * 
  * <p>Each text has a tree structure, embodying all its {@link
  * #getSiblings() siblings}. To iterate contents in the text and all
- * its siblings, call {@code visit} methods.
+ * its siblings, call {@code visit} methods.</p>
  * 
  * <p>This interface does not expose mutation operations. For mutation,
- * refer to {@link MutableText}.
+ * refer to {@link MutableText}.</p>
  * 
  * @see MutableText
  */
@@ -89,7 +89,7 @@ public interface Text extends Message, StringVisitable {
 	/**
 	 * Copies the text itself, the style, and the siblings.
 	 * 
-	 * <p>A shallow copy is made for the siblings.
+	 * <p>A shallow copy is made for the siblings.</p>
 	 */
 	MutableText shallowCopy();
 

@@ -2,10 +2,6 @@ package net.minecraft.world;
 
 import net.minecraft.util.math.Vec3d;
 
-/**
- * Represents the position that an entity takes after being
- * {@linkplain net.minecraft.entity.Entity#moveToWorld moved between worlds}.
- */
 public class TeleportTarget {
 	public final Vec3d position;
 	public final Vec3d velocity;

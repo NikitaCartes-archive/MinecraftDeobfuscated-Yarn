@@ -4,13 +4,14 @@ import java.util.BitSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class DecoratorContext {
+public class DecoratorContext implements HeightLimitView {
 	private final StructureWorldAccess world;
 	private final ChunkGenerator generator;
 
@@ -37,5 +38,15 @@ public class DecoratorContext {
 
 	public BlockState getBlockState(BlockPos pos) {
 		return this.world.getBlockState(pos);
+	}
+
+	@Override
+	public int getSectionCount() {
+		return this.world.getSectionCount();
+	}
+
+	@Override
+	public int getBottomSectionLimit() {
+		return this.world.getBottomSectionLimit();
 	}
 }

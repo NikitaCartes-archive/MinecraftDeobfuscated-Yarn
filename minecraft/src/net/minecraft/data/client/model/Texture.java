@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -252,6 +253,25 @@ public class Texture {
 
 	public static Texture method_27167(Block block) {
 		return new Texture().put(TextureKey.LIT_LOG, getSubId(block, "_log_lit")).put(TextureKey.FIRE, getSubId(block, "_fire"));
+	}
+
+	public static Texture method_32231(Block block) {
+		return new Texture()
+			.put(TextureKey.PARTICLE, getSubId(Blocks.CAKE, "_side"))
+			.put(TextureKey.BOTTOM, getSubId(Blocks.CAKE, "_bottom"))
+			.put(TextureKey.TOP, getSubId(Blocks.CAKE, "_top"))
+			.put(TextureKey.SIDE, getSubId(Blocks.CAKE, "_side"))
+			.put(TextureKey.CANDLE, getId(block));
+	}
+
+	public static Texture method_32232(Block block) {
+		return new Texture()
+			.put(TextureKey.PARTICLE, getSubId(Blocks.CAULDRON, "_side"))
+			.put(TextureKey.SIDE, getSubId(Blocks.CAULDRON, "_side"))
+			.put(TextureKey.TOP, getSubId(Blocks.CAULDRON, "_top"))
+			.put(TextureKey.BOTTOM, getSubId(Blocks.CAULDRON, "_bottom"))
+			.put(TextureKey.INSIDE, getSubId(Blocks.CAULDRON, "_inner"))
+			.put(TextureKey.CONTENT, getSubId(block, "_still"));
 	}
 
 	public static Texture layer0(Item item) {

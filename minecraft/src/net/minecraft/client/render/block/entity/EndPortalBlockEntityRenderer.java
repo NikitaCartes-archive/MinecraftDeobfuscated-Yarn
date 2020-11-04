@@ -16,21 +16,22 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
-public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> extends BlockEntityRenderer<T> {
+public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> implements BlockEntityRenderer<T> {
 	public static final Identifier SKY_TEXTURE = new Identifier("textures/environment/end_sky.png");
 	public static final Identifier PORTAL_TEXTURE = new Identifier("textures/entity/end_portal.png");
 	private static final Random RANDOM = new Random(31100L);
 	private static final List<RenderLayer> field_21732 = (List<RenderLayer>)IntStream.range(0, 16)
 		.mapToObj(i -> RenderLayer.getEndPortal(i + 1))
 		.collect(ImmutableList.toImmutableList());
+	private final BlockEntityRenderDispatcher field_27757;
 
-	public EndPortalBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-		super(blockEntityRenderDispatcher);
+	public EndPortalBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+		this.field_27757 = context.getRenderDispatcher();
 	}
 
 	public void render(T endPortalBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		RANDOM.setSeed(31100L);
-		double d = endPortalBlockEntity.getPos().getSquaredDistance(this.dispatcher.camera.getPos(), true);
+		double d = endPortalBlockEntity.getPos().getSquaredDistance(this.field_27757.camera.getPos(), true);
 		int k = this.method_3592(d);
 		float g = this.method_3594();
 		Matrix4f matrix4f = matrixStack.peek().getModel();

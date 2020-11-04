@@ -76,4 +76,8 @@ public class CrossbowPosing {
 		modelPart.pitch += h * 1.2F - i * 0.4F;
 		method_29350(modelPart2, modelPart, g);
 	}
+
+	public static float method_31978(ModelPart modelPart) {
+		return modelPart.pitch * 0.95F - 2.277655F;
+	}
 }

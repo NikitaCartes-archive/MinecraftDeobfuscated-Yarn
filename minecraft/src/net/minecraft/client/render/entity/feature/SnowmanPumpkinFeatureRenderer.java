@@ -9,9 +9,9 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.SnowGolemEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> {
@@ -36,7 +36,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 			this.getContextModel().getTopSnowball().rotate(matrixStack);
 			float m = 0.625F;
 			matrixStack.translate(0.0, -0.34375, 0.0);
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			matrixStack.scale(0.625F, -0.625F, -0.625F);
 			ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
 			MinecraftClient.getInstance()

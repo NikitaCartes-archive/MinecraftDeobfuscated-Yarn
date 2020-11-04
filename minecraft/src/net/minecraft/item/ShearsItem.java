@@ -15,7 +15,7 @@ public class ShearsItem extends Item {
 
 	@Override
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-		if (!world.isClient && !state.getBlock().isIn(BlockTags.FIRE)) {
+		if (!world.isClient && !state.isIn(BlockTags.FIRE)) {
 			stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
@@ -32,7 +32,7 @@ public class ShearsItem extends Item {
 	}
 
 	@Override
-	public boolean isSuitableFor(BlockState state) {
+	public boolean isEffectiveOn(BlockState state) {
 		return state.isOf(Blocks.COBWEB) || state.isOf(Blocks.REDSTONE_WIRE) || state.isOf(Blocks.TRIPWIRE);
 	}
 

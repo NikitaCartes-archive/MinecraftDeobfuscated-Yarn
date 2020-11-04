@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  * A dynamic management object for a Minecraft Server.
  * 
  * <p>It exposes the average tick time and the historical tick times of the
- * Minecraft Server.
+ * Minecraft Server.</p>
  * 
  * @see javax.management.DynamicMBean
  */

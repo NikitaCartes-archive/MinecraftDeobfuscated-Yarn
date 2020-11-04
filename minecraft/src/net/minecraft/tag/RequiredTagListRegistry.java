@@ -39,7 +39,7 @@ public class RequiredTagListRegistry {
 	}
 
 	public static void validateRegistrations() {
-		RequiredTagList[] requiredTagLists = new RequiredTagList[]{
+		RequiredTagList<?>[] requiredTagLists = new RequiredTagList[]{
 			BlockTags.REQUIRED_TAGS, ItemTags.REQUIRED_TAGS, FluidTags.REQUIRED_TAGS, EntityTypeTags.REQUIRED_TAGS
 		};
 		boolean bl = Stream.of(requiredTagLists).anyMatch(list -> !REQUIRED_TAG_LISTS.containsValue(list));

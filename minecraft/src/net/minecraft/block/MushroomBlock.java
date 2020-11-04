@@ -40,21 +40,19 @@ public class MushroomBlock extends Block {
 		BlockView blockView = ctx.getWorld();
 		BlockPos blockPos = ctx.getBlockPos();
 		return this.getDefaultState()
-			.with(DOWN, Boolean.valueOf(this != blockView.getBlockState(blockPos.down()).getBlock()))
-			.with(UP, Boolean.valueOf(this != blockView.getBlockState(blockPos.up()).getBlock()))
-			.with(NORTH, Boolean.valueOf(this != blockView.getBlockState(blockPos.north()).getBlock()))
-			.with(EAST, Boolean.valueOf(this != blockView.getBlockState(blockPos.east()).getBlock()))
-			.with(SOUTH, Boolean.valueOf(this != blockView.getBlockState(blockPos.south()).getBlock()))
-			.with(WEST, Boolean.valueOf(this != blockView.getBlockState(blockPos.west()).getBlock()));
+			.with(DOWN, Boolean.valueOf(!blockView.getBlockState(blockPos.down()).isOf(this)))
+			.with(UP, Boolean.valueOf(!blockView.getBlockState(blockPos.up()).isOf(this)))
+			.with(NORTH, Boolean.valueOf(!blockView.getBlockState(blockPos.north()).isOf(this)))
+			.with(EAST, Boolean.valueOf(!blockView.getBlockState(blockPos.east()).isOf(this)))
+			.with(SOUTH, Boolean.valueOf(!blockView.getBlockState(blockPos.south()).isOf(this)))
+			.with(WEST, Boolean.valueOf(!blockView.getBlockState(blockPos.west()).isOf(this)));
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
-		return neighborState.isOf(this)
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+		return newState.isOf(this)
 			? state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(false))
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override

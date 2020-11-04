@@ -98,10 +98,10 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			);
 	}
 
-	protected abstract Path getOutput(Identifier id);
+	protected abstract Path getOutput(Identifier identifier);
 
-	protected AbstractTagProvider.ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> tag) {
-		Tag.Builder builder = this.method_27169(tag);
+	protected AbstractTagProvider.ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> identified) {
+		Tag.Builder builder = this.method_27169(identified);
 		return new AbstractTagProvider.ObjectBuilder<>(builder, this.registry, "vanilla");
 	}
 

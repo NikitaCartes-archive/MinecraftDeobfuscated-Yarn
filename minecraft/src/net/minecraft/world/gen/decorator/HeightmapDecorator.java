@@ -15,6 +15,6 @@ public abstract class HeightmapDecorator<DC extends DecoratorConfig> extends Abs
 		int i = pos.getX();
 		int j = pos.getZ();
 		int k = context.getTopY(this.getHeightmapType(config), i, j);
-		return k > 0 ? Stream.of(new BlockPos(i, k, j)) : Stream.of();
+		return k > context.getBottomHeightLimit() ? Stream.of(new BlockPos(i, k, j)) : Stream.of();
 	}
 }

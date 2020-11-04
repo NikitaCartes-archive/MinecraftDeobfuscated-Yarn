@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ChatScreen extends Screen {
-	private String chatLastMessage = "";
+	private String field_2389 = "";
 	private int messageHistorySize = -1;
 	protected TextFieldWidget chatField;
 	private String originalChatText = "";
@@ -32,11 +32,11 @@ public class ChatScreen extends Screen {
 		this.chatField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, new TranslatableText("chat.editBox")) {
 			@Override
 			protected MutableText getNarrationMessage() {
-				return super.getNarrationMessage().append(ChatScreen.this.commandSuggestor.getNarration());
+				return super.getNarrationMessage().append(ChatScreen.this.commandSuggestor.method_23958());
 			}
 		};
 		this.chatField.setMaxLength(256);
-		this.chatField.setDrawsBackground(false);
+		this.chatField.setHasBorder(false);
 		this.chatField.setText(this.originalChatText);
 		this.chatField.setChangedListener(this::onChatFieldUpdate);
 		this.children.add(this.chatField);
@@ -163,10 +163,10 @@ public class ChatScreen extends Screen {
 		if (j != this.messageHistorySize) {
 			if (j == k) {
 				this.messageHistorySize = k;
-				this.chatField.setText(this.chatLastMessage);
+				this.chatField.setText(this.field_2389);
 			} else {
 				if (this.messageHistorySize == k) {
-					this.chatLastMessage = this.chatField.getText();
+					this.field_2389 = this.chatField.getText();
 				}
 
 				this.chatField.setText((String)this.client.inGameHud.getChatHud().getMessageHistory().get(j));
@@ -179,7 +179,7 @@ public class ChatScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.setFocused(this.chatField);
-		this.chatField.setTextFieldFocused(true);
+		this.chatField.setSelected(true);
 		fill(matrices, 2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
 		this.chatField.render(matrices, mouseX, mouseY, delta);
 		this.commandSuggestor.render(matrices, mouseX, mouseY);

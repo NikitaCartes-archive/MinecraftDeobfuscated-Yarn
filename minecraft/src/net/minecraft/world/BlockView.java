@@ -19,7 +19,7 @@ import net.minecraft.util.shape.VoxelShape;
 /**
  * Represents a scoped, read-only view of block states, fluid states and block entities.
  */
-public interface BlockView {
+public interface BlockView extends HeightLimitView {
 	@Nullable
 	BlockEntity getBlockEntity(BlockPos pos);
 
@@ -33,10 +33,6 @@ public interface BlockView {
 
 	default int getMaxLightLevel() {
 		return 15;
-	}
-
-	default int getHeight() {
-		return 256;
 	}
 
 	default Stream<BlockState> method_29546(Box box) {

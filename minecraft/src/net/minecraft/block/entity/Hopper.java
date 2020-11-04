@@ -1,11 +1,9 @@
 package net.minecraft.block.entity;
 
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.World;
 
 public interface Hopper extends Inventory {
 	VoxelShape INSIDE_SHAPE = Block.createCuboidShape(2.0, 11.0, 2.0, 14.0, 16.0, 14.0);
@@ -15,9 +13,6 @@ public interface Hopper extends Inventory {
 	default VoxelShape getInputAreaShape() {
 		return INPUT_AREA_SHAPE;
 	}
-
-	@Nullable
-	World getWorld();
 
 	double getHopperX();
 

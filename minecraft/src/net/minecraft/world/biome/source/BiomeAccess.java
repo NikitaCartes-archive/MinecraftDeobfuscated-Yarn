@@ -31,7 +31,7 @@ public class BiomeAccess {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Biome getBiomeForNoiseGen(double x, double y, double z) {
+	public Biome getBiome(double x, double y, double z) {
 		int i = MathHelper.floor(x) >> 2;
 		int j = MathHelper.floor(y) >> 2;
 		int k = MathHelper.floor(z) >> 2;
@@ -39,7 +39,7 @@ public class BiomeAccess {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Biome getBiomeForNoiseGen(BlockPos pos) {
+	public Biome method_27344(BlockPos pos) {
 		int i = pos.getX() >> 2;
 		int j = pos.getY() >> 2;
 		int k = pos.getZ() >> 2;
@@ -51,7 +51,15 @@ public class BiomeAccess {
 		return this.storage.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
+	public Biome method_31608(int i, int j) {
+		return this.storage.method_31609(i, j);
+	}
+
 	public interface Storage {
 		Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ);
+
+		default Biome method_31609(int i, int j) {
+			return this.getBiomeForNoiseGen((i << 2) + 2, 0, (j << 2) + 2);
+		}
 	}
 }

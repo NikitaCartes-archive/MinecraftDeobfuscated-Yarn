@@ -29,11 +29,11 @@ public class ItemPickupParticle extends Particle {
 	}
 
 	private ItemPickupParticle(
-		EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, ClientWorld world, Entity itemEntity, Entity interactingEntity, Vec3d velocity
+		EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, ClientWorld world, Entity entity, Entity interactingEntity, Vec3d velocity
 	) {
-		super(world, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), velocity.x, velocity.y, velocity.z);
+		super(world, entity.getX(), entity.getY(), entity.getZ(), velocity.x, velocity.y, velocity.z);
 		this.bufferStorage = bufferStorage;
-		this.itemEntity = this.method_29358(itemEntity);
+		this.itemEntity = this.method_29358(entity);
 		this.interactingEntity = interactingEntity;
 		this.dispatcher = dispatcher;
 	}

@@ -59,13 +59,13 @@ public class WeightedList<U> {
 	}
 
 	public static class Entry<T> {
-		private final T item;
+		private final T data;
 		private final int weight;
 		private double shuffledOrder;
 
-		private Entry(T item, int weight) {
+		private Entry(T data, int weight) {
 			this.weight = weight;
-			this.item = item;
+			this.data = data;
 		}
 
 		private double getShuffledOrder() {
@@ -77,11 +77,11 @@ public class WeightedList<U> {
 		}
 
 		public T getElement() {
-			return this.item;
+			return this.data;
 		}
 
 		public String toString() {
-			return "" + this.weight + ":" + this.item;
+			return "" + this.weight + ":" + this.data;
 		}
 
 		public static <E> Codec<WeightedList.Entry<E>> createCodec(Codec<E> codec) {
@@ -96,7 +96,7 @@ public class WeightedList<U> {
 				}
 
 				public <T> DataResult<T> encode(WeightedList.Entry<E> entry, DynamicOps<T> dynamicOps, T object) {
-					return dynamicOps.mapBuilder().add("weight", dynamicOps.createInt(entry.weight)).add("data", codec.encodeStart(dynamicOps, entry.item)).build(object);
+					return dynamicOps.mapBuilder().add("weight", dynamicOps.createInt(entry.weight)).add("data", codec.encodeStart(dynamicOps, entry.data)).build(object);
 				}
 			};
 		}

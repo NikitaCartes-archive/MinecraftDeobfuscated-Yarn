@@ -26,8 +26,8 @@ public class EndPortalBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new EndPortalBlockEntity();
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new EndPortalBlockEntity(pos, state);
 	}
 
 	@Override

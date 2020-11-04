@@ -10,8 +10,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
@@ -52,19 +53,19 @@ public class BlockDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public void setNbt(NbtCompound nbt) {
-		nbt.putInt("x", this.pos.getX());
-		nbt.putInt("y", this.pos.getY());
-		nbt.putInt("z", this.pos.getZ());
+	public void setTag(CompoundTag tag) {
+		tag.putInt("x", this.pos.getX());
+		tag.putInt("y", this.pos.getY());
+		tag.putInt("z", this.pos.getZ());
 		BlockState blockState = this.blockEntity.getWorld().getBlockState(this.pos);
-		this.blockEntity.fromTag(blockState, nbt);
+		this.blockEntity.fromTag(tag);
 		this.blockEntity.markDirty();
 		this.blockEntity.getWorld().updateListeners(this.pos, blockState, blockState, 3);
 	}
 
 	@Override
-	public NbtCompound getNbt() {
-		return this.blockEntity.writeNbt(new NbtCompound());
+	public CompoundTag getTag() {
+		return this.blockEntity.toTag(new CompoundTag());
 	}
 
 	@Override
@@ -73,14 +74,14 @@ public class BlockDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public Text feedbackQuery(NbtElement element) {
-		return new TranslatableText("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), element.toText());
+	public Text feedbackQuery(Tag tag) {
+		return new TranslatableText("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), NbtHelper.method_32270(tag));
 	}
 
 	@Override
-	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
+	public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double scale, int result) {
 		return new TranslatableText(
-			"commands.data.block.get", path, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", scale), result
+			"commands.data.block.get", nbtPath, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", scale), result
 		);
 	}
 }

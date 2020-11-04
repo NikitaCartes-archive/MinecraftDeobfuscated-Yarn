@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
@@ -16,6 +17,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
@@ -133,5 +135,11 @@ public class ArmorItem extends Item implements Wearable {
 
 	public float method_26353() {
 		return this.toughness;
+	}
+
+	@Nullable
+	@Override
+	public SoundEvent method_31570() {
+		return this.getMaterial().getEquipSound();
 	}
 }

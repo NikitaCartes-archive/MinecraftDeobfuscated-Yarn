@@ -4,9 +4,9 @@ public class TrackedData<T> {
 	private final int id;
 	private final TrackedDataHandler<T> dataType;
 
-	public TrackedData(int id, TrackedDataHandler<T> dataType) {
+	public TrackedData(int id, TrackedDataHandler<T> trackedDataHandler) {
 		this.id = id;
-		this.dataType = dataType;
+		this.dataType = trackedDataHandler;
 	}
 
 	public int getId() {

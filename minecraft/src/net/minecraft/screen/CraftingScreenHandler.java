@@ -1,6 +1,7 @@
 package net.minecraft.screen;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -13,7 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.CraftingResultSlot;
@@ -74,11 +75,11 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.context.run((world, blockPos) -> updateResult(this.syncId, world, this.player, this.input, this.result));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> updateResult(this.syncId, world, this.player, this.input, this.result)));
 	}
 
 	@Override
-	public void populateRecipeFinder(RecipeMatcher finder) {
+	public void populateRecipeFinder(RecipeFinder finder) {
 		this.input.provideRecipeInputs(finder);
 	}
 
@@ -96,7 +97,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((world, blockPos) -> this.dropInventory(player, world, this.input));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, this.input)));
 	}
 
 	@Override
@@ -107,17 +108,17 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(index);
+		Slot slot = this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (index == 0) {
-				this.context.run((world, blockPos) -> itemStack2.getItem().onCraft(itemStack2, world, player));
+				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> itemStack2.getItem().onCraft(itemStack2, world, player)));
 				if (!this.insertItem(itemStack2, 10, 46, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 			} else if (index >= 10 && index < 46) {
 				if (!this.insertItem(itemStack2, 1, 10, false)) {
 					if (index < 37) {

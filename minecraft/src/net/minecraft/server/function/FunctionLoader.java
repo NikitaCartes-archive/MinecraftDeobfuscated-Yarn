@@ -16,7 +16,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
+import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
@@ -31,7 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class FunctionLoader implements ResourceReloader {
+public class FunctionLoader implements ResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int PATH_PREFIX_LENGTH = "functions/".length();
 	private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
@@ -64,7 +64,7 @@ public class FunctionLoader implements ResourceReloader {
 
 	@Override
 	public CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
+		ResourceReloadListener.Synchronizer synchronizer,
 		ResourceManager manager,
 		Profiler prepareProfiler,
 		Profiler applyProfiler,
@@ -108,7 +108,7 @@ public class FunctionLoader implements ResourceReloader {
 					return null;
 				}).join());
 			this.functions = builder.build();
-			this.tags = this.tagLoader.buildGroup((Map<Identifier, Tag.Builder>)pair.getFirst());
+			this.tags = this.tagLoader.applyReload((Map<Identifier, Tag.Builder>)pair.getFirst());
 		}, applyExecutor);
 	}
 

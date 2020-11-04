@@ -1,9 +1,9 @@
 package net.minecraft.entity.ai.goal;
 
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
+import net.minecraft.class_5534;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +21,7 @@ public class FlyOntoTreeGoal extends WanderAroundFarGoal {
 	protected Vec3d getWanderTarget() {
 		Vec3d vec3d = null;
 		if (this.mob.isTouchingWater()) {
-			vec3d = TargetFinder.findGroundTarget(this.mob, 15, 15);
+			vec3d = class_5534.method_31527(this.mob, 15, 15);
 		}
 
 		if (this.mob.getRandom().nextFloat() >= this.probability) {
@@ -46,8 +46,8 @@ public class FlyOntoTreeGoal extends WanderAroundFarGoal {
 			MathHelper.floor(this.mob.getZ() + 3.0)
 		)) {
 			if (!blockPos.equals(blockPos2)) {
-				Block block = this.mob.world.getBlockState(mutable2.set(blockPos2, Direction.DOWN)).getBlock();
-				boolean bl = block instanceof LeavesBlock || block.isIn(BlockTags.LOGS);
+				BlockState blockState = this.mob.world.getBlockState(mutable2.set(blockPos2, Direction.DOWN));
+				boolean bl = blockState.getBlock() instanceof LeavesBlock || blockState.isIn(BlockTags.LOGS);
 				if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.set(blockPos2, Direction.UP))) {
 					return Vec3d.ofBottomCenter(blockPos2);
 				}

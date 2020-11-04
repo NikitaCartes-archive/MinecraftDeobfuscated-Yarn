@@ -200,7 +200,7 @@ public class CommandManager {
 				);
 				if (SharedConstants.isDevelopment) {
 					commandSource.sendError(new LiteralText(Util.getInnermostMessage(var15)));
-					LOGGER.error("'" + command + "' threw an exception", var15);
+					LOGGER.error("'{}' threw an exception", command, var15);
 				}
 
 				return 0;

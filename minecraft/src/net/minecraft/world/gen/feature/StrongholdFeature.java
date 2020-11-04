@@ -8,6 +8,7 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -63,7 +64,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 				this.boundingBox = BlockBox.empty();
 				this.random.setCarverSeed(this.seed + (long)(k++), i, j);
 				StrongholdGenerator.init();
-				start = new StrongholdGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
+				start = new StrongholdGenerator.Start(this.random, ChunkSectionPos.method_32205(i, 2), ChunkSectionPos.method_32205(j, 2));
 				this.children.add(start);
 				start.fillOpenings(start, this.children, this.random);
 				List<StructurePiece> list = start.pieces;

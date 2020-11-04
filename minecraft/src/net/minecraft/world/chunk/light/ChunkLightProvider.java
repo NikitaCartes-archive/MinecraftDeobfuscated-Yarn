@@ -193,8 +193,8 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	}
 
 	@Override
-	public int getLightLevel(BlockPos pos) {
-		return this.lightStorage.getLight(pos.asLong());
+	public int getLightLevel(BlockPos blockPos) {
+		return this.lightStorage.getLight(blockPos.asLong());
 	}
 
 	@Environment(EnvType.CLIENT)

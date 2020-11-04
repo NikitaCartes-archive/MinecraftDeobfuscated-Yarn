@@ -17,8 +17,8 @@ public class ChunkPos {
 	}
 
 	public ChunkPos(BlockPos pos) {
-		this.x = pos.getX() >> 4;
-		this.z = pos.getZ() >> 4;
+		this.x = ChunkSectionPos.getSectionCoord(pos.getX());
+		this.z = ChunkSectionPos.getSectionCoord(pos.getZ());
 	}
 
 	public ChunkPos(long pos) {
@@ -60,19 +60,19 @@ public class ChunkPos {
 	}
 
 	public int getStartX() {
-		return this.x << 4;
+		return ChunkSectionPos.getBlockCoord(this.x);
 	}
 
 	public int getStartZ() {
-		return this.z << 4;
+		return ChunkSectionPos.getBlockCoord(this.z);
 	}
 
 	public int getEndX() {
-		return (this.x << 4) + 15;
+		return ChunkSectionPos.method_32205(this.x, 15);
 	}
 
 	public int getEndZ() {
-		return (this.z << 4) + 15;
+		return ChunkSectionPos.method_32205(this.z, 15);
 	}
 
 	public int getRegionX() {

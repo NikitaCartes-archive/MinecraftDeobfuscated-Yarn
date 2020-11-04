@@ -14,13 +14,13 @@ public class StonecuttingRecipe extends CuttingRecipe {
 	}
 
 	@Override
-	public boolean matches(Inventory inventory, World world) {
-		return this.input.test(inventory.getStack(0));
+	public boolean matches(Inventory inv, World world) {
+		return this.input.test(inv.getStack(0));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack createIcon() {
+	public ItemStack getRecipeKindIcon() {
 		return new ItemStack(Blocks.STONECUTTER);
 	}
 }

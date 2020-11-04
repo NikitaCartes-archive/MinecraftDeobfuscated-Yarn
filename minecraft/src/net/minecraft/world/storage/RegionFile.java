@@ -137,6 +137,10 @@ public class RegionFile implements AutoCloseable {
 		}
 	}
 
+	private static int method_31739() {
+		return (int)(Util.getEpochTimeMs() / 1000L);
+	}
+
 	private static boolean hasChunkStreamVersionId(byte b) {
 		return (b & 128) != 0;
 	}
@@ -243,6 +247,18 @@ public class RegionFile implements AutoCloseable {
 		this.channel.force(true);
 	}
 
+	public void method_31740(ChunkPos chunkPos) throws IOException {
+		int i = getIndex(chunkPos);
+		int j = this.sectorData.get(i);
+		if (j != 0) {
+			this.sectorData.put(i, 0);
+			this.saveTimes.put(i, method_31739());
+			this.writeHeader();
+			Files.deleteIfExists(this.getExternalChunkPath(chunkPos));
+			this.sectors.free(getOffset(j), getSize(j));
+		}
+	}
+
 	protected synchronized void writeChunk(ChunkPos pos, ByteBuffer byteBuffer) throws IOException {
 		int i = getIndex(pos);
 		int j = this.sectorData.get(i);
@@ -266,9 +282,8 @@ public class RegionFile implements AutoCloseable {
 			this.channel.write(byteBuffer, (long)(o * 4096));
 		}
 
-		int p = (int)(Util.getEpochTimeMs() / 1000L);
 		this.sectorData.put(i, this.packSectorData(o, n));
-		this.saveTimes.put(i, p);
+		this.saveTimes.put(i, method_31739());
 		this.writeHeader();
 		outputAction.run();
 		if (k != 0) {

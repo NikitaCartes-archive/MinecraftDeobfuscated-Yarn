@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.option.DoubleOption;
-import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.options.DoubleOption;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.OrderedText;
 

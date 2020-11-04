@@ -25,16 +25,14 @@ public class FallingBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		world.getBlockTickScheduler().schedule(pos, this, this.getFallDelay());
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (canFallThrough(world.getBlockState(pos.down())) && pos.getY() >= 0) {
+		if (canFallThrough(world.getBlockState(pos.down())) && pos.getY() >= world.getBottomHeightLimit()) {
 			FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
 				world, (double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, world.getBlockState(pos)
 			);

@@ -402,7 +402,7 @@ public class EntityPredicate {
 		private static EntityPredicate.Extended fromJson(String key, AdvancementEntityPredicateDeserializer predicateDeserializer, @Nullable JsonElement json) {
 			if (json != null && json.isJsonArray()) {
 				LootCondition[] lootConditions = predicateDeserializer.loadConditions(
-					json.getAsJsonArray(), predicateDeserializer.getAdvancementId().toString() + "/" + key, LootContextTypes.ADVANCEMENT_ENTITY
+					json.getAsJsonArray(), predicateDeserializer.getAdvancementId() + "/" + key, LootContextTypes.ADVANCEMENT_ENTITY
 				);
 				return new EntityPredicate.Extended(lootConditions);
 			} else {

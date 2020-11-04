@@ -26,8 +26,8 @@ public abstract class AbstractBannerBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView world) {
-		return new BannerBlockEntity(this.color);
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new BannerBlockEntity(pos, state, this.color);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public abstract class AbstractBannerBlock extends BlockWithEntity {
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		return blockEntity instanceof BannerBlockEntity ? ((BannerBlockEntity)blockEntity).getPickStack(state) : super.getPickStack(world, pos, state);
+		return blockEntity instanceof BannerBlockEntity ? ((BannerBlockEntity)blockEntity).getPickStack() : super.getPickStack(world, pos, state);
 	}
 
 	public DyeColor getColor() {

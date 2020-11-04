@@ -3,6 +3,7 @@ package net.minecraft.server.network;
 import io.netty.buffer.Unpooled;
 import java.util.Collection;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
@@ -65,7 +66,7 @@ public class DebugInfoSender {
 	public static void sendNeighborUpdate(World world, BlockPos pos) {
 	}
 
-	public static void sendStructureStart(StructureWorldAccess world, StructureStart<?> structureStart) {
+	public static void sendStructureStart(StructureWorldAccess structureWorldAccess, StructureStart<?> structureStart) {
 	}
 
 	public static void sendGoalSelector(World world, MobEntity mob, GoalSelector goalSelector) {
@@ -83,7 +84,7 @@ public class DebugInfoSender {
 	public static void sendBeeDebugData(BeeEntity bee) {
 	}
 
-	public static void sendBeehiveDebugData(BeehiveBlockEntity beehive) {
+	public static void sendBeehiveDebugData(World world, BlockPos blockPos, BlockState blockState, BeehiveBlockEntity beehiveBlockEntity) {
 	}
 
 	private static void sendToAll(ServerWorld world, PacketByteBuf buf, Identifier channel) {

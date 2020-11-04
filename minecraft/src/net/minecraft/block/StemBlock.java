@@ -1,12 +1,12 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import javax.annotation.Nullable;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -31,10 +31,12 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0)
 	};
 	private final GourdBlock gourdBlock;
+	private final Supplier<Item> field_27205;
 
-	protected StemBlock(GourdBlock gourdBlock, AbstractBlock.Settings settings) {
+	protected StemBlock(GourdBlock gourdBlock, Supplier<Item> supplier, AbstractBlock.Settings settings) {
 		super(settings);
 		this.gourdBlock = gourdBlock;
+		this.field_27205 = supplier;
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
@@ -77,21 +79,10 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 		}
 	}
 
-	@Nullable
-	@Environment(EnvType.CLIENT)
-	protected Item getPickItem() {
-		if (this.gourdBlock == Blocks.PUMPKIN) {
-			return Items.PUMPKIN_SEEDS;
-		} else {
-			return this.gourdBlock == Blocks.MELON ? Items.MELON_SEEDS : null;
-		}
-	}
-
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		Item item = this.getPickItem();
-		return item == null ? ItemStack.EMPTY : new ItemStack(item);
+		return new ItemStack((ItemConvertible)this.field_27205.get());
 	}
 
 	@Override

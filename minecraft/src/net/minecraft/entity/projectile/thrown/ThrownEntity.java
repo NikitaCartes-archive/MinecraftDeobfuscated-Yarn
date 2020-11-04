@@ -10,8 +10,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -26,7 +24,7 @@ public abstract class ThrownEntity extends ProjectileEntity {
 
 	protected ThrownEntity(EntityType<? extends ThrownEntity> type, double x, double y, double z, World world) {
 		this(type, world);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 	}
 
 	protected ThrownEntity(EntityType<? extends ThrownEntity> type, LivingEntity owner, World world) {
@@ -60,7 +58,7 @@ public abstract class ThrownEntity extends ProjectileEntity {
 			} else if (blockState.isOf(Blocks.END_GATEWAY)) {
 				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 				if (blockEntity instanceof EndGatewayBlockEntity && EndGatewayBlockEntity.method_30276(this)) {
-					((EndGatewayBlockEntity)blockEntity).tryTeleportingEntity(this);
+					EndGatewayBlockEntity.tryTeleportingEntity(this.world, blockPos, blockState, this, (EndGatewayBlockEntity)blockEntity);
 				}
 
 				bl = true;
@@ -95,15 +93,10 @@ public abstract class ThrownEntity extends ProjectileEntity {
 			this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
 		}
 
-		this.setPosition(d, e, f);
+		this.updatePosition(d, e, f);
 	}
 
 	protected float getGravity() {
 		return 0.03F;
-	}
-
-	@Override
-	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this);
 	}
 }

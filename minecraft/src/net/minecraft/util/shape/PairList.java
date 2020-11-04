@@ -7,6 +7,8 @@ interface PairList {
 
 	boolean forEachPair(PairList.Consumer predicate);
 
+	int size();
+
 	public interface Consumer {
 		boolean merge(int x, int y, int index);
 	}

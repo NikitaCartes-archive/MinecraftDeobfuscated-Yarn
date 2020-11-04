@@ -76,7 +76,7 @@ public abstract class FoliagePlacer {
 	/**
 	 * Used to exclude certain positions such as corners when creating a square of leaves.
 	 */
-	protected abstract boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk);
+	protected abstract boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk);
 
 	/**
 	 * Normalizes x and z coords before checking if they are invalid.

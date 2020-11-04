@@ -49,7 +49,7 @@ public class HandledScreens {
 		}
 	}
 
-	public static boolean isMissingScreens() {
+	public static boolean validateScreens() {
 		boolean bl = false;
 
 		for(ScreenHandlerType<?> screenHandlerType : Registry.SCREEN_HANDLER) {
@@ -92,7 +92,7 @@ public class HandledScreens {
 	@Environment(EnvType.CLIENT)
 	interface Provider<T extends ScreenHandler, U extends Screen & ScreenHandlerProvider<T>> {
 		default void open(Text name, ScreenHandlerType<T> type, MinecraftClient client, int id) {
-			U screen = this.create(type.create(id, client.player.inventory), client.player.inventory, name);
+			U screen = this.create(type.create(id, client.player.getInventory()), client.player.getInventory(), name);
 			client.player.currentScreenHandler = screen.getScreenHandler();
 			client.openScreen(screen);
 		}

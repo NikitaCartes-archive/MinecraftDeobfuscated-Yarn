@@ -6,11 +6,10 @@ import net.minecraft.block.LecternBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
@@ -22,6 +21,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -128,8 +128,8 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	private int currentPage;
 	private int pageCount;
 
-	public LecternBlockEntity() {
-		super(BlockEntityType.LECTERN);
+	public LecternBlockEntity(BlockPos blockPos, BlockState blockState) {
+		super(BlockEntityType.LECTERN, blockPos, blockState);
 	}
 
 	public ItemStack getBook() {
@@ -137,8 +137,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	public boolean hasBook() {
-		Item item = this.book.getItem();
-		return item == Items.WRITABLE_BOOK || item == Items.WRITTEN_BOOK;
+		return this.book.isOf(Items.WRITABLE_BOOK) || this.book.isOf(Items.WRITTEN_BOOK);
 	}
 
 	public void setBook(ItemStack book) {
@@ -177,7 +176,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	private ItemStack resolveBook(ItemStack book, @Nullable PlayerEntity player) {
-		if (this.world instanceof ServerWorld && book.getItem() == Items.WRITTEN_BOOK) {
+		if (this.world instanceof ServerWorld && book.isOf(Items.WRITTEN_BOOK)) {
 			WrittenBookItem.resolve(book, this.getCommandSource(player), player);
 		}
 
@@ -205,27 +204,27 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	public void fromTag(BlockState state, NbtCompound tag) {
-		super.fromTag(state, tag);
-		if (tag.contains("Book", 10)) {
-			this.book = this.resolveBook(ItemStack.fromNbt(tag.getCompound("Book")), null);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		if (compoundTag.contains("Book", 10)) {
+			this.book = this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null);
 		} else {
 			this.book = ItemStack.EMPTY;
 		}
 
 		this.pageCount = WrittenBookItem.getPageCount(this.book);
-		this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
+		this.currentPage = MathHelper.clamp(compoundTag.getInt("Page"), 0, this.pageCount - 1);
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
 		if (!this.getBook().isEmpty()) {
-			nbt.put("Book", this.getBook().writeNbt(new NbtCompound()));
-			nbt.putInt("Page", this.currentPage);
+			tag.put("Book", this.getBook().toTag(new CompoundTag()));
+			tag.putInt("Page", this.currentPage);
 		}
 
-		return nbt;
+		return tag;
 	}
 
 	@Override

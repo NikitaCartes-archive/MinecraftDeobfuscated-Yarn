@@ -46,11 +46,11 @@ public class IntegratedServer extends MinecraftServer {
 		MinecraftClient client,
 		DynamicRegistryManager.Impl registryManager,
 		LevelStorage.Session session,
-		ResourcePackManager dataPackManager,
+		ResourcePackManager resourcePackManager,
 		ServerResourceManager serverResourceManager,
 		SaveProperties saveProperties,
-		MinecraftSessionService sessionService,
-		GameProfileRepository gameProfileRepo,
+		MinecraftSessionService minecraftSessionService,
+		GameProfileRepository gameProfileRepository,
 		UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
@@ -59,12 +59,12 @@ public class IntegratedServer extends MinecraftServer {
 			registryManager,
 			session,
 			saveProperties,
-			dataPackManager,
+			resourcePackManager,
 			client.getNetworkProxy(),
 			client.getDataFixer(),
 			serverResourceManager,
-			sessionService,
-			gameProfileRepo,
+			minecraftSessionService,
+			gameProfileRepository,
 			userCache,
 			worldGenerationProgressListenerFactory
 		);
@@ -77,7 +77,7 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public boolean setupServer() {
-		LOGGER.info("Starting integrated minecraft server version " + SharedConstants.getGameVersion().getName());
+		LOGGER.info("Starting integrated minecraft server version {}", SharedConstants.getGameVersion().getName());
 		this.setOnlineMode(true);
 		this.setPvpEnabled(true);
 		this.setFlightEnabled(true);

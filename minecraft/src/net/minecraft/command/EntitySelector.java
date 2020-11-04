@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_5575;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -22,6 +23,16 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 public class EntitySelector {
+	private static final class_5575<Entity, ?> field_27774 = new class_5575<Entity, Entity>() {
+		public Entity method_31796(Entity entity) {
+			return entity;
+		}
+
+		@Override
+		public Class<? extends Entity> method_31794() {
+			return Entity.class;
+		}
+	};
 	private final int limit;
 	private final boolean includesNonPlayers;
 	private final boolean localWorldOnly;
@@ -36,8 +47,7 @@ public class EntitySelector {
 	private final String playerName;
 	@Nullable
 	private final UUID uuid;
-	@Nullable
-	private final EntityType<?> type;
+	private class_5575<Entity, ?> type;
 	private final boolean usesAt;
 
 	public EntitySelector(
@@ -66,7 +76,7 @@ public class EntitySelector {
 		this.senderOnly = senderOnly;
 		this.playerName = playerName;
 		this.uuid = uuid;
-		this.type = type;
+		this.type = (class_5575<Entity, ?>)(type == null ? field_27774 : type);
 		this.usesAt = usesAt;
 	}
 
@@ -183,7 +193,7 @@ public class EntitySelector {
 			} else {
 				List<ServerPlayerEntity> list;
 				if (this.isLocalWorldOnly()) {
-					list = serverCommandSource.getWorld().getPlayers(predicate::test);
+					list = serverCommandSource.getWorld().getPlayers(predicate);
 				} else {
 					list = Lists.<ServerPlayerEntity>newArrayList();
 

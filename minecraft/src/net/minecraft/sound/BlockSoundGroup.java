@@ -391,6 +391,81 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_GILDED_BLACKSTONE_HIT,
 		SoundEvents.BLOCK_GILDED_BLACKSTONE_FALL
 	);
+	public static final BlockSoundGroup CANDLE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CANDLE_BREAK,
+		SoundEvents.BLOCK_CANDLE_STEP,
+		SoundEvents.BLOCK_CANDLE_PLACE,
+		SoundEvents.BLOCK_CANDLE_HIT,
+		SoundEvents.BLOCK_CANDLE_FALL
+	);
+	public static final BlockSoundGroup AMETHYST_BLOCK = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_AMETHYST_BLOCK_BREAK,
+		SoundEvents.BLOCK_AMETHYST_BLOCK_STEP,
+		SoundEvents.BLOCK_AMETHYST_BLOCK_PLACE,
+		SoundEvents.BLOCK_AMETHYST_BLOCK_HIT,
+		SoundEvents.BLOCK_AMETHYST_BLOCK_FALL
+	);
+	public static final BlockSoundGroup AMETHYST_CLUSTER = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_BREAK,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_STEP,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_PLACE,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_FALL
+	);
+	public static final BlockSoundGroup SMALL_AMETHYST_BUD = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SMALL_AMETHYST_BUD_BREAK,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_STEP,
+		SoundEvents.BLOCK_SMALL_AMETHYST_BUD_PLACE,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_FALL
+	);
+	public static final BlockSoundGroup MEDIUM_AMETHYST_BUD = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_MEDIUM_AMETHYST_BUD_BREAK,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_STEP,
+		SoundEvents.BLOCK_MEDIUM_AMETHYST_BUD_PLACE,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_FALL
+	);
+	public static final BlockSoundGroup LARGE_AMETHYST_BUD = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_LARGE_AMETHYST_BUD_BREAK,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_STEP,
+		SoundEvents.BLOCK_LARGE_AMETHYST_BUD_PLACE,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT,
+		SoundEvents.BLOCK_AMETHYST_CLUSTER_FALL
+	);
+	public static final BlockSoundGroup TUFF = new BlockSoundGroup(
+		1.0F, 1.0F, SoundEvents.BLOCK_TUFF_BREAK, SoundEvents.BLOCK_TUFF_STEP, SoundEvents.BLOCK_TUFF_PLACE, SoundEvents.BLOCK_TUFF_HIT, SoundEvents.BLOCK_TUFF_FALL
+	);
+	public static final BlockSoundGroup CALCITE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CALCITE_BREAK,
+		SoundEvents.BLOCK_CALCITE_STEP,
+		SoundEvents.BLOCK_CALCITE_PLACE,
+		SoundEvents.BLOCK_CALCITE_HIT,
+		SoundEvents.BLOCK_CALCITE_FALL
+	);
+	public static final BlockSoundGroup COPPER = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_COPPER_BREAK,
+		SoundEvents.BLOCK_COPPER_STEP,
+		SoundEvents.BLOCK_COPPER_PLACE,
+		SoundEvents.BLOCK_COPPER_HIT,
+		SoundEvents.BLOCK_COPPER_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

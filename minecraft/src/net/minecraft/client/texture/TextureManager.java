@@ -15,10 +15,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
+import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class TextureManager implements ResourceReloader, TextureTickListener, AutoCloseable {
+public class TextureManager implements ResourceReloadListener, TextureTickListener, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Identifier MISSING_IDENTIFIER = new Identifier("");
 	private final Map<Identifier, AbstractTexture> textures = Maps.<Identifier, AbstractTexture>newHashMap();
@@ -59,17 +59,17 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 		abstractTexture.bindTexture();
 	}
 
-	public void registerTexture(Identifier id, AbstractTexture texture) {
-		texture = this.method_24303(id, texture);
-		AbstractTexture abstractTexture = (AbstractTexture)this.textures.put(id, texture);
-		if (abstractTexture != texture) {
-			if (abstractTexture != null && abstractTexture != MissingSprite.getMissingSpriteTexture()) {
-				this.tickListeners.remove(abstractTexture);
-				this.method_30299(id, abstractTexture);
+	public void registerTexture(Identifier identifier, AbstractTexture abstractTexture) {
+		abstractTexture = this.method_24303(identifier, abstractTexture);
+		AbstractTexture abstractTexture2 = (AbstractTexture)this.textures.put(identifier, abstractTexture);
+		if (abstractTexture2 != abstractTexture) {
+			if (abstractTexture2 != null && abstractTexture2 != MissingSprite.getMissingSpriteTexture()) {
+				this.tickListeners.remove(abstractTexture2);
+				this.method_30299(identifier, abstractTexture2);
 			}
 
-			if (texture instanceof TextureTickListener) {
-				this.tickListeners.add((TextureTickListener)texture);
+			if (abstractTexture instanceof TextureTickListener) {
+				this.tickListeners.add((TextureTickListener)abstractTexture);
 			}
 		}
 	}
@@ -161,14 +161,16 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 
 	@Override
 	public CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
+		ResourceReloadListener.Synchronizer synchronizer,
 		ResourceManager manager,
 		Profiler prepareProfiler,
 		Profiler applyProfiler,
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		return CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(ClickableWidget.WIDGETS_TEXTURE, prepareExecutor))
+		return CompletableFuture.allOf(
+				TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, prepareExecutor)
+			)
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();

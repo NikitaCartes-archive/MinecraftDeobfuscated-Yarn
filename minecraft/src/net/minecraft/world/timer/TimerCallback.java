@@ -1,6 +1,6 @@
 package net.minecraft.world.timer;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 
 @FunctionalInterface
@@ -24,8 +24,8 @@ public interface TimerCallback<T> {
 			return this.callbackClass;
 		}
 
-		public abstract void serialize(NbtCompound tag, C callback);
+		public abstract void serialize(CompoundTag tag, C callback);
 
-		public abstract C deserialize(NbtCompound tag);
+		public abstract C deserialize(CompoundTag tag);
 	}
 }

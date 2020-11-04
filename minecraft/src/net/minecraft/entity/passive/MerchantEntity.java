@@ -21,7 +21,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -53,13 +53,13 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(false);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public int getHeadRollingTimeLeft() {
@@ -126,7 +126,7 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 		this.ambientSoundChance = -this.getMinAmbientSoundDelay();
 		this.afterUsing(offer);
 		if (this.customer instanceof ServerPlayerEntity) {
-			Criteria.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, offer.getSellItem());
+			Criteria.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, offer.getMutableSellItem());
 		}
 	}
 
@@ -159,24 +159,24 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		TradeOfferList tradeOfferList = this.getOffers();
 		if (!tradeOfferList.isEmpty()) {
-			nbt.put("Offers", tradeOfferList.toNbt());
+			tag.put("Offers", tradeOfferList.toTag());
 		}
 
-		nbt.put("Inventory", this.inventory.toNbtList());
+		tag.put("Inventory", this.inventory.getTags());
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("Offers", 10)) {
-			this.offers = new TradeOfferList(nbt.getCompound("Offers"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("Offers", 10)) {
+			this.offers = new TradeOfferList(tag.getCompound("Offers"));
 		}
 
-		this.inventory.readNbtList(nbt.getList("Inventory", 10));
+		this.inventory.readTags(tag.getList("Inventory", 10));
 	}
 
 	@Nullable

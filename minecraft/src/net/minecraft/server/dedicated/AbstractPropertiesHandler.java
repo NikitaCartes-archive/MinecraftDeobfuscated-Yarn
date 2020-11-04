@@ -54,7 +54,7 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 				}
 			}
 		} catch (IOException var15) {
-			LOGGER.error("Failed to load properties from file: " + path);
+			LOGGER.error("Failed to load properties from file: {}", path);
 		}
 
 		return properties;
@@ -87,7 +87,7 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 				}
 			}
 		} catch (IOException var15) {
-			LOGGER.error("Failed to store properties to file: " + path);
+			LOGGER.error("Failed to store properties to file: {}", path);
 		}
 	}
 
@@ -204,7 +204,7 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 	 * Creates another property handler with the same type as this one from the
 	 * passed new map of properties.
 	 */
-	protected abstract T create(DynamicRegistryManager registryManager, Properties properties);
+	protected abstract T create(DynamicRegistryManager dynamicRegistryManager, Properties properties);
 
 	public class PropertyAccessor<V> implements Supplier<V> {
 		private final String key;

@@ -8,7 +8,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -27,7 +27,7 @@ public abstract class PassiveEntity extends PathAwareEntity {
 
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(true);
@@ -39,7 +39,7 @@ public abstract class PassiveEntity extends PathAwareEntity {
 		}
 
 		passiveData.countSpawned();
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Nullable
@@ -98,17 +98,17 @@ public abstract class PassiveEntity extends PathAwareEntity {
 	}
 
 	@Override
-	public void writeCustomDataToNbt(NbtCompound nbt) {
-		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("Age", this.getBreedingAge());
-		nbt.putInt("ForcedAge", this.forcedAge);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("Age", this.getBreedingAge());
+		tag.putInt("ForcedAge", this.forcedAge);
 	}
 
 	@Override
-	public void readCustomDataFromNbt(NbtCompound nbt) {
-		super.readCustomDataFromNbt(nbt);
-		this.setBreedingAge(nbt.getInt("Age"));
-		this.forcedAge = nbt.getInt("ForcedAge");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setBreedingAge(tag.getInt("Age"));
+		this.forcedAge = tag.getInt("ForcedAge");
 	}
 
 	@Override

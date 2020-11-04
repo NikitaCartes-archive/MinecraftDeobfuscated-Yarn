@@ -595,11 +595,53 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_END).addTag(BlockTags.INFINIBURN_OVERWORLD).add(Blocks.BEDROCK);
 		this.getOrCreateTagBuilder(BlockTags.BASE_STONE_OVERWORLD).add(Blocks.STONE).add(Blocks.GRANITE).add(Blocks.DIORITE).add(Blocks.ANDESITE);
 		this.getOrCreateTagBuilder(BlockTags.BASE_STONE_NETHER).add(Blocks.NETHERRACK).add(Blocks.BASALT).add(Blocks.BLACKSTONE);
+		this.getOrCreateTagBuilder(BlockTags.CANDLES)
+			.add(
+				Blocks.CANDLE,
+				Blocks.WHITE_CANDLE,
+				Blocks.ORANGE_CANDLE,
+				Blocks.MAGENTA_CANDLE,
+				Blocks.LIGHT_BLUE_CANDLE,
+				Blocks.YELLOW_CANDLE,
+				Blocks.LIME_CANDLE,
+				Blocks.PINK_CANDLE,
+				Blocks.GRAY_CANDLE,
+				Blocks.LIGHT_GRAY_CANDLE,
+				Blocks.CYAN_CANDLE,
+				Blocks.PURPLE_CANDLE,
+				Blocks.BLUE_CANDLE,
+				Blocks.BROWN_CANDLE,
+				Blocks.GREEN_CANDLE,
+				Blocks.RED_CANDLE,
+				Blocks.BLACK_CANDLE
+			);
+		this.getOrCreateTagBuilder(BlockTags.CANDLE_CAKES)
+			.add(
+				Blocks.CANDLE_CAKE,
+				Blocks.WHITE_CANDLE_CAKE,
+				Blocks.ORANGE_CANDLE_CAKE,
+				Blocks.MAGENTA_CANDLE_CAKE,
+				Blocks.LIGHT_BLUE_CANDLE_CAKE,
+				Blocks.YELLOW_CANDLE_CAKE,
+				Blocks.LIME_CANDLE_CAKE,
+				Blocks.PINK_CANDLE_CAKE,
+				Blocks.GRAY_CANDLE_CAKE,
+				Blocks.LIGHT_GRAY_CANDLE_CAKE,
+				Blocks.CYAN_CANDLE_CAKE,
+				Blocks.PURPLE_CANDLE_CAKE,
+				Blocks.BLUE_CANDLE_CAKE,
+				Blocks.BROWN_CANDLE_CAKE,
+				Blocks.GREEN_CANDLE_CAKE,
+				Blocks.RED_CANDLE_CAKE,
+				Blocks.BLACK_CANDLE_CAKE
+			);
+		this.getOrCreateTagBuilder(BlockTags.CAULDRONS).add(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON);
+		this.getOrCreateTagBuilder(BlockTags.CRYSTAL_SOUND_BLOCKS).add(Blocks.AMETHYST_BLOCK, Blocks.BUDDING_AMETHYST);
 	}
 
 	@Override
-	protected Path getOutput(Identifier id) {
-		return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/blocks/" + id.getPath() + ".json");
+	protected Path getOutput(Identifier identifier) {
+		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/blocks/" + identifier.getPath() + ".json");
 	}
 
 	@Override
