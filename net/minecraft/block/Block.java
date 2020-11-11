@@ -57,6 +57,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -219,6 +220,9 @@ implements ItemConvertible {
                 return b != 0;
             }
             VoxelShape voxelShape = state.getCullingFace(world, pos, direction);
+            if (voxelShape.isEmpty()) {
+                return true;
+            }
             VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, direction.getOpposite());
             boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
             if (object2ByteLinkedOpenHashMap.size() == 2048) {
@@ -394,7 +398,7 @@ implements ItemConvertible {
         }
     }
 
-    public void rainTick(BlockState state, World world, BlockPos pos) {
+    public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
     }
 
     public boolean shouldDropItemsOnExplosion(Explosion explosion) {

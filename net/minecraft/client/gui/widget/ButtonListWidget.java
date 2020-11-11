@@ -4,7 +4,9 @@
 package net.minecraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,7 +14,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.util.math.MatrixStack;
@@ -53,10 +54,9 @@ extends ElementListWidget<ButtonEntry> {
     @Nullable
     public AbstractButtonWidget getButtonFor(Option option) {
         for (ButtonEntry buttonEntry : this.children()) {
-            for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
-                if (!(abstractButtonWidget instanceof OptionButtonWidget) || ((OptionButtonWidget)abstractButtonWidget).getOption() != option) continue;
-                return abstractButtonWidget;
-            }
+            AbstractButtonWidget abstractButtonWidget = (AbstractButtonWidget)buttonEntry.field_27983.get(option);
+            if (abstractButtonWidget == null) continue;
+            return abstractButtonWidget;
         }
         return null;
     }
@@ -74,22 +74,24 @@ extends ElementListWidget<ButtonEntry> {
     @Environment(value=EnvType.CLIENT)
     public static class ButtonEntry
     extends ElementListWidget.Entry<ButtonEntry> {
+        private final Map<Option, AbstractButtonWidget> field_27983;
         private final List<AbstractButtonWidget> buttons;
 
-        private ButtonEntry(List<AbstractButtonWidget> buttons) {
-            this.buttons = buttons;
+        private ButtonEntry(Map<Option, AbstractButtonWidget> map) {
+            this.field_27983 = map;
+            this.buttons = ImmutableList.copyOf(map.values());
         }
 
         public static ButtonEntry create(GameOptions options, int width, Option option) {
-            return new ButtonEntry(ImmutableList.of(option.createButton(options, width / 2 - 155, 0, 310)));
+            return new ButtonEntry(ImmutableMap.of(option, option.createButton(options, width / 2 - 155, 0, 310)));
         }
 
         public static ButtonEntry create(GameOptions options, int width, Option firstOption, @Nullable Option secondOption) {
             AbstractButtonWidget abstractButtonWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
             if (secondOption == null) {
-                return new ButtonEntry(ImmutableList.of(abstractButtonWidget));
+                return new ButtonEntry(ImmutableMap.of(firstOption, abstractButtonWidget));
             }
-            return new ButtonEntry(ImmutableList.of(abstractButtonWidget, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
+            return new ButtonEntry(ImmutableMap.of(firstOption, abstractButtonWidget, secondOption, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
         }
 
         @Override

@@ -23,8 +23,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5625;
-import net.minecraft.class_5628;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -33,6 +31,8 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.visitor.NbtOrderedStringFormatter;
+import net.minecraft.nbt.visitor.NbtTextFormatter;
 import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.text.Text;
@@ -267,12 +267,12 @@ public final class NbtHelper {
         return fixer.update(fixTypes.getTypeReference(), new Dynamic<CompoundTag>(NbtOps.INSTANCE, tag), oldVersion, targetVersion).getValue();
     }
 
-    public static Text method_32270(Tag tag) {
-        return new class_5628("", 0).method_32305(tag);
+    public static Text toPrettyPrintedText(Tag tag) {
+        return new NbtTextFormatter("", 0).apply(tag);
     }
 
-    public static String method_32271(CompoundTag compoundTag) {
-        return new class_5625().method_32283(NbtHelper.method_32273(compoundTag));
+    public static String toPrettyPrintedString(CompoundTag tag) {
+        return new NbtOrderedStringFormatter().apply(NbtHelper.method_32273(tag));
     }
 
     public static CompoundTag method_32260(String string) throws CommandSyntaxException {
@@ -280,16 +280,16 @@ public final class NbtHelper {
     }
 
     @VisibleForTesting
-    static CompoundTag method_32273(CompoundTag compoundTag2) {
+    static CompoundTag method_32273(CompoundTag tag) {
         ListTag listTag4;
         ListTag listTag32;
-        boolean bl = compoundTag2.contains("palettes", 9);
-        ListTag listTag = bl ? compoundTag2.getList("palettes", 9).getList(0) : compoundTag2.getList("palette", 10);
+        boolean bl = tag.contains("palettes", 9);
+        ListTag listTag = bl ? tag.getList("palettes", 9).getList(0) : tag.getList("palette", 10);
         ListTag listTag2 = listTag.stream().map(CompoundTag.class::cast).map(NbtHelper::method_32277).map(StringTag::of).collect(Collectors.toCollection(ListTag::new));
-        compoundTag2.put("palette", listTag2);
+        tag.put("palette", listTag2);
         if (bl) {
             listTag32 = new ListTag();
-            listTag4 = compoundTag2.getList("palettes", 9);
+            listTag4 = tag.getList("palettes", 9);
             listTag4.stream().map(ListTag.class::cast).forEach(listTag3 -> {
                 CompoundTag compoundTag = new CompoundTag();
                 for (int i = 0; i < listTag3.size(); ++i) {
@@ -297,17 +297,17 @@ public final class NbtHelper {
                 }
                 listTag32.add(compoundTag);
             });
-            compoundTag2.put("palettes", listTag32);
+            tag.put("palettes", listTag32);
         }
-        if (compoundTag2.contains("entities", 10)) {
-            listTag32 = compoundTag2.getList("entities", 10);
+        if (tag.contains("entities", 10)) {
+            listTag32 = tag.getList("entities", 10);
             listTag4 = listTag32.stream().map(CompoundTag.class::cast).sorted(Comparator.comparing(compoundTag -> compoundTag.getList("pos", 6), field_27817)).collect(Collectors.toCollection(ListTag::new));
-            compoundTag2.put("entities", listTag4);
+            tag.put("entities", listTag4);
         }
-        listTag32 = compoundTag2.getList("blocks", 10).stream().map(CompoundTag.class::cast).sorted(Comparator.comparing(compoundTag -> compoundTag.getList("pos", 3), field_27816)).peek(compoundTag -> compoundTag.putString("state", listTag2.getString(compoundTag.getInt("state")))).collect(Collectors.toCollection(ListTag::new));
-        compoundTag2.put("data", listTag32);
-        compoundTag2.remove("blocks");
-        return compoundTag2;
+        listTag32 = tag.getList("blocks", 10).stream().map(CompoundTag.class::cast).sorted(Comparator.comparing(compoundTag -> compoundTag.getList("pos", 3), field_27816)).peek(compoundTag -> compoundTag.putString("state", listTag2.getString(compoundTag.getInt("state")))).collect(Collectors.toCollection(ListTag::new));
+        tag.put("data", listTag32);
+        tag.remove("blocks");
+        return tag;
     }
 
     @VisibleForTesting

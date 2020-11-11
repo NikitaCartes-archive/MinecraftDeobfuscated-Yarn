@@ -183,7 +183,7 @@ implements VillagerDataContainer {
             ItemStack itemStack = this.getEquippedStack(equipmentSlot);
             if (itemStack.isEmpty()) continue;
             if (EnchantmentHelper.hasBindingCurse(itemStack)) {
-                villagerEntity.equip(equipmentSlot.getEntitySlotId() + 300, itemStack);
+                villagerEntity.method_32318(equipmentSlot.getEntitySlotId() + 300).method_32332(itemStack);
                 continue;
             }
             double d = this.getDropChance(equipmentSlot);

@@ -5,11 +5,11 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -25,9 +25,9 @@ extends EntityRenderer<TridentEntity> {
     public static final Identifier TEXTURE = new Identifier("textures/entity/trident.png");
     private final TridentEntityModel model;
 
-    public TridentEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
-        this.model = new TridentEntityModel(arg.method_32167(EntityModelLayers.TRIDENT));
+    public TridentEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
+        this.model = new TridentEntityModel(context.getPart(EntityModelLayers.TRIDENT));
     }
 
     @Override

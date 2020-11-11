@@ -20,8 +20,8 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class RealmsSettingsScreen
 extends RealmsScreen {
-    private static final Text field_26514 = new TranslatableText("mco.configure.world.name");
-    private static final Text field_26515 = new TranslatableText("mco.configure.world.description");
+    private static final Text WORLD_NAME_TEXT = new TranslatableText("mco.configure.world.name");
+    private static final Text WORLD_DESCRIPTION_TEXT = new TranslatableText("mco.configure.world.description");
     private final RealmsConfigureWorldScreen parent;
     private final RealmsServer serverData;
     private ButtonWidget doneButton;
@@ -95,8 +95,8 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.titleLabel.render(this, matrices);
-        this.textRenderer.draw(matrices, field_26514, (float)(this.width / 2 - 106), (float)RealmsSettingsScreen.row(3), 0xA0A0A0);
-        this.textRenderer.draw(matrices, field_26515, (float)(this.width / 2 - 106), (float)RealmsSettingsScreen.row(7), 0xA0A0A0);
+        this.textRenderer.draw(matrices, WORLD_NAME_TEXT, (float)(this.width / 2 - 106), (float)RealmsSettingsScreen.row(3), 0xA0A0A0);
+        this.textRenderer.draw(matrices, WORLD_DESCRIPTION_TEXT, (float)(this.width / 2 - 106), (float)RealmsSettingsScreen.row(7), 0xA0A0A0);
         this.nameEdit.render(matrices, mouseX, mouseY, delta);
         this.descEdit.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);

@@ -36,6 +36,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.class_5629;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -161,7 +162,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerPlayNetworkHandler
-implements ServerPlayPacketListener {
+implements class_5629,
+ServerPlayPacketListener {
     private static final Logger LOGGER = LogManager.getLogger();
     public final ClientConnection connection;
     private final MinecraftServer server;
@@ -1028,6 +1030,7 @@ implements ServerPlayPacketListener {
         }
     }
 
+    @Override
     public void sendPacket(Packet<?> packet) {
         this.sendPacket(packet, null);
     }
@@ -1407,6 +1410,11 @@ implements ServerPlayPacketListener {
             return;
         }
         this.server.setDifficultyLocked(packet.isDifficultyLocked());
+    }
+
+    @Override
+    public ServerPlayerEntity method_32311() {
+        return this.player;
     }
 }
 

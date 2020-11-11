@@ -23,10 +23,11 @@ Runnable {
     /**
      * Moved from RealmsTasks in 20w10a.
      */
-    protected static void pause(int seconds) {
+    protected static void pause(long l) {
         try {
-            Thread.sleep(seconds * 1000);
+            Thread.sleep(l * 1000L);
         } catch (InterruptedException interruptedException) {
+            Thread.currentThread().interrupt();
             LOGGER.error("", (Throwable)interruptedException);
         }
     }

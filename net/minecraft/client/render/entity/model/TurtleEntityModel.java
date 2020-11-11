@@ -7,12 +7,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -30,21 +30,21 @@ extends QuadrupedEntityModel<T> {
 
     public TurtleEntityModel(ModelPart modelPart) {
         super(modelPart, true, 120.0f, 0.0f, 9.0f, 6.0f, 120);
-        this.plastron = modelPart.method_32086("egg_belly");
+        this.plastron = modelPart.getChild("egg_belly");
     }
 
-    public static class_5607 method_32062() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("head", class_5606.method_32108().method_32101(3, 0).method_32097(-3.0f, -1.0f, -3.0f, 6.0f, 5.0f, 6.0f), class_5603.method_32090(0.0f, 19.0f, -10.0f));
-        lv2.method_32117("body", class_5606.method_32108().method_32101(7, 37).method_32102("shell", -9.5f, 3.0f, -10.0f, 19.0f, 20.0f, 6.0f).method_32101(31, 1).method_32102("belly", -5.5f, 3.0f, -13.0f, 11.0f, 18.0f, 3.0f), class_5603.method_32091(0.0f, 11.0f, -10.0f, 1.5707964f, 0.0f, 0.0f));
-        lv2.method_32117("egg_belly", class_5606.method_32108().method_32101(70, 33).method_32097(-4.5f, 3.0f, -14.0f, 9.0f, 18.0f, 1.0f), class_5603.method_32091(0.0f, 11.0f, -10.0f, 1.5707964f, 0.0f, 0.0f));
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("head", ModelPartBuilder.create().uv(3, 0).cuboid(-3.0f, -1.0f, -3.0f, 6.0f, 5.0f, 6.0f), ModelTransform.pivot(0.0f, 19.0f, -10.0f));
+        modelPartData.addChild("body", ModelPartBuilder.create().uv(7, 37).cuboid("shell", -9.5f, 3.0f, -10.0f, 19.0f, 20.0f, 6.0f).uv(31, 1).cuboid("belly", -5.5f, 3.0f, -13.0f, 11.0f, 18.0f, 3.0f), ModelTransform.of(0.0f, 11.0f, -10.0f, 1.5707964f, 0.0f, 0.0f));
+        modelPartData.addChild("egg_belly", ModelPartBuilder.create().uv(70, 33).cuboid(-4.5f, 3.0f, -14.0f, 9.0f, 18.0f, 1.0f), ModelTransform.of(0.0f, 11.0f, -10.0f, 1.5707964f, 0.0f, 0.0f));
         boolean i = true;
-        lv2.method_32117("right_hind_leg", class_5606.method_32108().method_32101(1, 23).method_32097(-2.0f, 0.0f, 0.0f, 4.0f, 1.0f, 10.0f), class_5603.method_32090(-3.5f, 22.0f, 11.0f));
-        lv2.method_32117("left_hind_leg", class_5606.method_32108().method_32101(1, 12).method_32097(-2.0f, 0.0f, 0.0f, 4.0f, 1.0f, 10.0f), class_5603.method_32090(3.5f, 22.0f, 11.0f));
-        lv2.method_32117("right_front_leg", class_5606.method_32108().method_32101(27, 30).method_32097(-13.0f, 0.0f, -2.0f, 13.0f, 1.0f, 5.0f), class_5603.method_32090(-5.0f, 21.0f, -4.0f));
-        lv2.method_32117("left_front_leg", class_5606.method_32108().method_32101(27, 24).method_32097(0.0f, 0.0f, -2.0f, 13.0f, 1.0f, 5.0f), class_5603.method_32090(5.0f, 21.0f, -4.0f));
-        return class_5607.method_32110(lv, 128, 64);
+        modelPartData.addChild("right_hind_leg", ModelPartBuilder.create().uv(1, 23).cuboid(-2.0f, 0.0f, 0.0f, 4.0f, 1.0f, 10.0f), ModelTransform.pivot(-3.5f, 22.0f, 11.0f));
+        modelPartData.addChild("left_hind_leg", ModelPartBuilder.create().uv(1, 12).cuboid(-2.0f, 0.0f, 0.0f, 4.0f, 1.0f, 10.0f), ModelTransform.pivot(3.5f, 22.0f, 11.0f));
+        modelPartData.addChild("right_front_leg", ModelPartBuilder.create().uv(27, 30).cuboid(-13.0f, 0.0f, -2.0f, 13.0f, 1.0f, 5.0f), ModelTransform.pivot(-5.0f, 21.0f, -4.0f));
+        modelPartData.addChild("left_front_leg", ModelPartBuilder.create().uv(27, 24).cuboid(0.0f, 0.0f, -2.0f, 13.0f, 1.0f, 5.0f), ModelTransform.pivot(5.0f, 21.0f, -4.0f));
+        return TexturedModelData.of(modelData, 128, 64);
     }
 
     @Override

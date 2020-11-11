@@ -26,7 +26,7 @@ public class TeleportToSpecificPlayerSpectatorCommand
 implements SpectatorMenuCommand {
     private final GameProfile gameProfile;
     private final Identifier skinId;
-    private final LiteralText name;
+    private final Text name;
 
     public TeleportToSpecificPlayerSpectatorCommand(GameProfile gameProfile) {
         this.gameProfile = gameProfile;

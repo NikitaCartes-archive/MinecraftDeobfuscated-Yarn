@@ -5,20 +5,20 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class SnowGolemEntityModel<T extends Entity>
-extends class_5597<T> {
+extends SinglePartEntityModel<T> {
     private final ModelPart field_27500;
     private final ModelPart field_27501;
     private final ModelPart topSnowball;
@@ -27,24 +27,24 @@ extends class_5597<T> {
 
     public SnowGolemEntityModel(ModelPart modelPart) {
         this.field_27500 = modelPart;
-        this.topSnowball = modelPart.method_32086("head");
-        this.field_27502 = modelPart.method_32086("left_arm");
-        this.field_27503 = modelPart.method_32086("right_arm");
-        this.field_27501 = modelPart.method_32086("upper_body");
+        this.topSnowball = modelPart.getChild("head");
+        this.field_27502 = modelPart.getChild("left_arm");
+        this.field_27503 = modelPart.getChild("right_arm");
+        this.field_27501 = modelPart.getChild("upper_body");
     }
 
-    public static class_5607 method_32053() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
         float f = 4.0f;
-        class_5605 lv3 = new class_5605(-0.5f);
-        lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32098(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, lv3), class_5603.method_32090(0.0f, 4.0f, 0.0f));
-        class_5606 lv4 = class_5606.method_32108().method_32101(32, 0).method_32098(-1.0f, 0.0f, -1.0f, 12.0f, 2.0f, 2.0f, lv3);
-        lv2.method_32117("left_arm", lv4, class_5603.method_32091(5.0f, 6.0f, 1.0f, 0.0f, 0.0f, 1.0f));
-        lv2.method_32117("right_arm", lv4, class_5603.method_32091(-5.0f, 6.0f, -1.0f, 0.0f, (float)Math.PI, -1.0f));
-        lv2.method_32117("upper_body", class_5606.method_32108().method_32101(0, 16).method_32098(-5.0f, -10.0f, -5.0f, 10.0f, 10.0f, 10.0f, lv3), class_5603.method_32090(0.0f, 13.0f, 0.0f));
-        lv2.method_32117("lower_body", class_5606.method_32108().method_32101(0, 36).method_32098(-6.0f, -12.0f, -6.0f, 12.0f, 12.0f, 12.0f, lv3), class_5603.method_32090(0.0f, 24.0f, 0.0f));
-        return class_5607.method_32110(lv, 64, 64);
+        Dilation dilation = new Dilation(-0.5f);
+        modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, dilation), ModelTransform.pivot(0.0f, 4.0f, 0.0f));
+        ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(32, 0).cuboid(-1.0f, 0.0f, -1.0f, 12.0f, 2.0f, 2.0f, dilation);
+        modelPartData.addChild("left_arm", modelPartBuilder, ModelTransform.of(5.0f, 6.0f, 1.0f, 0.0f, 0.0f, 1.0f));
+        modelPartData.addChild("right_arm", modelPartBuilder, ModelTransform.of(-5.0f, 6.0f, -1.0f, 0.0f, (float)Math.PI, -1.0f));
+        modelPartData.addChild("upper_body", ModelPartBuilder.create().uv(0, 16).cuboid(-5.0f, -10.0f, -5.0f, 10.0f, 10.0f, 10.0f, dilation), ModelTransform.pivot(0.0f, 13.0f, 0.0f));
+        modelPartData.addChild("lower_body", ModelPartBuilder.create().uv(0, 36).cuboid(-6.0f, -12.0f, -6.0f, 12.0f, 12.0f, 12.0f, dilation), ModelTransform.pivot(0.0f, 24.0f, 0.0f));
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
     @Override
@@ -63,7 +63,7 @@ extends class_5597<T> {
     }
 
     @Override
-    public ModelPart method_32008() {
+    public ModelPart getPart() {
         return this.field_27500;
     }
 

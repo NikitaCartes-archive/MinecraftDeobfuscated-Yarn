@@ -116,7 +116,7 @@ extends ScreenHandler {
     private void updateResult(ItemStack itemStack, ItemStack itemStack2, ItemStack oldResult) {
         this.context.run((world, blockPos) -> {
             ItemStack itemStack4;
-            MapState mapState = FilledMapItem.getMapState(itemStack, world);
+            MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, world);
             if (mapState == null) {
                 return;
             }

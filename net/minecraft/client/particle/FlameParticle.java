@@ -52,18 +52,18 @@ extends AbstractSlowingParticle {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_5613
+    public static class SmallFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_27736;
+        private final SpriteProvider spriteProvider;
 
-        public class_5613(SpriteProvider spriteProvider) {
-            this.field_27736 = spriteProvider;
+        public SmallFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             FlameParticle flameParticle = new FlameParticle(clientWorld, d, e, f, g, h, i);
-            flameParticle.setSprite(this.field_27736);
+            flameParticle.setSprite(this.spriteProvider);
             flameParticle.scale(0.5f);
             return flameParticle;
         }

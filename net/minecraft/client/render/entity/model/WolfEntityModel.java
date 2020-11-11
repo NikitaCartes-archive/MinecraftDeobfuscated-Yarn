@@ -6,12 +6,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.TintableAnimalModel;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -32,34 +32,34 @@ extends TintableAnimalModel<T> {
     private final ModelPart neck;
 
     public WolfEntityModel(ModelPart modelPart) {
-        this.head = modelPart.method_32086("head");
-        this.field_20788 = this.head.method_32086("real_head");
-        this.torso = modelPart.method_32086("body");
-        this.neck = modelPart.method_32086("upper_body");
-        this.field_27538 = modelPart.method_32086("right_hind_leg");
-        this.field_27539 = modelPart.method_32086("left_hind_leg");
-        this.field_27540 = modelPart.method_32086("right_front_leg");
-        this.field_27541 = modelPart.method_32086("left_front_leg");
-        this.tail = modelPart.method_32086("tail");
-        this.field_20789 = this.tail.method_32086("real_tail");
+        this.head = modelPart.getChild("head");
+        this.field_20788 = this.head.getChild("real_head");
+        this.torso = modelPart.getChild("body");
+        this.neck = modelPart.getChild("upper_body");
+        this.field_27538 = modelPart.getChild("right_hind_leg");
+        this.field_27539 = modelPart.getChild("left_hind_leg");
+        this.field_27540 = modelPart.getChild("right_front_leg");
+        this.field_27541 = modelPart.getChild("left_front_leg");
+        this.tail = modelPart.getChild("tail");
+        this.field_20789 = this.tail.getChild("real_tail");
     }
 
-    public static class_5607 method_32068() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
         float f = 13.5f;
-        class_5610 lv3 = lv2.method_32117("head", class_5606.method_32108(), class_5603.method_32090(-1.0f, 13.5f, -7.0f));
-        lv3.method_32117("real_head", class_5606.method_32108().method_32101(0, 0).method_32097(-2.0f, -3.0f, -2.0f, 6.0f, 6.0f, 4.0f).method_32101(16, 14).method_32097(-2.0f, -5.0f, 0.0f, 2.0f, 2.0f, 1.0f).method_32101(16, 14).method_32097(2.0f, -5.0f, 0.0f, 2.0f, 2.0f, 1.0f).method_32101(0, 10).method_32097(-0.5f, 0.0f, -5.0f, 3.0f, 3.0f, 4.0f), class_5603.field_27701);
-        lv2.method_32117("body", class_5606.method_32108().method_32101(18, 14).method_32097(-3.0f, -2.0f, -3.0f, 6.0f, 9.0f, 6.0f), class_5603.method_32091(0.0f, 14.0f, 2.0f, 1.5707964f, 0.0f, 0.0f));
-        lv2.method_32117("upper_body", class_5606.method_32108().method_32101(21, 0).method_32097(-3.0f, -3.0f, -3.0f, 8.0f, 6.0f, 7.0f), class_5603.method_32091(-1.0f, 14.0f, -3.0f, 1.5707964f, 0.0f, 0.0f));
-        class_5606 lv4 = class_5606.method_32108().method_32101(0, 18).method_32097(0.0f, 0.0f, -1.0f, 2.0f, 8.0f, 2.0f);
-        lv2.method_32117("right_hind_leg", lv4, class_5603.method_32090(-2.5f, 16.0f, 7.0f));
-        lv2.method_32117("left_hind_leg", lv4, class_5603.method_32090(0.5f, 16.0f, 7.0f));
-        lv2.method_32117("right_front_leg", lv4, class_5603.method_32090(-2.5f, 16.0f, -4.0f));
-        lv2.method_32117("left_front_leg", lv4, class_5603.method_32090(0.5f, 16.0f, -4.0f));
-        class_5610 lv5 = lv2.method_32117("tail", class_5606.method_32108(), class_5603.method_32091(-1.0f, 12.0f, 8.0f, 0.62831855f, 0.0f, 0.0f));
-        lv5.method_32117("real_tail", class_5606.method_32108().method_32101(9, 18).method_32097(0.0f, 0.0f, -1.0f, 2.0f, 8.0f, 2.0f), class_5603.field_27701);
-        return class_5607.method_32110(lv, 64, 32);
+        ModelPartData modelPartData2 = modelPartData.addChild("head", ModelPartBuilder.create(), ModelTransform.pivot(-1.0f, 13.5f, -7.0f));
+        modelPartData2.addChild("real_head", ModelPartBuilder.create().uv(0, 0).cuboid(-2.0f, -3.0f, -2.0f, 6.0f, 6.0f, 4.0f).uv(16, 14).cuboid(-2.0f, -5.0f, 0.0f, 2.0f, 2.0f, 1.0f).uv(16, 14).cuboid(2.0f, -5.0f, 0.0f, 2.0f, 2.0f, 1.0f).uv(0, 10).cuboid(-0.5f, 0.0f, -5.0f, 3.0f, 3.0f, 4.0f), ModelTransform.NONE);
+        modelPartData.addChild("body", ModelPartBuilder.create().uv(18, 14).cuboid(-3.0f, -2.0f, -3.0f, 6.0f, 9.0f, 6.0f), ModelTransform.of(0.0f, 14.0f, 2.0f, 1.5707964f, 0.0f, 0.0f));
+        modelPartData.addChild("upper_body", ModelPartBuilder.create().uv(21, 0).cuboid(-3.0f, -3.0f, -3.0f, 8.0f, 6.0f, 7.0f), ModelTransform.of(-1.0f, 14.0f, -3.0f, 1.5707964f, 0.0f, 0.0f));
+        ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 18).cuboid(0.0f, 0.0f, -1.0f, 2.0f, 8.0f, 2.0f);
+        modelPartData.addChild("right_hind_leg", modelPartBuilder, ModelTransform.pivot(-2.5f, 16.0f, 7.0f));
+        modelPartData.addChild("left_hind_leg", modelPartBuilder, ModelTransform.pivot(0.5f, 16.0f, 7.0f));
+        modelPartData.addChild("right_front_leg", modelPartBuilder, ModelTransform.pivot(-2.5f, 16.0f, -4.0f));
+        modelPartData.addChild("left_front_leg", modelPartBuilder, ModelTransform.pivot(0.5f, 16.0f, -4.0f));
+        ModelPartData modelPartData3 = modelPartData.addChild("tail", ModelPartBuilder.create(), ModelTransform.of(-1.0f, 12.0f, 8.0f, 0.62831855f, 0.0f, 0.0f));
+        modelPartData3.addChild("real_tail", ModelPartBuilder.create().uv(9, 18).cuboid(0.0f, 0.0f, -1.0f, 2.0f, 8.0f, 2.0f), ModelTransform.NONE);
+        return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override

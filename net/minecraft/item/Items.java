@@ -76,6 +76,7 @@ import net.minecraft.item.NetherStarItem;
 import net.minecraft.item.OnAStickItem;
 import net.minecraft.item.PickaxeItem;
 import net.minecraft.item.PotionItem;
+import net.minecraft.item.PowderSnowBucketItem;
 import net.minecraft.item.SaddleItem;
 import net.minecraft.item.ScaffoldingItem;
 import net.minecraft.item.ShearsItem;
@@ -1140,6 +1141,7 @@ public class Items {
     public static final Item WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item LIGHTNING_ROD = Items.register(Blocks.LIGHTNING_ROD, ItemGroup.REDSTONE);
+    public static final Item POWDER_SNOW_BUCKET = Items.register("powder_snow_bucket", (Item)new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

@@ -5,12 +5,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -26,8 +26,8 @@ extends EntityRenderer<ExperienceOrbEntity> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/experience_orb.png");
     private static final RenderLayer LAYER = RenderLayer.getItemEntityTranslucentCull(TEXTURE);
 
-    public ExperienceOrbEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
+    public ExperienceOrbEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
         this.shadowRadius = 0.15f;
         this.shadowOpacity = 0.75f;
     }

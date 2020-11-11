@@ -10,36 +10,38 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.dto.ValueObject;
 import net.minecraft.client.realms.util.JsonUtils;
 import net.minecraft.client.resource.language.I18n;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsWorldOptions
 extends ValueObject {
-    public Boolean pvp;
-    public Boolean spawnAnimals;
-    public Boolean spawnMonsters;
-    public Boolean spawnNPCs;
-    public Integer spawnProtection;
-    public Boolean commandBlocks;
-    public Boolean forceGameMode;
-    public Integer difficulty;
-    public Integer gameMode;
-    public String slotName;
+    public final boolean pvp;
+    public final boolean spawnAnimals;
+    public final boolean spawnMonsters;
+    public final boolean spawnNPCs;
+    public final int spawnProtection;
+    public final boolean commandBlocks;
+    public final boolean forceGameMode;
+    public final int difficulty;
+    public final int gameMode;
+    @Nullable
+    private final String slotName;
     public long templateId;
+    @Nullable
     public String templateImage;
-    public boolean adventureMap;
     public boolean empty;
     private static final String DEFAULT_WORLD_TEMPLATE_IMAGE = null;
 
-    public RealmsWorldOptions(Boolean pvp, Boolean spawnAnimals, Boolean spawnMonsters, Boolean spawnNPCs, Integer spawnProtection, Boolean commandBlocks, Integer difficulty, Integer gameMode, Boolean forceGameMode, String slotName) {
-        this.pvp = pvp;
-        this.spawnAnimals = spawnAnimals;
-        this.spawnMonsters = spawnMonsters;
-        this.spawnNPCs = spawnNPCs;
-        this.spawnProtection = spawnProtection;
-        this.commandBlocks = commandBlocks;
-        this.difficulty = difficulty;
-        this.gameMode = gameMode;
-        this.forceGameMode = forceGameMode;
+    public RealmsWorldOptions(boolean bl, boolean bl2, boolean bl3, boolean bl4, int i, boolean bl5, int j, int k, boolean bl6, @Nullable String slotName) {
+        this.pvp = bl;
+        this.spawnAnimals = bl2;
+        this.spawnMonsters = bl3;
+        this.spawnNPCs = bl4;
+        this.spawnProtection = i;
+        this.commandBlocks = bl5;
+        this.difficulty = j;
+        this.gameMode = k;
+        this.forceGameMode = bl6;
         this.slotName = slotName;
     }
 
@@ -61,7 +63,6 @@ extends ValueObject {
         RealmsWorldOptions realmsWorldOptions = new RealmsWorldOptions(JsonUtils.getBooleanOr("pvp", json, true), JsonUtils.getBooleanOr("spawnAnimals", json, true), JsonUtils.getBooleanOr("spawnMonsters", json, true), JsonUtils.getBooleanOr("spawnNPCs", json, true), JsonUtils.getIntOr("spawnProtection", json, 0), JsonUtils.getBooleanOr("commandBlocks", json, false), JsonUtils.getIntOr("difficulty", json, 2), JsonUtils.getIntOr("gameMode", json, 0), JsonUtils.getBooleanOr("forceGameMode", json, false), JsonUtils.getStringOr("slotName", json, ""));
         realmsWorldOptions.templateId = JsonUtils.getLongOr("worldTemplateId", json, -1L);
         realmsWorldOptions.templateImage = JsonUtils.getStringOr("worldTemplateImage", json, DEFAULT_WORLD_TEMPLATE_IMAGE);
-        realmsWorldOptions.adventureMap = JsonUtils.getBooleanOr("adventureMap", json, false);
         return realmsWorldOptions;
     }
 
@@ -81,22 +82,22 @@ extends ValueObject {
 
     public String toJson() {
         JsonObject jsonObject = new JsonObject();
-        if (!this.pvp.booleanValue()) {
+        if (!this.pvp) {
             jsonObject.addProperty("pvp", this.pvp);
         }
-        if (!this.spawnAnimals.booleanValue()) {
+        if (!this.spawnAnimals) {
             jsonObject.addProperty("spawnAnimals", this.spawnAnimals);
         }
-        if (!this.spawnMonsters.booleanValue()) {
+        if (!this.spawnMonsters) {
             jsonObject.addProperty("spawnMonsters", this.spawnMonsters);
         }
-        if (!this.spawnNPCs.booleanValue()) {
+        if (!this.spawnNPCs) {
             jsonObject.addProperty("spawnNPCs", this.spawnNPCs);
         }
         if (this.spawnProtection != 0) {
             jsonObject.addProperty("spawnProtection", this.spawnProtection);
         }
-        if (this.commandBlocks.booleanValue()) {
+        if (this.commandBlocks) {
             jsonObject.addProperty("commandBlocks", this.commandBlocks);
         }
         if (this.difficulty != 2) {
@@ -105,7 +106,7 @@ extends ValueObject {
         if (this.gameMode != 0) {
             jsonObject.addProperty("gameMode", this.gameMode);
         }
-        if (this.forceGameMode.booleanValue()) {
+        if (this.forceGameMode) {
             jsonObject.addProperty("forceGameMode", this.forceGameMode);
         }
         if (!Objects.equals(this.slotName, "")) {

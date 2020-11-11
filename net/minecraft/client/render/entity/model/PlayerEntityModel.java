@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -40,37 +40,37 @@ extends BipedEntityModel<T> {
     public PlayerEntityModel(ModelPart modelPart2, boolean thinArms) {
         super(modelPart2, RenderLayer::getEntityTranslucent);
         this.thinArms = thinArms;
-        this.ears = modelPart2.method_32086("ear");
-        this.cape = modelPart2.method_32086("cloak");
-        this.leftSleeve = modelPart2.method_32086("left_sleeve");
-        this.rightSleeve = modelPart2.method_32086("right_sleeve");
-        this.leftPantLeg = modelPart2.method_32086("left_pants");
-        this.rightPantLeg = modelPart2.method_32086("right_pants");
-        this.jacket = modelPart2.method_32086("jacket");
-        this.field_27466 = modelPart2.method_32088().filter(modelPart -> !modelPart.method_32087()).collect(ImmutableList.toImmutableList());
+        this.ears = modelPart2.getChild("ear");
+        this.cape = modelPart2.getChild("cloak");
+        this.leftSleeve = modelPart2.getChild("left_sleeve");
+        this.rightSleeve = modelPart2.getChild("right_sleeve");
+        this.leftPantLeg = modelPart2.getChild("left_pants");
+        this.rightPantLeg = modelPart2.getChild("right_pants");
+        this.jacket = modelPart2.getChild("jacket");
+        this.field_27466 = modelPart2.traverse().filter(modelPart -> !modelPart.isEmpty()).collect(ImmutableList.toImmutableList());
     }
 
-    public static class_5609 method_32028(class_5605 arg, boolean bl) {
-        class_5609 lv = BipedEntityModel.method_32011(arg, 0.0f);
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("ear", class_5606.method_32108().method_32101(24, 0).method_32098(-3.0f, -6.0f, -1.0f, 6.0f, 6.0f, 1.0f, arg), class_5603.field_27701);
-        lv2.method_32117("cloak", class_5606.method_32108().method_32101(0, 0).method_32099(-5.0f, 0.0f, -1.0f, 10.0f, 16.0f, 1.0f, arg, 1.0f, 0.5f), class_5603.method_32090(0.0f, 0.0f, 0.0f));
+    public static ModelData getTexturedModelData(Dilation dilation, boolean slim) {
+        ModelData modelData = BipedEntityModel.getModelData(dilation, 0.0f);
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("ear", ModelPartBuilder.create().uv(24, 0).cuboid(-3.0f, -6.0f, -1.0f, 6.0f, 6.0f, 1.0f, dilation), ModelTransform.NONE);
+        modelPartData.addChild("cloak", ModelPartBuilder.create().uv(0, 0).cuboid(-5.0f, 0.0f, -1.0f, 10.0f, 16.0f, 1.0f, dilation, 1.0f, 0.5f), ModelTransform.pivot(0.0f, 0.0f, 0.0f));
         float f = 0.25f;
-        if (bl) {
-            lv2.method_32117("left_arm", class_5606.method_32108().method_32101(32, 48).method_32098(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, arg), class_5603.method_32090(5.0f, 2.5f, 0.0f));
-            lv2.method_32117("right_arm", class_5606.method_32108().method_32101(40, 16).method_32098(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, arg), class_5603.method_32090(-5.0f, 2.5f, 0.0f));
-            lv2.method_32117("left_sleeve", class_5606.method_32108().method_32101(48, 48).method_32098(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, arg.method_32094(0.25f)), class_5603.method_32090(5.0f, 2.5f, 0.0f));
-            lv2.method_32117("right_sleeve", class_5606.method_32108().method_32101(40, 32).method_32098(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, arg.method_32094(0.25f)), class_5603.method_32090(-5.0f, 2.5f, 0.0f));
+        if (slim) {
+            modelPartData.addChild("left_arm", ModelPartBuilder.create().uv(32, 48).cuboid(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, dilation), ModelTransform.pivot(5.0f, 2.5f, 0.0f));
+            modelPartData.addChild("right_arm", ModelPartBuilder.create().uv(40, 16).cuboid(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, dilation), ModelTransform.pivot(-5.0f, 2.5f, 0.0f));
+            modelPartData.addChild("left_sleeve", ModelPartBuilder.create().uv(48, 48).cuboid(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, dilation.add(0.25f)), ModelTransform.pivot(5.0f, 2.5f, 0.0f));
+            modelPartData.addChild("right_sleeve", ModelPartBuilder.create().uv(40, 32).cuboid(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, dilation.add(0.25f)), ModelTransform.pivot(-5.0f, 2.5f, 0.0f));
         } else {
-            lv2.method_32117("left_arm", class_5606.method_32108().method_32101(32, 48).method_32098(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, arg), class_5603.method_32090(5.0f, 2.0f, 0.0f));
-            lv2.method_32117("left_sleeve", class_5606.method_32108().method_32101(48, 48).method_32098(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, arg.method_32094(0.25f)), class_5603.method_32090(5.0f, 2.0f, 0.0f));
-            lv2.method_32117("right_sleeve", class_5606.method_32108().method_32101(40, 32).method_32098(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, arg.method_32094(0.25f)), class_5603.method_32090(-5.0f, 2.0f, 0.0f));
+            modelPartData.addChild("left_arm", ModelPartBuilder.create().uv(32, 48).cuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, dilation), ModelTransform.pivot(5.0f, 2.0f, 0.0f));
+            modelPartData.addChild("left_sleeve", ModelPartBuilder.create().uv(48, 48).cuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, dilation.add(0.25f)), ModelTransform.pivot(5.0f, 2.0f, 0.0f));
+            modelPartData.addChild("right_sleeve", ModelPartBuilder.create().uv(40, 32).cuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, dilation.add(0.25f)), ModelTransform.pivot(-5.0f, 2.0f, 0.0f));
         }
-        lv2.method_32117("left_leg", class_5606.method_32108().method_32101(16, 48).method_32098(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, arg), class_5603.method_32090(1.9f, 12.0f, 0.0f));
-        lv2.method_32117("left_pants", class_5606.method_32108().method_32101(0, 48).method_32098(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, arg.method_32094(0.25f)), class_5603.method_32090(1.9f, 12.0f, 0.0f));
-        lv2.method_32117("right_pants", class_5606.method_32108().method_32101(0, 32).method_32098(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, arg.method_32094(0.25f)), class_5603.method_32090(-1.9f, 12.0f, 0.0f));
-        lv2.method_32117("jacket", class_5606.method_32108().method_32101(16, 32).method_32098(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, arg.method_32094(0.25f)), class_5603.field_27701);
-        return lv;
+        modelPartData.addChild("left_leg", ModelPartBuilder.create().uv(16, 48).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, dilation), ModelTransform.pivot(1.9f, 12.0f, 0.0f));
+        modelPartData.addChild("left_pants", ModelPartBuilder.create().uv(0, 48).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, dilation.add(0.25f)), ModelTransform.pivot(1.9f, 12.0f, 0.0f));
+        modelPartData.addChild("right_pants", ModelPartBuilder.create().uv(0, 32).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, dilation.add(0.25f)), ModelTransform.pivot(-1.9f, 12.0f, 0.0f));
+        modelPartData.addChild("jacket", ModelPartBuilder.create().uv(16, 32).cuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, dilation.add(0.25f)), ModelTransform.NONE);
+        return modelData;
     }
 
     @Override
@@ -79,7 +79,7 @@ extends BipedEntityModel<T> {
     }
 
     public void renderEars(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
-        this.ears.copyPositionAndRotation(this.head);
+        this.ears.copyTransform(this.head);
         this.ears.pivotX = 0.0f;
         this.ears.pivotY = 0.0f;
         this.ears.render(matrices, vertices, light, overlay);
@@ -92,11 +92,11 @@ extends BipedEntityModel<T> {
     @Override
     public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
         super.setAngles(livingEntity, f, g, h, i, j);
-        this.leftPantLeg.copyPositionAndRotation(this.leftLeg);
-        this.rightPantLeg.copyPositionAndRotation(this.rightLeg);
-        this.leftSleeve.copyPositionAndRotation(this.field_27433);
-        this.rightSleeve.copyPositionAndRotation(this.rightArm);
-        this.jacket.copyPositionAndRotation(this.torso);
+        this.leftPantLeg.copyTransform(this.leftLeg);
+        this.rightPantLeg.copyTransform(this.rightLeg);
+        this.leftSleeve.copyTransform(this.leftArm);
+        this.rightSleeve.copyTransform(this.rightArm);
+        this.jacket.copyTransform(this.torso);
         if (((LivingEntity)livingEntity).getEquippedStack(EquipmentSlot.CHEST).isEmpty()) {
             if (((Entity)livingEntity).isInSneakingPose()) {
                 this.cape.pivotZ = 1.4f;

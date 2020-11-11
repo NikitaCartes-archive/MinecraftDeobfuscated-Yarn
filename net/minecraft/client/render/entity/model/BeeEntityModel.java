@@ -6,15 +6,15 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.ModelUtil;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.AnimalModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.math.MathHelper;
@@ -35,34 +35,34 @@ extends AnimalModel<T> {
 
     public BeeEntityModel(ModelPart modelPart) {
         super(false, 24.0f, 0.0f);
-        this.body = modelPart.method_32086("bone");
-        ModelPart modelPart2 = this.body.method_32086("body");
-        this.stinger = modelPart2.method_32086("stinger");
-        this.leftAntenna = modelPart2.method_32086("left_antenna");
-        this.rightAntenna = modelPart2.method_32086("right_antenna");
-        this.rightWing = this.body.method_32086("right_wing");
-        this.leftWing = this.body.method_32086("left_wing");
-        this.frontLegs = this.body.method_32086("front_legs");
-        this.middleLegs = this.body.method_32086("middle_legs");
-        this.backLegs = this.body.method_32086("back_legs");
+        this.body = modelPart.getChild("bone");
+        ModelPart modelPart2 = this.body.getChild("body");
+        this.stinger = modelPart2.getChild("stinger");
+        this.leftAntenna = modelPart2.getChild("left_antenna");
+        this.rightAntenna = modelPart2.getChild("right_antenna");
+        this.rightWing = this.body.getChild("right_wing");
+        this.leftWing = this.body.getChild("left_wing");
+        this.frontLegs = this.body.getChild("front_legs");
+        this.middleLegs = this.body.getChild("middle_legs");
+        this.backLegs = this.body.getChild("back_legs");
     }
 
-    public static class_5607 method_31981() {
+    public static TexturedModelData getTexturedModelData() {
         float f = 19.0f;
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        class_5610 lv3 = lv2.method_32117("bone", class_5606.method_32108(), class_5603.method_32090(0.0f, 19.0f, 0.0f));
-        class_5610 lv4 = lv3.method_32117("body", class_5606.method_32108().method_32101(0, 0).method_32097(-3.5f, -4.0f, -5.0f, 7.0f, 7.0f, 10.0f), class_5603.field_27701);
-        lv4.method_32117("stinger", class_5606.method_32108().method_32101(26, 7).method_32097(0.0f, -1.0f, 5.0f, 0.0f, 1.0f, 2.0f), class_5603.field_27701);
-        lv4.method_32117("left_antenna", class_5606.method_32108().method_32101(2, 0).method_32097(1.5f, -2.0f, -3.0f, 1.0f, 2.0f, 3.0f), class_5603.method_32090(0.0f, -2.0f, -5.0f));
-        lv4.method_32117("right_antenna", class_5606.method_32108().method_32101(2, 3).method_32097(-2.5f, -2.0f, -3.0f, 1.0f, 2.0f, 3.0f), class_5603.method_32090(0.0f, -2.0f, -5.0f));
-        class_5605 lv5 = new class_5605(0.001f);
-        lv3.method_32117("right_wing", class_5606.method_32108().method_32101(0, 18).method_32098(-9.0f, 0.0f, 0.0f, 9.0f, 0.0f, 6.0f, lv5), class_5603.method_32091(-1.5f, -4.0f, -3.0f, 0.0f, -0.2618f, 0.0f));
-        lv3.method_32117("left_wing", class_5606.method_32108().method_32101(0, 18).method_32096().method_32098(0.0f, 0.0f, 0.0f, 9.0f, 0.0f, 6.0f, lv5), class_5603.method_32091(1.5f, -4.0f, -3.0f, 0.0f, 0.2618f, 0.0f));
-        lv3.method_32117("front_legs", class_5606.method_32108().method_32104("front_legs", -5.0f, 0.0f, 0.0f, 7, 2, 0, 26, 1), class_5603.method_32090(1.5f, 3.0f, -2.0f));
-        lv3.method_32117("middle_legs", class_5606.method_32108().method_32104("middle_legs", -5.0f, 0.0f, 0.0f, 7, 2, 0, 26, 3), class_5603.method_32090(1.5f, 3.0f, 0.0f));
-        lv3.method_32117("back_legs", class_5606.method_32108().method_32104("back_legs", -5.0f, 0.0f, 0.0f, 7, 2, 0, 26, 5), class_5603.method_32090(1.5f, 3.0f, 2.0f));
-        return class_5607.method_32110(lv, 64, 64);
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        ModelPartData modelPartData2 = modelPartData.addChild("bone", ModelPartBuilder.create(), ModelTransform.pivot(0.0f, 19.0f, 0.0f));
+        ModelPartData modelPartData3 = modelPartData2.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-3.5f, -4.0f, -5.0f, 7.0f, 7.0f, 10.0f), ModelTransform.NONE);
+        modelPartData3.addChild("stinger", ModelPartBuilder.create().uv(26, 7).cuboid(0.0f, -1.0f, 5.0f, 0.0f, 1.0f, 2.0f), ModelTransform.NONE);
+        modelPartData3.addChild("left_antenna", ModelPartBuilder.create().uv(2, 0).cuboid(1.5f, -2.0f, -3.0f, 1.0f, 2.0f, 3.0f), ModelTransform.pivot(0.0f, -2.0f, -5.0f));
+        modelPartData3.addChild("right_antenna", ModelPartBuilder.create().uv(2, 3).cuboid(-2.5f, -2.0f, -3.0f, 1.0f, 2.0f, 3.0f), ModelTransform.pivot(0.0f, -2.0f, -5.0f));
+        Dilation dilation = new Dilation(0.001f);
+        modelPartData2.addChild("right_wing", ModelPartBuilder.create().uv(0, 18).cuboid(-9.0f, 0.0f, 0.0f, 9.0f, 0.0f, 6.0f, dilation), ModelTransform.of(-1.5f, -4.0f, -3.0f, 0.0f, -0.2618f, 0.0f));
+        modelPartData2.addChild("left_wing", ModelPartBuilder.create().uv(0, 18).mirrored().cuboid(0.0f, 0.0f, 0.0f, 9.0f, 0.0f, 6.0f, dilation), ModelTransform.of(1.5f, -4.0f, -3.0f, 0.0f, 0.2618f, 0.0f));
+        modelPartData2.addChild("front_legs", ModelPartBuilder.create().cuboid("front_legs", -5.0f, 0.0f, 0.0f, 7, 2, 0, 26, 1), ModelTransform.pivot(1.5f, 3.0f, -2.0f));
+        modelPartData2.addChild("middle_legs", ModelPartBuilder.create().cuboid("middle_legs", -5.0f, 0.0f, 0.0f, 7, 2, 0, 26, 3), ModelTransform.pivot(1.5f, 3.0f, 0.0f));
+        modelPartData2.addChild("back_legs", ModelPartBuilder.create().cuboid("back_legs", -5.0f, 0.0f, 0.0f, 7, 2, 0, 26, 5), ModelTransform.pivot(1.5f, 3.0f, 2.0f));
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
     @Override

@@ -9,8 +9,8 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.WaterCauldronBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeableItem;
@@ -22,6 +22,7 @@ import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -34,8 +35,10 @@ public interface CauldronBehavior {
     public static final Map<Item, CauldronBehavior> EMPTY_CAULDRON_BEHAVIOR = CauldronBehavior.createMap();
     public static final Map<Item, CauldronBehavior> WATER_CAULDRON_BEHAVIOR = CauldronBehavior.createMap();
     public static final Map<Item, CauldronBehavior> LAVA_CAULDRON_BEHAVIOR = CauldronBehavior.createMap();
-    public static final CauldronBehavior FILL_WITH_WATER = (blockState, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.fillCauldron(world, blockPos, playerEntity, hand, itemStack, (BlockState)Blocks.WATER_CAULDRON.getDefaultState().with(WaterCauldronBlock.LEVEL, 3));
-    public static final CauldronBehavior FILL_WITH_LAVA = (blockState, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.fillCauldron(world, blockPos, playerEntity, hand, itemStack, Blocks.LAVA_CAULDRON.getDefaultState());
+    public static final Map<Item, CauldronBehavior> POWDER_SNOW_CAULDRON_BEHAVIOR = CauldronBehavior.createMap();
+    public static final CauldronBehavior FILL_WITH_WATER = (blockState, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.fillCauldron(world, blockPos, playerEntity, hand, itemStack, (BlockState)Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 3), SoundEvents.ITEM_BUCKET_EMPTY);
+    public static final CauldronBehavior FILL_WITH_LAVA = (blockState, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.fillCauldron(world, blockPos, playerEntity, hand, itemStack, Blocks.LAVA_CAULDRON.getDefaultState(), SoundEvents.ITEM_BUCKET_EMPTY_LAVA);
+    public static final CauldronBehavior FILL_WITH_POWDER_SNOW = (blockState, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.fillCauldron(world, blockPos, playerEntity, hand, itemStack, (BlockState)Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 3), SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW);
     public static final CauldronBehavior CLEAN_SHULKER_BOX = (blockState, world, blockPos, playerEntity, hand, itemStack) -> {
         Block block = Block.getBlockFromItem(itemStack.getItem());
         if (!(block instanceof ShulkerBoxBlock)) {
@@ -48,7 +51,7 @@ public interface CauldronBehavior {
             }
             playerEntity.setStackInHand(hand, itemStack2);
             playerEntity.incrementStat(Stats.CLEAN_SHULKER_BOX);
-            WaterCauldronBlock.subtractWaterLevel(blockState, world, blockPos);
+            LeveledCauldronBlock.decrementFluidLevel(blockState, world, blockPos);
         }
         return ActionResult.success(world.isClient);
     };
@@ -71,7 +74,7 @@ public interface CauldronBehavior {
                 playerEntity.dropItem(itemStack2, false);
             }
             playerEntity.incrementStat(Stats.CLEAN_BANNER);
-            WaterCauldronBlock.subtractWaterLevel(blockState, world, blockPos);
+            LeveledCauldronBlock.decrementFluidLevel(blockState, world, blockPos);
         }
         return ActionResult.success(world.isClient);
     };
@@ -87,7 +90,7 @@ public interface CauldronBehavior {
         if (!world.isClient) {
             dyeableItem.removeColor(itemStack);
             playerEntity.incrementStat(Stats.CLEAN_ARMOR);
-            WaterCauldronBlock.subtractWaterLevel(blockState, world, blockPos);
+            LeveledCauldronBlock.decrementFluidLevel(blockState, world, blockPos);
         }
         return ActionResult.success(world.isClient);
     };
@@ -101,39 +104,41 @@ public interface CauldronBehavior {
     public static void registerBehavior() {
         EMPTY_CAULDRON_BEHAVIOR.put(Items.WATER_BUCKET, FILL_WITH_WATER);
         EMPTY_CAULDRON_BEHAVIOR.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
-        EMPTY_CAULDRON_BEHAVIOR.put(Items.POTION, (blockState, world, blockPos, playerEntity, hand, itemStack) -> {
-            if (PotionUtil.getPotion(itemStack) != Potions.WATER) {
+        EMPTY_CAULDRON_BEHAVIOR.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
+        EMPTY_CAULDRON_BEHAVIOR.put(Items.POTION, (state, world, pos, player, hand, stack) -> {
+            if (PotionUtil.getPotion(stack) != Potions.WATER) {
                 return ActionResult.PASS;
             }
             if (!world.isClient) {
-                playerEntity.setStackInHand(hand, ItemUsage.method_30012(itemStack, playerEntity, new ItemStack(Items.GLASS_BOTTLE)));
-                playerEntity.incrementStat(Stats.USE_CAULDRON);
-                world.setBlockState(blockPos, Blocks.WATER_CAULDRON.getDefaultState());
-                world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                player.setStackInHand(hand, ItemUsage.method_30012(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
+                player.incrementStat(Stats.USE_CAULDRON);
+                world.setBlockState(pos, Blocks.WATER_CAULDRON.getDefaultState());
+                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
             return ActionResult.success(world.isClient);
         });
         WATER_CAULDRON_BEHAVIOR.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
         WATER_CAULDRON_BEHAVIOR.put(Items.WATER_BUCKET, FILL_WITH_WATER);
-        WATER_CAULDRON_BEHAVIOR.put(Items.BUCKET, (blockState2, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.emptyCauldron(blockState2, world, blockPos, playerEntity, hand, itemStack, new ItemStack(Items.WATER_BUCKET), blockState -> blockState.get(WaterCauldronBlock.LEVEL) == 3));
-        WATER_CAULDRON_BEHAVIOR.put(Items.GLASS_BOTTLE, (blockState, world, blockPos, playerEntity, hand, itemStack) -> {
+        WATER_CAULDRON_BEHAVIOR.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
+        WATER_CAULDRON_BEHAVIOR.put(Items.BUCKET, (state, world, pos, player, hand, stack) -> CauldronBehavior.emptyCauldron(state, world, pos, player, hand, stack, new ItemStack(Items.WATER_BUCKET), blockState -> blockState.get(LeveledCauldronBlock.LEVEL) == 3, SoundEvents.ITEM_BUCKET_FILL));
+        WATER_CAULDRON_BEHAVIOR.put(Items.GLASS_BOTTLE, (state, world, pos, player, hand, stack) -> {
             if (!world.isClient) {
-                playerEntity.setStackInHand(hand, ItemUsage.method_30012(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
-                playerEntity.incrementStat(Stats.USE_CAULDRON);
-                WaterCauldronBlock.subtractWaterLevel(blockState, world, blockPos);
-                world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                player.setStackInHand(hand, ItemUsage.method_30012(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+                player.incrementStat(Stats.USE_CAULDRON);
+                LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
+                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
             return ActionResult.success(world.isClient);
         });
-        WATER_CAULDRON_BEHAVIOR.put(Items.POTION, (blockState, world, blockPos, playerEntity, hand, itemStack) -> {
-            if (blockState.get(WaterCauldronBlock.LEVEL) == 3 || PotionUtil.getPotion(itemStack) != Potions.WATER) {
+        WATER_CAULDRON_BEHAVIOR.put(Items.POTION, (state, world, pos, player, hand, stack) -> {
+            if (state.get(LeveledCauldronBlock.LEVEL) == 3 || PotionUtil.getPotion(stack) != Potions.WATER) {
                 return ActionResult.PASS;
             }
             if (!world.isClient) {
-                playerEntity.setStackInHand(hand, ItemUsage.method_30012(itemStack, playerEntity, new ItemStack(Items.GLASS_BOTTLE)));
-                playerEntity.incrementStat(Stats.USE_CAULDRON);
-                world.setBlockState(blockPos, (BlockState)blockState.cycle(WaterCauldronBlock.LEVEL));
-                world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                player.setStackInHand(hand, ItemUsage.method_30012(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
+                player.incrementStat(Stats.USE_CAULDRON);
+                world.setBlockState(pos, (BlockState)state.cycle(LeveledCauldronBlock.LEVEL));
+                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
             return ActionResult.success(world.isClient);
         });
@@ -174,11 +179,15 @@ public interface CauldronBehavior {
         WATER_CAULDRON_BEHAVIOR.put(Items.PURPLE_SHULKER_BOX, CLEAN_SHULKER_BOX);
         WATER_CAULDRON_BEHAVIOR.put(Items.RED_SHULKER_BOX, CLEAN_SHULKER_BOX);
         WATER_CAULDRON_BEHAVIOR.put(Items.YELLOW_SHULKER_BOX, CLEAN_SHULKER_BOX);
-        LAVA_CAULDRON_BEHAVIOR.put(Items.BUCKET, (blockState2, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.emptyCauldron(blockState2, world, blockPos, playerEntity, hand, itemStack, new ItemStack(Items.LAVA_BUCKET), blockState -> true));
+        LAVA_CAULDRON_BEHAVIOR.put(Items.BUCKET, (state2, world, pos, player, hand, stack) -> CauldronBehavior.emptyCauldron(state2, world, pos, player, hand, stack, new ItemStack(Items.LAVA_BUCKET), state -> true, SoundEvents.ITEM_BUCKET_FILL_LAVA));
         LAVA_CAULDRON_BEHAVIOR.put(Items.WATER_BUCKET, FILL_WITH_WATER);
+        LAVA_CAULDRON_BEHAVIOR.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
+        POWDER_SNOW_CAULDRON_BEHAVIOR.put(Items.BUCKET, (state2, world, pos, player, hand, stack) -> CauldronBehavior.emptyCauldron(state2, world, pos, player, hand, stack, new ItemStack(Items.POWDER_SNOW_BUCKET), state -> state.get(LeveledCauldronBlock.LEVEL) == 3, SoundEvents.ITEM_BUCKET_FILL_POWDER_SNOW));
+        POWDER_SNOW_CAULDRON_BEHAVIOR.put(Items.WATER_BUCKET, FILL_WITH_WATER);
+        POWDER_SNOW_CAULDRON_BEHAVIOR.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
     }
 
-    public static ActionResult emptyCauldron(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, ItemStack output, Predicate<BlockState> predicate) {
+    public static ActionResult emptyCauldron(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, ItemStack output, Predicate<BlockState> predicate, SoundEvent soundEvent) {
         if (!predicate.test(state)) {
             return ActionResult.PASS;
         }
@@ -186,17 +195,17 @@ public interface CauldronBehavior {
             player.setStackInHand(hand, ItemUsage.method_30012(stack, player, output));
             player.incrementStat(Stats.USE_CAULDRON);
             world.setBlockState(pos, Blocks.CAULDRON.getDefaultState());
-            world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
         return ActionResult.success(world.isClient);
     }
 
-    public static ActionResult fillCauldron(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, BlockState state) {
+    public static ActionResult fillCauldron(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, BlockState state, SoundEvent soundEvent) {
         if (!world.isClient) {
             player.setStackInHand(hand, ItemUsage.method_30012(stack, player, new ItemStack(Items.BUCKET)));
             player.incrementStat(Stats.FILL_CAULDRON);
             world.setBlockState(pos, state);
-            world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
         return ActionResult.success(world.isClient);
     }

@@ -100,7 +100,7 @@ public abstract class Language {
 
     @Environment(value=EnvType.CLIENT)
     public List<OrderedText> reorder(List<StringVisitable> texts) {
-        return texts.stream().map(Language.getInstance()::reorder).collect(ImmutableList.toImmutableList());
+        return texts.stream().map(this::reorder).collect(ImmutableList.toImmutableList());
     }
 }
 

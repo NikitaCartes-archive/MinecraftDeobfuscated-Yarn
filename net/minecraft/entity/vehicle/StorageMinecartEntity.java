@@ -4,6 +4,7 @@
 package net.minecraft.entity.vehicle;
 
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.class_5630;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -103,12 +104,23 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public boolean equip(int slot, ItemStack item) {
-        if (slot >= 0 && slot < this.size()) {
-            this.setStack(slot, item);
-            return true;
+    public class_5630 method_32318(final int i) {
+        if (i >= 0 && i < this.size()) {
+            return new class_5630(){
+
+                @Override
+                public ItemStack method_32327() {
+                    return StorageMinecartEntity.this.getStack(i);
+                }
+
+                @Override
+                public boolean method_32332(ItemStack itemStack) {
+                    StorageMinecartEntity.this.setStack(i, itemStack);
+                    return true;
+                }
+            };
         }
-        return false;
+        return super.method_32318(i);
     }
 
     @Override

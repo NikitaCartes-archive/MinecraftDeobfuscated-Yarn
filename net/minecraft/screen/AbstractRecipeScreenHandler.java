@@ -36,10 +36,11 @@ extends ScreenHandler {
 
     public abstract int getCraftingHeight();
 
-    @Environment(value=EnvType.CLIENT)
     public abstract int getCraftingSlotCount();
 
     @Environment(value=EnvType.CLIENT)
     public abstract RecipeBookCategory getCategory();
+
+    public abstract boolean method_32339(int var1);
 }
 

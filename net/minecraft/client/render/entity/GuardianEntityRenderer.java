@@ -5,12 +5,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -33,12 +33,12 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
     private static final Identifier EXPLOSION_BEAM_TEXTURE = new Identifier("textures/entity/guardian_beam.png");
     private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEXTURE);
 
-    public GuardianEntityRenderer(class_5617.class_5618 arg) {
-        this(arg, 0.5f, EntityModelLayers.GUARDIAN);
+    public GuardianEntityRenderer(EntityRendererFactory.Context context) {
+        this(context, 0.5f, EntityModelLayers.GUARDIAN);
     }
 
-    protected GuardianEntityRenderer(class_5617.class_5618 arg, float f, EntityModelLayer entityModelLayer) {
-        super(arg, new GuardianEntityModel(arg.method_32167(entityModelLayer)), f);
+    protected GuardianEntityRenderer(EntityRendererFactory.Context ctx, float shadowRadius, EntityModelLayer layer) {
+        super(ctx, new GuardianEntityModel(ctx.getPart(layer)), shadowRadius);
     }
 
     @Override

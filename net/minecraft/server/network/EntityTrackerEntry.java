@@ -83,13 +83,14 @@ public class EntityTrackerEntry {
             this.receiver.accept(new EntityPassengersSetS2CPacket(this.entity));
         }
         if (this.entity instanceof ItemFrameEntity && this.trackingTick % 10 == 0) {
+            Integer integer;
+            MapState mapState;
             ItemFrameEntity itemFrameEntity = (ItemFrameEntity)this.entity;
             ItemStack itemStack = itemFrameEntity.getHeldItemStack();
-            if (itemStack.getItem() instanceof FilledMapItem) {
-                MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.world);
+            if (itemStack.getItem() instanceof FilledMapItem && (mapState = FilledMapItem.getMapState(integer = FilledMapItem.getMapId(itemStack), this.world)) != null) {
                 for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
                     mapState.update(serverPlayerEntity, itemStack);
-                    Packet<?> packet = ((FilledMapItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, serverPlayerEntity);
+                    Packet<?> packet = mapState.getPlayerMarkerPacket(integer, serverPlayerEntity);
                     if (packet == null) continue;
                     serverPlayerEntity.networkHandler.sendPacket(packet);
                 }

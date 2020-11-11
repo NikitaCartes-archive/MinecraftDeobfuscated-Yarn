@@ -13,12 +13,12 @@ import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.BedPart;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -44,22 +44,22 @@ implements BlockEntityRenderer<BedBlockEntity> {
         this.field_27745 = context.getLayerModelPart(EntityModelLayers.BED_FOOT);
     }
 
-    public static class_5607 method_32136() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("main", class_5606.method_32108().method_32101(0, 0).method_32097(0.0f, 0.0f, 0.0f, 16.0f, 16.0f, 6.0f), class_5603.field_27701);
-        lv2.method_32117("left_leg", class_5606.method_32108().method_32101(50, 6).method_32097(0.0f, 6.0f, 0.0f, 3.0f, 3.0f, 3.0f), class_5603.method_32092(1.5707964f, 0.0f, 1.5707964f));
-        lv2.method_32117("right_leg", class_5606.method_32108().method_32101(50, 18).method_32097(-16.0f, 6.0f, 0.0f, 3.0f, 3.0f, 3.0f), class_5603.method_32092(1.5707964f, 0.0f, (float)Math.PI));
-        return class_5607.method_32110(lv, 64, 64);
+    public static TexturedModelData getHeadTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("main", ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, 0.0f, 0.0f, 16.0f, 16.0f, 6.0f), ModelTransform.NONE);
+        modelPartData.addChild("left_leg", ModelPartBuilder.create().uv(50, 6).cuboid(0.0f, 6.0f, 0.0f, 3.0f, 3.0f, 3.0f), ModelTransform.rotation(1.5707964f, 0.0f, 1.5707964f));
+        modelPartData.addChild("right_leg", ModelPartBuilder.create().uv(50, 18).cuboid(-16.0f, 6.0f, 0.0f, 3.0f, 3.0f, 3.0f), ModelTransform.rotation(1.5707964f, 0.0f, (float)Math.PI));
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
-    public static class_5607 method_32137() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("main", class_5606.method_32108().method_32101(0, 22).method_32097(0.0f, 0.0f, 0.0f, 16.0f, 16.0f, 6.0f), class_5603.field_27701);
-        lv2.method_32117("left_leg", class_5606.method_32108().method_32101(50, 0).method_32097(0.0f, 6.0f, -16.0f, 3.0f, 3.0f, 3.0f), class_5603.method_32092(1.5707964f, 0.0f, 0.0f));
-        lv2.method_32117("right_leg", class_5606.method_32108().method_32101(50, 12).method_32097(-16.0f, 6.0f, -16.0f, 3.0f, 3.0f, 3.0f), class_5603.method_32092(1.5707964f, 0.0f, 4.712389f));
-        return class_5607.method_32110(lv, 64, 64);
+    public static TexturedModelData getFootTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("main", ModelPartBuilder.create().uv(0, 22).cuboid(0.0f, 0.0f, 0.0f, 16.0f, 16.0f, 6.0f), ModelTransform.NONE);
+        modelPartData.addChild("left_leg", ModelPartBuilder.create().uv(50, 0).cuboid(0.0f, 6.0f, -16.0f, 3.0f, 3.0f, 3.0f), ModelTransform.rotation(1.5707964f, 0.0f, 0.0f));
+        modelPartData.addChild("right_leg", ModelPartBuilder.create().uv(50, 12).cuboid(-16.0f, 6.0f, -16.0f, 3.0f, 3.0f, 3.0f), ModelTransform.rotation(1.5707964f, 0.0f, 4.712389f));
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
     @Override

@@ -46,7 +46,7 @@ import org.jetbrains.annotations.Nullable;
 public class StatsScreen
 extends Screen
 implements StatsListener {
-    private static final Text field_26546 = new TranslatableText("multiplayer.downloadingStats");
+    private static final Text DOWNLOADING_STATS_TEXT = new TranslatableText("multiplayer.downloadingStats");
     protected final Screen parent;
     private GeneralStatsListWidget generalStats;
     private ItemStatsListWidget itemStats;
@@ -91,7 +91,7 @@ implements StatsListener {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (this.downloadingStats) {
             this.renderBackground(matrices);
-            StatsScreen.drawCenteredText(matrices, this.textRenderer, field_26546, this.width / 2, this.height / 2, 0xFFFFFF);
+            StatsScreen.drawCenteredText(matrices, this.textRenderer, DOWNLOADING_STATS_TEXT, this.width / 2, this.height / 2, 0xFFFFFF);
             StatsScreen.drawCenteredString(matrices, this.textRenderer, PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)], this.width / 2, this.height / 2 + this.textRenderer.fontHeight * 2, 0xFFFFFF);
         } else {
             this.getSelectedStatList().render(matrices, mouseX, mouseY, delta);
@@ -342,7 +342,7 @@ implements StatsListener {
                 for (int m = 0; m < this.HEADER_ICON_SPRITE_INDICES.length; ++m) {
                     int n = StatsScreen.this.getColumnX(m);
                     if (l < n - 18 || l > n) continue;
-                    text = this.getStatType(m).method_30739();
+                    text = this.getStatType(m).getName();
                     break;
                 }
                 this.render(matrixStack, text, i, j);

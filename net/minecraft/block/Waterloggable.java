@@ -3,12 +3,16 @@
  */
 package net.minecraft.block;
 
+import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -35,12 +39,17 @@ FluidFillable {
     }
 
     @Override
-    default public Fluid tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
+    default public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
         if (state.get(Properties.WATERLOGGED).booleanValue()) {
             world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, false), 3);
-            return Fluids.WATER;
+            return new ItemStack(Items.WATER_BUCKET);
         }
-        return Fluids.EMPTY;
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    default public Optional<SoundEvent> getDrainSound() {
+        return Fluids.WATER.getFillSound();
     }
 }
 

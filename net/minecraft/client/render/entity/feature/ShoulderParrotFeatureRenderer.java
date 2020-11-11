@@ -5,7 +5,6 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -13,6 +12,7 @@ import net.minecraft.client.render.entity.ParrotEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.ParrotEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -25,9 +25,9 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity>
 extends FeatureRenderer<T, PlayerEntityModel<T>> {
     private final ParrotEntityModel model;
 
-    public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext, class_5599 arg) {
+    public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext, EntityModelLoader entityModelLoader) {
         super(featureRendererContext);
-        this.model = new ParrotEntityModel(arg.method_32072(EntityModelLayers.PARROT));
+        this.model = new ParrotEntityModel(entityModelLoader.getModelPart(EntityModelLayers.PARROT));
     }
 
     @Override

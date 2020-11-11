@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.RavagerEntityModel;
@@ -17,8 +17,8 @@ public class RavagerEntityRenderer
 extends MobEntityRenderer<RavagerEntity, RavagerEntityModel> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/illager/ravager.png");
 
-    public RavagerEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new RavagerEntityModel(arg.method_32167(EntityModelLayers.RAVAGER)), 1.1f);
+    public RavagerEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new RavagerEntityModel(context.getPart(EntityModelLayers.RAVAGER)), 1.1f);
     }
 
     @Override

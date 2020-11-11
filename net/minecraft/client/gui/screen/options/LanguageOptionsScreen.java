@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.LanguageDefinition;
@@ -27,11 +26,9 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class LanguageOptionsScreen
 extends GameOptionsScreen {
-    private static final Text WARNING_TEXT = new LiteralText("(").append(new TranslatableText("options.languageWarning")).append(")").formatted(Formatting.GRAY);
+    private static final Text LANGUAGE_WARNING_TEXT = new LiteralText("(").append(new TranslatableText("options.languageWarning")).append(")").formatted(Formatting.GRAY);
     private LanguageSelectionListWidget languageSelectionList;
     private final LanguageManager languageManager;
-    private OptionButtonWidget forceUnicodeButton;
-    private ButtonWidget doneButton;
 
     public LanguageOptionsScreen(Screen parent, GameOptions options, LanguageManager languageManager) {
         super(parent, options, new TranslatableText("options.language"));
@@ -42,20 +39,13 @@ extends GameOptionsScreen {
     protected void init() {
         this.languageSelectionList = new LanguageSelectionListWidget(this.client);
         this.children.add(this.languageSelectionList);
-        this.forceUnicodeButton = this.addButton(new OptionButtonWidget(this.width / 2 - 155, this.height - 38, 150, 20, Option.FORCE_UNICODE_FONT, Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions), button -> {
-            Option.FORCE_UNICODE_FONT.toggle(this.gameOptions);
-            this.gameOptions.write();
-            button.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
-            this.client.onResolutionChanged();
-        }));
-        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, ScreenTexts.DONE, button -> {
+        this.addButton(Option.FORCE_UNICODE_FONT.createButton(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
+        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, ScreenTexts.DONE, button -> {
             LanguageSelectionListWidget.LanguageEntry languageEntry = (LanguageSelectionListWidget.LanguageEntry)this.languageSelectionList.getSelected();
             if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
                 this.languageManager.setLanguage(languageEntry.languageDefinition);
                 this.gameOptions.language = languageEntry.languageDefinition.getCode();
                 this.client.reloadResources();
-                this.doneButton.setMessage(ScreenTexts.DONE);
-                this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
                 this.gameOptions.write();
             }
             this.client.openScreen(this.parent);
@@ -67,7 +57,7 @@ extends GameOptionsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.languageSelectionList.render(matrices, mouseX, mouseY, delta);
         LanguageOptionsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
-        LanguageOptionsScreen.drawCenteredText(matrices, this.textRenderer, WARNING_TEXT, this.width / 2, this.height - 56, 0x808080);
+        LanguageOptionsScreen.drawCenteredText(matrices, this.textRenderer, LANGUAGE_WARNING_TEXT, this.width / 2, this.height - 56, 0x808080);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

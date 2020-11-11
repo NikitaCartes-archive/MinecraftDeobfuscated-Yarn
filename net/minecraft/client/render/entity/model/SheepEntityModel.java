@@ -5,14 +5,14 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.passive.SheepEntity;
 
 @Environment(value=EnvType.CLIENT)
@@ -24,12 +24,12 @@ extends QuadrupedEntityModel<T> {
         super(modelPart, false, 8.0f, 4.0f, 2.0f, 2.0f, 24);
     }
 
-    public static class_5607 method_32038() {
-        class_5609 lv = QuadrupedEntityModel.method_32033(12, class_5605.field_27715);
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32097(-3.0f, -4.0f, -6.0f, 6.0f, 6.0f, 8.0f), class_5603.method_32090(0.0f, 6.0f, -8.0f));
-        lv2.method_32117("body", class_5606.method_32108().method_32101(28, 8).method_32097(-4.0f, -10.0f, -7.0f, 8.0f, 16.0f, 6.0f), class_5603.method_32091(0.0f, 5.0f, 2.0f, 1.5707964f, 0.0f, 0.0f));
-        return class_5607.method_32110(lv, 64, 32);
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = QuadrupedEntityModel.method_32033(12, Dilation.NONE);
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-3.0f, -4.0f, -6.0f, 6.0f, 6.0f, 8.0f), ModelTransform.pivot(0.0f, 6.0f, -8.0f));
+        modelPartData.addChild("body", ModelPartBuilder.create().uv(28, 8).cuboid(-4.0f, -10.0f, -7.0f, 8.0f, 16.0f, 6.0f), ModelTransform.of(0.0f, 5.0f, 2.0f, 1.5707964f, 0.0f, 0.0f));
+        return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override

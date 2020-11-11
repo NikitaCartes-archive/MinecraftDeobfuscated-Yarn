@@ -68,7 +68,7 @@ implements class_5552 {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return (BlockState)this.getDefaultState().with(MODE, StructureBlockMode.DATA);
+        return (BlockState)this.getDefaultState().with(MODE, StructureBlockMode.LOAD);
     }
 
     @Override

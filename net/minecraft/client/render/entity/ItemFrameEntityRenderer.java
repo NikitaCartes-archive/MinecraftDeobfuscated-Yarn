@@ -5,13 +5,13 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -37,9 +37,9 @@ extends EntityRenderer<ItemFrameEntity> {
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final ItemRenderer itemRenderer;
 
-    public ItemFrameEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
-        this.itemRenderer = arg.method_32168();
+    public ItemFrameEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
+        this.itemRenderer = context.getItemRenderer();
     }
 
     @Override
@@ -78,10 +78,11 @@ extends EntityRenderer<ItemFrameEntity> {
                 float h = 0.0078125f;
                 matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);
                 matrixStack.translate(-64.0, -64.0, 0.0);
-                MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, itemFrameEntity.world);
+                Integer integer = FilledMapItem.getMapId(itemStack);
+                MapState mapState = FilledMapItem.getMapState(integer, itemFrameEntity.world);
                 matrixStack.translate(0.0, 0.0, -1.0);
                 if (mapState != null) {
-                    this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, mapState, true, i);
+                    this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, integer, mapState, true, i);
                 }
             } else {
                 matrixStack.scale(0.5f, 0.5f, 0.5f);

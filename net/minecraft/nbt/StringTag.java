@@ -7,10 +7,10 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
-import net.minecraft.class_5627;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class StringTag
 implements Tag {
@@ -100,8 +100,8 @@ implements Tag {
     }
 
     @Override
-    public void method_32289(class_5627 arg) {
-        arg.method_32302(this);
+    public void accept(NbtTagVisitor visitor) {
+        visitor.visitStringTag(this);
     }
 
     public static String escape(String value) {

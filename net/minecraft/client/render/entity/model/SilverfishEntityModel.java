@@ -6,19 +6,19 @@ package net.minecraft.client.render.entity.model;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class SilverfishEntityModel<T extends Entity>
-extends class_5597<T> {
+extends SinglePartEntityModel<T> {
     private final ModelPart field_27497;
     private final ModelPart[] body = new ModelPart[7];
     private final ModelPart[] scales = new ModelPart[3];
@@ -27,8 +27,8 @@ extends class_5597<T> {
 
     public SilverfishEntityModel(ModelPart modelPart) {
         this.field_27497 = modelPart;
-        Arrays.setAll(this.body, i -> modelPart.method_32086(SilverfishEntityModel.method_32045(i)));
-        Arrays.setAll(this.scales, i -> modelPart.method_32086(SilverfishEntityModel.method_32043(i)));
+        Arrays.setAll(this.body, i -> modelPart.getChild(SilverfishEntityModel.method_32045(i)));
+        Arrays.setAll(this.scales, i -> modelPart.getChild(SilverfishEntityModel.method_32043(i)));
     }
 
     private static String method_32043(int i) {
@@ -39,25 +39,25 @@ extends class_5597<T> {
         return "segment" + i;
     }
 
-    public static class_5607 method_32042() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
         float[] fs = new float[7];
         float f = -3.5f;
         for (int i = 0; i < 7; ++i) {
-            lv2.method_32117(SilverfishEntityModel.method_32045(i), class_5606.method_32108().method_32101(segmentSizes[i][0], segmentSizes[i][1]).method_32097((float)segmentLocations[i][0] * -0.5f, 0.0f, (float)segmentLocations[i][2] * -0.5f, segmentLocations[i][0], segmentLocations[i][1], segmentLocations[i][2]), class_5603.method_32090(0.0f, 24 - segmentLocations[i][1], f));
+            modelPartData.addChild(SilverfishEntityModel.method_32045(i), ModelPartBuilder.create().uv(segmentSizes[i][0], segmentSizes[i][1]).cuboid((float)segmentLocations[i][0] * -0.5f, 0.0f, (float)segmentLocations[i][2] * -0.5f, segmentLocations[i][0], segmentLocations[i][1], segmentLocations[i][2]), ModelTransform.pivot(0.0f, 24 - segmentLocations[i][1], f));
             fs[i] = f;
             if (i >= 6) continue;
             f += (float)(segmentLocations[i][2] + segmentLocations[i + 1][2]) * 0.5f;
         }
-        lv2.method_32117(SilverfishEntityModel.method_32043(0), class_5606.method_32108().method_32101(20, 0).method_32097(-5.0f, 0.0f, (float)segmentLocations[2][2] * -0.5f, 10.0f, 8.0f, segmentLocations[2][2]), class_5603.method_32090(0.0f, 16.0f, fs[2]));
-        lv2.method_32117(SilverfishEntityModel.method_32043(1), class_5606.method_32108().method_32101(20, 11).method_32097(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 4.0f, segmentLocations[4][2]), class_5603.method_32090(0.0f, 20.0f, fs[4]));
-        lv2.method_32117(SilverfishEntityModel.method_32043(2), class_5606.method_32108().method_32101(20, 18).method_32097(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 5.0f, segmentLocations[1][2]), class_5603.method_32090(0.0f, 19.0f, fs[1]));
-        return class_5607.method_32110(lv, 64, 32);
+        modelPartData.addChild(SilverfishEntityModel.method_32043(0), ModelPartBuilder.create().uv(20, 0).cuboid(-5.0f, 0.0f, (float)segmentLocations[2][2] * -0.5f, 10.0f, 8.0f, segmentLocations[2][2]), ModelTransform.pivot(0.0f, 16.0f, fs[2]));
+        modelPartData.addChild(SilverfishEntityModel.method_32043(1), ModelPartBuilder.create().uv(20, 11).cuboid(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 4.0f, segmentLocations[4][2]), ModelTransform.pivot(0.0f, 20.0f, fs[4]));
+        modelPartData.addChild(SilverfishEntityModel.method_32043(2), ModelPartBuilder.create().uv(20, 18).cuboid(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 5.0f, segmentLocations[1][2]), ModelTransform.pivot(0.0f, 19.0f, fs[1]));
+        return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override
-    public ModelPart method_32008() {
+    public ModelPart getPart() {
         return this.field_27497;
     }
 

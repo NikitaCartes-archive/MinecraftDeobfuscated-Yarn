@@ -34,9 +34,9 @@ implements TickableElement {
     public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
     public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
     public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
-    private static final Text field_26468 = new TranslatableText("mco.configure.world.slot.tooltip.active");
-    private static final Text field_26469 = new TranslatableText("mco.configure.world.slot.tooltip.minigame");
-    private static final Text field_26470 = new TranslatableText("mco.configure.world.slot.tooltip");
+    private static final Text ACTIVE_TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip.active");
+    private static final Text MINIGAME_TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip.minigame");
+    private static final Text TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip");
     private final Supplier<RealmsServer> serverDataProvider;
     private final Consumer<Text> toolTipSetter;
     private final int slotIndex;
@@ -110,7 +110,7 @@ implements TickableElement {
             return Pair.of(null, new LiteralText(string));
         }
         Text text = bl2 ? (bl ? LiteralText.EMPTY : new LiteralText(" ").append(string).append(" ").append(realmsServer.minigameName)) : new LiteralText(" ").append(string);
-        Text text2 = action == Action.JOIN ? field_26468 : (bl2 ? field_26469 : field_26470);
+        Text text2 = action == Action.JOIN ? ACTIVE_TOOLTIP : (bl2 ? MINIGAME_TOOLTIP : TOOLTIP);
         MutableText text3 = text2.shallowCopy().append(text);
         return Pair.of(text2, text3);
     }

@@ -9,12 +9,12 @@ import java.util.Map;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
@@ -27,12 +27,12 @@ import net.minecraft.util.math.Quaternion;
 @Environment(value=EnvType.CLIENT)
 public class BoatEntityRenderer
 extends EntityRenderer<BoatEntity> {
-    private final Map<BoatEntity.Type, Pair<Identifier, BoatEntityModel>> field_27758;
+    private final Map<BoatEntity.Type, Pair<Identifier, BoatEntityModel>> texturesAndModels;
 
-    public BoatEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
+    public BoatEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
         this.shadowRadius = 0.8f;
-        this.field_27758 = Stream.of(BoatEntity.Type.values()).collect(ImmutableMap.toImmutableMap(type -> type, type -> Pair.of(new Identifier("textures/entity/boat/" + type.getName() + ".png"), new BoatEntityModel(arg.method_32167(EntityModelLayers.createBoat(type))))));
+        this.texturesAndModels = Stream.of(BoatEntity.Type.values()).collect(ImmutableMap.toImmutableMap(type -> type, type -> Pair.of(new Identifier("textures/entity/boat/" + type.getName() + ".png"), new BoatEntityModel(context.getPart(EntityModelLayers.createBoat(type))))));
     }
 
     @Override
@@ -52,7 +52,7 @@ extends EntityRenderer<BoatEntity> {
         if (!MathHelper.approximatelyEquals(k = boatEntity.interpolateBubbleWobble(g), 0.0f)) {
             matrixStack.multiply(new Quaternion(new Vector3f(1.0f, 0.0f, 1.0f), boatEntity.interpolateBubbleWobble(g), true));
         }
-        Pair<Identifier, BoatEntityModel> pair = this.field_27758.get((Object)boatEntity.getBoatType());
+        Pair<Identifier, BoatEntityModel> pair = this.texturesAndModels.get((Object)boatEntity.getBoatType());
         Identifier identifier = pair.getFirst();
         BoatEntityModel boatEntityModel = pair.getSecond();
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
@@ -70,7 +70,7 @@ extends EntityRenderer<BoatEntity> {
 
     @Override
     public Identifier getTexture(BoatEntity boatEntity) {
-        return this.field_27758.get((Object)boatEntity.getBoatType()).getFirst();
+        return this.texturesAndModels.get((Object)boatEntity.getBoatType()).getFirst();
     }
 }
 

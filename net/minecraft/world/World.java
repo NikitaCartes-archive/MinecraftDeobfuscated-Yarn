@@ -714,7 +714,7 @@ AutoCloseable {
     @Nullable
     public abstract MapState getMapState(String var1);
 
-    public abstract void putMapState(MapState var1);
+    public abstract void putMapState(String var1, MapState var2);
 
     public abstract int getNextMapId();
 

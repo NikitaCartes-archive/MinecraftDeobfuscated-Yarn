@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.SpiderEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
@@ -17,8 +17,8 @@ public class CaveSpiderEntityRenderer
 extends SpiderEntityRenderer<CaveSpiderEntity> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/spider/cave_spider.png");
 
-    public CaveSpiderEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, EntityModelLayers.CAVE_SPIDER);
+    public CaveSpiderEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, EntityModelLayers.CAVE_SPIDER);
         this.shadowRadius *= 0.7f;
     }
 

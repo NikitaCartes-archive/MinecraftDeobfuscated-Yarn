@@ -21,6 +21,7 @@ import net.minecraft.loot.condition.ReferenceLootCondition;
 import net.minecraft.loot.condition.SurvivesExplosionLootCondition;
 import net.minecraft.loot.condition.TableBonusLootCondition;
 import net.minecraft.loot.condition.TimeCheckLootCondition;
+import net.minecraft.loot.condition.ValueCheckLootCondition;
 import net.minecraft.loot.condition.WeatherCheckLootCondition;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonSerializer;
@@ -44,6 +45,7 @@ public class LootConditionTypes {
     public static final LootConditionType WEATHER_CHECK = LootConditionTypes.register("weather_check", new WeatherCheckLootCondition.Serializer());
     public static final LootConditionType REFERENCE = LootConditionTypes.register("reference", new ReferenceLootCondition.Serializer());
     public static final LootConditionType TIME_CHECK = LootConditionTypes.register("time_check", new TimeCheckLootCondition.Serializer());
+    public static final LootConditionType VALUE_CHECK = LootConditionTypes.register("value_check", new ValueCheckLootCondition.Serializer());
 
     private static LootConditionType register(String id, JsonSerializer<? extends LootCondition> serializer) {
         return Registry.register(Registry.LOOT_CONDITION_TYPE, new Identifier(id), new LootConditionType(serializer));

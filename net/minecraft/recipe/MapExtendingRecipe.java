@@ -7,7 +7,6 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
@@ -40,20 +39,10 @@ extends ShapedRecipe {
         if (mapState == null) {
             return false;
         }
-        if (this.matches(mapState)) {
+        if (mapState.method_32372()) {
             return false;
         }
         return mapState.scale < 4;
-    }
-
-    private boolean matches(MapState state) {
-        if (state.icons != null) {
-            for (MapIcon mapIcon : state.icons.values()) {
-                if (mapIcon.getType() != MapIcon.Type.MANSION && mapIcon.getType() != MapIcon.Type.MONUMENT) continue;
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

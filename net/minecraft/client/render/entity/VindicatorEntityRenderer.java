@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.IllagerEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
@@ -21,8 +21,8 @@ public class VindicatorEntityRenderer
 extends IllagerEntityRenderer<VindicatorEntity> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/illager/vindicator.png");
 
-    public VindicatorEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new IllagerEntityModel(arg.method_32167(EntityModelLayers.VINDICATOR)), 0.5f);
+    public VindicatorEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new IllagerEntityModel(context.getPart(EntityModelLayers.VINDICATOR)), 0.5f);
         this.addFeature(new HeldItemFeatureRenderer<VindicatorEntity, IllagerEntityModel<VindicatorEntity>>((FeatureRendererContext)this){
 
             @Override

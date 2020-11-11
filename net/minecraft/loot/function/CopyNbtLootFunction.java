@@ -4,7 +4,6 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -17,34 +16,28 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
-import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.loot.provider.nbt.LootNbtProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.util.JsonHelper;
 
 public class CopyNbtLootFunction
 extends ConditionalLootFunction {
-    private final Source source;
+    private final LootNbtProvider source;
     private final List<Operation> operations;
-    private static final Function<Entity, Tag> ENTITY_TAG_GETTER = NbtPredicate::entityToTag;
-    private static final Function<BlockEntity, Tag> BLOCK_ENTITY_TAG_GETTER = blockEntity -> blockEntity.toTag(new CompoundTag());
 
-    private CopyNbtLootFunction(LootCondition[] conditions, Source source, List<Operation> operations) {
+    private CopyNbtLootFunction(LootCondition[] conditions, LootNbtProvider source, List<Operation> operations) {
         super(conditions);
         this.source = source;
         this.operations = ImmutableList.copyOf(operations);
@@ -65,28 +58,20 @@ extends ConditionalLootFunction {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return ImmutableSet.of(this.source.parameter);
+        return this.source.method_32441();
     }
 
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
-        Tag tag = this.source.getter.apply(context);
+        Tag tag = this.source.method_32440(context);
         if (tag != null) {
             this.operations.forEach(operation -> operation.execute(stack::getOrCreateTag, tag));
         }
         return stack;
     }
 
-    public static Builder builder(Source source) {
+    public static Builder builder(LootNbtProvider source) {
         return new Builder(source);
-    }
-
-    static /* synthetic */ Function method_16851() {
-        return ENTITY_TAG_GETTER;
-    }
-
-    static /* synthetic */ Function method_16854() {
-        return BLOCK_ENTITY_TAG_GETTER;
     }
 
     public static class Serializer
@@ -94,7 +79,7 @@ extends ConditionalLootFunction {
         @Override
         public void toJson(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, copyNbtLootFunction, jsonSerializationContext);
-            jsonObject.addProperty("source", ((CopyNbtLootFunction)copyNbtLootFunction).source.name);
+            jsonObject.add("source", jsonSerializationContext.serialize(copyNbtLootFunction.source));
             JsonArray jsonArray = new JsonArray();
             copyNbtLootFunction.operations.stream().map(Operation::toJson).forEach(jsonArray::add);
             jsonObject.add("ops", jsonArray);
@@ -102,47 +87,19 @@ extends ConditionalLootFunction {
 
         @Override
         public CopyNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            Source source = Source.get(JsonHelper.getString(jsonObject, "source"));
+            LootNbtProvider lootNbtProvider = JsonHelper.deserialize(jsonObject, "source", jsonDeserializationContext, LootNbtProvider.class);
             ArrayList<Operation> list = Lists.newArrayList();
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "ops");
             for (JsonElement jsonElement : jsonArray) {
                 JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "op");
                 list.add(Operation.fromJson(jsonObject2));
             }
-            return new CopyNbtLootFunction(lootConditions, source, list);
+            return new CopyNbtLootFunction(lootConditions, lootNbtProvider, list);
         }
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
             return this.fromJson(json, context, conditions);
-        }
-    }
-
-    public static enum Source {
-        THIS("this", LootContextParameters.THIS_ENTITY, CopyNbtLootFunction.method_16851()),
-        KILLER("killer", LootContextParameters.KILLER_ENTITY, CopyNbtLootFunction.method_16851()),
-        KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER, CopyNbtLootFunction.method_16851()),
-        BLOCK_ENTITY("block_entity", LootContextParameters.BLOCK_ENTITY, CopyNbtLootFunction.method_16854());
-
-        public final String name;
-        public final LootContextParameter<?> parameter;
-        public final Function<LootContext, Tag> getter;
-
-        private <T> Source(String name, LootContextParameter<T> parameter, Function<? super T, Tag> operator) {
-            this.name = name;
-            this.parameter = parameter;
-            this.getter = context -> {
-                Object object = context.get(parameter);
-                return object != null ? (Tag)operator.apply((Object)object) : null;
-            };
-        }
-
-        public static Source get(String name) {
-            for (Source source : Source.values()) {
-                if (!source.name.equals(name)) continue;
-                return source;
-            }
-            throw new IllegalArgumentException("Invalid tag source " + name);
         }
     }
 
@@ -204,10 +161,10 @@ extends ConditionalLootFunction {
 
     public static class Builder
     extends ConditionalLootFunction.Builder<Builder> {
-        private final Source source;
+        private final LootNbtProvider source;
         private final List<Operation> operations = Lists.newArrayList();
 
-        private Builder(Source source) {
+        private Builder(LootNbtProvider source) {
             this.source = source;
         }
 

@@ -33,13 +33,13 @@ extends AbstractTeam {
     private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
     private Formatting color = Formatting.RESET;
     private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.ALWAYS;
-    private final Style field_24195;
+    private final Style nameStyle;
 
     public Team(Scoreboard scoreboard, String name) {
         this.scoreboard = scoreboard;
         this.name = name;
         this.displayName = new LiteralText(name);
-        this.field_24195 = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(name)));
+        this.nameStyle = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(name)));
     }
 
     @Override
@@ -52,7 +52,7 @@ extends AbstractTeam {
     }
 
     public MutableText getFormattedName() {
-        MutableText mutableText = Texts.bracketed(this.displayName.shallowCopy().fillStyle(this.field_24195));
+        MutableText mutableText = Texts.bracketed(this.displayName.shallowCopy().fillStyle(this.nameStyle));
         Formatting formatting = this.getColor();
         if (formatting != Formatting.RESET) {
             mutableText.formatted(formatting);
@@ -60,16 +60,16 @@ extends AbstractTeam {
         return mutableText;
     }
 
-    public void setDisplayName(Text text) {
-        if (text == null) {
+    public void setDisplayName(Text displayName) {
+        if (displayName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        this.displayName = text;
+        this.displayName = displayName;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
-    public void setPrefix(@Nullable Text text) {
-        this.prefix = text == null ? LiteralText.EMPTY : text;
+    public void setPrefix(@Nullable Text prefix) {
+        this.prefix = prefix == null ? LiteralText.EMPTY : prefix;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
@@ -77,8 +77,8 @@ extends AbstractTeam {
         return this.prefix;
     }
 
-    public void setSuffix(@Nullable Text text) {
-        this.suffix = text == null ? LiteralText.EMPTY : text;
+    public void setSuffix(@Nullable Text suffix) {
+        this.suffix = suffix == null ? LiteralText.EMPTY : suffix;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
@@ -92,8 +92,8 @@ extends AbstractTeam {
     }
 
     @Override
-    public MutableText modifyText(Text text) {
-        MutableText mutableText = new LiteralText("").append(this.prefix).append(text).append(this.suffix);
+    public MutableText decorateName(Text name) {
+        MutableText mutableText = new LiteralText("").append(this.prefix).append(name).append(this.suffix);
         Formatting formatting = this.getColor();
         if (formatting != Formatting.RESET) {
             mutableText.formatted(formatting);
@@ -101,11 +101,18 @@ extends AbstractTeam {
         return mutableText;
     }
 
-    public static MutableText modifyText(@Nullable AbstractTeam abstractTeam, Text text) {
-        if (abstractTeam == null) {
-            return text.shallowCopy();
+    /**
+     * Decorates the name of an entity with the prefix, suffix and color of the team.
+     * If the team is null, returns a copy of the name.
+     * 
+     * @param team the team, can be null
+     * @param name the name to be decorated
+     */
+    public static MutableText decorateName(@Nullable AbstractTeam team, Text name) {
+        if (team == null) {
+            return name.shallowCopy();
         }
-        return abstractTeam.modifyText(text);
+        return team.decorateName(name);
     }
 
     @Override
@@ -138,13 +145,13 @@ extends AbstractTeam {
         return this.deathMessageVisibilityRule;
     }
 
-    public void setNameTagVisibilityRule(AbstractTeam.VisibilityRule visibilityRule) {
-        this.nameTagVisibilityRule = visibilityRule;
+    public void setNameTagVisibilityRule(AbstractTeam.VisibilityRule nameTagVisibilityRule) {
+        this.nameTagVisibilityRule = nameTagVisibilityRule;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
-    public void setDeathMessageVisibilityRule(AbstractTeam.VisibilityRule visibilityRule) {
-        this.deathMessageVisibilityRule = visibilityRule;
+    public void setDeathMessageVisibilityRule(AbstractTeam.VisibilityRule deathMessageVisibilityRule) {
+        this.deathMessageVisibilityRule = deathMessageVisibilityRule;
         this.scoreboard.updateScoreboardTeam(this);
     }
 

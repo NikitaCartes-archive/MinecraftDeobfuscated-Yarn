@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EndermiteEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -19,8 +19,8 @@ public class EndermiteEntityRenderer
 extends MobEntityRenderer<EndermiteEntity, EndermiteEntityModel<EndermiteEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/endermite.png");
 
-    public EndermiteEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new EndermiteEntityModel(arg.method_32167(EntityModelLayers.ENDERMITE)), 0.3f);
+    public EndermiteEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new EndermiteEntityModel(context.getPart(EntityModelLayers.ENDERMITE)), 0.3f);
     }
 
     @Override

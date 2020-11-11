@@ -273,6 +273,10 @@ Nameable {
     }
 
     public void offerOrDrop(ItemStack itemStack) {
+        this.method_32338(itemStack, true);
+    }
+
+    public void method_32338(ItemStack itemStack, boolean bl) {
         while (!itemStack.isEmpty()) {
             int i = this.getOccupiedSlotWithRoomForStack(itemStack);
             if (i == -1) {
@@ -283,7 +287,7 @@ Nameable {
                 break;
             }
             int j = itemStack.getMaxCount() - this.getStack(i).getCount();
-            if (!this.insertStack(i, itemStack.split(j)) || !(this.player instanceof ServerPlayerEntity)) continue;
+            if (!this.insertStack(i, itemStack.split(j)) || !bl || !(this.player instanceof ServerPlayerEntity)) continue;
             ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, i, this.getStack(i)));
         }
     }

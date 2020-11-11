@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.ProjectileEntityRenderer;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.util.Identifier;
@@ -16,8 +16,8 @@ extends ProjectileEntityRenderer<ArrowEntity> {
     public static final Identifier TEXTURE = new Identifier("textures/entity/projectiles/arrow.png");
     public static final Identifier TIPPED_TEXTURE = new Identifier("textures/entity/projectiles/tipped_arrow.png");
 
-    public ArrowEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
+    public ArrowEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
     }
 
     @Override

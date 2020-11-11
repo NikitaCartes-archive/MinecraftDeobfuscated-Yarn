@@ -13,17 +13,16 @@ extends PersistentState {
     private final Object2IntMap<String> idCounts = new Object2IntOpenHashMap<String>();
 
     public IdCountsState() {
-        super("idcounts");
         this.idCounts.defaultReturnValue(-1);
     }
 
-    @Override
-    public void fromTag(CompoundTag tag) {
-        this.idCounts.clear();
-        for (String string : tag.getKeys()) {
-            if (!tag.contains(string, 99)) continue;
-            this.idCounts.put(string, tag.getInt(string));
+    public static IdCountsState method_32360(CompoundTag compoundTag) {
+        IdCountsState idCountsState = new IdCountsState();
+        for (String string : compoundTag.getKeys()) {
+            if (!compoundTag.contains(string, 99)) continue;
+            idCountsState.idCounts.put(string, compoundTag.getInt(string));
         }
+        return idCountsState;
     }
 
     @Override

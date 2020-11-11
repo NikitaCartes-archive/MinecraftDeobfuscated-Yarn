@@ -3,15 +3,19 @@
  */
 package net.minecraft.client.options;
 
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.DoubleOptionSliderWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -24,8 +28,9 @@ extends Option {
     private final Function<GameOptions, Double> getter;
     private final BiConsumer<GameOptions, Double> setter;
     private final BiFunction<GameOptions, DoubleOption, Text> displayStringGetter;
+    private final Function<MinecraftClient, List<OrderedText>> field_27958;
 
-    public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter) {
+    public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter, Function<MinecraftClient, List<OrderedText>> function) {
         super(key);
         this.min = min;
         this.max = max;
@@ -33,11 +38,17 @@ extends Option {
         this.getter = getter;
         this.setter = setter;
         this.displayStringGetter = displayStringGetter;
+        this.field_27958 = function;
+    }
+
+    public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter) {
+        this(key, min, max, step, getter, setter, displayStringGetter, client -> ImmutableList.of());
     }
 
     @Override
     public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
-        return new DoubleOptionSliderWidget(options, x, y, width, 20, this);
+        List<OrderedText> list = this.field_27958.apply(MinecraftClient.getInstance());
+        return new DoubleOptionSliderWidget(options, x, y, width, 20, this, list);
     }
 
     public double getRatio(double value) {

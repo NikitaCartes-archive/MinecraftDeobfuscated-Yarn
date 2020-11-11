@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.FoxHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -24,8 +24,8 @@ extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
     private static final Identifier SNOW_TEXTURE = new Identifier("textures/entity/fox/snow_fox.png");
     private static final Identifier SLEEPING_SNOW_TEXTURE = new Identifier("textures/entity/fox/snow_fox_sleep.png");
 
-    public FoxEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new FoxEntityModel(arg.method_32167(EntityModelLayers.FOX)), 0.4f);
+    public FoxEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new FoxEntityModel(context.getPart(EntityModelLayers.FOX)), 0.4f);
         this.addFeature(new FoxHeldItemFeatureRenderer(this));
     }
 

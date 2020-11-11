@@ -6,13 +6,13 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.entity.model.AnimalModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
@@ -28,25 +28,25 @@ extends AnimalModel<T> {
 
     protected QuadrupedEntityModel(ModelPart modelPart, boolean bl, float f, float g, float h, float i, int j) {
         super(bl, f, g, h, i, j);
-        this.head = modelPart.method_32086("head");
-        this.torso = modelPart.method_32086("body");
-        this.field_27476 = modelPart.method_32086("right_hind_leg");
-        this.field_27477 = modelPart.method_32086("left_hind_leg");
-        this.field_27478 = modelPart.method_32086("right_front_leg");
-        this.field_27479 = modelPart.method_32086("left_front_leg");
+        this.head = modelPart.getChild("head");
+        this.torso = modelPart.getChild("body");
+        this.field_27476 = modelPart.getChild("right_hind_leg");
+        this.field_27477 = modelPart.getChild("left_hind_leg");
+        this.field_27478 = modelPart.getChild("right_front_leg");
+        this.field_27479 = modelPart.getChild("left_front_leg");
     }
 
-    public static class_5609 method_32033(int i, class_5605 arg) {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32098(-4.0f, -4.0f, -8.0f, 8.0f, 8.0f, 8.0f, arg), class_5603.method_32090(0.0f, 18 - i, -6.0f));
-        lv2.method_32117("body", class_5606.method_32108().method_32101(28, 8).method_32098(-5.0f, -10.0f, -7.0f, 10.0f, 16.0f, 8.0f, arg), class_5603.method_32091(0.0f, 17 - i, 2.0f, 1.5707964f, 0.0f, 0.0f));
-        class_5606 lv3 = class_5606.method_32108().method_32101(0, 16).method_32098(-2.0f, 0.0f, -2.0f, 4.0f, i, 4.0f, arg);
-        lv2.method_32117("right_hind_leg", lv3, class_5603.method_32090(-3.0f, 24 - i, 7.0f));
-        lv2.method_32117("left_hind_leg", lv3, class_5603.method_32090(3.0f, 24 - i, 7.0f));
-        lv2.method_32117("right_front_leg", lv3, class_5603.method_32090(-3.0f, 24 - i, -5.0f));
-        lv2.method_32117("left_front_leg", lv3, class_5603.method_32090(3.0f, 24 - i, -5.0f));
-        return lv;
+    public static ModelData method_32033(int i, Dilation dilation) {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -4.0f, -8.0f, 8.0f, 8.0f, 8.0f, dilation), ModelTransform.pivot(0.0f, 18 - i, -6.0f));
+        modelPartData.addChild("body", ModelPartBuilder.create().uv(28, 8).cuboid(-5.0f, -10.0f, -7.0f, 10.0f, 16.0f, 8.0f, dilation), ModelTransform.of(0.0f, 17 - i, 2.0f, 1.5707964f, 0.0f, 0.0f));
+        ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 16).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, (float)i, 4.0f, dilation);
+        modelPartData.addChild("right_hind_leg", modelPartBuilder, ModelTransform.pivot(-3.0f, 24 - i, 7.0f));
+        modelPartData.addChild("left_hind_leg", modelPartBuilder, ModelTransform.pivot(3.0f, 24 - i, 7.0f));
+        modelPartData.addChild("right_front_leg", modelPartBuilder, ModelTransform.pivot(-3.0f, 24 - i, -5.0f));
+        modelPartData.addChild("left_front_leg", modelPartBuilder, ModelTransform.pivot(3.0f, 24 - i, -5.0f));
+        return modelData;
     }
 
     @Override

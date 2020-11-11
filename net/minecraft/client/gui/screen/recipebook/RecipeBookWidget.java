@@ -53,9 +53,9 @@ Element,
 RecipeDisplayListener,
 RecipeGridAligner<Ingredient> {
     protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
-    private static final Text field_25711 = new TranslatableText("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
-    private static final Text field_26593 = new TranslatableText("gui.recipebook.toggleRecipes.craftable");
-    private static final Text field_26594 = new TranslatableText("gui.recipebook.toggleRecipes.all");
+    private static final Text SEARCH_HINT_TEXT = new TranslatableText("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
+    private static final Text TOGGLE_CRAFTABLE_RECIPES_TEXT = new TranslatableText("gui.recipebook.toggleRecipes.craftable");
+    private static final Text TOGGLE_ALL_RECIPES_TEXT = new TranslatableText("gui.recipebook.toggleRecipes.all");
     private int leftOffset;
     private int parentWidth;
     private int parentHeight;
@@ -231,7 +231,7 @@ RecipeGridAligner<Ingredient> {
         int j = (this.parentHeight - 166) / 2;
         this.drawTexture(matrices, i, j, 1, 1, 147, 166);
         if (!this.searchField.isFocused() && this.searchField.getText().isEmpty()) {
-            RecipeBookWidget.drawTextWithShadow(matrices, this.client.textRenderer, field_25711, i + 25, j + 14, -1);
+            RecipeBookWidget.drawTextWithShadow(matrices, this.client.textRenderer, SEARCH_HINT_TEXT, i + 25, j + 14, -1);
         } else {
             this.searchField.render(matrices, mouseX, mouseY, delta);
         }
@@ -258,11 +258,11 @@ RecipeGridAligner<Ingredient> {
     }
 
     private Text getCraftableButtonText() {
-        return this.toggleCraftableButton.isToggled() ? this.getToggleCraftableButtonText() : field_26594;
+        return this.toggleCraftableButton.isToggled() ? this.getToggleCraftableButtonText() : TOGGLE_ALL_RECIPES_TEXT;
     }
 
     protected Text getToggleCraftableButtonText() {
-        return field_26593;
+        return TOGGLE_CRAFTABLE_RECIPES_TEXT;
     }
 
     private void drawGhostSlotTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {

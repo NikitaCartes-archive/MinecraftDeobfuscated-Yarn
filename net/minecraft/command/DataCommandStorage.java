@@ -18,23 +18,21 @@ public class DataCommandStorage {
         this.stateManager = stateManager;
     }
 
-    private PersistentState createStorage(String namespace, String saveKey) {
-        PersistentState persistentState = new PersistentState(saveKey);
+    private PersistentState createStorage(String namespace) {
+        PersistentState persistentState = new PersistentState();
         this.storages.put(namespace, persistentState);
         return persistentState;
     }
 
     public CompoundTag get(Identifier id) {
-        String string2;
         String string = id.getNamespace();
-        PersistentState persistentState = this.stateManager.get(() -> this.method_22549(string, string2 = DataCommandStorage.getSaveKey(string)), string2);
+        PersistentState persistentState = this.stateManager.get(compoundTag -> this.createStorage(string).method_32383(compoundTag), DataCommandStorage.getSaveKey(string));
         return persistentState != null ? persistentState.get(id.getPath()) : new CompoundTag();
     }
 
     public void set(Identifier id, CompoundTag tag) {
         String string = id.getNamespace();
-        String string2 = DataCommandStorage.getSaveKey(string);
-        this.stateManager.getOrCreate(() -> this.createStorage(string, string2), string2).set(id.getPath(), tag);
+        this.stateManager.getOrCreate(compoundTag -> this.createStorage(string).method_32383(compoundTag), () -> this.createStorage(string), DataCommandStorage.getSaveKey(string)).set(id.getPath(), tag);
     }
 
     public Stream<Identifier> getIds() {
@@ -45,24 +43,19 @@ public class DataCommandStorage {
         return "command_storage_" + namespace;
     }
 
-    private /* synthetic */ PersistentState method_22549(String string, String string2) {
-        return this.createStorage(string, string2);
-    }
-
     static class PersistentState
     extends net.minecraft.world.PersistentState {
         private final Map<String, CompoundTag> map = Maps.newHashMap();
 
-        public PersistentState(String string) {
-            super(string);
+        private PersistentState() {
         }
 
-        @Override
-        public void fromTag(CompoundTag tag) {
-            CompoundTag compoundTag = tag.getCompound("contents");
-            for (String string : compoundTag.getKeys()) {
-                this.map.put(string, compoundTag.getCompound(string));
+        private PersistentState method_32383(CompoundTag compoundTag) {
+            CompoundTag compoundTag2 = compoundTag.getCompound("contents");
+            for (String string : compoundTag2.getKeys()) {
+                this.map.put(string, compoundTag2.getCompound(string));
             }
+            return this;
         }
 
         @Override

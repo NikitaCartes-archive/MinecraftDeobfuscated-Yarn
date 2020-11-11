@@ -28,8 +28,8 @@ public class TeleportSpectatorMenu
 implements SpectatorMenuCommandGroup,
 SpectatorMenuCommand {
     private static final Ordering<PlayerListEntry> ORDERING = Ordering.from((playerListEntry, playerListEntry2) -> ComparisonChain.start().compare(playerListEntry.getProfile().getId(), playerListEntry2.getProfile().getId()).result());
-    private static final Text field_26616 = new TranslatableText("spectatorMenu.teleport");
-    private static final Text field_26617 = new TranslatableText("spectatorMenu.teleport.prompt");
+    private static final Text TELEPORT_TEXT = new TranslatableText("spectatorMenu.teleport");
+    private static final Text PROMPT_TEXT = new TranslatableText("spectatorMenu.teleport.prompt");
     private final List<SpectatorMenuCommand> elements = Lists.newArrayList();
 
     public TeleportSpectatorMenu() {
@@ -50,7 +50,7 @@ SpectatorMenuCommand {
 
     @Override
     public Text getPrompt() {
-        return field_26617;
+        return PROMPT_TEXT;
     }
 
     @Override
@@ -60,7 +60,7 @@ SpectatorMenuCommand {
 
     @Override
     public Text getName() {
-        return field_26616;
+        return TELEPORT_TEXT;
     }
 
     @Override

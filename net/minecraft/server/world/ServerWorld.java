@@ -194,7 +194,7 @@ implements StructureWorldAccess {
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
         this.getWorldBorder().setMaxWorldBorderRadius(server.getMaxWorldBorderRadius());
-        this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
+        this.raidManager = this.getPersistentStateManager().getOrCreate(compoundTag -> RaidManager.fromTag(this, compoundTag), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
         if (!server.isSinglePlayer()) {
             properties.setGameMode(server.getDefaultGameMode());
         }
@@ -417,12 +417,13 @@ implements StructureWorldAccess {
             if (biome.canSetIce(this, blockPos2)) {
                 this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
             }
-            if (bl && biome.canSetSnow(this, blockPos)) {
-                this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
-            }
-            if (bl && this.getBiome(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
+            if (bl) {
+                if (biome.canSetSnow(this, blockPos)) {
+                    this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
+                }
                 BlockState blockState = this.getBlockState(blockPos2);
-                blockState.getBlock().rainTick(blockState, this, blockPos2);
+                Biome.Precipitation precipitation = this.getBiome(blockPos2).getPrecipitation();
+                blockState.getBlock().precipitationTick(blockState, this, blockPos2, precipitation);
             }
         }
         profiler.swap("tickBlocks");
@@ -449,7 +450,7 @@ implements StructureWorldAccess {
     }
 
     private Optional<BlockPos> method_31418(BlockPos blockPos) {
-        Optional<BlockPos> optional = this.getPointOfInterestStorage().getNearestPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.LIGHTNING_ROD, blockPos, 64, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = this.getPointOfInterestStorage().getNearestPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.LIGHTNING_ROD, blockPos, 128, PointOfInterestStorage.OccupationStatus.ANY);
         if (optional.isPresent()) {
             BlockPos blockPos2 = optional.get();
             int i = this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX(), blockPos2.getZ()) - 1;
@@ -913,17 +914,17 @@ implements StructureWorldAccess {
     @Override
     @Nullable
     public MapState getMapState(String id) {
-        return this.getServer().getOverworld().getPersistentStateManager().get(() -> new MapState(id), id);
+        return this.getServer().getOverworld().getPersistentStateManager().get(MapState::method_32371, id);
     }
 
     @Override
-    public void putMapState(MapState mapState) {
-        this.getServer().getOverworld().getPersistentStateManager().set(mapState);
+    public void putMapState(String string, MapState mapState) {
+        this.getServer().getOverworld().getPersistentStateManager().set(string, mapState);
     }
 
     @Override
     public int getNextMapId() {
-        return this.getServer().getOverworld().getPersistentStateManager().getOrCreate(IdCountsState::new, "idcounts").getNextMapId();
+        return this.getServer().getOverworld().getPersistentStateManager().getOrCreate(IdCountsState::method_32360, IdCountsState::new, "idcounts").getNextMapId();
     }
 
     public void setSpawnPos(BlockPos pos, float angle) {
@@ -947,13 +948,13 @@ implements StructureWorldAccess {
     }
 
     public LongSet getForcedChunks() {
-        ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::new, "chunks");
+        ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::method_32350, "chunks");
         return forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET;
     }
 
     public boolean setChunkForced(int x, int z, boolean forced) {
         boolean bl;
-        ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::new, "chunks");
+        ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::method_32350, ForcedChunkState::new, "chunks");
         ChunkPos chunkPos = new ChunkPos(x, z);
         long l = chunkPos.toLong();
         if (forced) {

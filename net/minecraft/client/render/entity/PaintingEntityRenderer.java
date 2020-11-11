@@ -5,7 +5,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -13,6 +12,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
@@ -29,8 +29,8 @@ import net.minecraft.util.math.Matrix4f;
 @Environment(value=EnvType.CLIENT)
 public class PaintingEntityRenderer
 extends EntityRenderer<PaintingEntity> {
-    public PaintingEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
+    public PaintingEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
     }
 
     @Override

@@ -6,11 +6,11 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.class_5627;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class IntTag
 extends AbstractNumberTag {
@@ -86,8 +86,8 @@ extends AbstractNumberTag {
     }
 
     @Override
-    public void method_32289(class_5627 arg) {
-        arg.method_32297(this);
+    public void accept(NbtTagVisitor visitor) {
+        visitor.visitIntTag(this);
     }
 
     @Override

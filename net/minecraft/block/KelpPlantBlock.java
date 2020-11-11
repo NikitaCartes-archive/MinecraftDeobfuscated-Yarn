@@ -36,6 +36,11 @@ implements FluidFillable {
     }
 
     @Override
+    protected boolean canAttachTo(BlockState blockState) {
+        return this.getStem().canAttachTo(blockState);
+    }
+
+    @Override
     public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         return false;
     }

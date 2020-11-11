@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 public class AnvilScreen
 extends ForgingScreen<AnvilScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/anvil.png");
-    private static final Text field_26559 = new TranslatableText("container.repair.expensive");
+    private static final Text TOO_EXPENSIVE_TEXT = new TranslatableText("container.repair.expensive");
     private TextFieldWidget nameField;
 
     public AnvilScreen(AnvilScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -100,7 +100,7 @@ extends ForgingScreen<AnvilScreenHandler> {
             Text text;
             int j = 8453920;
             if (i >= 40 && !this.client.player.getAbilities().creativeMode) {
-                text = field_26559;
+                text = TOO_EXPENSIVE_TEXT;
                 j = 0xFF6060;
             } else if (!((AnvilScreenHandler)this.handler).getSlot(2).hasStack()) {
                 text = null;

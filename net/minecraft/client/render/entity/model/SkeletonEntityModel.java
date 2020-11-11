@@ -5,15 +5,15 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.CrossbowPosing;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -30,14 +30,14 @@ extends BipedEntityModel<T> {
         super(modelPart);
     }
 
-    public static class_5607 method_32047() {
-        class_5609 lv = BipedEntityModel.method_32011(class_5605.field_27715, 0.0f);
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("right_arm", class_5606.method_32108().method_32101(40, 16).method_32097(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f), class_5603.method_32090(-5.0f, 2.0f, 0.0f));
-        lv2.method_32117("left_arm", class_5606.method_32108().method_32101(40, 16).method_32096().method_32097(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f), class_5603.method_32090(5.0f, 2.0f, 0.0f));
-        lv2.method_32117("right_leg", class_5606.method_32108().method_32101(0, 16).method_32097(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f), class_5603.method_32090(-2.0f, 12.0f, 0.0f));
-        lv2.method_32117("left_leg", class_5606.method_32108().method_32101(0, 16).method_32096().method_32097(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f), class_5603.method_32090(2.0f, 12.0f, 0.0f));
-        return class_5607.method_32110(lv, 64, 32);
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0f);
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("right_arm", ModelPartBuilder.create().uv(40, 16).cuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f), ModelTransform.pivot(-5.0f, 2.0f, 0.0f));
+        modelPartData.addChild("left_arm", ModelPartBuilder.create().uv(40, 16).mirrored().cuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f), ModelTransform.pivot(5.0f, 2.0f, 0.0f));
+        modelPartData.addChild("right_leg", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f), ModelTransform.pivot(-2.0f, 12.0f, 0.0f));
+        modelPartData.addChild("left_leg", ModelPartBuilder.create().uv(0, 16).mirrored().cuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f), ModelTransform.pivot(2.0f, 12.0f, 0.0f));
+        return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override
@@ -63,14 +63,14 @@ extends BipedEntityModel<T> {
             float k = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
             float l = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
             this.rightArm.roll = 0.0f;
-            this.field_27433.roll = 0.0f;
+            this.leftArm.roll = 0.0f;
             this.rightArm.yaw = -(0.1f - k * 0.6f);
-            this.field_27433.yaw = 0.1f - k * 0.6f;
+            this.leftArm.yaw = 0.1f - k * 0.6f;
             this.rightArm.pitch = -1.5707964f;
-            this.field_27433.pitch = -1.5707964f;
+            this.leftArm.pitch = -1.5707964f;
             this.rightArm.pitch -= k * 1.2f - l * 0.4f;
-            this.field_27433.pitch -= k * 1.2f - l * 0.4f;
-            CrossbowPosing.method_29350(this.rightArm, this.field_27433, h);
+            this.leftArm.pitch -= k * 1.2f - l * 0.4f;
+            CrossbowPosing.method_29350(this.rightArm, this.leftArm, h);
         }
     }
 

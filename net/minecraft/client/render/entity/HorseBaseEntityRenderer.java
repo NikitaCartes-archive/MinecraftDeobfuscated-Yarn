@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,8 +16,8 @@ public abstract class HorseBaseEntityRenderer<T extends HorseBaseEntity, M exten
 extends MobEntityRenderer<T, M> {
     private final float scale;
 
-    public HorseBaseEntityRenderer(class_5617.class_5618 arg, M model, float scale) {
-        super(arg, model, 0.75f);
+    public HorseBaseEntityRenderer(EntityRendererFactory.Context ctx, M model, float scale) {
+        super(ctx, model, 0.75f);
         this.scale = scale;
     }
 

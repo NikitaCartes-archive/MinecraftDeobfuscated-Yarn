@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5630;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -235,8 +236,8 @@ extends AbstractDecorationEntity {
     }
 
     private void removeFromFrame(ItemStack map) {
-        if (map.isOf(Items.FILLED_MAP)) {
-            MapState mapState = FilledMapItem.getOrCreateMapState(map, this.world);
+        MapState mapState;
+        if (map.isOf(Items.FILLED_MAP) && (mapState = FilledMapItem.getOrCreateMapState(map, this.world)) != null) {
             mapState.removeFrame(this.attachmentPos, this.getEntityId());
             mapState.setDirty(true);
         }
@@ -267,12 +268,23 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public boolean equip(int slot, ItemStack item) {
-        if (slot == 0) {
-            this.setHeldItemStack(item);
-            return true;
+    public class_5630 method_32318(int i) {
+        if (i == 0) {
+            return new class_5630(){
+
+                @Override
+                public ItemStack method_32327() {
+                    return ItemFrameEntity.this.getHeldItemStack();
+                }
+
+                @Override
+                public boolean method_32332(ItemStack itemStack) {
+                    ItemFrameEntity.this.setHeldItemStack(itemStack);
+                    return true;
+                }
+            };
         }
-        return false;
+        return super.method_32318(i);
     }
 
     @Override

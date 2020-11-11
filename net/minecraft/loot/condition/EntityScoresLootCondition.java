@@ -13,13 +13,14 @@ import com.google.gson.JsonSerializationContext;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import net.minecraft.entity.Entity;
-import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.util.JsonHelper;
@@ -27,10 +28,10 @@ import net.minecraft.util.JsonSerializer;
 
 public class EntityScoresLootCondition
 implements LootCondition {
-    private final Map<String, UniformLootTableRange> scores;
+    private final Map<String, BoundedIntUnaryOperator> scores;
     private final LootContext.EntityTarget target;
 
-    private EntityScoresLootCondition(Map<String, UniformLootTableRange> scores, LootContext.EntityTarget target) {
+    private EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> scores, LootContext.EntityTarget target) {
         this.scores = ImmutableMap.copyOf(scores);
         this.target = target;
     }
@@ -42,7 +43,7 @@ implements LootCondition {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return ImmutableSet.of(this.target.getParameter());
+        return Stream.concat(Stream.of(this.target.getParameter()), this.scores.values().stream().flatMap(boundedIntUnaryOperator -> boundedIntUnaryOperator.method_32386().stream())).collect(ImmutableSet.toImmutableSet());
     }
 
     @Override
@@ -52,23 +53,23 @@ implements LootCondition {
             return false;
         }
         Scoreboard scoreboard = entity.world.getScoreboard();
-        for (Map.Entry<String, UniformLootTableRange> entry : this.scores.entrySet()) {
-            if (this.entityScoreIsInRange(entity, scoreboard, entry.getKey(), entry.getValue())) continue;
+        for (Map.Entry<String, BoundedIntUnaryOperator> entry : this.scores.entrySet()) {
+            if (this.entityScoreIsInRange(lootContext, entity, scoreboard, entry.getKey(), entry.getValue())) continue;
             return false;
         }
         return true;
     }
 
-    protected boolean entityScoreIsInRange(Entity entity, Scoreboard scoreboard, String objective, UniformLootTableRange scoreRange) {
-        ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objective);
+    protected boolean entityScoreIsInRange(LootContext lootContext, Entity entity, Scoreboard scoreboard, String string, BoundedIntUnaryOperator boundedIntUnaryOperator) {
+        ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
         if (scoreboardObjective == null) {
             return false;
         }
-        String string = entity.getEntityName();
-        if (!scoreboard.playerHasObjective(string, scoreboardObjective)) {
+        String string2 = entity.getEntityName();
+        if (!scoreboard.playerHasObjective(string2, scoreboardObjective)) {
             return false;
         }
-        return scoreRange.contains(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
+        return boundedIntUnaryOperator.method_32393(lootContext, scoreboard.getPlayerScore(string2, scoreboardObjective).getScore());
     }
 
     @Override
@@ -91,9 +92,9 @@ implements LootCondition {
         @Override
         public EntityScoresLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             Set<Map.Entry<String, JsonElement>> set = JsonHelper.getObject(jsonObject, "scores").entrySet();
-            LinkedHashMap<String, UniformLootTableRange> map = Maps.newLinkedHashMap();
+            LinkedHashMap<String, BoundedIntUnaryOperator> map = Maps.newLinkedHashMap();
             for (Map.Entry<String, JsonElement> entry : set) {
-                map.put(entry.getKey(), JsonHelper.deserialize(entry.getValue(), "score", jsonDeserializationContext, UniformLootTableRange.class));
+                map.put(entry.getKey(), JsonHelper.deserialize(entry.getValue(), "score", jsonDeserializationContext, BoundedIntUnaryOperator.class));
             }
             return new EntityScoresLootCondition(map, JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class));
         }

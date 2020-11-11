@@ -5,10 +5,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -22,9 +22,9 @@ public class FireworkEntityRenderer
 extends EntityRenderer<FireworkRocketEntity> {
     private final ItemRenderer itemRenderer;
 
-    public FireworkEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
-        this.itemRenderer = arg.method_32168();
+    public FireworkEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
+        this.itemRenderer = context.getItemRenderer();
     }
 
     @Override

@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
@@ -22,11 +22,11 @@ extends MobEntityRenderer<GiantEntity, BipedEntityModel<GiantEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/zombie/zombie.png");
     private final float scale;
 
-    public GiantEntityRenderer(class_5617.class_5618 arg, float f) {
-        super(arg, new GiantEntityModel(arg.method_32167(EntityModelLayers.GIANT)), 0.5f * f);
-        this.scale = f;
+    public GiantEntityRenderer(EntityRendererFactory.Context ctx, float scale) {
+        super(ctx, new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT)), 0.5f * scale);
+        this.scale = scale;
         this.addFeature(new HeldItemFeatureRenderer<GiantEntity, BipedEntityModel<GiantEntity>>(this));
-        this.addFeature(new ArmorFeatureRenderer<GiantEntity, BipedEntityModel<GiantEntity>, GiantEntityModel>(this, new GiantEntityModel(arg.method_32167(EntityModelLayers.GIANT_INNER_ARMOR)), new GiantEntityModel(arg.method_32167(EntityModelLayers.GIANT_OUTER_ARMOR))));
+        this.addFeature(new ArmorFeatureRenderer<GiantEntity, BipedEntityModel<GiantEntity>, GiantEntityModel>(this, new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_INNER_ARMOR)), new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_OUTER_ARMOR))));
     }
 
     @Override

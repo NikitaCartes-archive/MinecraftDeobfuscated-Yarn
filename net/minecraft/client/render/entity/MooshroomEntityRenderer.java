@@ -7,7 +7,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.MooshroomMushroomFeatureRenderer;
 import net.minecraft.client.render.entity.model.CowEntityModel;
@@ -24,8 +24,8 @@ extends MobEntityRenderer<MooshroomEntity, CowEntityModel<MooshroomEntity>> {
         hashMap.put(MooshroomEntity.Type.RED, new Identifier("textures/entity/cow/red_mooshroom.png"));
     });
 
-    public MooshroomEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new CowEntityModel(arg.method_32167(EntityModelLayers.MOOSHROOM)), 0.7f);
+    public MooshroomEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new CowEntityModel(context.getPart(EntityModelLayers.MOOSHROOM)), 0.7f);
         this.addFeature(new MooshroomMushroomFeatureRenderer<MooshroomEntity>(this));
     }
 

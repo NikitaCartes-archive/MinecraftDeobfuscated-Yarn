@@ -285,7 +285,7 @@ import org.jetbrains.annotations.Nullable;
 public class ClientPlayNetworkHandler
 implements ClientPlayPacketListener {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Text field_26620 = new TranslatableText("disconnect.lost");
+    private static final Text DISCONNECT_LOST_TEXT = new TranslatableText("disconnect.lost");
     private final ClientConnection connection;
     private final GameProfile profile;
     private final Screen loginScreen;
@@ -637,12 +637,12 @@ implements ClientPlayPacketListener {
         this.client.disconnect();
         if (this.loginScreen != null) {
             if (this.loginScreen instanceof RealmsScreen) {
-                this.client.openScreen(new DisconnectedRealmsScreen(this.loginScreen, field_26620, reason));
+                this.client.openScreen(new DisconnectedRealmsScreen(this.loginScreen, DISCONNECT_LOST_TEXT, reason));
             } else {
-                this.client.openScreen(new DisconnectedScreen(this.loginScreen, field_26620, reason));
+                this.client.openScreen(new DisconnectedScreen(this.loginScreen, DISCONNECT_LOST_TEXT, reason));
             }
         } else {
-            this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), field_26620, reason));
+            this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), DISCONNECT_LOST_TEXT, reason));
         }
     }
 
@@ -1088,18 +1088,18 @@ implements ClientPlayPacketListener {
     public void onMapUpdate(MapUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         MapRenderer mapRenderer = this.client.gameRenderer.getMapRenderer();
-        String string = FilledMapItem.getMapName(packet.getId());
+        int i = packet.getId();
+        String string = FilledMapItem.getMapName(i);
         MapState mapState = this.client.world.getMapState(string);
         if (mapState == null) {
-            MapState mapState2;
-            mapState = new MapState(string);
-            if (mapRenderer.getTexture(string) != null && (mapState2 = mapRenderer.getState(mapRenderer.getTexture(string))) != null) {
-                mapState = mapState2;
+            mapState = mapRenderer.method_32599(i);
+            if (mapState == null) {
+                mapState = MapState.method_32362(packet.method_32701(), packet.method_32702(), this.client.world.getRegistryKey());
             }
-            this.client.world.putMapState(mapState);
+            this.client.world.putMapState(string, mapState);
         }
         packet.apply(mapState);
-        mapRenderer.updateTexture(mapState);
+        mapRenderer.updateTexture(i, mapState);
     }
 
     @Override
@@ -1328,8 +1328,8 @@ implements ClientPlayPacketListener {
 
     @Override
     public void onPlayerListHeader(PlayerListHeaderS2CPacket packet) {
-        this.client.inGameHud.getPlayerListWidget().setHeader(packet.getHeader().getString().isEmpty() ? null : packet.getHeader());
-        this.client.inGameHud.getPlayerListWidget().setFooter(packet.getFooter().getString().isEmpty() ? null : packet.getFooter());
+        this.client.inGameHud.getPlayerListHud().setHeader(packet.getHeader().getString().isEmpty() ? null : packet.getHeader());
+        this.client.inGameHud.getPlayerListHud().setFooter(packet.getFooter().getString().isEmpty() ? null : packet.getFooter());
     }
 
     @Override

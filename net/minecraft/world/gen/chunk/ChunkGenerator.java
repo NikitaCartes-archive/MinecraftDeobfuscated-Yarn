@@ -63,7 +63,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ChunkGenerator {
     public static final Codec<ChunkGenerator> CODEC;
     /**
-     * Used to control the population step without replacing the actual biome that comes from the original {@link biomeSource}.
+     * Used to control the population step without replacing the actual biome that comes from the original {@link #biomeSource}.
      * 
      * <p>This is used by {@link FlatChunkGenerator} to overwrite biome properties like whether lakes generate, while preserving the original biome ID.
      */

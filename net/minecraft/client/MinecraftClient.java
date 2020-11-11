@@ -51,7 +51,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_5599;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -123,6 +122,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -314,8 +314,8 @@ WindowEventHandler {
     private final MinecraftClientGame game = new MinecraftClientGame(this);
     private final TutorialManager tutorialManager;
     private final SocialInteractionsManager socialInteractionsManager;
-    private final class_5599 field_27387;
-    private final BlockEntityRenderDispatcher field_27388;
+    private final EntityModelLoader entityModelLoader;
+    private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
     public static byte[] memoryReservedForCrash;
     @Nullable
     public ClientPlayerInteractionManager interactionManager;
@@ -466,14 +466,14 @@ WindowEventHandler {
         this.itemColors = ItemColors.create(this.blockColors);
         this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColors, this.options.mipmapLevels);
         this.resourceManager.registerListener(this.bakedModelManager);
-        this.field_27387 = new class_5599();
-        this.resourceManager.registerListener(this.field_27387);
-        this.field_27388 = new BlockEntityRenderDispatcher(this.textRenderer, this.field_27387, this::getBlockRenderManager);
-        this.resourceManager.registerListener(this.field_27388);
-        BuiltinModelItemRenderer builtinModelItemRenderer = new BuiltinModelItemRenderer(this.field_27388, this.field_27387);
+        this.entityModelLoader = new EntityModelLoader();
+        this.resourceManager.registerListener(this.entityModelLoader);
+        this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.textRenderer, this.entityModelLoader, this::getBlockRenderManager);
+        this.resourceManager.registerListener(this.blockEntityRenderDispatcher);
+        BuiltinModelItemRenderer builtinModelItemRenderer = new BuiltinModelItemRenderer(this.blockEntityRenderDispatcher, this.entityModelLoader);
         this.resourceManager.registerListener(builtinModelItemRenderer);
         this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
-        this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.textRenderer, this.options, this.field_27387);
+        this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.textRenderer, this.options, this.entityModelLoader);
         this.resourceManager.registerListener(this.entityRenderDispatcher);
         this.heldItemRenderer = new HeldItemRenderer(this);
         this.resourceManager.registerListener(this.itemRenderer);
@@ -749,8 +749,8 @@ WindowEventHandler {
                 LOGGER.debug("Missing translation for: {} {} {}", (Object)itemStack, (Object)string, (Object)itemStack.getItem());
             }
         }
-        bl |= HandledScreens.validateScreens();
-        if (bl |= EntityRenderers.method_32172()) {
+        bl |= HandledScreens.isMissingScreens();
+        if (bl |= EntityRenderers.isMissingRendererFactories()) {
             throw new IllegalStateException("Your game data is foobar, fix the errors above!");
         }
     }
@@ -1717,7 +1717,7 @@ WindowEventHandler {
     private void setWorld(@Nullable ClientWorld world) {
         this.worldRenderer.setWorld(world);
         this.particleManager.setWorld(world);
-        this.field_27388.setWorld(world);
+        this.blockEntityRenderDispatcher.setWorld(world);
         this.updateWindowTitle();
     }
 
@@ -2103,7 +2103,7 @@ WindowEventHandler {
     }
 
     public BlockEntityRenderDispatcher method_31975() {
-        return this.field_27388;
+        return this.blockEntityRenderDispatcher;
     }
 
     public ItemRenderer getItemRenderer() {
@@ -2240,8 +2240,8 @@ WindowEventHandler {
         this.bakedModelManager.resetMipmapLevels(mipmapLevels);
     }
 
-    public class_5599 method_31974() {
-        return this.field_27387;
+    public EntityModelLoader method_31974() {
+        return this.entityModelLoader;
     }
 
     static {

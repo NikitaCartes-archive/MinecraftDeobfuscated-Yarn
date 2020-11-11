@@ -22,7 +22,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -31,7 +30,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class PotionUtil {
-    private static final MutableText field_25817 = new TranslatableText("effect.none").formatted(Formatting.GRAY);
+    private static final Text field_25817 = new TranslatableText("effect.none").formatted(Formatting.GRAY);
 
     public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
         return PotionUtil.getPotionEffects(stack.getTag());

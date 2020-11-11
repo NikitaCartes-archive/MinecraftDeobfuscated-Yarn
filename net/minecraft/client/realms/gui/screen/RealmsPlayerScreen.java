@@ -45,10 +45,10 @@ extends RealmsScreen {
     private static final Identifier USER_ICON = new Identifier("realms", "textures/gui/realms/user_icon.png");
     private static final Identifier CROSS_PLAYER_ICON = new Identifier("realms", "textures/gui/realms/cross_player_icon.png");
     private static final Identifier OPTIONS_BACKGROUND = new Identifier("minecraft", "textures/gui/options_background.png");
-    private static final Text field_26498 = new TranslatableText("mco.configure.world.invites.normal.tooltip");
-    private static final Text field_26499 = new TranslatableText("mco.configure.world.invites.ops.tooltip");
-    private static final Text field_26500 = new TranslatableText("mco.configure.world.invites.remove.tooltip");
-    private static final Text field_26501 = new TranslatableText("mco.configure.world.invited");
+    private static final Text NORMAL_TOOLTIP = new TranslatableText("mco.configure.world.invites.normal.tooltip");
+    private static final Text OPERATOR_TOOLTIP = new TranslatableText("mco.configure.world.invites.ops.tooltip");
+    private static final Text REMOVE_TOOLTIP = new TranslatableText("mco.configure.world.invites.remove.tooltip");
+    private static final Text INVITED_TEXT = new TranslatableText("mco.configure.world.invited");
     private Text tooltipText;
     private final RealmsConfigureWorldScreen parent;
     private final RealmsServer serverData;
@@ -207,9 +207,9 @@ extends RealmsScreen {
         tessellator.draw();
         this.titleLabel.render(this, matrices);
         if (this.serverData != null && this.serverData.players != null) {
-            this.textRenderer.draw(matrices, new LiteralText("").append(field_26501).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"), (float)this.column1_x, (float)RealmsPlayerScreen.row(0), 0xA0A0A0);
+            this.textRenderer.draw(matrices, new LiteralText("").append(INVITED_TEXT).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"), (float)this.column1_x, (float)RealmsPlayerScreen.row(0), 0xA0A0A0);
         } else {
-            this.textRenderer.draw(matrices, field_26501, (float)this.column1_x, (float)RealmsPlayerScreen.row(0), 0xA0A0A0);
+            this.textRenderer.draw(matrices, INVITED_TEXT, (float)this.column1_x, (float)RealmsPlayerScreen.row(0), 0xA0A0A0);
         }
         super.render(matrices, mouseX, mouseY, delta);
         if (this.serverData == null) {
@@ -236,7 +236,7 @@ extends RealmsScreen {
         float f = bl ? 7.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, f, 8, 7, 8, 14);
         if (bl) {
-            this.tooltipText = field_26500;
+            this.tooltipText = REMOVE_TOOLTIP;
             this.operation = PlayerOperation.REMOVE;
         }
     }
@@ -248,7 +248,7 @@ extends RealmsScreen {
         float f = bl ? 8.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
-            this.tooltipText = field_26499;
+            this.tooltipText = OPERATOR_TOOLTIP;
             this.operation = PlayerOperation.TOGGLE_OP;
         }
     }
@@ -260,7 +260,7 @@ extends RealmsScreen {
         float f = bl ? 8.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
-            this.tooltipText = field_26498;
+            this.tooltipText = NORMAL_TOOLTIP;
             this.operation = PlayerOperation.TOGGLE_OP;
         }
     }

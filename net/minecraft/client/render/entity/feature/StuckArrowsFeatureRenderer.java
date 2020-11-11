@@ -5,9 +5,9 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.StuckObjectsFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -22,9 +22,9 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Player
 extends StuckObjectsFeatureRenderer<T, M> {
     private final EntityRenderDispatcher dispatcher;
 
-    public StuckArrowsFeatureRenderer(class_5617.class_5618 arg, LivingEntityRenderer<T, M> livingEntityRenderer) {
+    public StuckArrowsFeatureRenderer(EntityRendererFactory.Context context, LivingEntityRenderer<T, M> livingEntityRenderer) {
         super(livingEntityRenderer);
-        this.dispatcher = arg.method_32166();
+        this.dispatcher = context.getRenderDispatcher();
     }
 
     @Override

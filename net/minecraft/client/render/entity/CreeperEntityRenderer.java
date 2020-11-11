@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.CreeperChargeFeatureRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
@@ -21,9 +21,9 @@ public class CreeperEntityRenderer
 extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/creeper/creeper.png");
 
-    public CreeperEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new CreeperEntityModel(arg.method_32167(EntityModelLayers.CREEPER)), 0.5f);
-        this.addFeature(new CreeperChargeFeatureRenderer(this, arg.method_32170()));
+    public CreeperEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new CreeperEntityModel(context.getPart(EntityModelLayers.CREEPER)), 0.5f);
+        this.addFeature(new CreeperChargeFeatureRenderer(this, context.getModelLoader()));
     }
 
     @Override

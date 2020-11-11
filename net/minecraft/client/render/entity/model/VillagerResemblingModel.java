@@ -5,22 +5,22 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.client.render.entity.model.ModelWithHead;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class VillagerResemblingModel<T extends Entity>
-extends class_5597<T>
+extends SinglePartEntityModel<T>
 implements ModelWithHead,
 ModelWithHat {
     private final ModelPart field_27526;
@@ -33,32 +33,32 @@ ModelWithHat {
 
     public VillagerResemblingModel(ModelPart modelPart) {
         this.field_27526 = modelPart;
-        this.field_27527 = modelPart.method_32086("head");
-        this.field_27528 = this.field_27527.method_32086("hat");
-        this.field_27529 = this.field_27528.method_32086("hat_rim");
-        this.field_27525 = this.field_27527.method_32086("nose");
-        this.field_27530 = modelPart.method_32086("right_leg");
-        this.field_27531 = modelPart.method_32086("left_leg");
+        this.field_27527 = modelPart.getChild("head");
+        this.field_27528 = this.field_27527.getChild("hat");
+        this.field_27529 = this.field_27528.getChild("hat_rim");
+        this.field_27525 = this.field_27527.getChild("nose");
+        this.field_27530 = modelPart.getChild("right_leg");
+        this.field_27531 = modelPart.getChild("left_leg");
     }
 
-    public static class_5609 method_32064() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
+    public static ModelData getModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
         float f = 0.5f;
-        class_5610 lv3 = lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32097(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f), class_5603.field_27701);
-        class_5610 lv4 = lv3.method_32117("hat", class_5606.method_32108().method_32101(32, 0).method_32098(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, new class_5605(0.5f)), class_5603.field_27701);
-        lv4.method_32117("hat_rim", class_5606.method_32108().method_32101(30, 47).method_32097(-8.0f, -8.0f, -6.0f, 16.0f, 16.0f, 1.0f), class_5603.method_32092(-1.5707964f, 0.0f, 0.0f));
-        lv3.method_32117("nose", class_5606.method_32108().method_32101(24, 0).method_32097(-1.0f, -1.0f, -6.0f, 2.0f, 4.0f, 2.0f), class_5603.method_32090(0.0f, -2.0f, 0.0f));
-        class_5610 lv5 = lv2.method_32117("body", class_5606.method_32108().method_32101(16, 20).method_32097(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f), class_5603.field_27701);
-        lv5.method_32117("jacket", class_5606.method_32108().method_32101(0, 38).method_32098(-4.0f, 0.0f, -3.0f, 8.0f, 18.0f, 6.0f, new class_5605(0.5f)), class_5603.field_27701);
-        lv2.method_32117("arms", class_5606.method_32108().method_32101(44, 22).method_32097(-8.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f).method_32101(44, 22).method_32100(4.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f, true).method_32101(40, 38).method_32097(-4.0f, 2.0f, -2.0f, 8.0f, 4.0f, 4.0f), class_5603.method_32091(0.0f, 3.0f, -1.0f, -0.75f, 0.0f, 0.0f));
-        lv2.method_32117("right_leg", class_5606.method_32108().method_32101(0, 22).method_32097(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f), class_5603.method_32090(-2.0f, 12.0f, 0.0f));
-        lv2.method_32117("left_leg", class_5606.method_32108().method_32101(0, 22).method_32096().method_32097(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f), class_5603.method_32090(2.0f, 12.0f, 0.0f));
-        return lv;
+        ModelPartData modelPartData2 = modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f), ModelTransform.NONE);
+        ModelPartData modelPartData3 = modelPartData2.addChild("hat", ModelPartBuilder.create().uv(32, 0).cuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, new Dilation(0.5f)), ModelTransform.NONE);
+        modelPartData3.addChild("hat_rim", ModelPartBuilder.create().uv(30, 47).cuboid(-8.0f, -8.0f, -6.0f, 16.0f, 16.0f, 1.0f), ModelTransform.rotation(-1.5707964f, 0.0f, 0.0f));
+        modelPartData2.addChild("nose", ModelPartBuilder.create().uv(24, 0).cuboid(-1.0f, -1.0f, -6.0f, 2.0f, 4.0f, 2.0f), ModelTransform.pivot(0.0f, -2.0f, 0.0f));
+        ModelPartData modelPartData4 = modelPartData.addChild("body", ModelPartBuilder.create().uv(16, 20).cuboid(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f), ModelTransform.NONE);
+        modelPartData4.addChild("jacket", ModelPartBuilder.create().uv(0, 38).cuboid(-4.0f, 0.0f, -3.0f, 8.0f, 18.0f, 6.0f, new Dilation(0.5f)), ModelTransform.NONE);
+        modelPartData.addChild("arms", ModelPartBuilder.create().uv(44, 22).cuboid(-8.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f).uv(44, 22).cuboid(4.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f, true).uv(40, 38).cuboid(-4.0f, 2.0f, -2.0f, 8.0f, 4.0f, 4.0f), ModelTransform.of(0.0f, 3.0f, -1.0f, -0.75f, 0.0f, 0.0f));
+        modelPartData.addChild("right_leg", ModelPartBuilder.create().uv(0, 22).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f), ModelTransform.pivot(-2.0f, 12.0f, 0.0f));
+        modelPartData.addChild("left_leg", ModelPartBuilder.create().uv(0, 22).mirrored().cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f), ModelTransform.pivot(2.0f, 12.0f, 0.0f));
+        return modelData;
     }
 
     @Override
-    public ModelPart method_32008() {
+    public ModelPart getPart() {
         return this.field_27526;
     }
 

@@ -63,7 +63,8 @@ extends Screen {
         this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.options"), buttonWidget -> this.client.openScreen(new OptionsScreen(this, this.client.options))));
         ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.shareToLan"), buttonWidget -> this.client.openScreen(new OpenToLanScreen(this))));
         buttonWidget2.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
-        ButtonWidget buttonWidget22 = this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, new TranslatableText("menu.returnToMenu"), buttonWidget -> {
+        TranslatableText text = this.client.isInSingleplayer() ? new TranslatableText("menu.returnToMenu") : new TranslatableText("menu.disconnect");
+        this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, text, buttonWidget -> {
             boolean bl = this.client.isInSingleplayer();
             boolean bl2 = this.client.isConnectedToRealms();
             buttonWidget.active = false;
@@ -82,9 +83,6 @@ extends Screen {
                 this.client.openScreen(new MultiplayerScreen(new TitleScreen()));
             }
         }));
-        if (!this.client.isInSingleplayer()) {
-            buttonWidget22.setMessage(new TranslatableText("menu.disconnect"));
-        }
     }
 
     @Override

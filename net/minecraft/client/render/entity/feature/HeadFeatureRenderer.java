@@ -10,7 +10,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_5599;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -19,6 +18,7 @@ import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
@@ -38,21 +38,21 @@ import org.apache.commons.lang3.StringUtils;
 @Environment(value=EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M> {
-    private final float field_24474;
-    private final float field_24475;
-    private final float field_24476;
-    private final Map<SkullBlock.SkullType, SkullBlockEntityModel> field_27771;
+    private final float scaleX;
+    private final float scaleY;
+    private final float scaleZ;
+    private final Map<SkullBlock.SkullType, SkullBlockEntityModel> headModels;
 
-    public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, class_5599 arg) {
-        this(featureRendererContext, arg, 1.0f, 1.0f, 1.0f);
+    public HeadFeatureRenderer(FeatureRendererContext<T, M> ctx, EntityModelLoader modelLoader) {
+        this(ctx, modelLoader, 1.0f, 1.0f, 1.0f);
     }
 
-    public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, class_5599 arg, float f, float g, float h) {
-        super(featureRendererContext);
-        this.field_24474 = f;
-        this.field_24475 = g;
-        this.field_24476 = h;
-        this.field_27771 = SkullBlockEntityRenderer.method_32160(arg);
+    public HeadFeatureRenderer(FeatureRendererContext<T, M> ctx, EntityModelLoader modelLoader, float scaleX, float scaleY, float scaleZ) {
+        super(ctx);
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
+        this.scaleZ = scaleZ;
+        this.headModels = SkullBlockEntityRenderer.getModels(modelLoader);
     }
 
     @Override
@@ -65,7 +65,7 @@ extends FeatureRenderer<T, M> {
         }
         Item item = itemStack.getItem();
         matrixStack.push();
-        matrixStack.scale(this.field_24474, this.field_24475, this.field_24476);
+        matrixStack.scale(this.scaleX, this.scaleY, this.scaleZ);
         boolean bl2 = bl = livingEntity instanceof VillagerEntity || livingEntity instanceof ZombieVillagerEntity;
         if (((LivingEntity)livingEntity).isBaby() && !(livingEntity instanceof VillagerEntity)) {
             m = 2.0f;
@@ -94,7 +94,7 @@ extends FeatureRenderer<T, M> {
             }
             matrixStack.translate(-0.5, 0.0, -0.5);
             SkullBlock.SkullType skullType = ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType();
-            SkullBlockEntityModel skullBlockEntityModel = this.field_27771.get(skullType);
+            SkullBlockEntityModel skullBlockEntityModel = this.headModels.get(skullType);
             RenderLayer renderLayer = SkullBlockEntityRenderer.method_3578(skullType, gameProfile);
             SkullBlockEntityRenderer.method_32161(null, 180.0f, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
         } else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {

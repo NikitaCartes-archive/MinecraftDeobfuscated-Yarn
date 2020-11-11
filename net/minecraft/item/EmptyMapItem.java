@@ -22,20 +22,23 @@ extends NetworkSyncedItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = FilledMapItem.createMap(world, user.getBlockX(), user.getBlockZ(), (byte)0, true, false);
-        ItemStack itemStack2 = user.getStackInHand(hand);
+        ItemStack itemStack = user.getStackInHand(hand);
+        if (world.isClient) {
+            return TypedActionResult.success(itemStack);
+        }
         if (!user.getAbilities().creativeMode) {
-            itemStack2.decrement(1);
+            itemStack.decrement(1);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         user.playSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1.0f, 1.0f);
-        if (itemStack2.isEmpty()) {
-            return TypedActionResult.success(itemStack, world.isClient());
+        ItemStack itemStack2 = FilledMapItem.createMap(world, user.getBlockX(), user.getBlockZ(), (byte)0, true, false);
+        if (itemStack.isEmpty()) {
+            return TypedActionResult.consume(itemStack2);
         }
-        if (!user.getInventory().insertStack(itemStack.copy())) {
-            user.dropItem(itemStack, false);
+        if (!user.getInventory().insertStack(itemStack2.copy())) {
+            user.dropItem(itemStack2, false);
         }
-        return TypedActionResult.success(itemStack2, world.isClient());
+        return TypedActionResult.consume(itemStack);
     }
 }
 

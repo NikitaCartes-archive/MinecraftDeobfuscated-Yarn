@@ -34,7 +34,6 @@ import net.minecraft.world.WorldAccess;
 public class EndermiteEntity
 extends HostileEntity {
     private int lifeTime;
-    private boolean playerSpawned;
 
     public EndermiteEntity(EntityType<? extends EndermiteEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
@@ -90,14 +89,12 @@ extends HostileEntity {
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         this.lifeTime = tag.getInt("Lifetime");
-        this.playerSpawned = tag.getBoolean("PlayerSpawned");
     }
 
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
         tag.putInt("Lifetime", this.lifeTime);
-        tag.putBoolean("PlayerSpawned", this.playerSpawned);
     }
 
     @Override
@@ -115,17 +112,6 @@ extends HostileEntity {
     @Override
     public double getHeightOffset() {
         return 0.1;
-    }
-
-    /**
-     * Returns whether this endermite was spawned from an ender pearl thrown by a player.
-     */
-    public boolean isPlayerSpawned() {
-        return this.playerSpawned;
-    }
-
-    public void setPlayerSpawned(boolean playerSpawned) {
-        this.playerSpawned = playerSpawned;
     }
 
     @Override

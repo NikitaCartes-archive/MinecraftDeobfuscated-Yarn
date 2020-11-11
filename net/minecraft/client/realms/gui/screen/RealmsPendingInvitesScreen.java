@@ -40,9 +40,9 @@ extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Identifier ACCEPT_ICON = new Identifier("realms", "textures/gui/realms/accept_icon.png");
     private static final Identifier REJECT_ICON = new Identifier("realms", "textures/gui/realms/reject_icon.png");
-    private static final Text field_26493 = new TranslatableText("mco.invites.nopending");
-    private static final Text field_26494 = new TranslatableText("mco.invites.button.accept");
-    private static final Text field_26495 = new TranslatableText("mco.invites.button.reject");
+    private static final Text NO_PENDING_TEXT = new TranslatableText("mco.invites.nopending");
+    private static final Text ACCEPT_TEXT = new TranslatableText("mco.invites.button.accept");
+    private static final Text REJECT_TEXT = new TranslatableText("mco.invites.button.reject");
     private final Screen parent;
     @Nullable
     private Text toolTip;
@@ -157,7 +157,7 @@ extends RealmsScreen {
             this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
         }
         if (this.pendingInvitationSelectionList.getItemCount() == 0 && this.loaded) {
-            RealmsPendingInvitesScreen.drawCenteredText(matrices, this.textRenderer, field_26493, this.width / 2, this.height / 2 - 20, 0xFFFFFF);
+            RealmsPendingInvitesScreen.drawCenteredText(matrices, this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -230,7 +230,7 @@ extends RealmsScreen {
                 float f = bl ? 19.0f : 0.0f;
                 DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0f, 18, 18, 37, 18);
                 if (bl) {
-                    RealmsPendingInvitesScreen.this.toolTip = field_26495;
+                    RealmsPendingInvitesScreen.this.toolTip = REJECT_TEXT;
                 }
             }
 
@@ -254,7 +254,7 @@ extends RealmsScreen {
                 float f = bl ? 19.0f : 0.0f;
                 DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0f, 18, 18, 37, 18);
                 if (bl) {
-                    RealmsPendingInvitesScreen.this.toolTip = field_26494;
+                    RealmsPendingInvitesScreen.this.toolTip = ACCEPT_TEXT;
                 }
             }
 

@@ -29,8 +29,8 @@ import net.minecraft.util.Identifier;
 public class GameModeSelectionScreen
 extends Screen {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
-    private static final int UI_WIDTH = GameMode.values().length * 30 - 5;
-    private static final Text field_25454 = new TranslatableText("debug.gamemodes.select_next", new TranslatableText("debug.gamemodes.press_f4").formatted(Formatting.AQUA));
+    private static final int UI_WIDTH = GameMode.values().length * 31 - 5;
+    private static final Text SELECT_NEXT_TEXT = new TranslatableText("debug.gamemodes.select_next", new TranslatableText("debug.gamemodes.press_f4").formatted(Formatting.AQUA));
     private final Optional<GameMode> currentGameMode;
     private Optional<GameMode> gameMode = Optional.empty();
     private int lastMouseX;
@@ -58,7 +58,7 @@ extends Screen {
         this.gameMode = this.currentGameMode.isPresent() ? this.currentGameMode : GameMode.of(this.client.interactionManager.getCurrentGameMode());
         for (int i = 0; i < GameMode.VALUES.length; ++i) {
             GameMode gameMode = GameMode.VALUES[i];
-            this.gameModeButtons.add(new ButtonWidget(gameMode, this.width / 2 - UI_WIDTH / 2 + i * 30, this.height / 2 - 30));
+            this.gameModeButtons.add(new ButtonWidget(gameMode, this.width / 2 - UI_WIDTH / 2 + i * 31, this.height / 2 - 31));
         }
     }
 
@@ -71,12 +71,12 @@ extends Screen {
         RenderSystem.enableBlend();
         this.client.getTextureManager().bindTexture(TEXTURE);
         int i = this.width / 2 - 62;
-        int j = this.height / 2 - 30 - 27;
+        int j = this.height / 2 - 31 - 27;
         GameModeSelectionScreen.drawTexture(matrices, i, j, 0.0f, 0.0f, 125, 75, 128, 128);
         matrices.pop();
         super.render(matrices, mouseX, mouseY, delta);
-        this.gameMode.ifPresent(gameMode -> GameModeSelectionScreen.drawCenteredText(matrices, this.textRenderer, ((GameMode)gameMode).getText(), this.width / 2, this.height / 2 - 30 - 20, -1));
-        GameModeSelectionScreen.drawCenteredText(matrices, this.textRenderer, field_25454, this.width / 2, this.height / 2 + 5, 0xFFFFFF);
+        this.gameMode.ifPresent(gameMode -> GameModeSelectionScreen.drawCenteredText(matrices, this.textRenderer, ((GameMode)gameMode).getText(), this.width / 2, this.height / 2 - 31 - 20, -1));
+        GameModeSelectionScreen.drawCenteredText(matrices, this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 0xFFFFFF);
         if (!this.mouseUsedForSelection) {
             this.lastMouseX = mouseX;
             this.lastMouseY = mouseY;
@@ -137,7 +137,7 @@ extends Screen {
         private boolean selected;
 
         public ButtonWidget(GameMode gameMode, int x, int y) {
-            super(x, y, 25, 25, gameMode.getText());
+            super(x, y, 26, 26, gameMode.getText());
             this.gameMode = gameMode;
         }
 
@@ -165,7 +165,7 @@ extends Screen {
             textureManager.bindTexture(TEXTURE);
             matrices.push();
             matrices.translate(this.x, this.y, 0.0);
-            ButtonWidget.drawTexture(matrices, 0, 0, 0.0f, 75.0f, 25, 25, 128, 128);
+            ButtonWidget.drawTexture(matrices, 0, 0, 0.0f, 75.0f, 26, 26, 128, 128);
             matrices.pop();
         }
 
@@ -173,7 +173,7 @@ extends Screen {
             textureManager.bindTexture(TEXTURE);
             matrices.push();
             matrices.translate(this.x, this.y, 0.0);
-            ButtonWidget.drawTexture(matrices, 0, 0, 25.0f, 75.0f, 25, 25, 128, 128);
+            ButtonWidget.drawTexture(matrices, 0, 0, 26.0f, 75.0f, 26, 26, 128, 128);
             matrices.pop();
         }
     }

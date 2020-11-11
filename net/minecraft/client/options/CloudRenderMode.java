@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public enum CloudRenderMode {
@@ -30,10 +29,6 @@ public enum CloudRenderMode {
 
     public String getTranslationKey() {
         return this.translationKey;
-    }
-
-    public static CloudRenderMode byId(int id) {
-        return VALUES[MathHelper.floorMod(id, VALUES.length)];
     }
 
     static {

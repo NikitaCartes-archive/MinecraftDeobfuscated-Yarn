@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.SheepWoolFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -18,9 +18,9 @@ public class SheepEntityRenderer
 extends MobEntityRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/sheep/sheep.png");
 
-    public SheepEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new SheepEntityModel(arg.method_32167(EntityModelLayers.SHEEP)), 0.7f);
-        this.addFeature(new SheepWoolFeatureRenderer(this, arg.method_32170()));
+    public SheepEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new SheepEntityModel(context.getPart(EntityModelLayers.SHEEP)), 0.7f);
+        this.addFeature(new SheepWoolFeatureRenderer(this, context.getModelLoader()));
     }
 
     @Override

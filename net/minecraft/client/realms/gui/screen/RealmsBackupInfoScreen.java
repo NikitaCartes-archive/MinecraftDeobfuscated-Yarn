@@ -23,6 +23,7 @@ import net.minecraft.text.Text;
 @Environment(value=EnvType.CLIENT)
 public class RealmsBackupInfoScreen
 extends RealmsScreen {
+    private static final Text field_27937 = new LiteralText("UNKNOWN");
     private final Screen parent;
     private final Backup backup;
     private BackupInfoList backupInfoList;
@@ -80,17 +81,17 @@ extends RealmsScreen {
 
     private Text gameDifficultyMetadata(String value) {
         try {
-            return RealmsSlotOptionsScreen.DIFFICULTIES[Integer.parseInt(value)];
+            return RealmsSlotOptionsScreen.DIFFICULTIES.get(Integer.parseInt(value)).getTranslatableName();
         } catch (Exception exception) {
-            return new LiteralText("UNKNOWN");
+            return field_27937;
         }
     }
 
     private Text gameModeMetadata(String value) {
         try {
-            return RealmsSlotOptionsScreen.GAME_MODES[Integer.parseInt(value)];
+            return RealmsSlotOptionsScreen.GAME_MODES.get(Integer.parseInt(value)).getName();
         } catch (Exception exception) {
-            return new LiteralText("UNKNOWN");
+            return field_27937;
         }
     }
 

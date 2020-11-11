@@ -404,7 +404,7 @@ extends AnimalEntity {
 
     @Override
     public boolean canEquip(ItemStack stack) {
-        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+        EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
         if (!this.getEquippedStack(equipmentSlot).isEmpty()) {
             return false;
         }

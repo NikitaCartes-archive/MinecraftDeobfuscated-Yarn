@@ -160,7 +160,6 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public int getCraftingSlotCount() {
         return 10;
     }
@@ -169,6 +168,11 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     @Environment(value=EnvType.CLIENT)
     public RecipeBookCategory getCategory() {
         return RecipeBookCategory.CRAFTING;
+    }
+
+    @Override
+    public boolean method_32339(int i) {
+        return i != this.getCraftingResultSlotIndex();
     }
 }
 

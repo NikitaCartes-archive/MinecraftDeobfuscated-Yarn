@@ -6,7 +6,7 @@ package net.minecraft.client.render.entity;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.CatCollarFeatureRenderer;
 import net.minecraft.client.render.entity.model.CatEntityModel;
@@ -23,9 +23,9 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class CatEntityRenderer
 extends MobEntityRenderer<CatEntity, CatEntityModel<CatEntity>> {
-    public CatEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new CatEntityModel(arg.method_32167(EntityModelLayers.CAT)), 0.4f);
-        this.addFeature(new CatCollarFeatureRenderer(this, arg.method_32170()));
+    public CatEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new CatEntityModel(context.getPart(EntityModelLayers.CAT)), 0.4f);
+        this.addFeature(new CatCollarFeatureRenderer(this, context.getModelLoader()));
     }
 
     @Override

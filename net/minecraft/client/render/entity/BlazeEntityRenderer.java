@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.BlazeEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -18,8 +18,8 @@ public class BlazeEntityRenderer
 extends MobEntityRenderer<BlazeEntity, BlazeEntityModel<BlazeEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/blaze.png");
 
-    public BlazeEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new BlazeEntityModel(arg.method_32167(EntityModelLayers.BLAZE)), 0.5f);
+    public BlazeEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new BlazeEntityModel(context.getPart(EntityModelLayers.BLAZE)), 0.5f);
     }
 
     @Override

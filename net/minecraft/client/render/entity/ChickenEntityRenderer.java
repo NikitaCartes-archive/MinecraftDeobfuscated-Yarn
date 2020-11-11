@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.ChickenEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -18,8 +18,8 @@ public class ChickenEntityRenderer
 extends MobEntityRenderer<ChickenEntity, ChickenEntityModel<ChickenEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/chicken.png");
 
-    public ChickenEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new ChickenEntityModel(arg.method_32167(EntityModelLayers.CHICKEN)), 0.3f);
+    public ChickenEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new ChickenEntityModel(context.getPart(EntityModelLayers.CHICKEN)), 0.3f);
     }
 
     @Override

@@ -19,7 +19,7 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public class RealmsParentalConsentScreen
 extends RealmsScreen {
-    private static final Text field_26491 = new TranslatableText("mco.account.privacyinfo");
+    private static final Text PRIVACY_INFO_TEXT = new TranslatableText("mco.account.privacyinfo");
     private final Screen parent;
     private class_5489 field_26492 = class_5489.field_26528;
 
@@ -29,7 +29,7 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        Realms.narrateNow(field_26491.getString());
+        Realms.narrateNow(PRIVACY_INFO_TEXT.getString());
         TranslatableText text = new TranslatableText("mco.account.update");
         Text text2 = ScreenTexts.BACK;
         int i = Math.max(this.textRenderer.getWidth(text), this.textRenderer.getWidth(text2)) + 30;
@@ -38,7 +38,7 @@ extends RealmsScreen {
         this.addButton(new ButtonWidget(this.width / 2 - j / 2, RealmsParentalConsentScreen.row(11), j, 20, text3, buttonWidget -> Util.getOperatingSystem().open("https://aka.ms/MinecraftGDPR")));
         this.addButton(new ButtonWidget(this.width / 2 - (i + 5), RealmsParentalConsentScreen.row(13), i, 20, text, buttonWidget -> Util.getOperatingSystem().open("https://aka.ms/UpdateMojangAccount")));
         this.addButton(new ButtonWidget(this.width / 2 + 5, RealmsParentalConsentScreen.row(13), i, 20, text2, buttonWidget -> this.client.openScreen(this.parent)));
-        this.field_26492 = class_5489.method_30890(this.textRenderer, field_26491, (int)Math.round((double)this.width * 0.9));
+        this.field_26492 = class_5489.method_30890(this.textRenderer, PRIVACY_INFO_TEXT, (int)Math.round((double)this.width * 0.9));
     }
 
     @Override

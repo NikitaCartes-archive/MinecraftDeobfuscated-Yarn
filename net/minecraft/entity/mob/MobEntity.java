@@ -12,8 +12,6 @@ import java.util.Random;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.AbstractSkullBlock;
-import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -492,7 +490,7 @@ extends LivingEntity {
     }
 
     public boolean tryEquip(ItemStack equipment) {
-        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(equipment);
+        EquipmentSlot equipmentSlot = MobEntity.method_32326(equipment);
         ItemStack itemStack = this.getEquippedStack(equipmentSlot);
         boolean bl = this.prefersNewEquipment(equipment, itemStack);
         if (bl && this.canPickupItem(equipment)) {
@@ -845,23 +843,6 @@ extends LivingEntity {
         }
     }
 
-    public static EquipmentSlot getPreferredEquipmentSlot(ItemStack stack) {
-        Item item = stack.getItem();
-        if (stack.isOf(Blocks.CARVED_PUMPKIN.asItem()) || item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
-            return EquipmentSlot.HEAD;
-        }
-        if (item instanceof ArmorItem) {
-            return ((ArmorItem)item).getSlotType();
-        }
-        if (stack.isOf(Items.ELYTRA)) {
-            return EquipmentSlot.CHEST;
-        }
-        if (stack.isOf(Items.SHIELD)) {
-            return EquipmentSlot.OFFHAND;
-        }
-        return EquipmentSlot.MAINHAND;
-    }
-
     @Nullable
     public static Item getEquipmentForSlot(EquipmentSlot equipmentSlot, int equipmentLevel) {
         switch (equipmentSlot) {
@@ -999,7 +980,7 @@ extends LivingEntity {
 
     @Override
     public boolean canEquip(ItemStack stack) {
-        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+        EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
         return this.getEquippedStack(equipmentSlot).isEmpty() && this.canPickUpLoot();
     }
 
@@ -1219,38 +1200,8 @@ extends LivingEntity {
     }
 
     @Override
-    public boolean equip(int slot, ItemStack item) {
-        EquipmentSlot equipmentSlot;
-        if (slot == 98) {
-            equipmentSlot = EquipmentSlot.MAINHAND;
-        } else if (slot == 99) {
-            equipmentSlot = EquipmentSlot.OFFHAND;
-        } else if (slot == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
-            equipmentSlot = EquipmentSlot.HEAD;
-        } else if (slot == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
-            equipmentSlot = EquipmentSlot.CHEST;
-        } else if (slot == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
-            equipmentSlot = EquipmentSlot.LEGS;
-        } else if (slot == 100 + EquipmentSlot.FEET.getEntitySlotId()) {
-            equipmentSlot = EquipmentSlot.FEET;
-        } else {
-            return false;
-        }
-        if (item.isEmpty() || MobEntity.canEquipmentSlotContain(equipmentSlot, item) || equipmentSlot == EquipmentSlot.HEAD) {
-            this.equipStack(equipmentSlot, item);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public boolean isLogicalSideForUpdatingMovement() {
         return this.canBeControlledByRider() && super.isLogicalSideForUpdatingMovement();
-    }
-
-    public static boolean canEquipmentSlotContain(EquipmentSlot slot, ItemStack item) {
-        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(item);
-        return equipmentSlot == slot || equipmentSlot == EquipmentSlot.MAINHAND && slot == EquipmentSlot.OFFHAND || equipmentSlot == EquipmentSlot.OFFHAND && slot == EquipmentSlot.MAINHAND;
     }
 
     @Override
@@ -1341,9 +1292,11 @@ extends LivingEntity {
 
     protected boolean isAffectedByDaylight() {
         if (this.world.isDay() && !this.world.isClient) {
+            boolean bl;
             float f = this.getBrightnessAtEyes();
             BlockPos blockPos = new BlockPos(this.getX(), this.getEyeY(), this.getZ());
-            if (f > 0.5f && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f && !this.isWet() && this.world.isSkyVisible(blockPos)) {
+            boolean bl2 = bl = this.isWet() || this.inPowderSnow;
+            if (f > 0.5f && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f && !bl && this.world.isSkyVisible(blockPos)) {
                 return true;
             }
         }

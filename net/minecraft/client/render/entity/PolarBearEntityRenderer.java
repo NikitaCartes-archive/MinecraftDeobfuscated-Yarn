@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PolarBearEntityModel;
@@ -18,8 +18,8 @@ public class PolarBearEntityRenderer
 extends MobEntityRenderer<PolarBearEntity, PolarBearEntityModel<PolarBearEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/bear/polarbear.png");
 
-    public PolarBearEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new PolarBearEntityModel(arg.method_32167(EntityModelLayers.POLAR_BEAR)), 0.9f);
+    public PolarBearEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new PolarBearEntityModel(context.getPart(EntityModelLayers.POLAR_BEAR)), 0.9f);
     }
 
     @Override

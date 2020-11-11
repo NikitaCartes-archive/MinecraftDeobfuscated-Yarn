@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
@@ -26,7 +27,6 @@ import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.dto.WorldTemplatePaginatedList;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
-import net.minecraft.client.realms.gui.screen.RealmsScreenWithCallback;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.realms.util.TextRenderingUtils;
 import net.minecraft.client.resource.language.I18n;
@@ -48,9 +48,9 @@ extends RealmsScreen {
     private static final Identifier LINK_ICONS = new Identifier("realms", "textures/gui/realms/link_icons.png");
     private static final Identifier TRAILER_ICONS = new Identifier("realms", "textures/gui/realms/trailer_icons.png");
     private static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
-    private static final Text field_26512 = new TranslatableText("mco.template.info.tooltip");
-    private static final Text field_26513 = new TranslatableText("mco.template.trailer.tooltip");
-    private final RealmsScreenWithCallback parent;
+    private static final Text INFO_TOOLTIP = new TranslatableText("mco.template.info.tooltip");
+    private static final Text TRAILER_TOOLTIP = new TranslatableText("mco.template.trailer.tooltip");
+    private final Consumer<WorldTemplate> field_27941;
     private WorldTemplateObjectSelectionList templateList;
     private int selectedTemplate = -1;
     private Text title;
@@ -70,12 +70,12 @@ extends RealmsScreen {
     @Nullable
     private List<TextRenderingUtils.Line> noTemplatesMessage;
 
-    public RealmsSelectWorldTemplateScreen(RealmsScreenWithCallback parent, RealmsServer.WorldType worldType) {
-        this(parent, worldType, null);
+    public RealmsSelectWorldTemplateScreen(Consumer<WorldTemplate> consumer, RealmsServer.WorldType worldType) {
+        this(consumer, worldType, null);
     }
 
-    public RealmsSelectWorldTemplateScreen(RealmsScreenWithCallback parent, RealmsServer.WorldType worldType, @Nullable WorldTemplatePaginatedList list) {
-        this.parent = parent;
+    public RealmsSelectWorldTemplateScreen(Consumer<WorldTemplate> consumer, RealmsServer.WorldType worldType, @Nullable WorldTemplatePaginatedList list) {
+        this.field_27941 = consumer;
         this.worldType = worldType;
         if (list == null) {
             this.templateList = new WorldTemplateObjectSelectionList();
@@ -112,7 +112,7 @@ extends RealmsScreen {
         this.trailerButton = this.addButton(new ButtonWidget(this.width / 2 - 206, this.height - 32, 100, 20, new TranslatableText("mco.template.button.trailer"), buttonWidget -> this.onTrailer()));
         this.selectButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 32, 100, 20, new TranslatableText("mco.template.button.select"), buttonWidget -> this.selectTemplate()));
         Text text = this.worldType == RealmsServer.WorldType.MINIGAME ? ScreenTexts.CANCEL : ScreenTexts.BACK;
-        ButtonWidget buttonWidget2 = new ButtonWidget(this.width / 2 + 6, this.height - 32, 100, 20, text, buttonWidget -> this.backButtonClicked());
+        ButtonWidget buttonWidget2 = new ButtonWidget(this.width / 2 + 6, this.height - 32, 100, 20, text, buttonWidget -> this.onClose());
         this.addButton(buttonWidget2);
         this.publisherButton = this.addButton(new ButtonWidget(this.width / 2 + 112, this.height - 32, 100, 20, new TranslatableText("mco.template.button.publisher"), buttonWidget -> this.onPublish()));
         this.selectButton.active = false;
@@ -159,22 +159,13 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
-            this.backButtonClicked();
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    private void backButtonClicked() {
-        this.parent.callback(null);
-        this.client.openScreen(this.parent);
+    public void onClose() {
+        this.field_27941.accept(null);
     }
 
     private void selectTemplate() {
         if (this.method_25247()) {
-            this.parent.callback(this.method_21434());
+            this.field_27941.accept(this.method_21434());
         }
     }
 
@@ -386,10 +377,10 @@ extends RealmsScreen {
                 RenderSystem.popMatrix();
             }
             if (bl) {
-                RealmsSelectWorldTemplateScreen.this.toolTip = field_26512;
+                RealmsSelectWorldTemplateScreen.this.toolTip = INFO_TOOLTIP;
                 RealmsSelectWorldTemplateScreen.this.currentLink = string;
             } else if (bl2 && !"".equals(string2)) {
-                RealmsSelectWorldTemplateScreen.this.toolTip = field_26513;
+                RealmsSelectWorldTemplateScreen.this.toolTip = TRAILER_TOOLTIP;
                 RealmsSelectWorldTemplateScreen.this.currentLink = string2;
             }
         }

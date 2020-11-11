@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.class_5627;
 import net.minecraft.nbt.AbstractListTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
@@ -23,6 +22,7 @@ import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
 import net.minecraft.nbt.TagReaders;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class ListTag
 extends AbstractListTag<Tag> {
@@ -260,8 +260,8 @@ extends AbstractListTag<Tag> {
     }
 
     @Override
-    public void method_32289(class_5627 arg) {
-        arg.method_32298(this);
+    public void accept(NbtTagVisitor visitor) {
+        visitor.visitListTag(this);
     }
 
     @Override

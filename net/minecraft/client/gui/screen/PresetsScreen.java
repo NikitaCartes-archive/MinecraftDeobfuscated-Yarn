@@ -55,6 +55,7 @@ public class PresetsScreen
 extends Screen {
     private static final Logger field_25043 = LogManager.getLogger();
     private static final List<SuperflatPreset> PRESETS = Lists.newArrayList();
+    private static final RegistryKey<Biome> field_27985 = BiomeKeys.PLAINS;
     private final CustomizeFlatLevelScreen parent;
     private Text shareText;
     private Text listText;
@@ -126,7 +127,7 @@ extends Screen {
             return FlatChunkGeneratorConfig.getDefaultConfig(registry);
         }
         FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getStructuresConfig());
-        RegistryKey<Biome> registryKey = BiomeKeys.PLAINS;
+        RegistryKey<Biome> registryKey = field_27985;
         if (iterator.hasNext()) {
             try {
                 Identifier identifier = new Identifier(iterator.next());
@@ -134,6 +135,7 @@ extends Screen {
                 registry.getOrEmpty(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
             } catch (Exception exception) {
                 field_25043.error("Error while parsing flat world string => {}", (Object)exception.getMessage());
+                registryKey = field_27985;
             }
         }
         RegistryKey<Biome> registryKey2 = registryKey;

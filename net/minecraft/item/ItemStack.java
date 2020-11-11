@@ -33,6 +33,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipData;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.enchantment.Enchantment;
@@ -102,6 +103,11 @@ public final class ItemStack {
     private boolean lastDestroyResult;
     private CachedBlockPosition lastPlaceOnPos;
     private boolean lastPlaceOnResult;
+
+    @Environment(value=EnvType.CLIENT)
+    public Optional<TooltipData> getTooltipData() {
+        return this.getItem().getTooltipData(this);
+    }
 
     public ItemStack(ItemConvertible item) {
         this(item, 1);
@@ -558,14 +564,15 @@ public final class ItemStack {
     @Environment(value=EnvType.CLIENT)
     public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
         int i;
+        Integer integer;
         ArrayList<Text> list = Lists.newArrayList();
         MutableText mutableText = new LiteralText("").append(this.getName()).formatted(this.getRarity().formatting);
         if (this.hasCustomName()) {
             mutableText.formatted(Formatting.ITALIC);
         }
         list.add(mutableText);
-        if (!context.isAdvanced() && !this.hasCustomName() && this.isOf(Items.FILLED_MAP)) {
-            list.add(new LiteralText("#" + FilledMapItem.getMapId(this)).formatted(Formatting.GRAY));
+        if (!context.isAdvanced() && !this.hasCustomName() && this.isOf(Items.FILLED_MAP) && (integer = FilledMapItem.getMapId(this)) != null) {
+            list.add(new LiteralText("#" + integer).formatted(Formatting.GRAY));
         }
         if (ItemStack.isSectionHidden(i = this.getHideFlags(), TooltipSection.ADDITIONAL)) {
             this.getItem().appendTooltip(this, player == null ? null : player.world, list, context);

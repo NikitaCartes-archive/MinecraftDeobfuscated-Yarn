@@ -6,35 +6,25 @@ package net.minecraft.client.realms.task;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.dto.WorldTemplate;
+import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class ResettingWorldTask
+public abstract class ResettingWorldTask
 extends LongRunningTask {
-    private final String seed;
-    private final WorldTemplate worldTemplate;
-    private final int levelType;
-    private final boolean generateStructures;
     private final long serverId;
-    private Text title = new TranslatableText("mco.reset.world.resetting.screen.title");
+    private final Text title;
     private final Runnable callback;
 
-    public ResettingWorldTask(@Nullable String seed, @Nullable WorldTemplate worldTemplate, int levelType, boolean generateStructures, long serverId, @Nullable Text text, Runnable callback) {
-        this.seed = seed;
-        this.worldTemplate = worldTemplate;
-        this.levelType = levelType;
-        this.generateStructures = generateStructures;
-        this.serverId = serverId;
-        if (text != null) {
-            this.title = text;
-        }
-        this.callback = callback;
+    public ResettingWorldTask(long l, Text text, Runnable runnable) {
+        this.serverId = l;
+        this.title = text;
+        this.callback = runnable;
     }
+
+    protected abstract void method_32517(RealmsClient var1, long var2) throws RealmsServiceException;
 
     @Override
     public void run() {
@@ -45,11 +35,7 @@ extends LongRunningTask {
                 if (this.aborted()) {
                     return;
                 }
-                if (this.worldTemplate != null) {
-                    realmsClient.resetWorldWithTemplate(this.serverId, this.worldTemplate.id);
-                } else {
-                    realmsClient.resetWorldWithSeed(this.serverId, this.seed, this.levelType, this.generateStructures);
-                }
+                this.method_32517(realmsClient, this.serverId);
                 if (this.aborted()) {
                     return;
                 }

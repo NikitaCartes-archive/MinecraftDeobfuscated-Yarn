@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5630;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
@@ -907,26 +908,48 @@ Saddleable {
         return false;
     }
 
+    private class_5630 method_32335(final int i, final Predicate<ItemStack> predicate) {
+        return new class_5630(){
+
+            @Override
+            public ItemStack method_32327() {
+                return HorseBaseEntity.this.items.getStack(i);
+            }
+
+            @Override
+            public boolean method_32332(ItemStack itemStack) {
+                if (!predicate.test(itemStack)) {
+                    return false;
+                }
+                HorseBaseEntity.this.items.setStack(i, itemStack);
+                HorseBaseEntity.this.updateSaddle();
+                return true;
+            }
+        };
+    }
+
     @Override
-    public boolean equip(int slot, ItemStack item) {
-        int i = slot - 400;
-        if (i >= 0 && i < 2 && i < this.items.size()) {
-            if (i == 0 && !item.isOf(Items.SADDLE)) {
-                return false;
+    public class_5630 method_32318(int i) {
+        int k;
+        int j = i - 400;
+        if (j >= 0 && j < 2 && j < this.items.size()) {
+            if (j == 0) {
+                if (!this.hasArmorSlot()) {
+                    return class_5630.field_27860;
+                }
+                return this.method_32335(j, itemStack -> itemStack.isEmpty() || itemStack.isOf(Items.SADDLE));
             }
-            if (!(i != 1 || this.hasArmorSlot() && this.isHorseArmor(item))) {
-                return false;
+            if (j == 1) {
+                if (!this.hasArmorSlot()) {
+                    return class_5630.field_27860;
+                }
+                return this.method_32335(j, itemStack -> itemStack.isEmpty() || this.isHorseArmor((ItemStack)itemStack));
             }
-            this.items.setStack(i, item);
-            this.updateSaddle();
-            return true;
         }
-        int j = slot - 500 + 2;
-        if (j >= 2 && j < this.items.size()) {
-            this.items.setStack(j, item);
-            return true;
+        if ((k = i - 500 + 2) >= 2 && k < this.items.size()) {
+            return class_5630.method_32328(this.items, k);
         }
-        return false;
+        return super.method_32318(i);
     }
 
     @Override

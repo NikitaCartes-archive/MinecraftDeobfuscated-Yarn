@@ -3,8 +3,8 @@
  */
 package net.minecraft.client.gui;
 
-import com.google.common.collect.Maps;
-import java.util.Map;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.MapColor;
@@ -31,32 +31,28 @@ implements AutoCloseable {
     private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
     private static final RenderLayer field_21688 = RenderLayer.getText(MAP_ICONS_TEXTURE);
     private final TextureManager textureManager;
-    private final Map<String, MapTexture> mapTextures = Maps.newHashMap();
+    private final Int2ObjectMap<MapTexture> mapTextures = new Int2ObjectOpenHashMap<MapTexture>();
 
     public MapRenderer(TextureManager textureManager) {
         this.textureManager = textureManager;
     }
 
-    public void updateTexture(MapState mapState) {
-        this.getMapTexture(mapState).updateTexture();
+    public void updateTexture(int i, MapState mapState) {
+        this.method_32601(i, mapState).updateTexture();
     }
 
-    public void draw(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, MapState mapState, boolean bl, int i) {
-        this.getMapTexture(mapState).draw(matrixStack, vertexConsumerProvider, bl, i);
+    public void draw(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, MapState mapState, boolean bl, int j) {
+        this.method_32601(i, mapState).draw(matrixStack, vertexConsumerProvider, bl, j);
     }
 
-    private MapTexture getMapTexture(MapState mapState) {
-        MapTexture mapTexture = this.mapTextures.get(mapState.getId());
-        if (mapTexture == null) {
-            mapTexture = new MapTexture(mapState);
-            this.mapTextures.put(mapState.getId(), mapTexture);
-        }
-        return mapTexture;
+    private MapTexture method_32601(int i2, MapState mapState) {
+        return this.mapTextures.computeIfAbsent(i2, i -> new MapTexture(i, mapState));
     }
 
     @Nullable
-    public MapTexture getTexture(String string) {
-        return this.mapTextures.get(string);
+    public MapState method_32599(int i) {
+        MapTexture mapTexture = (MapTexture)this.mapTextures.get(i);
+        return mapTexture != null ? mapTexture.mapState : null;
     }
 
     public void clearStateTextures() {
@@ -64,14 +60,6 @@ implements AutoCloseable {
             mapTexture.close();
         }
         this.mapTextures.clear();
-    }
-
-    @Nullable
-    public MapState getState(@Nullable MapTexture texture) {
-        if (texture != null) {
-            return texture.mapState;
-        }
-        return null;
     }
 
     @Override
@@ -86,10 +74,10 @@ implements AutoCloseable {
         private final NativeImageBackedTexture texture;
         private final RenderLayer field_21689;
 
-        private MapTexture(MapState mapState) {
+        private MapTexture(int i, MapState mapState) {
             this.mapState = mapState;
             this.texture = new NativeImageBackedTexture(128, 128, true);
-            Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + mapState.getId(), this.texture);
+            Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + i, this.texture);
             this.field_21689 = RenderLayer.getText(identifier);
         }
 
@@ -119,7 +107,7 @@ implements AutoCloseable {
             vertexConsumer.vertex(matrix4f, 128.0f, 0.0f, -0.01f).color(255, 255, 255, 255).texture(1.0f, 0.0f).light(i).next();
             vertexConsumer.vertex(matrix4f, 0.0f, 0.0f, -0.01f).color(255, 255, 255, 255).texture(0.0f, 0.0f).light(i).next();
             int l = 0;
-            for (MapIcon mapIcon : this.mapState.icons.values()) {
+            for (MapIcon mapIcon : this.mapState.method_32373()) {
                 if (bl && !mapIcon.isAlwaysRendered()) continue;
                 matrixStack.push();
                 matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f, -0.02f);

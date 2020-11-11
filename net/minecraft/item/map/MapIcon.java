@@ -12,9 +12,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class MapIcon {
     private final Type type;
-    private byte x;
-    private byte z;
-    private byte rotation;
+    private final byte x;
+    private final byte z;
+    private final byte rotation;
+    @Nullable
     private final Text text;
 
     public MapIcon(Type type, byte x, byte z, byte rotation, @Nullable Text text) {
@@ -64,19 +65,7 @@ public class MapIcon {
             return false;
         }
         MapIcon mapIcon = (MapIcon)o;
-        if (this.type != mapIcon.type) {
-            return false;
-        }
-        if (this.rotation != mapIcon.rotation) {
-            return false;
-        }
-        if (this.x != mapIcon.x) {
-            return false;
-        }
-        if (this.z != mapIcon.z) {
-            return false;
-        }
-        return Objects.equals(this.text, mapIcon.text);
+        return this.type == mapIcon.type && this.rotation == mapIcon.rotation && this.x == mapIcon.x && this.z == mapIcon.z && Objects.equals(this.text, mapIcon.text);
     }
 
     public int hashCode() {

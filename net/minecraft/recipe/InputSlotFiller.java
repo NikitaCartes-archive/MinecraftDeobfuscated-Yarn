@@ -16,8 +16,6 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
-import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
@@ -49,37 +47,20 @@ implements RecipeGridAligner<Integer> {
         if (this.recipeFinder.findRecipe(recipe, null)) {
             this.fillInputSlots(recipe, craftAll);
         } else {
-            this.returnInputs();
+            this.returnInputs(true);
             entity.networkHandler.sendPacket(new CraftFailedResponseS2CPacket(entity.currentScreenHandler.syncId, recipe));
         }
         entity.getInventory().markDirty();
     }
 
-    protected void returnInputs() {
-        for (int i = 0; i < this.craftingScreenHandler.getCraftingWidth() * this.craftingScreenHandler.getCraftingHeight() + 1; ++i) {
-            if (i == this.craftingScreenHandler.getCraftingResultSlotIndex() && (this.craftingScreenHandler instanceof CraftingScreenHandler || this.craftingScreenHandler instanceof PlayerScreenHandler)) continue;
-            this.returnSlot(i);
+    protected void returnInputs(boolean bl) {
+        for (int i = 0; i < this.craftingScreenHandler.getCraftingSlotCount(); ++i) {
+            if (!this.craftingScreenHandler.method_32339(i)) continue;
+            ItemStack itemStack = this.craftingScreenHandler.getSlot(i).getStack().copy();
+            this.inventory.method_32338(itemStack, false);
+            this.craftingScreenHandler.getSlot(i).setStack(itemStack);
         }
         this.craftingScreenHandler.clearCraftingSlots();
-    }
-
-    protected void returnSlot(int i) {
-        ItemStack itemStack = this.craftingScreenHandler.getSlot(i).getStack();
-        if (itemStack.isEmpty()) {
-            return;
-        }
-        while (itemStack.getCount() > 0) {
-            int j = this.inventory.getOccupiedSlotWithRoomForStack(itemStack);
-            if (j == -1) {
-                j = this.inventory.getEmptySlot();
-            }
-            ItemStack itemStack2 = itemStack.copy();
-            itemStack2.setCount(1);
-            if (!this.inventory.insertStack(j, itemStack2)) {
-                LOGGER.error("Can't find any space for item in the inventory");
-            }
-            this.craftingScreenHandler.getSlot(i).takeStack(1);
-        }
     }
 
     protected void fillInputSlots(Recipe<C> recipe, boolean craftAll) {
@@ -105,7 +86,7 @@ implements RecipeGridAligner<Integer> {
             }
             j = k;
             if (this.recipeFinder.findRecipe(recipe, intList, j)) {
-                this.returnInputs();
+                this.returnInputs(false);
                 this.alignRecipeToGrid(this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.craftingScreenHandler.getCraftingResultSlotIndex(), recipe, intList.iterator(), j);
             }
         }

@@ -35,6 +35,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.class_5459;
 import net.minecraft.class_5568;
 import net.minecraft.class_5569;
+import net.minecraft.class_5630;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
@@ -188,6 +189,7 @@ CommandOutput {
     private static final TrackedData<Boolean> SILENT = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> NO_GRAVITY = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
     protected static final TrackedData<EntityPose> POSE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.ENTITY_POSE);
+    private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
     private class_5569 field_26996 = class_5569.field_27243;
     private Vec3d trackedPosition;
     public boolean ignoreCameraFrustum;
@@ -205,6 +207,7 @@ CommandOutput {
     private long pistonMovementTick;
     private EntityDimensions dimensions;
     private float standingEyeHeight;
+    protected boolean inPowderSnow;
     private float field_26997;
     private int field_26994;
 
@@ -224,6 +227,7 @@ CommandOutput {
         this.dataTracker.startTracking(SILENT, false);
         this.dataTracker.startTracking(NO_GRAVITY, false);
         this.dataTracker.startTracking(POSE, EntityPose.STANDING);
+        this.dataTracker.startTracking(FROZEN_TICKS, 0);
         this.initDataTracker();
         this.standingEyeHeight = this.getEyeHeight(EntityPose.STANDING, this.dimensions);
     }
@@ -409,6 +413,7 @@ CommandOutput {
         if (this.shouldSpawnSprintingParticles()) {
             this.spawnSprintingParticles();
         }
+        this.inPowderSnow = false;
         this.updateWaterState();
         this.updateSubmergedInWaterState();
         this.updateSwimming();
@@ -426,6 +431,7 @@ CommandOutput {
                 }
                 this.setFireTicks(this.fireTicks - 1);
             }
+            this.setFrozenTicks(0);
         }
         if (this.isInLava()) {
             this.setOnFireFromLava();
@@ -559,7 +565,7 @@ CommandOutput {
             double d = vec3d.x;
             double e = vec3d.y;
             double f = vec3d.z;
-            if (!blockState2.isIn(BlockTags.CLIMBABLE)) {
+            if (!blockState2.isIn(BlockTags.CLIMBABLE) && !blockState2.isOf(Blocks.POWDER_SNOW)) {
                 e = 0.0;
             }
             this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d)) * 0.6);
@@ -595,7 +601,7 @@ CommandOutput {
         if (this.world.method_29556(this.getBoundingBox().contract(0.001)).noneMatch(blockState -> blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA)) && this.fireTicks <= 0) {
             this.setFireTicks(-this.getBurningDuration());
         }
-        if (this.isWet() && this.isOnFire()) {
+        if ((this.isWet() || this.inPowderSnow) && this.isOnFire()) {
             this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7f, 1.6f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
             this.setFireTicks(-this.getBurningDuration());
         }
@@ -825,7 +831,7 @@ CommandOutput {
             this.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, g, f);
             this.field_26994 = this.age;
         }
-        BlockSoundGroup blockSoundGroup = (blockState = this.world.getBlockState(pos.up())).isOf(Blocks.SNOW) ? blockState.getSoundGroup() : state.getSoundGroup();
+        BlockSoundGroup blockSoundGroup = (blockState = this.world.getBlockState(pos.up())).isIn(BlockTags.SNOW_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
         this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15f, blockSoundGroup.getPitch());
     }
 
@@ -1319,6 +1325,7 @@ CommandOutput {
     public CompoundTag toTag(CompoundTag tag) {
         try {
             ListTag listTag;
+            int i;
             if (this.vehicle != null) {
                 tag.put("Pos", this.toListTag(this.vehicle.getX(), this.getY(), this.vehicle.getZ()));
             } else {
@@ -1349,6 +1356,9 @@ CommandOutput {
             }
             if (this.glowing) {
                 tag.putBoolean("Glowing", this.glowing);
+            }
+            if ((i = this.getFrozenTicks()) > 0) {
+                tag.putInt("TicksFrozen", this.getFrozenTicks());
             }
             if (!this.scoreboardTags.isEmpty()) {
                 listTag = new ListTag();
@@ -1424,6 +1434,7 @@ CommandOutput {
             this.setSilent(tag.getBoolean("Silent"));
             this.setNoGravity(tag.getBoolean("NoGravity"));
             this.setGlowing(tag.getBoolean("Glowing"));
+            this.setFrozenTicks(tag.getInt("TicksFrozen"));
             if (tag.contains("Tags", 9)) {
                 this.scoreboardTags.clear();
                 ListTag listTag4 = tag.getList("Tags", 8);
@@ -1917,6 +1928,27 @@ CommandOutput {
         this.dataTracker.set(AIR, air);
     }
 
+    public int getFrozenTicks() {
+        return this.dataTracker.get(FROZEN_TICKS);
+    }
+
+    public void setFrozenTicks(int frozenTicks) {
+        this.dataTracker.set(FROZEN_TICKS, frozenTicks);
+    }
+
+    public float getFreezingScale() {
+        int i = this.getMinFreezeDamageTicks();
+        return (float)Math.min(this.getFrozenTicks(), i) / (float)i;
+    }
+
+    public boolean isFreezing() {
+        return this.getFrozenTicks() >= this.getMinFreezeDamageTicks();
+    }
+
+    public int getMinFreezeDamageTicks() {
+        return 300;
+    }
+
     public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
         this.setFireTicks(this.fireTicks + 1);
         if (this.fireTicks == 0) {
@@ -2203,7 +2235,7 @@ CommandOutput {
 
     @Override
     public Text getDisplayName() {
-        return Team.modifyText(this.getScoreboardTeam(), this.getName()).styled(style -> style.withHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
+        return Team.decorateName(this.getScoreboardTeam(), this.getName()).styled(style -> style.withHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
     }
 
     public void setCustomName(@Nullable Text name) {
@@ -2338,8 +2370,8 @@ CommandOutput {
         return new Vec3d(0.0, this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 
-    public boolean equip(int slot, ItemStack item) {
-        return false;
+    public class_5630 method_32318(int i) {
+        return class_5630.field_27860;
     }
 
     @Override
@@ -2750,6 +2782,14 @@ CommandOutput {
     @Environment(value=EnvType.CLIENT)
     public ItemStack getPickBlockStack() {
         return null;
+    }
+
+    public void setInPowderSnow(boolean inPowderSnow) {
+        this.inPowderSnow = inPowderSnow;
+    }
+
+    public boolean canFreeze() {
+        return false;
     }
 
     public final boolean isRemoved() {

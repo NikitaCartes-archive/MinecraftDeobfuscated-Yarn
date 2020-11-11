@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.SlimeOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -21,9 +21,9 @@ public class SlimeEntityRenderer
 extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/slime/slime.png");
 
-    public SlimeEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new SlimeEntityModel(arg.method_32167(EntityModelLayers.SLIME)), 0.25f);
-        this.addFeature(new SlimeOverlayFeatureRenderer<SlimeEntity>(this, arg.method_32170()));
+    public SlimeEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new SlimeEntityModel(context.getPart(EntityModelLayers.SLIME)), 0.25f);
+        this.addFeature(new SlimeOverlayFeatureRenderer<SlimeEntity>(this, context.getModelLoader()));
     }
 
     @Override

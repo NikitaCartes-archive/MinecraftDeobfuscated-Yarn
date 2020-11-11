@@ -5,7 +5,6 @@ package net.minecraft.client.options;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -237,67 +236,67 @@ public class GameOptions {
             }
             CompoundTag compoundTag2 = this.update(compoundTag);
             if (!compoundTag2.contains("graphicsMode") && compoundTag2.contains("fancyGraphics")) {
-                this.graphicsMode = "true".equals(compoundTag2.getString("fancyGraphics")) ? GraphicsMode.FANCY : GraphicsMode.FAST;
+                this.graphicsMode = GameOptions.isTrue(compoundTag2.getString("fancyGraphics")) ? GraphicsMode.FANCY : GraphicsMode.FAST;
             }
             for (String string2 : compoundTag2.getKeys()) {
                 String string22 = compoundTag2.getString(string2);
                 try {
                     if ("autoJump".equals(string2)) {
-                        Option.AUTO_JUMP.set(this, string22);
+                        this.autoJump = GameOptions.isTrue(string22);
                     }
                     if ("autoSuggestions".equals(string2)) {
-                        Option.AUTO_SUGGESTIONS.set(this, string22);
+                        this.autoSuggestions = GameOptions.isTrue(string22);
                     }
                     if ("chatColors".equals(string2)) {
-                        Option.CHAT_COLOR.set(this, string22);
+                        this.chatColors = GameOptions.isTrue(string22);
                     }
                     if ("chatLinks".equals(string2)) {
-                        Option.CHAT_LINKS.set(this, string22);
+                        this.chatLinks = GameOptions.isTrue(string22);
                     }
                     if ("chatLinksPrompt".equals(string2)) {
-                        Option.CHAT_LINKS_PROMPT.set(this, string22);
+                        this.chatLinksPrompt = GameOptions.isTrue(string22);
                     }
                     if ("enableVsync".equals(string2)) {
-                        Option.VSYNC.set(this, string22);
+                        this.enableVsync = GameOptions.isTrue(string22);
                     }
                     if ("entityShadows".equals(string2)) {
-                        Option.ENTITY_SHADOWS.set(this, string22);
+                        this.entityShadows = GameOptions.isTrue(string22);
                     }
                     if ("forceUnicodeFont".equals(string2)) {
-                        Option.FORCE_UNICODE_FONT.set(this, string22);
+                        this.forceUnicodeFont = GameOptions.isTrue(string22);
                     }
                     if ("discrete_mouse_scroll".equals(string2)) {
-                        Option.DISCRETE_MOUSE_SCROLL.set(this, string22);
+                        this.discreteMouseScroll = GameOptions.isTrue(string22);
                     }
                     if ("invertYMouse".equals(string2)) {
-                        Option.INVERT_MOUSE.set(this, string22);
+                        this.invertYMouse = GameOptions.isTrue(string22);
                     }
                     if ("realmsNotifications".equals(string2)) {
-                        Option.REALMS_NOTIFICATIONS.set(this, string22);
+                        this.realmsNotifications = GameOptions.isTrue(string22);
                     }
                     if ("reducedDebugInfo".equals(string2)) {
-                        Option.REDUCED_DEBUG_INFO.set(this, string22);
+                        this.reducedDebugInfo = GameOptions.isTrue(string22);
                     }
                     if ("showSubtitles".equals(string2)) {
-                        Option.SUBTITLES.set(this, string22);
+                        this.showSubtitles = GameOptions.isTrue(string22);
                     }
                     if ("snooperEnabled".equals(string2)) {
-                        Option.SNOOPER.set(this, string22);
+                        this.snooperEnabled = GameOptions.isTrue(string22);
                     }
                     if ("touchscreen".equals(string2)) {
-                        Option.TOUCHSCREEN.set(this, string22);
+                        this.touchscreen = GameOptions.isTrue(string22);
                     }
                     if ("fullscreen".equals(string2)) {
-                        Option.FULLSCREEN.set(this, string22);
+                        this.fullscreen = GameOptions.isTrue(string22);
                     }
                     if ("bobView".equals(string2)) {
-                        Option.VIEW_BOBBING.set(this, string22);
+                        this.bobView = GameOptions.isTrue(string22);
                     }
                     if ("toggleCrouch".equals(string2)) {
-                        this.sneakToggled = "true".equals(string22);
+                        this.sneakToggled = GameOptions.isTrue(string22);
                     }
                     if ("toggleSprint".equals(string2)) {
-                        this.sprintToggled = "true".equals(string22);
+                        this.sprintToggled = GameOptions.isTrue(string22);
                     }
                     if ("mouseSensitivity".equals(string2)) {
                         this.mouseSensitivity = GameOptions.parseFloat(string22);
@@ -342,12 +341,12 @@ public class GameOptions {
                         this.tutorialStep = TutorialStep.byName(string22);
                     }
                     if ("ao".equals(string2)) {
-                        this.ao = "true".equals(string22) ? AoMode.MAX : ("false".equals(string22) ? AoMode.OFF : AoMode.byId(Integer.parseInt(string22)));
+                        this.ao = GameOptions.isTrue(string22) ? AoMode.MAX : (GameOptions.isFalse(string22) ? AoMode.OFF : AoMode.byId(Integer.parseInt(string22)));
                     }
                     if ("renderClouds".equals(string2)) {
-                        if ("true".equals(string22)) {
+                        if (GameOptions.isTrue(string22)) {
                             this.cloudRenderMode = CloudRenderMode.FANCY;
-                        } else if ("false".equals(string22)) {
+                        } else if (GameOptions.isFalse(string22)) {
                             this.cloudRenderMode = CloudRenderMode.OFF;
                         } else if ("fast".equals(string22)) {
                             this.cloudRenderMode = CloudRenderMode.FAST;
@@ -387,19 +386,19 @@ public class GameOptions {
                         this.textBackgroundOpacity = GameOptions.parseFloat(string22);
                     }
                     if ("backgroundForChatOnly".equals(string2)) {
-                        this.backgroundForChatOnly = "true".equals(string22);
+                        this.backgroundForChatOnly = GameOptions.isTrue(string22);
                     }
                     if ("fullscreenResolution".equals(string2)) {
                         this.fullscreenResolution = string22;
                     }
                     if ("hideServerAddress".equals(string2)) {
-                        this.hideServerAddress = "true".equals(string22);
+                        this.hideServerAddress = GameOptions.isTrue(string22);
                     }
                     if ("advancedItemTooltips".equals(string2)) {
-                        this.advancedItemTooltips = "true".equals(string22);
+                        this.advancedItemTooltips = GameOptions.isTrue(string22);
                     }
                     if ("pauseOnLostFocus".equals(string2)) {
-                        this.pauseOnLostFocus = "true".equals(string22);
+                        this.pauseOnLostFocus = GameOptions.isTrue(string22);
                     }
                     if ("overrideHeight".equals(string2)) {
                         this.overrideHeight = Integer.parseInt(string22);
@@ -408,7 +407,7 @@ public class GameOptions {
                         this.overrideWidth = Integer.parseInt(string22);
                     }
                     if ("heldItemTooltips".equals(string2)) {
-                        this.heldItemTooltips = "true".equals(string22);
+                        this.heldItemTooltips = GameOptions.isTrue(string22);
                     }
                     if ("chatHeightFocused".equals(string2)) {
                         this.chatHeightFocused = GameOptions.parseFloat(string22);
@@ -429,7 +428,7 @@ public class GameOptions {
                         this.mipmapLevels = Integer.parseInt(string22);
                     }
                     if ("useNativeTransport".equals(string2)) {
-                        this.useNativeTransport = "true".equals(string22);
+                        this.useNativeTransport = GameOptions.isTrue(string22);
                     }
                     if ("mainHand".equals(string2)) {
                         Arm arm = this.mainArm = "left".equals(string22) ? Arm.LEFT : Arm.RIGHT;
@@ -444,13 +443,13 @@ public class GameOptions {
                         this.mouseWheelSensitivity = GameOptions.parseFloat(string22);
                     }
                     if ("rawMouseInput".equals(string2)) {
-                        this.rawMouseInput = "true".equals(string22);
+                        this.rawMouseInput = GameOptions.isTrue(string22);
                     }
                     if ("glDebugVerbosity".equals(string2)) {
                         this.glDebugVerbosity = Integer.parseInt(string22);
                     }
                     if ("skipMultiplayerWarning".equals(string2)) {
-                        this.skipMultiplayerWarning = "true".equals(string22);
+                        this.skipMultiplayerWarning = GameOptions.isTrue(string22);
                     }
                     if ("hideMatchedNames".equals(string2)) {
                         this.hideMatchedNames = "true".equals(string22);
@@ -459,7 +458,7 @@ public class GameOptions {
                         this.joinedFirstServer = "true".equals(string22);
                     }
                     if ("syncChunkWrites".equals(string2)) {
-                        this.syncChunkWrites = "true".equals(string22);
+                        this.syncChunkWrites = GameOptions.isTrue(string22);
                     }
                     for (KeyBinding keyBinding : this.keysAll) {
                         if (!string2.equals("key_" + keyBinding.getTranslationKey())) continue;
@@ -471,7 +470,7 @@ public class GameOptions {
                     }
                     for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
                         if (!string2.equals("modelPart_" + playerModelPart.getName())) continue;
-                        this.setPlayerModelPart(playerModelPart, "true".equals(string22));
+                        this.setPlayerModelPart(playerModelPart, GameOptions.isTrue(string22));
                     }
                 } catch (Exception exception) {
                     LOGGER.warn("Skipping bad option: {}:{}", (Object)string2, (Object)string22);
@@ -481,6 +480,14 @@ public class GameOptions {
         } catch (Exception exception2) {
             LOGGER.error("Failed to load options", (Throwable)exception2);
         }
+    }
+
+    private static boolean isTrue(String string) {
+        return "true".equals(string);
+    }
+
+    private static boolean isFalse(String string) {
+        return "false".equals(string);
     }
 
     private CompoundTag update(CompoundTag tag) {
@@ -494,10 +501,10 @@ public class GameOptions {
     }
 
     private static float parseFloat(String string) {
-        if ("true".equals(string)) {
+        if (GameOptions.isTrue(string)) {
             return 1.0f;
         }
-        if ("false".equals(string)) {
+        if (GameOptions.isFalse(string)) {
             return 0.0f;
         }
         return Float.parseFloat(string);
@@ -506,23 +513,23 @@ public class GameOptions {
     public void write() {
         try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter((OutputStream)new FileOutputStream(this.optionsFile), StandardCharsets.UTF_8));){
             printWriter.println("version:" + SharedConstants.getGameVersion().getWorldVersion());
-            printWriter.println("autoJump:" + Option.AUTO_JUMP.get(this));
-            printWriter.println("autoSuggestions:" + Option.AUTO_SUGGESTIONS.get(this));
-            printWriter.println("chatColors:" + Option.CHAT_COLOR.get(this));
-            printWriter.println("chatLinks:" + Option.CHAT_LINKS.get(this));
-            printWriter.println("chatLinksPrompt:" + Option.CHAT_LINKS_PROMPT.get(this));
-            printWriter.println("enableVsync:" + Option.VSYNC.get(this));
-            printWriter.println("entityShadows:" + Option.ENTITY_SHADOWS.get(this));
-            printWriter.println("forceUnicodeFont:" + Option.FORCE_UNICODE_FONT.get(this));
-            printWriter.println("discrete_mouse_scroll:" + Option.DISCRETE_MOUSE_SCROLL.get(this));
-            printWriter.println("invertYMouse:" + Option.INVERT_MOUSE.get(this));
-            printWriter.println("realmsNotifications:" + Option.REALMS_NOTIFICATIONS.get(this));
-            printWriter.println("reducedDebugInfo:" + Option.REDUCED_DEBUG_INFO.get(this));
-            printWriter.println("snooperEnabled:" + Option.SNOOPER.get(this));
-            printWriter.println("showSubtitles:" + Option.SUBTITLES.get(this));
-            printWriter.println("touchscreen:" + Option.TOUCHSCREEN.get(this));
-            printWriter.println("fullscreen:" + Option.FULLSCREEN.get(this));
-            printWriter.println("bobView:" + Option.VIEW_BOBBING.get(this));
+            printWriter.println("autoJump:" + this.autoJump);
+            printWriter.println("autoSuggestions:" + this.autoSuggestions);
+            printWriter.println("chatColors:" + this.chatColors);
+            printWriter.println("chatLinks:" + this.chatLinks);
+            printWriter.println("chatLinksPrompt:" + this.chatLinksPrompt);
+            printWriter.println("enableVsync:" + this.enableVsync);
+            printWriter.println("entityShadows:" + this.entityShadows);
+            printWriter.println("forceUnicodeFont:" + this.forceUnicodeFont);
+            printWriter.println("discrete_mouse_scroll:" + this.discreteMouseScroll);
+            printWriter.println("invertYMouse:" + this.invertYMouse);
+            printWriter.println("realmsNotifications:" + this.realmsNotifications);
+            printWriter.println("reducedDebugInfo:" + this.reducedDebugInfo);
+            printWriter.println("snooperEnabled:" + this.snooperEnabled);
+            printWriter.println("showSubtitles:" + this.showSubtitles);
+            printWriter.println("touchscreen:" + this.touchscreen);
+            printWriter.println("fullscreen:" + this.fullscreen);
+            printWriter.println("bobView:" + this.bobView);
             printWriter.println("toggleCrouch:" + this.sneakToggled);
             printWriter.println("toggleSprint:" + this.sprintToggled);
             printWriter.println("mouseSensitivity:" + this.mouseSensitivity);
@@ -582,7 +589,7 @@ public class GameOptions {
             printWriter.println("narrator:" + this.narrator.getId());
             printWriter.println("tutorialStep:" + this.tutorialStep.getName());
             printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
-            printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
+            printWriter.println("rawMouseInput:" + this.rawMouseInput);
             printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
             printWriter.println("skipMultiplayerWarning:" + this.skipMultiplayerWarning);
             printWriter.println("hideMatchedNames:" + this.hideMatchedNames);
@@ -625,10 +632,6 @@ public class GameOptions {
         }
     }
 
-    public Set<PlayerModelPart> getEnabledPlayerModelParts() {
-        return ImmutableSet.copyOf(this.enabledPlayerModelParts);
-    }
-
     public void setPlayerModelPart(PlayerModelPart part, boolean enabled) {
         if (enabled) {
             this.enabledPlayerModelParts.add(part);
@@ -638,8 +641,12 @@ public class GameOptions {
         this.onPlayerModelPartChange();
     }
 
-    public void togglePlayerModelPart(PlayerModelPart part) {
-        if (this.getEnabledPlayerModelParts().contains((Object)part)) {
+    public boolean isPlayerModelPartEnabled(PlayerModelPart part) {
+        return this.enabledPlayerModelParts.contains((Object)part);
+    }
+
+    public void togglePlayerModelPart(PlayerModelPart part, boolean bl) {
+        if (!bl) {
             this.enabledPlayerModelParts.remove((Object)part);
         } else {
             this.enabledPlayerModelParts.add(part);

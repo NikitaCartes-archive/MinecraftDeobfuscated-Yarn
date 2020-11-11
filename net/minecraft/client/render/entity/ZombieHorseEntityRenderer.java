@@ -8,7 +8,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.HorseBaseEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
@@ -21,8 +21,8 @@ public class ZombieHorseEntityRenderer
 extends HorseBaseEntityRenderer<HorseBaseEntity, HorseEntityModel<HorseBaseEntity>> {
     private static final Map<EntityType<?>, Identifier> TEXTURES = Maps.newHashMap(ImmutableMap.of(EntityType.ZOMBIE_HORSE, new Identifier("textures/entity/horse/horse_zombie.png"), EntityType.SKELETON_HORSE, new Identifier("textures/entity/horse/horse_skeleton.png")));
 
-    public ZombieHorseEntityRenderer(class_5617.class_5618 arg, EntityModelLayer entityModelLayer) {
-        super(arg, new HorseEntityModel(arg.method_32167(entityModelLayer)), 1.0f);
+    public ZombieHorseEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
+        super(ctx, new HorseEntityModel(ctx.getPart(layer)), 1.0f);
     }
 
     @Override

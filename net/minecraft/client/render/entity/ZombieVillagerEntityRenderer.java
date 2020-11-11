@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerClothingFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -20,10 +20,10 @@ public class ZombieVillagerEntityRenderer
 extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
 
-    public ZombieVillagerEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new ZombieVillagerEntityModel(arg.method_32167(EntityModelLayers.ZOMBIE_VILLAGER)), 0.5f);
-        this.addFeature(new ArmorFeatureRenderer(this, new ZombieVillagerEntityModel(arg.method_32167(EntityModelLayers.ZOMBIE_VILLAGER_INNER_ARMOR)), new ZombieVillagerEntityModel(arg.method_32167(EntityModelLayers.ZOMBIE_VILLAGER_OUTER_ARMOR))));
-        this.addFeature(new VillagerClothingFeatureRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>>(this, arg.method_32169(), "zombie_villager"));
+    public ZombieVillagerEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new ZombieVillagerEntityModel(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER)), 0.5f);
+        this.addFeature(new ArmorFeatureRenderer(this, new ZombieVillagerEntityModel(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER_INNER_ARMOR)), new ZombieVillagerEntityModel(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER_OUTER_ARMOR))));
+        this.addFeature(new VillagerClothingFeatureRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>>(this, context.getResourceManager(), "zombie_villager"));
     }
 
     @Override

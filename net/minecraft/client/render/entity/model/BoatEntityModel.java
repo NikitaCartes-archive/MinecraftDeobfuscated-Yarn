@@ -6,12 +6,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.MathHelper;
@@ -25,33 +25,33 @@ extends CompositeEntityModel<BoatEntity> {
     private final ImmutableList<ModelPart> parts;
 
     public BoatEntityModel(ModelPart modelPart) {
-        this.field_27396 = modelPart.method_32086("left_paddle");
-        this.field_27397 = modelPart.method_32086("right_paddle");
-        this.bottom = modelPart.method_32086("water_patch");
-        this.parts = ImmutableList.of(modelPart.method_32086("bottom"), modelPart.method_32086("back"), modelPart.method_32086("front"), modelPart.method_32086("right"), modelPart.method_32086("left"), this.field_27396, this.field_27397);
+        this.field_27396 = modelPart.getChild("left_paddle");
+        this.field_27397 = modelPart.getChild("right_paddle");
+        this.bottom = modelPart.getChild("water_patch");
+        this.parts = ImmutableList.of(modelPart.getChild("bottom"), modelPart.getChild("back"), modelPart.getChild("front"), modelPart.getChild("right"), modelPart.getChild("left"), this.field_27396, this.field_27397);
     }
 
-    public static class_5607 method_31985() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
         int i = 32;
         int j = 6;
         int k = 20;
         int l = 4;
         int m = 28;
-        lv2.method_32117("bottom", class_5606.method_32108().method_32101(0, 0).method_32097(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f), class_5603.method_32091(0.0f, 3.0f, 1.0f, 1.5707964f, 0.0f, 0.0f));
-        lv2.method_32117("back", class_5606.method_32108().method_32101(0, 19).method_32097(-13.0f, -7.0f, -1.0f, 18.0f, 6.0f, 2.0f), class_5603.method_32091(-15.0f, 4.0f, 4.0f, 0.0f, 4.712389f, 0.0f));
-        lv2.method_32117("front", class_5606.method_32108().method_32101(0, 27).method_32097(-8.0f, -7.0f, -1.0f, 16.0f, 6.0f, 2.0f), class_5603.method_32091(15.0f, 4.0f, 0.0f, 0.0f, 1.5707964f, 0.0f));
-        lv2.method_32117("right", class_5606.method_32108().method_32101(0, 35).method_32097(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f), class_5603.method_32091(0.0f, 4.0f, -9.0f, 0.0f, (float)Math.PI, 0.0f));
-        lv2.method_32117("left", class_5606.method_32108().method_32101(0, 43).method_32097(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f), class_5603.method_32090(0.0f, 4.0f, 9.0f));
+        modelPartData.addChild("bottom", ModelPartBuilder.create().uv(0, 0).cuboid(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f), ModelTransform.of(0.0f, 3.0f, 1.0f, 1.5707964f, 0.0f, 0.0f));
+        modelPartData.addChild("back", ModelPartBuilder.create().uv(0, 19).cuboid(-13.0f, -7.0f, -1.0f, 18.0f, 6.0f, 2.0f), ModelTransform.of(-15.0f, 4.0f, 4.0f, 0.0f, 4.712389f, 0.0f));
+        modelPartData.addChild("front", ModelPartBuilder.create().uv(0, 27).cuboid(-8.0f, -7.0f, -1.0f, 16.0f, 6.0f, 2.0f), ModelTransform.of(15.0f, 4.0f, 0.0f, 0.0f, 1.5707964f, 0.0f));
+        modelPartData.addChild("right", ModelPartBuilder.create().uv(0, 35).cuboid(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f), ModelTransform.of(0.0f, 4.0f, -9.0f, 0.0f, (float)Math.PI, 0.0f));
+        modelPartData.addChild("left", ModelPartBuilder.create().uv(0, 43).cuboid(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f), ModelTransform.pivot(0.0f, 4.0f, 9.0f));
         int n = 20;
         int o = 7;
         int p = 6;
         float f = -5.0f;
-        lv2.method_32117("left_paddle", class_5606.method_32108().method_32101(62, 0).method_32097(-1.0f, 0.0f, -5.0f, 2.0f, 2.0f, 18.0f).method_32097(-1.001f, -3.0f, 8.0f, 1.0f, 6.0f, 7.0f), class_5603.method_32091(3.0f, -5.0f, 9.0f, 0.0f, 0.0f, 0.19634955f));
-        lv2.method_32117("right_paddle", class_5606.method_32108().method_32101(62, 20).method_32097(-1.0f, 0.0f, -5.0f, 2.0f, 2.0f, 18.0f).method_32097(0.001f, -3.0f, 8.0f, 1.0f, 6.0f, 7.0f), class_5603.method_32091(3.0f, -5.0f, -9.0f, 0.0f, (float)Math.PI, 0.19634955f));
-        lv2.method_32117("water_patch", class_5606.method_32108().method_32101(0, 0).method_32097(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f), class_5603.method_32091(0.0f, -3.0f, 1.0f, 1.5707964f, 0.0f, 0.0f));
-        return class_5607.method_32110(lv, 128, 64);
+        modelPartData.addChild("left_paddle", ModelPartBuilder.create().uv(62, 0).cuboid(-1.0f, 0.0f, -5.0f, 2.0f, 2.0f, 18.0f).cuboid(-1.001f, -3.0f, 8.0f, 1.0f, 6.0f, 7.0f), ModelTransform.of(3.0f, -5.0f, 9.0f, 0.0f, 0.0f, 0.19634955f));
+        modelPartData.addChild("right_paddle", ModelPartBuilder.create().uv(62, 20).cuboid(-1.0f, 0.0f, -5.0f, 2.0f, 2.0f, 18.0f).cuboid(0.001f, -3.0f, 8.0f, 1.0f, 6.0f, 7.0f), ModelTransform.of(3.0f, -5.0f, -9.0f, 0.0f, (float)Math.PI, 0.19634955f));
+        modelPartData.addChild("water_patch", ModelPartBuilder.create().uv(0, 0).cuboid(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f), ModelTransform.of(0.0f, -3.0f, 1.0f, 1.5707964f, 0.0f, 0.0f));
+        return TexturedModelData.of(modelData, 128, 64);
     }
 
     @Override

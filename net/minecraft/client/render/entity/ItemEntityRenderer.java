@@ -6,10 +6,10 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -28,9 +28,9 @@ extends EntityRenderer<ItemEntity> {
     private final ItemRenderer itemRenderer;
     private final Random random = new Random();
 
-    public ItemEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
-        this.itemRenderer = arg.method_32168();
+    public ItemEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
+        this.itemRenderer = context.getItemRenderer();
         this.shadowRadius = 0.15f;
         this.shadowOpacity = 0.75f;
     }

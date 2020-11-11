@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SquidEntityModel;
@@ -20,8 +20,8 @@ public class SquidEntityRenderer
 extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/squid.png");
 
-    public SquidEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new SquidEntityModel(arg.method_32167(EntityModelLayers.SQUID)), 0.7f);
+    public SquidEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new SquidEntityModel(context.getPart(EntityModelLayers.SQUID)), 0.7f);
     }
 
     @Override

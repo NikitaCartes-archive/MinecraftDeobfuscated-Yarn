@@ -65,6 +65,7 @@ import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.particle.RainSplashParticle;
 import net.minecraft.client.particle.RedDustParticle;
 import net.minecraft.client.particle.ReversePortalParticle;
+import net.minecraft.client.particle.SnowflakeParticle;
 import net.minecraft.client.particle.SoulParticle;
 import net.minecraft.client.particle.SpellParticle;
 import net.minecraft.client.particle.SpitParticle;
@@ -184,6 +185,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.RAIN, RainSplashParticle.Factory::new);
         this.registerFactory(ParticleTypes.SMOKE, FireSmokeParticle.Factory::new);
         this.registerFactory(ParticleTypes.SNEEZE, CloudParticle.SneezeFactory::new);
+        this.registerFactory(ParticleTypes.SNOWFLAKE, SnowflakeParticle.Factory::new);
         this.registerFactory(ParticleTypes.SPIT, SpitParticle.Factory::new);
         this.registerFactory(ParticleTypes.SWEEP_ATTACK, SweepAttackParticle.Factory::new);
         this.registerFactory(ParticleTypes.TOTEM_OF_UNDYING, TotemParticle.Factory::new);
@@ -203,7 +205,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.LANDING_OBSIDIAN_TEAR, BlockLeakParticle.LandingObsidianTearFactory::new);
         this.registerFactory(ParticleTypes.REVERSE_PORTAL, ReversePortalParticle.Factory::new);
         this.registerFactory(ParticleTypes.WHITE_ASH, WhiteAshParticle.Factory::new);
-        this.registerFactory(ParticleTypes.SMALL_FLAME, FlameParticle.class_5613::new);
+        this.registerFactory(ParticleTypes.SMALL_FLAME, FlameParticle.SmallFactory::new);
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

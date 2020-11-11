@@ -68,7 +68,7 @@ extends ForwardingDynamicOps<T> {
      * <p>This method is called by casting an arbitrary dynamic ops to a registry
      * reading ops.</p>
      * 
-     * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, MapCodec)
+     * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, Codec)
      */
     protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean allowInlineDefinitions) {
         Optional optional = this.registryManager.getOptional(registryKey);

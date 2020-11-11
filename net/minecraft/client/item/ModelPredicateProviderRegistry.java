@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -226,7 +225,7 @@ public class ModelPredicateProviderRegistry {
         });
         ModelPredicateProviderRegistry.register(Items.SHIELD, new Identifier("blocking"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
         ModelPredicateProviderRegistry.register(Items.TRIDENT, new Identifier("throwing"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
-        ModelPredicateProviderRegistry.register(Items.SPYGLASS, new Identifier("scoping"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack && livingEntity.getUuid().equals(MinecraftClient.getInstance().player.getUuid()) ? 1.0f : 0.0f);
+        ModelPredicateProviderRegistry.register(Items.SPYGLASS, new Identifier("scoping"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
     }
 
     @Environment(value=EnvType.CLIENT)

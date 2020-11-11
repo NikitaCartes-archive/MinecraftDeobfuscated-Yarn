@@ -5,20 +5,20 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class CreeperEntityModel<T extends Entity>
-extends class_5597<T> {
+extends SinglePartEntityModel<T> {
     private final ModelPart field_27406;
     private final ModelPart head;
     private final ModelPart field_27407;
@@ -28,28 +28,28 @@ extends class_5597<T> {
 
     public CreeperEntityModel(ModelPart modelPart) {
         this.field_27406 = modelPart;
-        this.head = modelPart.method_32086("head");
-        this.field_27408 = modelPart.method_32086("right_hind_leg");
-        this.field_27407 = modelPart.method_32086("left_hind_leg");
-        this.field_27410 = modelPart.method_32086("right_front_leg");
-        this.field_27409 = modelPart.method_32086("left_front_leg");
+        this.head = modelPart.getChild("head");
+        this.field_27408 = modelPart.getChild("right_hind_leg");
+        this.field_27407 = modelPart.getChild("left_hind_leg");
+        this.field_27410 = modelPart.getChild("right_front_leg");
+        this.field_27409 = modelPart.getChild("left_front_leg");
     }
 
-    public static class_5607 method_31991(class_5605 arg) {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32098(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, arg), class_5603.method_32090(0.0f, 6.0f, 0.0f));
-        lv2.method_32117("body", class_5606.method_32108().method_32101(16, 16).method_32098(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, arg), class_5603.method_32090(0.0f, 6.0f, 0.0f));
-        class_5606 lv3 = class_5606.method_32108().method_32101(0, 16).method_32098(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, arg);
-        lv2.method_32117("right_hind_leg", lv3, class_5603.method_32090(-2.0f, 18.0f, 4.0f));
-        lv2.method_32117("left_hind_leg", lv3, class_5603.method_32090(2.0f, 18.0f, 4.0f));
-        lv2.method_32117("right_front_leg", lv3, class_5603.method_32090(-2.0f, 18.0f, -4.0f));
-        lv2.method_32117("left_front_leg", lv3, class_5603.method_32090(2.0f, 18.0f, -4.0f));
-        return class_5607.method_32110(lv, 64, 32);
+    public static TexturedModelData getTexturedModelData(Dilation dilation) {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, dilation), ModelTransform.pivot(0.0f, 6.0f, 0.0f));
+        modelPartData.addChild("body", ModelPartBuilder.create().uv(16, 16).cuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, dilation), ModelTransform.pivot(0.0f, 6.0f, 0.0f));
+        ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 16).cuboid(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, dilation);
+        modelPartData.addChild("right_hind_leg", modelPartBuilder, ModelTransform.pivot(-2.0f, 18.0f, 4.0f));
+        modelPartData.addChild("left_hind_leg", modelPartBuilder, ModelTransform.pivot(2.0f, 18.0f, 4.0f));
+        modelPartData.addChild("right_front_leg", modelPartBuilder, ModelTransform.pivot(-2.0f, 18.0f, -4.0f));
+        modelPartData.addChild("left_front_leg", modelPartBuilder, ModelTransform.pivot(2.0f, 18.0f, -4.0f));
+        return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override
-    public ModelPart method_32008() {
+    public ModelPart getPart() {
         return this.field_27406;
     }
 

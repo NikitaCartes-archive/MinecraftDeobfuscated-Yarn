@@ -146,6 +146,10 @@ public abstract class GeneratorType {
 
     protected abstract ChunkGenerator getChunkGenerator(Registry<Biome> var1, Registry<ChunkGeneratorSettings> var2, long var3);
 
+    public static boolean method_32685(GeneratorType generatorType) {
+        return generatorType != DEBUG_ALL_BLOCK_STATES;
+    }
+
     @Environment(value=EnvType.CLIENT)
     public static interface ScreenProvider {
         public Screen createEditScreen(CreateWorldScreen var1, GeneratorOptions var2);

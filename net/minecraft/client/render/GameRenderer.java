@@ -21,6 +21,7 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
@@ -44,7 +45,6 @@ import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
@@ -289,7 +289,7 @@ AutoCloseable {
     }
 
     private double getFov(Camera camera, float tickDelta, boolean changingFov) {
-        FluidState fluidState;
+        CameraSubmersionType cameraSubmersionType;
         if (this.renderingPanorama) {
             return 90.0;
         }
@@ -302,7 +302,7 @@ AutoCloseable {
             float f = Math.min((float)((LivingEntity)camera.getFocusedEntity()).deathTime + tickDelta, 20.0f);
             d /= (double)((1.0f - 500.0f / (f + 500.0f)) * 2.0f + 1.0f);
         }
-        if (!(fluidState = camera.getSubmergedFluidState()).isEmpty()) {
+        if ((cameraSubmersionType = camera.getSubmersionType()) == CameraSubmersionType.LAVA || cameraSubmersionType == CameraSubmersionType.WATER) {
             d = d * 60.0 / 70.0;
         }
         return d;

@@ -56,7 +56,7 @@ implements Packet<ClientPlayPacketListener> {
             case REMOVE: {
                 break;
             }
-            case UPDATE_PCT: {
+            case UPDATE_PROGRESS: {
                 this.percent = buf.readFloat();
                 break;
             }
@@ -97,7 +97,7 @@ implements Packet<ClientPlayPacketListener> {
             case REMOVE: {
                 break;
             }
-            case UPDATE_PCT: {
+            case UPDATE_PROGRESS: {
                 buf.writeFloat(this.percent);
                 break;
             }
@@ -183,7 +183,7 @@ implements Packet<ClientPlayPacketListener> {
     public static enum Type {
         ADD,
         REMOVE,
-        UPDATE_PCT,
+        UPDATE_PROGRESS,
         UPDATE_NAME,
         UPDATE_STYLE,
         UPDATE_PROPERTIES;

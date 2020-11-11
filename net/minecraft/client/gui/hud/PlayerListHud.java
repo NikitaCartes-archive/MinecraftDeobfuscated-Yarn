@@ -49,15 +49,15 @@ extends DrawableHelper {
         this.inGameHud = inGameHud;
     }
 
-    public Text getPlayerName(PlayerListEntry playerListEntry) {
-        if (playerListEntry.getDisplayName() != null) {
-            return this.method_27538(playerListEntry, playerListEntry.getDisplayName().shallowCopy());
+    public Text getPlayerName(PlayerListEntry entry) {
+        if (entry.getDisplayName() != null) {
+            return this.applyGameModeFormatting(entry, entry.getDisplayName().shallowCopy());
         }
-        return this.method_27538(playerListEntry, Team.modifyText(playerListEntry.getScoreboardTeam(), new LiteralText(playerListEntry.getProfile().getName())));
+        return this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), new LiteralText(entry.getProfile().getName())));
     }
 
-    private Text method_27538(PlayerListEntry playerListEntry, MutableText mutableText) {
-        return playerListEntry.getGameMode() == GameMode.SPECTATOR ? mutableText.formatted(Formatting.ITALIC) : mutableText;
+    private Text applyGameModeFormatting(PlayerListEntry entry, MutableText name) {
+        return entry.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name;
     }
 
     public void tick(boolean visible) {

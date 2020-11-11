@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
+import net.minecraft.loot.function.LootFunctionManager;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
@@ -30,6 +31,7 @@ implements AutoCloseable {
     private final TagManagerLoader registryTagManager = new TagManagerLoader();
     private final LootConditionManager lootConditionManager = new LootConditionManager();
     private final LootManager lootManager = new LootManager(this.lootConditionManager);
+    private final LootFunctionManager lootFunctionManager = new LootFunctionManager(this.lootConditionManager, this.lootManager);
     private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootConditionManager);
     private final FunctionLoader functionLoader;
 
@@ -40,6 +42,7 @@ implements AutoCloseable {
         this.resourceManager.registerListener(this.lootConditionManager);
         this.resourceManager.registerListener(this.recipeManager);
         this.resourceManager.registerListener(this.lootManager);
+        this.resourceManager.registerListener(this.lootFunctionManager);
         this.resourceManager.registerListener(this.functionLoader);
         this.resourceManager.registerListener(this.serverAdvancementLoader);
     }
@@ -54,6 +57,10 @@ implements AutoCloseable {
 
     public LootManager getLootManager() {
         return this.lootManager;
+    }
+
+    public LootFunctionManager getLootFunctionManager() {
+        return this.lootFunctionManager;
     }
 
     public TagManager getRegistryTagManager() {

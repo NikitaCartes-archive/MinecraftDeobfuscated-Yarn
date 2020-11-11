@@ -159,9 +159,9 @@ public class FeatureUpdater {
                 this.featureIdToChunkTag.computeIfAbsent(string3, string -> new Long2ObjectOpenHashMap()).put(l, compoundTag2);
             }
             String string5 = string2 + "_index";
-            ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(() -> new ChunkUpdateState(string5), string5);
+            ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState::method_32358, ChunkUpdateState::new, string5);
             if (chunkUpdateState.getAll().isEmpty()) {
-                ChunkUpdateState chunkUpdateState2 = new ChunkUpdateState(string5);
+                ChunkUpdateState chunkUpdateState2 = new ChunkUpdateState();
                 this.updateStates.put(string2, chunkUpdateState2);
                 for (String string6 : compoundTag.getKeys()) {
                     CompoundTag compoundTag3 = compoundTag.getCompound(string6);

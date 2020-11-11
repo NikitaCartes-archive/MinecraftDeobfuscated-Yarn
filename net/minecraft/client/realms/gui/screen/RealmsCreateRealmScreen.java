@@ -22,8 +22,8 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class RealmsCreateRealmScreen
 extends RealmsScreen {
-    private static final Text field_26487 = new TranslatableText("mco.configure.world.name");
-    private static final Text field_26488 = new TranslatableText("mco.configure.world.description");
+    private static final Text WORLD_NAME_TEXT = new TranslatableText("mco.configure.world.name");
+    private static final Text WORLD_DESCRIPTION_TEXT = new TranslatableText("mco.configure.world.description");
     private final RealmsServer server;
     private final RealmsMainScreen parent;
     private TextFieldWidget nameBox;
@@ -101,8 +101,8 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.createRealmLabel.render(this, matrices);
-        this.textRenderer.draw(matrices, field_26487, (float)(this.width / 2 - 100), 52.0f, 0xA0A0A0);
-        this.textRenderer.draw(matrices, field_26488, (float)(this.width / 2 - 100), 102.0f, 0xA0A0A0);
+        this.textRenderer.draw(matrices, WORLD_NAME_TEXT, (float)(this.width / 2 - 100), 52.0f, 0xA0A0A0);
+        this.textRenderer.draw(matrices, WORLD_DESCRIPTION_TEXT, (float)(this.width / 2 - 100), 102.0f, 0xA0A0A0);
         if (this.nameBox != null) {
             this.nameBox.render(matrices, mouseX, mouseY, delta);
         }

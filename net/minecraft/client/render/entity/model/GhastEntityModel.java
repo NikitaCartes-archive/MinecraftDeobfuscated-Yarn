@@ -6,26 +6,26 @@ package net.minecraft.client.render.entity.model;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class GhastEntityModel<T extends Entity>
-extends class_5597<T> {
+extends SinglePartEntityModel<T> {
     private final ModelPart field_27419;
     private final ModelPart[] tentacles = new ModelPart[9];
 
     public GhastEntityModel(ModelPart modelPart) {
         this.field_27419 = modelPart;
         for (int i = 0; i < this.tentacles.length; ++i) {
-            this.tentacles[i] = modelPart.method_32086(GhastEntityModel.method_32001(i));
+            this.tentacles[i] = modelPart.getChild(GhastEntityModel.method_32001(i));
         }
     }
 
@@ -33,18 +33,18 @@ extends class_5597<T> {
         return "tentacle" + i;
     }
 
-    public static class_5607 method_32000() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("body", class_5606.method_32108().method_32101(0, 0).method_32097(-8.0f, -8.0f, -8.0f, 16.0f, 16.0f, 16.0f), class_5603.method_32090(0.0f, 17.6f, 0.0f));
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0f, -8.0f, -8.0f, 16.0f, 16.0f, 16.0f), ModelTransform.pivot(0.0f, 17.6f, 0.0f));
         Random random = new Random(1660L);
         for (int i = 0; i < 9; ++i) {
             float f = (((float)(i % 3) - (float)(i / 3 % 2) * 0.5f + 0.25f) / 2.0f * 2.0f - 1.0f) * 5.0f;
             float g = ((float)(i / 3) / 2.0f * 2.0f - 1.0f) * 5.0f;
             int j = random.nextInt(7) + 8;
-            lv2.method_32117(GhastEntityModel.method_32001(i), class_5606.method_32108().method_32101(0, 0).method_32097(-1.0f, 0.0f, -1.0f, 2.0f, j, 2.0f), class_5603.method_32090(f, 24.6f, g));
+            modelPartData.addChild(GhastEntityModel.method_32001(i), ModelPartBuilder.create().uv(0, 0).cuboid(-1.0f, 0.0f, -1.0f, 2.0f, j, 2.0f), ModelTransform.pivot(f, 24.6f, g));
         }
-        return class_5607.method_32110(lv, 64, 32);
+        return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override
@@ -55,7 +55,7 @@ extends class_5597<T> {
     }
 
     @Override
-    public ModelPart method_32008() {
+    public ModelPart getPart() {
         return this.field_27419;
     }
 }

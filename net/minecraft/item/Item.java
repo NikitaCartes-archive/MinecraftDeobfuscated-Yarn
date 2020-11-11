@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,6 +16,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -78,6 +80,9 @@ implements ItemConvertible {
         return Registry.ITEM.get(id);
     }
 
+    /**
+     * @deprecated Please use {@link Block#asItem}
+     */
     @Deprecated
     public static Item fromBlock(Block block) {
         return BLOCK_ITEMS.getOrDefault(block, Items.AIR);
@@ -180,26 +185,26 @@ implements ItemConvertible {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean isItemBarVisible(ItemStack itemStack) {
-        return itemStack.isDamaged();
+    public boolean isItemBarVisible(ItemStack stack) {
+        return stack.isDamaged();
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getItemBarStep(ItemStack itemStack) {
-        return Math.round(13.0f - (float)itemStack.getDamage() * 13.0f / (float)this.maxDamage);
+    public int getItemBarStep(ItemStack stack) {
+        return Math.round(13.0f - (float)stack.getDamage() * 13.0f / (float)this.maxDamage);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getItemBarColor(ItemStack itemStack) {
-        float f = Math.max(0.0f, ((float)this.maxDamage - (float)itemStack.getDamage()) / (float)this.maxDamage);
+    public int getItemBarColor(ItemStack stack) {
+        float f = Math.max(0.0f, ((float)this.maxDamage - (float)stack.getDamage()) / (float)this.maxDamage);
         return MathHelper.hsvToRgb(f / 3.0f, 1.0f, 1.0f);
     }
 
-    public boolean onStackClicked(ItemStack itemStack, ItemStack itemStack2, ClickType clickType, PlayerInventory playerInventory) {
+    public boolean onStackClicked(ItemStack stack, ItemStack otherStack, ClickType clickType, PlayerInventory playerInventory) {
         return false;
     }
 
-    public boolean onClicked(ItemStack itemStack, ItemStack itemStack2, ClickType clickType, PlayerInventory playerInventory) {
+    public boolean onClicked(ItemStack stack, ItemStack otherStack, ClickType clickType, PlayerInventory playerInventory) {
         return false;
     }
 
@@ -250,7 +255,7 @@ implements ItemConvertible {
     }
 
     /**
-     * Checks if an item should have its NBT data stored in {@link #tag} sent to the client.
+     * Checks if an item should have its NBT data stored in {@link ItemStack#tag} sent to the client.
      * 
      * <p>If an item is damageable, this method is ignored and data is always synced to client.
      */
@@ -302,6 +307,11 @@ implements ItemConvertible {
 
     @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Optional<TooltipData> getTooltipData(ItemStack stack) {
+        return Optional.empty();
     }
 
     public Text getName(ItemStack stack) {

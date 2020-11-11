@@ -5,14 +5,14 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 
 @Environment(value=EnvType.CLIENT)
@@ -23,22 +23,22 @@ extends HorseEntityModel<T> {
 
     public DonkeyEntityModel(ModelPart modelPart) {
         super(modelPart);
-        this.field_27399 = this.torso.method_32086("left_chest");
-        this.field_27400 = this.torso.method_32086("right_chest");
+        this.field_27399 = this.torso.getChild("left_chest");
+        this.field_27400 = this.torso.getChild("right_chest");
     }
 
-    public static class_5607 method_31987() {
-        class_5609 lv = HorseEntityModel.method_32010(class_5605.field_27715);
-        class_5610 lv2 = lv.method_32111();
-        class_5610 lv3 = lv2.method_32116("body");
-        class_5606 lv4 = class_5606.method_32108().method_32101(26, 21).method_32097(-4.0f, 0.0f, -2.0f, 8.0f, 8.0f, 3.0f);
-        lv3.method_32117("left_chest", lv4, class_5603.method_32091(6.0f, -8.0f, 0.0f, 0.0f, -1.5707964f, 0.0f));
-        lv3.method_32117("right_chest", lv4, class_5603.method_32091(-6.0f, -8.0f, 0.0f, 0.0f, 1.5707964f, 0.0f));
-        class_5610 lv5 = lv2.method_32116("head_parts").method_32116("head");
-        class_5606 lv6 = class_5606.method_32108().method_32101(0, 12).method_32097(-1.0f, -7.0f, 0.0f, 2.0f, 7.0f, 1.0f);
-        lv5.method_32117("left_ear", lv6, class_5603.method_32091(1.25f, -10.0f, 4.0f, 0.2617994f, 0.0f, 0.2617994f));
-        lv5.method_32117("right_ear", lv6, class_5603.method_32091(-1.25f, -10.0f, 4.0f, 0.2617994f, 0.0f, -0.2617994f));
-        return class_5607.method_32110(lv, 64, 64);
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = HorseEntityModel.getModelData(Dilation.NONE);
+        ModelPartData modelPartData = modelData.getRoot();
+        ModelPartData modelPartData2 = modelPartData.getChild("body");
+        ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(26, 21).cuboid(-4.0f, 0.0f, -2.0f, 8.0f, 8.0f, 3.0f);
+        modelPartData2.addChild("left_chest", modelPartBuilder, ModelTransform.of(6.0f, -8.0f, 0.0f, 0.0f, -1.5707964f, 0.0f));
+        modelPartData2.addChild("right_chest", modelPartBuilder, ModelTransform.of(-6.0f, -8.0f, 0.0f, 0.0f, 1.5707964f, 0.0f));
+        ModelPartData modelPartData3 = modelPartData.getChild("head_parts").getChild("head");
+        ModelPartBuilder modelPartBuilder2 = ModelPartBuilder.create().uv(0, 12).cuboid(-1.0f, -7.0f, 0.0f, 2.0f, 7.0f, 1.0f);
+        modelPartData3.addChild("left_ear", modelPartBuilder2, ModelTransform.of(1.25f, -10.0f, 4.0f, 0.2617994f, 0.0f, 0.2617994f));
+        modelPartData3.addChild("right_ear", modelPartBuilder2, ModelTransform.of(-1.25f, -10.0f, 4.0f, 0.2617994f, 0.0f, -0.2617994f));
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
     @Override

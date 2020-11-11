@@ -5,19 +5,19 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class DolphinEntityModel<T extends Entity>
-extends class_5597<T> {
+extends SinglePartEntityModel<T> {
     private final ModelPart field_27411;
     private final ModelPart body;
     private final ModelPart tail;
@@ -25,29 +25,29 @@ extends class_5597<T> {
 
     public DolphinEntityModel(ModelPart modelPart) {
         this.field_27411 = modelPart;
-        this.body = modelPart.method_32086("body");
-        this.tail = this.body.method_32086("tail");
-        this.flukes = this.tail.method_32086("tail_fin");
+        this.body = modelPart.getChild("body");
+        this.tail = this.body.getChild("tail");
+        this.flukes = this.tail.getChild("tail_fin");
     }
 
-    public static class_5607 method_31992() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
         float f = 18.0f;
         float g = -8.0f;
-        class_5610 lv3 = lv2.method_32117("body", class_5606.method_32108().method_32101(22, 0).method_32097(-4.0f, -7.0f, 0.0f, 8.0f, 7.0f, 13.0f), class_5603.method_32090(0.0f, 22.0f, -5.0f));
-        lv3.method_32117("back_fin", class_5606.method_32108().method_32101(51, 0).method_32097(-0.5f, 0.0f, 8.0f, 1.0f, 4.0f, 5.0f), class_5603.method_32092(1.0471976f, 0.0f, 0.0f));
-        lv3.method_32117("left_fin", class_5606.method_32108().method_32101(48, 20).method_32096().method_32097(-0.5f, -4.0f, 0.0f, 1.0f, 4.0f, 7.0f), class_5603.method_32091(2.0f, -2.0f, 4.0f, 1.0471976f, 0.0f, 2.0943952f));
-        lv3.method_32117("right_fin", class_5606.method_32108().method_32101(48, 20).method_32097(-0.5f, -4.0f, 0.0f, 1.0f, 4.0f, 7.0f), class_5603.method_32091(-2.0f, -2.0f, 4.0f, 1.0471976f, 0.0f, -2.0943952f));
-        class_5610 lv4 = lv3.method_32117("tail", class_5606.method_32108().method_32101(0, 19).method_32097(-2.0f, -2.5f, 0.0f, 4.0f, 5.0f, 11.0f), class_5603.method_32091(0.0f, -2.5f, 11.0f, -0.10471976f, 0.0f, 0.0f));
-        lv4.method_32117("tail_fin", class_5606.method_32108().method_32101(19, 20).method_32097(-5.0f, -0.5f, 0.0f, 10.0f, 1.0f, 6.0f), class_5603.method_32090(0.0f, 0.0f, 9.0f));
-        class_5610 lv5 = lv3.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32097(-4.0f, -3.0f, -3.0f, 8.0f, 7.0f, 6.0f), class_5603.method_32090(0.0f, -4.0f, -3.0f));
-        lv5.method_32117("nose", class_5606.method_32108().method_32101(0, 13).method_32097(-1.0f, 2.0f, -7.0f, 2.0f, 2.0f, 4.0f), class_5603.field_27701);
-        return class_5607.method_32110(lv, 64, 64);
+        ModelPartData modelPartData2 = modelPartData.addChild("body", ModelPartBuilder.create().uv(22, 0).cuboid(-4.0f, -7.0f, 0.0f, 8.0f, 7.0f, 13.0f), ModelTransform.pivot(0.0f, 22.0f, -5.0f));
+        modelPartData2.addChild("back_fin", ModelPartBuilder.create().uv(51, 0).cuboid(-0.5f, 0.0f, 8.0f, 1.0f, 4.0f, 5.0f), ModelTransform.rotation(1.0471976f, 0.0f, 0.0f));
+        modelPartData2.addChild("left_fin", ModelPartBuilder.create().uv(48, 20).mirrored().cuboid(-0.5f, -4.0f, 0.0f, 1.0f, 4.0f, 7.0f), ModelTransform.of(2.0f, -2.0f, 4.0f, 1.0471976f, 0.0f, 2.0943952f));
+        modelPartData2.addChild("right_fin", ModelPartBuilder.create().uv(48, 20).cuboid(-0.5f, -4.0f, 0.0f, 1.0f, 4.0f, 7.0f), ModelTransform.of(-2.0f, -2.0f, 4.0f, 1.0471976f, 0.0f, -2.0943952f));
+        ModelPartData modelPartData3 = modelPartData2.addChild("tail", ModelPartBuilder.create().uv(0, 19).cuboid(-2.0f, -2.5f, 0.0f, 4.0f, 5.0f, 11.0f), ModelTransform.of(0.0f, -2.5f, 11.0f, -0.10471976f, 0.0f, 0.0f));
+        modelPartData3.addChild("tail_fin", ModelPartBuilder.create().uv(19, 20).cuboid(-5.0f, -0.5f, 0.0f, 10.0f, 1.0f, 6.0f), ModelTransform.pivot(0.0f, 0.0f, 9.0f));
+        ModelPartData modelPartData4 = modelPartData2.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -3.0f, -3.0f, 8.0f, 7.0f, 6.0f), ModelTransform.pivot(0.0f, -4.0f, -3.0f));
+        modelPartData4.addChild("nose", ModelPartBuilder.create().uv(0, 13).cuboid(-1.0f, 2.0f, -7.0f, 2.0f, 2.0f, 4.0f), ModelTransform.NONE);
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
     @Override
-    public ModelPart method_32008() {
+    public ModelPart getPart() {
         return this.field_27411;
     }
 

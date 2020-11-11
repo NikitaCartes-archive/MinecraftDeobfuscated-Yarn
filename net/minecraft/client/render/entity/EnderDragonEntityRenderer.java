@@ -6,19 +6,19 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
-import net.minecraft.class_5617;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EndCrystalEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
@@ -44,10 +44,10 @@ extends EntityRenderer<EnderDragonEntity> {
     private static final float HALF_SQRT_3 = (float)(Math.sqrt(3.0) / 2.0);
     private final DragonEntityModel model;
 
-    public EnderDragonEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
+    public EnderDragonEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
         this.shadowRadius = 0.5f;
-        this.model = new DragonEntityModel(arg.method_32167(EntityModelLayers.ENDER_DRAGON));
+        this.model = new DragonEntityModel(context.getPart(EntityModelLayers.ENDER_DRAGON));
     }
 
     @Override
@@ -171,31 +171,31 @@ extends EntityRenderer<EnderDragonEntity> {
         return TEXTURE;
     }
 
-    public static class_5607 method_32165() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
         float f = -16.0f;
-        class_5610 lv3 = lv2.method_32117("head", class_5606.method_32108().method_32104("upperlip", -6.0f, -1.0f, -24.0f, 12, 5, 16, 176, 44).method_32104("upperhead", -8.0f, -8.0f, -10.0f, 16, 16, 16, 112, 30).method_32096().method_32104("scale", -5.0f, -12.0f, -4.0f, 2, 4, 6, 0, 0).method_32104("nostril", -5.0f, -3.0f, -22.0f, 2, 2, 4, 112, 0).method_32096().method_32104("scale", 3.0f, -12.0f, -4.0f, 2, 4, 6, 0, 0).method_32104("nostril", 3.0f, -3.0f, -22.0f, 2, 2, 4, 112, 0), class_5603.field_27701);
-        lv3.method_32117("jaw", class_5606.method_32108().method_32104("jaw", -6.0f, 0.0f, -16.0f, 12, 4, 16, 176, 65), class_5603.method_32090(0.0f, 4.0f, -8.0f));
-        lv2.method_32117("neck", class_5606.method_32108().method_32104("box", -5.0f, -5.0f, -5.0f, 10, 10, 10, 192, 104).method_32104("scale", -1.0f, -9.0f, -3.0f, 2, 4, 6, 48, 0), class_5603.field_27701);
-        lv2.method_32117("body", class_5606.method_32108().method_32104("body", -12.0f, 0.0f, -16.0f, 24, 24, 64, 0, 0).method_32104("scale", -1.0f, -6.0f, -10.0f, 2, 6, 12, 220, 53).method_32104("scale", -1.0f, -6.0f, 10.0f, 2, 6, 12, 220, 53).method_32104("scale", -1.0f, -6.0f, 30.0f, 2, 6, 12, 220, 53), class_5603.method_32090(0.0f, 4.0f, 8.0f));
-        class_5610 lv4 = lv2.method_32117("left_wing", class_5606.method_32108().method_32096().method_32104("bone", 0.0f, -4.0f, -4.0f, 56, 8, 8, 112, 88).method_32104("skin", 0.0f, 0.0f, 2.0f, 56, 0, 56, -56, 88), class_5603.method_32090(12.0f, 5.0f, 2.0f));
-        lv4.method_32117("left_wing_tip", class_5606.method_32108().method_32096().method_32104("bone", 0.0f, -2.0f, -2.0f, 56, 4, 4, 112, 136).method_32104("skin", 0.0f, 0.0f, 2.0f, 56, 0, 56, -56, 144), class_5603.method_32090(56.0f, 0.0f, 0.0f));
-        class_5610 lv5 = lv2.method_32117("left_front_leg", class_5606.method_32108().method_32104("main", -4.0f, -4.0f, -4.0f, 8, 24, 8, 112, 104), class_5603.method_32090(12.0f, 20.0f, 2.0f));
-        class_5610 lv6 = lv5.method_32117("left_front_leg_tip", class_5606.method_32108().method_32104("main", -3.0f, -1.0f, -3.0f, 6, 24, 6, 226, 138), class_5603.method_32090(0.0f, 20.0f, -1.0f));
-        lv6.method_32117("left_front_foot", class_5606.method_32108().method_32104("main", -4.0f, 0.0f, -12.0f, 8, 4, 16, 144, 104), class_5603.method_32090(0.0f, 23.0f, 0.0f));
-        class_5610 lv7 = lv2.method_32117("left_hind_leg", class_5606.method_32108().method_32104("main", -8.0f, -4.0f, -8.0f, 16, 32, 16, 0, 0), class_5603.method_32090(16.0f, 16.0f, 42.0f));
-        class_5610 lv8 = lv7.method_32117("left_hind_leg_tip", class_5606.method_32108().method_32104("main", -6.0f, -2.0f, 0.0f, 12, 32, 12, 196, 0), class_5603.method_32090(0.0f, 32.0f, -4.0f));
-        lv8.method_32117("left_hind_foot", class_5606.method_32108().method_32104("main", -9.0f, 0.0f, -20.0f, 18, 6, 24, 112, 0), class_5603.method_32090(0.0f, 31.0f, 4.0f));
-        class_5610 lv9 = lv2.method_32117("right_wing", class_5606.method_32108().method_32104("bone", -56.0f, -4.0f, -4.0f, 56, 8, 8, 112, 88).method_32104("skin", -56.0f, 0.0f, 2.0f, 56, 0, 56, -56, 88), class_5603.method_32090(-12.0f, 5.0f, 2.0f));
-        lv9.method_32117("right_wing_tip", class_5606.method_32108().method_32104("bone", -56.0f, -2.0f, -2.0f, 56, 4, 4, 112, 136).method_32104("skin", -56.0f, 0.0f, 2.0f, 56, 0, 56, -56, 144), class_5603.method_32090(-56.0f, 0.0f, 0.0f));
-        class_5610 lv10 = lv2.method_32117("right_front_leg", class_5606.method_32108().method_32104("main", -4.0f, -4.0f, -4.0f, 8, 24, 8, 112, 104), class_5603.method_32090(-12.0f, 20.0f, 2.0f));
-        class_5610 lv11 = lv10.method_32117("right_front_leg_tip", class_5606.method_32108().method_32104("main", -3.0f, -1.0f, -3.0f, 6, 24, 6, 226, 138), class_5603.method_32090(0.0f, 20.0f, -1.0f));
-        lv11.method_32117("right_front_foot", class_5606.method_32108().method_32104("main", -4.0f, 0.0f, -12.0f, 8, 4, 16, 144, 104), class_5603.method_32090(0.0f, 23.0f, 0.0f));
-        class_5610 lv12 = lv2.method_32117("right_hind_leg", class_5606.method_32108().method_32104("main", -8.0f, -4.0f, -8.0f, 16, 32, 16, 0, 0), class_5603.method_32090(-16.0f, 16.0f, 42.0f));
-        class_5610 lv13 = lv12.method_32117("right_hind_leg_tip", class_5606.method_32108().method_32104("main", -6.0f, -2.0f, 0.0f, 12, 32, 12, 196, 0), class_5603.method_32090(0.0f, 32.0f, -4.0f));
-        lv13.method_32117("right_hind_foot", class_5606.method_32108().method_32104("main", -9.0f, 0.0f, -20.0f, 18, 6, 24, 112, 0), class_5603.method_32090(0.0f, 31.0f, 4.0f));
-        return class_5607.method_32110(lv, 256, 256);
+        ModelPartData modelPartData2 = modelPartData.addChild("head", ModelPartBuilder.create().cuboid("upperlip", -6.0f, -1.0f, -24.0f, 12, 5, 16, 176, 44).cuboid("upperhead", -8.0f, -8.0f, -10.0f, 16, 16, 16, 112, 30).mirrored().cuboid("scale", -5.0f, -12.0f, -4.0f, 2, 4, 6, 0, 0).cuboid("nostril", -5.0f, -3.0f, -22.0f, 2, 2, 4, 112, 0).mirrored().cuboid("scale", 3.0f, -12.0f, -4.0f, 2, 4, 6, 0, 0).cuboid("nostril", 3.0f, -3.0f, -22.0f, 2, 2, 4, 112, 0), ModelTransform.NONE);
+        modelPartData2.addChild("jaw", ModelPartBuilder.create().cuboid("jaw", -6.0f, 0.0f, -16.0f, 12, 4, 16, 176, 65), ModelTransform.pivot(0.0f, 4.0f, -8.0f));
+        modelPartData.addChild("neck", ModelPartBuilder.create().cuboid("box", -5.0f, -5.0f, -5.0f, 10, 10, 10, 192, 104).cuboid("scale", -1.0f, -9.0f, -3.0f, 2, 4, 6, 48, 0), ModelTransform.NONE);
+        modelPartData.addChild("body", ModelPartBuilder.create().cuboid("body", -12.0f, 0.0f, -16.0f, 24, 24, 64, 0, 0).cuboid("scale", -1.0f, -6.0f, -10.0f, 2, 6, 12, 220, 53).cuboid("scale", -1.0f, -6.0f, 10.0f, 2, 6, 12, 220, 53).cuboid("scale", -1.0f, -6.0f, 30.0f, 2, 6, 12, 220, 53), ModelTransform.pivot(0.0f, 4.0f, 8.0f));
+        ModelPartData modelPartData3 = modelPartData.addChild("left_wing", ModelPartBuilder.create().mirrored().cuboid("bone", 0.0f, -4.0f, -4.0f, 56, 8, 8, 112, 88).cuboid("skin", 0.0f, 0.0f, 2.0f, 56, 0, 56, -56, 88), ModelTransform.pivot(12.0f, 5.0f, 2.0f));
+        modelPartData3.addChild("left_wing_tip", ModelPartBuilder.create().mirrored().cuboid("bone", 0.0f, -2.0f, -2.0f, 56, 4, 4, 112, 136).cuboid("skin", 0.0f, 0.0f, 2.0f, 56, 0, 56, -56, 144), ModelTransform.pivot(56.0f, 0.0f, 0.0f));
+        ModelPartData modelPartData4 = modelPartData.addChild("left_front_leg", ModelPartBuilder.create().cuboid("main", -4.0f, -4.0f, -4.0f, 8, 24, 8, 112, 104), ModelTransform.pivot(12.0f, 20.0f, 2.0f));
+        ModelPartData modelPartData5 = modelPartData4.addChild("left_front_leg_tip", ModelPartBuilder.create().cuboid("main", -3.0f, -1.0f, -3.0f, 6, 24, 6, 226, 138), ModelTransform.pivot(0.0f, 20.0f, -1.0f));
+        modelPartData5.addChild("left_front_foot", ModelPartBuilder.create().cuboid("main", -4.0f, 0.0f, -12.0f, 8, 4, 16, 144, 104), ModelTransform.pivot(0.0f, 23.0f, 0.0f));
+        ModelPartData modelPartData6 = modelPartData.addChild("left_hind_leg", ModelPartBuilder.create().cuboid("main", -8.0f, -4.0f, -8.0f, 16, 32, 16, 0, 0), ModelTransform.pivot(16.0f, 16.0f, 42.0f));
+        ModelPartData modelPartData7 = modelPartData6.addChild("left_hind_leg_tip", ModelPartBuilder.create().cuboid("main", -6.0f, -2.0f, 0.0f, 12, 32, 12, 196, 0), ModelTransform.pivot(0.0f, 32.0f, -4.0f));
+        modelPartData7.addChild("left_hind_foot", ModelPartBuilder.create().cuboid("main", -9.0f, 0.0f, -20.0f, 18, 6, 24, 112, 0), ModelTransform.pivot(0.0f, 31.0f, 4.0f));
+        ModelPartData modelPartData8 = modelPartData.addChild("right_wing", ModelPartBuilder.create().cuboid("bone", -56.0f, -4.0f, -4.0f, 56, 8, 8, 112, 88).cuboid("skin", -56.0f, 0.0f, 2.0f, 56, 0, 56, -56, 88), ModelTransform.pivot(-12.0f, 5.0f, 2.0f));
+        modelPartData8.addChild("right_wing_tip", ModelPartBuilder.create().cuboid("bone", -56.0f, -2.0f, -2.0f, 56, 4, 4, 112, 136).cuboid("skin", -56.0f, 0.0f, 2.0f, 56, 0, 56, -56, 144), ModelTransform.pivot(-56.0f, 0.0f, 0.0f));
+        ModelPartData modelPartData9 = modelPartData.addChild("right_front_leg", ModelPartBuilder.create().cuboid("main", -4.0f, -4.0f, -4.0f, 8, 24, 8, 112, 104), ModelTransform.pivot(-12.0f, 20.0f, 2.0f));
+        ModelPartData modelPartData10 = modelPartData9.addChild("right_front_leg_tip", ModelPartBuilder.create().cuboid("main", -3.0f, -1.0f, -3.0f, 6, 24, 6, 226, 138), ModelTransform.pivot(0.0f, 20.0f, -1.0f));
+        modelPartData10.addChild("right_front_foot", ModelPartBuilder.create().cuboid("main", -4.0f, 0.0f, -12.0f, 8, 4, 16, 144, 104), ModelTransform.pivot(0.0f, 23.0f, 0.0f));
+        ModelPartData modelPartData11 = modelPartData.addChild("right_hind_leg", ModelPartBuilder.create().cuboid("main", -8.0f, -4.0f, -8.0f, 16, 32, 16, 0, 0), ModelTransform.pivot(-16.0f, 16.0f, 42.0f));
+        ModelPartData modelPartData12 = modelPartData11.addChild("right_hind_leg_tip", ModelPartBuilder.create().cuboid("main", -6.0f, -2.0f, 0.0f, 12, 32, 12, 196, 0), ModelTransform.pivot(0.0f, 32.0f, -4.0f));
+        modelPartData12.addChild("right_hind_foot", ModelPartBuilder.create().cuboid("main", -9.0f, 0.0f, -20.0f, 18, 6, 24, 112, 0), ModelTransform.pivot(0.0f, 31.0f, 4.0f));
+        return TexturedModelData.of(modelData, 256, 256);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -205,47 +205,47 @@ extends EntityRenderer<EnderDragonEntity> {
         private final ModelPart neck;
         private final ModelPart jaw;
         private final ModelPart body;
-        private final ModelPart wing;
-        private final ModelPart field_21548;
-        private final ModelPart field_21549;
-        private final ModelPart field_21550;
-        private final ModelPart field_21551;
-        private final ModelPart field_21552;
-        private final ModelPart field_21553;
-        private final ModelPart field_21554;
-        private final ModelPart field_21555;
-        private final ModelPart wingTip;
-        private final ModelPart frontLeg;
-        private final ModelPart frontLegTip;
-        private final ModelPart frontFoot;
-        private final ModelPart rearLeg;
-        private final ModelPart rearLegTip;
-        private final ModelPart rearFoot;
+        private final ModelPart leftWing;
+        private final ModelPart leftWingTip;
+        private final ModelPart leftFrontLeg;
+        private final ModelPart leftFrontLegTip;
+        private final ModelPart leftFrontFoot;
+        private final ModelPart leftHindLeg;
+        private final ModelPart leftHindLegTip;
+        private final ModelPart leftHindFoot;
+        private final ModelPart rightWing;
+        private final ModelPart rightWingTip;
+        private final ModelPart rightFrontLeg;
+        private final ModelPart rightFrontLegTip;
+        private final ModelPart rightFrontFoot;
+        private final ModelPart rightHindLeg;
+        private final ModelPart rightHindLegTip;
+        private final ModelPart rightHindFoot;
         @Nullable
         private EnderDragonEntity dragon;
         private float tickDelta;
 
-        public DragonEntityModel(ModelPart modelPart) {
-            this.head = modelPart.method_32086("head");
-            this.jaw = this.head.method_32086("jaw");
-            this.neck = modelPart.method_32086("neck");
-            this.body = modelPart.method_32086("body");
-            this.wing = modelPart.method_32086("left_wing");
-            this.field_21548 = this.wing.method_32086("left_wing_tip");
-            this.field_21549 = modelPart.method_32086("left_front_leg");
-            this.field_21550 = this.field_21549.method_32086("left_front_leg_tip");
-            this.field_21551 = this.field_21550.method_32086("left_front_foot");
-            this.field_21552 = modelPart.method_32086("left_hind_leg");
-            this.field_21553 = this.field_21552.method_32086("left_hind_leg_tip");
-            this.field_21554 = this.field_21553.method_32086("left_hind_foot");
-            this.field_21555 = modelPart.method_32086("right_wing");
-            this.wingTip = this.field_21555.method_32086("right_wing_tip");
-            this.frontLeg = modelPart.method_32086("right_front_leg");
-            this.frontLegTip = this.frontLeg.method_32086("right_front_leg_tip");
-            this.frontFoot = this.frontLegTip.method_32086("right_front_foot");
-            this.rearLeg = modelPart.method_32086("right_hind_leg");
-            this.rearLegTip = this.rearLeg.method_32086("right_hind_leg_tip");
-            this.rearFoot = this.rearLegTip.method_32086("right_hind_foot");
+        public DragonEntityModel(ModelPart part) {
+            this.head = part.getChild("head");
+            this.jaw = this.head.getChild("jaw");
+            this.neck = part.getChild("neck");
+            this.body = part.getChild("body");
+            this.leftWing = part.getChild("left_wing");
+            this.leftWingTip = this.leftWing.getChild("left_wing_tip");
+            this.leftFrontLeg = part.getChild("left_front_leg");
+            this.leftFrontLegTip = this.leftFrontLeg.getChild("left_front_leg_tip");
+            this.leftFrontFoot = this.leftFrontLegTip.getChild("left_front_foot");
+            this.leftHindLeg = part.getChild("left_hind_leg");
+            this.leftHindLegTip = this.leftHindLeg.getChild("left_hind_leg_tip");
+            this.leftHindFoot = this.leftHindLegTip.getChild("left_hind_foot");
+            this.rightWing = part.getChild("right_wing");
+            this.rightWingTip = this.rightWing.getChild("right_wing_tip");
+            this.rightFrontLeg = part.getChild("right_front_leg");
+            this.rightFrontLegTip = this.rightFrontLeg.getChild("right_front_leg_tip");
+            this.rightFrontFoot = this.rightFrontLegTip.getChild("right_front_foot");
+            this.rightHindLeg = part.getChild("right_hind_leg");
+            this.rightHindLegTip = this.rightHindLeg.getChild("right_hind_leg_tip");
+            this.rightHindFoot = this.rightHindLegTip.getChild("right_hind_foot");
         }
 
         @Override
@@ -305,16 +305,16 @@ extends EntityRenderer<EnderDragonEntity> {
             this.body.roll = 0.0f;
             this.body.render(matrices, vertices, light, overlay);
             float q = f * ((float)Math.PI * 2);
-            this.wing.pitch = 0.125f - (float)Math.cos(q) * 0.2f;
-            this.wing.yaw = -0.25f;
-            this.wing.roll = -((float)(Math.sin(q) + 0.125)) * 0.8f;
-            this.field_21548.roll = (float)(Math.sin(q + 2.0f) + 0.5) * 0.75f;
-            this.field_21555.pitch = this.wing.pitch;
-            this.field_21555.yaw = -this.wing.yaw;
-            this.field_21555.roll = -this.wing.roll;
-            this.wingTip.roll = -this.field_21548.roll;
-            this.method_23838(matrices, vertices, light, overlay, g, this.wing, this.field_21549, this.field_21550, this.field_21551, this.field_21552, this.field_21553, this.field_21554);
-            this.method_23838(matrices, vertices, light, overlay, g, this.field_21555, this.frontLeg, this.frontLegTip, this.frontFoot, this.rearLeg, this.rearLegTip, this.rearFoot);
+            this.leftWing.pitch = 0.125f - (float)Math.cos(q) * 0.2f;
+            this.leftWing.yaw = -0.25f;
+            this.leftWing.roll = -((float)(Math.sin(q) + 0.125)) * 0.8f;
+            this.leftWingTip.roll = (float)(Math.sin(q + 2.0f) + 0.5) * 0.75f;
+            this.rightWing.pitch = this.leftWing.pitch;
+            this.rightWing.yaw = -this.leftWing.yaw;
+            this.rightWing.roll = -this.leftWing.roll;
+            this.rightWingTip.roll = -this.leftWingTip.roll;
+            this.setLimbRotation(matrices, vertices, light, overlay, g, this.leftWing, this.leftFrontLeg, this.leftFrontLegTip, this.leftFrontFoot, this.leftHindLeg, this.leftHindLegTip, this.leftHindFoot);
+            this.setLimbRotation(matrices, vertices, light, overlay, g, this.rightWing, this.rightFrontLeg, this.rightFrontLegTip, this.rightFrontFoot, this.rightHindLeg, this.rightHindLegTip, this.rightHindFoot);
             matrices.pop();
             p = -((float)Math.sin(f * ((float)Math.PI * 2))) * 0.0f;
             n = f * ((float)Math.PI * 2);
@@ -339,16 +339,16 @@ extends EntityRenderer<EnderDragonEntity> {
             matrices.pop();
         }
 
-        private void method_23838(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float offset, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, ModelPart modelPart4, ModelPart modelPart5, ModelPart modelPart6, ModelPart modelPart7) {
-            modelPart5.pitch = 1.0f + offset * 0.1f;
-            modelPart6.pitch = 0.5f + offset * 0.1f;
-            modelPart7.pitch = 0.75f + offset * 0.1f;
-            modelPart2.pitch = 1.3f + offset * 0.1f;
-            modelPart3.pitch = -0.5f - offset * 0.1f;
-            modelPart4.pitch = 0.75f + offset * 0.1f;
-            modelPart.render(matrices, vertices, light, overlay);
-            modelPart2.render(matrices, vertices, light, overlay);
-            modelPart5.render(matrices, vertices, light, overlay);
+        private void setLimbRotation(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float offset, ModelPart wing, ModelPart frontLeg, ModelPart frontLegTip, ModelPart frontFoot, ModelPart hindLeg, ModelPart hindLegTip, ModelPart hindFoot) {
+            hindLeg.pitch = 1.0f + offset * 0.1f;
+            hindLegTip.pitch = 0.5f + offset * 0.1f;
+            hindFoot.pitch = 0.75f + offset * 0.1f;
+            frontLeg.pitch = 1.3f + offset * 0.1f;
+            frontLegTip.pitch = -0.5f - offset * 0.1f;
+            frontFoot.pitch = 0.75f + offset * 0.1f;
+            wing.render(matrices, vertices, light, overlay);
+            frontLeg.render(matrices, vertices, light, overlay);
+            hindLeg.render(matrices, vertices, light, overlay);
         }
     }
 }

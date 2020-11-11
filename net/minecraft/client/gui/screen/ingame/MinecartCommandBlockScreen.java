@@ -32,8 +32,6 @@ extends AbstractCommandBlockScreen {
     @Override
     protected void init() {
         super.init();
-        this.trackingOutput = this.getCommandExecutor().isTrackingOutput();
-        this.updateTrackedOutput();
         this.consoleCommandTextField.setText(this.getCommandExecutor().getCommand());
     }
 

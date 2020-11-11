@@ -6,11 +6,13 @@ package net.minecraft.loot.condition;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import net.minecraft.loot.UniformLootTableRange;
+import java.util.Set;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
@@ -20,9 +22,9 @@ public class TimeCheckLootCondition
 implements LootCondition {
     @Nullable
     private final Long period;
-    private final UniformLootTableRange value;
+    private final BoundedIntUnaryOperator value;
 
-    private TimeCheckLootCondition(@Nullable Long period, UniformLootTableRange value) {
+    private TimeCheckLootCondition(@Nullable Long period, BoundedIntUnaryOperator value) {
         this.period = period;
         this.value = value;
     }
@@ -33,13 +35,18 @@ implements LootCondition {
     }
 
     @Override
+    public Set<LootContextParameter<?>> getRequiredParameters() {
+        return this.value.method_32386();
+    }
+
+    @Override
     public boolean test(LootContext lootContext) {
         ServerWorld serverWorld = lootContext.getWorld();
         long l = serverWorld.getTimeOfDay();
         if (this.period != null) {
             l %= this.period.longValue();
         }
-        return this.value.contains((int)l);
+        return this.value.method_32393(lootContext, (int)l);
     }
 
     @Override
@@ -58,8 +65,8 @@ implements LootCondition {
         @Override
         public TimeCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             Long long_ = jsonObject.has("period") ? Long.valueOf(JsonHelper.getLong(jsonObject, "period")) : null;
-            UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, UniformLootTableRange.class);
-            return new TimeCheckLootCondition(long_, uniformLootTableRange);
+            BoundedIntUnaryOperator boundedIntUnaryOperator = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, BoundedIntUnaryOperator.class);
+            return new TimeCheckLootCondition(long_, boundedIntUnaryOperator);
         }
 
         @Override

@@ -6,15 +6,15 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.model.AnimalModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
@@ -26,17 +26,17 @@ extends AnimalModel<T> {
     private final ModelPart field_3365;
 
     public ElytraEntityModel(ModelPart modelPart) {
-        this.field_3365 = modelPart.method_32086("left_wing");
-        this.field_27412 = modelPart.method_32086("right_wing");
+        this.field_3365 = modelPart.getChild("left_wing");
+        this.field_27412 = modelPart.getChild("right_wing");
     }
 
-    public static class_5607 method_31994() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        class_5605 lv3 = new class_5605(1.0f);
-        lv2.method_32117("left_wing", class_5606.method_32108().method_32101(22, 0).method_32098(-10.0f, 0.0f, 0.0f, 10.0f, 20.0f, 2.0f, lv3), class_5603.method_32091(5.0f, 0.0f, 0.0f, 0.2617994f, 0.0f, -0.2617994f));
-        lv2.method_32117("right_wing", class_5606.method_32108().method_32101(22, 0).method_32096().method_32098(0.0f, 0.0f, 0.0f, 10.0f, 20.0f, 2.0f, lv3), class_5603.method_32091(-5.0f, 0.0f, 0.0f, 0.2617994f, 0.0f, 0.2617994f));
-        return class_5607.method_32110(lv, 64, 32);
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        Dilation dilation = new Dilation(1.0f);
+        modelPartData.addChild("left_wing", ModelPartBuilder.create().uv(22, 0).cuboid(-10.0f, 0.0f, 0.0f, 10.0f, 20.0f, 2.0f, dilation), ModelTransform.of(5.0f, 0.0f, 0.0f, 0.2617994f, 0.0f, -0.2617994f));
+        modelPartData.addChild("right_wing", ModelPartBuilder.create().uv(22, 0).mirrored().cuboid(0.0f, 0.0f, 0.0f, 10.0f, 20.0f, 2.0f, dilation), ModelTransform.of(-5.0f, 0.0f, 0.0f, 0.2617994f, 0.0f, 0.2617994f));
+        return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override

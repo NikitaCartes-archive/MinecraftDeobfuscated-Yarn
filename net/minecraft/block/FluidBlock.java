@@ -6,6 +6,7 @@ package net.minecraft.block;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,12 +19,11 @@ import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -164,12 +164,17 @@ implements FluidDrainable {
     }
 
     @Override
-    public Fluid tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
+    public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
         if (state.get(LEVEL) == 0) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
-            return this.fluid;
+            return new ItemStack(this.fluid.getBucketItem());
         }
-        return Fluids.EMPTY;
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public Optional<SoundEvent> getDrainSound() {
+        return this.fluid.getFillSound();
     }
 }
 

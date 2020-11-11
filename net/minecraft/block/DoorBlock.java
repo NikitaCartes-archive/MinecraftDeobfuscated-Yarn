@@ -187,16 +187,16 @@ extends Block {
         return ActionResult.success(world.isClient);
     }
 
-    public boolean method_30841(BlockState blockState) {
-        return blockState.get(OPEN);
+    public boolean isOpen(BlockState state) {
+        return state.get(OPEN);
     }
 
-    public void setOpen(World world, BlockState blockState, BlockPos blockPos, boolean bl) {
-        if (!blockState.isOf(this) || blockState.get(OPEN) == bl) {
+    public void setOpen(World world, BlockState state, BlockPos pos, boolean open) {
+        if (!state.isOf(this) || state.get(OPEN) == open) {
             return;
         }
-        world.setBlockState(blockPos, (BlockState)blockState.with(OPEN, bl), 10);
-        this.playOpenCloseSound(world, blockPos, bl);
+        world.setBlockState(pos, (BlockState)state.with(OPEN, open), 10);
+        this.playOpenCloseSound(world, pos, open);
     }
 
     @Override

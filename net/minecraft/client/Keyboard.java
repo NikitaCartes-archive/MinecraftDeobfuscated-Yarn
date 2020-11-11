@@ -17,10 +17,12 @@ import net.minecraft.client.gui.screen.options.NarratorOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.options.NarratorMode;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.entity.Entity;
@@ -244,7 +246,7 @@ public class Keyboard {
             tag.remove("UUID");
             tag.remove("Pos");
             tag.remove("Dimension");
-            String string = NbtHelper.method_32270(tag).getString();
+            String string = NbtHelper.toPrettyPrintedText(tag).getString();
             string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", id.toString(), pos.x, pos.y, pos.z, string);
         } else {
             string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", id.toString(), pos.x, pos.y, pos.z);
@@ -253,7 +255,6 @@ public class Keyboard {
     }
 
     public void onKey(long window, int key, int scancode, int i, int j) {
-        boolean bl;
         if (window != this.client.getWindow().getHandle()) {
             return;
         }
@@ -283,11 +284,15 @@ public class Keyboard {
                 return;
             }
         }
-        boolean bl2 = bl = parentElement == null || !(parentElement.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)parentElement.getFocused()).isActive();
-        if (i != 0 && key == 66 && Screen.hasControlDown() && bl) {
-            Option.NARRATOR.cycle(this.client.options, 1);
-            if (parentElement instanceof NarratorOptionsScreen) {
-                ((NarratorOptionsScreen)parentElement).updateNarratorButtonText();
+        if (NarratorManager.INSTANCE.isActive()) {
+            boolean bl;
+            boolean bl2 = bl = parentElement == null || !(parentElement.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)parentElement.getFocused()).isActive();
+            if (i != 0 && key == 66 && Screen.hasControlDown() && bl) {
+                this.client.options.narrator = NarratorMode.byId(this.client.options.narrator.getId() + 1);
+                NarratorManager.INSTANCE.addToast(this.client.options.narrator);
+                if (parentElement instanceof NarratorOptionsScreen) {
+                    ((NarratorOptionsScreen)parentElement).updateNarratorButtonText();
+                }
             }
         }
         if (parentElement != null) {
@@ -320,19 +325,19 @@ public class Keyboard {
                 if (key == 293 && this.client.gameRenderer != null) {
                     this.client.gameRenderer.toggleShadersEnabled();
                 }
-                boolean bl22 = false;
+                boolean bl2 = false;
                 if (this.client.currentScreen == null) {
                     if (key == 256) {
                         boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292);
                         this.client.openPauseMenu(bl3);
                     }
-                    bl22 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292) && this.processF3(key);
-                    this.switchF3State |= bl22;
+                    bl2 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292) && this.processF3(key);
+                    this.switchF3State |= bl2;
                     if (key == 290) {
-                        boolean bl3 = this.client.options.hudHidden = !this.client.options.hudHidden;
+                        boolean bl = this.client.options.hudHidden = !this.client.options.hudHidden;
                     }
                 }
-                if (bl22) {
+                if (bl2) {
                     KeyBinding.setKeyPressed(key2, false);
                 } else {
                     KeyBinding.setKeyPressed(key2, true);

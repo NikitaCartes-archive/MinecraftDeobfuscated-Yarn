@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.IllagerEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -20,8 +20,8 @@ public class EvokerEntityRenderer<T extends SpellcastingIllagerEntity>
 extends IllagerEntityRenderer<T> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/illager/evoker.png");
 
-    public EvokerEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new IllagerEntityModel(arg.method_32167(EntityModelLayers.EVOKER)), 0.5f);
+    public EvokerEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new IllagerEntityModel(context.getPart(EntityModelLayers.EVOKER)), 0.5f);
         this.addFeature(new HeldItemFeatureRenderer<T, IllagerEntityModel<T>>(this){
 
             @Override

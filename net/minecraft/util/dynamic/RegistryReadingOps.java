@@ -38,7 +38,7 @@ extends ForwardingDynamicOps<T> {
      * <p>This method is called by casting an arbitrary dynamic ops to a registry
      * reading ops.</p>
      * 
-     * @see RegistryOps#decodeOrId(Object, RegistryKey, MapCodec)
+     * @see RegistryOps#decodeOrId(Object, RegistryKey, Codec, boolean)
      */
     protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<? extends Registry<E>> registryReference, Codec<E> codec) {
         MutableRegistry mutableRegistry;

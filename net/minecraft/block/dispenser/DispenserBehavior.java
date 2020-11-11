@@ -51,11 +51,9 @@ import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BoneMealItem;
-import net.minecraft.item.BucketItem;
+import net.minecraft.item.FluidModificationItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -246,7 +244,7 @@ public interface DispenserBehavior {
                 List<HorseBaseEntity> list = pointer.getWorld().getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntity -> horseBaseEntity.isAlive() && horseBaseEntity.hasArmorSlot());
                 for (HorseBaseEntity horseBaseEntity2 : list) {
                     if (!horseBaseEntity2.isHorseArmor(stack) || horseBaseEntity2.hasArmorInSlot() || !horseBaseEntity2.isTame()) continue;
-                    horseBaseEntity2.equip(401, stack.split(1));
+                    horseBaseEntity2.method_32318(401).method_32332(stack.split(1));
                     this.setSuccess(true);
                     return stack;
                 }
@@ -280,7 +278,7 @@ public interface DispenserBehavior {
                 BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
                 List<AbstractDonkeyEntity> list = pointer.getWorld().getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntity -> abstractDonkeyEntity.isAlive() && !abstractDonkeyEntity.hasChest());
                 for (AbstractDonkeyEntity abstractDonkeyEntity2 : list) {
-                    if (!abstractDonkeyEntity2.isTame() || !abstractDonkeyEntity2.equip(499, stack)) continue;
+                    if (!abstractDonkeyEntity2.isTame() || !abstractDonkeyEntity2.method_32318(499).method_32332(stack)) continue;
                     stack.decrement(1);
                     this.setSuccess(true);
                     return stack;
@@ -341,11 +339,11 @@ public interface DispenserBehavior {
 
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-                BucketItem bucketItem = (BucketItem)stack.getItem();
+                FluidModificationItem fluidModificationItem = (FluidModificationItem)((Object)stack.getItem());
                 BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
                 ServerWorld world = pointer.getWorld();
-                if (bucketItem.placeFluid(null, world, blockPos, null)) {
-                    bucketItem.onEmptied(world, stack, blockPos);
+                if (fluidModificationItem.placeFluid(null, world, blockPos, null)) {
+                    fluidModificationItem.onEmptied(world, stack, blockPos);
                     return new ItemStack(Items.BUCKET);
                 }
                 return this.field_13367.dispense(pointer, stack);
@@ -353,6 +351,7 @@ public interface DispenserBehavior {
         };
         DispenserBlock.registerBehavior(Items.LAVA_BUCKET, dispenserBehavior);
         DispenserBlock.registerBehavior(Items.WATER_BUCKET, dispenserBehavior);
+        DispenserBlock.registerBehavior(Items.POWDER_SNOW_BUCKET, dispenserBehavior);
         DispenserBlock.registerBehavior(Items.SALMON_BUCKET, dispenserBehavior);
         DispenserBlock.registerBehavior(Items.COD_BUCKET, dispenserBehavior);
         DispenserBlock.registerBehavior(Items.PUFFERFISH_BUCKET, dispenserBehavior);
@@ -362,20 +361,20 @@ public interface DispenserBehavior {
 
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-                Fluid fluid;
+                ItemStack itemStack;
                 BlockPos blockPos;
                 ServerWorld worldAccess = pointer.getWorld();
                 BlockState blockState = worldAccess.getBlockState(blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING)));
                 Block block = blockState.getBlock();
                 if (block instanceof FluidDrainable) {
-                    fluid = ((FluidDrainable)((Object)block)).tryDrainFluid(worldAccess, blockPos, blockState);
-                    if (!(fluid instanceof FlowableFluid)) {
+                    itemStack = ((FluidDrainable)((Object)block)).tryDrainFluid(worldAccess, blockPos, blockState);
+                    if (itemStack.isEmpty()) {
                         return super.dispenseSilently(pointer, stack);
                     }
                 } else {
                     return super.dispenseSilently(pointer, stack);
                 }
-                Item item = fluid.getBucketItem();
+                Item item = itemStack.getItem();
                 stack.decrement(1);
                 if (stack.isEmpty()) {
                     return new ItemStack(item);

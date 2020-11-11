@@ -30,6 +30,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.class_5630;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -67,7 +68,6 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
@@ -556,6 +556,9 @@ extends LivingEntity {
         }
         if (source == DamageSource.SWEET_BERRY_BUSH) {
             return SoundEvents.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH;
+        }
+        if (source == DamageSource.FREEZE) {
+            return SoundEvents.ENTITY_PLAYER_HURT_FREEZE;
         }
         return SoundEvents.ENTITY_PLAYER_HURT;
     }
@@ -1658,7 +1661,7 @@ extends LivingEntity {
 
     @Override
     public Text getDisplayName() {
-        MutableText mutableText = Team.modifyText(this.getScoreboardTeam(), this.getName());
+        MutableText mutableText = Team.decorateName(this.getScoreboardTeam(), this.getName());
         return this.addTellClickEvent(mutableText);
     }
 
@@ -1718,33 +1721,15 @@ extends LivingEntity {
     }
 
     @Override
-    public boolean equip(int slot, ItemStack item) {
-        if (slot >= 0 && slot < this.inventory.main.size()) {
-            this.inventory.setStack(slot, item);
-            return true;
+    public class_5630 method_32318(int i) {
+        if (i >= 0 && i < this.inventory.main.size()) {
+            return class_5630.method_32328(this.inventory, i);
         }
-        EquipmentSlot equipmentSlot = slot == 100 + EquipmentSlot.HEAD.getEntitySlotId() ? EquipmentSlot.HEAD : (slot == 100 + EquipmentSlot.CHEST.getEntitySlotId() ? EquipmentSlot.CHEST : (slot == 100 + EquipmentSlot.LEGS.getEntitySlotId() ? EquipmentSlot.LEGS : (slot == 100 + EquipmentSlot.FEET.getEntitySlotId() ? EquipmentSlot.FEET : null)));
-        if (slot == 98) {
-            this.equipStack(EquipmentSlot.MAINHAND, item);
-            return true;
+        int j = i - 200;
+        if (j >= 0 && j < this.enderChestInventory.size()) {
+            return class_5630.method_32328(this.enderChestInventory, j);
         }
-        if (slot == 99) {
-            this.equipStack(EquipmentSlot.OFFHAND, item);
-            return true;
-        }
-        if (equipmentSlot != null) {
-            if (!item.isEmpty() && (item.getItem() instanceof ArmorItem || item.getItem() instanceof ElytraItem ? MobEntity.getPreferredEquipmentSlot(item) != equipmentSlot : equipmentSlot != EquipmentSlot.HEAD)) {
-                return false;
-            }
-            this.inventory.setStack(equipmentSlot.getEntitySlotId() + this.inventory.main.size(), item);
-            return true;
-        }
-        int i = slot - 200;
-        if (i >= 0 && i < this.enderChestInventory.size()) {
-            this.enderChestInventory.setStack(i, item);
-            return true;
-        }
-        return false;
+        return super.method_32318(i);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -1818,7 +1803,7 @@ extends LivingEntity {
 
     @Override
     public boolean canEquip(ItemStack stack) {
-        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+        EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
         return this.getEquippedStack(equipmentSlot).isEmpty();
     }
 
@@ -1904,6 +1889,11 @@ extends LivingEntity {
     @Environment(value=EnvType.CLIENT)
     public boolean isUsingSpyglass() {
         return this.isUsingItem() && this.getActiveItem().isOf(Items.SPYGLASS);
+    }
+
+    @Override
+    public boolean canFreeze() {
+        return super.canFreeze() && !this.isCreative();
     }
 
     public static enum SleepFailureReason {

@@ -3,11 +3,12 @@
  */
 package net.minecraft.item;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.BundleTooltipData;
+import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -15,18 +16,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ClickType;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class BundleItem
 extends Item {
@@ -37,30 +33,30 @@ extends Item {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static float getAmountFilled(ItemStack itemStack) {
-        return (float)BundleItem.getBundleOccupancy(itemStack) / 64.0f;
+    public static float getAmountFilled(ItemStack stack) {
+        return (float)BundleItem.getBundleOccupancy(stack) / 64.0f;
     }
 
     @Override
-    public boolean onStackClicked(ItemStack itemStack, ItemStack itemStack2, ClickType clickType, PlayerInventory playerInventory) {
+    public boolean onStackClicked(ItemStack stack, ItemStack otherStack, ClickType clickType, PlayerInventory playerInventory) {
         if (clickType == ClickType.RIGHT) {
-            BundleItem.addToBundle(itemStack, itemStack2);
+            BundleItem.addToBundle(stack, otherStack);
             return true;
         }
-        return super.onStackClicked(itemStack, itemStack2, clickType, playerInventory);
+        return super.onStackClicked(stack, otherStack, clickType, playerInventory);
     }
 
     @Override
-    public boolean onClicked(ItemStack itemStack, ItemStack itemStack2, ClickType clickType, PlayerInventory playerInventory) {
+    public boolean onClicked(ItemStack stack, ItemStack otherStack, ClickType clickType, PlayerInventory playerInventory) {
         if (clickType == ClickType.RIGHT) {
-            if (itemStack2.isEmpty()) {
-                BundleItem.emptyBundle(itemStack, playerInventory);
+            if (otherStack.isEmpty()) {
+                BundleItem.emptyBundle(stack, playerInventory);
             } else {
-                BundleItem.addToBundle(itemStack, itemStack2);
+                BundleItem.addToBundle(stack, otherStack);
             }
             return true;
         }
-        return super.onClicked(itemStack, itemStack2, clickType, playerInventory);
+        return super.onClicked(stack, otherStack, clickType, playerInventory);
     }
 
     @Override
@@ -72,20 +68,20 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean isItemBarVisible(ItemStack itemStack) {
-        int i = BundleItem.getBundleOccupancy(itemStack);
-        return i != 0 && i != 64;
+    public boolean isItemBarVisible(ItemStack stack) {
+        int i = BundleItem.getBundleOccupancy(stack);
+        return i > 0 && i < 64;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getItemBarStep(ItemStack itemStack) {
-        return 13 * BundleItem.getBundleOccupancy(itemStack) / 64 + 1;
+    public int getItemBarStep(ItemStack stack) {
+        return 13 * BundleItem.getBundleOccupancy(stack) / 64 + 1;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getItemBarColor(ItemStack itemStack) {
+    public int getItemBarColor(ItemStack stack) {
         return ITEM_BAR_COLOR;
     }
 
@@ -104,9 +100,9 @@ extends Item {
             return;
         }
         ListTag listTag = compoundTag.getList("Items", 10);
-        Optional<Tag> optional = listTag.stream().filter(tag -> tag instanceof CompoundTag && ItemStack.method_31577(ItemStack.fromTag((CompoundTag)tag), stack)).findFirst();
+        Optional<CompoundTag> optional = BundleItem.method_32344(stack, listTag);
         if (optional.isPresent()) {
-            CompoundTag compoundTag2 = (CompoundTag)optional.get();
+            CompoundTag compoundTag2 = optional.get();
             ItemStack itemStack = ItemStack.fromTag(compoundTag2);
             itemStack.increment(k);
             itemStack.toTag(compoundTag2);
@@ -120,60 +116,48 @@ extends Item {
         stack.decrement(k);
     }
 
-    private static int getItemOccupancy(ItemStack itemStack) {
+    private static Optional<CompoundTag> method_32344(ItemStack itemStack, ListTag listTag) {
         if (itemStack.isOf(Items.BUNDLE)) {
-            return 4 + BundleItem.getBundleOccupancy(itemStack);
+            return Optional.empty();
         }
-        return 64 / itemStack.getMaxCount();
+        return listTag.stream().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast).filter(compoundTag -> ItemStack.method_31577(ItemStack.fromTag(compoundTag), itemStack)).findFirst();
     }
 
-    private static int getBundleOccupancy(ItemStack itemStack2) {
-        CompoundTag compoundTag = itemStack2.getOrCreateTag();
-        if (!compoundTag.contains("Items")) {
-            return 0;
+    private static int getItemOccupancy(ItemStack stack) {
+        if (stack.isOf(Items.BUNDLE)) {
+            return 4 + BundleItem.getBundleOccupancy(stack);
         }
-        ListTag listTag = compoundTag.getList("Items", 10);
-        return listTag.stream().map(tag -> ItemStack.fromTag((CompoundTag)tag)).mapToInt(itemStack -> BundleItem.getItemOccupancy(itemStack) * itemStack.getCount()).sum();
+        return 64 / stack.getMaxCount();
     }
 
-    private static void emptyBundle(ItemStack itemStack, PlayerInventory playerInventory) {
-        CompoundTag compoundTag = itemStack.getOrCreateTag();
-        if (!compoundTag.contains("Items")) {
-            return;
+    private static int getBundleOccupancy(ItemStack stack) {
+        return BundleItem.method_32345(stack).mapToInt(itemStack -> BundleItem.getItemOccupancy(itemStack) * itemStack.getCount()).sum();
+    }
+
+    private static void emptyBundle(ItemStack stack2, PlayerInventory playerInventory) {
+        BundleItem.method_32345(stack2).forEach(stack -> {
+            if (playerInventory.player instanceof ServerPlayerEntity || playerInventory.player.isCreative()) {
+                playerInventory.offerOrDrop((ItemStack)stack);
+            }
+        });
+        stack2.removeSubTag("Items");
+    }
+
+    private static Stream<ItemStack> method_32345(ItemStack itemStack) {
+        CompoundTag compoundTag = itemStack.getTag();
+        if (compoundTag == null) {
+            return Stream.empty();
         }
         ListTag listTag = compoundTag.getList("Items", 10);
-        for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag2 = listTag.getCompound(i);
-            ItemStack itemStack2 = ItemStack.fromTag(compoundTag2);
-            if (!(playerInventory.player instanceof ServerPlayerEntity) && !playerInventory.player.isCreative()) continue;
-            playerInventory.offerOrDrop(itemStack2);
-        }
-        itemStack.removeSubTag("Items");
+        return listTag.stream().map(tag -> ItemStack.fromTag((CompoundTag)tag));
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        super.appendTooltip(stack, world, tooltip, context);
-        CompoundTag compoundTag = stack.getOrCreateTag();
-        if (compoundTag.contains("Items", 9)) {
-            ListTag listTag = compoundTag.getList("Items", 10);
-            int i = 0;
-            int j = 0;
-            for (Tag tag : listTag) {
-                ItemStack itemStack = ItemStack.fromTag((CompoundTag)tag);
-                if (itemStack.isEmpty()) continue;
-                ++j;
-                if (i > 8) continue;
-                ++i;
-                MutableText mutableText = itemStack.getName().shallowCopy();
-                mutableText.append(" x").append(String.valueOf(itemStack.getCount()));
-                tooltip.add(mutableText);
-            }
-            if (j - i > 0) {
-                tooltip.add(new TranslatableText("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
-            }
-        }
+    public Optional<TooltipData> getTooltipData(ItemStack stack) {
+        DefaultedList<ItemStack> defaultedList = DefaultedList.of();
+        BundleItem.method_32345(stack).forEach(defaultedList::add);
+        return Optional.of(new BundleTooltipData(defaultedList, BundleItem.getBundleOccupancy(stack) < 64));
     }
 }
 

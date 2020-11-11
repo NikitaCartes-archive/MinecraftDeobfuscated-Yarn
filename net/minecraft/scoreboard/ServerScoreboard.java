@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
@@ -17,6 +18,7 @@ import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.scoreboard.ScoreboardState;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,7 +28,7 @@ public class ServerScoreboard
 extends Scoreboard {
     private final MinecraftServer server;
     private final Set<ScoreboardObjective> objectives = Sets.newHashSet();
-    private Runnable[] updateListeners = new Runnable[0];
+    private final List<Runnable> updateListeners = Lists.newArrayList();
 
     public ServerScoreboard(MinecraftServer server) {
         this.server = server;
@@ -141,8 +143,7 @@ extends Scoreboard {
     }
 
     public void addUpdateListener(Runnable listener) {
-        this.updateListeners = Arrays.copyOf(this.updateListeners, this.updateListeners.length + 1);
-        this.updateListeners[this.updateListeners.length - 1] = listener;
+        this.updateListeners.add(listener);
     }
 
     protected void runUpdateListeners() {
@@ -201,6 +202,16 @@ extends Scoreboard {
             ++i;
         }
         return i;
+    }
+
+    public ScoreboardState method_32705() {
+        ScoreboardState scoreboardState = new ScoreboardState(this);
+        this.addUpdateListener(scoreboardState::markDirty);
+        return scoreboardState;
+    }
+
+    public ScoreboardState method_32704(CompoundTag compoundTag) {
+        return this.method_32705().fromTag(compoundTag);
     }
 
     public static enum UpdateMode {

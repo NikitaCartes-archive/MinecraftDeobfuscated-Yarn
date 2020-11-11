@@ -29,8 +29,8 @@ import net.minecraft.util.math.MathHelper;
 public class SplashScreen
 extends Overlay {
     private static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
-    private static final int field_25041 = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
-    private static final int field_25042 = field_25041 & 0xFFFFFF;
+    private static final int BRAND_ARGB = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
+    private static final int BRAND_RGB = BRAND_ARGB & 0xFFFFFF;
     private final MinecraftClient client;
     private final ResourceReloadMonitor reloadMonitor;
     private final Consumer<Optional<Throwable>> exceptionHandler;
@@ -68,17 +68,17 @@ extends Overlay {
                 this.client.currentScreen.render(matrices, 0, 0, delta);
             }
             k = MathHelper.ceil((1.0f - MathHelper.clamp(f - 1.0f, 0.0f, 1.0f)) * 255.0f);
-            SplashScreen.fill(matrices, 0, 0, i, j, field_25042 | k << 24);
+            SplashScreen.fill(matrices, 0, 0, i, j, BRAND_RGB | k << 24);
             h = 1.0f - MathHelper.clamp(f - 1.0f, 0.0f, 1.0f);
         } else if (this.reloading) {
             if (this.client.currentScreen != null && g < 1.0f) {
                 this.client.currentScreen.render(matrices, mouseX, mouseY, delta);
             }
             k = MathHelper.ceil(MathHelper.clamp((double)g, 0.15, 1.0) * 255.0);
-            SplashScreen.fill(matrices, 0, 0, i, j, field_25042 | k << 24);
+            SplashScreen.fill(matrices, 0, 0, i, j, BRAND_RGB | k << 24);
             h = MathHelper.clamp(g, 0.0f, 1.0f);
         } else {
-            SplashScreen.fill(matrices, 0, 0, i, j, field_25041);
+            SplashScreen.fill(matrices, 0, 0, i, j, BRAND_ARGB);
             h = 1.0f;
         }
         k = (int)((double)this.client.getWindow().getScaledWidth() * 0.5);
@@ -121,15 +121,15 @@ extends Overlay {
         }
     }
 
-    private void renderProgressBar(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
-        int m = MathHelper.ceil((float)(k - i - 2) * this.progress);
-        int n = Math.round(f * 255.0f);
-        int o = BackgroundHelper.ColorMixer.getArgb(n, 255, 255, 255);
-        SplashScreen.fill(matrixStack, i + 1, j, k - 1, j + 1, o);
-        SplashScreen.fill(matrixStack, i + 1, l, k - 1, l - 1, o);
-        SplashScreen.fill(matrixStack, i, j, i + 1, l, o);
-        SplashScreen.fill(matrixStack, k, j, k - 1, l, o);
-        SplashScreen.fill(matrixStack, i + 2, j + 2, i + m, l - 2, o);
+    private void renderProgressBar(MatrixStack matrices, int x1, int y1, int x2, int y2, float opacity) {
+        int i = MathHelper.ceil((float)(x2 - x1 - 2) * this.progress);
+        int j = Math.round(opacity * 255.0f);
+        int k = BackgroundHelper.ColorMixer.getArgb(j, 255, 255, 255);
+        SplashScreen.fill(matrices, x1 + 1, y1, x2 - 1, y1 + 1, k);
+        SplashScreen.fill(matrices, x1 + 1, y2, x2 - 1, y2 - 1, k);
+        SplashScreen.fill(matrices, x1, y1, x1 + 1, y2, k);
+        SplashScreen.fill(matrices, x2, y1, x2 - 1, y2, k);
+        SplashScreen.fill(matrices, x1 + 2, y1 + 2, x1 + i, y2 - 2, k);
     }
 
     @Override

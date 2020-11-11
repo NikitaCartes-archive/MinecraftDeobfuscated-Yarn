@@ -168,9 +168,6 @@ implements Clearable {
 
     public void spawnItemsBeingCooked() {
         if (this.world != null) {
-            if (!this.world.isClient) {
-                ItemScatterer.spawn(this.world, this.getPos(), this.getItemsBeingCooked());
-            }
             this.updateListeners();
         }
     }

@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.BatEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -19,8 +19,8 @@ public class BatEntityRenderer
 extends MobEntityRenderer<BatEntity, BatEntityModel> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/bat.png");
 
-    public BatEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new BatEntityModel(arg.method_32167(EntityModelLayers.BAT)), 0.25f);
+    public BatEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new BatEntityModel(context.getPart(EntityModelLayers.BAT)), 0.25f);
     }
 
     @Override

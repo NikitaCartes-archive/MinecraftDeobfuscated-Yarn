@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.SkeletonEntityRenderer;
 import net.minecraft.client.render.entity.feature.StrayOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -18,9 +18,9 @@ public class StrayEntityRenderer
 extends SkeletonEntityRenderer {
     private static final Identifier TEXTURE = new Identifier("textures/entity/skeleton/stray.png");
 
-    public StrayEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, EntityModelLayers.STRAY, EntityModelLayers.STRAY_INNER_ARMOR, EntityModelLayers.STRAY_OUTER_ARMOR);
-        this.addFeature(new StrayOverlayFeatureRenderer<AbstractSkeletonEntity, SkeletonEntityModel<AbstractSkeletonEntity>>(this, arg.method_32170()));
+    public StrayEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, EntityModelLayers.STRAY, EntityModelLayers.STRAY_INNER_ARMOR, EntityModelLayers.STRAY_OUTER_ARMOR);
+        this.addFeature(new StrayOverlayFeatureRenderer<AbstractSkeletonEntity, SkeletonEntityModel<AbstractSkeletonEntity>>(this, context.getModelLoader()));
     }
 
     @Override

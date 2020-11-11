@@ -100,7 +100,7 @@ implements DataProvider {
             NbtIo.writeCompressed(compoundTag, byteArrayOutputStream);
             byte[] bs = byteArrayOutputStream.toByteArray();
             String string2 = SHA1.hashBytes(bs).toString();
-            String string3 = field_24615 != null ? NbtHelper.method_32271(compoundTag) : null;
+            String string3 = field_24615 != null ? NbtHelper.toPrettyPrintedString(compoundTag) : null;
             CompressedData compressedData = new CompressedData(name, bs, string3, string2);
             return compressedData;
         } catch (Throwable throwable) {

@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -19,13 +19,13 @@ public class SkeletonEntityRenderer
 extends BipedEntityRenderer<AbstractSkeletonEntity, SkeletonEntityModel<AbstractSkeletonEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/skeleton/skeleton.png");
 
-    public SkeletonEntityRenderer(class_5617.class_5618 arg) {
-        this(arg, EntityModelLayers.SKELETON, EntityModelLayers.SKELETON_INNER_ARMOR, EntityModelLayers.SKELETON_OUTER_ARMOR);
+    public SkeletonEntityRenderer(EntityRendererFactory.Context context) {
+        this(context, EntityModelLayers.SKELETON, EntityModelLayers.SKELETON_INNER_ARMOR, EntityModelLayers.SKELETON_OUTER_ARMOR);
     }
 
-    public SkeletonEntityRenderer(class_5617.class_5618 arg, EntityModelLayer entityModelLayer, EntityModelLayer entityModelLayer2, EntityModelLayer entityModelLayer3) {
-        super(arg, new SkeletonEntityModel(arg.method_32167(entityModelLayer)), 0.5f);
-        this.addFeature(new ArmorFeatureRenderer(this, new SkeletonEntityModel(arg.method_32167(entityModelLayer2)), new SkeletonEntityModel(arg.method_32167(entityModelLayer3))));
+    public SkeletonEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer, EntityModelLayer legArmorLayer, EntityModelLayer bodyArmorLayer) {
+        super(ctx, new SkeletonEntityModel(ctx.getPart(layer)), 0.5f);
+        this.addFeature(new ArmorFeatureRenderer(this, new SkeletonEntityModel(ctx.getPart(legArmorLayer)), new SkeletonEntityModel(ctx.getPart(bodyArmorLayer))));
     }
 
     @Override

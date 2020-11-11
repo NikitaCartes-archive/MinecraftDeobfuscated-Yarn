@@ -43,6 +43,7 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5567;
+import net.minecraft.class_5629;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -954,7 +955,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         private final Entity entity;
         private final int maxDistance;
         private ChunkSectionPos lastCameraPosition;
-        private final Set<ServerPlayerEntity> playersTracking = Sets.newHashSet();
+        private final Set<class_5629> playersTracking = Sets.newIdentityHashSet();
 
         public EntityTracker(Entity maxDistance, int tickInterval, int i, boolean bl) {
             this.entry = new EntityTrackerEntry(ThreadedAnvilChunkStorage.this.world, maxDistance, i, bl, this::sendToOtherNearbyPlayers);
@@ -975,8 +976,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
 
         public void sendToOtherNearbyPlayers(Packet<?> packet) {
-            for (ServerPlayerEntity serverPlayerEntity : this.playersTracking) {
-                serverPlayerEntity.networkHandler.sendPacket(packet);
+            for (class_5629 lv : this.playersTracking) {
+                lv.sendPacket(packet);
             }
         }
 
@@ -988,13 +989,13 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
 
         public void stopTracking() {
-            for (ServerPlayerEntity serverPlayerEntity : this.playersTracking) {
-                this.entry.stopTracking(serverPlayerEntity);
+            for (class_5629 lv : this.playersTracking) {
+                this.entry.stopTracking(lv.method_32311());
             }
         }
 
         public void stopTracking(ServerPlayerEntity serverPlayerEntity) {
-            if (this.playersTracking.remove(serverPlayerEntity)) {
+            if (this.playersTracking.remove(serverPlayerEntity.networkHandler)) {
                 this.entry.stopTracking(serverPlayerEntity);
             }
         }
@@ -1014,10 +1015,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 if (!bl22 && (chunkHolder = ThreadedAnvilChunkStorage.this.getChunkHolder((chunkPos = this.entity.getChunkPos()).toLong())) != null && chunkHolder.getWorldChunk() != null) {
                     boolean bl3 = bl22 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, player, false) <= ThreadedAnvilChunkStorage.this.watchDistance;
                 }
-                if (bl22 && this.playersTracking.add(player)) {
+                if (bl22 && this.playersTracking.add(player.networkHandler)) {
                     this.entry.startTracking(player);
                 }
-            } else if (this.playersTracking.remove(player)) {
+            } else if (this.playersTracking.remove(player.networkHandler)) {
                 this.entry.stopTracking(player);
             }
         }

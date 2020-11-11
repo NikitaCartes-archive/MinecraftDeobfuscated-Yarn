@@ -227,8 +227,8 @@ public class Texture {
         return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(Blocks.CAKE, "_side")).put(TextureKey.BOTTOM, Texture.getSubId(Blocks.CAKE, "_bottom")).put(TextureKey.TOP, Texture.getSubId(Blocks.CAKE, "_top")).put(TextureKey.SIDE, Texture.getSubId(Blocks.CAKE, "_side")).put(TextureKey.CANDLE, Texture.getId(block));
     }
 
-    public static Texture method_32232(Block block) {
-        return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(Blocks.CAULDRON, "_side")).put(TextureKey.SIDE, Texture.getSubId(Blocks.CAULDRON, "_side")).put(TextureKey.TOP, Texture.getSubId(Blocks.CAULDRON, "_top")).put(TextureKey.BOTTOM, Texture.getSubId(Blocks.CAULDRON, "_bottom")).put(TextureKey.INSIDE, Texture.getSubId(Blocks.CAULDRON, "_inner")).put(TextureKey.CONTENT, Texture.getSubId(block, "_still"));
+    public static Texture method_32232(Identifier identifier) {
+        return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(Blocks.CAULDRON, "_side")).put(TextureKey.SIDE, Texture.getSubId(Blocks.CAULDRON, "_side")).put(TextureKey.TOP, Texture.getSubId(Blocks.CAULDRON, "_top")).put(TextureKey.BOTTOM, Texture.getSubId(Blocks.CAULDRON, "_bottom")).put(TextureKey.INSIDE, Texture.getSubId(Blocks.CAULDRON, "_inner")).put(TextureKey.CONTENT, identifier);
     }
 
     public static Texture layer0(Item item) {

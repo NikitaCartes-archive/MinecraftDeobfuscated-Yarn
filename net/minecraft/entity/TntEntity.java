@@ -25,7 +25,6 @@ extends Entity {
     private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
     @Nullable
     private LivingEntity causingEntity;
-    private int fuseTimer = 80;
 
     public TntEntity(EntityType<? extends TntEntity> entityType, World world) {
         super(entityType, world);
@@ -69,8 +68,9 @@ extends Entity {
         if (this.onGround) {
             this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
         }
-        --this.fuseTimer;
-        if (this.fuseTimer <= 0) {
+        int i = this.getFuse() - 1;
+        this.setFuse(i);
+        if (i <= 0) {
             this.discard();
             if (!this.world.isClient) {
                 this.explode();
@@ -90,7 +90,7 @@ extends Entity {
 
     @Override
     protected void writeCustomDataToTag(CompoundTag tag) {
-        tag.putShort("Fuse", (short)this.getFuseTimer());
+        tag.putShort("Fuse", (short)this.getFuse());
     }
 
     @Override
@@ -110,22 +110,10 @@ extends Entity {
 
     public void setFuse(int fuse) {
         this.dataTracker.set(FUSE, fuse);
-        this.fuseTimer = fuse;
-    }
-
-    @Override
-    public void onTrackedDataSet(TrackedData<?> data) {
-        if (FUSE.equals(data)) {
-            this.fuseTimer = this.getFuse();
-        }
     }
 
     public int getFuse() {
         return this.dataTracker.get(FUSE);
-    }
-
-    public int getFuseTimer() {
-        return this.fuseTimer;
     }
 
     @Override

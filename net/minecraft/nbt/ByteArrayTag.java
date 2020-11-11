@@ -8,13 +8,13 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.class_5627;
 import net.minecraft.nbt.AbstractListTag;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class ByteArrayTag
@@ -106,8 +106,8 @@ extends AbstractListTag<ByteTag> {
     }
 
     @Override
-    public void method_32289(class_5627 arg) {
-        arg.method_32290(this);
+    public void accept(NbtTagVisitor visitor) {
+        visitor.visitByteArrayTag(this);
     }
 
     public byte[] getByteArray() {

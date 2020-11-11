@@ -5,16 +5,16 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
-import net.minecraft.class_5617;
+import net.minecraft.client.model.ModelData;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -30,16 +30,16 @@ extends EntityRenderer<WitherSkullEntity> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/wither/wither.png");
     private final SkullEntityModel model;
 
-    public WitherSkullEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
-        this.model = new SkullEntityModel(arg.method_32167(EntityModelLayers.WITHER_SKULL));
+    public WitherSkullEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
+        this.model = new SkullEntityModel(context.getPart(EntityModelLayers.WITHER_SKULL));
     }
 
-    public static class_5607 method_32199() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("head", class_5606.method_32108().method_32101(0, 35).method_32097(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f), class_5603.field_27701);
-        return class_5607.method_32110(lv, 64, 64);
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 35).cuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f), ModelTransform.NONE);
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
     @Override

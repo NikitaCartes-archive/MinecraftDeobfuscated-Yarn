@@ -29,7 +29,6 @@ import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
-import net.minecraft.class_5599;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -38,6 +37,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -73,18 +73,18 @@ implements SynchronousResourceReloadListener {
     private TridentEntityModel modelTrident;
     private Map<SkullBlock.SkullType, SkullBlockEntityModel> field_27737;
     private final BlockEntityRenderDispatcher field_27738;
-    private final class_5599 field_27739;
+    private final EntityModelLoader field_27739;
 
-    public BuiltinModelItemRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher, class_5599 arg) {
+    public BuiltinModelItemRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher, EntityModelLoader entityModelLoader) {
         this.field_27738 = blockEntityRenderDispatcher;
-        this.field_27739 = arg;
+        this.field_27739 = entityModelLoader;
     }
 
     @Override
     public void apply(ResourceManager manager) {
-        this.modelShield = new ShieldEntityModel(this.field_27739.method_32072(EntityModelLayers.SHIELD));
-        this.modelTrident = new TridentEntityModel(this.field_27739.method_32072(EntityModelLayers.TRIDENT));
-        this.field_27737 = SkullBlockEntityRenderer.method_32160(this.field_27739);
+        this.modelShield = new ShieldEntityModel(this.field_27739.getModelPart(EntityModelLayers.SHIELD));
+        this.modelTrident = new TridentEntityModel(this.field_27739.getModelPart(EntityModelLayers.TRIDENT));
+        this.field_27737 = SkullBlockEntityRenderer.getModels(this.field_27739);
     }
 
     public void render(ItemStack stack, ModelTransformation.Mode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {

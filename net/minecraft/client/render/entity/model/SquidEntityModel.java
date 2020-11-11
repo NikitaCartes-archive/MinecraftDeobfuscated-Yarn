@@ -6,37 +6,37 @@ package net.minecraft.client.render.entity.model;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 
 @Environment(value=EnvType.CLIENT)
 public class SquidEntityModel<T extends Entity>
-extends class_5597<T> {
+extends SinglePartEntityModel<T> {
     private final ModelPart[] tentacles = new ModelPart[8];
     private final ModelPart field_27513;
 
     public SquidEntityModel(ModelPart modelPart) {
         this.field_27513 = modelPart;
-        Arrays.setAll(this.tentacles, i -> modelPart.method_32086(SquidEntityModel.method_32056(i)));
+        Arrays.setAll(this.tentacles, i -> modelPart.getChild(SquidEntityModel.method_32056(i)));
     }
 
     private static String method_32056(int i) {
         return "tentacle" + i;
     }
 
-    public static class_5607 method_32055() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
         int i = -16;
-        lv2.method_32117("body", class_5606.method_32108().method_32101(0, 0).method_32097(-6.0f, -8.0f, -6.0f, 12.0f, 16.0f, 12.0f), class_5603.method_32090(0.0f, 8.0f, 0.0f));
+        modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0f, -8.0f, -6.0f, 12.0f, 16.0f, 12.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
         int j = 8;
-        class_5606 lv3 = class_5606.method_32108().method_32101(48, 0).method_32097(-1.0f, 0.0f, -1.0f, 2.0f, 18.0f, 2.0f);
+        ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(48, 0).cuboid(-1.0f, 0.0f, -1.0f, 2.0f, 18.0f, 2.0f);
         for (int k = 0; k < 8; ++k) {
             double d = (double)k * Math.PI * 2.0 / 8.0;
             float f = (float)Math.cos(d) * 5.0f;
@@ -44,9 +44,9 @@ extends class_5597<T> {
             float h = (float)Math.sin(d) * 5.0f;
             d = (double)k * Math.PI * -2.0 / 8.0 + 1.5707963267948966;
             float l = (float)d;
-            lv2.method_32117(SquidEntityModel.method_32056(k), lv3, class_5603.method_32091(f, 15.0f, h, 0.0f, l, 0.0f));
+            modelPartData.addChild(SquidEntityModel.method_32056(k), modelPartBuilder, ModelTransform.of(f, 15.0f, h, 0.0f, l, 0.0f));
         }
-        return class_5607.method_32110(lv, 64, 32);
+        return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override
@@ -57,7 +57,7 @@ extends class_5597<T> {
     }
 
     @Override
-    public ModelPart method_32008() {
+    public ModelPart getPart() {
         return this.field_27513;
     }
 }

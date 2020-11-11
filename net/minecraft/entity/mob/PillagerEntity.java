@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5630;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -250,16 +251,12 @@ implements CrossbowUser {
     }
 
     @Override
-    public boolean equip(int slot, ItemStack item) {
-        if (super.equip(slot, item)) {
-            return true;
+    public class_5630 method_32318(int i) {
+        int j = i - 300;
+        if (j >= 0 && j < this.inventory.size()) {
+            return class_5630.method_32328(this.inventory, j);
         }
-        int i = slot - 300;
-        if (i >= 0 && i < this.inventory.size()) {
-            this.inventory.setStack(i, item);
-            return true;
-        }
-        return false;
+        return super.method_32318(i);
     }
 
     @Override

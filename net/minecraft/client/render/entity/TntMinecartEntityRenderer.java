@@ -6,10 +6,10 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MinecartEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,8 +19,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class TntMinecartEntityRenderer
 extends MinecartEntityRenderer<TntMinecartEntity> {
-    public TntMinecartEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, EntityModelLayers.TNT_MINECART);
+    public TntMinecartEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, EntityModelLayers.TNT_MINECART);
     }
 
     @Override

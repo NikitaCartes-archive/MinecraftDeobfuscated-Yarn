@@ -136,8 +136,8 @@ public class ArgumentTypes {
     }
 
     @Nullable
-    private static Entry<?> byId(Identifier identifier) {
-        return idMap.get(identifier);
+    private static Entry<?> byId(Identifier id) {
+        return idMap.get(id);
     }
 
     @Nullable

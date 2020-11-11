@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -27,10 +27,10 @@ extends MobEntityRenderer<PufferfishEntity, EntityModel<PufferfishEntity>> {
     private final EntityModel<PufferfishEntity> mediumModel;
     private final EntityModel<PufferfishEntity> largeModel = this.getModel();
 
-    public PufferfishEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new LargePufferfishEntityModel(arg.method_32167(EntityModelLayers.PUFFERFISH_BIG)), 0.2f);
-        this.mediumModel = new MediumPufferfishEntityModel<PufferfishEntity>(arg.method_32167(EntityModelLayers.PUFFERFISH_MEDIUM));
-        this.smallModel = new SmallPufferfishEntityModel<PufferfishEntity>(arg.method_32167(EntityModelLayers.PUFFERFISH_SMALL));
+    public PufferfishEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new LargePufferfishEntityModel(context.getPart(EntityModelLayers.PUFFERFISH_BIG)), 0.2f);
+        this.mediumModel = new MediumPufferfishEntityModel<PufferfishEntity>(context.getPart(EntityModelLayers.PUFFERFISH_MEDIUM));
+        this.smallModel = new SmallPufferfishEntityModel<PufferfishEntity>(context.getPart(EntityModelLayers.PUFFERFISH_SMALL));
     }
 
     @Override

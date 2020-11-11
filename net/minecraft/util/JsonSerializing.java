@@ -97,6 +97,11 @@ public class JsonSerializing {
             this.typeIdentification = typeIdentification;
         }
 
+        public TypeHandler<E, T> method_32385(T jsonSerializableType, CustomSerializer<? extends E> customSerializer) {
+            this.customSerializer = Pair.of(jsonSerializableType, customSerializer);
+            return this;
+        }
+
         public Object createGsonSerializer() {
             return new GsonSerializer(this.registry, this.rootFieldName, this.idFieldName, this.typeIdentification, this.customSerializer);
         }

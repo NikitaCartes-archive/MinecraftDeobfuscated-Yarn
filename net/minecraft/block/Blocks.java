@@ -106,6 +106,7 @@ import net.minecraft.block.LanternBlock;
 import net.minecraft.block.LavaCauldronBlock;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.LecternBlock;
+import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.LeverBlock;
 import net.minecraft.block.LightningRodBlock;
 import net.minecraft.block.LilyPadBlock;
@@ -131,6 +132,7 @@ import net.minecraft.block.PistonExtensionBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.block.PlayerSkullBlock;
 import net.minecraft.block.PotatoesBlock;
+import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.PressurePlateBlock;
 import net.minecraft.block.PumpkinBlock;
@@ -196,7 +198,6 @@ import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.WallSkullBlock;
 import net.minecraft.block.WallTorchBlock;
 import net.minecraft.block.WallWitherSkullBlock;
-import net.minecraft.block.WaterCauldronBlock;
 import net.minecraft.block.WeepingVinesBlock;
 import net.minecraft.block.WeepingVinesPlantBlock;
 import net.minecraft.block.WeightedPressurePlateBlock;
@@ -204,6 +205,7 @@ import net.minecraft.block.WetSpongeBlock;
 import net.minecraft.block.WitherRoseBlock;
 import net.minecraft.block.WitherSkullBlock;
 import net.minecraft.block.WoodenButtonBlock;
+import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
@@ -493,8 +495,9 @@ public class Blocks {
     public static final Block ENCHANTING_TABLE = Blocks.register("enchanting_table", new EnchantingTableBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.RED).requiresTool().strength(5.0f, 1200.0f)));
     public static final Block BREWING_STAND = Blocks.register("brewing_stand", new BrewingStandBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(0.5f).luminance(state -> 1).nonOpaque()));
     public static final Block CAULDRON = Blocks.register("cauldron", new CauldronBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.STONE).requiresTool().strength(2.0f).nonOpaque()));
-    public static final Block WATER_CAULDRON = Blocks.register("water_cauldron", new WaterCauldronBlock(AbstractBlock.Settings.copy(CAULDRON)));
-    public static final Block LAVA_CAULDRON = Blocks.register("lava_cauldron", new LavaCauldronBlock(AbstractBlock.Settings.copy(CAULDRON).luminance(blockState -> 15)));
+    public static final Block WATER_CAULDRON = Blocks.register("water_cauldron", new LeveledCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.RAIN_PREDICATE, CauldronBehavior.WATER_CAULDRON_BEHAVIOR));
+    public static final Block LAVA_CAULDRON = Blocks.register("lava_cauldron", new LavaCauldronBlock(AbstractBlock.Settings.copy(CAULDRON).luminance(state -> 15)));
+    public static final Block POWDER_SNOW_CAULDRON = Blocks.register("powder_snow_cauldron", new LeveledCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.SNOW_PREDICATE, CauldronBehavior.POWDER_SNOW_CAULDRON_BEHAVIOR));
     public static final Block END_PORTAL = Blocks.register("end_portal", new EndPortalBlock(AbstractBlock.Settings.of(Material.PORTAL, MapColor.BLACK).noCollision().luminance(state -> 15).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block END_PORTAL_FRAME = Blocks.register("end_portal_frame", new EndPortalFrameBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.GREEN).sounds(BlockSoundGroup.GLASS).luminance(state -> 1).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block END_STONE = Blocks.register("end_stone", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.SAND).requiresTool().strength(3.0f, 9.0f)));
@@ -1039,6 +1042,7 @@ public class Blocks {
     public static final Block TUFF = Blocks.register("tuff", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.GRAY_TERRACOTTA).sounds(BlockSoundGroup.TUFF).requiresTool().strength(1.5f, 6.0f)));
     public static final Block CALCITE = Blocks.register("calcite", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.WHITE_TERRACOTTA).sounds(BlockSoundGroup.CALCITE).requiresTool().strength(0.75f)));
     public static final Block TINTED_GLASS = Blocks.register("tinted_glass", new TintedGlassBlock(AbstractBlock.Settings.copy(GLASS).mapColor(MapColor.GRAY)));
+    public static final Block POWDER_SNOW = Blocks.register("powder_snow", new PowderSnowBlock(AbstractBlock.Settings.of(Material.POWDER_SNOW).strength(0.1f).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds()));
     public static final Block WEATHERED_COPPER_BLOCK = Blocks.register("weathered_copper_block", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.WARPED_NYLIUM).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER)));
     public static final Block SEMI_WEATHERED_COPPER_BLOCK = Blocks.register("semi_weathered_copper_block", new CopperBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.WARPED_STEM).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), WEATHERED_COPPER_BLOCK));
     public static final Block LIGHTLY_WEATHERED_COPPER_BLOCK = Blocks.register("lightly_weathered_copper_block", new CopperBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.LIGHT_GRAY_TERRACOTTA).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), SEMI_WEATHERED_COPPER_BLOCK));
@@ -1157,8 +1161,8 @@ public class Blocks {
 
     static {
         for (Block block : Registry.BLOCK) {
-            for (BlockState blockState2 : block.getStateManager().getStates()) {
-                Block.STATE_IDS.add(blockState2);
+            for (BlockState blockState : block.getStateManager().getStates()) {
+                Block.STATE_IDS.add(blockState);
             }
             block.getLootTableId();
         }

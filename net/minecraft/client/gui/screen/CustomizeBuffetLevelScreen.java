@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class CustomizeBuffetLevelScreen
 extends Screen {
-    private static final Text field_26535 = new TranslatableText("createWorld.customize.buffet.biome");
+    private static final Text BUFFET_BIOME_TEXT = new TranslatableText("createWorld.customize.buffet.biome");
     private final Screen field_24562;
     private final Consumer<Biome> field_24563;
     private final MutableRegistry<Biome> field_25888;
@@ -73,7 +73,7 @@ extends Screen {
         this.renderBackgroundTexture(0);
         this.biomeSelectionList.render(matrices, mouseX, mouseY, delta);
         CustomizeBuffetLevelScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
-        CustomizeBuffetLevelScreen.drawCenteredText(matrices, this.textRenderer, field_26535, this.width / 2, 28, 0xA0A0A0);
+        CustomizeBuffetLevelScreen.drawCenteredText(matrices, this.textRenderer, BUFFET_BIOME_TEXT, this.width / 2, 28, 0xA0A0A0);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

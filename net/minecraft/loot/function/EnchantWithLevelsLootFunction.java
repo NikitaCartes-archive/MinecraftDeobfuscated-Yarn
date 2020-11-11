@@ -7,24 +7,25 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Random;
+import java.util.Set;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTableRange;
-import net.minecraft.loot.LootTableRanges;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.JsonHelper;
 
 public class EnchantWithLevelsLootFunction
 extends ConditionalLootFunction {
-    private final LootTableRange range;
+    private final LootNumberProvider range;
     private final boolean treasureEnchantmentsAllowed;
 
-    private EnchantWithLevelsLootFunction(LootCondition[] conditions, LootTableRange range, boolean treasureEnchantmentsAllowed) {
+    private EnchantWithLevelsLootFunction(LootCondition[] conditions, LootNumberProvider range, boolean treasureEnchantmentsAllowed) {
         super(conditions);
         this.range = range;
         this.treasureEnchantmentsAllowed = treasureEnchantmentsAllowed;
@@ -36,12 +37,17 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    public ItemStack process(ItemStack stack, LootContext context) {
-        Random random = context.getRandom();
-        return EnchantmentHelper.enchant(random, stack, this.range.next(random), this.treasureEnchantmentsAllowed);
+    public Set<LootContextParameter<?>> getRequiredParameters() {
+        return this.range.getRequiredParameters();
     }
 
-    public static Builder builder(LootTableRange range) {
+    @Override
+    public ItemStack process(ItemStack stack, LootContext context) {
+        Random random = context.getRandom();
+        return EnchantmentHelper.enchant(random, stack, this.range.nextInt(context), this.treasureEnchantmentsAllowed);
+    }
+
+    public static Builder builder(LootNumberProvider range) {
         return new Builder(range);
     }
 
@@ -50,15 +56,15 @@ extends ConditionalLootFunction {
         @Override
         public void toJson(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
-            jsonObject.add("levels", LootTableRanges.toJson(enchantWithLevelsLootFunction.range, jsonSerializationContext));
+            jsonObject.add("levels", jsonSerializationContext.serialize(enchantWithLevelsLootFunction.range));
             jsonObject.addProperty("treasure", enchantWithLevelsLootFunction.treasureEnchantmentsAllowed);
         }
 
         @Override
         public EnchantWithLevelsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            LootTableRange lootTableRange = LootTableRanges.fromJson(jsonObject.get("levels"), jsonDeserializationContext);
+            LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonObject, "levels", jsonDeserializationContext, LootNumberProvider.class);
             boolean bl = JsonHelper.getBoolean(jsonObject, "treasure", false);
-            return new EnchantWithLevelsLootFunction(lootConditions, lootTableRange, bl);
+            return new EnchantWithLevelsLootFunction(lootConditions, lootNumberProvider, bl);
         }
 
         @Override
@@ -69,10 +75,10 @@ extends ConditionalLootFunction {
 
     public static class Builder
     extends ConditionalLootFunction.Builder<Builder> {
-        private final LootTableRange range;
+        private final LootNumberProvider range;
         private boolean treasureEnchantmentsAllowed;
 
-        public Builder(LootTableRange range) {
+        public Builder(LootNumberProvider range) {
             this.range = range;
         }
 

@@ -20,7 +20,7 @@ import net.minecraft.util.Language;
 
 @Environment(value=EnvType.CLIENT)
 public class ChatMessages {
-    private static final OrderedText field_25263 = OrderedText.styled(32, Style.EMPTY);
+    private static final OrderedText SPACES = OrderedText.styled(32, Style.EMPTY);
 
     private static String getRenderedChatMessage(String message) {
         return MinecraftClient.getInstance().options.chatColors ? message : Formatting.strip(message);
@@ -33,9 +33,9 @@ public class ChatMessages {
             return Optional.empty();
         }, Style.EMPTY);
         ArrayList<OrderedText> list = Lists.newArrayList();
-        textRenderer.getTextHandler().method_29971(textCollector.getCombined(), width, Style.EMPTY, (stringVisitable, boolean_) -> {
+        textRenderer.getTextHandler().wrapLines(textCollector.getCombined(), width, Style.EMPTY, (stringVisitable, boolean_) -> {
             OrderedText orderedText = Language.getInstance().reorder((StringVisitable)stringVisitable);
-            list.add(boolean_ != false ? OrderedText.concat(field_25263, orderedText) : orderedText);
+            list.add(boolean_ != false ? OrderedText.concat(SPACES, orderedText) : orderedText);
         });
         if (list.isEmpty()) {
             return Lists.newArrayList(OrderedText.EMPTY);

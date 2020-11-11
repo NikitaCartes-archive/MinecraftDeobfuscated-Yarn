@@ -67,6 +67,7 @@ import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
+import net.minecraft.loot.function.LootFunctionManager;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -76,8 +77,6 @@ import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ServerResourceManager;
-import net.minecraft.scoreboard.ScoreboardState;
-import net.minecraft.scoreboard.ScoreboardSynchronizer;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.OperatorEntry;
 import net.minecraft.server.PlayerManager;
@@ -271,9 +270,7 @@ AutoCloseable {
     }
 
     private void initScoreboard(PersistentStateManager persistentStateManager) {
-        ScoreboardState scoreboardState = persistentStateManager.getOrCreate(ScoreboardState::new, "scoreboard");
-        scoreboardState.setScoreboard(this.getScoreboard());
-        this.getScoreboard().addUpdateListener(new ScoreboardSynchronizer(scoreboardState));
+        persistentStateManager.getOrCreate(this.getScoreboard()::method_32704, this.getScoreboard()::method_32705, "scoreboard");
     }
 
     protected abstract boolean setupServer() throws IOException;
@@ -462,7 +459,7 @@ AutoCloseable {
         this.timeReference = Util.getMeasuringTimeMs() + 10L;
         this.method_16208();
         for (ServerWorld serverWorld2 : this.worlds.values()) {
-            ForcedChunkState forcedChunkState = serverWorld2.getPersistentStateManager().get(ForcedChunkState::new, "chunks");
+            ForcedChunkState forcedChunkState = serverWorld2.getPersistentStateManager().get(ForcedChunkState::method_32350, "chunks");
             if (forcedChunkState == null) continue;
             LongIterator longIterator = forcedChunkState.getChunks().iterator();
             while (longIterator.hasNext()) {
@@ -1362,6 +1359,10 @@ AutoCloseable {
 
     public LootConditionManager getPredicateManager() {
         return this.serverResourceManager.getLootConditionManager();
+    }
+
+    public LootFunctionManager getItemModifierManager() {
+        return this.serverResourceManager.getLootFunctionManager();
     }
 
     public GameRules getGameRules() {

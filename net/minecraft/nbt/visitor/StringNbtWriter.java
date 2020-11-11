@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Pattern;
-import net.minecraft.class_5627;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
@@ -22,56 +21,60 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 
+/**
+ * A simple converter to turn NBT into single-line SNBT. The output may be parsed back into binary NBT.
+ */
 public class StringNbtWriter
-implements class_5627 {
+implements NbtTagVisitor {
     private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
     private final StringBuilder result = new StringBuilder();
 
     public String apply(Tag tag) {
-        tag.method_32289(this);
+        tag.accept(this);
         return this.result.toString();
     }
 
     @Override
-    public void method_32302(StringTag stringTag) {
-        this.result.append(StringTag.escape(stringTag.asString()));
+    public void visitStringTag(StringTag tag) {
+        this.result.append(StringTag.escape(tag.asString()));
     }
 
     @Override
-    public void method_32291(ByteTag byteTag) {
-        this.result.append(byteTag.getNumber()).append('b');
+    public void visitByteTag(ByteTag tag) {
+        this.result.append(tag.getNumber()).append('b');
     }
 
     @Override
-    public void method_32301(ShortTag shortTag) {
-        this.result.append(shortTag.getNumber()).append('s');
+    public void visitShortTag(ShortTag tag) {
+        this.result.append(tag.getNumber()).append('s');
     }
 
     @Override
-    public void method_32297(IntTag intTag) {
-        this.result.append(intTag.getNumber());
+    public void visitIntTag(IntTag tag) {
+        this.result.append(tag.getNumber());
     }
 
     @Override
-    public void method_32300(LongTag longTag) {
-        this.result.append(longTag.getNumber()).append('L');
+    public void visitLongTag(LongTag tag) {
+        this.result.append(tag.getNumber()).append('L');
     }
 
     @Override
-    public void method_32295(FloatTag floatTag) {
-        this.result.append(floatTag.getFloat()).append('f');
+    public void visitFloatTag(FloatTag tag) {
+        this.result.append(tag.getFloat()).append('f');
     }
 
     @Override
-    public void method_32293(DoubleTag doubleTag) {
-        this.result.append(doubleTag.getDouble()).append('d');
+    public void visitDoubleTag(DoubleTag tag) {
+        this.result.append(tag.getDouble()).append('d');
     }
 
     @Override
-    public void method_32290(ByteArrayTag byteArrayTag) {
+    public void visitByteArrayTag(ByteArrayTag tag) {
         this.result.append("[B;");
-        byte[] bs = byteArrayTag.getByteArray();
+        byte[] bs = tag.getByteArray();
         for (int i = 0; i < bs.length; ++i) {
             if (i != 0) {
                 this.result.append(',');
@@ -82,9 +85,9 @@ implements class_5627 {
     }
 
     @Override
-    public void method_32296(IntArrayTag intArrayTag) {
+    public void visitIntArrayTag(IntArrayTag tag) {
         this.result.append("[I;");
-        int[] is = intArrayTag.getIntArray();
+        int[] is = tag.getIntArray();
         for (int i = 0; i < is.length; ++i) {
             if (i != 0) {
                 this.result.append(',');
@@ -95,9 +98,9 @@ implements class_5627 {
     }
 
     @Override
-    public void method_32299(LongArrayTag longArrayTag) {
+    public void visitLongArrayTag(LongArrayTag tag) {
         this.result.append("[L;");
-        long[] ls = longArrayTag.getLongArray();
+        long[] ls = tag.getLongArray();
         for (int i = 0; i < ls.length; ++i) {
             if (i != 0) {
                 this.result.append(',');
@@ -108,27 +111,27 @@ implements class_5627 {
     }
 
     @Override
-    public void method_32298(ListTag listTag) {
+    public void visitListTag(ListTag tag) {
         this.result.append('[');
-        for (int i = 0; i < listTag.size(); ++i) {
+        for (int i = 0; i < tag.size(); ++i) {
             if (i != 0) {
                 this.result.append(',');
             }
-            this.result.append(new StringNbtWriter().apply(listTag.get(i)));
+            this.result.append(new StringNbtWriter().apply(tag.get(i)));
         }
         this.result.append(']');
     }
 
     @Override
-    public void method_32292(CompoundTag compoundTag) {
+    public void visitCompoundTag(CompoundTag tag) {
         this.result.append('{');
-        ArrayList<String> list = Lists.newArrayList(compoundTag.getKeys());
+        ArrayList<String> list = Lists.newArrayList(tag.getKeys());
         Collections.sort(list);
         for (String string : list) {
             if (this.result.length() != 1) {
                 this.result.append(',');
             }
-            this.result.append(StringNbtWriter.escapeName(string)).append(':').append(new StringNbtWriter().apply(compoundTag.get(string)));
+            this.result.append(StringNbtWriter.escapeName(string)).append(':').append(new StringNbtWriter().apply(tag.get(string)));
         }
         this.result.append('}');
     }
@@ -141,7 +144,7 @@ implements class_5627 {
     }
 
     @Override
-    public void method_32294(EndTag endTag) {
+    public void visitEndTag(EndTag tag) {
         this.result.append("END");
     }
 }

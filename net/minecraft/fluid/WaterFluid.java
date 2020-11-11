@@ -3,6 +3,7 @@
  */
 package net.minecraft.fluid;
 
+import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,6 +21,7 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.tag.FluidTags;
@@ -111,6 +113,11 @@ extends FlowableFluid {
     @Override
     protected float getBlastResistance() {
         return 100.0f;
+    }
+
+    @Override
+    public Optional<SoundEvent> getFillSound() {
+        return Optional.of(SoundEvents.ITEM_BUCKET_FILL);
     }
 
     public static class Flowing

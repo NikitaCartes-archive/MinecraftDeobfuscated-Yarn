@@ -8,13 +8,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.FallingBlockEntity;
@@ -25,8 +25,8 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class FallingBlockEntityRenderer
 extends EntityRenderer<FallingBlockEntity> {
-    public FallingBlockEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
+    public FallingBlockEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
         this.shadowRadius = 0.5f;
     }
 

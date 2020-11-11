@@ -5,14 +5,14 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.VillagerResemblingModel;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
@@ -25,17 +25,17 @@ extends VillagerResemblingModel<T> {
         super(modelPart);
     }
 
-    public static class_5607 method_32065() {
-        class_5609 lv = VillagerResemblingModel.method_32064();
-        class_5610 lv2 = lv.method_32111();
-        class_5610 lv3 = lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32097(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f), class_5603.field_27701);
-        class_5610 lv4 = lv3.method_32117("hat", class_5606.method_32108().method_32101(0, 64).method_32097(0.0f, 0.0f, 0.0f, 10.0f, 2.0f, 10.0f), class_5603.method_32090(-5.0f, -10.03125f, -5.0f));
-        class_5610 lv5 = lv4.method_32117("hat2", class_5606.method_32108().method_32101(0, 76).method_32097(0.0f, 0.0f, 0.0f, 7.0f, 4.0f, 7.0f), class_5603.method_32091(1.75f, -4.0f, 2.0f, -0.05235988f, 0.0f, 0.02617994f));
-        class_5610 lv6 = lv5.method_32117("hat3", class_5606.method_32108().method_32101(0, 87).method_32097(0.0f, 0.0f, 0.0f, 4.0f, 4.0f, 4.0f), class_5603.method_32091(1.75f, -4.0f, 2.0f, -0.10471976f, 0.0f, 0.05235988f));
-        lv6.method_32117("hat4", class_5606.method_32108().method_32101(0, 95).method_32098(0.0f, 0.0f, 0.0f, 1.0f, 2.0f, 1.0f, new class_5605(0.25f)), class_5603.method_32091(1.75f, -2.0f, 2.0f, -0.20943952f, 0.0f, 0.10471976f));
-        class_5610 lv7 = lv3.method_32116("nose");
-        lv7.method_32117("mole", class_5606.method_32108().method_32101(0, 0).method_32098(0.0f, 3.0f, -6.75f, 1.0f, 1.0f, 1.0f, new class_5605(-0.25f)), class_5603.method_32090(0.0f, -2.0f, 0.0f));
-        return class_5607.method_32110(lv, 64, 128);
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = VillagerResemblingModel.getModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        ModelPartData modelPartData2 = modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f), ModelTransform.NONE);
+        ModelPartData modelPartData3 = modelPartData2.addChild("hat", ModelPartBuilder.create().uv(0, 64).cuboid(0.0f, 0.0f, 0.0f, 10.0f, 2.0f, 10.0f), ModelTransform.pivot(-5.0f, -10.03125f, -5.0f));
+        ModelPartData modelPartData4 = modelPartData3.addChild("hat2", ModelPartBuilder.create().uv(0, 76).cuboid(0.0f, 0.0f, 0.0f, 7.0f, 4.0f, 7.0f), ModelTransform.of(1.75f, -4.0f, 2.0f, -0.05235988f, 0.0f, 0.02617994f));
+        ModelPartData modelPartData5 = modelPartData4.addChild("hat3", ModelPartBuilder.create().uv(0, 87).cuboid(0.0f, 0.0f, 0.0f, 4.0f, 4.0f, 4.0f), ModelTransform.of(1.75f, -4.0f, 2.0f, -0.10471976f, 0.0f, 0.05235988f));
+        modelPartData5.addChild("hat4", ModelPartBuilder.create().uv(0, 95).cuboid(0.0f, 0.0f, 0.0f, 1.0f, 2.0f, 1.0f, new Dilation(0.25f)), ModelTransform.of(1.75f, -2.0f, 2.0f, -0.20943952f, 0.0f, 0.10471976f));
+        ModelPartData modelPartData6 = modelPartData2.getChild("nose");
+        modelPartData6.addChild("mole", ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, 3.0f, -6.75f, 1.0f, 1.0f, 1.0f, new Dilation(-0.25f)), ModelTransform.pivot(0.0f, -2.0f, 0.0f));
+        return TexturedModelData.of(modelData, 64, 128);
     }
 
     @Override

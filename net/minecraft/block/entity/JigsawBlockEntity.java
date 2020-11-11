@@ -22,6 +22,8 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.pool.SinglePoolElement;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -155,6 +157,11 @@ extends BlockEntity {
 
         public static Optional<Joint> byName(String name) {
             return Arrays.stream(Joint.values()).filter(joint -> joint.asString().equals(name)).findFirst();
+        }
+
+        @Environment(value=EnvType.CLIENT)
+        public Text method_32357() {
+            return new TranslatableText("jigsaw_block.joint." + this.name);
         }
     }
 }

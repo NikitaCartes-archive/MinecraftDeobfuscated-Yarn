@@ -132,7 +132,8 @@ public class HeldItemRenderer {
         matrices.scale(0.38f, 0.38f, 0.38f);
         matrices.translate(-0.5, -0.5, 0.0);
         matrices.scale(0.0078125f, 0.0078125f, 0.0078125f);
-        MapState mapState = FilledMapItem.getOrCreateMapState(stack, this.client.world);
+        Integer integer = FilledMapItem.getMapId(stack);
+        MapState mapState = FilledMapItem.getMapState(integer, this.client.world);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(mapState == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
         Matrix4f matrix4f = matrices.peek().getModel();
         vertexConsumer.vertex(matrix4f, -7.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(swingProgress).next();
@@ -140,7 +141,7 @@ public class HeldItemRenderer {
         vertexConsumer.vertex(matrix4f, 135.0f, -7.0f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).light(swingProgress).next();
         vertexConsumer.vertex(matrix4f, -7.0f, -7.0f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 0.0f).light(swingProgress).next();
         if (mapState != null) {
-            this.client.gameRenderer.getMapRenderer().draw(matrices, vertexConsumers, mapState, false, swingProgress);
+            this.client.gameRenderer.getMapRenderer().draw(matrices, vertexConsumers, integer, mapState, false, swingProgress);
         }
     }
 
@@ -251,6 +252,9 @@ public class HeldItemRenderer {
     }
 
     private void renderFirstPersonItem(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        if (player.isUsingSpyglass()) {
+            return;
+        }
         boolean bl = hand == Hand.MAIN_HAND;
         Arm arm = bl ? player.getMainArm() : player.getMainArm().getOpposite();
         matrices.push();

@@ -21,7 +21,7 @@ implements Iterable<Stat<T>> {
     private final Map<T, Stat<T>> stats = new IdentityHashMap<T, Stat<T>>();
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    private Text field_26382;
+    private Text name;
 
     public StatType(Registry<T> registry) {
         this.registry = registry;
@@ -55,11 +55,11 @@ implements Iterable<Stat<T>> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Text method_30739() {
-        if (this.field_26382 == null) {
-            this.field_26382 = new TranslatableText(this.getTranslationKey());
+    public Text getName() {
+        if (this.name == null) {
+            this.name = new TranslatableText(this.getTranslationKey());
         }
-        return this.field_26382;
+        return this.name;
     }
 }
 

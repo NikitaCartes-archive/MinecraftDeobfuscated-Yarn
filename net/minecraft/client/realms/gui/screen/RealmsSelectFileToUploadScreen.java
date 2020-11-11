@@ -39,8 +39,8 @@ extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Text worldLang = new TranslatableText("selectWorld.world");
     private static final Text conversionLang = new TranslatableText("selectWorld.conversion");
-    private static final Text field_26507 = new TranslatableText("mco.upload.hardcore").formatted(Formatting.DARK_RED);
-    private static final Text field_26508 = new TranslatableText("selectWorld.cheats");
+    private static final Text HARDCORE_TEXT = new TranslatableText("mco.upload.hardcore").formatted(Formatting.DARK_RED);
+    private static final Text CHEATS_TEXT = new TranslatableText("selectWorld.cheats");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
     private final RealmsResetWorldScreen parent;
     private final long worldId;
@@ -153,9 +153,9 @@ extends RealmsScreen {
             if (levelSummary.requiresConversion()) {
                 this.field_26511 = conversionLang;
             } else {
-                Text text = levelSummary.isHardcore() ? field_26507 : RealmsSelectFileToUploadScreen.method_21400(levelSummary);
+                Text text = levelSummary.isHardcore() ? HARDCORE_TEXT : RealmsSelectFileToUploadScreen.method_21400(levelSummary);
                 if (levelSummary.hasCheats()) {
-                    text = text.shallowCopy().append(", ").append(field_26508);
+                    text = text.shallowCopy().append(", ").append(CHEATS_TEXT);
                 }
                 this.field_26511 = text;
             }

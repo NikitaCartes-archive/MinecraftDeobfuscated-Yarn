@@ -4,7 +4,6 @@
 package net.minecraft.client.gui.widget;
 
 import java.util.List;
-import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.OptionSliderWidget;
@@ -18,10 +17,12 @@ public class DoubleOptionSliderWidget
 extends OptionSliderWidget
 implements OrderableTooltip {
     private final DoubleOption option;
+    private final List<OrderedText> field_27984;
 
-    public DoubleOptionSliderWidget(GameOptions gameOptions, int x, int y, int width, int height, DoubleOption option) {
+    public DoubleOptionSliderWidget(GameOptions gameOptions, int x, int y, int width, int height, DoubleOption option, List<OrderedText> list) {
         super(gameOptions, x, y, width, height, (double)((float)option.getRatio(option.get(gameOptions))));
         this.option = option;
+        this.field_27984 = list;
         this.updateMessage();
     }
 
@@ -37,8 +38,8 @@ implements OrderableTooltip {
     }
 
     @Override
-    public Optional<List<OrderedText>> getOrderedTooltip() {
-        return this.option.getTooltip();
+    public List<OrderedText> getOrderedTooltip() {
+        return this.field_27984;
     }
 }
 

@@ -7,12 +7,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.MinecartEntityModel;
@@ -30,10 +30,10 @@ extends EntityRenderer<T> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/minecart.png");
     protected final EntityModel<T> model;
 
-    public MinecartEntityRenderer(class_5617.class_5618 arg, EntityModelLayer entityModelLayer) {
-        super(arg);
+    public MinecartEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
+        super(ctx);
         this.shadowRadius = 0.7f;
-        this.model = new MinecartEntityModel(arg.method_32167(entityModelLayer));
+        this.model = new MinecartEntityModel(ctx.getPart(layer));
     }
 
     @Override

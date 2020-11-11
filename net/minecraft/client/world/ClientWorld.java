@@ -47,6 +47,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.CubicSampler;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -75,6 +76,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
@@ -414,8 +416,8 @@ extends World {
     }
 
     @Override
-    public void putMapState(MapState mapState) {
-        this.mapStates.put(mapState.getId(), mapState);
+    public void putMapState(String string, MapState mapState) {
+        this.mapStates.put(string, mapState);
     }
 
     @Override
@@ -516,45 +518,43 @@ extends World {
         return h * 0.8f + 0.2f;
     }
 
-    public Vec3d method_23777(BlockPos blockPos, float f) {
-        float o;
+    public Vec3d method_23777(Vec3d vec3d, float f) {
         float n;
+        float m;
         float g = this.getSkyAngle(f);
+        Vec3d vec3d2 = vec3d.subtract(2.0, 2.0, 2.0).multiply(0.25);
+        BiomeAccess biomeAccess = this.getBiomeAccess();
+        Vec3d vec3d3 = CubicSampler.sampleColor(vec3d2, (i, j, k) -> Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(i, j, k).getSkyColor()));
         float h = MathHelper.cos(g * ((float)Math.PI * 2)) * 2.0f + 0.5f;
         h = MathHelper.clamp(h, 0.0f, 1.0f);
-        Biome biome = this.getBiome(blockPos);
-        int i = biome.getSkyColor();
-        float j = (float)(i >> 16 & 0xFF) / 255.0f;
-        float k = (float)(i >> 8 & 0xFF) / 255.0f;
-        float l = (float)(i & 0xFF) / 255.0f;
-        j *= h;
-        k *= h;
-        l *= h;
-        float m = this.getRainGradient(f);
-        if (m > 0.0f) {
-            n = (j * 0.3f + k * 0.59f + l * 0.11f) * 0.6f;
-            o = 1.0f - m * 0.75f;
-            j = j * o + n * (1.0f - o);
-            k = k * o + n * (1.0f - o);
-            l = l * o + n * (1.0f - o);
+        float i2 = (float)vec3d3.x * h;
+        float j2 = (float)vec3d3.y * h;
+        float k2 = (float)vec3d3.z * h;
+        float l = this.getRainGradient(f);
+        if (l > 0.0f) {
+            m = (i2 * 0.3f + j2 * 0.59f + k2 * 0.11f) * 0.6f;
+            n = 1.0f - l * 0.75f;
+            i2 = i2 * n + m * (1.0f - n);
+            j2 = j2 * n + m * (1.0f - n);
+            k2 = k2 * n + m * (1.0f - n);
         }
-        if ((n = this.getThunderGradient(f)) > 0.0f) {
-            o = (j * 0.3f + k * 0.59f + l * 0.11f) * 0.2f;
-            float p = 1.0f - n * 0.75f;
-            j = j * p + o * (1.0f - p);
-            k = k * p + o * (1.0f - p);
-            l = l * p + o * (1.0f - p);
+        if ((m = this.getThunderGradient(f)) > 0.0f) {
+            n = (i2 * 0.3f + j2 * 0.59f + k2 * 0.11f) * 0.2f;
+            float o = 1.0f - m * 0.75f;
+            i2 = i2 * o + n * (1.0f - o);
+            j2 = j2 * o + n * (1.0f - o);
+            k2 = k2 * o + n * (1.0f - o);
         }
         if (this.lightningTicksLeft > 0) {
-            o = (float)this.lightningTicksLeft - f;
-            if (o > 1.0f) {
-                o = 1.0f;
+            n = (float)this.lightningTicksLeft - f;
+            if (n > 1.0f) {
+                n = 1.0f;
             }
-            j = j * (1.0f - (o *= 0.45f)) + 0.8f * o;
-            k = k * (1.0f - o) + 0.8f * o;
-            l = l * (1.0f - o) + 1.0f * o;
+            i2 = i2 * (1.0f - (n *= 0.45f)) + 0.8f * n;
+            j2 = j2 * (1.0f - n) + 0.8f * n;
+            k2 = k2 * (1.0f - n) + 1.0f * n;
         }
-        return new Vec3d(j, k, l);
+        return new Vec3d(i2, j2, k2);
     }
 
     public Vec3d getCloudsColor(float tickDelta) {

@@ -5,8 +5,8 @@ package net.minecraft.nbt;
 
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.class_5627;
 import net.minecraft.nbt.TagReader;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 import net.minecraft.nbt.visitor.StringNbtWriter;
 
 public interface Tag {
@@ -24,6 +24,6 @@ public interface Tag {
         return new StringNbtWriter().apply(this);
     }
 
-    public void method_32289(class_5627 var1);
+    public void accept(NbtTagVisitor var1);
 }
 

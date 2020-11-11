@@ -5,12 +5,12 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -22,17 +22,17 @@ extends SkullBlockEntityModel {
     private final ModelPart jaw;
 
     public DragonHeadEntityModel(ModelPart modelPart) {
-        this.head = modelPart.method_32086("head");
-        this.jaw = this.head.method_32086("jaw");
+        this.head = modelPart.getChild("head");
+        this.jaw = this.head.getChild("jaw");
     }
 
-    public static class_5607 method_32071() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
         float f = -16.0f;
-        class_5610 lv3 = lv2.method_32117("head", class_5606.method_32108().method_32104("upper_lip", -6.0f, -1.0f, -24.0f, 12, 5, 16, 176, 44).method_32104("upper_head", -8.0f, -8.0f, -10.0f, 16, 16, 16, 112, 30).method_32106(true).method_32104("scale", -5.0f, -12.0f, -4.0f, 2, 4, 6, 0, 0).method_32104("nostril", -5.0f, -3.0f, -22.0f, 2, 2, 4, 112, 0).method_32106(false).method_32104("scale", 3.0f, -12.0f, -4.0f, 2, 4, 6, 0, 0).method_32104("nostril", 3.0f, -3.0f, -22.0f, 2, 2, 4, 112, 0), class_5603.field_27701);
-        lv3.method_32117("jaw", class_5606.method_32108().method_32101(176, 65).method_32102("jaw", -6.0f, 0.0f, -16.0f, 12.0f, 4.0f, 16.0f), class_5603.method_32090(0.0f, 4.0f, -8.0f));
-        return class_5607.method_32110(lv, 256, 256);
+        ModelPartData modelPartData2 = modelPartData.addChild("head", ModelPartBuilder.create().cuboid("upper_lip", -6.0f, -1.0f, -24.0f, 12, 5, 16, 176, 44).cuboid("upper_head", -8.0f, -8.0f, -10.0f, 16, 16, 16, 112, 30).mirrored(true).cuboid("scale", -5.0f, -12.0f, -4.0f, 2, 4, 6, 0, 0).cuboid("nostril", -5.0f, -3.0f, -22.0f, 2, 2, 4, 112, 0).mirrored(false).cuboid("scale", 3.0f, -12.0f, -4.0f, 2, 4, 6, 0, 0).cuboid("nostril", 3.0f, -3.0f, -22.0f, 2, 2, 4, 112, 0), ModelTransform.NONE);
+        modelPartData2.addChild("jaw", ModelPartBuilder.create().uv(176, 65).cuboid("jaw", -6.0f, 0.0f, -16.0f, 12.0f, 4.0f, 16.0f), ModelTransform.pivot(0.0f, 4.0f, -8.0f));
+        return TexturedModelData.of(modelData, 256, 256);
     }
 
     @Override

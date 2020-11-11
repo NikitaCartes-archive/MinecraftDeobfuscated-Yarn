@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.gui.screen.options;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
@@ -14,7 +15,6 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class GameOptionsScreen
@@ -38,14 +38,12 @@ extends Screen {
         this.client.openScreen(this.parent);
     }
 
-    @Nullable
     public static List<OrderedText> getHoveredButtonTooltip(ButtonListWidget buttonList, int mouseX, int mouseY) {
         Optional<AbstractButtonWidget> optional = buttonList.getHoveredButton(mouseX, mouseY);
         if (optional.isPresent() && optional.get() instanceof OrderableTooltip) {
-            Optional<List<OrderedText>> optional2 = ((OrderableTooltip)((Object)optional.get())).getOrderedTooltip();
-            return optional2.orElse(null);
+            return ((OrderableTooltip)((Object)optional.get())).getOrderedTooltip();
         }
-        return null;
+        return ImmutableList.of();
     }
 }
 

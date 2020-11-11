@@ -63,12 +63,12 @@ extends Task<LivingEntity> {
         BlockState blockState = world.getBlockState(blockPos);
         if (blockState.isIn(BlockTags.WOODEN_DOORS)) {
             DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
-            if (!doorBlock.method_30841(blockState)) {
+            if (!doorBlock.isOpen(blockState)) {
                 doorBlock.setOpen(world, blockState, blockPos, true);
             }
             this.method_30767(world, entity, blockPos);
         }
-        if ((blockState2 = world.getBlockState(blockPos2 = pathNode2.getPos())).isIn(BlockTags.WOODEN_DOORS) && !(doorBlock2 = (DoorBlock)blockState2.getBlock()).method_30841(blockState2)) {
+        if ((blockState2 = world.getBlockState(blockPos2 = pathNode2.getPos())).isIn(BlockTags.WOODEN_DOORS) && !(doorBlock2 = (DoorBlock)blockState2.getBlock()).isOpen(blockState2)) {
             doorBlock2.setOpen(world, blockState2, blockPos2, true);
             this.method_30767(world, entity, blockPos2);
         }
@@ -93,7 +93,7 @@ extends Task<LivingEntity> {
                     continue;
                 }
                 DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
-                if (!doorBlock.method_30841(blockState)) {
+                if (!doorBlock.isOpen(blockState)) {
                     iterator.remove();
                     continue;
                 }

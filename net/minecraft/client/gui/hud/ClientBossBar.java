@@ -46,7 +46,7 @@ extends BossBar {
                 this.setName(packet.getName());
                 break;
             }
-            case UPDATE_PCT: {
+            case UPDATE_PROGRESS: {
                 this.setPercent(packet.getPercent());
                 break;
             }

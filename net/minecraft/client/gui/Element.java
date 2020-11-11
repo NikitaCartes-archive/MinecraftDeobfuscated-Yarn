@@ -113,7 +113,7 @@ public interface Element {
      * 
      * @param keyCode the named key code of the event as described in the {@link org.lwjgl.glfw.GLFW GLFW} class
      * @param scanCode the unique/platform-specific scan code of the keyboard input
-     * @param modifiers a GLFW bitfield describing the modifier keys that are held down (see {@linkplain https://www.glfw.org/docs/3.3/group__mods.html GLFW Modifier key flags})
+     * @param modifiers a GLFW bitfield describing the modifier keys that are held down (see <a href="https://www.glfw.org/docs/3.3/group__mods.html">GLFW Modifier key flags</a>)
      */
     default public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return false;
@@ -132,7 +132,7 @@ public interface Element {
      * 
      * @param keyCode the named key code of the event as described in the {@link org.lwjgl.glfw.GLFW GLFW} class
      * @param scanCode the unique/platform-specific scan code of the keyboard input
-     * @param modifiers a GLFW bitfield describing the modifier keys that are held down (see {@linkplain https://www.glfw.org/docs/3.3/group__mods.html GLFW Modifier key flags})
+     * @param modifiers a GLFW bitfield describing the modifier keys that are held down (see <a href="https://www.glfw.org/docs/3.3/group__mods.html">GLFW Modifier key flags</a>)
      */
     default public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         return false;

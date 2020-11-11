@@ -25,6 +25,7 @@ import net.minecraft.loot.function.SetBannerPatternFunction;
 import net.minecraft.loot.function.SetContentsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetDamageLootFunction;
+import net.minecraft.loot.function.SetEnchantmentsLootFunction;
 import net.minecraft.loot.function.SetLootTableLootFunction;
 import net.minecraft.loot.function.SetLoreLootFunction;
 import net.minecraft.loot.function.SetNameLootFunction;
@@ -40,6 +41,7 @@ public class LootFunctionTypes {
     public static final LootFunctionType SET_COUNT = LootFunctionTypes.register("set_count", new SetCountLootFunction.Serializer());
     public static final LootFunctionType ENCHANT_WITH_LEVELS = LootFunctionTypes.register("enchant_with_levels", new EnchantWithLevelsLootFunction.Serializer());
     public static final LootFunctionType ENCHANT_RANDOMLY = LootFunctionTypes.register("enchant_randomly", new EnchantRandomlyLootFunction.Serializer());
+    public static final LootFunctionType SET_ENCHANTMENTS = LootFunctionTypes.register("set_enchantments", new SetEnchantmentsLootFunction.Serializer());
     public static final LootFunctionType SET_NBT = LootFunctionTypes.register("set_nbt", new SetNbtLootFunction.Serializer());
     public static final LootFunctionType FURNACE_SMELT = LootFunctionTypes.register("furnace_smelt", new FurnaceSmeltLootFunction.Serializer());
     public static final LootFunctionType LOOTING_ENCHANT = LootFunctionTypes.register("looting_enchant", new LootingEnchantLootFunction.Serializer());

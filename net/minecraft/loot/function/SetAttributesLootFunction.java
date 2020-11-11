@@ -4,6 +4,7 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -15,17 +16,19 @@ import com.google.gson.JsonSyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -47,6 +50,11 @@ extends ConditionalLootFunction {
     }
 
     @Override
+    public Set<LootContextParameter<?>> getRequiredParameters() {
+        return this.attributes.stream().flatMap(attribute -> ((Attribute)attribute).amountRange.getRequiredParameters().stream()).collect(ImmutableSet.toImmutableSet());
+    }
+
+    @Override
     public ItemStack process(ItemStack stack, LootContext context) {
         Random random = context.getRandom();
         for (Attribute attribute : this.attributes) {
@@ -55,7 +63,7 @@ extends ConditionalLootFunction {
                 uUID = UUID.randomUUID();
             }
             EquipmentSlot equipmentSlot = Util.getRandom(attribute.slots, random);
-            stack.addAttributeModifier(attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amountRange.nextFloat(random), attribute.operation), equipmentSlot);
+            stack.addAttributeModifier(attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amountRange.nextFloat(context), attribute.operation), equipmentSlot);
         }
         return stack;
     }
@@ -64,12 +72,12 @@ extends ConditionalLootFunction {
         private final String name;
         private final EntityAttribute attribute;
         private final EntityAttributeModifier.Operation operation;
-        private final UniformLootTableRange amountRange;
+        private final LootNumberProvider amountRange;
         @Nullable
         private final UUID id;
         private final EquipmentSlot[] slots;
 
-        private Attribute(String name, EntityAttribute entityAttribute, EntityAttributeModifier.Operation operation, UniformLootTableRange amountRange, EquipmentSlot[] slots, @Nullable UUID id) {
+        private Attribute(String name, EntityAttribute entityAttribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange, EquipmentSlot[] slots, @Nullable UUID id) {
             this.name = name;
             this.attribute = entityAttribute;
             this.operation = operation;
@@ -108,7 +116,7 @@ extends ConditionalLootFunction {
                 throw new JsonSyntaxException("Unknown attribute: " + identifier);
             }
             EntityAttributeModifier.Operation operation = Attribute.fromName(JsonHelper.getString(json, "operation"));
-            UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(json, "amount", context, UniformLootTableRange.class);
+            LootNumberProvider lootNumberProvider = JsonHelper.deserialize(json, "amount", context, LootNumberProvider.class);
             UUID uUID = null;
             if (JsonHelper.hasString(json, "slot")) {
                 equipmentSlots = new EquipmentSlot[]{EquipmentSlot.byName(JsonHelper.getString(json, "slot"))};
@@ -133,7 +141,7 @@ extends ConditionalLootFunction {
                     throw new JsonSyntaxException("Invalid attribute modifier id '" + string2 + "' (must be UUID format, with dashes)");
                 }
             }
-            return new Attribute(string, entityAttribute, operation, uniformLootTableRange, equipmentSlots, uUID);
+            return new Attribute(string, entityAttribute, operation, lootNumberProvider, equipmentSlots, uUID);
         }
 
         private static String getName(EntityAttributeModifier.Operation operation) {

@@ -215,6 +215,7 @@ RangedAttackMob {
         int i;
         if (this.getInvulnerableTimer() > 0) {
             int i2 = this.getInvulnerableTimer() - 1;
+            this.bossBar.setPercent(1.0f - (float)i2 / 220.0f);
             if (i2 <= 0) {
                 Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
                 this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0f, false, destructionType);
@@ -318,6 +319,7 @@ RangedAttackMob {
 
     public void method_6885() {
         this.setInvulTimer(220);
+        this.bossBar.setPercent(0.0f);
         this.setHealth(this.getMaxHealth() / 3.0f);
     }
 

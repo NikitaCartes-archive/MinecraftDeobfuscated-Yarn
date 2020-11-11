@@ -5,11 +5,11 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EvokerFangsEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,9 +23,9 @@ extends EntityRenderer<EvokerFangsEntity> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/illager/evoker_fangs.png");
     private final EvokerFangsEntityModel<EvokerFangsEntity> model;
 
-    public EvokerFangsEntityRenderer(class_5617.class_5618 arg) {
-        super(arg);
-        this.model = new EvokerFangsEntityModel(arg.method_32167(EntityModelLayers.EVOKER_FANGS));
+    public EvokerFangsEntityRenderer(EntityRendererFactory.Context context) {
+        super(context);
+        this.model = new EvokerFangsEntityModel(context.getPart(EntityModelLayers.EVOKER_FANGS));
     }
 
     @Override

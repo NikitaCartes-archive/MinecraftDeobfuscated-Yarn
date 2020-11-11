@@ -9,8 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5599;
-import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -24,7 +22,9 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRenderers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
@@ -67,10 +67,10 @@ implements SynchronousResourceReloadListener {
     public Camera camera;
     private Quaternion rotation;
     public Entity targetedEntity;
-    private final ItemRenderer field_27759;
+    private final ItemRenderer itemRenderer;
     private final TextRenderer textRenderer;
     public final GameOptions gameOptions;
-    private final class_5599 field_27760;
+    private final EntityModelLoader modelLoader;
     private boolean renderShadows = true;
     private boolean renderHitboxes;
 
@@ -78,12 +78,12 @@ implements SynchronousResourceReloadListener {
         return this.getRenderer(entity).getLight(entity, tickDelta);
     }
 
-    public EntityRenderDispatcher(TextureManager textureManager, ItemRenderer itemRenderer, TextRenderer textRenderer, GameOptions gameOptions, class_5599 arg) {
+    public EntityRenderDispatcher(TextureManager textureManager, ItemRenderer itemRenderer, TextRenderer textRenderer, GameOptions gameOptions, EntityModelLoader modelLoader) {
         this.textureManager = textureManager;
-        this.field_27759 = itemRenderer;
+        this.itemRenderer = itemRenderer;
         this.textRenderer = textRenderer;
         this.gameOptions = gameOptions;
-        this.field_27760 = arg;
+        this.modelLoader = modelLoader;
     }
 
     public <T extends Entity> EntityRenderer<? super T> getRenderer(T entity) {
@@ -325,9 +325,9 @@ implements SynchronousResourceReloadListener {
 
     @Override
     public void apply(ResourceManager manager) {
-        class_5617.class_5618 lv = new class_5617.class_5618(this, this.field_27759, manager, this.field_27760, this.textRenderer);
-        this.renderers = EntityRenderers.method_32176(lv);
-        this.modelRenderers = EntityRenderers.method_32177(lv);
+        EntityRendererFactory.Context context = new EntityRendererFactory.Context(this, this.itemRenderer, manager, this.modelLoader, this.textRenderer);
+        this.renderers = EntityRenderers.reloadEntityRenderers(context);
+        this.modelRenderers = EntityRenderers.reloadPlayerRenderers(context);
     }
 }
 

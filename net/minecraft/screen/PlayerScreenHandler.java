@@ -61,7 +61,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
 
                 @Override
                 public boolean canInsert(ItemStack stack) {
-                    return equipmentSlot == MobEntity.getPreferredEquipmentSlot(stack);
+                    return equipmentSlot == MobEntity.method_32326(stack);
                 }
 
                 @Override
@@ -142,7 +142,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
             int i;
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+            EquipmentSlot equipmentSlot = MobEntity.method_32326(itemStack);
             if (index == 0) {
                 if (!this.insertItem(itemStack2, 9, 45, true)) {
                     return ItemStack.EMPTY;
@@ -188,7 +188,6 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public int getCraftingSlotCount() {
         return 5;
     }
@@ -201,6 +200,11 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     @Environment(value=EnvType.CLIENT)
     public RecipeBookCategory getCategory() {
         return RecipeBookCategory.CRAFTING;
+    }
+
+    @Override
+    public boolean method_32339(int i) {
+        return i != this.getCraftingResultSlotIndex();
     }
 }
 

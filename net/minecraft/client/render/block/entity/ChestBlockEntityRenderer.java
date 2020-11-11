@@ -15,13 +15,13 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
 import net.minecraft.client.block.ChestAnimationProgress;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -56,44 +56,44 @@ implements BlockEntityRenderer<T> {
             this.christmas = true;
         }
         ModelPart modelPart = context.getLayerModelPart(EntityModelLayers.CHEST);
-        this.singleChestBase = modelPart.method_32086("bottom");
-        this.singleChestLid = modelPart.method_32086("lid");
-        this.singleChestLatch = modelPart.method_32086("lock");
+        this.singleChestBase = modelPart.getChild("bottom");
+        this.singleChestLid = modelPart.getChild("lid");
+        this.singleChestLatch = modelPart.getChild("lock");
         ModelPart modelPart2 = context.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_LEFT);
-        this.doubleChestRightBase = modelPart2.method_32086("bottom");
-        this.doubleChestRightLid = modelPart2.method_32086("lid");
-        this.doubleChestRightLatch = modelPart2.method_32086("lock");
+        this.doubleChestRightBase = modelPart2.getChild("bottom");
+        this.doubleChestRightLid = modelPart2.getChild("lid");
+        this.doubleChestRightLatch = modelPart2.getChild("lock");
         ModelPart modelPart3 = context.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_RIGHT);
-        this.doubleChestLeftBase = modelPart3.method_32086("bottom");
-        this.doubleChestLeftLid = modelPart3.method_32086("lid");
-        this.doubleChestLeftLatch = modelPart3.method_32086("lock");
+        this.doubleChestLeftBase = modelPart3.getChild("bottom");
+        this.doubleChestLeftLid = modelPart3.getChild("lid");
+        this.doubleChestLeftLatch = modelPart3.getChild("lock");
     }
 
-    public static class_5607 method_32147() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("bottom", class_5606.method_32108().method_32101(0, 19).method_32097(1.0f, 0.0f, 1.0f, 14.0f, 10.0f, 14.0f), class_5603.field_27701);
-        lv2.method_32117("lid", class_5606.method_32108().method_32101(0, 0).method_32097(1.0f, 0.0f, 0.0f, 14.0f, 5.0f, 14.0f), class_5603.method_32090(0.0f, 9.0f, 1.0f));
-        lv2.method_32117("lock", class_5606.method_32108().method_32101(0, 0).method_32097(7.0f, -1.0f, 15.0f, 2.0f, 4.0f, 1.0f), class_5603.method_32090(0.0f, 8.0f, 0.0f));
-        return class_5607.method_32110(lv, 64, 64);
+    public static TexturedModelData getSingleTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("bottom", ModelPartBuilder.create().uv(0, 19).cuboid(1.0f, 0.0f, 1.0f, 14.0f, 10.0f, 14.0f), ModelTransform.NONE);
+        modelPartData.addChild("lid", ModelPartBuilder.create().uv(0, 0).cuboid(1.0f, 0.0f, 0.0f, 14.0f, 5.0f, 14.0f), ModelTransform.pivot(0.0f, 9.0f, 1.0f));
+        modelPartData.addChild("lock", ModelPartBuilder.create().uv(0, 0).cuboid(7.0f, -1.0f, 15.0f, 2.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
-    public static class_5607 method_32148() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("bottom", class_5606.method_32108().method_32101(0, 19).method_32097(1.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f), class_5603.field_27701);
-        lv2.method_32117("lid", class_5606.method_32108().method_32101(0, 0).method_32097(1.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f), class_5603.method_32090(0.0f, 9.0f, 1.0f));
-        lv2.method_32117("lock", class_5606.method_32108().method_32101(0, 0).method_32097(15.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f), class_5603.method_32090(0.0f, 8.0f, 0.0f));
-        return class_5607.method_32110(lv, 64, 64);
+    public static TexturedModelData getRightDoubleTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("bottom", ModelPartBuilder.create().uv(0, 19).cuboid(1.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f), ModelTransform.NONE);
+        modelPartData.addChild("lid", ModelPartBuilder.create().uv(0, 0).cuboid(1.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f), ModelTransform.pivot(0.0f, 9.0f, 1.0f));
+        modelPartData.addChild("lock", ModelPartBuilder.create().uv(0, 0).cuboid(15.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
-    public static class_5607 method_32149() {
-        class_5609 lv = new class_5609();
-        class_5610 lv2 = lv.method_32111();
-        lv2.method_32117("bottom", class_5606.method_32108().method_32101(0, 19).method_32097(0.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f), class_5603.field_27701);
-        lv2.method_32117("lid", class_5606.method_32108().method_32101(0, 0).method_32097(0.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f), class_5603.method_32090(0.0f, 9.0f, 1.0f));
-        lv2.method_32117("lock", class_5606.method_32108().method_32101(0, 0).method_32097(0.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f), class_5603.method_32090(0.0f, 8.0f, 0.0f));
-        return class_5607.method_32110(lv, 64, 64);
+    public static TexturedModelData getLeftDoubleTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        modelPartData.addChild("bottom", ModelPartBuilder.create().uv(0, 19).cuboid(0.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f), ModelTransform.NONE);
+        modelPartData.addChild("lid", ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f), ModelTransform.pivot(0.0f, 9.0f, 1.0f));
+        modelPartData.addChild("lock", ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
     @Override

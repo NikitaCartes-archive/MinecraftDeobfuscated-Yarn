@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_5630;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -40,7 +41,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ReplaceItemCommand;
+import net.minecraft.server.command.ItemCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -68,7 +69,7 @@ public class LootCommand {
     private static Inventory getBlockInventory(ServerCommandSource source, BlockPos pos) throws CommandSyntaxException {
         BlockEntity blockEntity = source.getWorld().getBlockEntity(pos);
         if (!(blockEntity instanceof Inventory)) {
-            throw ReplaceItemCommand.BLOCK_FAILED_EXCEPTION.create();
+            throw ItemCommand.NOT_A_CONTAINER_TARGET_EXCEPTION.create(pos.getX(), pos.getY(), pos.getZ());
         }
         return (Inventory)((Object)blockEntity);
     }
@@ -109,7 +110,7 @@ public class LootCommand {
         Inventory inventory = LootCommand.getBlockInventory(source, targetPos);
         int i = inventory.size();
         if (slot < 0 || slot >= i) {
-            throw ReplaceItemCommand.SLOT_INAPPLICABLE_EXCEPTION.create(slot);
+            throw ItemCommand.NO_SUCH_SLOT_TARGET_EXCEPTION.create(slot);
         }
         ArrayList<ItemStack> list = Lists.newArrayListWithCapacity(stacks.size());
         for (int j = 0; j < stackCount; ++j) {
@@ -142,9 +143,9 @@ public class LootCommand {
 
     private static void replace(Entity entity, List<ItemStack> stacks, int slot, int stackCount, List<ItemStack> addedStacks) {
         for (int i = 0; i < stackCount; ++i) {
-            ItemStack itemStack;
-            ItemStack itemStack2 = itemStack = i < stacks.size() ? stacks.get(i) : ItemStack.EMPTY;
-            if (!entity.equip(slot + i, itemStack.copy())) continue;
+            ItemStack itemStack = i < stacks.size() ? stacks.get(i) : ItemStack.EMPTY;
+            class_5630 lv = entity.method_32318(slot + i);
+            if (lv == class_5630.field_27860 || !lv.method_32332(itemStack.copy())) continue;
             addedStacks.add(itemStack);
         }
     }

@@ -9,14 +9,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -36,8 +35,9 @@ public class BackgroundRenderer {
 
     public static void render(Camera camera, float tickDelta, ClientWorld world, int i2, float f) {
         int j2;
-        FluidState fluidState = camera.getSubmergedFluidState();
-        if (fluidState.isIn(FluidTags.WATER)) {
+        CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
+        Entity entity = camera.getFocusedEntity();
+        if (cameraSubmersionType == CameraSubmersionType.WATER) {
             long l = Util.getMeasuringTimeMs();
             j2 = world.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
             if (lastWaterFogColorUpdateTime < 0L) {
@@ -63,18 +63,24 @@ public class BackgroundRenderer {
                 nextWaterFogColor = MathHelper.floor(h) << 16 | MathHelper.floor(r) << 8 | MathHelper.floor(s);
                 lastWaterFogColorUpdateTime = l;
             }
-        } else if (fluidState.isIn(FluidTags.LAVA)) {
+        } else if (cameraSubmersionType == CameraSubmersionType.LAVA) {
             red = 0.6f;
             green = 0.1f;
             blue = 0.0f;
             lastWaterFogColorUpdateTime = -1L;
+        } else if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW) {
+            red = 0.623f;
+            green = 0.734f;
+            blue = 0.785f;
+            lastWaterFogColorUpdateTime = -1L;
+            RenderSystem.clearColor(red, green, blue, 0.0f);
         } else {
             float h;
             float r;
             float g;
             float t = 0.25f + 0.75f * (float)i2 / 32.0f;
             t = 1.0f - (float)Math.pow(t, 0.25);
-            Vec3d vec3d = world.method_23777(camera.getBlockPos(), tickDelta);
+            Vec3d vec3d = world.method_23777(camera.getPos(), tickDelta);
             float u = (float)vec3d.x;
             float v = (float)vec3d.y;
             float w = (float)vec3d.z;
@@ -123,7 +129,7 @@ public class BackgroundRenderer {
             j2 = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
             d = j2 < 20 ? (d *= (double)(1.0f - (float)j2 / 20.0f)) : 0.0;
         }
-        if (d < 1.0 && !fluidState.isIn(FluidTags.LAVA)) {
+        if (d < 1.0 && cameraSubmersionType != CameraSubmersionType.LAVA) {
             if (d < 0.0) {
                 d = 0.0;
             }
@@ -137,18 +143,18 @@ public class BackgroundRenderer {
             green = green * (1.0f - f) + green * 0.6f * f;
             blue = blue * (1.0f - f) + blue * 0.6f * f;
         }
-        if (fluidState.isIn(FluidTags.WATER)) {
+        if (cameraSubmersionType == CameraSubmersionType.WATER) {
             float u = 0.0f;
-            if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
-                ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
+            if (entity instanceof ClientPlayerEntity) {
+                ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
                 u = clientPlayerEntity.getUnderwaterVisibility();
             }
             float v = Math.min(1.0f / red, Math.min(1.0f / green, 1.0f / blue));
             red = red * (1.0f - u) + red * v * u;
             green = green * (1.0f - u) + green * v * u;
             blue = blue * (1.0f - u) + blue * v * u;
-        } else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-            float u = GameRenderer.getNightVisionStrength((LivingEntity)camera.getFocusedEntity(), tickDelta);
+        } else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.NIGHT_VISION)) {
+            float u = GameRenderer.getNightVisionStrength((LivingEntity)entity, tickDelta);
             float v = Math.min(1.0f / red, Math.min(1.0f / green, 1.0f / blue));
             red = red * (1.0f - u) + red * v * u;
             green = green * (1.0f - u) + green * v * u;
@@ -163,9 +169,9 @@ public class BackgroundRenderer {
     }
 
     public static void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog) {
-        FluidState fluidState = camera.getSubmergedFluidState();
+        CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
         Entity entity = camera.getFocusedEntity();
-        if (fluidState.isIn(FluidTags.WATER)) {
+        if (cameraSubmersionType == CameraSubmersionType.WATER) {
             float f = 1.0f;
             f = 0.05f;
             if (entity instanceof ClientPlayerEntity) {
@@ -181,7 +187,7 @@ public class BackgroundRenderer {
         } else {
             float g;
             float f;
-            if (fluidState.isIn(FluidTags.LAVA)) {
+            if (cameraSubmersionType == CameraSubmersionType.LAVA) {
                 if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
                     f = 0.0f;
                     g = 3.0f;
@@ -199,6 +205,9 @@ public class BackgroundRenderer {
                     f = h * 0.25f;
                     g = h;
                 }
+            } else if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW) {
+                f = 0.0f;
+                g = 2.0f;
             } else if (thickFog) {
                 f = viewDistance * 0.05f;
                 g = Math.min(viewDistance, 192.0f) * 0.5f;

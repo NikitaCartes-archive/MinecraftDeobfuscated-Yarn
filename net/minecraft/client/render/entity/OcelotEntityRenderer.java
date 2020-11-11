@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.OcelotEntityModel;
@@ -17,8 +17,8 @@ public class OcelotEntityRenderer
 extends MobEntityRenderer<OcelotEntity, OcelotEntityModel<OcelotEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/cat/ocelot.png");
 
-    public OcelotEntityRenderer(class_5617.class_5618 arg) {
-        super(arg, new OcelotEntityModel(arg.method_32167(EntityModelLayers.OCELOT)), 0.4f);
+    public OcelotEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new OcelotEntityModel(context.getPart(EntityModelLayers.OCELOT)), 0.4f);
     }
 
     @Override

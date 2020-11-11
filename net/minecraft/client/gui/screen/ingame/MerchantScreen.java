@@ -28,7 +28,7 @@ public class MerchantScreen
 extends HandledScreen<MerchantScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
     private static final Text TRADES_TEXT = new TranslatableText("merchant.trades");
-    private static final Text SEPARATOR = new LiteralText(" - ");
+    private static final Text SEPARATOR_TEXT = new LiteralText(" - ");
     private static final Text DEPRECATED_TEXT = new TranslatableText("merchant.deprecated");
     private int selectedIndex;
     private final WidgetButtonPage[] offers = new WidgetButtonPage[7];
@@ -68,7 +68,7 @@ extends HandledScreen<MerchantScreenHandler> {
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         int i = ((MerchantScreenHandler)this.handler).getLevelProgress();
         if (i > 0 && i <= 5 && ((MerchantScreenHandler)this.handler).isLeveled()) {
-            MutableText text = this.title.shallowCopy().append(SEPARATOR).append(new TranslatableText("merchant.level." + i));
+            MutableText text = this.title.shallowCopy().append(SEPARATOR_TEXT).append(new TranslatableText("merchant.level." + i));
             int j = this.textRenderer.getWidth(text);
             int k = 49 + this.backgroundWidth / 2 - j / 2;
             this.textRenderer.draw(matrices, text, (float)k, 6.0f, 0x404040);

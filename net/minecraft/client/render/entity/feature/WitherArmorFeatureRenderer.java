@@ -5,11 +5,11 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.client.render.entity.feature.EnergySwirlOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.WitherEntityModel;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.util.Identifier;
@@ -21,9 +21,9 @@ extends EnergySwirlOverlayFeatureRenderer<WitherEntity, WitherEntityModel<Wither
     private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
     private final WitherEntityModel<WitherEntity> model;
 
-    public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> featureRendererContext, class_5599 arg) {
+    public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> featureRendererContext, EntityModelLoader entityModelLoader) {
         super(featureRendererContext);
-        this.model = new WitherEntityModel(arg.method_32072(EntityModelLayers.WITHER_ARMOR));
+        this.model = new WitherEntityModel(entityModelLoader.getModelPart(EntityModelLayers.WITHER_ARMOR));
     }
 
     @Override

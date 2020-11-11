@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
@@ -32,35 +33,33 @@ public class PersistentStateManager {
         return new File(this.directory, id + ".dat");
     }
 
-    public <T extends PersistentState> T getOrCreate(Supplier<T> factory, String id) {
-        T persistentState = this.get(factory, id);
+    public <T extends PersistentState> T getOrCreate(Function<CompoundTag, T> function, Supplier<T> supplier, String string) {
+        T persistentState = this.get(function, string);
         if (persistentState != null) {
             return persistentState;
         }
-        PersistentState persistentState2 = (PersistentState)factory.get();
-        this.set(persistentState2);
+        PersistentState persistentState2 = (PersistentState)supplier.get();
+        this.set(string, persistentState2);
         return (T)persistentState2;
     }
 
     @Nullable
-    public <T extends PersistentState> T get(Supplier<T> factory, String id) {
+    public <T extends PersistentState> T get(Function<CompoundTag, T> function, String id) {
         PersistentState persistentState = this.loadedStates.get(id);
         if (persistentState == null && !this.loadedStates.containsKey(id)) {
-            persistentState = this.readFromFile(factory, id);
+            persistentState = this.readFromFile(function, id);
             this.loadedStates.put(id, persistentState);
         }
         return (T)persistentState;
     }
 
     @Nullable
-    private <T extends PersistentState> T readFromFile(Supplier<T> factory, String id) {
+    private <T extends PersistentState> T readFromFile(Function<CompoundTag, T> function, String id) {
         try {
             File file = this.getFile(id);
             if (file.exists()) {
-                PersistentState persistentState = (PersistentState)factory.get();
                 CompoundTag compoundTag = this.readTag(id, SharedConstants.getGameVersion().getWorldVersion());
-                persistentState.fromTag(compoundTag.getCompound("data"));
-                return (T)persistentState;
+                return (T)((PersistentState)function.apply(compoundTag.getCompound("data")));
             }
         } catch (Exception exception) {
             LOGGER.error("Error loading saved data: {}", (Object)id, (Object)exception);
@@ -68,8 +67,8 @@ public class PersistentStateManager {
         return null;
     }
 
-    public void set(PersistentState state) {
-        this.loadedStates.put(state.getId(), state);
+    public void set(String string, PersistentState persistentState) {
+        this.loadedStates.put(string, persistentState);
     }
 
     /*
@@ -140,10 +139,11 @@ public class PersistentStateManager {
     }
 
     public void save() {
-        for (PersistentState persistentState : this.loadedStates.values()) {
-            if (persistentState == null) continue;
-            persistentState.save(this.getFile(persistentState.getId()));
-        }
+        this.loadedStates.forEach((string, persistentState) -> {
+            if (persistentState != null) {
+                persistentState.save(this.getFile((String)string));
+            }
+        });
     }
 }
 

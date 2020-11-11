@@ -70,11 +70,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
     private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
     private static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
-    private static final Text field_26606 = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
-    private static final Text field_26607 = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
-    private static final Text field_26608 = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
-    private static final Text field_26609 = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
-    private static final Text field_26610 = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+    private static final Text FROM_NEWER_VERSION_ONE_TOOLTIP = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
+    private static final Text FROM_NEWER_VERSION_TWO_TOOLTIP = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
+    private static final Text SNAPSHOT_ONE_TOOLTIP = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
+    private static final Text SNAPSHOT_TWO_TOOLTIP = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
+    private static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
     private final SelectWorldScreen parent;
     @Nullable
     private List<LevelSummary> levels;
@@ -203,19 +203,19 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 if (this.level.isLocked()) {
                     DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                     if (bl) {
-                        this.screen.setTooltip(this.client.textRenderer.wrapLines(field_26610, 175));
+                        this.screen.setTooltip(this.client.textRenderer.wrapLines(LOCKED_TEXT, 175));
                     }
                 } else if (this.level.isDifferentVersion()) {
                     DrawableHelper.drawTexture(matrices, x, y, 32.0f, j, 32, 32, 256, 256);
                     if (this.level.isFutureLevel()) {
                         DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                         if (bl) {
-                            this.screen.setTooltip(ImmutableList.of(field_26606.asOrderedText(), field_26607.asOrderedText()));
+                            this.screen.setTooltip(ImmutableList.of(FROM_NEWER_VERSION_ONE_TOOLTIP.asOrderedText(), FROM_NEWER_VERSION_TWO_TOOLTIP.asOrderedText()));
                         }
                     } else if (!SharedConstants.getGameVersion().isStable()) {
                         DrawableHelper.drawTexture(matrices, x, y, 64.0f, j, 32, 32, 256, 256);
                         if (bl) {
-                            this.screen.setTooltip(ImmutableList.of(field_26608.asOrderedText(), field_26609.asOrderedText()));
+                            this.screen.setTooltip(ImmutableList.of(SNAPSHOT_ONE_TOOLTIP.asOrderedText(), SNAPSHOT_TWO_TOOLTIP.asOrderedText()));
                         }
                     }
                 } else {

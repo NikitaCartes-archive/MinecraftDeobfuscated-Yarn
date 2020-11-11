@@ -22,7 +22,9 @@ public class ChunkDeltaUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private ChunkSectionPos sectionPos;
     /**
-     * The packed local positions {@see ChunkSectionPos#getPackedLocalPos} for each entry in {@see #blockStates}.
+     * The packed local positions for each entry in {@link #blockStates}.
+     * 
+     * @see ChunkSectionPos#packLocal(BlockPos)
      */
     private short[] positions;
     private BlockState[] blockStates;
