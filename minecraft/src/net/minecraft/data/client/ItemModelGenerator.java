@@ -214,6 +214,7 @@ public class ItemModelGenerator {
 		this.register(Items.POISONOUS_POTATO, Models.GENERATED);
 		this.register(Items.POPPED_CHORUS_FRUIT, Models.GENERATED);
 		this.register(Items.PORKCHOP, Models.GENERATED);
+		this.register(Items.POWDER_SNOW_BUCKET, Models.GENERATED);
 		this.register(Items.PRISMARINE_CRYSTALS, Models.GENERATED);
 		this.register(Items.PRISMARINE_SHARD, Models.GENERATED);
 		this.register(Items.PUFFERFISH, Models.GENERATED);

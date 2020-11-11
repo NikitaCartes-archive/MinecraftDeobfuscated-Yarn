@@ -108,7 +108,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 
 	private void updateResult(ItemStack itemStack, ItemStack itemStack2, ItemStack oldResult) {
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
-			MapState mapState = FilledMapItem.getMapState(itemStack, world);
+			MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
 				if (itemStack2.isOf(Items.PAPER) && !mapState.locked && mapState.scale < 4) {

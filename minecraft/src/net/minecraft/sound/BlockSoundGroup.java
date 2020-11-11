@@ -70,6 +70,15 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup SNOW = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.BLOCK_SNOW_BREAK, SoundEvents.BLOCK_SNOW_STEP, SoundEvents.BLOCK_SNOW_PLACE, SoundEvents.BLOCK_SNOW_HIT, SoundEvents.BLOCK_SNOW_FALL
 	);
+	public static final BlockSoundGroup POWDER_SNOW = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_POWDER_SNOW_BREAK,
+		SoundEvents.BLOCK_POWDER_SNOW_STEP,
+		SoundEvents.BLOCK_POWDER_SNOW_PLACE,
+		SoundEvents.BLOCK_POWDER_SNOW_HIT,
+		SoundEvents.BLOCK_POWDER_SNOW_FALL
+	);
 	public static final BlockSoundGroup LADDER = new BlockSoundGroup(
 		1.0F,
 		1.0F,

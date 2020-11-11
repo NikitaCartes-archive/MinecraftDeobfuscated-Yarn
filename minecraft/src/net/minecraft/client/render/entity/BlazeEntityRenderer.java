@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.model.BlazeEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.entity.mob.BlazeEntity;
@@ -13,8 +12,8 @@ import net.minecraft.util.math.BlockPos;
 public class BlazeEntityRenderer extends MobEntityRenderer<BlazeEntity, BlazeEntityModel<BlazeEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/blaze.png");
 
-	public BlazeEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new BlazeEntityModel<>(arg.method_32167(EntityModelLayers.BLAZE)), 0.5F);
+	public BlazeEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new BlazeEntityModel<>(context.getPart(EntityModelLayers.BLAZE)), 0.5F);
 	}
 
 	protected int getBlockLight(BlazeEntity blazeEntity, BlockPos blockPos) {

@@ -23,6 +23,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_5459;
 import net.minecraft.class_5568;
 import net.minecraft.class_5569;
+import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -174,6 +175,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 	private static final TrackedData<Boolean> SILENT = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> NO_GRAVITY = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	protected static final TrackedData<EntityPose> POSE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.ENTITY_POSE);
+	private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
 	private class_5569 field_26996 = class_5569.field_27243;
 	private Vec3d trackedPosition;
 	public boolean ignoreCameraFrustum;
@@ -191,6 +193,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 	private long pistonMovementTick;
 	private EntityDimensions dimensions;
 	private float standingEyeHeight;
+	protected boolean inPowderSnow;
 	private float field_26997;
 	private int field_26994;
 
@@ -210,6 +213,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 		this.dataTracker.startTracking(SILENT, false);
 		this.dataTracker.startTracking(NO_GRAVITY, false);
 		this.dataTracker.startTracking(POSE, EntityPose.STANDING);
+		this.dataTracker.startTracking(FROZEN_TICKS, 0);
 		this.initDataTracker();
 		this.standingEyeHeight = this.getEyeHeight(EntityPose.STANDING, this.dimensions);
 	}
@@ -397,6 +401,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 			this.spawnSprintingParticles();
 		}
 
+		this.inPowderSnow = false;
 		this.updateWaterState();
 		this.updateSubmergedInWaterState();
 		this.updateSwimming();
@@ -415,6 +420,8 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 
 				this.setFireTicks(this.fireTicks - 1);
 			}
+
+			this.setFrozenTicks(0);
 		}
 
 		if (this.isInLava()) {
@@ -561,7 +568,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 				double d = vec3d.x;
 				double e = vec3d.y;
 				double f = vec3d.z;
-				if (!blockState.isIn(BlockTags.CLIMBABLE)) {
+				if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
 					e = 0.0;
 				}
 
@@ -605,7 +612,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 				this.setFireTicks(-this.getBurningDuration());
 			}
 
-			if (this.isWet() && this.isOnFire()) {
+			if ((this.isWet() || this.inPowderSnow) && this.isOnFire()) {
 				this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 				this.setFireTicks(-this.getBurningDuration());
 			}
@@ -875,7 +882,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 			}
 
 			BlockState blockState = this.world.getBlockState(pos.up());
-			BlockSoundGroup blockSoundGroup = blockState.isOf(Blocks.SNOW) ? blockState.getSoundGroup() : state.getSoundGroup();
+			BlockSoundGroup blockSoundGroup = blockState.isIn(BlockTags.SNOW_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
 			this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 		}
 	}
@@ -1427,6 +1434,11 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 				tag.putBoolean("Glowing", this.glowing);
 			}
 
+			int i = this.getFrozenTicks();
+			if (i > 0) {
+				tag.putInt("TicksFrozen", this.getFrozenTicks());
+			}
+
 			if (!this.scoreboardTags.isEmpty()) {
 				ListTag listTag = new ListTag();
 
@@ -1454,8 +1466,8 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 			}
 
 			return tag;
-		} catch (Throwable var8) {
-			CrashReport crashReport = CrashReport.create(var8, "Saving entity NBT");
+		} catch (Throwable var9) {
+			CrashReport crashReport = CrashReport.create(var9, "Saving entity NBT");
 			CrashReportSection crashReportSection = crashReport.addElement("Entity being saved");
 			this.populateCrashReport(crashReportSection);
 			throw new CrashException(crashReport);
@@ -1508,6 +1520,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 				this.setSilent(tag.getBoolean("Silent"));
 				this.setNoGravity(tag.getBoolean("NoGravity"));
 				this.setGlowing(tag.getBoolean("Glowing"));
+				this.setFrozenTicks(tag.getInt("TicksFrozen"));
 				if (tag.contains("Tags", 9)) {
 					this.scoreboardTags.clear();
 					ListTag listTag4 = tag.getList("Tags", 8);
@@ -2017,6 +2030,27 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 		this.dataTracker.set(AIR, air);
 	}
 
+	public int getFrozenTicks() {
+		return this.dataTracker.get(FROZEN_TICKS);
+	}
+
+	public void setFrozenTicks(int frozenTicks) {
+		this.dataTracker.set(FROZEN_TICKS, frozenTicks);
+	}
+
+	public float getFreezingScale() {
+		int i = this.getMinFreezeDamageTicks();
+		return (float)Math.min(this.getFrozenTicks(), i) / (float)i;
+	}
+
+	public boolean isFreezing() {
+		return this.getFrozenTicks() >= this.getMinFreezeDamageTicks();
+	}
+
+	public int getMinFreezeDamageTicks() {
+		return 300;
+	}
+
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		this.setFireTicks(this.fireTicks + 1);
 		if (this.fireTicks == 0) {
@@ -2349,7 +2383,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 
 	@Override
 	public Text getDisplayName() {
-		return Team.modifyText(this.getScoreboardTeam(), this.getName())
+		return Team.decorateName(this.getScoreboardTeam(), this.getName())
 			.styled(style -> style.withHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
 	}
 
@@ -2494,8 +2528,8 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 		return new Vec3d(0.0, (double)this.getStandingEyeHeight(), (double)(this.getWidth() * 0.4F));
 	}
 
-	public boolean equip(int slot, ItemStack item) {
-		return false;
+	public class_5630 method_32318(int i) {
+		return class_5630.field_27860;
 	}
 
 	@Override
@@ -2933,6 +2967,14 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 	@Environment(EnvType.CLIENT)
 	public ItemStack getPickBlockStack() {
 		return null;
+	}
+
+	public void setInPowderSnow(boolean inPowderSnow) {
+		this.inPowderSnow = inPowderSnow;
+	}
+
+	public boolean canFreeze() {
+		return false;
 	}
 
 	public final boolean isRemoved() {

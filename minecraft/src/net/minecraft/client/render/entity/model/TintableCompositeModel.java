@@ -2,13 +2,12 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public abstract class TintableCompositeModel<E extends Entity> extends class_5597<E> {
+public abstract class TintableCompositeModel<E extends Entity> extends SinglePartEntityModel<E> {
 	private float redMultiplier = 1.0F;
 	private float greenMultiplier = 1.0F;
 	private float blueMultiplier = 1.0F;

@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.TropicalFishColorFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -20,10 +19,10 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 	private final TintableCompositeModel<TropicalFishEntity> smallModel = this.getModel();
 	private final TintableCompositeModel<TropicalFishEntity> largeModel;
 
-	public TropicalFishEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new SmallTropicalFishEntityModel<>(arg.method_32167(EntityModelLayers.TROPICAL_FISH_SMALL)), 0.15F);
-		this.largeModel = new LargeTropicalFishEntityModel<>(arg.method_32167(EntityModelLayers.TROPICAL_FISH_LARGE));
-		this.addFeature(new TropicalFishColorFeatureRenderer(this, arg.method_32170()));
+	public TropicalFishEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new SmallTropicalFishEntityModel<>(context.getPart(EntityModelLayers.TROPICAL_FISH_SMALL)), 0.15F);
+		this.largeModel = new LargeTropicalFishEntityModel<>(context.getPart(EntityModelLayers.TROPICAL_FISH_LARGE));
+		this.addFeature(new TropicalFishColorFeatureRenderer(this, context.getModelLoader()));
 	}
 
 	public Identifier getTexture(TropicalFishEntity tropicalFishEntity) {

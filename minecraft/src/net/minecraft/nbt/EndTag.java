@@ -3,7 +3,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.class_5627;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class EndTag implements Tag {
 	public static final TagReader<EndTag> READER = new TagReader<EndTag>() {
@@ -56,7 +56,7 @@ public class EndTag implements Tag {
 	}
 
 	@Override
-	public void method_32289(class_5627 arg) {
-		arg.method_32294(this);
+	public void accept(NbtTagVisitor visitor) {
+		visitor.visitEndTag(this);
 	}
 }

@@ -47,7 +47,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ReentrantLock UPLOAD_LOCK = new ReentrantLock();
 	private static final String[] DOTS = new String[]{"", ".", ". .", ". . ."};
-	private static final Text field_26526 = new TranslatableText("mco.upload.verifying");
+	private static final Text VERIFYING_TEXT = new TranslatableText("mco.upload.verifying");
 	private final RealmsResetWorldScreen parent;
 	private final LevelSummary selectedLevel;
 	private final long worldId;
@@ -133,7 +133,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		if (!this.uploadFinished && this.uploadStatus.bytesWritten != 0L && this.uploadStatus.bytesWritten == this.uploadStatus.totalBytes) {
-			this.status = field_26526;
+			this.status = VERIFYING_TEXT;
 			this.cancelButton.active = false;
 		}
 

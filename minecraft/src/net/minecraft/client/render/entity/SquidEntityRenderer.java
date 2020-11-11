@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SquidEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -15,8 +14,8 @@ import net.minecraft.util.math.MathHelper;
 public class SquidEntityRenderer extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/squid.png");
 
-	public SquidEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new SquidEntityModel<>(arg.method_32167(EntityModelLayers.SQUID)), 0.7F);
+	public SquidEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new SquidEntityModel<>(context.getPart(EntityModelLayers.SQUID)), 0.7F);
 	}
 
 	public Identifier getTexture(SquidEntity squidEntity) {

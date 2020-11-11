@@ -24,7 +24,7 @@ public class ServerBossBar extends BossBar {
 	public void setPercent(float percentage) {
 		if (percentage != this.percent) {
 			super.setPercent(percentage);
-			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PCT);
+			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PROGRESS);
 		}
 	}
 

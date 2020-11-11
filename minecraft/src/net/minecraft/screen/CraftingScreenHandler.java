@@ -172,7 +172,6 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 		return this.input.getHeight();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public int getCraftingSlotCount() {
 		return 10;
@@ -182,5 +181,10 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	@Override
 	public RecipeBookCategory getCategory() {
 		return RecipeBookCategory.CRAFTING;
+	}
+
+	@Override
+	public boolean method_32339(int i) {
+		return i != this.getCraftingResultSlotIndex();
 	}
 }

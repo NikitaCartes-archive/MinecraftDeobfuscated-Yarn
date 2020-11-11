@@ -1,0 +1,47 @@
+package net.minecraft.loot.provider.score;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import java.util.Set;
+import javax.annotation.Nullable;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializer;
+
+public class FixedLootScoreProvider implements LootScoreProvider {
+	private final String name;
+
+	private FixedLootScoreProvider(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public LootScoreProviderType getType() {
+		return LootScoreProviderTypes.FIXED;
+	}
+
+	@Nullable
+	@Override
+	public String getName(LootContext context) {
+		return this.name;
+	}
+
+	@Override
+	public Set<LootContextParameter<?>> method_32477() {
+		return ImmutableSet.of();
+	}
+
+	public static class Serializer implements JsonSerializer<FixedLootScoreProvider> {
+		public void toJson(JsonObject jsonObject, FixedLootScoreProvider fixedLootScoreProvider, JsonSerializationContext jsonSerializationContext) {
+			jsonObject.addProperty("name", fixedLootScoreProvider.name);
+		}
+
+		public FixedLootScoreProvider fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+			String string = JsonHelper.getString(jsonObject, "name");
+			return new FixedLootScoreProvider(string);
+		}
+	}
+}

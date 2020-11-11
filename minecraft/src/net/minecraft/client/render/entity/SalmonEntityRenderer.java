@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SalmonEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -15,8 +14,8 @@ import net.minecraft.util.math.MathHelper;
 public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, SalmonEntityModel<SalmonEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/fish/salmon.png");
 
-	public SalmonEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new SalmonEntityModel<>(arg.method_32167(EntityModelLayers.SALMON)), 0.4F);
+	public SalmonEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new SalmonEntityModel<>(context.getPart(EntityModelLayers.SALMON)), 0.4F);
 	}
 
 	public Identifier getTexture(SalmonEntity salmonEntity) {

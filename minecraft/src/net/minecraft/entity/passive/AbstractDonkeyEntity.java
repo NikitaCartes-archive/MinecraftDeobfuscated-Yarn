@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import net.minecraft.class_5630;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -112,22 +113,34 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public boolean equip(int slot, ItemStack item) {
-		if (slot == 499) {
-			if (this.hasChest() && item.isEmpty()) {
-				this.setHasChest(false);
-				this.onChestedStatusChanged();
-				return true;
+	public class_5630 method_32318(int i) {
+		return i == 499 ? new class_5630() {
+			@Override
+			public ItemStack method_32327() {
+				return AbstractDonkeyEntity.this.hasChest() ? new ItemStack(Items.CHEST) : ItemStack.EMPTY;
 			}
 
-			if (!this.hasChest() && item.isOf(Blocks.CHEST.asItem())) {
-				this.setHasChest(true);
-				this.onChestedStatusChanged();
-				return true;
-			}
-		}
+			@Override
+			public boolean method_32332(ItemStack itemStack) {
+				if (itemStack.isEmpty()) {
+					if (AbstractDonkeyEntity.this.hasChest()) {
+						AbstractDonkeyEntity.this.setHasChest(false);
+						AbstractDonkeyEntity.this.onChestedStatusChanged();
+					}
 
-		return super.equip(slot, item);
+					return true;
+				} else if (itemStack.isOf(Items.CHEST)) {
+					if (!AbstractDonkeyEntity.this.hasChest()) {
+						AbstractDonkeyEntity.this.setHasChest(true);
+						AbstractDonkeyEntity.this.onChestedStatusChanged();
+					}
+
+					return true;
+				} else {
+					return false;
+				}
+			}
+		} : super.method_32318(i);
 	}
 
 	@Override

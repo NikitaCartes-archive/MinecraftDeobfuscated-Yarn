@@ -45,9 +45,11 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 		boolean bl3 = itemStack.isOf(Items.GLASS_PANE);
 		ItemStack itemStack2 = this.handler.getSlot(0).getStack();
 		boolean bl4 = false;
+		Integer integer;
 		MapState mapState;
 		if (itemStack2.isOf(Items.FILLED_MAP)) {
-			mapState = FilledMapItem.getMapState(itemStack2, this.client.world);
+			integer = FilledMapItem.getMapId(itemStack2);
+			mapState = FilledMapItem.getMapState(integer, this.client.world);
 			if (mapState != null) {
 				if (mapState.locked) {
 					bl4 = true;
@@ -62,30 +64,31 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 				}
 			}
 		} else {
+			integer = null;
 			mapState = null;
 		}
 
-		this.drawMap(matrices, mapState, bl, bl2, bl3, bl4);
+		this.drawMap(matrices, integer, mapState, bl, bl2, bl3, bl4);
 	}
 
-	private void drawMap(MatrixStack matrixStack, @Nullable MapState mapState, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+	private void drawMap(MatrixStack matrixStack, @Nullable Integer integer, @Nullable MapState mapState, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
 		int i = this.x;
 		int j = this.y;
 		if (bl2 && !bl4) {
 			this.drawTexture(matrixStack, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
-			this.drawMap(mapState, i + 85, j + 31, 0.226F);
+			this.drawMap(integer, mapState, i + 85, j + 31, 0.226F);
 		} else if (bl) {
 			this.drawTexture(matrixStack, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
-			this.drawMap(mapState, i + 86, j + 16, 0.34F);
+			this.drawMap(integer, mapState, i + 86, j + 16, 0.34F);
 			this.client.getTextureManager().bindTexture(TEXTURE);
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 1.0F);
 			this.drawTexture(matrixStack, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
-			this.drawMap(mapState, i + 70, j + 32, 0.34F);
+			this.drawMap(integer, mapState, i + 70, j + 32, 0.34F);
 			RenderSystem.popMatrix();
 		} else if (bl3) {
 			this.drawTexture(matrixStack, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
-			this.drawMap(mapState, i + 71, j + 17, 0.45F);
+			this.drawMap(integer, mapState, i + 71, j + 17, 0.45F);
 			this.client.getTextureManager().bindTexture(TEXTURE);
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 1.0F);
@@ -93,17 +96,17 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 			RenderSystem.popMatrix();
 		} else {
 			this.drawTexture(matrixStack, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
-			this.drawMap(mapState, i + 71, j + 17, 0.45F);
+			this.drawMap(integer, mapState, i + 71, j + 17, 0.45F);
 		}
 	}
 
-	private void drawMap(@Nullable MapState state, int x, int y, float size) {
-		if (state != null) {
+	private void drawMap(@Nullable Integer integer, @Nullable MapState mapState, int i, int j, float f) {
+		if (integer != null && mapState != null) {
 			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)x, (float)y, 1.0F);
-			RenderSystem.scalef(size, size, 1.0F);
+			RenderSystem.translatef((float)i, (float)j, 1.0F);
+			RenderSystem.scalef(f, f, 1.0F);
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			this.client.gameRenderer.getMapRenderer().draw(new MatrixStack(), immediate, state, true, 15728880);
+			this.client.gameRenderer.getMapRenderer().draw(new MatrixStack(), immediate, integer, mapState, true, 15728880);
 			immediate.draw();
 			RenderSystem.popMatrix();
 		}

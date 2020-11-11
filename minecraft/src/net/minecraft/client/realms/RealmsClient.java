@@ -27,6 +27,7 @@ import net.minecraft.client.realms.dto.WorldTemplatePaginatedList;
 import net.minecraft.client.realms.exception.RealmsHttpException;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
+import net.minecraft.client.realms.gui.screen.ResetWorldInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -219,8 +220,10 @@ public class RealmsClient {
 		return Boolean.valueOf(string2);
 	}
 
-	public Boolean resetWorldWithSeed(long worldId, String seed, Integer levelType, boolean generateStructures) throws RealmsServiceException {
-		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(seed, -1L, levelType, generateStructures);
+	public Boolean resetWorldWithSeed(long worldId, ResetWorldInfo resetWorldInfo) throws RealmsServiceException {
+		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(
+			resetWorldInfo.method_32508(), -1L, resetWorldInfo.method_32509().method_32507(), resetWorldInfo.method_32510()
+		);
 		String string = this.url("worlds" + "/$WORLD_ID/reset".replace("$WORLD_ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.post(string, JSON.toJson(realmsWorldResetDto), 30000, 80000));
 		return Boolean.valueOf(string2);

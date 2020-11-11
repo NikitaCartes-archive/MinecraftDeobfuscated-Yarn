@@ -269,8 +269,10 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	 * <p>
 	 * If the {@link StructureConfig} uses a separation setting greater than 0, the
 	 * placement will be constrained to [0, spacing - separation] within the grid cell.
-	 * If a non-uniform distribution is used for placement {@see #isUniformDistribution()},
-	 * then this also moves the center towards the origin.
+	 * If a non-uniform distribution is used for placement, then this also moves
+	 * the center towards the origin.
+	 * 
+	 * @see #isUniformDistribution()
 	 */
 	public final ChunkPos getStartChunk(StructureConfig config, long worldSeed, ChunkRandom placementRandom, int chunkX, int chunkY) {
 		int i = config.getSpacing();
@@ -309,7 +311,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	/**
 	 * Tries to place a starting point for this type of structure in the given chunk.
 	 * <p>
-	 * If this structure doesn't have a starting point in the chunk, {@link StructureStart.DEFAULT}
+	 * If this structure doesn't have a starting point in the chunk, {@link StructureStart#DEFAULT}
 	 * will be returned.
 	 */
 	public StructureStart<?> tryPlaceStart(

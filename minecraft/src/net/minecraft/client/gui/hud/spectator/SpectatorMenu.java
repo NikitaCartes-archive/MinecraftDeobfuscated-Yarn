@@ -19,9 +19,9 @@ public class SpectatorMenu {
 	private static final SpectatorMenuCommand PREVIOUS_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(-1, true);
 	private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);
 	private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, false);
-	private static final Text field_26613 = new TranslatableText("spectatorMenu.close");
-	private static final Text field_26614 = new TranslatableText("spectatorMenu.previous_page");
-	private static final Text field_26615 = new TranslatableText("spectatorMenu.next_page");
+	private static final Text CLOSE_TEXT = new TranslatableText("spectatorMenu.close");
+	private static final Text PREVIOUS_PAGE_TEXT = new TranslatableText("spectatorMenu.previous_page");
+	private static final Text NEXT_PAGE_TEXT = new TranslatableText("spectatorMenu.next_page");
 	public static final SpectatorMenuCommand BLANK_COMMAND = new SpectatorMenuCommand() {
 		@Override
 		public void use(SpectatorMenu menu) {
@@ -130,7 +130,7 @@ public class SpectatorMenu {
 
 		@Override
 		public Text getName() {
-			return this.direction < 0 ? SpectatorMenu.field_26614 : SpectatorMenu.field_26615;
+			return this.direction < 0 ? SpectatorMenu.PREVIOUS_PAGE_TEXT : SpectatorMenu.NEXT_PAGE_TEXT;
 		}
 
 		@Override
@@ -161,7 +161,7 @@ public class SpectatorMenu {
 
 		@Override
 		public Text getName() {
-			return SpectatorMenu.field_26613;
+			return SpectatorMenu.CLOSE_TEXT;
 		}
 
 		@Override

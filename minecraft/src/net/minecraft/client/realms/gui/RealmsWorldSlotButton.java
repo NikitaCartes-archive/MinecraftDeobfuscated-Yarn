@@ -28,9 +28,9 @@ public class RealmsWorldSlotButton extends ButtonWidget implements TickableEleme
 	public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
 	public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
 	public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
-	private static final Text field_26468 = new TranslatableText("mco.configure.world.slot.tooltip.active");
-	private static final Text field_26469 = new TranslatableText("mco.configure.world.slot.tooltip.minigame");
-	private static final Text field_26470 = new TranslatableText("mco.configure.world.slot.tooltip");
+	private static final Text ACTIVE_TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip.active");
+	private static final Text MINIGAME_TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip.minigame");
+	private static final Text TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip");
 	private final Supplier<RealmsServer> serverDataProvider;
 	private final Consumer<Text> toolTipSetter;
 	private final int slotIndex;
@@ -120,9 +120,9 @@ public class RealmsWorldSlotButton extends ButtonWidget implements TickableEleme
 
 			Text text2;
 			if (action == RealmsWorldSlotButton.Action.JOIN) {
-				text2 = field_26468;
+				text2 = ACTIVE_TOOLTIP;
 			} else {
-				text2 = bl2 ? field_26469 : field_26470;
+				text2 = bl2 ? MINIGAME_TOOLTIP : TOOLTIP;
 			}
 
 			Text text3 = text2.shallowCopy().append(text);

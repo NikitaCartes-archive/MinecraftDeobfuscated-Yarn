@@ -38,13 +38,9 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
-import net.minecraft.loot.BinomialLootTableRange;
-import net.minecraft.loot.ConstantLootTableRange;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTableRange;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.LocationCheckLootCondition;
@@ -70,6 +66,11 @@ import net.minecraft.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.loot.function.SetContentsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
+import net.minecraft.loot.provider.nbt.ContextLootNbtProvider;
+import net.minecraft.loot.provider.number.BinomialLootNumberProvider;
+import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
+import net.minecraft.loot.provider.number.LootNumberProvider;
+import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.StatePredicate;
@@ -134,14 +135,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 
 	private static LootTable.Builder drops(ItemConvertible drop) {
 		return LootTable.builder()
-			.pool(addSurvivesExplosionCondition(drop, LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(drop))));
+			.pool(addSurvivesExplosionCondition(drop, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(drop))));
 	}
 
 	private static LootTable.Builder drops(Block drop, LootCondition.Builder conditionBuilder, LootPoolEntry.Builder<?> child) {
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
-					.rolls(ConstantLootTableRange.create(1))
+					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(((LeafEntry.Builder)ItemEntry.builder(drop).conditionally(conditionBuilder)).alternatively(child))
 			);
 	}
@@ -162,42 +163,45 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return dropsWithSilkTouch(dropWithSilkTouch, addSurvivesExplosionCondition(dropWithSilkTouch, ItemEntry.builder(drop)));
 	}
 
-	private static LootTable.Builder drops(ItemConvertible drop, LootTableRange count) {
+	private static LootTable.Builder drops(ItemConvertible drop, LootNumberProvider count) {
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
-					.rolls(ConstantLootTableRange.create(1))
+					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(applyExplosionDecay(drop, ItemEntry.builder(drop).apply(SetCountLootFunction.builder(count))))
 			);
 	}
 
-	private static LootTable.Builder drops(Block dropWithSilkTouch, ItemConvertible drop, LootTableRange count) {
+	private static LootTable.Builder drops(Block dropWithSilkTouch, ItemConvertible drop, LootNumberProvider count) {
 		return dropsWithSilkTouch(dropWithSilkTouch, applyExplosionDecay(dropWithSilkTouch, ItemEntry.builder(drop).apply(SetCountLootFunction.builder(count))));
 	}
 
 	private static LootTable.Builder dropsWithSilkTouch(ItemConvertible drop) {
-		return LootTable.builder().pool(LootPool.builder().conditionally(WITH_SILK_TOUCH).rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(drop)));
+		return LootTable.builder()
+			.pool(LootPool.builder().conditionally(WITH_SILK_TOUCH).rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(drop)));
 	}
 
 	private static LootTable.Builder pottedPlantDrops(ItemConvertible plant) {
 		return LootTable.builder()
 			.pool(
-				addSurvivesExplosionCondition(Blocks.FLOWER_POT, LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(Blocks.FLOWER_POT)))
+				addSurvivesExplosionCondition(
+					Blocks.FLOWER_POT, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Blocks.FLOWER_POT))
+				)
 			)
-			.pool(addSurvivesExplosionCondition(plant, LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(plant))));
+			.pool(addSurvivesExplosionCondition(plant, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(plant))));
 	}
 
 	private static LootTable.Builder slabDrops(Block drop) {
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
-					.rolls(ConstantLootTableRange.create(1))
+					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						applyExplosionDecay(
 							drop,
 							ItemEntry.builder(drop)
 								.apply(
-									SetCountLootFunction.builder(ConstantLootTableRange.create(2))
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))
 										.conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(SlabBlock.TYPE, SlabType.DOUBLE)))
 								)
 						)
@@ -211,7 +215,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				addSurvivesExplosionCondition(
 					drop,
 					LootPool.builder()
-						.rolls(ConstantLootTableRange.create(1))
+						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
 							ItemEntry.builder(drop)
 								.conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(property, comparable)))
@@ -226,7 +230,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				addSurvivesExplosionCondition(
 					drop,
 					LootPool.builder()
-						.rolls(ConstantLootTableRange.create(1))
+						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(ItemEntry.builder(drop).apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY)))
 				)
 			);
@@ -238,12 +242,12 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				addSurvivesExplosionCondition(
 					drop,
 					LootPool.builder()
-						.rolls(ConstantLootTableRange.create(1))
+						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
 							ItemEntry.builder(drop)
 								.apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
 								.apply(
-									CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY)
+									CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914)
 										.withOperation("Lock", "BlockEntityTag.Lock")
 										.withOperation("LootTable", "BlockEntityTag.LootTable")
 										.withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed")
@@ -260,11 +264,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				addSurvivesExplosionCondition(
 					drop,
 					LootPool.builder()
-						.rolls(ConstantLootTableRange.create(1))
+						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
 							ItemEntry.builder(drop)
 								.apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
-								.apply(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Patterns", "BlockEntityTag.Patterns"))
+								.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Patterns", "BlockEntityTag.Patterns"))
 						)
 				)
 			);
@@ -275,10 +279,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			.pool(
 				LootPool.builder()
 					.conditionally(WITH_SILK_TOUCH)
-					.rolls(ConstantLootTableRange.create(1))
+					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						ItemEntry.builder(drop)
-							.apply(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
+							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Bees", "BlockEntityTag.Bees"))
 							.apply(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))
 					)
 			);
@@ -288,10 +292,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
-					.rolls(ConstantLootTableRange.create(1))
+					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						((LeafEntry.Builder)ItemEntry.builder(drop).conditionally(WITH_SILK_TOUCH))
-							.apply(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
+							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Bees", "BlockEntityTag.Bees"))
 							.apply(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))
 							.alternatively(ItemEntry.builder(drop))
 					)
@@ -310,7 +314,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			applyExplosionDecay(
 				dropWithSilkTouch,
 				ItemEntry.builder(drop)
-					.apply(SetCountLootFunction.builder(UniformLootTableRange.between(-6.0F, 2.0F)))
+					.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(-6.0F, 2.0F)))
 					.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMin(0)))
 			)
 		);
@@ -333,39 +337,39 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				applyExplosionDecay(
 					stem,
 					LootPool.builder()
-						.rolls(ConstantLootTableRange.create(1))
+						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
 							ItemEntry.builder(drop)
 								.apply(
-									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.06666667F))
+									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.06666667F))
 										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 0)))
 								)
 								.apply(
-									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.13333334F))
+									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.13333334F))
 										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 1)))
 								)
 								.apply(
-									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.2F))
+									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.2F))
 										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 2)))
 								)
 								.apply(
-									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.26666668F))
+									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.26666668F))
 										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 3)))
 								)
 								.apply(
-									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.33333334F))
+									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.33333334F))
 										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 4)))
 								)
 								.apply(
-									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.4F))
+									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.4F))
 										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 5)))
 								)
 								.apply(
-									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.46666667F))
+									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.46666667F))
 										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 6)))
 								)
 								.apply(
-									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336F))
+									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.53333336F))
 										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 7)))
 								)
 						)
@@ -379,14 +383,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				applyExplosionDecay(
 					stem,
 					LootPool.builder()
-						.rolls(ConstantLootTableRange.create(1))
-						.with(ItemEntry.builder(drop).apply(SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336F))))
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(drop).apply(SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.53333336F))))
 				)
 			);
 	}
 
 	private static LootTable.Builder dropsWithShears(ItemConvertible drop) {
-		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).conditionally(WITH_SHEARS).with(ItemEntry.builder(drop)));
+		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).conditionally(WITH_SHEARS).with(ItemEntry.builder(drop)));
 	}
 
 	private static LootTable.Builder leavesDrop(Block leaves, Block drop, float... chance) {
@@ -395,10 +399,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			)
 			.pool(
 				LootPool.builder()
-					.rolls(ConstantLootTableRange.create(1))
+					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS)
 					.with(
-						applyExplosionDecay(leaves, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F))))
+						applyExplosionDecay(leaves, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F))
 					)
 			);
@@ -408,7 +412,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return leavesDrop(leaves, drop, chance)
 			.pool(
 				LootPool.builder()
-					.rolls(ConstantLootTableRange.create(1))
+					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS)
 					.with(
 						addSurvivesExplosionCondition(leaves, ItemEntry.builder(Items.APPLE))
@@ -432,12 +436,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 
 	private static LootTable.Builder method_30159(Block block) {
 		return LootTable.builder()
-			.pool(LootPool.builder().conditionally(WITH_SHEARS).with(ItemEntry.builder(block).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))));
+			.pool(
+				LootPool.builder().conditionally(WITH_SHEARS).with(ItemEntry.builder(block).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
+			);
 	}
 
 	private static LootTable.Builder method_30158(Block block, Block block2) {
 		LootPoolEntry.Builder<?> builder = ((LeafEntry.Builder)ItemEntry.builder(block2)
-				.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
+				.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
 				.conditionally(WITH_SHEARS))
 			.alternatively(addSurvivesExplosionCondition(block, ItemEntry.builder(Items.WHEAT_SEEDS)).conditionally(RandomChanceLootCondition.builder(0.125F)));
 		return LootTable.builder()
@@ -485,21 +491,21 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
-					.rolls(ConstantLootTableRange.create(1))
+					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						applyExplosionDecay(
 							block,
 							ItemEntry.builder(block)
 								.apply(
-									SetCountLootFunction.builder(ConstantLootTableRange.create(2))
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))
 										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 2)))
 								)
 								.apply(
-									SetCountLootFunction.builder(ConstantLootTableRange.create(3))
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F))
 										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 3)))
 								)
 								.apply(
-									SetCountLootFunction.builder(ConstantLootTableRange.create(4))
+									SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F))
 										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 4)))
 								)
 						)
@@ -508,7 +514,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private static LootTable.Builder method_32225(Block block) {
-		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(block)));
+		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(block)));
 	}
 
 	public static LootTable.Builder dropsNothing() {
@@ -959,6 +965,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.BAMBOO_SAPLING, Blocks.BAMBOO);
 		this.addDrop(Blocks.WATER_CAULDRON, Blocks.CAULDRON);
 		this.addDrop(Blocks.LAVA_CAULDRON, Blocks.CAULDRON);
+		this.addDrop(Blocks.POWDER_SNOW_CAULDRON, Blocks.CAULDRON);
 		this.addDrop(Blocks.STONE, blockx -> drops(blockx, Blocks.COBBLESTONE));
 		this.addDrop(Blocks.GRASS_BLOCK, blockx -> drops(blockx, Blocks.DIRT));
 		this.addDrop(Blocks.PODZOL, blockx -> drops(blockx, Blocks.DIRT));
@@ -970,11 +977,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.HORN_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_HORN_CORAL_BLOCK));
 		this.addDrop(Blocks.CRIMSON_NYLIUM, blockx -> drops(blockx, Blocks.NETHERRACK));
 		this.addDrop(Blocks.WARPED_NYLIUM, blockx -> drops(blockx, Blocks.NETHERRACK));
-		this.addDrop(Blocks.BOOKSHELF, blockx -> drops(blockx, Items.BOOK, ConstantLootTableRange.create(3)));
-		this.addDrop(Blocks.CLAY, blockx -> drops(blockx, Items.CLAY_BALL, ConstantLootTableRange.create(4)));
-		this.addDrop(Blocks.ENDER_CHEST, blockx -> drops(blockx, Blocks.OBSIDIAN, ConstantLootTableRange.create(8)));
-		this.addDrop(Blocks.SNOW_BLOCK, blockx -> drops(blockx, Items.SNOWBALL, ConstantLootTableRange.create(4)));
-		this.addDrop(Blocks.CHORUS_PLANT, drops(Items.CHORUS_FRUIT, UniformLootTableRange.between(0.0F, 1.0F)));
+		this.addDrop(Blocks.BOOKSHELF, blockx -> drops(blockx, Items.BOOK, ConstantLootNumberProvider.create(3.0F)));
+		this.addDrop(Blocks.CLAY, blockx -> drops(blockx, Items.CLAY_BALL, ConstantLootNumberProvider.create(4.0F)));
+		this.addDrop(Blocks.ENDER_CHEST, blockx -> drops(blockx, Blocks.OBSIDIAN, ConstantLootNumberProvider.create(8.0F)));
+		this.addDrop(Blocks.SNOW_BLOCK, blockx -> drops(blockx, Items.SNOWBALL, ConstantLootNumberProvider.create(4.0F)));
+		this.addDrop(Blocks.CHORUS_PLANT, drops(Items.CHORUS_FRUIT, UniformLootNumberProvider.create(0.0F, 1.0F)));
 		this.addPottedPlantDrop(Blocks.POTTED_OAK_SAPLING);
 		this.addPottedPlantDrop(Blocks.POTTED_SPRUCE_SAPLING);
 		this.addPottedPlantDrop(Blocks.POTTED_BIRCH_SAPLING);
@@ -1080,7 +1087,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					addSurvivesExplosionCondition(
 						Blocks.TNT,
 						LootPool.builder()
-							.rolls(ConstantLootTableRange.create(1))
+							.rolls(ConstantLootNumberProvider.create(1.0F))
 							.with(
 								ItemEntry.builder(Blocks.TNT)
 									.conditionally(BlockStatePropertyLootCondition.builder(Blocks.TNT).properties(StatePredicate.Builder.create().exactMatch(TntBlock.UNSTABLE, false)))
@@ -1093,13 +1100,13 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			blockx -> LootTable.builder()
 					.pool(
 						LootPool.builder()
-							.rolls(ConstantLootTableRange.create(1))
+							.rolls(ConstantLootNumberProvider.create(1.0F))
 							.with(
 								applyExplosionDecay(
 									blockx,
 									ItemEntry.builder(Items.COCOA_BEANS)
 										.apply(
-											SetCountLootFunction.builder(ConstantLootTableRange.create(3))
+											SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F))
 												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(CocoaBlock.AGE, 2)))
 										)
 								)
@@ -1111,21 +1118,21 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			blockx -> LootTable.builder()
 					.pool(
 						LootPool.builder()
-							.rolls(ConstantLootTableRange.create(1))
+							.rolls(ConstantLootNumberProvider.create(1.0F))
 							.with(
 								applyExplosionDecay(
 									Blocks.SEA_PICKLE,
 									ItemEntry.builder(blockx)
 										.apply(
-											SetCountLootFunction.builder(ConstantLootTableRange.create(2))
+											SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))
 												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 2)))
 										)
 										.apply(
-											SetCountLootFunction.builder(ConstantLootTableRange.create(3))
+											SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F))
 												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 3)))
 										)
 										.apply(
-											SetCountLootFunction.builder(ConstantLootTableRange.create(4))
+											SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F))
 												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 4)))
 										)
 								)
@@ -1220,8 +1227,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						addSurvivesExplosionCondition(
 							blockx,
 							LootPool.builder()
-								.rolls(ConstantLootTableRange.create(1))
-								.with(ItemEntry.builder(blockx).apply(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("SkullOwner", "SkullOwner")))
+								.rolls(ConstantLootNumberProvider.create(1.0F))
+								.with(ItemEntry.builder(blockx).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("SkullOwner", "SkullOwner")))
 						)
 					)
 		);
@@ -1281,7 +1288,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 									BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).properties(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 3))
 								)
 								.with(ItemEntry.builder(Items.SWEET_BERRIES))
-								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 3.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 3.0F)))
 								.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
 						)
 						.pool(
@@ -1290,7 +1297,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 									BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).properties(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 2))
 								)
 								.with(ItemEntry.builder(Items.SWEET_BERRIES))
-								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F)))
 								.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
 						)
 				)
@@ -1308,7 +1315,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.GOLD_NUGGET)
-							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 6.0F)))
+							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 6.0F)))
 							.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
 					)
 				)
@@ -1320,7 +1327,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.LAPIS_LAZULI)
-							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 9.0F)))
+							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 9.0F)))
 							.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
 					)
 				)
@@ -1329,7 +1336,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(
 			Blocks.DEAD_BUSH,
 			blockx -> dropsWithShears(
-					blockx, applyExplosionDecay(blockx, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F))))
+					blockx, applyExplosionDecay(blockx, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 2.0F))))
 				)
 		);
 		this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
@@ -1347,7 +1354,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			blockx -> LootTable.builder()
 					.pool(
 						LootPool.builder()
-							.rolls(ConstantLootTableRange.create(1))
+							.rolls(ConstantLootNumberProvider.create(1.0F))
 							.with(
 								addSurvivesExplosionCondition(blockx, ItemEntry.builder(blockx)).conditionally(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
 							)
@@ -1362,7 +1369,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.GLOWSTONE_DUST)
-							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F)))
+							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F)))
 							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
 							.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 4)))
 					)
@@ -1375,7 +1382,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.MELON_SLICE)
-							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 7.0F)))
+							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(3.0F, 7.0F)))
 							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
 							.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMax(9)))
 					)
@@ -1388,7 +1395,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.REDSTONE)
-							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 5.0F)))
+							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 5.0F)))
 							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
 					)
 				)
@@ -1400,7 +1407,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.PRISMARINE_CRYSTALS)
-							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 3.0F)))
+							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 3.0F)))
 							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
 							.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 5)))
 					)
@@ -1413,11 +1420,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						applyExplosionDecay(
 							blockx,
 							LootPool.builder()
-								.rolls(ConstantLootTableRange.create(1))
+								.rolls(ConstantLootNumberProvider.create(1.0F))
 								.with(
 									ItemEntry.builder(Items.NETHER_WART)
 										.apply(
-											SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F))
+											SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))
 												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(NetherWartBlock.AGE, 3)))
 										)
 										.apply(
@@ -1441,45 +1448,45 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 1))),
 											((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL)
 													.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2))))
-												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2))),
+												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))),
 											((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL)
 													.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3))))
-												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(3))),
+												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F))),
 											((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL)
 													.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4))))
-												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(4))),
+												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F))),
 											((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL)
 													.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5))))
-												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(5))),
+												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(5.0F))),
 											((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL)
 													.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6))))
-												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(6))),
+												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(6.0F))),
 											((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL)
 													.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7))))
-												.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(7))),
-											ItemEntry.builder(Items.SNOWBALL).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(8)))
+												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(7.0F))),
+											ItemEntry.builder(Items.SNOWBALL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(8.0F)))
 										)
 										.conditionally(WITHOUT_SILK_TOUCH),
 									AlternativeEntry.builder(
 										ItemEntry.builder(Blocks.SNOW)
 											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 1))),
 										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
+											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
 											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2))),
 										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(3)))
+											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F)))
 											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3))),
 										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(4)))
+											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F)))
 											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4))),
 										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(5)))
+											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(5.0F)))
 											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5))),
 										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(6)))
+											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(6.0F)))
 											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6))),
 										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(7)))
+											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(7.0F)))
 											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7))),
 										ItemEntry.builder(Blocks.SNOW_BLOCK)
 									)
@@ -1501,7 +1508,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(
 			Blocks.CAMPFIRE,
 			blockx -> dropsWithSilkTouch(
-					blockx, addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.CHARCOAL).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2))))
+					blockx,
+					addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.CHARCOAL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 				)
 		);
 		this.addDrop(
@@ -1511,7 +1519,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					addSurvivesExplosionCondition(
 						blockx,
 						((LeafEntry.Builder)ItemEntry.builder(Items.GOLD_NUGGET)
-								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 5.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 5.0F)))
 								.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1F, 0.14285715F, 0.25F, 1.0F)))
 							.alternatively(ItemEntry.builder(blockx))
 					)
@@ -1520,7 +1528,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(
 			Blocks.SOUL_CAMPFIRE,
 			blockx -> dropsWithSilkTouch(
-					blockx, addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.SOUL_SOIL).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
+					blockx,
+					addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.SOUL_SOIL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))))
 				)
 		);
 		this.addDrop(
@@ -1530,7 +1539,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.AMETHYST_SHARD)
-							.apply(SetCountLootFunction.builder(ConstantLootTableRange.create(4)))
+							.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F)))
 							.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
 					)
 				)
@@ -1629,6 +1638,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.SOUL_FIRE, dropsNothing());
 		this.addDrop(Blocks.NETHER_PORTAL, dropsNothing());
 		this.addDrop(Blocks.BUDDING_AMETHYST, dropsNothing());
+		this.addDrop(Blocks.POWDER_SNOW, dropsNothing());
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for(Block block : Registry.BLOCK) {

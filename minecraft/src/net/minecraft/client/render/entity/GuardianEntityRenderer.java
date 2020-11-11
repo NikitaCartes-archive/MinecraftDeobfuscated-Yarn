@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -28,12 +27,12 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 	private static final Identifier EXPLOSION_BEAM_TEXTURE = new Identifier("textures/entity/guardian_beam.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEXTURE);
 
-	public GuardianEntityRenderer(class_5617.class_5618 arg) {
-		this(arg, 0.5F, EntityModelLayers.GUARDIAN);
+	public GuardianEntityRenderer(EntityRendererFactory.Context context) {
+		this(context, 0.5F, EntityModelLayers.GUARDIAN);
 	}
 
-	protected GuardianEntityRenderer(class_5617.class_5618 arg, float f, EntityModelLayer entityModelLayer) {
-		super(arg, new GuardianEntityModel(arg.method_32167(entityModelLayer)), f);
+	protected GuardianEntityRenderer(EntityRendererFactory.Context ctx, float shadowRadius, EntityModelLayer layer) {
+		super(ctx, new GuardianEntityModel(ctx.getPart(layer)), shadowRadius);
 	}
 
 	public boolean shouldRender(GuardianEntity guardianEntity, Frustum frustum, double d, double e, double f) {

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5629;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -155,7 +156,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
+public class ServerPlayNetworkHandler implements class_5629, ServerPlayPacketListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public final ClientConnection connection;
 	private final MinecraftServer server;
@@ -1076,6 +1077,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 	}
 
+	@Override
 	public void sendPacket(Packet<?> packet) {
 		this.sendPacket(packet, null);
 	}
@@ -1478,5 +1480,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		if (this.player.hasPermissionLevel(2) || this.isHost()) {
 			this.server.setDifficultyLocked(packet.isDifficultyLocked());
 		}
+	}
+
+	@Override
+	public ServerPlayerEntity method_32311() {
+		return this.player;
 	}
 }

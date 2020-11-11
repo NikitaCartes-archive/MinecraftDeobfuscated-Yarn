@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
@@ -22,18 +21,18 @@ import net.minecraft.util.math.MathHelper;
 public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
 	public static final Identifier TEXTURE = new Identifier("textures/entity/armorstand/wood.png");
 
-	public ArmorStandEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new ArmorStandEntityModel(arg.method_32167(EntityModelLayers.ARMOR_STAND)), 0.0F);
+	public ArmorStandEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new ArmorStandEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND)), 0.0F);
 		this.addFeature(
 			new ArmorFeatureRenderer<>(
 				this,
-				new ArmorStandArmorEntityModel(arg.method_32167(EntityModelLayers.ARMOR_STAND_INNER_ARMOR)),
-				new ArmorStandArmorEntityModel(arg.method_32167(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR))
+				new ArmorStandArmorEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND_INNER_ARMOR)),
+				new ArmorStandArmorEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR))
 			)
 		);
 		this.addFeature(new HeldItemFeatureRenderer<>(this));
-		this.addFeature(new ElytraFeatureRenderer<>(this, arg.method_32170()));
-		this.addFeature(new HeadFeatureRenderer<>(this, arg.method_32170()));
+		this.addFeature(new ElytraFeatureRenderer<>(this, context.getModelLoader()));
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
 	}
 
 	public Identifier getTexture(ArmorStandEntity armorStandEntity) {

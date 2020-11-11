@@ -25,7 +25,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 
 	private ElderGuardianAppearanceParticle(ClientWorld world, double x, double y, double z) {
 		super(world, x, y, z);
-		this.model = new GuardianEntityModel(MinecraftClient.getInstance().method_31974().method_32072(EntityModelLayers.ELDER_GUARDIAN));
+		this.model = new GuardianEntityModel(MinecraftClient.getInstance().method_31974().getModelPart(EntityModelLayers.ELDER_GUARDIAN));
 		this.gravityStrength = 0.0F;
 		this.maxAge = 30;
 	}

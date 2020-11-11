@@ -58,7 +58,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.isIn(BlockTags.WOODEN_DOORS)) {
 			DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
-			if (!doorBlock.method_30841(blockState)) {
+			if (!doorBlock.isOpen(blockState)) {
 				doorBlock.setOpen(world, blockState, blockPos, true);
 			}
 
@@ -69,7 +69,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.isIn(BlockTags.WOODEN_DOORS)) {
 			DoorBlock doorBlock2 = (DoorBlock)blockState2.getBlock();
-			if (!doorBlock2.method_30841(blockState2)) {
+			if (!doorBlock2.isOpen(blockState2)) {
 				doorBlock2.setOpen(world, blockState2, blockPos2, true);
 				this.method_30767(world, entity, blockPos2);
 			}
@@ -95,7 +95,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 							iterator.remove();
 						} else {
 							DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
-							if (!doorBlock.method_30841(blockState)) {
+							if (!doorBlock.isOpen(blockState)) {
 								iterator.remove();
 							} else if (method_30761(serverWorld, livingEntity, blockPos)) {
 								iterator.remove();

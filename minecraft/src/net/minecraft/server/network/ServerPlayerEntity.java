@@ -4,8 +4,9 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import io.netty.util.concurrent.Future;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -137,7 +138,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
 	public final ServerPlayerInteractionManager interactionManager;
-	private final List<Integer> removedEntities = Lists.newLinkedList();
+	private final IntList removedEntities = new IntArrayList();
 	private final PlayerAdvancementTracker advancementTracker;
 	private final ServerStatHandler statHandler;
 	private float lastHealthScore = Float.MIN_VALUE;
@@ -378,18 +379,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.currentScreenHandler = this.playerScreenHandler;
 		}
 
-		while(!this.removedEntities.isEmpty()) {
-			int i = Math.min(this.removedEntities.size(), Integer.MAX_VALUE);
-			int[] is = new int[i];
-			Iterator<Integer> iterator = this.removedEntities.iterator();
-			int j = 0;
-
-			while(iterator.hasNext() && j < i) {
-				is[j++] = iterator.next();
-				iterator.remove();
-			}
-
-			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(is));
+		if (!this.removedEntities.isEmpty()) {
+			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(this.removedEntities.toIntArray()));
+			this.removedEntities.clear();
 		}
 
 		Entity entity = this.getCameraEntity();
@@ -1301,7 +1293,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	public void onStartedTracking(Entity entity) {
-		this.removedEntities.remove(entity.getEntityId());
+		this.removedEntities.rem(entity.getEntityId());
 	}
 
 	@Override

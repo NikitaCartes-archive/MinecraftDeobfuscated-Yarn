@@ -51,7 +51,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 	@Override
 	protected void init() {
 		super.init();
-		this.BOOK_MODEL = new BookModel(this.client.method_31974().method_32072(EntityModelLayers.BOOK));
+		this.BOOK_MODEL = new BookModel(this.client.method_31974().getModelPart(EntityModelLayers.BOOK));
 	}
 
 	@Override

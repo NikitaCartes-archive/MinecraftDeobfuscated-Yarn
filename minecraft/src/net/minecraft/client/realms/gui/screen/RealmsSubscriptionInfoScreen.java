@@ -30,12 +30,12 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private static final Text subscriptionStartLabelText = new TranslatableText("mco.configure.world.subscription.start");
 	private static final Text timeLeftLabelText = new TranslatableText("mco.configure.world.subscription.timeleft");
 	private static final Text daysLeftLabelText = new TranslatableText("mco.configure.world.subscription.recurring.daysleft");
-	private static final Text field_26517 = new TranslatableText("mco.configure.world.subscription.expired");
-	private static final Text field_26518 = new TranslatableText("mco.configure.world.subscription.less_than_a_day");
-	private static final Text field_26519 = new TranslatableText("mco.configure.world.subscription.month");
-	private static final Text field_26520 = new TranslatableText("mco.configure.world.subscription.months");
-	private static final Text field_26521 = new TranslatableText("mco.configure.world.subscription.day");
-	private static final Text field_26522 = new TranslatableText("mco.configure.world.subscription.days");
+	private static final Text EXPIRED_TEXT = new TranslatableText("mco.configure.world.subscription.expired");
+	private static final Text EXPIRES_IN_LESS_THAN_A_DAY_TEXT = new TranslatableText("mco.configure.world.subscription.less_than_a_day");
+	private static final Text MONTH_TEXT = new TranslatableText("mco.configure.world.subscription.month");
+	private static final Text MONTHS_TEXT = new TranslatableText("mco.configure.world.subscription.months");
+	private static final Text DAY_TEXT = new TranslatableText("mco.configure.world.subscription.day");
+	private static final Text DAYS_TEXT = new TranslatableText("mco.configure.world.subscription.days");
 	private final Screen parent;
 	private final RealmsServer serverData;
 	private final Screen mainScreen;
@@ -157,9 +157,9 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 
 	private Text daysLeftPresentation(int daysLeft) {
 		if (daysLeft < 0 && this.serverData.expired) {
-			return field_26517;
+			return EXPIRED_TEXT;
 		} else if (daysLeft <= 1) {
-			return field_26518;
+			return EXPIRES_IN_LESS_THAN_A_DAY_TEXT;
 		} else {
 			int i = daysLeft / 30;
 			int j = daysLeft % 30;
@@ -167,9 +167,9 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 			if (i > 0) {
 				mutableText.append(Integer.toString(i)).append(" ");
 				if (i == 1) {
-					mutableText.append(field_26519);
+					mutableText.append(MONTH_TEXT);
 				} else {
-					mutableText.append(field_26520);
+					mutableText.append(MONTHS_TEXT);
 				}
 			}
 
@@ -180,9 +180,9 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 
 				mutableText.append(Integer.toString(j)).append(" ");
 				if (j == 1) {
-					mutableText.append(field_26521);
+					mutableText.append(DAY_TEXT);
 				} else {
-					mutableText.append(field_26522);
+					mutableText.append(DAYS_TEXT);
 				}
 			}
 

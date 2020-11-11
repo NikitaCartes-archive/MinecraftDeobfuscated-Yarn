@@ -50,6 +50,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -213,14 +214,18 @@ public class Block extends AbstractBlock implements ItemConvertible {
 				return b != 0;
 			} else {
 				VoxelShape voxelShape = state.getCullingFace(world, pos, direction);
-				VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, direction.getOpposite());
-				boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
-				if (object2ByteLinkedOpenHashMap.size() == 2048) {
-					object2ByteLinkedOpenHashMap.removeLastByte();
-				}
+				if (voxelShape.isEmpty()) {
+					return true;
+				} else {
+					VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, direction.getOpposite());
+					boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
+					if (object2ByteLinkedOpenHashMap.size() == 2048) {
+						object2ByteLinkedOpenHashMap.removeLastByte();
+					}
 
-				object2ByteLinkedOpenHashMap.putAndMoveToFirst(neighborGroup, (byte)(bl ? 1 : 0));
-				return bl;
+					object2ByteLinkedOpenHashMap.putAndMoveToFirst(neighborGroup, (byte)(bl ? 1 : 0));
+					return bl;
+				}
 			}
 		} else {
 			return true;
@@ -399,7 +404,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		}
 	}
 
-	public void rainTick(BlockState state, World world, BlockPos pos) {
+	public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
 	}
 
 	public boolean shouldDropItemsOnExplosion(Explosion explosion) {

@@ -66,8 +66,6 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	);
 	private static final TrackedData<Boolean> ANGRY = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> PROVOKED = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final Predicate<LivingEntity> PLAYER_ENDERMITE_PREDICATE = livingEntity -> livingEntity instanceof EndermiteEntity
-			&& ((EndermiteEntity)livingEntity).isPlayerSpawned();
 	private int lastAngrySoundAge = Integer.MIN_VALUE;
 	private int ageWhenTargetSet;
 	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
@@ -92,7 +90,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		this.goalSelector.add(11, new EndermanEntity.PickUpBlockGoal(this));
 		this.targetSelector.add(1, new EndermanEntity.TeleportTowardsPlayerGoal(this, this::shouldAngerAt));
 		this.targetSelector.add(2, new RevengeGoal(this));
-		this.targetSelector.add(3, new FollowTargetGoal(this, EndermiteEntity.class, 10, true, false, PLAYER_ENDERMITE_PREDICATE));
+		this.targetSelector.add(3, new FollowTargetGoal(this, EndermiteEntity.class, true, false));
 		this.targetSelector.add(4, new UniversalAngerGoal<>(this, false));
 	}
 

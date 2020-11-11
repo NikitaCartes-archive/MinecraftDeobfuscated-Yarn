@@ -2,18 +2,17 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class EvokerFangsEntityModel<T extends Entity> extends class_5597<T> {
+public class EvokerFangsEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
 	private final ModelPart field_27414;
 	private final ModelPart field_3374;
 	private final ModelPart field_3376;
@@ -21,21 +20,19 @@ public class EvokerFangsEntityModel<T extends Entity> extends class_5597<T> {
 
 	public EvokerFangsEntityModel(ModelPart modelPart) {
 		this.field_27414 = modelPart;
-		this.field_3374 = modelPart.method_32086("base");
-		this.field_3376 = modelPart.method_32086("upper_jaw");
-		this.field_3375 = modelPart.method_32086("lower_jaw");
+		this.field_3374 = modelPart.getChild("base");
+		this.field_3376 = modelPart.getChild("upper_jaw");
+		this.field_3375 = modelPart.getChild("lower_jaw");
 	}
 
-	public static class_5607 method_31998() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117(
-			"base", class_5606.method_32108().method_32101(0, 0).method_32097(0.0F, 0.0F, 0.0F, 10.0F, 12.0F, 10.0F), class_5603.method_32090(-5.0F, 24.0F, -5.0F)
-		);
-		class_5606 lv3 = class_5606.method_32108().method_32101(40, 0).method_32097(0.0F, 0.0F, 0.0F, 4.0F, 14.0F, 8.0F);
-		lv2.method_32117("upper_jaw", lv3, class_5603.method_32090(1.5F, 24.0F, -4.0F));
-		lv2.method_32117("lower_jaw", lv3, class_5603.method_32091(-1.5F, 24.0F, 4.0F, 0.0F, (float) Math.PI, 0.0F));
-		return class_5607.method_32110(lv, 64, 32);
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("base", ModelPartBuilder.create().uv(0, 0).cuboid(0.0F, 0.0F, 0.0F, 10.0F, 12.0F, 10.0F), ModelTransform.pivot(-5.0F, 24.0F, -5.0F));
+		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(40, 0).cuboid(0.0F, 0.0F, 0.0F, 4.0F, 14.0F, 8.0F);
+		modelPartData.addChild("upper_jaw", modelPartBuilder, ModelTransform.pivot(1.5F, 24.0F, -4.0F));
+		modelPartData.addChild("lower_jaw", modelPartBuilder, ModelTransform.of(-1.5F, 24.0F, 4.0F, 0.0F, (float) Math.PI, 0.0F));
+		return TexturedModelData.of(modelData, 64, 32);
 	}
 
 	@Override
@@ -55,7 +52,7 @@ public class EvokerFangsEntityModel<T extends Entity> extends class_5597<T> {
 	}
 
 	@Override
-	public ModelPart method_32008() {
+	public ModelPart getPart() {
 		return this.field_27414;
 	}
 }

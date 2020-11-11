@@ -13,7 +13,7 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class DirectConnectScreen extends Screen {
-	private static final Text field_26540 = new TranslatableText("addServer.enterIp");
+	private static final Text ENTER_IP_TEXT = new TranslatableText("addServer.enterIp");
 	private ButtonWidget selectServerButton;
 	private final ServerInfo serverEntry;
 	private TextFieldWidget addressField;
@@ -92,7 +92,7 @@ public class DirectConnectScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
-		drawTextWithShadow(matrices, this.textRenderer, field_26540, this.width / 2 - 100, 100, 10526880);
+		drawTextWithShadow(matrices, this.textRenderer, ENTER_IP_TEXT, this.width / 2 - 100, 100, 10526880);
 		this.addressField.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

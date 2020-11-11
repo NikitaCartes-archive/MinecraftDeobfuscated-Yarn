@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.LlamaDecorFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.LlamaEntityModel;
@@ -18,9 +17,9 @@ public class LlamaEntityRenderer extends MobEntityRenderer<LlamaEntity, LlamaEnt
 		new Identifier("textures/entity/llama/gray.png")
 	};
 
-	public LlamaEntityRenderer(class_5617.class_5618 arg, EntityModelLayer entityModelLayer) {
-		super(arg, new LlamaEntityModel<>(arg.method_32167(entityModelLayer)), 0.7F);
-		this.addFeature(new LlamaDecorFeatureRenderer(this, arg.method_32170()));
+	public LlamaEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
+		super(ctx, new LlamaEntityModel<>(ctx.getPart(layer)), 0.7F);
+		this.addFeature(new LlamaDecorFeatureRenderer(this, ctx.getModelLoader()));
 	}
 
 	public Identifier getTexture(LlamaEntity llamaEntity) {

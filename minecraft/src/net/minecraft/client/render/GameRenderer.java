@@ -32,7 +32,6 @@ import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
@@ -325,8 +324,8 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				d /= (double)((1.0F - 500.0F / (f + 500.0F)) * 2.0F + 1.0F);
 			}
 
-			FluidState fluidState = camera.getSubmergedFluidState();
-			if (!fluidState.isEmpty()) {
+			CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
+			if (cameraSubmersionType == CameraSubmersionType.LAVA || cameraSubmersionType == CameraSubmersionType.WATER) {
 				d = d * 60.0 / 70.0;
 			}
 

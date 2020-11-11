@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.TurtleEntityModel;
@@ -14,8 +13,8 @@ import net.minecraft.util.Identifier;
 public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, TurtleEntityModel<TurtleEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/turtle/big_sea_turtle.png");
 
-	public TurtleEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new TurtleEntityModel<>(arg.method_32167(EntityModelLayers.TURTLE)), 0.7F);
+	public TurtleEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new TurtleEntityModel<>(context.getPart(EntityModelLayers.TURTLE)), 0.7F);
 	}
 
 	public void render(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

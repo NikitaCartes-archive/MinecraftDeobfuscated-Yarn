@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -19,9 +18,9 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/llama/spit.png");
 	private final LlamaSpitEntityModel<LlamaSpitEntity> model;
 
-	public LlamaSpitEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
-		this.model = new LlamaSpitEntityModel<>(arg.method_32167(EntityModelLayers.LLAMA_SPIT));
+	public LlamaSpitEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
+		this.model = new LlamaSpitEntityModel<>(context.getPart(EntityModelLayers.LLAMA_SPIT));
 	}
 
 	public void render(LlamaSpitEntity llamaSpitEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

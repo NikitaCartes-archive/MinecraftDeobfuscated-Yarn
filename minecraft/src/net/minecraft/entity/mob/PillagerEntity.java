@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5630;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -249,18 +250,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public boolean equip(int slot, ItemStack item) {
-		if (super.equip(slot, item)) {
-			return true;
-		} else {
-			int i = slot - 300;
-			if (i >= 0 && i < this.inventory.size()) {
-				this.inventory.setStack(i, item);
-				return true;
-			} else {
-				return false;
-			}
-		}
+	public class_5630 method_32318(int i) {
+		int j = i - 300;
+		return j >= 0 && j < this.inventory.size() ? class_5630.method_32328(this.inventory, j) : super.method_32318(i);
 	}
 
 	@Override

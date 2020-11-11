@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -24,10 +23,10 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 	private static final Identifier TEXTURE = new Identifier("textures/entity/minecart.png");
 	protected final EntityModel<T> model;
 
-	public MinecartEntityRenderer(class_5617.class_5618 arg, EntityModelLayer entityModelLayer) {
-		super(arg);
+	public MinecartEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
+		super(ctx);
 		this.shadowRadius = 0.7F;
-		this.model = new MinecartEntityModel<>(arg.method_32167(entityModelLayer));
+		this.model = new MinecartEntityModel<>(ctx.getPart(layer));
 	}
 
 	public void render(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

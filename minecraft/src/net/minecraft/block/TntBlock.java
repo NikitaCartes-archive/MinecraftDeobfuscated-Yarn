@@ -59,7 +59,8 @@ public class TntBlock extends Block {
 	public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
 		if (!world.isClient) {
 			TntEntity tntEntity = new TntEntity(world, (double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, explosion.getCausingEntity());
-			tntEntity.setFuse((short)(world.random.nextInt(tntEntity.getFuseTimer() / 4) + tntEntity.getFuseTimer() / 8));
+			int i = tntEntity.getFuse();
+			tntEntity.setFuse((short)(world.random.nextInt(i / 4) + i / 8));
 			world.spawnEntity(tntEntity);
 		}
 	}

@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.util.Identifier;
 
@@ -14,9 +14,11 @@ public class CreeperChargeFeatureRenderer extends EnergySwirlOverlayFeatureRende
 	private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper_armor.png");
 	private final CreeperEntityModel<CreeperEntity> model;
 
-	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> featureRendererContext, class_5599 arg) {
+	public CreeperChargeFeatureRenderer(
+		FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> featureRendererContext, EntityModelLoader entityModelLoader
+	) {
 		super(featureRendererContext);
-		this.model = new CreeperEntityModel<>(arg.method_32072(EntityModelLayers.CREEPER_ARMOR));
+		this.model = new CreeperEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.CREEPER_ARMOR));
 	}
 
 	@Override

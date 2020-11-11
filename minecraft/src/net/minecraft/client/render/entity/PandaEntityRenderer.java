@@ -5,7 +5,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.PandaHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PandaEntityModel;
@@ -28,8 +27,8 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 		enumMap.put(PandaEntity.Gene.AGGRESSIVE, new Identifier("textures/entity/panda/aggressive_panda.png"));
 	});
 
-	public PandaEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new PandaEntityModel<>(arg.method_32167(EntityModelLayers.PANDA)), 0.9F);
+	public PandaEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new PandaEntityModel<>(context.getPart(EntityModelLayers.PANDA)), 0.9F);
 		this.addFeature(new PandaHeldItemFeatureRenderer(this));
 	}
 

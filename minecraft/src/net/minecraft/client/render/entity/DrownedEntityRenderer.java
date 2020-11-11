@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.DrownedOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.model.DrownedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -17,14 +16,14 @@ import net.minecraft.util.math.MathHelper;
 public class DrownedEntityRenderer extends ZombieBaseEntityRenderer<DrownedEntity, DrownedEntityModel<DrownedEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/zombie/drowned.png");
 
-	public DrownedEntityRenderer(class_5617.class_5618 arg) {
+	public DrownedEntityRenderer(EntityRendererFactory.Context context) {
 		super(
-			arg,
-			new DrownedEntityModel<>(arg.method_32167(EntityModelLayers.DROWNED)),
-			new DrownedEntityModel<>(arg.method_32167(EntityModelLayers.DROWNED_INNER_ARMOR)),
-			new DrownedEntityModel<>(arg.method_32167(EntityModelLayers.DROWNED_OUTER_ARMOR))
+			context,
+			new DrownedEntityModel<>(context.getPart(EntityModelLayers.DROWNED)),
+			new DrownedEntityModel<>(context.getPart(EntityModelLayers.DROWNED_INNER_ARMOR)),
+			new DrownedEntityModel<>(context.getPart(EntityModelLayers.DROWNED_OUTER_ARMOR))
 		);
-		this.addFeature(new DrownedOverlayFeatureRenderer<>(this, arg.method_32170()));
+		this.addFeature(new DrownedOverlayFeatureRenderer<>(this, context.getModelLoader()));
 	}
 
 	@Override

@@ -2,13 +2,13 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.ModelUtil;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -22,35 +22,35 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		super(modelPart, true, 23.0F, 4.8F, 2.7F, 3.0F, 49);
 	}
 
-	public static class_5607 method_32022() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117(
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild(
 			"head",
-			class_5606.method_32108()
-				.method_32101(0, 6)
-				.method_32097(-6.5F, -5.0F, -4.0F, 13.0F, 10.0F, 9.0F)
-				.method_32101(45, 16)
-				.method_32102("nose", -3.5F, 0.0F, -6.0F, 7.0F, 5.0F, 2.0F)
-				.method_32101(52, 25)
-				.method_32102("left_ear", 3.5F, -8.0F, -1.0F, 5.0F, 4.0F, 1.0F)
-				.method_32101(52, 25)
-				.method_32102("right_ear", -8.5F, -8.0F, -1.0F, 5.0F, 4.0F, 1.0F),
-			class_5603.method_32090(0.0F, 11.5F, -17.0F)
+			ModelPartBuilder.create()
+				.uv(0, 6)
+				.cuboid(-6.5F, -5.0F, -4.0F, 13.0F, 10.0F, 9.0F)
+				.uv(45, 16)
+				.cuboid("nose", -3.5F, 0.0F, -6.0F, 7.0F, 5.0F, 2.0F)
+				.uv(52, 25)
+				.cuboid("left_ear", 3.5F, -8.0F, -1.0F, 5.0F, 4.0F, 1.0F)
+				.uv(52, 25)
+				.cuboid("right_ear", -8.5F, -8.0F, -1.0F, 5.0F, 4.0F, 1.0F),
+			ModelTransform.pivot(0.0F, 11.5F, -17.0F)
 		);
-		lv2.method_32117(
+		modelPartData.addChild(
 			"body",
-			class_5606.method_32108().method_32101(0, 25).method_32097(-9.5F, -13.0F, -6.5F, 19.0F, 26.0F, 13.0F),
-			class_5603.method_32091(0.0F, 10.0F, 0.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
+			ModelPartBuilder.create().uv(0, 25).cuboid(-9.5F, -13.0F, -6.5F, 19.0F, 26.0F, 13.0F),
+			ModelTransform.of(0.0F, 10.0F, 0.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
 		int i = 9;
 		int j = 6;
-		class_5606 lv3 = class_5606.method_32108().method_32101(40, 0).method_32097(-3.0F, 0.0F, -3.0F, 6.0F, 9.0F, 6.0F);
-		lv2.method_32117("right_hind_leg", lv3, class_5603.method_32090(-5.5F, 15.0F, 9.0F));
-		lv2.method_32117("left_hind_leg", lv3, class_5603.method_32090(5.5F, 15.0F, 9.0F));
-		lv2.method_32117("right_front_leg", lv3, class_5603.method_32090(-5.5F, 15.0F, -9.0F));
-		lv2.method_32117("left_front_leg", lv3, class_5603.method_32090(5.5F, 15.0F, -9.0F));
-		return class_5607.method_32110(lv, 64, 64);
+		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(40, 0).cuboid(-3.0F, 0.0F, -3.0F, 6.0F, 9.0F, 6.0F);
+		modelPartData.addChild("right_hind_leg", modelPartBuilder, ModelTransform.pivot(-5.5F, 15.0F, 9.0F));
+		modelPartData.addChild("left_hind_leg", modelPartBuilder, ModelTransform.pivot(5.5F, 15.0F, 9.0F));
+		modelPartData.addChild("right_front_leg", modelPartBuilder, ModelTransform.pivot(-5.5F, 15.0F, -9.0F));
+		modelPartData.addChild("left_front_leg", modelPartBuilder, ModelTransform.pivot(5.5F, 15.0F, -9.0F));
+		return TexturedModelData.of(modelData, 64, 64);
 	}
 
 	public void animateModel(T pandaEntity, float f, float g, float h) {

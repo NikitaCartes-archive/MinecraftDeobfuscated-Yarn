@@ -60,7 +60,7 @@ public class StructureBlock extends BlockWithEntity implements class_5552 {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(MODE, StructureBlockMode.DATA);
+		return this.getDefaultState().with(MODE, StructureBlockMode.LOAD);
 	}
 
 	@Override

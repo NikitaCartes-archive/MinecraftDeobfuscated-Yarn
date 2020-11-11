@@ -53,7 +53,7 @@ public class ArmorItem extends Item implements Wearable {
 			return false;
 		} else {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
-			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(armor);
+			EquipmentSlot equipmentSlot = MobEntity.method_32326(armor);
 			ItemStack itemStack = armor.split(1);
 			livingEntity.equipStack(equipmentSlot, itemStack);
 			if (livingEntity instanceof MobEntity) {
@@ -113,7 +113,7 @@ public class ArmorItem extends Item implements Wearable {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+		EquipmentSlot equipmentSlot = MobEntity.method_32326(itemStack);
 		ItemStack itemStack2 = user.getEquippedStack(equipmentSlot);
 		if (itemStack2.isEmpty()) {
 			user.equipStack(equipmentSlot, itemStack.copy());

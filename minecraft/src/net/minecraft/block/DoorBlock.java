@@ -190,14 +190,14 @@ public class DoorBlock extends Block {
 		}
 	}
 
-	public boolean method_30841(BlockState blockState) {
-		return blockState.get(OPEN);
+	public boolean isOpen(BlockState state) {
+		return state.get(OPEN);
 	}
 
-	public void setOpen(World world, BlockState blockState, BlockPos blockPos, boolean bl) {
-		if (blockState.isOf(this) && blockState.get(OPEN) != bl) {
-			world.setBlockState(blockPos, blockState.with(OPEN, Boolean.valueOf(bl)), 10);
-			this.playOpenCloseSound(world, blockPos, bl);
+	public void setOpen(World world, BlockState state, BlockPos pos, boolean open) {
+		if (state.isOf(this) && state.get(OPEN) != open) {
+			world.setBlockState(pos, state.with(OPEN, Boolean.valueOf(open)), 10);
+			this.playOpenCloseSound(world, pos, open);
 		}
 	}
 

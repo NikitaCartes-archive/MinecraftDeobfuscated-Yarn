@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.PhantomEyesFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PhantomEntityModel;
@@ -15,8 +14,8 @@ import net.minecraft.util.Identifier;
 public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, PhantomEntityModel<PhantomEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/phantom.png");
 
-	public PhantomEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new PhantomEntityModel<>(arg.method_32167(EntityModelLayers.PHANTOM)), 0.75F);
+	public PhantomEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new PhantomEntityModel<>(context.getPart(EntityModelLayers.PHANTOM)), 0.75F);
 		this.addFeature(new PhantomEyesFeatureRenderer<>(this));
 	}
 

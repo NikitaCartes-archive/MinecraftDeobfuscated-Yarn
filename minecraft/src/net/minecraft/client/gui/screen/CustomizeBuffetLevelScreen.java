@@ -24,7 +24,7 @@ import net.minecraft.world.biome.Biome;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeBuffetLevelScreen extends Screen {
-	private static final Text field_26535 = new TranslatableText("createWorld.customize.buffet.biome");
+	private static final Text BUFFET_BIOME_TEXT = new TranslatableText("createWorld.customize.buffet.biome");
 	private final Screen field_24562;
 	private final Consumer<Biome> field_24563;
 	private final MutableRegistry<Biome> field_25888;
@@ -75,7 +75,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.renderBackgroundTexture(0);
 		this.biomeSelectionList.render(matrices, mouseX, mouseY, delta);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
-		drawCenteredText(matrices, this.textRenderer, field_26535, this.width / 2, 28, 10526880);
+		drawCenteredText(matrices, this.textRenderer, BUFFET_BIOME_TEXT, this.width / 2, 28, 10526880);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

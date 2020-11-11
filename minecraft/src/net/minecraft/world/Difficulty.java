@@ -3,8 +3,6 @@ package net.minecraft.world;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -50,10 +48,5 @@ public enum Difficulty {
 
 	public String getName() {
 		return this.name;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public Difficulty cycle() {
-		return BY_NAME[(this.id + 1) % BY_NAME.length];
 	}
 }

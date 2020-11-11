@@ -8,15 +8,18 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.screen.world.GameModeSelection;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.dto.Backup;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBackupInfoScreen extends RealmsScreen {
+	private static final Text field_27937 = new LiteralText("UNKNOWN");
 	private final Screen parent;
 	private final Backup backup;
 	private RealmsBackupInfoScreen.BackupInfoList backupInfoList;
@@ -75,17 +78,17 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 	private Text gameDifficultyMetadata(String value) {
 		try {
-			return RealmsSlotOptionsScreen.DIFFICULTIES[Integer.parseInt(value)];
+			return ((Difficulty)RealmsSlotOptionsScreen.DIFFICULTIES.get(Integer.parseInt(value))).getTranslatableName();
 		} catch (Exception var3) {
-			return new LiteralText("UNKNOWN");
+			return field_27937;
 		}
 	}
 
 	private Text gameModeMetadata(String value) {
 		try {
-			return RealmsSlotOptionsScreen.GAME_MODES[Integer.parseInt(value)];
+			return ((GameModeSelection)RealmsSlotOptionsScreen.GAME_MODES.get(Integer.parseInt(value))).getName();
 		} catch (Exception var3) {
-			return new LiteralText("UNKNOWN");
+			return field_27937;
 		}
 	}
 

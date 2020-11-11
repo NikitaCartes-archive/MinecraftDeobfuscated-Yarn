@@ -28,9 +28,15 @@ import net.minecraft.util.Language;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
+/**
+ * Manages the rendering of text.
+ */
 @Environment(EnvType.CLIENT)
 public class TextRenderer {
 	private static final Vector3f FORWARD_SHIFT = new Vector3f(0.0F, 0.0F, 0.03F);
+	/**
+	 * The font height of the text that is rendered by the text renderer.
+	 */
 	public final int fontHeight = 9;
 	public final Random random = new Random();
 	private final Function<Identifier, FontStorage> fontStorageAccessor;
@@ -311,26 +317,56 @@ public class TextRenderer {
 		}
 	}
 
+	/**
+	 * Gets the width of some text when rendered.
+	 * 
+	 * @param text the text
+	 */
 	public int getWidth(String text) {
 		return MathHelper.ceil(this.handler.getWidth(text));
 	}
 
+	/**
+	 * Gets the width of some text when rendered.
+	 * 
+	 * @param text the text
+	 */
 	public int getWidth(StringVisitable text) {
 		return MathHelper.ceil(this.handler.getWidth(text));
 	}
 
+	/**
+	 * Gets the width of some text when rendered.
+	 */
 	public int getWidth(OrderedText text) {
 		return MathHelper.ceil(this.handler.getWidth(text));
 	}
 
+	/**
+	 * Trims a string to be at most {@code maxWidth} wide.
+	 * 
+	 * @return the trimmed string
+	 */
 	public String trimToWidth(String text, int maxWidth, boolean backwards) {
 		return backwards ? this.handler.trimToWidthBackwards(text, maxWidth, Style.EMPTY) : this.handler.trimToWidth(text, maxWidth, Style.EMPTY);
 	}
 
+	/**
+	 * Trims a string to be at most {@code maxWidth} wide.
+	 * 
+	 * @return the trimmed string
+	 * @see TextHandler#trimToWidth(String, int, Style)
+	 */
 	public String trimToWidth(String text, int maxWidth) {
 		return this.handler.trimToWidth(text, maxWidth, Style.EMPTY);
 	}
 
+	/**
+	 * Trims a string to be at most {@code maxWidth} wide.
+	 * 
+	 * @return the text
+	 * @see TextHandler#trimToWidth(StringVisitable, int, Style)
+	 */
 	public StringVisitable trimToWidth(StringVisitable text, int width) {
 		return this.handler.trimToWidth(text, width, Style.EMPTY);
 	}
@@ -347,14 +383,28 @@ public class TextRenderer {
 		}
 	}
 
-	public int getStringBoundedHeight(String text, int maxWidth) {
+	/**
+	 * Gets the height of the text when it has been wrapped.
+	 * 
+	 * @return the height of the wrapped text
+	 * @see TextRenderer#wrapLines(StringVisitable, int)
+	 */
+	public int getWrappedLinesHeight(String text, int maxWidth) {
 		return 9 * this.handler.wrapLines(text, maxWidth, Style.EMPTY).size();
 	}
 
+	/**
+	 * Wraps text when the rendered width of text exceeds the {@code width}.
+	 * 
+	 * @return a list of ordered text which has been wrapped
+	 */
 	public List<OrderedText> wrapLines(StringVisitable text, int width) {
 		return Language.getInstance().reorder(this.handler.wrapLines(text, width, Style.EMPTY));
 	}
 
+	/**
+	 * Checks if the currently set language uses right to left writing.
+	 */
 	public boolean isRightToLeft() {
 		return Language.getInstance().isRightToLeft();
 	}

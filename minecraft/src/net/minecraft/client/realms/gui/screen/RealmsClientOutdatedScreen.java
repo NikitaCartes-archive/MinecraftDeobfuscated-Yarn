@@ -11,12 +11,12 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RealmsClientOutdatedScreen extends RealmsScreen {
-	private static final Text field_26475 = new TranslatableText("mco.client.outdated.title");
-	private static final Text[] field_26476 = new Text[]{
+	private static final Text OUTDATED_TITLE = new TranslatableText("mco.client.outdated.title");
+	private static final Text[] OUTDATED_LINES = new Text[]{
 		new TranslatableText("mco.client.outdated.msg.line1"), new TranslatableText("mco.client.outdated.msg.line2")
 	};
-	private static final Text field_26477 = new TranslatableText("mco.client.incompatible.title");
-	private static final Text[] field_26478 = new Text[]{
+	private static final Text INCOMPATIBLE_TITLE = new TranslatableText("mco.client.incompatible.title");
+	private static final Text[] INCOMPATIBLE_LINES = new Text[]{
 		new TranslatableText("mco.client.incompatible.msg.line1"),
 		new TranslatableText("mco.client.incompatible.msg.line2"),
 		new TranslatableText("mco.client.incompatible.msg.line3")
@@ -40,11 +40,11 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 		Text text;
 		Text[] texts;
 		if (this.outdated) {
-			text = field_26477;
-			texts = field_26478;
+			text = INCOMPATIBLE_TITLE;
+			texts = INCOMPATIBLE_LINES;
 		} else {
-			text = field_26475;
-			texts = field_26476;
+			text = OUTDATED_TITLE;
+			texts = OUTDATED_LINES;
 		}
 
 		drawCenteredText(matrices, this.textRenderer, text, this.width / 2, row(3), 16711680);

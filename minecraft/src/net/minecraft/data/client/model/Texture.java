@@ -264,14 +264,14 @@ public class Texture {
 			.put(TextureKey.CANDLE, getId(block));
 	}
 
-	public static Texture method_32232(Block block) {
+	public static Texture method_32232(Identifier identifier) {
 		return new Texture()
 			.put(TextureKey.PARTICLE, getSubId(Blocks.CAULDRON, "_side"))
 			.put(TextureKey.SIDE, getSubId(Blocks.CAULDRON, "_side"))
 			.put(TextureKey.TOP, getSubId(Blocks.CAULDRON, "_top"))
 			.put(TextureKey.BOTTOM, getSubId(Blocks.CAULDRON, "_bottom"))
 			.put(TextureKey.INSIDE, getSubId(Blocks.CAULDRON, "_inner"))
-			.put(TextureKey.CONTENT, getSubId(block, "_still"));
+			.put(TextureKey.CONTENT, identifier);
 	}
 
 	public static Texture layer0(Item item) {

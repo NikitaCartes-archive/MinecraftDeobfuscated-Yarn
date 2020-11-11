@@ -47,10 +47,10 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 @Environment(EnvType.CLIENT)
 public class BookEditScreen extends Screen {
-	private static final Text field_25893 = new TranslatableText("book.editTitle");
-	private static final Text field_25894 = new TranslatableText("book.finalizeWarning");
-	private static final OrderedText field_25895 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.BLACK));
-	private static final OrderedText field_25896 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.GRAY));
+	private static final Text EDIT_TITLE_TEXT = new TranslatableText("book.editTitle");
+	private static final Text FINALIZE_WARNING_TEXT = new TranslatableText("book.finalizeWarning");
+	private static final OrderedText BLACK_CURSOR_TEXT = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.BLACK));
+	private static final OrderedText GRAY_CURSOR_TEXT = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.GRAY));
 	private final PlayerEntity player;
 	private final ItemStack itemStack;
 	private boolean dirty;
@@ -64,7 +64,7 @@ public class BookEditScreen extends Screen {
 		this::setPageContent,
 		this::method_27595,
 		this::method_27584,
-		string -> string.length() < 1024 && this.textRenderer.getStringBoundedHeight(string, 114) <= 128
+		string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight(string, 114) <= 128
 	);
 	private final SelectionManager field_24270 = new SelectionManager(
 		() -> this.title, string -> this.title = string, this::method_27595, this::method_27584, string -> string.length() < 16
@@ -392,14 +392,14 @@ public class BookEditScreen extends Screen {
 		this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
 		if (this.signing) {
 			boolean bl = this.tickCounter / 6 % 2 == 0;
-			OrderedText orderedText = OrderedText.concat(OrderedText.styledString(this.title, Style.EMPTY), bl ? field_25895 : field_25896);
-			int k = this.textRenderer.getWidth(field_25893);
-			this.textRenderer.draw(matrices, field_25893, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
+			OrderedText orderedText = OrderedText.concat(OrderedText.styledString(this.title, Style.EMPTY), bl ? BLACK_CURSOR_TEXT : GRAY_CURSOR_TEXT);
+			int k = this.textRenderer.getWidth(EDIT_TITLE_TEXT);
+			this.textRenderer.draw(matrices, EDIT_TITLE_TEXT, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
 			int l = this.textRenderer.getWidth(orderedText);
 			this.textRenderer.draw(matrices, orderedText, (float)(i + 36 + (114 - l) / 2), 50.0F, 0);
 			int m = this.textRenderer.getWidth(this.field_25892);
 			this.textRenderer.draw(matrices, this.field_25892, (float)(i + 36 + (114 - m) / 2), 60.0F, 0);
-			this.textRenderer.drawTrimmed(field_25894, i + 36, 82, 114, 0);
+			this.textRenderer.drawTrimmed(FINALIZE_WARNING_TEXT, i + 36, 82, 114, 0);
 		} else {
 			int n = this.textRenderer.getWidth(this.field_25891);
 			this.textRenderer.draw(matrices, this.field_25891, (float)(i - n + 192 - 44), 18.0F, 0);

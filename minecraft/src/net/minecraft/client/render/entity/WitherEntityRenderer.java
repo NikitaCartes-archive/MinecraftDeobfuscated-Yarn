@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.WitherArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.WitherEntityModel;
@@ -16,9 +15,9 @@ public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, Wither
 	private static final Identifier INVULNERABLE_TEXTURE = new Identifier("textures/entity/wither/wither_invulnerable.png");
 	private static final Identifier TEXTURE = new Identifier("textures/entity/wither/wither.png");
 
-	public WitherEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new WitherEntityModel<>(arg.method_32167(EntityModelLayers.WITHER)), 1.0F);
-		this.addFeature(new WitherArmorFeatureRenderer(this, arg.method_32170()));
+	public WitherEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new WitherEntityModel<>(context.getPart(EntityModelLayers.WITHER)), 1.0F);
+		this.addFeature(new WitherArmorFeatureRenderer(this, context.getModelLoader()));
 	}
 
 	protected int getBlockLight(WitherEntity witherEntity, BlockPos blockPos) {

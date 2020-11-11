@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.RabbitEntityModel;
 import net.minecraft.entity.passive.RabbitEntity;
@@ -20,8 +19,8 @@ public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, Rabbit
 	private static final Identifier TOAST_TEXTURE = new Identifier("textures/entity/rabbit/toast.png");
 	private static final Identifier CAERBANNOG_TEXTURE = new Identifier("textures/entity/rabbit/caerbannog.png");
 
-	public RabbitEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new RabbitEntityModel<>(arg.method_32167(EntityModelLayers.RABBIT)), 0.3F);
+	public RabbitEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new RabbitEntityModel<>(context.getPart(EntityModelLayers.RABBIT)), 0.3F);
 	}
 
 	public Identifier getTexture(RabbitEntity rabbitEntity) {

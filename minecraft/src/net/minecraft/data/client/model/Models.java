@@ -99,6 +99,12 @@ public class Models {
 	public static final Model TEMPLATE_THREE_TURTLE_EGGS = block("template_three_turtle_eggs", TextureKey.ALL);
 	public static final Model TEMPLATE_FOUR_TURTLE_EGGS = block("template_four_turtle_eggs", TextureKey.ALL);
 	public static final Model TEMPLATE_SINGLE_FACE = block("template_single_face", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_CAULDRON_LEVEL1 = block(
+		"template_cauldron_level1", TextureKey.CONTENT, TextureKey.INSIDE, TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE
+	);
+	public static final Model TEMPLATE_CAULDRON_LEVEL2 = block(
+		"template_cauldron_level2", TextureKey.CONTENT, TextureKey.INSIDE, TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE
+	);
 	public static final Model TEMPLATE_CAULDRON_FULL = block(
 		"template_cauldron_full", TextureKey.CONTENT, TextureKey.INSIDE, TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE
 	);

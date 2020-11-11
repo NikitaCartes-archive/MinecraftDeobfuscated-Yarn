@@ -101,7 +101,7 @@ public class SnbtProvider implements DataProvider {
 				String string2 = SHA1.hashBytes(bs).toString();
 				String string3;
 				if (field_24615 != null) {
-					string3 = NbtHelper.method_32271(compoundTag);
+					string3 = NbtHelper.toPrettyPrintedString(compoundTag);
 				} else {
 					string3 = null;
 				}

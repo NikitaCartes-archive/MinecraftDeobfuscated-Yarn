@@ -28,6 +28,10 @@ public enum EquipmentSlot {
 		return this.entityId;
 	}
 
+	public int method_32320(int i) {
+		return i + this.entityId;
+	}
+
 	public int getArmorStandSlotId() {
 		return this.armorStandId;
 	}

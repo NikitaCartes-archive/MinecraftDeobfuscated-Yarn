@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -20,8 +19,8 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 	private static final Identifier TEXTURE = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(TEXTURE);
 
-	public DragonFireballEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
+	public DragonFireballEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
 	}
 
 	protected int getBlockLight(DragonFireballEntity dragonFireballEntity, BlockPos blockPos) {

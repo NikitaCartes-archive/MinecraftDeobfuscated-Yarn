@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -22,9 +21,9 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 	private static final RenderLayer LAYER = RenderLayer.getEntityTranslucent(TEXTURE);
 	private final ShulkerBulletEntityModel<ShulkerBulletEntity> model;
 
-	public ShulkerBulletEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
-		this.model = new ShulkerBulletEntityModel<>(arg.method_32167(EntityModelLayers.SHULKER_BULLET));
+	public ShulkerBulletEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
+		this.model = new ShulkerBulletEntityModel<>(context.getPart(EntityModelLayers.SHULKER_BULLET));
 	}
 
 	protected int getBlockLight(ShulkerBulletEntity shulkerBulletEntity, BlockPos blockPos) {

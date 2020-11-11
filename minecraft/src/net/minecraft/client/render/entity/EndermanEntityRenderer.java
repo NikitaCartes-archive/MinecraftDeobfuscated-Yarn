@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.EndermanBlockFeatureRenderer;
@@ -20,8 +19,8 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 	private static final Identifier TEXTURE = new Identifier("textures/entity/enderman/enderman.png");
 	private final Random random = new Random();
 
-	public EndermanEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new EndermanEntityModel<>(arg.method_32167(EntityModelLayers.ENDERMAN)), 0.5F);
+	public EndermanEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new EndermanEntityModel<>(context.getPart(EntityModelLayers.ENDERMAN)), 0.5F);
 		this.addFeature(new EndermanEyesFeatureRenderer<>(this));
 		this.addFeature(new EndermanBlockFeatureRenderer(this));
 	}

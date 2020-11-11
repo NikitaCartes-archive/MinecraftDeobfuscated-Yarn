@@ -40,7 +40,7 @@ public class Identifier implements Comparable<Identifier> {
 	/**
 	 * <p>Takes a string of the form {@code <namespace>:<path>}, for example {@code minecraft:iron_ingot}.</p>
 	 * <p>The string will be split (on the {@code :}) into an identifier with the specified path and namespace.</p>
-	 * Prefer using the {@link #Identifier(java.lang.String, java.lang.String)} constructor that takes the namespace and path as individual parameters to avoid mistakes.
+	 * Prefer using the {@link net.minecraft.util.Identifier#Identifier(java.lang.String, java.lang.String) Identifier(java.lang.String, java.lang.String)} constructor that takes the namespace and path as individual parameters to avoid mistakes.
 	 * @throws InvalidIdentifierException if the string cannot be parsed as an identifier.
 	 */
 	public Identifier(String id) {

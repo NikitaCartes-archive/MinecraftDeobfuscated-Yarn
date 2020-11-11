@@ -62,7 +62,7 @@ public class FoodComponents {
 	public static final FoodComponent PUFFERFISH = new FoodComponent.Builder()
 		.hunger(1)
 		.saturationModifier(0.1F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 3), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 1), 1.0F)
 		.statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 300, 2), 1.0F)
 		.statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0), 1.0F)
 		.build();

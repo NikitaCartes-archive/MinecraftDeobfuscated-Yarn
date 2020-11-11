@@ -51,7 +51,7 @@ public interface EntityView {
 	 * Computes a list of entities within some box, excluding the given entity, that are not spectators.
 	 * 
 	 * @return a list of entities within a box, excluding the given entity
-	 * @see #getSurroundingEntities(Entity, Box, Predicate)
+	 * @see #getOtherEntities(Entity, Box, Predicate)
 	 * @see Entity#isSpectator()
 	 * 
 	 * @param except the entity the box logically surrounds. This entity is ignored if it is inside the box.
