@@ -1,12 +1,15 @@
 package net.minecraft.client.render;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -155,14 +158,40 @@ public class Camera {
 		return this.thirdPerson;
 	}
 
-	public FluidState getSubmergedFluidState() {
+	public CameraSubmersionType getSubmersionType() {
 		if (!this.ready) {
-			return Fluids.EMPTY.getDefaultState();
+			return CameraSubmersionType.NONE;
 		} else {
 			FluidState fluidState = this.area.getFluidState(this.blockPos);
-			return !fluidState.isEmpty() && this.pos.y >= (double)((float)this.blockPos.getY() + fluidState.getHeight(this.area, this.blockPos))
-				? Fluids.EMPTY.getDefaultState()
-				: fluidState;
+			if (fluidState.isIn(FluidTags.WATER) && this.pos.y < (double)((float)this.blockPos.getY() + fluidState.getHeight(this.area, this.blockPos))) {
+				return CameraSubmersionType.WATER;
+			} else {
+				Vec3d vec3d = new Vec3d(this.diagonalPlane);
+				Vec3d vec3d2 = new Vec3d(this.horizontalPlane);
+				Vec3d vec3d3 = new Vec3d(this.verticalPlane);
+				Vec3d vec3d4 = vec3d2.add(vec3d3).add(vec3d).multiply(0.083333336F);
+				Vec3d vec3d5 = vec3d2.add(vec3d3).subtract(vec3d).multiply(0.083333336F);
+				Vec3d vec3d6 = vec3d2.subtract(vec3d3).add(vec3d).multiply(0.083333336F);
+				Vec3d vec3d7 = vec3d2.subtract(vec3d3).subtract(vec3d).multiply(0.083333336F);
+
+				for (Vec3d vec3d8 : ImmutableList.of(vec3d4, vec3d5, vec3d6, vec3d7)) {
+					Vec3d vec3d9 = this.pos.add(vec3d8);
+					BlockPos blockPos = new BlockPos(vec3d9);
+					FluidState fluidState2 = this.area.getFluidState(blockPos);
+					if (!fluidState2.isEmpty()) {
+						if (!(vec3d9.y >= (double)((float)this.blockPos.getY() + fluidState2.getHeight(this.area, this.blockPos))) && fluidState2.isIn(FluidTags.LAVA)) {
+							return CameraSubmersionType.LAVA;
+						}
+					} else {
+						BlockState blockState = this.area.getBlockState(blockPos);
+						if (blockState.isOf(Blocks.POWDER_SNOW)) {
+							return CameraSubmersionType.POWDER_SNOW;
+						}
+					}
+				}
+
+				return CameraSubmersionType.NONE;
+			}
 		}
 	}
 

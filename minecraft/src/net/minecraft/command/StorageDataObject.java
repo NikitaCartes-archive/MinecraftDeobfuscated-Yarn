@@ -70,7 +70,7 @@ public class StorageDataObject implements DataCommandObject {
 
 	@Override
 	public Text feedbackQuery(Tag tag) {
-		return new TranslatableText("commands.data.storage.query", this.id, NbtHelper.method_32270(tag));
+		return new TranslatableText("commands.data.storage.query", this.id, NbtHelper.toPrettyPrintedText(tag));
 	}
 
 	@Override

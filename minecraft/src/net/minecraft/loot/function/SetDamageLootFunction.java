@@ -3,10 +3,12 @@ package net.minecraft.loot.function;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import java.util.Set;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
@@ -14,11 +16,13 @@ import org.apache.logging.log4j.Logger;
 
 public class SetDamageLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final UniformLootTableRange durabilityRange;
+	private final LootNumberProvider durabilityRange;
+	private final boolean field_27910;
 
-	private SetDamageLootFunction(LootCondition[] contents, UniformLootTableRange durabilityRange) {
+	private SetDamageLootFunction(LootCondition[] contents, LootNumberProvider durabilityRange, boolean bl) {
 		super(contents);
 		this.durabilityRange = durabilityRange;
+		this.field_27910 = bl;
 	}
 
 	@Override
@@ -27,10 +31,17 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return this.durabilityRange.getRequiredParameters();
+	}
+
+	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isDamageable()) {
-			float f = 1.0F - this.durabilityRange.nextFloat(context.getRandom());
-			stack.setDamage(MathHelper.floor(f * (float)stack.getMaxDamage()));
+			int i = stack.getMaxDamage();
+			float f = this.field_27910 ? 1.0F - (float)stack.getDamage() / (float)i : 0.0F;
+			float g = 1.0F - MathHelper.clamp(this.durabilityRange.nextFloat(context) + f, 0.0F, 1.0F);
+			stack.setDamage(MathHelper.floor(g * (float)i));
 		} else {
 			LOGGER.warn("Couldn't set damage of loot item {}", stack);
 		}
@@ -38,18 +49,21 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(UniformLootTableRange durabilityRange) {
-		return builder(conditions -> new SetDamageLootFunction(conditions, durabilityRange));
+	public static ConditionalLootFunction.Builder<?> builder(LootNumberProvider durabilityRange) {
+		return builder(conditions -> new SetDamageLootFunction(conditions, durabilityRange, false));
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetDamageLootFunction> {
 		public void toJson(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setDamageLootFunction, jsonSerializationContext);
 			jsonObject.add("damage", jsonSerializationContext.serialize(setDamageLootFunction.durabilityRange));
+			jsonObject.addProperty("add", setDamageLootFunction.field_27910);
 		}
 
 		public SetDamageLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			return new SetDamageLootFunction(lootConditions, JsonHelper.deserialize(jsonObject, "damage", jsonDeserializationContext, UniformLootTableRange.class));
+			LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonObject, "damage", jsonDeserializationContext, LootNumberProvider.class);
+			boolean bl = JsonHelper.getBoolean(jsonObject, "add", false);
+			return new SetDamageLootFunction(lootConditions, lootNumberProvider, bl);
 		}
 	}
 }

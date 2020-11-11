@@ -765,7 +765,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Nullable
 	public abstract MapState getMapState(String id);
 
-	public abstract void putMapState(MapState mapState);
+	public abstract void putMapState(String string, MapState mapState);
 
 	public abstract int getNextMapId();
 

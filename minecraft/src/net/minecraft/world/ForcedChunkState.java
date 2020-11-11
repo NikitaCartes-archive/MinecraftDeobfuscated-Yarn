@@ -5,15 +5,18 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.nbt.CompoundTag;
 
 public class ForcedChunkState extends PersistentState {
-	private LongSet chunks = new LongOpenHashSet();
+	private final LongSet chunks;
 
-	public ForcedChunkState() {
-		super("chunks");
+	private ForcedChunkState(LongSet longSet) {
+		this.chunks = longSet;
 	}
 
-	@Override
-	public void fromTag(CompoundTag tag) {
-		this.chunks = new LongOpenHashSet(tag.getLongArray("Forced"));
+	public ForcedChunkState() {
+		this(new LongOpenHashSet());
+	}
+
+	public static ForcedChunkState method_32350(CompoundTag compoundTag) {
+		return new ForcedChunkState(new LongOpenHashSet(compoundTag.getLongArray("Forced")));
 	}
 
 	@Override

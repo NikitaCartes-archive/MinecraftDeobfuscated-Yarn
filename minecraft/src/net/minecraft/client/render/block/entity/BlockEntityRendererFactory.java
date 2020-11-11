@@ -2,12 +2,12 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 
 @FunctionalInterface
 @Environment(EnvType.CLIENT)
@@ -18,10 +18,12 @@ public interface BlockEntityRendererFactory<T extends BlockEntity> {
 	public static class Context {
 		private final BlockEntityRenderDispatcher renderDispatcher;
 		private final BlockRenderManager renderManager;
-		private final class_5599 layerRenderDispatcher;
+		private final EntityModelLoader layerRenderDispatcher;
 		private final TextRenderer textRenderer;
 
-		public Context(BlockEntityRenderDispatcher renderDispatcher, BlockRenderManager renderManager, class_5599 layerRenderDispatcher, TextRenderer textRenderer) {
+		public Context(
+			BlockEntityRenderDispatcher renderDispatcher, BlockRenderManager renderManager, EntityModelLoader layerRenderDispatcher, TextRenderer textRenderer
+		) {
 			this.renderDispatcher = renderDispatcher;
 			this.renderManager = renderManager;
 			this.layerRenderDispatcher = layerRenderDispatcher;
@@ -36,12 +38,12 @@ public interface BlockEntityRendererFactory<T extends BlockEntity> {
 			return this.renderManager;
 		}
 
-		public class_5599 getLayerRenderDispatcher() {
+		public EntityModelLoader getLayerRenderDispatcher() {
 			return this.layerRenderDispatcher;
 		}
 
 		public ModelPart getLayerModelPart(EntityModelLayer modelLayer) {
-			return this.layerRenderDispatcher.method_32072(modelLayer);
+			return this.layerRenderDispatcher.getModelPart(modelLayer);
 		}
 
 		public TextRenderer getTextRenderer() {

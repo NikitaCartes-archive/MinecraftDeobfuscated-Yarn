@@ -92,8 +92,8 @@ public class ArgumentTypes {
 	}
 
 	@Nullable
-	private static ArgumentTypes.Entry<?> byId(Identifier identifier) {
-		return (ArgumentTypes.Entry<?>)idMap.get(identifier);
+	private static ArgumentTypes.Entry<?> byId(Identifier id) {
+		return (ArgumentTypes.Entry<?>)idMap.get(id);
 	}
 
 	@Nullable

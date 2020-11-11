@@ -32,7 +32,6 @@ public class RaidManager extends PersistentState {
 	private int currentTime;
 
 	public RaidManager(ServerWorld world) {
-		super(nameFor(world.getDimension()));
 		this.world = world;
 		this.nextAvailableId = 1;
 		this.markDirty();
@@ -141,17 +140,19 @@ public class RaidManager extends PersistentState {
 		return raid != null ? raid : new Raid(this.nextId(), world, pos);
 	}
 
-	@Override
-	public void fromTag(CompoundTag tag) {
-		this.nextAvailableId = tag.getInt("NextAvailableID");
-		this.currentTime = tag.getInt("Tick");
-		ListTag listTag = tag.getList("Raids", 10);
+	public static RaidManager fromTag(ServerWorld serverWorld, CompoundTag compoundTag) {
+		RaidManager raidManager = new RaidManager(serverWorld);
+		raidManager.nextAvailableId = compoundTag.getInt("NextAvailableID");
+		raidManager.currentTime = compoundTag.getInt("Tick");
+		ListTag listTag = compoundTag.getList("Raids", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
-			Raid raid = new Raid(this.world, compoundTag);
-			this.raids.put(raid.getRaidId(), raid);
+			CompoundTag compoundTag2 = listTag.getCompound(i);
+			Raid raid = new Raid(serverWorld, compoundTag2);
+			raidManager.raids.put(raid.getRaidId(), raid);
 		}
+
+		return raidManager;
 	}
 
 	@Override

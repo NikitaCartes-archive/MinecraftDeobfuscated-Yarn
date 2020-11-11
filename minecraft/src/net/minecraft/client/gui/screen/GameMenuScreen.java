@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
@@ -109,31 +110,27 @@ public class GameMenuScreen extends Screen {
 			)
 		);
 		buttonWidget.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
-		ButtonWidget buttonWidget2 = this.addButton(
-			new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, new TranslatableText("menu.returnToMenu"), buttonWidgetx -> {
-				boolean bl = this.client.isInSingleplayer();
-				boolean bl2 = this.client.isConnectedToRealms();
-				buttonWidgetx.active = false;
-				this.client.world.disconnect();
-				if (bl) {
-					this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
-				} else {
-					this.client.disconnect();
-				}
+		Text text = this.client.isInSingleplayer() ? new TranslatableText("menu.returnToMenu") : new TranslatableText("menu.disconnect");
+		this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, text, buttonWidgetx -> {
+			boolean bl = this.client.isInSingleplayer();
+			boolean bl2 = this.client.isConnectedToRealms();
+			buttonWidgetx.active = false;
+			this.client.world.disconnect();
+			if (bl) {
+				this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+			} else {
+				this.client.disconnect();
+			}
 
-				if (bl) {
-					this.client.openScreen(new TitleScreen());
-				} else if (bl2) {
-					RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
-					realmsBridgeScreen.switchToRealms(new TitleScreen());
-				} else {
-					this.client.openScreen(new MultiplayerScreen(new TitleScreen()));
-				}
-			})
-		);
-		if (!this.client.isInSingleplayer()) {
-			buttonWidget2.setMessage(new TranslatableText("menu.disconnect"));
-		}
+			if (bl) {
+				this.client.openScreen(new TitleScreen());
+			} else if (bl2) {
+				RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
+				realmsBridgeScreen.switchToRealms(new TitleScreen());
+			} else {
+				this.client.openScreen(new MultiplayerScreen(new TitleScreen()));
+			}
+		}));
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.AbstractCookingRecipe;
-import net.minecraft.recipe.FurnaceInputSlotFiller;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
@@ -18,7 +17,6 @@ import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.FurnaceFuelSlot;
 import net.minecraft.screen.slot.FurnaceOutputSlot;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenHandler<Inventory> {
@@ -81,12 +79,8 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 
 	@Override
 	public void clearCraftingSlots() {
-		this.inventory.clear();
-	}
-
-	@Override
-	public void fillInputSlots(boolean craftAll, Recipe<?> recipe, ServerPlayerEntity player) {
-		new FurnaceInputSlotFiller<>(this).fillInputSlots(player, (Recipe<Inventory>)recipe, craftAll);
+		this.getSlot(0).setStack(ItemStack.EMPTY);
+		this.getSlot(2).setStack(ItemStack.EMPTY);
 	}
 
 	@Override
@@ -109,7 +103,6 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 		return 1;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public int getCraftingSlotCount() {
 		return 3;
@@ -203,5 +196,10 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	@Override
 	public RecipeBookCategory getCategory() {
 		return this.category;
+	}
+
+	@Override
+	public boolean method_32339(int i) {
+		return i != 1;
 	}
 }

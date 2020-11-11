@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -26,8 +25,8 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 	private static final Identifier TEXTURE = new Identifier("textures/entity/fishing_hook.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutout(TEXTURE);
 
-	public FishingBobberEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
+	public FishingBobberEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
 	}
 
 	public void render(FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

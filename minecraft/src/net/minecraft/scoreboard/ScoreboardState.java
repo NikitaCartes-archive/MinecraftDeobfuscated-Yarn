@@ -6,45 +6,31 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.PersistentState;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ScoreboardState extends PersistentState {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private Scoreboard scoreboard;
-	private CompoundTag tag;
+	private final Scoreboard scoreboard;
 
-	public ScoreboardState() {
-		super("scoreboard");
-	}
-
-	public void setScoreboard(Scoreboard scoreboard) {
+	public ScoreboardState(Scoreboard scoreboard) {
 		this.scoreboard = scoreboard;
-		if (this.tag != null) {
-			this.fromTag(this.tag);
-		}
 	}
 
-	@Override
-	public void fromTag(CompoundTag tag) {
-		if (this.scoreboard == null) {
-			this.tag = tag;
-		} else {
-			this.deserializeObjectives(tag.getList("Objectives", 10));
-			this.scoreboard.fromTag(tag.getList("PlayerScores", 10));
-			if (tag.contains("DisplaySlots", 10)) {
-				this.deserializeDisplaySlots(tag.getCompound("DisplaySlots"));
-			}
-
-			if (tag.contains("Teams", 9)) {
-				this.deserializeTeams(tag.getList("Teams", 10));
-			}
+	public ScoreboardState fromTag(CompoundTag tag) {
+		this.objectivesFromTag(tag.getList("Objectives", 10));
+		this.scoreboard.fromTag(tag.getList("PlayerScores", 10));
+		if (tag.contains("DisplaySlots", 10)) {
+			this.displaySlotsFromTag(tag.getCompound("DisplaySlots"));
 		}
+
+		if (tag.contains("Teams", 9)) {
+			this.teamsFromTag(tag.getList("Teams", 10));
+		}
+
+		return this;
 	}
 
-	protected void deserializeTeams(ListTag listTag) {
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
+	private void teamsFromTag(ListTag tag) {
+		for (int i = 0; i < tag.size(); i++) {
+			CompoundTag compoundTag = tag.getCompound(i);
 			String string = compoundTag.getString("Name");
 			if (string.length() > 16) {
 				string = string.substring(0, 16);
@@ -103,30 +89,30 @@ public class ScoreboardState extends PersistentState {
 				}
 			}
 
-			this.deserializeTeamPlayers(team, compoundTag.getList("Players", 8));
+			this.teamPlayersFromTag(team, compoundTag.getList("Players", 8));
 		}
 	}
 
-	protected void deserializeTeamPlayers(Team team, ListTag listTag) {
-		for (int i = 0; i < listTag.size(); i++) {
-			this.scoreboard.addPlayerToTeam(listTag.getString(i), team);
+	private void teamPlayersFromTag(Team team, ListTag tag) {
+		for (int i = 0; i < tag.size(); i++) {
+			this.scoreboard.addPlayerToTeam(tag.getString(i), team);
 		}
 	}
 
-	protected void deserializeDisplaySlots(CompoundTag compoundTag) {
+	private void displaySlotsFromTag(CompoundTag tag) {
 		for (int i = 0; i < 19; i++) {
-			if (compoundTag.contains("slot_" + i, 8)) {
-				String string = compoundTag.getString("slot_" + i);
+			if (tag.contains("slot_" + i, 8)) {
+				String string = tag.getString("slot_" + i);
 				ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
 				this.scoreboard.setObjectiveSlot(i, scoreboardObjective);
 			}
 		}
 	}
 
-	protected void deserializeObjectives(ListTag listTag) {
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
-			ScoreboardCriterion.createStatCriterion(compoundTag.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
+	private void objectivesFromTag(ListTag tag) {
+		for (int i = 0; i < tag.size(); i++) {
+			CompoundTag compoundTag = tag.getCompound(i);
+			ScoreboardCriterion.getOrCreateStatCriterion(compoundTag.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
 				String string = compoundTag.getString("Name");
 				if (string.length() > 16) {
 					string = string.substring(0, 16);
@@ -141,19 +127,14 @@ public class ScoreboardState extends PersistentState {
 
 	@Override
 	public CompoundTag toTag(CompoundTag tag) {
-		if (this.scoreboard == null) {
-			LOGGER.warn("Tried to save scoreboard without having a scoreboard...");
-			return tag;
-		} else {
-			tag.put("Objectives", this.serializeObjectives());
-			tag.put("PlayerScores", this.scoreboard.toTag());
-			tag.put("Teams", this.serializeTeams());
-			this.serializeSlots(tag);
-			return tag;
-		}
+		tag.put("Objectives", this.objectivesToTag());
+		tag.put("PlayerScores", this.scoreboard.toTag());
+		tag.put("Teams", this.teamsToTag());
+		this.displaySlotsToTag(tag);
+		return tag;
 	}
 
-	protected ListTag serializeTeams() {
+	private ListTag teamsToTag() {
 		ListTag listTag = new ListTag();
 
 		for (Team team : this.scoreboard.getTeams()) {
@@ -184,24 +165,24 @@ public class ScoreboardState extends PersistentState {
 		return listTag;
 	}
 
-	protected void serializeSlots(CompoundTag compoundTag) {
-		CompoundTag compoundTag2 = new CompoundTag();
+	private void displaySlotsToTag(CompoundTag tag) {
+		CompoundTag compoundTag = new CompoundTag();
 		boolean bl = false;
 
 		for (int i = 0; i < 19; i++) {
 			ScoreboardObjective scoreboardObjective = this.scoreboard.getObjectiveForSlot(i);
 			if (scoreboardObjective != null) {
-				compoundTag2.putString("slot_" + i, scoreboardObjective.getName());
+				compoundTag.putString("slot_" + i, scoreboardObjective.getName());
 				bl = true;
 			}
 		}
 
 		if (bl) {
-			compoundTag.put("DisplaySlots", compoundTag2);
+			tag.put("DisplaySlots", compoundTag);
 		}
 	}
 
-	protected ListTag serializeObjectives() {
+	private ListTag objectivesToTag() {
 		ListTag listTag = new ListTag();
 
 		for (ScoreboardObjective scoreboardObjective : this.scoreboard.getObjectives()) {

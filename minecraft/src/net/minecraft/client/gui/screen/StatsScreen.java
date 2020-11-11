@@ -37,7 +37,7 @@ import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class StatsScreen extends Screen implements StatsListener {
-	private static final Text field_26546 = new TranslatableText("multiplayer.downloadingStats");
+	private static final Text DOWNLOADING_STATS_TEXT = new TranslatableText("multiplayer.downloadingStats");
 	protected final Screen parent;
 	private StatsScreen.GeneralStatsListWidget generalStats;
 	private StatsScreen.ItemStatsListWidget itemStats;
@@ -93,7 +93,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.downloadingStats) {
 			this.renderBackground(matrices);
-			drawCenteredText(matrices, this.textRenderer, field_26546, this.width / 2, this.height / 2, 16777215);
+			drawCenteredText(matrices, this.textRenderer, DOWNLOADING_STATS_TEXT, this.width / 2, this.height / 2, 16777215);
 			drawCenteredString(
 				matrices,
 				this.textRenderer,
@@ -404,7 +404,7 @@ public class StatsScreen extends Screen implements StatsListener {
 					for (int m = 0; m < this.HEADER_ICON_SPRITE_INDICES.length; m++) {
 						int n = StatsScreen.this.getColumnX(m);
 						if (l >= n - 18 && l <= n) {
-							text = this.getStatType(m).method_30739();
+							text = this.getStatType(m).getName();
 							break;
 						}
 					}

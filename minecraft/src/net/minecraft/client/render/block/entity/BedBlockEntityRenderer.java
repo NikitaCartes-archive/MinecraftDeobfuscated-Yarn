@@ -2,11 +2,6 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
@@ -14,7 +9,12 @@ import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -36,38 +36,36 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 		this.field_27745 = context.getLayerModelPart(EntityModelLayers.BED_FOOT);
 	}
 
-	public static class_5607 method_32136() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117("main", class_5606.method_32108().method_32101(0, 0).method_32097(0.0F, 0.0F, 0.0F, 16.0F, 16.0F, 6.0F), class_5603.field_27701);
-		lv2.method_32117(
+	public static TexturedModelData getHeadTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("main", ModelPartBuilder.create().uv(0, 0).cuboid(0.0F, 0.0F, 0.0F, 16.0F, 16.0F, 6.0F), ModelTransform.NONE);
+		modelPartData.addChild(
 			"left_leg",
-			class_5606.method_32108().method_32101(50, 6).method_32097(0.0F, 6.0F, 0.0F, 3.0F, 3.0F, 3.0F),
-			class_5603.method_32092((float) (Math.PI / 2), 0.0F, (float) (Math.PI / 2))
+			ModelPartBuilder.create().uv(50, 6).cuboid(0.0F, 6.0F, 0.0F, 3.0F, 3.0F, 3.0F),
+			ModelTransform.rotation((float) (Math.PI / 2), 0.0F, (float) (Math.PI / 2))
 		);
-		lv2.method_32117(
+		modelPartData.addChild(
 			"right_leg",
-			class_5606.method_32108().method_32101(50, 18).method_32097(-16.0F, 6.0F, 0.0F, 3.0F, 3.0F, 3.0F),
-			class_5603.method_32092((float) (Math.PI / 2), 0.0F, (float) Math.PI)
+			ModelPartBuilder.create().uv(50, 18).cuboid(-16.0F, 6.0F, 0.0F, 3.0F, 3.0F, 3.0F),
+			ModelTransform.rotation((float) (Math.PI / 2), 0.0F, (float) Math.PI)
 		);
-		return class_5607.method_32110(lv, 64, 64);
+		return TexturedModelData.of(modelData, 64, 64);
 	}
 
-	public static class_5607 method_32137() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117("main", class_5606.method_32108().method_32101(0, 22).method_32097(0.0F, 0.0F, 0.0F, 16.0F, 16.0F, 6.0F), class_5603.field_27701);
-		lv2.method_32117(
-			"left_leg",
-			class_5606.method_32108().method_32101(50, 0).method_32097(0.0F, 6.0F, -16.0F, 3.0F, 3.0F, 3.0F),
-			class_5603.method_32092((float) (Math.PI / 2), 0.0F, 0.0F)
+	public static TexturedModelData getFootTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("main", ModelPartBuilder.create().uv(0, 22).cuboid(0.0F, 0.0F, 0.0F, 16.0F, 16.0F, 6.0F), ModelTransform.NONE);
+		modelPartData.addChild(
+			"left_leg", ModelPartBuilder.create().uv(50, 0).cuboid(0.0F, 6.0F, -16.0F, 3.0F, 3.0F, 3.0F), ModelTransform.rotation((float) (Math.PI / 2), 0.0F, 0.0F)
 		);
-		lv2.method_32117(
+		modelPartData.addChild(
 			"right_leg",
-			class_5606.method_32108().method_32101(50, 12).method_32097(-16.0F, 6.0F, -16.0F, 3.0F, 3.0F, 3.0F),
-			class_5603.method_32092((float) (Math.PI / 2), 0.0F, (float) (Math.PI * 3.0 / 2.0))
+			ModelPartBuilder.create().uv(50, 12).cuboid(-16.0F, 6.0F, -16.0F, 3.0F, 3.0F, 3.0F),
+			ModelTransform.rotation((float) (Math.PI / 2), 0.0F, (float) (Math.PI * 3.0 / 2.0))
 		);
-		return class_5607.method_32110(lv, 64, 64);
+		return TexturedModelData.of(modelData, 64, 64);
 	}
 
 	public void render(BedBlockEntity bedBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

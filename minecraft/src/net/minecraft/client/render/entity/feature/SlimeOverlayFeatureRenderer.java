@@ -2,13 +2,13 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.SlimeEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -17,9 +17,9 @@ import net.minecraft.entity.LivingEntity;
 public class SlimeOverlayFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, SlimeEntityModel<T>> {
 	private final EntityModel<T> model;
 
-	public SlimeOverlayFeatureRenderer(FeatureRendererContext<T, SlimeEntityModel<T>> featureRendererContext, class_5599 arg) {
+	public SlimeOverlayFeatureRenderer(FeatureRendererContext<T, SlimeEntityModel<T>> featureRendererContext, EntityModelLoader entityModelLoader) {
 		super(featureRendererContext);
-		this.model = new SlimeEntityModel<>(arg.method_32072(EntityModelLayers.SLIME_OUTER));
+		this.model = new SlimeEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.SLIME_OUTER));
 	}
 
 	public void render(

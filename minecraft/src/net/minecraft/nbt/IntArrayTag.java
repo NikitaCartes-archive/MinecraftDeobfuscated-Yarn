@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.class_5627;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class IntArrayTag extends AbstractListTag<IntTag> {
@@ -97,8 +97,8 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	}
 
 	@Override
-	public void method_32289(class_5627 arg) {
-		arg.method_32296(this);
+	public void accept(NbtTagVisitor visitor) {
+		visitor.visitIntArrayTag(this);
 	}
 
 	public int size() {

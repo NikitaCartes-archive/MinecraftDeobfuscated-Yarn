@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
@@ -18,8 +17,8 @@ import net.minecraft.util.math.Vec3d;
 public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/illusioner.png");
 
-	public IllusionerEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new IllagerEntityModel<>(arg.method_32167(EntityModelLayers.ILLUSIONER)), 0.5F);
+	public IllusionerEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.ILLUSIONER)), 0.5F);
 		this.addFeature(
 			new HeldItemFeatureRenderer<IllusionerEntity, IllagerEntityModel<IllusionerEntity>>(this) {
 				public void render(

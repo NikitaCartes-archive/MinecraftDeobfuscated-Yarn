@@ -17,6 +17,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.block.enums.BlockHalf;
@@ -1866,20 +1867,75 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector
 			.accept(
 				createSingletonBlockState(
-					Blocks.LAVA_CAULDRON, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.LAVA_CAULDRON, Texture.method_32232(Blocks.LAVA), this.modelCollector)
+					Blocks.LAVA_CAULDRON,
+					Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.LAVA_CAULDRON, Texture.method_32232(Texture.getSubId(Blocks.LAVA, "_still")), this.modelCollector)
 				)
 			);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.WATER_CAULDRON)
 					.coordinate(
-						BlockStateVariantMap.create(Properties.LEVEL_3)
-							.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.WATER_CAULDRON, "_level1")))
-							.register(2, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.WATER_CAULDRON, "_level2")))
+						BlockStateVariantMap.create(LeveledCauldronBlock.LEVEL)
+							.register(
+								1,
+								BlockStateVariant.create()
+									.put(
+										VariantSettings.MODEL,
+										Models.TEMPLATE_CAULDRON_LEVEL1
+											.upload(Blocks.WATER_CAULDRON, "_level1", Texture.method_32232(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector)
+									)
+							)
+							.register(
+								2,
+								BlockStateVariant.create()
+									.put(
+										VariantSettings.MODEL,
+										Models.TEMPLATE_CAULDRON_LEVEL2
+											.upload(Blocks.WATER_CAULDRON, "_level2", Texture.method_32232(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector)
+									)
+							)
 							.register(
 								3,
 								BlockStateVariant.create()
-									.put(VariantSettings.MODEL, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.WATER_CAULDRON, Texture.method_32232(Blocks.WATER), this.modelCollector))
+									.put(
+										VariantSettings.MODEL,
+										Models.TEMPLATE_CAULDRON_FULL
+											.upload(Blocks.WATER_CAULDRON, "_full", Texture.method_32232(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector)
+									)
+							)
+					)
+			);
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.POWDER_SNOW_CAULDRON)
+					.coordinate(
+						BlockStateVariantMap.create(LeveledCauldronBlock.LEVEL)
+							.register(
+								1,
+								BlockStateVariant.create()
+									.put(
+										VariantSettings.MODEL,
+										Models.TEMPLATE_CAULDRON_LEVEL1
+											.upload(Blocks.POWDER_SNOW_CAULDRON, "_level1", Texture.method_32232(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector)
+									)
+							)
+							.register(
+								2,
+								BlockStateVariant.create()
+									.put(
+										VariantSettings.MODEL,
+										Models.TEMPLATE_CAULDRON_LEVEL2
+											.upload(Blocks.POWDER_SNOW_CAULDRON, "_level2", Texture.method_32232(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector)
+									)
+							)
+							.register(
+								3,
+								BlockStateVariant.create()
+									.put(
+										VariantSettings.MODEL,
+										Models.TEMPLATE_CAULDRON_FULL
+											.upload(Blocks.POWDER_SNOW_CAULDRON, "_full", Texture.method_32232(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector)
+									)
 							)
 					)
 			);
@@ -3392,6 +3448,7 @@ public class BlockStateModelGenerator {
 		this.method_32228(Blocks.CANDLE, Blocks.CANDLE_CAKE);
 		this.registerSimpleState(Blocks.POTTED_BAMBOO);
 		this.registerSimpleState(Blocks.POTTED_CACTUS);
+		this.registerSimpleState(Blocks.POWDER_SNOW);
 		this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
 		this.registerItemModel(Items.BARRIER);
 		this.registerBuiltinWithParticle(Blocks.STRUCTURE_VOID, Items.STRUCTURE_VOID);

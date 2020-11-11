@@ -45,7 +45,7 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 		}
 
 		String string = stringReader.getString().substring(i, stringReader.getCursor());
-		return (ScoreboardCriterion)ScoreboardCriterion.createStatCriterion(string).orElseThrow(() -> {
+		return (ScoreboardCriterion)ScoreboardCriterion.getOrCreateStatCriterion(string).orElseThrow(() -> {
 			stringReader.setCursor(i);
 			return INVALID_CRITERIA_EXCEPTION.create(string);
 		});
@@ -53,7 +53,7 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		List<String> list = Lists.<String>newArrayList(ScoreboardCriterion.OBJECTIVES.keySet());
+		List<String> list = Lists.<String>newArrayList(ScoreboardCriterion.CRITERIA.keySet());
 
 		for (StatType<?> statType : Registry.STAT_TYPE) {
 			for (Object object : statType.getRegistry()) {

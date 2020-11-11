@@ -3,7 +3,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.class_5627;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 import net.minecraft.util.math.MathHelper;
 
 public class DoubleTag extends AbstractNumberTag {
@@ -68,8 +68,8 @@ public class DoubleTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void method_32289(class_5627 arg) {
-		arg.method_32293(this);
+	public void accept(NbtTagVisitor visitor) {
+		visitor.visitDoubleTag(this);
 	}
 
 	@Override

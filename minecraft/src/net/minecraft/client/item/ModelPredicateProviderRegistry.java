@@ -6,7 +6,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -292,12 +291,7 @@ public class ModelPredicateProviderRegistry {
 		register(
 			Items.SPYGLASS,
 			new Identifier("scoping"),
-			(itemStack, clientWorld, livingEntity) -> livingEntity != null
-						&& livingEntity.isUsingItem()
-						&& livingEntity.getActiveItem() == itemStack
-						&& livingEntity.getUuid().equals(MinecraftClient.getInstance().player.getUuid())
-					? 1.0F
-					: 0.0F
+			(itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
 	}
 

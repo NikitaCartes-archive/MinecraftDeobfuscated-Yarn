@@ -22,7 +22,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class AnimatedResultButton extends AbstractButtonWidget {
 	private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
-	private static final Text field_26595 = new TranslatableText("gui.recipebook.moreRecipes");
+	private static final Text MORE_RECIPES_TEXT = new TranslatableText("gui.recipebook.moreRecipes");
 	private AbstractRecipeScreenHandler<?> craftingScreenHandler;
 	private RecipeBook recipeBook;
 	private RecipeResultCollection results;
@@ -124,7 +124,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
 		List<Text> list = Lists.<Text>newArrayList(screen.getTooltipFromItem(itemStack));
 		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
-			list.add(field_26595);
+			list.add(MORE_RECIPES_TEXT);
 		}
 
 		return list;

@@ -78,6 +78,7 @@ public class InGameHud extends DrawableHelper {
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	private static final Identifier PUMPKIN_BLUR = new Identifier("textures/misc/pumpkinblur.png");
 	private static final Identifier SPYGLASS_SCOPE = new Identifier("textures/misc/spyglass_scope.png");
+	private static final Identifier POWDER_SNOW_OUTLINE = new Identifier("textures/misc/powder_snow_outline.png");
 	private static final Text DEMO_EXPIRED_MESSAGE = new TranslatableText("demo.demoExpired");
 	private final Random random = new Random();
 	private final MinecraftClient client;
@@ -111,6 +112,7 @@ public class InGameHud extends DrawableHelper {
 	private int scaledWidth;
 	private int scaledHeight;
 	private final Map<MessageType, List<ClientChatListener>> listeners = Maps.<MessageType, List<ClientChatListener>>newHashMap();
+	private float spyglassScale;
 
 	public InGameHud(MinecraftClient client) {
 		this.client = client;
@@ -153,18 +155,27 @@ public class InGameHud extends DrawableHelper {
 			RenderSystem.defaultBlendFunc();
 		}
 
-		ItemStack itemStack = this.client.player.getInventory().getArmorStack(3);
+		float f = this.client.getLastFrameDuration();
+		this.spyglassScale = MathHelper.lerp(0.5F * f, this.spyglassScale, 1.125F);
 		if (this.client.options.getPerspective().isFirstPerson()) {
 			if (this.client.player.isUsingSpyglass()) {
-				this.renderOverlay(SPYGLASS_SCOPE, 0.5F, -16777216);
-			} else if (itemStack.isOf(Blocks.CARVED_PUMPKIN.asItem())) {
-				this.renderOverlay(PUMPKIN_BLUR);
+				this.renderSpyglassOverlay(this.spyglassScale);
+			} else {
+				this.spyglassScale = 0.5F;
+				ItemStack itemStack = this.client.player.getInventory().getArmorStack(3);
+				if (itemStack.isOf(Blocks.CARVED_PUMPKIN.asItem())) {
+					this.renderOverlay(PUMPKIN_BLUR, 1.0F);
+				}
 			}
 		}
 
-		float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
-		if (f > 0.0F && !this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
-			this.renderPortalOverlay(f);
+		if (this.client.player.getFrozenTicks() > 0) {
+			this.renderOverlay(POWDER_SNOW_OUTLINE, this.client.player.getFreezingScale());
+		}
+
+		float g = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
+		if (g > 0.0F && !this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
+			this.renderPortalOverlay(g);
 		}
 
 		if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
@@ -209,14 +220,14 @@ public class InGameHud extends DrawableHelper {
 			this.client.getProfiler().push("sleep");
 			RenderSystem.disableDepthTest();
 			RenderSystem.disableAlphaTest();
-			float g = (float)this.client.player.getSleepTimer();
-			float h = g / 100.0F;
-			if (h > 1.0F) {
-				h = 1.0F - (g - 100.0F) / 10.0F;
+			float h = (float)this.client.player.getSleepTimer();
+			float j = h / 100.0F;
+			if (j > 1.0F) {
+				j = 1.0F - (h - 100.0F) / 10.0F;
 			}
 
-			int j = (int)(220.0F * h) << 24 | 1052704;
-			fill(matrices, 0, 0, this.scaledWidth, this.scaledHeight, j);
+			int k = (int)(220.0F * j) << 24 | 1052704;
+			fill(matrices, 0, 0, this.scaledWidth, this.scaledHeight, k);
 			RenderSystem.enableAlphaTest();
 			RenderSystem.enableDepthTest();
 			this.client.getProfiler().pop();
@@ -235,26 +246,26 @@ public class InGameHud extends DrawableHelper {
 		if (!this.client.options.hudHidden) {
 			if (this.overlayMessage != null && this.overlayRemaining > 0) {
 				this.client.getProfiler().push("overlayMessage");
-				float g = (float)this.overlayRemaining - tickDelta;
-				int k = (int)(g * 255.0F / 20.0F);
-				if (k > 255) {
-					k = 255;
+				float h = (float)this.overlayRemaining - tickDelta;
+				int l = (int)(h * 255.0F / 20.0F);
+				if (l > 255) {
+					l = 255;
 				}
 
-				if (k > 8) {
+				if (l > 8) {
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight - 68), 0.0F);
 					RenderSystem.enableBlend();
 					RenderSystem.defaultBlendFunc();
-					int j = 16777215;
+					int k = 16777215;
 					if (this.overlayTinted) {
-						j = MathHelper.hsvToRgb(g / 50.0F, 0.7F, 0.6F) & 16777215;
+						k = MathHelper.hsvToRgb(h / 50.0F, 0.7F, 0.6F) & 16777215;
 					}
 
-					int l = k << 24 & 0xFF000000;
-					int m = textRenderer.getWidth(this.overlayMessage);
-					this.drawTextBackground(matrices, textRenderer, -4, m, 16777215 | l);
-					textRenderer.draw(matrices, this.overlayMessage, (float)(-m / 2), -4.0F, j | l);
+					int m = l << 24 & 0xFF000000;
+					int n = textRenderer.getWidth(this.overlayMessage);
+					this.drawTextBackground(matrices, textRenderer, -4, n, 16777215 | m);
+					textRenderer.draw(matrices, this.overlayMessage, (float)(-n / 2), -4.0F, k | m);
 					RenderSystem.disableBlend();
 					RenderSystem.popMatrix();
 				}
@@ -264,36 +275,36 @@ public class InGameHud extends DrawableHelper {
 
 			if (this.title != null && this.titleTotalTicks > 0) {
 				this.client.getProfiler().push("titleAndSubtitle");
-				float gx = (float)this.titleTotalTicks - tickDelta;
-				int kx = 255;
+				float hx = (float)this.titleTotalTicks - tickDelta;
+				int lx = 255;
 				if (this.titleTotalTicks > this.titleFadeOutTicks + this.titleRemainTicks) {
-					float n = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - gx;
-					kx = (int)(n * 255.0F / (float)this.titleFadeInTicks);
+					float o = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - hx;
+					lx = (int)(o * 255.0F / (float)this.titleFadeInTicks);
 				}
 
 				if (this.titleTotalTicks <= this.titleFadeOutTicks) {
-					kx = (int)(gx * 255.0F / (float)this.titleFadeOutTicks);
+					lx = (int)(hx * 255.0F / (float)this.titleFadeOutTicks);
 				}
 
-				kx = MathHelper.clamp(kx, 0, 255);
-				if (kx > 8) {
+				lx = MathHelper.clamp(lx, 0, 255);
+				if (lx > 8) {
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), 0.0F);
 					RenderSystem.enableBlend();
 					RenderSystem.defaultBlendFunc();
 					RenderSystem.pushMatrix();
 					RenderSystem.scalef(4.0F, 4.0F, 4.0F);
-					int j = kx << 24 & 0xFF000000;
-					int l = textRenderer.getWidth(this.title);
-					this.drawTextBackground(matrices, textRenderer, -10, l, 16777215 | j);
-					textRenderer.drawWithShadow(matrices, this.title, (float)(-l / 2), -10.0F, 16777215 | j);
+					int k = lx << 24 & 0xFF000000;
+					int m = textRenderer.getWidth(this.title);
+					this.drawTextBackground(matrices, textRenderer, -10, m, 16777215 | k);
+					textRenderer.drawWithShadow(matrices, this.title, (float)(-m / 2), -10.0F, 16777215 | k);
 					RenderSystem.popMatrix();
 					if (this.subtitle != null) {
 						RenderSystem.pushMatrix();
 						RenderSystem.scalef(2.0F, 2.0F, 2.0F);
-						int m = textRenderer.getWidth(this.subtitle);
-						this.drawTextBackground(matrices, textRenderer, 5, m, 16777215 | j);
-						textRenderer.drawWithShadow(matrices, this.subtitle, (float)(-m / 2), 5.0F, 16777215 | j);
+						int n = textRenderer.getWidth(this.subtitle);
+						this.drawTextBackground(matrices, textRenderer, 5, n, 16777215 | k);
+						textRenderer.drawWithShadow(matrices, this.subtitle, (float)(-n / 2), 5.0F, 16777215 | k);
 						RenderSystem.popMatrix();
 					}
 
@@ -309,9 +320,9 @@ public class InGameHud extends DrawableHelper {
 			ScoreboardObjective scoreboardObjective = null;
 			Team team = scoreboard.getPlayerTeam(this.client.player.getEntityName());
 			if (team != null) {
-				int l = team.getColor().getColorIndex();
-				if (l >= 0) {
-					scoreboardObjective = scoreboard.getObjectiveForSlot(3 + l);
+				int m = team.getColor().getColorIndex();
+				if (m >= 0) {
+					scoreboardObjective = scoreboard.getObjectiveForSlot(3 + m);
 				}
 			}
 
@@ -640,7 +651,7 @@ public class InGameHud extends DrawableHelper {
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
 			Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-			Text text2 = Team.modifyText(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
+			Text text2 = Team.decorateName(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
 			list2.add(Pair.of(scoreboardPlayerScore, text2));
 			j = Math.max(j, this.getFontRenderer().getWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
 		}
@@ -777,6 +788,8 @@ public class InGameHud extends DrawableHelper {
 					yx += 36;
 				} else if (playerEntity.hasStatusEffect(StatusEffects.WITHER)) {
 					yx += 72;
+				} else if (playerEntity.isFreezing()) {
+					yx += 126;
 				}
 
 				int z = 0;
@@ -920,72 +933,69 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	private void renderOverlay(Identifier texture) {
-		this.renderOverlay(texture, 0.0F, 0);
-	}
-
-	private void renderOverlay(Identifier texture, float scale, int color) {
+	private void renderOverlay(Identifier texture, float opacity) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, opacity);
 		RenderSystem.disableAlphaTest();
 		this.client.getTextureManager().bindTexture(texture);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		if (scale == 0.0F) {
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-			bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0F, 1.0F).next();
-			bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0F, 1.0F).next();
-			bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0F, 0.0F).next();
-			bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0F, 0.0F).next();
-			tessellator.draw();
-		} else {
-			float f = (float)Math.min(this.scaledWidth, this.scaledHeight);
-			float g = f * scale;
-			float h = Math.min((float)this.scaledWidth / f, (float)this.scaledHeight / g);
-			float i = f * h;
-			float j = g * h;
-			float k = ((float)this.scaledWidth - i) / 2.0F;
-			float l = ((float)this.scaledHeight - j) / 2.0F;
-			float m = k + i;
-			float n = l + j;
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-			bufferBuilder.vertex((double)k, (double)n, -90.0).texture(0.0F, 1.0F).next();
-			bufferBuilder.vertex((double)m, (double)n, -90.0).texture(1.0F, 1.0F).next();
-			bufferBuilder.vertex((double)m, (double)l, -90.0).texture(1.0F, 0.0F).next();
-			bufferBuilder.vertex((double)k, (double)l, -90.0).texture(0.0F, 0.0F).next();
-			tessellator.draw();
-			int o = BackgroundHelper.ColorMixer.getRed(color);
-			int p = BackgroundHelper.ColorMixer.getGreen(color);
-			int q = BackgroundHelper.ColorMixer.getBlue(color);
-			int r = BackgroundHelper.ColorMixer.getAlpha(color);
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-			bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex((double)this.scaledWidth, (double)n, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex(0.0, (double)n, -90.0).color(o, p, q, r).next();
-			tessellator.draw();
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-			bufferBuilder.vertex(0.0, (double)l, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex((double)this.scaledWidth, (double)l, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex(0.0, 0.0, -90.0).color(o, p, q, r).next();
-			tessellator.draw();
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-			bufferBuilder.vertex(0.0, (double)n, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex((double)k, (double)n, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex((double)k, (double)l, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex(0.0, (double)l, -90.0).color(o, p, q, r).next();
-			tessellator.draw();
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-			bufferBuilder.vertex((double)m, (double)n, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex((double)this.scaledWidth, (double)n, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex((double)this.scaledWidth, (double)l, -90.0).color(o, p, q, r).next();
-			bufferBuilder.vertex((double)m, (double)l, -90.0).color(o, p, q, r).next();
-			tessellator.draw();
-		}
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0F, 1.0F).next();
+		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0F, 0.0F).next();
+		bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0F, 0.0F).next();
+		tessellator.draw();
+		RenderSystem.depthMask(true);
+		RenderSystem.enableDepthTest();
+		RenderSystem.enableAlphaTest();
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+	}
 
+	private void renderSpyglassOverlay(float scale) {
+		RenderSystem.disableDepthTest();
+		RenderSystem.depthMask(false);
+		RenderSystem.defaultBlendFunc();
+		RenderSystem.disableAlphaTest();
+		this.client.getTextureManager().bindTexture(SPYGLASS_SCOPE);
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		float f = (float)Math.min(this.scaledWidth, this.scaledHeight);
+		float h = Math.min((float)this.scaledWidth / f, (float)this.scaledHeight / f) * scale;
+		float i = f * h;
+		float j = f * h;
+		float k = ((float)this.scaledWidth - i) / 2.0F;
+		float l = ((float)this.scaledHeight - j) / 2.0F;
+		float m = k + i;
+		float n = l + j;
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.vertex((double)k, (double)n, -90.0).texture(0.0F, 1.0F).next();
+		bufferBuilder.vertex((double)m, (double)n, -90.0).texture(1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)m, (double)l, -90.0).texture(1.0F, 0.0F).next();
+		bufferBuilder.vertex((double)k, (double)l, -90.0).texture(0.0F, 0.0F).next();
+		tessellator.draw();
+		RenderSystem.disableTexture();
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.scaledWidth, (double)n, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex(0.0, (double)n, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex(0.0, (double)l, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.scaledWidth, (double)l, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex(0.0, 0.0, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex(0.0, (double)n, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)k, (double)n, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)k, (double)l, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex(0.0, (double)l, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)m, (double)n, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.scaledWidth, (double)n, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.scaledWidth, (double)l, -90.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)m, (double)l, -90.0).color(0, 0, 0, 255).next();
+		tessellator.draw();
+		RenderSystem.enableTexture();
 		RenderSystem.depthMask(true);
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableAlphaTest();
@@ -1194,7 +1204,7 @@ public class InGameHud extends DrawableHelper {
 		return this.spectatorHud;
 	}
 
-	public PlayerListHud getPlayerListWidget() {
+	public PlayerListHud getPlayerListHud() {
 		return this.playerListHud;
 	}
 

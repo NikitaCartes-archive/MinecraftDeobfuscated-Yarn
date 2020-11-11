@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.entity.feature.ShulkerHeadFeatureRenderer;
@@ -23,8 +22,8 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		.map(spriteIdentifier -> new Identifier("textures/" + spriteIdentifier.getTextureId().getPath() + ".png"))
 		.toArray(Identifier[]::new);
 
-	public ShulkerEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new ShulkerEntityModel<>(arg.method_32167(EntityModelLayers.SHULKER)), 0.0F);
+	public ShulkerEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new ShulkerEntityModel<>(context.getPart(EntityModelLayers.SHULKER)), 0.0F);
 		this.addFeature(new ShulkerHeadFeatureRenderer(this));
 	}
 

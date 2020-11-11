@@ -10,7 +10,9 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,8 +21,10 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -130,7 +134,16 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	}
 
 	protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
-		this.renderTooltip(matrices, this.getTooltipFromItem(stack), x, y);
+		this.method_32634(matrices, this.getTooltipFromItem(stack), stack.getTooltipData(), x, y);
+	}
+
+	public void method_32634(MatrixStack matrixStack, List<Text> list, Optional<TooltipData> optional, int i, int j) {
+		List<TooltipComponent> list2 = (List<TooltipComponent>)list.stream()
+			.map(Text::asOrderedText)
+			.map(TooltipComponent::createOrderedTextTooltipComponent)
+			.collect(Collectors.toList());
+		optional.ifPresent(tooltipData -> list2.add(1, TooltipComponent.createTooltipComponent(tooltipData)));
+		this.method_32633(matrixStack, list2, i, j);
 	}
 
 	public List<Text> getTooltipFromItem(ItemStack stack) {
@@ -145,50 +158,54 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 		this.renderOrderedTooltip(matrices, Lists.transform(lines, Text::asOrderedText), x, y);
 	}
 
-	public void renderOrderedTooltip(MatrixStack matrices, List<? extends OrderedText> lines, int x, int y) {
-		if (!lines.isEmpty()) {
-			int i = 0;
+	public void renderOrderedTooltip(MatrixStack matrices, List<? extends OrderedText> list, int x, int y) {
+		this.method_32633(matrices, (List<TooltipComponent>)list.stream().map(TooltipComponent::createOrderedTextTooltipComponent).collect(Collectors.toList()), x, y);
+	}
 
-			for (OrderedText orderedText : lines) {
-				int j = this.textRenderer.getWidth(orderedText);
-				if (j > i) {
-					i = j;
+	private void method_32633(MatrixStack matrixStack, List<TooltipComponent> list, int i, int j) {
+		if (!list.isEmpty()) {
+			int k = 0;
+			int l = list.size() == 1 ? -2 : 0;
+
+			for (TooltipComponent tooltipComponent : list) {
+				int m = tooltipComponent.getWidth(this.textRenderer);
+				if (m > k) {
+					k = m;
 				}
+
+				l += tooltipComponent.getHeight();
 			}
 
-			int k = x + 12;
-			int l = y - 12;
-			int m = 8;
-			if (lines.size() > 1) {
-				m += 2 + (lines.size() - 1) * 10;
+			int n = i + 12;
+			int o = j - 12;
+			if (n + k > this.width) {
+				n -= 28 + k;
 			}
 
-			if (k + i > this.width) {
-				k -= 28 + i;
+			if (o + l + 6 > this.height) {
+				o = this.height - l - 6;
 			}
 
-			if (l + m + 6 > this.height) {
-				l = this.height - m - 6;
-			}
-
-			matrices.push();
-			int n = -267386864;
-			int o = 1347420415;
-			int p = 1344798847;
-			int q = 400;
+			matrixStack.push();
+			int q = -267386864;
+			int r = 1347420415;
+			int s = 1344798847;
+			int t = 400;
+			float f = this.itemRenderer.zOffset;
+			this.itemRenderer.zOffset = 400.0F;
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-			Matrix4f matrix4f = matrices.peek().getModel();
-			fillGradient(matrix4f, bufferBuilder, k - 3, l - 4, k + i + 3, l - 3, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 3, k + i + 3, l + m + 4, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + i + 3, l + m + 3, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k - 4, l - 3, k - 3, l + m + 3, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k + i + 3, l - 3, k + i + 4, l + m + 3, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3 + 1, k - 3 + 1, l + m + 3 - 1, 400, 1347420415, 1344798847);
-			fillGradient(matrix4f, bufferBuilder, k + i + 2, l - 3 + 1, k + i + 3, l + m + 3 - 1, 400, 1347420415, 1344798847);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + i + 3, l - 3 + 1, 400, 1347420415, 1347420415);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 2, k + i + 3, l + m + 3, 400, 1344798847, 1344798847);
+			Matrix4f matrix4f = matrixStack.peek().getModel();
+			fillGradient(matrix4f, bufferBuilder, n - 3, o - 4, n + k + 3, o - 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, n - 3, o + l + 3, n + k + 3, o + l + 4, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, n - 3, o - 3, n + k + 3, o + l + 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, n - 4, o - 3, n - 3, o + l + 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, n + k + 3, o - 3, n + k + 4, o + l + 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, n - 3, o - 3 + 1, n - 3 + 1, o + l + 3 - 1, 400, 1347420415, 1344798847);
+			fillGradient(matrix4f, bufferBuilder, n + k + 2, o - 3 + 1, n + k + 3, o + l + 3 - 1, 400, 1347420415, 1344798847);
+			fillGradient(matrix4f, bufferBuilder, n - 3, o - 3, n + k + 3, o - 3 + 1, 400, 1347420415, 1347420415);
+			fillGradient(matrix4f, bufferBuilder, n - 3, o + l + 2, n + k + 3, o + l + 3, 400, 1344798847, 1344798847);
 			RenderSystem.enableDepthTest();
 			RenderSystem.disableTexture();
 			RenderSystem.enableBlend();
@@ -200,23 +217,26 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 			RenderSystem.disableBlend();
 			RenderSystem.enableTexture();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			matrices.translate(0.0, 0.0, 400.0);
+			matrixStack.translate(0.0, 0.0, 400.0);
+			int u = o;
 
-			for (int r = 0; r < lines.size(); r++) {
-				OrderedText orderedText2 = (OrderedText)lines.get(r);
-				if (orderedText2 != null) {
-					this.textRenderer.draw(orderedText2, (float)k, (float)l, -1, true, matrix4f, immediate, false, 0, 15728880);
-				}
-
-				if (r == 0) {
-					l += 2;
-				}
-
-				l += 10;
+			for (int v = 0; v < list.size(); v++) {
+				TooltipComponent tooltipComponent2 = (TooltipComponent)list.get(v);
+				tooltipComponent2.drawText(this.textRenderer, n, u, matrix4f, immediate);
+				u += tooltipComponent2.getHeight() + (v == 0 ? 2 : 0);
 			}
 
 			immediate.draw();
-			matrices.pop();
+			matrixStack.pop();
+			u = o;
+
+			for (int v = 0; v < list.size(); v++) {
+				TooltipComponent tooltipComponent2 = (TooltipComponent)list.get(v);
+				tooltipComponent2.drawItems(this.textRenderer, n, u, matrixStack, this.itemRenderer, 400, this.client.getTextureManager());
+				u += tooltipComponent2.getHeight() + (v == 0 ? 2 : 0);
+			}
+
+			this.itemRenderer.zOffset = f;
 		}
 	}
 
@@ -332,7 +352,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	/**
 	 * Called when a screen should be initialized.
 	 * 
-	 * <p>This method is called when this screen is {@link MinecraftClient#openScreen(Screen) opened} or resized.
+	 * <p>This method is called when this screen is {@linkplain net.minecraft.client.MinecraftClient#openScreen(Screen) opened} or resized.
 	 */
 	protected void init() {
 	}
@@ -371,7 +391,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	}
 
 	/**
-	 * Renders the fullscreen {@linkplain #BACKGROUND_TEXTURE background texture} of this screen.
+	 * Renders the fullscreen {@linkplain net.minecraft.client.gui.DrawableHelper#OPTIONS_BACKGROUND_TEXTURE background texture} of this screen.
 	 * 
 	 * @param vOffset an offset applied to the V coordinate of the background texture
 	 */

@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -17,9 +16,9 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeashKnotEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/lead_knot.png");
 	private final LeashKnotEntityModel<LeashKnotEntity> model;
 
-	public LeashKnotEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
-		this.model = new LeashKnotEntityModel<>(arg.method_32167(EntityModelLayers.LEASH_KNOT));
+	public LeashKnotEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
+		this.model = new LeashKnotEntityModel<>(context.getPart(EntityModelLayers.LEASH_KNOT));
 	}
 
 	public void render(LeashKnotEntity leashKnotEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

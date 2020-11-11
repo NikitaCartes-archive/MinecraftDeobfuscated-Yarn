@@ -24,7 +24,7 @@ public class ChatOptionsScreen extends NarratorOptionsScreen {
 		Option.SATURATION,
 		Option.NARRATOR,
 		Option.AUTO_SUGGESTIONS,
-		Option.field_26924,
+		Option.HIDE_MATCHED_NAMES,
 		Option.REDUCED_DEBUG_INFO
 	};
 

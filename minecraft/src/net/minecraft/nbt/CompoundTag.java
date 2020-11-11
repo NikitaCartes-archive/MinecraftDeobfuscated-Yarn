@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
-import net.minecraft.class_5627;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -428,8 +428,8 @@ public class CompoundTag implements Tag {
 	}
 
 	@Override
-	public void method_32289(class_5627 arg) {
-		arg.method_32292(this);
+	public void accept(NbtTagVisitor visitor) {
+		visitor.visitCompoundTag(this);
 	}
 
 	protected Map<String, Tag> toMap() {

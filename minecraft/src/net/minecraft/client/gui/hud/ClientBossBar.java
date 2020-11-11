@@ -41,7 +41,7 @@ public class ClientBossBar extends BossBar {
 			case UPDATE_NAME:
 				this.setName(packet.getName());
 				break;
-			case UPDATE_PCT:
+			case UPDATE_PROGRESS:
 				this.setPercent(packet.getPercent());
 				break;
 			case UPDATE_STYLE:

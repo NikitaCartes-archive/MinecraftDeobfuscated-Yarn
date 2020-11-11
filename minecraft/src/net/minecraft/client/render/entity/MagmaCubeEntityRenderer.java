@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.MagmaCubeEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -15,8 +14,8 @@ import net.minecraft.util.math.MathHelper;
 public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/slime/magmacube.png");
 
-	public MagmaCubeEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new MagmaCubeEntityModel<>(arg.method_32167(EntityModelLayers.MAGMA_CUBE)), 0.25F);
+	public MagmaCubeEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new MagmaCubeEntityModel<>(context.getPart(EntityModelLayers.MAGMA_CUBE)), 0.25F);
 	}
 
 	protected int getBlockLight(MagmaCubeEntity magmaCubeEntity, BlockPos blockPos) {

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import java.util.Queue;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
@@ -52,9 +51,7 @@ public class SpongeBlock extends Block {
 				FluidState fluidState = world.getFluidState(blockPos2);
 				Material material = blockState.getMaterial();
 				if (fluidState.isIn(FluidTags.WATER)) {
-					if (blockState.getBlock() instanceof FluidDrainable && ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos2, blockState) != Fluids.EMPTY
-						)
-					 {
+					if (blockState.getBlock() instanceof FluidDrainable && !((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos2, blockState).isEmpty()) {
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos2, j + 1));

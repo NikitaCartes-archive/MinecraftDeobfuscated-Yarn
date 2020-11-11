@@ -4,11 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.PiglinEntityModel;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.AbstractPiglinEntity;
@@ -27,18 +26,16 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 	);
 
 	public PiglinEntityRenderer(
-		class_5617.class_5618 arg, EntityModelLayer mainLayer, EntityModelLayer innerArmorLayer, EntityModelLayer outerArmorLayer, boolean bl
+		EntityRendererFactory.Context ctx, EntityModelLayer mainLayer, EntityModelLayer innerArmorLayer, EntityModelLayer outerArmorLayer, boolean zombie
 	) {
-		super(arg, getPiglinModel(arg.method_32170(), mainLayer, bl), 0.5F, 1.0019531F, 1.0F, 1.0019531F);
-		this.addFeature(
-			new ArmorFeatureRenderer<>(this, new BipedEntityModel(arg.method_32167(innerArmorLayer)), new BipedEntityModel(arg.method_32167(outerArmorLayer)))
-		);
+		super(ctx, getPiglinModel(ctx.getModelLoader(), mainLayer, zombie), 0.5F, 1.0019531F, 1.0F, 1.0019531F);
+		this.addFeature(new ArmorFeatureRenderer<>(this, new BipedEntityModel(ctx.getPart(innerArmorLayer)), new BipedEntityModel(ctx.getPart(outerArmorLayer))));
 	}
 
-	private static PiglinEntityModel<MobEntity> getPiglinModel(class_5599 arg, EntityModelLayer entityModelLayer, boolean bl) {
-		PiglinEntityModel<MobEntity> piglinEntityModel = new PiglinEntityModel<>(arg.method_32072(entityModelLayer));
-		if (bl) {
-			piglinEntityModel.field_27464.visible = false;
+	private static PiglinEntityModel<MobEntity> getPiglinModel(EntityModelLoader modelLoader, EntityModelLayer layer, boolean zombie) {
+		PiglinEntityModel<MobEntity> piglinEntityModel = new PiglinEntityModel<>(modelLoader.getModelPart(layer));
+		if (zombie) {
+			piglinEntityModel.rightEar.visible = false;
 		}
 
 		return piglinEntityModel;

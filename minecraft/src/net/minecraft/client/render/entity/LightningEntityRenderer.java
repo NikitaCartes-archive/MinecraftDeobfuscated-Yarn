@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -15,8 +14,8 @@ import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
-	public LightningEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
+	public LightningEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
 	}
 
 	public void render(LightningEntity lightningEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

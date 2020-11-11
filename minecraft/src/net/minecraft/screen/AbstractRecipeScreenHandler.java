@@ -30,9 +30,10 @@ public abstract class AbstractRecipeScreenHandler<C extends Inventory> extends S
 
 	public abstract int getCraftingHeight();
 
-	@Environment(EnvType.CLIENT)
 	public abstract int getCraftingSlotCount();
 
 	@Environment(EnvType.CLIENT)
 	public abstract RecipeBookCategory getCategory();
+
+	public abstract boolean method_32339(int i);
 }

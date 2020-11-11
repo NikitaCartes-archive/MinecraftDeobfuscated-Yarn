@@ -3,12 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.math.MathHelper;
@@ -21,24 +21,18 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 
 	public ShulkerEntityModel(ModelPart modelPart) {
 		super(RenderLayer::getEntityCutoutNoCullZOffset);
-		this.topShell = modelPart.method_32086("lid");
-		this.bottomShell = modelPart.method_32086("base");
-		this.head = modelPart.method_32086("head");
+		this.topShell = modelPart.getChild("lid");
+		this.bottomShell = modelPart.getChild("base");
+		this.head = modelPart.getChild("head");
 	}
 
-	public static class_5607 method_32041() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117(
-			"lid", class_5606.method_32108().method_32101(0, 0).method_32097(-8.0F, -16.0F, -8.0F, 16.0F, 12.0F, 16.0F), class_5603.method_32090(0.0F, 24.0F, 0.0F)
-		);
-		lv2.method_32117(
-			"base", class_5606.method_32108().method_32101(0, 28).method_32097(-8.0F, -8.0F, -8.0F, 16.0F, 8.0F, 16.0F), class_5603.method_32090(0.0F, 24.0F, 0.0F)
-		);
-		lv2.method_32117(
-			"head", class_5606.method_32108().method_32101(0, 52).method_32097(-3.0F, 0.0F, -3.0F, 6.0F, 6.0F, 6.0F), class_5603.method_32090(0.0F, 12.0F, 0.0F)
-		);
-		return class_5607.method_32110(lv, 64, 64);
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("lid", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -16.0F, -8.0F, 16.0F, 12.0F, 16.0F), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+		modelPartData.addChild("base", ModelPartBuilder.create().uv(0, 28).cuboid(-8.0F, -8.0F, -8.0F, 16.0F, 8.0F, 16.0F), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+		modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 52).cuboid(-3.0F, 0.0F, -3.0F, 6.0F, 6.0F, 6.0F), ModelTransform.pivot(0.0F, 12.0F, 0.0F));
+		return TexturedModelData.of(modelData, 64, 64);
 	}
 
 	public void setAngles(T shulkerEntity, float f, float g, float h, float i, float j) {
@@ -64,10 +58,6 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 	@Override
 	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.bottomShell, this.topShell);
-	}
-
-	public ModelPart getBottomShell() {
-		return this.bottomShell;
 	}
 
 	public ModelPart getTopShell() {

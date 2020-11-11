@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.entity.EntityType;
@@ -23,8 +22,8 @@ public class ZombieHorseEntityRenderer extends HorseBaseEntityRenderer<HorseBase
 		)
 	);
 
-	public ZombieHorseEntityRenderer(class_5617.class_5618 arg, EntityModelLayer entityModelLayer) {
-		super(arg, new HorseEntityModel<>(arg.method_32167(entityModelLayer)), 1.0F);
+	public ZombieHorseEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
+		super(ctx, new HorseEntityModel<>(ctx.getPart(layer)), 1.0F);
 	}
 
 	public Identifier getTexture(HorseBaseEntity horseBaseEntity) {

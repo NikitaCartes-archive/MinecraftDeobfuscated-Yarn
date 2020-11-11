@@ -33,9 +33,9 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier ACCEPT_ICON = new Identifier("realms", "textures/gui/realms/accept_icon.png");
 	private static final Identifier REJECT_ICON = new Identifier("realms", "textures/gui/realms/reject_icon.png");
-	private static final Text field_26493 = new TranslatableText("mco.invites.nopending");
-	private static final Text field_26494 = new TranslatableText("mco.invites.button.accept");
-	private static final Text field_26495 = new TranslatableText("mco.invites.button.reject");
+	private static final Text NO_PENDING_TEXT = new TranslatableText("mco.invites.nopending");
+	private static final Text ACCEPT_TEXT = new TranslatableText("mco.invites.button.accept");
+	private static final Text REJECT_TEXT = new TranslatableText("mco.invites.button.reject");
 	private final Screen parent;
 	@Nullable
 	private Text toolTip;
@@ -163,7 +163,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 
 		if (this.pendingInvitationSelectionList.getItemCount() == 0 && this.loaded) {
-			drawCenteredText(matrices, this.textRenderer, field_26493, this.width / 2, this.height / 2 - 20, 16777215);
+			drawCenteredText(matrices, this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, 16777215);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);
@@ -295,7 +295,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 				float f = bl ? 19.0F : 0.0F;
 				DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0F, 18, 18, 37, 18);
 				if (bl) {
-					RealmsPendingInvitesScreen.this.toolTip = RealmsPendingInvitesScreen.field_26494;
+					RealmsPendingInvitesScreen.this.toolTip = RealmsPendingInvitesScreen.ACCEPT_TEXT;
 				}
 			}
 
@@ -318,7 +318,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 				float f = bl ? 19.0F : 0.0F;
 				DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0F, 18, 18, 37, 18);
 				if (bl) {
-					RealmsPendingInvitesScreen.this.toolTip = RealmsPendingInvitesScreen.field_26495;
+					RealmsPendingInvitesScreen.this.toolTip = RealmsPendingInvitesScreen.REJECT_TEXT;
 				}
 			}
 

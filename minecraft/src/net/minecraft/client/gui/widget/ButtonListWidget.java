@@ -1,7 +1,9 @@
 package net.minecraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -46,10 +48,9 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 	@Nullable
 	public AbstractButtonWidget getButtonFor(Option option) {
 		for (ButtonListWidget.ButtonEntry buttonEntry : this.children()) {
-			for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
-				if (abstractButtonWidget instanceof OptionButtonWidget && ((OptionButtonWidget)abstractButtonWidget).getOption() == option) {
-					return abstractButtonWidget;
-				}
+			AbstractButtonWidget abstractButtonWidget = (AbstractButtonWidget)buttonEntry.field_27983.get(option);
+			if (abstractButtonWidget != null) {
+				return abstractButtonWidget;
 			}
 		}
 
@@ -70,21 +71,25 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 
 	@Environment(EnvType.CLIENT)
 	public static class ButtonEntry extends ElementListWidget.Entry<ButtonListWidget.ButtonEntry> {
+		private final Map<Option, AbstractButtonWidget> field_27983;
 		private final List<AbstractButtonWidget> buttons;
 
-		private ButtonEntry(List<AbstractButtonWidget> buttons) {
-			this.buttons = buttons;
+		private ButtonEntry(Map<Option, AbstractButtonWidget> map) {
+			this.field_27983 = map;
+			this.buttons = ImmutableList.copyOf(map.values());
 		}
 
 		public static ButtonListWidget.ButtonEntry create(GameOptions options, int width, Option option) {
-			return new ButtonListWidget.ButtonEntry(ImmutableList.of(option.createButton(options, width / 2 - 155, 0, 310)));
+			return new ButtonListWidget.ButtonEntry(ImmutableMap.of(option, option.createButton(options, width / 2 - 155, 0, 310)));
 		}
 
 		public static ButtonListWidget.ButtonEntry create(GameOptions options, int width, Option firstOption, @Nullable Option secondOption) {
 			AbstractButtonWidget abstractButtonWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
 			return secondOption == null
-				? new ButtonListWidget.ButtonEntry(ImmutableList.of(abstractButtonWidget))
-				: new ButtonListWidget.ButtonEntry(ImmutableList.of(abstractButtonWidget, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
+				? new ButtonListWidget.ButtonEntry(ImmutableMap.of(firstOption, abstractButtonWidget))
+				: new ButtonListWidget.ButtonEntry(
+					ImmutableMap.of(firstOption, abstractButtonWidget, secondOption, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150))
+				);
 		}
 
 		@Override

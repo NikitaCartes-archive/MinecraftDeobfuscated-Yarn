@@ -1,6 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -11,15 +12,17 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -39,6 +42,14 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return (Set<LootContextParameter<?>>)this.attributes
+			.stream()
+			.flatMap(attribute -> attribute.amountRange.getRequiredParameters().stream())
+			.collect(ImmutableSet.toImmutableSet());
+	}
+
+	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		Random random = context.getRandom();
 
@@ -50,7 +61,9 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 			EquipmentSlot equipmentSlot = Util.getRandom(attribute.slots, random);
 			stack.addAttributeModifier(
-				attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amountRange.nextFloat(random), attribute.operation), equipmentSlot
+				attribute.attribute,
+				new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amountRange.nextFloat(context), attribute.operation),
+				equipmentSlot
 			);
 		}
 
@@ -61,7 +74,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		private final String name;
 		private final EntityAttribute attribute;
 		private final EntityAttributeModifier.Operation operation;
-		private final UniformLootTableRange amountRange;
+		private final LootNumberProvider amountRange;
 		@Nullable
 		private final UUID id;
 		private final EquipmentSlot[] slots;
@@ -70,7 +83,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			String name,
 			EntityAttribute entityAttribute,
 			EntityAttributeModifier.Operation operation,
-			UniformLootTableRange amountRange,
+			LootNumberProvider amountRange,
 			EquipmentSlot[] slots,
 			@Nullable UUID id
 		) {
@@ -115,7 +128,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 				throw new JsonSyntaxException("Unknown attribute: " + identifier);
 			} else {
 				EntityAttributeModifier.Operation operation = fromName(JsonHelper.getString(json, "operation"));
-				UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(json, "amount", context, UniformLootTableRange.class);
+				LootNumberProvider lootNumberProvider = JsonHelper.deserialize(json, "amount", context, LootNumberProvider.class);
 				UUID uUID = null;
 				EquipmentSlot[] equipmentSlots;
 				if (JsonHelper.hasString(json, "slot")) {
@@ -148,7 +161,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 					}
 				}
 
-				return new SetAttributesLootFunction.Attribute(string, entityAttribute, operation, uniformLootTableRange, equipmentSlots, uUID);
+				return new SetAttributesLootFunction.Attribute(string, entityAttribute, operation, lootNumberProvider, equipmentSlots, uUID);
 			}
 		}
 

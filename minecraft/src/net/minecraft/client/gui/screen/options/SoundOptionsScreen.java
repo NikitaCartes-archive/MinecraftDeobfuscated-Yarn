@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.gui.widget.SoundSliderWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
@@ -32,15 +31,7 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 			}
 		}
 
-		this.addButton(
-			new OptionButtonWidget(
-				this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150, 20, Option.SUBTITLES, Option.SUBTITLES.getDisplayString(this.gameOptions), button -> {
-					Option.SUBTITLES.toggle(this.client.options);
-					button.setMessage(Option.SUBTITLES.getDisplayString(this.client.options));
-					this.client.options.write();
-				}
-			)
-		);
+		this.addButton(Option.SUBTITLES.createButton(this.gameOptions, this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150));
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
 	}
 

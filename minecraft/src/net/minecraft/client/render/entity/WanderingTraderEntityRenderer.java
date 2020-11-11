@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -15,9 +14,9 @@ import net.minecraft.util.Identifier;
 public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTraderEntity, VillagerResemblingModel<WanderingTraderEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/wandering_trader.png");
 
-	public WanderingTraderEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new VillagerResemblingModel<>(arg.method_32167(EntityModelLayers.WANDERING_TRADER)), 0.5F);
-		this.addFeature(new HeadFeatureRenderer<>(this, arg.method_32170()));
+	public WanderingTraderEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new VillagerResemblingModel<>(context.getPart(EntityModelLayers.WANDERING_TRADER)), 0.5F);
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
 		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 

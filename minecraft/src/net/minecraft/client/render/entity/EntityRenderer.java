@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
@@ -21,26 +20,26 @@ import net.minecraft.world.LightType;
 @Environment(EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
 	protected final EntityRenderDispatcher dispatcher;
-	private final TextRenderer field_27761;
+	private final TextRenderer textRenderer;
 	protected float shadowRadius;
 	protected float shadowOpacity = 1.0F;
 
-	protected EntityRenderer(class_5617.class_5618 arg) {
-		this.dispatcher = arg.method_32166();
-		this.field_27761 = arg.method_32171();
+	protected EntityRenderer(EntityRendererFactory.Context ctx) {
+		this.dispatcher = ctx.getRenderDispatcher();
+		this.textRenderer = ctx.getTextRenderer();
 	}
 
 	public final int getLight(T entity, float tickDelta) {
 		BlockPos blockPos = new BlockPos(entity.method_31166(tickDelta));
-		return LightmapTextureManager.pack(this.getBlockLight(entity, blockPos), this.method_27950(entity, blockPos));
+		return LightmapTextureManager.pack(this.getBlockLight(entity, blockPos), this.getSkyLight(entity, blockPos));
 	}
 
-	protected int method_27950(T entity, BlockPos blockPos) {
-		return entity.world.getLightLevel(LightType.SKY, blockPos);
+	protected int getSkyLight(T entity, BlockPos pos) {
+		return entity.world.getLightLevel(LightType.SKY, pos);
 	}
 
-	protected int getBlockLight(T entity, BlockPos blockPos) {
-		return entity.isOnFire() ? 15 : entity.world.getLightLevel(LightType.BLOCK, blockPos);
+	protected int getBlockLight(T entity, BlockPos pos) {
+		return entity.isOnFire() ? 15 : entity.world.getLightLevel(LightType.BLOCK, pos);
 	}
 
 	public boolean shouldRender(T entity, Frustum frustum, double x, double y, double z) {
@@ -80,7 +79,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	public abstract Identifier getTexture(T entity);
 
 	public TextRenderer getFontRenderer() {
-		return this.field_27761;
+		return this.textRenderer;
 	}
 
 	protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {

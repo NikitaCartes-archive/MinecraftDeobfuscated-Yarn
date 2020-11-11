@@ -68,7 +68,7 @@ public class EntityDataObject implements DataCommandObject {
 
 	@Override
 	public Text feedbackQuery(Tag tag) {
-		return new TranslatableText("commands.data.entity.query", this.entity.getDisplayName(), NbtHelper.method_32270(tag));
+		return new TranslatableText("commands.data.entity.query", this.entity.getDisplayName(), NbtHelper.toPrettyPrintedText(tag));
 	}
 
 	@Override

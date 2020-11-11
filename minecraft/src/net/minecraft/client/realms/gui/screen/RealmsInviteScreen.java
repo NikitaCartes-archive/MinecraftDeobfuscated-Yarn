@@ -19,8 +19,8 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsInviteScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Text field_26489 = new TranslatableText("mco.configure.world.invite.profile.name");
-	private static final Text field_26490 = new TranslatableText("mco.configure.world.players.error");
+	private static final Text INVITE_PROFILE_NAME_TEXT = new TranslatableText("mco.configure.world.invite.profile.name");
+	private static final Text PLAYER_ERROR_TEXT = new TranslatableText("mco.configure.world.players.error");
 	private TextFieldWidget field_22696;
 	private final RealmsServer serverData;
 	private final RealmsConfigureWorldScreen configureScreen;
@@ -67,14 +67,14 @@ public class RealmsInviteScreen extends RealmsScreen {
 					this.serverData.players = realmsServer.players;
 					this.client.openScreen(new RealmsPlayerScreen(this.configureScreen, this.serverData));
 				} else {
-					this.showError(field_26490);
+					this.showError(PLAYER_ERROR_TEXT);
 				}
 			} catch (Exception var3) {
 				LOGGER.error("Couldn't invite user");
-				this.showError(field_26490);
+				this.showError(PLAYER_ERROR_TEXT);
 			}
 		} else {
-			this.showError(field_26490);
+			this.showError(PLAYER_ERROR_TEXT);
 		}
 	}
 
@@ -96,7 +96,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.textRenderer.draw(matrices, field_26489, (float)(this.width / 2 - 100), (float)row(1), 10526880);
+		this.textRenderer.draw(matrices, INVITE_PROFILE_NAME_TEXT, (float)(this.width / 2 - 100), (float)row(1), 10526880);
 		if (this.errorMsg != null) {
 			drawCenteredText(matrices, this.textRenderer, this.errorMsg, this.width / 2, row(5), 16711680);
 		}

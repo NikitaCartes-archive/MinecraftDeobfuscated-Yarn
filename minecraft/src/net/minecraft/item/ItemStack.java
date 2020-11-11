@@ -28,6 +28,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipData;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.enchantment.Enchantment;
@@ -100,6 +101,11 @@ public final class ItemStack {
 	private boolean lastDestroyResult;
 	private CachedBlockPosition lastPlaceOnPos;
 	private boolean lastPlaceOnResult;
+
+	@Environment(EnvType.CLIENT)
+	public Optional<TooltipData> getTooltipData() {
+		return this.getItem().getTooltipData(this);
+	}
 
 	public ItemStack(ItemConvertible item) {
 		this(item, 1);
@@ -561,7 +567,10 @@ public final class ItemStack {
 
 		list.add(mutableText);
 		if (!context.isAdvanced() && !this.hasCustomName() && this.isOf(Items.FILLED_MAP)) {
-			list.add(new LiteralText("#" + FilledMapItem.getMapId(this)).formatted(Formatting.GRAY));
+			Integer integer = FilledMapItem.getMapId(this);
+			if (integer != null) {
+				list.add(new LiteralText("#" + integer).formatted(Formatting.GRAY));
+			}
 		}
 
 		int i = this.getHideFlags();

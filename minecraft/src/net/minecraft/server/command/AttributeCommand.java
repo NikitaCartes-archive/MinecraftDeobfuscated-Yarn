@@ -54,7 +54,7 @@ public class AttributeCommand {
 											commandContext -> executeValueGet(
 													commandContext.getSource(),
 													EntityArgumentType.getEntity(commandContext, "target"),
-													IdentifierArgumentType.method_27575(commandContext, "attribute"),
+													IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 													1.0
 												)
 										)
@@ -64,7 +64,7 @@ public class AttributeCommand {
 													commandContext -> executeValueGet(
 															commandContext.getSource(),
 															EntityArgumentType.getEntity(commandContext, "target"),
-															IdentifierArgumentType.method_27575(commandContext, "attribute"),
+															IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 															DoubleArgumentType.getDouble(commandContext, "scale")
 														)
 												)
@@ -80,7 +80,7 @@ public class AttributeCommand {
 															commandContext -> executeBaseValueSet(
 																	commandContext.getSource(),
 																	EntityArgumentType.getEntity(commandContext, "target"),
-																	IdentifierArgumentType.method_27575(commandContext, "attribute"),
+																	IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 																	DoubleArgumentType.getDouble(commandContext, "value")
 																)
 														)
@@ -92,7 +92,7 @@ public class AttributeCommand {
 													commandContext -> executeBaseValueGet(
 															commandContext.getSource(),
 															EntityArgumentType.getEntity(commandContext, "target"),
-															IdentifierArgumentType.method_27575(commandContext, "attribute"),
+															IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 															1.0
 														)
 												)
@@ -102,7 +102,7 @@ public class AttributeCommand {
 															commandContext -> executeBaseValueGet(
 																	commandContext.getSource(),
 																	EntityArgumentType.getEntity(commandContext, "target"),
-																	IdentifierArgumentType.method_27575(commandContext, "attribute"),
+																	IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 																	DoubleArgumentType.getDouble(commandContext, "scale")
 																)
 														)
@@ -125,7 +125,7 @@ public class AttributeCommand {
 																					commandContext -> executeModifierAdd(
 																							commandContext.getSource(),
 																							EntityArgumentType.getEntity(commandContext, "target"),
-																							IdentifierArgumentType.method_27575(commandContext, "attribute"),
+																							IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 																							UuidArgumentType.getUuid(commandContext, "uuid"),
 																							StringArgumentType.getString(commandContext, "name"),
 																							DoubleArgumentType.getDouble(commandContext, "value"),
@@ -139,7 +139,7 @@ public class AttributeCommand {
 																					commandContext -> executeModifierAdd(
 																							commandContext.getSource(),
 																							EntityArgumentType.getEntity(commandContext, "target"),
-																							IdentifierArgumentType.method_27575(commandContext, "attribute"),
+																							IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 																							UuidArgumentType.getUuid(commandContext, "uuid"),
 																							StringArgumentType.getString(commandContext, "name"),
 																							DoubleArgumentType.getDouble(commandContext, "value"),
@@ -153,7 +153,7 @@ public class AttributeCommand {
 																					commandContext -> executeModifierAdd(
 																							commandContext.getSource(),
 																							EntityArgumentType.getEntity(commandContext, "target"),
-																							IdentifierArgumentType.method_27575(commandContext, "attribute"),
+																							IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 																							UuidArgumentType.getUuid(commandContext, "uuid"),
 																							StringArgumentType.getString(commandContext, "name"),
 																							DoubleArgumentType.getDouble(commandContext, "value"),
@@ -173,7 +173,7 @@ public class AttributeCommand {
 															commandContext -> executeModifierRemove(
 																	commandContext.getSource(),
 																	EntityArgumentType.getEntity(commandContext, "target"),
-																	IdentifierArgumentType.method_27575(commandContext, "attribute"),
+																	IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 																	UuidArgumentType.getUuid(commandContext, "uuid")
 																)
 														)
@@ -189,7 +189,7 @@ public class AttributeCommand {
 																	commandContext -> executeModifierValueGet(
 																			commandContext.getSource(),
 																			EntityArgumentType.getEntity(commandContext, "target"),
-																			IdentifierArgumentType.method_27575(commandContext, "attribute"),
+																			IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 																			UuidArgumentType.getUuid(commandContext, "uuid"),
 																			1.0
 																		)
@@ -200,7 +200,7 @@ public class AttributeCommand {
 																			commandContext -> executeModifierValueGet(
 																					commandContext.getSource(),
 																					EntityArgumentType.getEntity(commandContext, "target"),
-																					IdentifierArgumentType.method_27575(commandContext, "attribute"),
+																					IdentifierArgumentType.getAttributeArgument(commandContext, "attribute"),
 																					UuidArgumentType.getUuid(commandContext, "uuid"),
 																					DoubleArgumentType.getDouble(commandContext, "scale")
 																				)

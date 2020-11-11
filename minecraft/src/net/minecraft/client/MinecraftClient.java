@@ -45,7 +45,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5599;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -115,6 +114,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -303,8 +303,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final MinecraftClientGame game = new MinecraftClientGame(this);
 	private final TutorialManager tutorialManager;
 	private final SocialInteractionsManager socialInteractionsManager;
-	private final class_5599 field_27387;
-	private final BlockEntityRenderDispatcher field_27388;
+	private final EntityModelLoader entityModelLoader;
+	private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
 	public static byte[] memoryReservedForCrash = new byte[10485760];
 	@Nullable
 	public ClientPlayerInteractionManager interactionManager;
@@ -474,14 +474,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.itemColors = ItemColors.create(this.blockColors);
 		this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColors, this.options.mipmapLevels);
 		this.resourceManager.registerListener(this.bakedModelManager);
-		this.field_27387 = new class_5599();
-		this.resourceManager.registerListener(this.field_27387);
-		this.field_27388 = new BlockEntityRenderDispatcher(this.textRenderer, this.field_27387, this::getBlockRenderManager);
-		this.resourceManager.registerListener(this.field_27388);
-		BuiltinModelItemRenderer builtinModelItemRenderer = new BuiltinModelItemRenderer(this.field_27388, this.field_27387);
+		this.entityModelLoader = new EntityModelLoader();
+		this.resourceManager.registerListener(this.entityModelLoader);
+		this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.textRenderer, this.entityModelLoader, this::getBlockRenderManager);
+		this.resourceManager.registerListener(this.blockEntityRenderDispatcher);
+		BuiltinModelItemRenderer builtinModelItemRenderer = new BuiltinModelItemRenderer(this.blockEntityRenderDispatcher, this.entityModelLoader);
 		this.resourceManager.registerListener(builtinModelItemRenderer);
 		this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
-		this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.textRenderer, this.options, this.field_27387);
+		this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.textRenderer, this.options, this.entityModelLoader);
 		this.resourceManager.registerListener(this.entityRenderDispatcher);
 		this.heldItemRenderer = new HeldItemRenderer(this);
 		this.resourceManager.registerListener(this.itemRenderer);
@@ -819,8 +819,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		bl |= HandledScreens.validateScreens();
-		bl |= EntityRenderers.method_32172();
+		bl |= HandledScreens.isMissingScreens();
+		bl |= EntityRenderers.isMissingRendererFactories();
 		if (bl) {
 			throw new IllegalStateException("Your game data is foobar, fix the errors above!");
 		}
@@ -1971,7 +1971,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private void setWorld(@Nullable ClientWorld world) {
 		this.worldRenderer.setWorld(world);
 		this.particleManager.setWorld(world);
-		this.field_27388.setWorld(world);
+		this.blockEntityRenderDispatcher.setWorld(world);
 		this.updateWindowTitle();
 	}
 
@@ -2374,7 +2374,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public BlockEntityRenderDispatcher method_31975() {
-		return this.field_27388;
+		return this.blockEntityRenderDispatcher;
 	}
 
 	public ItemRenderer getItemRenderer() {
@@ -2521,8 +2521,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.bakedModelManager.resetMipmapLevels(mipmapLevels);
 	}
 
-	public class_5599 method_31974() {
-		return this.field_27387;
+	public EntityModelLoader method_31974() {
+		return this.entityModelLoader;
 	}
 
 	@Environment(EnvType.CLIENT)

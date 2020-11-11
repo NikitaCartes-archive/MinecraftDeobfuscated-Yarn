@@ -13,6 +13,7 @@ public final class EntityTypeTags {
 	public static final Tag.Identified<EntityType<?>> BEEHIVE_INHABITORS = register("beehive_inhabitors");
 	public static final Tag.Identified<EntityType<?>> ARROWS = register("arrows");
 	public static final Tag.Identified<EntityType<?>> IMPACT_PROJECTILES = register("impact_projectiles");
+	public static final Tag.Identified<EntityType<?>> POWDER_SNOW_WALKABLE_MOBS = register("powder_snow_walkable_mobs");
 
 	private static Tag.Identified<EntityType<?>> register(String id) {
 		return REQUIRED_TAGS.add(id);

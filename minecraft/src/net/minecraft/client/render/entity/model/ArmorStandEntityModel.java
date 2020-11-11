@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Arm;
@@ -25,43 +25,37 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 
 	public ArmorStandEntityModel(ModelPart modelPart) {
 		super(modelPart);
-		this.field_27391 = modelPart.method_32086("right_body_stick");
-		this.field_27392 = modelPart.method_32086("left_body_stick");
-		this.hip = modelPart.method_32086("shoulder_stick");
-		this.plate = modelPart.method_32086("base_plate");
+		this.field_27391 = modelPart.getChild("right_body_stick");
+		this.field_27392 = modelPart.getChild("left_body_stick");
+		this.hip = modelPart.getChild("shoulder_stick");
+		this.plate = modelPart.getChild("base_plate");
 		this.helmet.visible = false;
 	}
 
-	public static class_5607 method_31979() {
-		class_5609 lv = BipedEntityModel.method_32011(class_5605.field_27715, 0.0F);
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32097(-1.0F, -7.0F, -1.0F, 2.0F, 7.0F, 2.0F), class_5603.field_27701);
-		lv2.method_32117("body", class_5606.method_32108().method_32101(0, 26).method_32097(-6.0F, 0.0F, -1.5F, 12.0F, 3.0F, 3.0F), class_5603.field_27701);
-		lv2.method_32117(
-			"right_arm", class_5606.method_32108().method_32101(24, 0).method_32097(-2.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F), class_5603.method_32090(-5.0F, 2.0F, 0.0F)
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, -7.0F, -1.0F, 2.0F, 7.0F, 2.0F), ModelTransform.pivot(0.0F, 1.0F, 0.0F));
+		modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 26).cuboid(-6.0F, 0.0F, -1.5F, 12.0F, 3.0F, 3.0F), ModelTransform.NONE);
+		modelPartData.addChild(
+			"right_arm", ModelPartBuilder.create().uv(24, 0).cuboid(-2.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F), ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
 		);
-		lv2.method_32117(
-			"left_arm",
-			class_5606.method_32108().method_32101(32, 16).method_32096().method_32097(0.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F),
-			class_5603.method_32090(5.0F, 2.0F, 0.0F)
+		modelPartData.addChild(
+			"left_arm", ModelPartBuilder.create().uv(32, 16).mirrored().cuboid(0.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F), ModelTransform.pivot(5.0F, 2.0F, 0.0F)
 		);
-		lv2.method_32117(
-			"right_leg", class_5606.method_32108().method_32101(8, 0).method_32097(-1.0F, 0.0F, -1.0F, 2.0F, 11.0F, 2.0F), class_5603.method_32090(-1.9F, 12.0F, 0.0F)
+		modelPartData.addChild(
+			"right_leg", ModelPartBuilder.create().uv(8, 0).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 11.0F, 2.0F), ModelTransform.pivot(-1.9F, 12.0F, 0.0F)
 		);
-		lv2.method_32117(
-			"left_leg",
-			class_5606.method_32108().method_32101(40, 16).method_32096().method_32097(-1.0F, 0.0F, -1.0F, 2.0F, 11.0F, 2.0F),
-			class_5603.method_32090(1.9F, 12.0F, 0.0F)
+		modelPartData.addChild(
+			"left_leg", ModelPartBuilder.create().uv(40, 16).mirrored().cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 11.0F, 2.0F), ModelTransform.pivot(1.9F, 12.0F, 0.0F)
 		);
-		lv2.method_32117("right_body_stick", class_5606.method_32108().method_32101(16, 0).method_32097(-3.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F), class_5603.field_27701);
-		lv2.method_32117("left_body_stick", class_5606.method_32108().method_32101(48, 16).method_32097(1.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F), class_5603.field_27701);
-		lv2.method_32117("shoulder_stick", class_5606.method_32108().method_32101(0, 48).method_32097(-4.0F, 10.0F, -1.0F, 8.0F, 2.0F, 2.0F), class_5603.field_27701);
-		lv2.method_32117(
-			"base_plate",
-			class_5606.method_32108().method_32101(0, 32).method_32097(-6.0F, 11.0F, -6.0F, 12.0F, 1.0F, 12.0F),
-			class_5603.method_32090(0.0F, 12.0F, 0.0F)
+		modelPartData.addChild("right_body_stick", ModelPartBuilder.create().uv(16, 0).cuboid(-3.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F), ModelTransform.NONE);
+		modelPartData.addChild("left_body_stick", ModelPartBuilder.create().uv(48, 16).cuboid(1.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F), ModelTransform.NONE);
+		modelPartData.addChild("shoulder_stick", ModelPartBuilder.create().uv(0, 48).cuboid(-4.0F, 10.0F, -1.0F, 8.0F, 2.0F, 2.0F), ModelTransform.NONE);
+		modelPartData.addChild(
+			"base_plate", ModelPartBuilder.create().uv(0, 32).cuboid(-6.0F, 11.0F, -6.0F, 12.0F, 1.0F, 12.0F), ModelTransform.pivot(0.0F, 12.0F, 0.0F)
 		);
-		return class_5607.method_32110(lv, 64, 64);
+		return TexturedModelData.of(modelData, 64, 64);
 	}
 
 	public void animateModel(ArmorStandEntity armorStandEntity, float f, float g, float h) {
@@ -73,7 +67,7 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	@Override
 	public void setAngles(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(armorStandEntity, f, g, h, i, j);
-		this.field_27433.visible = armorStandEntity.shouldShowArms();
+		this.leftArm.visible = armorStandEntity.shouldShowArms();
 		this.rightArm.visible = armorStandEntity.shouldShowArms();
 		this.plate.visible = !armorStandEntity.shouldHideBasePlate();
 		this.field_27391.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();

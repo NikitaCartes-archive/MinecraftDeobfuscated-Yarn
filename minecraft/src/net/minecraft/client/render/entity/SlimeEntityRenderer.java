@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.SlimeOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -16,9 +15,9 @@ import net.minecraft.util.math.MathHelper;
 public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/slime/slime.png");
 
-	public SlimeEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new SlimeEntityModel<>(arg.method_32167(EntityModelLayers.SLIME)), 0.25F);
-		this.addFeature(new SlimeOverlayFeatureRenderer<>(this, arg.method_32170()));
+	public SlimeEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new SlimeEntityModel<>(context.getPart(EntityModelLayers.SLIME)), 0.25F);
+		this.addFeature(new SlimeOverlayFeatureRenderer<>(this, context.getModelLoader()));
 	}
 
 	public void render(SlimeEntity slimeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

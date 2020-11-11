@@ -57,7 +57,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	@Override
 	protected void init() {
 		super.init();
-		this.bannerField = this.client.method_31974().method_32072(EntityModelLayers.BANNER).method_32086("flag");
+		this.bannerField = this.client.method_31974().getModelPart(EntityModelLayers.BANNER).getChild("flag");
 	}
 
 	@Override

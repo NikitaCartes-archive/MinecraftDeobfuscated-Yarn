@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -28,37 +27,37 @@ public final class ModelPart {
 	private final List<ModelPart.Cuboid> cuboids;
 	private final Map<String, ModelPart> children;
 
-	public ModelPart(List<ModelPart.Cuboid> list, Map<String, ModelPart> map) {
-		this.cuboids = list;
-		this.children = map;
+	public ModelPart(List<ModelPart.Cuboid> cuboids, Map<String, ModelPart> children) {
+		this.cuboids = cuboids;
+		this.children = children;
 	}
 
-	public class_5603 method_32084() {
-		return class_5603.method_32091(this.pivotX, this.pivotY, this.pivotZ, this.pitch, this.yaw, this.roll);
+	public ModelTransform getTransform() {
+		return ModelTransform.of(this.pivotX, this.pivotY, this.pivotZ, this.pitch, this.yaw, this.roll);
 	}
 
-	public void method_32085(class_5603 arg) {
-		this.pivotX = arg.field_27702;
-		this.pivotY = arg.field_27703;
-		this.pivotZ = arg.field_27704;
-		this.pitch = arg.field_27705;
-		this.yaw = arg.field_27706;
-		this.roll = arg.field_27707;
+	public void setTransform(ModelTransform rotationData) {
+		this.pivotX = rotationData.pivotX;
+		this.pivotY = rotationData.pivotY;
+		this.pivotZ = rotationData.pivotZ;
+		this.pitch = rotationData.pitch;
+		this.yaw = rotationData.yaw;
+		this.roll = rotationData.roll;
 	}
 
-	public void copyPositionAndRotation(ModelPart modelPart) {
-		this.pitch = modelPart.pitch;
-		this.yaw = modelPart.yaw;
-		this.roll = modelPart.roll;
-		this.pivotX = modelPart.pivotX;
-		this.pivotY = modelPart.pivotY;
-		this.pivotZ = modelPart.pivotZ;
+	public void copyTransform(ModelPart part) {
+		this.pitch = part.pitch;
+		this.yaw = part.yaw;
+		this.roll = part.roll;
+		this.pivotX = part.pivotX;
+		this.pivotY = part.pivotY;
+		this.pivotZ = part.pivotZ;
 	}
 
-	public ModelPart method_32086(String string) {
-		ModelPart modelPart = (ModelPart)this.children.get(string);
+	public ModelPart getChild(String name) {
+		ModelPart modelPart = (ModelPart)this.children.get(name);
 		if (modelPart == null) {
-			throw new NoSuchElementException("Can't find part " + string);
+			throw new NoSuchElementException("Can't find part " + name);
 		} else {
 			return modelPart;
 		}
@@ -107,7 +106,7 @@ public final class ModelPart {
 
 	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
-			cuboid.method_32089(entry, vertexConsumer, light, overlay, red, green, blue, alpha);
+			cuboid.renderCuboid(entry, vertexConsumer, light, overlay, red, green, blue, alpha);
 		}
 	}
 
@@ -115,12 +114,12 @@ public final class ModelPart {
 		return (ModelPart.Cuboid)this.cuboids.get(random.nextInt(this.cuboids.size()));
 	}
 
-	public boolean method_32087() {
+	public boolean isEmpty() {
 		return this.cuboids.isEmpty();
 	}
 
-	public Stream<ModelPart> method_32088() {
-		return Stream.concat(Stream.of(this), this.children.values().stream().flatMap(ModelPart::method_32088));
+	public Stream<ModelPart> traverse() {
+		return Stream.concat(Stream.of(this), this.children.values().stream().flatMap(ModelPart::traverse));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -206,24 +205,24 @@ public final class ModelPart {
 			);
 		}
 
-		public void method_32089(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+		public void renderCuboid(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
 			Matrix4f matrix4f = entry.getModel();
 			Matrix3f matrix3f = entry.getNormal();
 
 			for (ModelPart.Quad quad : this.sides) {
 				Vector3f vector3f = quad.direction.copy();
 				vector3f.transform(matrix3f);
-				float l = vector3f.getX();
-				float m = vector3f.getY();
-				float n = vector3f.getZ();
+				float f = vector3f.getX();
+				float g = vector3f.getY();
+				float h = vector3f.getZ();
 
 				for (ModelPart.Vertex vertex : quad.vertices) {
-					float o = vertex.pos.getX() / 16.0F;
-					float p = vertex.pos.getY() / 16.0F;
-					float q = vertex.pos.getZ() / 16.0F;
-					Vector4f vector4f = new Vector4f(o, p, q, 1.0F);
+					float i = vertex.pos.getX() / 16.0F;
+					float j = vertex.pos.getY() / 16.0F;
+					float k = vertex.pos.getZ() / 16.0F;
+					Vector4f vector4f = new Vector4f(i, j, k, 1.0F);
 					vector4f.transform(matrix4f);
-					vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, k, vertex.u, vertex.v, j, i, l, m, n);
+					vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), red, green, blue, alpha, vertex.u, vertex.v, overlay, light, f, g, h);
 				}
 			}
 		}

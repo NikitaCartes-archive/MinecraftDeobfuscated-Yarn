@@ -2,12 +2,12 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.LlamaEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -37,9 +37,11 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 	private static final Identifier TRADER_LLAMA_DECOR = new Identifier("textures/entity/llama/decor/trader_llama.png");
 	private final LlamaEntityModel<LlamaEntity> model;
 
-	public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> featureRendererContext, class_5599 arg) {
+	public LlamaDecorFeatureRenderer(
+		FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> featureRendererContext, EntityModelLoader entityModelLoader
+	) {
 		super(featureRendererContext);
-		this.model = new LlamaEntityModel<>(arg.method_32072(EntityModelLayers.LLAMA_DECOR));
+		this.model = new LlamaEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.LLAMA_DECOR));
 	}
 
 	public void render(

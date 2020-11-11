@@ -149,37 +149,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean equip(int slot, ItemStack item) {
-		EquipmentSlot equipmentSlot;
-		if (slot == 98) {
-			equipmentSlot = EquipmentSlot.MAINHAND;
-		} else if (slot == 99) {
-			equipmentSlot = EquipmentSlot.OFFHAND;
-		} else if (slot == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.HEAD;
-		} else if (slot == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.CHEST;
-		} else if (slot == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.LEGS;
-		} else {
-			if (slot != 100 + EquipmentSlot.FEET.getEntitySlotId()) {
-				return false;
-			}
-
-			equipmentSlot = EquipmentSlot.FEET;
-		}
-
-		if (!item.isEmpty() && !MobEntity.canEquipmentSlotContain(equipmentSlot, item) && equipmentSlot != EquipmentSlot.HEAD) {
-			return false;
-		} else {
-			this.equipStack(equipmentSlot, item);
-			return true;
-		}
-	}
-
-	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+		EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
 		return this.getEquippedStack(equipmentSlot).isEmpty() && !this.isSlotDisabled(equipmentSlot);
 	}
 
@@ -327,7 +298,7 @@ public class ArmorStandEntity extends LivingEntity {
 		} else if (player.world.isClient) {
 			return ActionResult.CONSUME;
 		} else {
-			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+			EquipmentSlot equipmentSlot = MobEntity.method_32326(itemStack);
 			if (itemStack.isEmpty()) {
 				EquipmentSlot equipmentSlot2 = this.slotFromPosition(hitPos);
 				EquipmentSlot equipmentSlot3 = this.isSlotDisabled(equipmentSlot2) ? equipmentSlot : equipmentSlot2;

@@ -176,11 +176,11 @@ public class FeatureUpdater {
 				}
 
 				String string5 = string + "_index";
-				ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(() -> new ChunkUpdateState(string5), string5);
+				ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState::method_32358, ChunkUpdateState::new, string5);
 				if (!chunkUpdateState.getAll().isEmpty()) {
 					this.updateStates.put(string, chunkUpdateState);
 				} else {
-					ChunkUpdateState chunkUpdateState2 = new ChunkUpdateState(string5);
+					ChunkUpdateState chunkUpdateState2 = new ChunkUpdateState();
 					this.updateStates.put(string, chunkUpdateState2);
 
 					for (String string6 : compoundTag.getKeys()) {

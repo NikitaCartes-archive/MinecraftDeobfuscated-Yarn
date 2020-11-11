@@ -594,7 +594,7 @@ public class ScoreboardCommand {
 		} else if (objective.length() > 16) {
 			throw ObjectiveArgumentType.LONG_NAME_EXCEPTION.create(16);
 		} else {
-			scoreboard.addObjective(objective, criteria, displayName, criteria.getCriterionType());
+			scoreboard.addObjective(objective, criteria, displayName, criteria.getDefaultRenderType());
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objective);
 			source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.add.success", scoreboardObjective.toHoverableText()), true);
 			return scoreboard.getObjectives().size();

@@ -2,6 +2,7 @@ package net.minecraft.client.realms.dto;
 
 import com.google.gson.JsonObject;
 import java.util.Objects;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.util.JsonUtils;
@@ -9,43 +10,33 @@ import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
 public class RealmsWorldOptions extends ValueObject {
-	public Boolean pvp;
-	public Boolean spawnAnimals;
-	public Boolean spawnMonsters;
-	public Boolean spawnNPCs;
-	public Integer spawnProtection;
-	public Boolean commandBlocks;
-	public Boolean forceGameMode;
-	public Integer difficulty;
-	public Integer gameMode;
-	public String slotName;
+	public final boolean pvp;
+	public final boolean spawnAnimals;
+	public final boolean spawnMonsters;
+	public final boolean spawnNPCs;
+	public final int spawnProtection;
+	public final boolean commandBlocks;
+	public final boolean forceGameMode;
+	public final int difficulty;
+	public final int gameMode;
+	@Nullable
+	private final String slotName;
 	public long templateId;
+	@Nullable
 	public String templateImage;
-	public boolean adventureMap;
 	public boolean empty;
 	private static final String DEFAULT_WORLD_TEMPLATE_IMAGE = null;
 
-	public RealmsWorldOptions(
-		Boolean pvp,
-		Boolean spawnAnimals,
-		Boolean spawnMonsters,
-		Boolean spawnNPCs,
-		Integer spawnProtection,
-		Boolean commandBlocks,
-		Integer difficulty,
-		Integer gameMode,
-		Boolean forceGameMode,
-		String slotName
-	) {
-		this.pvp = pvp;
-		this.spawnAnimals = spawnAnimals;
-		this.spawnMonsters = spawnMonsters;
-		this.spawnNPCs = spawnNPCs;
-		this.spawnProtection = spawnProtection;
-		this.commandBlocks = commandBlocks;
-		this.difficulty = difficulty;
-		this.gameMode = gameMode;
-		this.forceGameMode = forceGameMode;
+	public RealmsWorldOptions(boolean bl, boolean bl2, boolean bl3, boolean bl4, int i, boolean bl5, int j, int k, boolean bl6, @Nullable String slotName) {
+		this.pvp = bl;
+		this.spawnAnimals = bl2;
+		this.spawnMonsters = bl3;
+		this.spawnNPCs = bl4;
+		this.spawnProtection = i;
+		this.commandBlocks = bl5;
+		this.difficulty = j;
+		this.gameMode = k;
+		this.forceGameMode = bl6;
 		this.slotName = slotName;
 	}
 
@@ -78,7 +69,6 @@ public class RealmsWorldOptions extends ValueObject {
 		);
 		realmsWorldOptions.templateId = JsonUtils.getLongOr("worldTemplateId", json, -1L);
 		realmsWorldOptions.templateImage = JsonUtils.getStringOr("worldTemplateImage", json, DEFAULT_WORLD_TEMPLATE_IMAGE);
-		realmsWorldOptions.adventureMap = JsonUtils.getBooleanOr("adventureMap", json, false);
 		return realmsWorldOptions;
 	}
 

@@ -46,36 +46,38 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	@Nullable
-	public static MapState getMapState(ItemStack stack, World world) {
-		return world.getMapState(getMapName(getMapId(stack)));
+	public static MapState getMapState(@Nullable Integer integer, World world) {
+		return integer == null ? null : world.getMapState(getMapName(integer));
 	}
 
 	@Nullable
 	public static MapState getOrCreateMapState(ItemStack map, World world) {
-		MapState mapState = getMapState(map, world);
-		if (mapState == null && world instanceof ServerWorld) {
-			mapState = createMapState(
-				map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.getRegistryKey()
-			);
-		}
-
-		return mapState;
+		Integer integer = getMapId(map);
+		return getMapState(integer, world);
 	}
 
-	public static int getMapId(ItemStack stack) {
+	@Nullable
+	public static Integer getMapId(ItemStack stack) {
 		CompoundTag compoundTag = stack.getTag();
-		return compoundTag != null && compoundTag.contains("map", 99) ? compoundTag.getInt("map") : 0;
+		return compoundTag != null && compoundTag.contains("map", 99) ? compoundTag.getInt("map") : null;
 	}
 
-	private static MapState createMapState(
+	private static int method_32349(World world, int i, int j, int k, boolean bl, boolean bl2, RegistryKey<World> registryKey) {
+		MapState mapState = MapState.method_32363((double)i, (double)j, (byte)k, bl, bl2, registryKey);
+		int l = world.getNextMapId();
+		world.putMapState(getMapName(l), mapState);
+		return l;
+	}
+
+	private static void method_32348(ItemStack itemStack, int i) {
+		itemStack.getOrCreateTag().putInt("map", i);
+	}
+
+	private static void createMapState(
 		ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension
 	) {
-		int i = world.getNextMapId();
-		MapState mapState = new MapState(getMapName(i));
-		mapState.init(x, z, scale, showIcons, unlimitedTracking, dimension);
-		world.putMapState(mapState);
-		stack.getOrCreateTag().putInt("map", i);
-		return mapState;
+		int i = method_32349(world, x, z, scale, showIcons, unlimitedTracking, dimension);
+		method_32348(stack, i);
 	}
 
 	public static String getMapName(int mapId) {
@@ -192,13 +194,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 								d = e;
 								if (p >= 0 && q * q + r * r < n * n && (!bl2 || (o + p & 1) != 0)) {
-									byte b = state.colors[o + p * 128];
-									byte c = (byte)(mapColor.id * 4 + y);
-									if (b != c) {
-										state.colors[o + p * 128] = c;
-										state.markDirty(o, p);
-										bl = true;
-									}
+									bl |= state.method_32365(o, p, (byte)(mapColor.id * 4 + y));
 								}
 							}
 						}
@@ -299,8 +295,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 							}
 
 							if (mapColor != MapColor.CLEAR) {
-								mapState.colors[l + m * 128] = (byte)(mapColor.id * 4 + o);
-								mapState.markDirty(l, m);
+								mapState.method_32370(l, m, (byte)(mapColor.id * 4 + o));
 							}
 						}
 					}
@@ -329,7 +324,9 @@ public class FilledMapItem extends NetworkSyncedItem {
 	@Nullable
 	@Override
 	public Packet<?> createSyncPacket(ItemStack stack, World world, PlayerEntity player) {
-		return getOrCreateMapState(stack, world).getPlayerMarkerPacket(stack, world, player);
+		Integer integer = getMapId(stack);
+		MapState mapState = getMapState(integer, world);
+		return mapState != null ? mapState.getPlayerMarkerPacket(integer, player) : null;
 	}
 
 	@Override
@@ -344,41 +341,38 @@ public class FilledMapItem extends NetworkSyncedItem {
 		}
 	}
 
-	protected static void scale(ItemStack map, World world, int amount) {
+	private static void scale(ItemStack map, World world, int amount) {
 		MapState mapState = getOrCreateMapState(map, world);
 		if (mapState != null) {
-			createMapState(
-				map,
-				world,
-				mapState.xCenter,
-				mapState.zCenter,
-				MathHelper.clamp(mapState.scale + amount, 0, 4),
-				mapState.showIcons,
-				mapState.unlimitedTracking,
-				mapState.dimension
-			);
+			int i = world.getNextMapId();
+			world.putMapState(getMapName(i), mapState.method_32364(amount));
+			method_32348(map, i);
 		}
 	}
 
 	public static void copyMap(World world, ItemStack stack) {
 		MapState mapState = getOrCreateMapState(stack, world);
 		if (mapState != null) {
-			MapState mapState2 = createMapState(stack, world, 0, 0, mapState.scale, mapState.showIcons, mapState.unlimitedTracking, mapState.dimension);
-			mapState2.copyFrom(mapState);
+			int i = world.getNextMapId();
+			String string = getMapName(i);
+			MapState mapState2 = mapState.method_32361();
+			world.putMapState(string, mapState2);
+			method_32348(stack, i);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		MapState mapState = world == null ? null : getOrCreateMapState(stack, world);
+		Integer integer = getMapId(stack);
+		MapState mapState = world == null ? null : getMapState(integer, world);
 		if (mapState != null && mapState.locked) {
-			tooltip.add(new TranslatableText("filled_map.locked", getMapId(stack)).formatted(Formatting.GRAY));
+			tooltip.add(new TranslatableText("filled_map.locked", integer).formatted(Formatting.GRAY));
 		}
 
 		if (context.isAdvanced()) {
 			if (mapState != null) {
-				tooltip.add(new TranslatableText("filled_map.id", getMapId(stack)).formatted(Formatting.GRAY));
+				tooltip.add(new TranslatableText("filled_map.id", integer).formatted(Formatting.GRAY));
 				tooltip.add(new TranslatableText("filled_map.scale", 1 << mapState.scale).formatted(Formatting.GRAY));
 				tooltip.add(new TranslatableText("filled_map.level", mapState.scale, 4).formatted(Formatting.GRAY));
 			} else {
@@ -404,7 +398,9 @@ public class FilledMapItem extends NetworkSyncedItem {
 		if (blockState.isIn(BlockTags.BANNERS)) {
 			if (!context.getWorld().isClient) {
 				MapState mapState = getOrCreateMapState(context.getStack(), context.getWorld());
-				mapState.addBanner(context.getWorld(), context.getBlockPos());
+				if (mapState != null) {
+					mapState.addBanner(context.getWorld(), context.getBlockPos());
+				}
 			}
 
 			return ActionResult.success(context.getWorld().isClient);

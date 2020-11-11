@@ -1,15 +1,18 @@
 package net.minecraft.block;
 
+import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -171,8 +174,13 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public Fluid tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
+	public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
-		return Fluids.WATER;
+		return new ItemStack(Items.WATER_BUCKET);
+	}
+
+	@Override
+	public Optional<SoundEvent> getDrainSound() {
+		return Fluids.WATER.getFillSound();
 	}
 }

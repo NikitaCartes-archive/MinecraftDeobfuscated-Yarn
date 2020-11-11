@@ -10,8 +10,8 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.VideoOptionsScreen;
 import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
-import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,7 +19,6 @@ import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 
@@ -28,9 +27,8 @@ public class OptionsScreen extends Screen {
 	private static final Option[] OPTIONS = new Option[]{Option.FOV};
 	private final Screen parent;
 	private final GameOptions settings;
-	private ButtonWidget difficultyButton;
+	private CyclingButtonWidget<Difficulty> difficultyButton;
 	private LockButtonWidget lockDifficultyButton;
-	private Difficulty difficulty;
 
 	public OptionsScreen(Screen parent, GameOptions gameOptions) {
 		super(new TranslatableText("options.title"));
@@ -50,15 +48,18 @@ public class OptionsScreen extends Screen {
 		}
 
 		if (this.client.world != null) {
-			this.difficulty = this.client.world.getDifficulty();
 			this.difficultyButton = this.addButton(
-				new ButtonWidget(
-					this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.getDifficultyButtonText(this.difficulty), button -> {
-						this.difficulty = Difficulty.byOrdinal(this.difficulty.getId() + 1);
-						this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(this.difficulty));
-						this.difficultyButton.setMessage(this.getDifficultyButtonText(this.difficulty));
-					}
-				)
+				CyclingButtonWidget.<Difficulty>method_32606(Difficulty::getTranslatableName)
+					.method_32624(Difficulty.values())
+					.value(this.client.world.getDifficulty())
+					.build(
+						this.width / 2 - 155 + i % 2 * 160,
+						this.height / 6 - 12 + 24 * (i >> 1),
+						150,
+						20,
+						new TranslatableText("options.difficulty"),
+						(cyclingButtonWidget, difficulty) -> this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(difficulty))
+					)
 			);
 			if (this.client.isIntegratedServerRunning() && !this.client.world.getLevelProperties().isHardcore()) {
 				this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
@@ -71,9 +72,7 @@ public class OptionsScreen extends Screen {
 									new ConfirmScreen(
 										this::lockDifficulty,
 										new TranslatableText("difficulty.lock.title"),
-										new TranslatableText(
-											"difficulty.lock.question", new TranslatableText("options.difficulty." + this.client.world.getLevelProperties().getDifficulty().getName())
-										)
+										new TranslatableText("difficulty.lock.question", this.client.world.getLevelProperties().getDifficulty().getTranslatableName())
 									)
 								)
 					)
@@ -85,21 +84,7 @@ public class OptionsScreen extends Screen {
 				this.difficultyButton.active = false;
 			}
 		} else {
-			this.addButton(
-				new OptionButtonWidget(
-					this.width / 2 - 155 + i % 2 * 160,
-					this.height / 6 - 12 + 24 * (i >> 1),
-					150,
-					20,
-					Option.REALMS_NOTIFICATIONS,
-					Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings),
-					button -> {
-						Option.REALMS_NOTIFICATIONS.toggle(this.settings);
-						this.settings.write();
-						button.setMessage(Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings));
-					}
-				)
-			);
+			this.addButton(Option.REALMS_NOTIFICATIONS.createButton(this.settings, this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150));
 		}
 
 		this.addButton(
@@ -209,10 +194,6 @@ public class OptionsScreen extends Screen {
 		if (!list2.equals(list)) {
 			this.client.reloadResources();
 		}
-	}
-
-	private Text getDifficultyButtonText(Difficulty difficulty) {
-		return new TranslatableText("options.difficulty").append(": ").append(difficulty.getTranslatableName());
 	}
 
 	private void lockDifficulty(boolean difficultyLocked) {

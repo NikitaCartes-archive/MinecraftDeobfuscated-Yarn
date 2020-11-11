@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -22,17 +21,17 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
-	private final Map<BoatEntity.Type, Pair<Identifier, BoatEntityModel>> field_27758;
+	private final Map<BoatEntity.Type, Pair<Identifier, BoatEntityModel>> texturesAndModels;
 
-	public BoatEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
+	public BoatEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
 		this.shadowRadius = 0.8F;
-		this.field_27758 = (Map<BoatEntity.Type, Pair<Identifier, BoatEntityModel>>)Stream.of(BoatEntity.Type.values())
+		this.texturesAndModels = (Map<BoatEntity.Type, Pair<Identifier, BoatEntityModel>>)Stream.of(BoatEntity.Type.values())
 			.collect(
 				ImmutableMap.toImmutableMap(
 					type -> type,
 					type -> Pair.of(
-							new Identifier("textures/entity/boat/" + type.getName() + ".png"), new BoatEntityModel(arg.method_32167(EntityModelLayers.createBoat(type)))
+							new Identifier("textures/entity/boat/" + type.getName() + ".png"), new BoatEntityModel(context.getPart(EntityModelLayers.createBoat(type)))
 						)
 				)
 			);
@@ -57,7 +56,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 			matrixStack.multiply(new Quaternion(new Vector3f(1.0F, 0.0F, 1.0F), boatEntity.interpolateBubbleWobble(g), true));
 		}
 
-		Pair<Identifier, BoatEntityModel> pair = (Pair<Identifier, BoatEntityModel>)this.field_27758.get(boatEntity.getBoatType());
+		Pair<Identifier, BoatEntityModel> pair = (Pair<Identifier, BoatEntityModel>)this.texturesAndModels.get(boatEntity.getBoatType());
 		Identifier identifier = pair.getFirst();
 		BoatEntityModel boatEntityModel = pair.getSecond();
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
@@ -75,6 +74,6 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 	}
 
 	public Identifier getTexture(BoatEntity boatEntity) {
-		return (Identifier)((Pair)this.field_27758.get(boatEntity.getBoatType())).getFirst();
+		return (Identifier)((Pair)this.texturesAndModels.get(boatEntity.getBoatType())).getFirst();
 	}
 }

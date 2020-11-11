@@ -50,7 +50,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			case REMOVE:
 			default:
 				break;
-			case UPDATE_PCT:
+			case UPDATE_PROGRESS:
 				this.percent = buf.readFloat();
 				break;
 			case UPDATE_NAME:
@@ -85,7 +85,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			case REMOVE:
 			default:
 				break;
-			case UPDATE_PCT:
+			case UPDATE_PROGRESS:
 				buf.writeFloat(this.percent);
 				break;
 			case UPDATE_NAME:
@@ -169,7 +169,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static enum Type {
 		ADD,
 		REMOVE,
-		UPDATE_PCT,
+		UPDATE_PROGRESS,
 		UPDATE_NAME,
 		UPDATE_STYLE,
 		UPDATE_PROPERTIES;

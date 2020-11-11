@@ -19,13 +19,13 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -113,20 +113,14 @@ public class EditGameRulesScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	public class BooleanRuleWidget extends EditGameRulesScreen.NamedRuleWidget {
-		private final ButtonWidget toggleButton;
+		private final CyclingButtonWidget<Boolean> toggleButton;
 
 		public BooleanRuleWidget(Text name, List<OrderedText> description, String ruleName, GameRules.BooleanRule booleanRule) {
 			super(description, name);
-			this.toggleButton = new ButtonWidget(10, 5, 44, 20, ScreenTexts.getToggleText(booleanRule.get()), buttonWidget -> {
-				boolean bl = !booleanRule.get();
-				booleanRule.set(bl, null);
-				buttonWidget.setMessage(ScreenTexts.getToggleText(booleanRule.get()));
-			}) {
-				@Override
-				protected MutableText getNarrationMessage() {
-					return ScreenTexts.composeToggleText(name, booleanRule.get()).append("\n").append(ruleName);
-				}
-			};
+			this.toggleButton = CyclingButtonWidget.method_32613(booleanRule.get())
+				.method_32616()
+				.method_32623(cyclingButtonWidget -> cyclingButtonWidget.method_32611().append("\n").append(ruleName))
+				.build(10, 5, 44, 20, name, (cyclingButtonWidget, boolean_) -> booleanRule.set(boolean_, null));
 			this.children.add(this.toggleButton);
 		}
 

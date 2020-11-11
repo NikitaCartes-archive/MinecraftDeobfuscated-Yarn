@@ -1,7 +1,6 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -13,29 +12,23 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
-import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.provider.nbt.LootNbtProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.util.JsonHelper;
 
 public class CopyNbtLootFunction extends ConditionalLootFunction {
-	private final CopyNbtLootFunction.Source source;
+	private final LootNbtProvider source;
 	private final List<CopyNbtLootFunction.Operation> operations;
-	private static final Function<Entity, Tag> ENTITY_TAG_GETTER = NbtPredicate::entityToTag;
-	private static final Function<BlockEntity, Tag> BLOCK_ENTITY_TAG_GETTER = blockEntity -> blockEntity.toTag(new CompoundTag());
 
-	private CopyNbtLootFunction(LootCondition[] conditions, CopyNbtLootFunction.Source source, List<CopyNbtLootFunction.Operation> operations) {
+	private CopyNbtLootFunction(LootCondition[] conditions, LootNbtProvider source, List<CopyNbtLootFunction.Operation> operations) {
 		super(conditions);
 		this.source = source;
 		this.operations = ImmutableList.copyOf(operations);
@@ -56,12 +49,12 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.source.parameter);
+		return this.source.method_32441();
 	}
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Tag tag = (Tag)this.source.getter.apply(context);
+		Tag tag = this.source.method_32440(context);
 		if (tag != null) {
 			this.operations.forEach(operation -> operation.execute(stack::getOrCreateTag, tag));
 		}
@@ -69,15 +62,15 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static CopyNbtLootFunction.Builder builder(CopyNbtLootFunction.Source source) {
+	public static CopyNbtLootFunction.Builder builder(LootNbtProvider source) {
 		return new CopyNbtLootFunction.Builder(source);
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<CopyNbtLootFunction.Builder> {
-		private final CopyNbtLootFunction.Source source;
+		private final LootNbtProvider source;
 		private final List<CopyNbtLootFunction.Operation> operations = Lists.<CopyNbtLootFunction.Operation>newArrayList();
 
-		private Builder(CopyNbtLootFunction.Source source) {
+		private Builder(LootNbtProvider source) {
 			this.source = source;
 		}
 
@@ -197,14 +190,14 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	public static class Serializer extends ConditionalLootFunction.Serializer<CopyNbtLootFunction> {
 		public void toJson(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, copyNbtLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("source", copyNbtLootFunction.source.name);
+			jsonObject.add("source", jsonSerializationContext.serialize(copyNbtLootFunction.source));
 			JsonArray jsonArray = new JsonArray();
 			copyNbtLootFunction.operations.stream().map(CopyNbtLootFunction.Operation::toJson).forEach(jsonArray::add);
 			jsonObject.add("ops", jsonArray);
 		}
 
 		public CopyNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			CopyNbtLootFunction.Source source = CopyNbtLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
+			LootNbtProvider lootNbtProvider = JsonHelper.deserialize(jsonObject, "source", jsonDeserializationContext, LootNbtProvider.class);
 			List<CopyNbtLootFunction.Operation> list = Lists.<CopyNbtLootFunction.Operation>newArrayList();
 
 			for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "ops")) {
@@ -212,37 +205,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 				list.add(CopyNbtLootFunction.Operation.fromJson(jsonObject2));
 			}
 
-			return new CopyNbtLootFunction(lootConditions, source, list);
-		}
-	}
-
-	public static enum Source {
-		THIS("this", LootContextParameters.THIS_ENTITY, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		KILLER("killer", LootContextParameters.KILLER_ENTITY, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		BLOCK_ENTITY("block_entity", LootContextParameters.BLOCK_ENTITY, CopyNbtLootFunction.BLOCK_ENTITY_TAG_GETTER);
-
-		public final String name;
-		public final LootContextParameter<?> parameter;
-		public final Function<LootContext, Tag> getter;
-
-		private <T> Source(String name, LootContextParameter<T> parameter, Function<? super T, Tag> operator) {
-			this.name = name;
-			this.parameter = parameter;
-			this.getter = context -> {
-				T object = context.get(parameter);
-				return object != null ? (Tag)operator.apply(object) : null;
-			};
-		}
-
-		public static CopyNbtLootFunction.Source get(String name) {
-			for (CopyNbtLootFunction.Source source : values()) {
-				if (source.name.equals(name)) {
-					return source;
-				}
-			}
-
-			throw new IllegalArgumentException("Invalid tag source " + name);
+			return new CopyNbtLootFunction(lootConditions, lootNbtProvider, list);
 		}
 	}
 }

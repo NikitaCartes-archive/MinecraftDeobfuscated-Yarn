@@ -2,13 +2,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
-import net.minecraft.class_5617;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -32,22 +31,22 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
 	private final ModelPart frame;
 	private final ModelPart bottom;
 
-	public EndCrystalEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
+	public EndCrystalEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
 		this.shadowRadius = 0.5F;
-		ModelPart modelPart = arg.method_32167(EntityModelLayers.END_CRYSTAL);
-		this.frame = modelPart.method_32086("glass");
-		this.core = modelPart.method_32086("cube");
-		this.bottom = modelPart.method_32086("base");
+		ModelPart modelPart = context.getPart(EntityModelLayers.END_CRYSTAL);
+		this.frame = modelPart.getChild("glass");
+		this.core = modelPart.getChild("cube");
+		this.bottom = modelPart.getChild("base");
 	}
 
-	public static class_5607 method_32164() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117("glass", class_5606.method_32108().method_32101(0, 0).method_32097(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), class_5603.field_27701);
-		lv2.method_32117("cube", class_5606.method_32108().method_32101(32, 0).method_32097(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), class_5603.field_27701);
-		lv2.method_32117("base", class_5606.method_32108().method_32101(0, 16).method_32097(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F), class_5603.field_27701);
-		return class_5607.method_32110(lv, 64, 32);
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("glass", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE);
+		modelPartData.addChild("cube", ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE);
+		modelPartData.addChild("base", ModelPartBuilder.create().uv(0, 16).cuboid(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F), ModelTransform.NONE);
+		return TexturedModelData.of(modelData, 64, 32);
 	}
 
 	public void render(EndCrystalEntity endCrystalEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

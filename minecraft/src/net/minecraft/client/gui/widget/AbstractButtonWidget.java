@@ -96,7 +96,11 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	}
 
 	protected MutableText getNarrationMessage() {
-		return new TranslatableText("gui.narrate.button", this.getMessage());
+		return method_32602(this.getMessage());
+	}
+
+	public static MutableText method_32602(Text text) {
+		return new TranslatableText("gui.narrate.button", text);
 	}
 
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {

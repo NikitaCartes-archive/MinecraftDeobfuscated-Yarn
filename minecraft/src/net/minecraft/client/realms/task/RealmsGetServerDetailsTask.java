@@ -1,5 +1,9 @@
 package net.minecraft.client.realms.task;
 
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
@@ -18,7 +22,6 @@ import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsTermsScreen;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
@@ -37,117 +40,105 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 
 	public void run() {
 		this.setTitle(new TranslatableText("mco.connect.connecting"));
-		RealmsClient realmsClient = RealmsClient.createRealmsClient();
-		boolean bl = false;
-		boolean bl2 = false;
-		int i = 5;
-		RealmsServerAddress realmsServerAddress = null;
-		boolean bl3 = false;
-		boolean bl4 = false;
 
-		for (int j = 0; j < 40 && !this.aborted(); j++) {
-			try {
-				realmsServerAddress = realmsClient.join(this.server.id);
-				bl = true;
-			} catch (RetryCallException var11) {
-				i = var11.delaySeconds;
-			} catch (RealmsServiceException var12) {
-				if (var12.errorCode == 6002) {
-					bl3 = true;
-				} else if (var12.errorCode == 6006) {
-					bl4 = true;
-				} else {
-					bl2 = true;
-					this.error(var12.toString());
-					LOGGER.error("Couldn't connect to world", (Throwable)var12);
-				}
-				break;
-			} catch (Exception var13) {
-				bl2 = true;
-				LOGGER.error("Couldn't connect to world", (Throwable)var13);
-				this.error(var13.getLocalizedMessage());
-				break;
-			}
-
-			if (bl) {
-				break;
-			}
-
-			this.sleep(i);
-		}
-
-		if (bl3) {
-			setScreen(new RealmsTermsScreen(this.lastScreen, this.mainScreen, this.server));
-		} else if (bl4) {
-			if (this.server.ownerUUID.equals(MinecraftClient.getInstance().getSession().getUuid())) {
-				setScreen(new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME));
-			} else {
-				setScreen(
-					new RealmsGenericErrorScreen(
-						new TranslatableText("mco.brokenworld.nonowner.title"), new TranslatableText("mco.brokenworld.nonowner.error"), this.lastScreen
-					)
-				);
-			}
-		} else if (!this.aborted() && !bl2) {
-			if (bl) {
-				RealmsServerAddress realmsServerAddress2 = realmsServerAddress;
-				if (realmsServerAddress2.resourcePackUrl != null && realmsServerAddress2.resourcePackHash != null) {
-					Text text = new TranslatableText("mco.configure.world.resourcepack.question.line1");
-					Text text2 = new TranslatableText("mco.configure.world.resourcepack.question.line2");
+		RealmsServerAddress realmsServerAddress;
+		try {
+			realmsServerAddress = this.method_32516();
+		} catch (CancellationException var4) {
+			LOGGER.info("User aborted connecting to realms");
+			return;
+		} catch (RealmsServiceException var5) {
+			switch (var5.errorCode) {
+				case 6002:
+					setScreen(new RealmsTermsScreen(this.lastScreen, this.mainScreen, this.server));
+					return;
+				case 6006:
+					boolean bl = this.server.ownerUUID.equals(MinecraftClient.getInstance().getSession().getUuid());
 					setScreen(
-						new RealmsLongConfirmationScreen(
-							blx -> {
-								try {
-									if (blx) {
-										Function<Throwable, Void> function = throwable -> {
-											MinecraftClient.getInstance().getResourcePackDownloader().clear();
-											LOGGER.error(throwable);
-											setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
-											return null;
-										};
-
-										try {
-											MinecraftClient.getInstance()
-												.getResourcePackDownloader()
-												.download(realmsServerAddress2.resourcePackUrl, realmsServerAddress2.resourcePackHash)
-												.thenRun(
-													() -> this.setScreen(
-															new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, realmsServerAddress2))
-														)
-												)
-												.exceptionally(function);
-										} catch (Exception var8x) {
-											function.apply(var8x);
-										}
-									} else {
-										setScreen(this.lastScreen);
-									}
-								} finally {
-									if (this.connectLock != null && this.connectLock.isHeldByCurrentThread()) {
-										this.connectLock.unlock();
-									}
-								}
-							},
-							RealmsLongConfirmationScreen.Type.Info,
-							text,
-							text2,
-							true
-						)
+						(Screen)(bl
+							? new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME)
+							: new RealmsGenericErrorScreen(
+								new TranslatableText("mco.brokenworld.nonowner.title"), new TranslatableText("mco.brokenworld.nonowner.error"), this.lastScreen
+							))
 					);
-				} else {
-					this.setScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, realmsServerAddress2)));
-				}
-			} else {
-				this.error(new TranslatableText("mco.errorMessage.connectionFailure"));
+					return;
+				default:
+					this.error(var5.toString());
+					LOGGER.error("Couldn't connect to world", (Throwable)var5);
+					return;
 			}
+		} catch (TimeoutException var6) {
+			this.error(new TranslatableText("mco.errorMessage.connectionFailure"));
+			return;
+		} catch (Exception var7) {
+			LOGGER.error("Couldn't connect to world", (Throwable)var7);
+			this.error(var7.getLocalizedMessage());
+			return;
 		}
+
+		boolean bl2 = realmsServerAddress.resourcePackUrl != null && realmsServerAddress.resourcePackHash != null;
+		Screen screen = (Screen)(bl2 ? this.method_32512(realmsServerAddress, this::method_32511) : this.method_32511(realmsServerAddress));
+		setScreen(screen);
 	}
 
-	private void sleep(int sleepTimeSeconds) {
+	private RealmsServerAddress method_32516() throws RealmsServiceException, TimeoutException, CancellationException {
+		RealmsClient realmsClient = RealmsClient.createRealmsClient();
+
+		for (int i = 0; i < 40; i++) {
+			if (this.aborted()) {
+				throw new CancellationException();
+			}
+
+			try {
+				return realmsClient.join(this.server.id);
+			} catch (RetryCallException var4) {
+				pause((long)var4.delaySeconds);
+			}
+		}
+
+		throw new TimeoutException();
+	}
+
+	public RealmsLongRunningMcoTaskScreen method_32511(RealmsServerAddress realmsServerAddress) {
+		return new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, realmsServerAddress));
+	}
+
+	private RealmsLongConfirmationScreen method_32512(RealmsServerAddress realmsServerAddress, Function<RealmsServerAddress, Screen> function) {
+		BooleanConsumer booleanConsumer = bl -> {
+			try {
+				if (bl) {
+					this.method_32515(realmsServerAddress).thenRun(() -> setScreen((Screen)function.apply(realmsServerAddress))).exceptionally(throwable -> {
+						MinecraftClient.getInstance().getResourcePackDownloader().clear();
+						LOGGER.error(throwable);
+						setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
+						return null;
+					});
+					return;
+				}
+
+				setScreen(this.lastScreen);
+			} finally {
+				if (this.connectLock.isHeldByCurrentThread()) {
+					this.connectLock.unlock();
+				}
+			}
+		};
+		return new RealmsLongConfirmationScreen(
+			booleanConsumer,
+			RealmsLongConfirmationScreen.Type.Info,
+			new TranslatableText("mco.configure.world.resourcepack.question.line1"),
+			new TranslatableText("mco.configure.world.resourcepack.question.line2"),
+			true
+		);
+	}
+
+	private CompletableFuture<?> method_32515(RealmsServerAddress realmsServerAddress) {
 		try {
-			Thread.sleep((long)(sleepTimeSeconds * 1000));
-		} catch (InterruptedException var3) {
-			LOGGER.warn(var3.getLocalizedMessage());
+			return MinecraftClient.getInstance().getResourcePackDownloader().download(realmsServerAddress.resourcePackUrl, realmsServerAddress.resourcePackHash);
+		} catch (Exception var4) {
+			CompletableFuture<Void> completableFuture = new CompletableFuture();
+			completableFuture.completeExceptionally(var4);
+			return completableFuture;
 		}
 	}
 }

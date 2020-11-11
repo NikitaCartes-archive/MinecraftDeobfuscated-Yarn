@@ -81,13 +81,15 @@ public class EntityTrackerEntry {
 			ItemFrameEntity itemFrameEntity = (ItemFrameEntity)this.entity;
 			ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 			if (itemStack.getItem() instanceof FilledMapItem) {
-				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.world);
-
-				for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
-					mapState.update(serverPlayerEntity, itemStack);
-					Packet<?> packet = ((FilledMapItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, serverPlayerEntity);
-					if (packet != null) {
-						serverPlayerEntity.networkHandler.sendPacket(packet);
+				Integer integer = FilledMapItem.getMapId(itemStack);
+				MapState mapState = FilledMapItem.getMapState(integer, this.world);
+				if (mapState != null) {
+					for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
+						mapState.update(serverPlayerEntity, itemStack);
+						Packet<?> packet = mapState.getPlayerMarkerPacket(integer, serverPlayerEntity);
+						if (packet != null) {
+							serverPlayerEntity.networkHandler.sendPacket(packet);
+						}
 					}
 				}
 			}

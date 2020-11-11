@@ -1,9 +1,13 @@
 package net.minecraft.client.realms.gui.screen;
 
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.screen.world.GameModeSelection;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.RealmsLabel;
@@ -14,48 +18,31 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSlotOptionsScreen extends RealmsScreen {
-	public static final Text[] DIFFICULTIES = new Text[]{
-		new TranslatableText("options.difficulty.peaceful"),
-		new TranslatableText("options.difficulty.easy"),
-		new TranslatableText("options.difficulty.normal"),
-		new TranslatableText("options.difficulty.hard")
-	};
-	public static final Text[] GAME_MODES = new Text[]{
-		new TranslatableText("selectWorld.gameMode.survival"),
-		new TranslatableText("selectWorld.gameMode.creative"),
-		new TranslatableText("selectWorld.gameMode.adventure")
-	};
-	private static final Text field_24207 = new TranslatableText("mco.configure.world.on");
-	private static final Text field_24208 = new TranslatableText("mco.configure.world.off");
-	private static final Text field_25884 = new TranslatableText("selectWorld.gameMode");
+	public static final List<Difficulty> DIFFICULTIES = ImmutableList.of(Difficulty.PEACEFUL, Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD);
+	public static final List<GameModeSelection> GAME_MODES = ImmutableList.of(GameModeSelection.SURVIVAL, GameModeSelection.CREATIVE, GameModeSelection.ADVENTURE);
 	private static final Text field_26516 = new TranslatableText("mco.configure.world.edit.slot.name");
+	private static final Text field_27942 = new TranslatableText("mco.configure.world.spawnProtection");
 	private TextFieldWidget nameEdit;
 	protected final RealmsConfigureWorldScreen parent;
 	private int column1_x;
-	private int column_width;
 	private int column2_x;
 	private final RealmsWorldOptions options;
 	private final RealmsServer.WorldType worldType;
 	private final int activeSlot;
+	private Difficulty field_27943;
+	private GameModeSelection gameModeIndex;
+	private boolean pvp;
+	private boolean spawnNPCs;
+	private boolean spawnAnimals;
+	private boolean spawnMonsters;
 	private int difficultyIndex;
-	private int gameModeIndex;
-	private Boolean pvp;
-	private Boolean spawnNPCs;
-	private Boolean spawnAnimals;
-	private Boolean spawnMonsters;
-	private Integer spawnProtection;
-	private Boolean commandBlocks;
-	private Boolean forceGameMode;
-	private ButtonWidget pvpButton;
-	private ButtonWidget spawnAnimalsButton;
-	private ButtonWidget spawnMonstersButton;
-	private ButtonWidget spawnNPCsButton;
+	private boolean commandBlocks;
+	private boolean forceGameMode;
 	private RealmsSlotOptionsScreen.SettingsSlider spawnProtectionButton;
-	private ButtonWidget commandBlocksButton;
-	private ButtonWidget gameModeButton;
 	private RealmsLabel titleLabel;
 	private RealmsLabel toastMessage;
 
@@ -86,16 +73,29 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		}
 	}
 
+	private static <T> T method_32498(List<T> list, int i, int j) {
+		try {
+			return (T)list.get(i);
+		} catch (IndexOutOfBoundsException var4) {
+			return (T)list.get(j);
+		}
+	}
+
+	private static <T> int method_32499(List<T> list, T object, int i) {
+		int j = list.indexOf(object);
+		return j == -1 ? i : j;
+	}
+
 	@Override
 	public void init() {
-		this.column_width = 170;
-		this.column1_x = this.width / 2 - this.column_width;
-		this.column2_x = this.width / 2 + 10;
-		this.difficultyIndex = this.options.difficulty;
-		this.gameModeIndex = this.options.gameMode;
+		this.column2_x = 170;
+		this.column1_x = this.width / 2 - this.column2_x;
+		int i = this.width / 2 + 10;
+		this.field_27943 = method_32498(DIFFICULTIES, this.options.difficulty, 2);
+		this.gameModeIndex = method_32498(GAME_MODES, this.options.gameMode, 0);
 		if (this.worldType == RealmsServer.WorldType.NORMAL) {
 			this.pvp = this.options.pvp;
-			this.spawnProtection = this.options.spawnProtection;
+			this.difficultyIndex = this.options.spawnProtection;
 			this.forceGameMode = this.options.forceGameMode;
 			this.spawnAnimals = this.options.spawnAnimals;
 			this.spawnMonsters = this.options.spawnMonsters;
@@ -113,7 +113,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 
 			this.toastMessage = new RealmsLabel(text, this.width / 2, 26, 16711680);
 			this.pvp = true;
-			this.spawnProtection = 0;
+			this.difficultyIndex = 0;
 			this.forceGameMode = false;
 			this.spawnAnimals = true;
 			this.spawnMonsters = true;
@@ -122,70 +122,99 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		}
 
 		this.nameEdit = new TextFieldWidget(
-			this.client.textRenderer, this.column1_x + 2, row(1), this.column_width - 4, 20, null, new TranslatableText("mco.configure.world.edit.slot.name")
+			this.client.textRenderer, this.column1_x + 2, row(1), this.column2_x - 4, 20, null, new TranslatableText("mco.configure.world.edit.slot.name")
 		);
 		this.nameEdit.setMaxLength(10);
 		this.nameEdit.setText(this.options.getSlotName(this.activeSlot));
 		this.focusOn(this.nameEdit);
-		this.pvpButton = this.addButton(new ButtonWidget(this.column2_x, row(1), this.column_width, 20, this.pvpTitle(), buttonWidget -> {
-			this.pvp = !this.pvp;
-			buttonWidget.setMessage(this.pvpTitle());
-		}));
-		this.addButton(new ButtonWidget(this.column1_x, row(3), this.column_width, 20, this.gameModeTitle(), buttonWidget -> {
-			this.gameModeIndex = (this.gameModeIndex + 1) % GAME_MODES.length;
-			buttonWidget.setMessage(this.gameModeTitle());
-		}));
-		this.spawnAnimalsButton = this.addButton(new ButtonWidget(this.column2_x, row(3), this.column_width, 20, this.spawnAnimalsTitle(), buttonWidget -> {
-			this.spawnAnimals = !this.spawnAnimals;
-			buttonWidget.setMessage(this.spawnAnimalsTitle());
-		}));
-		this.addButton(new ButtonWidget(this.column1_x, row(5), this.column_width, 20, this.difficultyTitle(), buttonWidget -> {
-			this.difficultyIndex = (this.difficultyIndex + 1) % DIFFICULTIES.length;
-			buttonWidget.setMessage(this.difficultyTitle());
-			if (this.worldType == RealmsServer.WorldType.NORMAL) {
-				this.spawnMonstersButton.active = this.difficultyIndex != 0;
-				this.spawnMonstersButton.setMessage(this.spawnMonstersTitle());
-			}
-		}));
-		this.spawnMonstersButton = this.addButton(new ButtonWidget(this.column2_x, row(5), this.column_width, 20, this.spawnMonstersTitle(), buttonWidget -> {
-			this.spawnMonsters = !this.spawnMonsters;
-			buttonWidget.setMessage(this.spawnMonstersTitle());
-		}));
-		this.spawnProtectionButton = this.addButton(
-			new RealmsSlotOptionsScreen.SettingsSlider(this.column1_x, row(7), this.column_width, this.spawnProtection, 0.0F, 16.0F)
+		CyclingButtonWidget<Boolean> cyclingButtonWidget = this.addButton(
+			CyclingButtonWidget.method_32613(this.pvp)
+				.build(i, row(1), this.column2_x, 20, new TranslatableText("mco.configure.world.pvp"), (cyclingButtonWidgetx, boolean_) -> this.pvp = boolean_)
 		);
-		this.spawnNPCsButton = this.addButton(new ButtonWidget(this.column2_x, row(7), this.column_width, 20, this.spawnNPCsTitle(), buttonWidget -> {
-			this.spawnNPCs = !this.spawnNPCs;
-			buttonWidget.setMessage(this.spawnNPCsTitle());
-		}));
-		this.gameModeButton = this.addButton(new ButtonWidget(this.column1_x, row(9), this.column_width, 20, this.forceGameModeTitle(), buttonWidget -> {
-			this.forceGameMode = !this.forceGameMode;
-			buttonWidget.setMessage(this.forceGameModeTitle());
-		}));
-		this.commandBlocksButton = this.addButton(new ButtonWidget(this.column2_x, row(9), this.column_width, 20, this.commandBlocksTitle(), buttonWidget -> {
-			this.commandBlocks = !this.commandBlocks;
-			buttonWidget.setMessage(this.commandBlocksTitle());
-		}));
+		this.addButton(
+			CyclingButtonWidget.<GameModeSelection>method_32606(GameModeSelection::getName)
+				.method_32624(GameModeSelection.values())
+				.value(this.gameModeIndex)
+				.build(
+					this.column1_x,
+					row(3),
+					this.column2_x,
+					20,
+					new TranslatableText("selectWorld.gameMode"),
+					(cyclingButtonWidgetx, gameModeSelection) -> this.gameModeIndex = gameModeSelection
+				)
+		);
+		CyclingButtonWidget<Boolean> cyclingButtonWidget2 = this.addButton(
+			CyclingButtonWidget.method_32613(this.spawnAnimals)
+				.build(
+					i, row(3), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnAnimals"), (cyclingButtonWidgetx, boolean_) -> this.spawnAnimals = boolean_
+				)
+		);
+		CyclingButtonWidget<Boolean> cyclingButtonWidget3 = CyclingButtonWidget.method_32613(this.field_27943 != Difficulty.PEACEFUL && this.spawnMonsters)
+			.build(
+				i, row(5), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnMonsters"), (cyclingButtonWidgetx, boolean_) -> this.spawnMonsters = boolean_
+			);
+		this.addButton(
+			CyclingButtonWidget.<Difficulty>method_32606(Difficulty::getTranslatableName)
+				.method_32620(DIFFICULTIES)
+				.value(this.field_27943)
+				.build(this.column1_x, row(5), this.column2_x, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget2x, difficulty) -> {
+					this.field_27943 = difficulty;
+					if (this.worldType == RealmsServer.WorldType.NORMAL) {
+						boolean bl = this.field_27943 != Difficulty.PEACEFUL;
+						cyclingButtonWidget3.active = bl;
+						cyclingButtonWidget3.method_32605(bl && this.spawnMonsters);
+					}
+				})
+		);
+		this.addButton(cyclingButtonWidget3);
+		this.spawnProtectionButton = this.addButton(
+			new RealmsSlotOptionsScreen.SettingsSlider(this.column1_x, row(7), this.column2_x, this.difficultyIndex, 0.0F, 16.0F)
+		);
+		CyclingButtonWidget<Boolean> cyclingButtonWidget4 = this.addButton(
+			CyclingButtonWidget.method_32613(this.spawnNPCs)
+				.build(i, row(7), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnNPCs"), (cyclingButtonWidgetx, boolean_) -> this.spawnNPCs = boolean_)
+		);
+		CyclingButtonWidget<Boolean> cyclingButtonWidget5 = this.addButton(
+			CyclingButtonWidget.method_32613(this.forceGameMode)
+				.build(
+					this.column1_x,
+					row(9),
+					this.column2_x,
+					20,
+					new TranslatableText("mco.configure.world.forceGameMode"),
+					(cyclingButtonWidgetx, boolean_) -> this.forceGameMode = boolean_
+				)
+		);
+		CyclingButtonWidget<Boolean> cyclingButtonWidget6 = this.addButton(
+			CyclingButtonWidget.method_32613(this.commandBlocks)
+				.build(
+					i,
+					row(9),
+					this.column2_x,
+					20,
+					new TranslatableText("mco.configure.world.commandBlocks"),
+					(cyclingButtonWidgetx, boolean_) -> this.commandBlocks = boolean_
+				)
+		);
 		if (this.worldType != RealmsServer.WorldType.NORMAL) {
-			this.pvpButton.active = false;
-			this.spawnAnimalsButton.active = false;
-			this.spawnNPCsButton.active = false;
-			this.spawnMonstersButton.active = false;
+			cyclingButtonWidget.active = false;
+			cyclingButtonWidget2.active = false;
+			cyclingButtonWidget4.active = false;
+			cyclingButtonWidget3.active = false;
 			this.spawnProtectionButton.active = false;
-			this.commandBlocksButton.active = false;
-			this.gameModeButton.active = false;
+			cyclingButtonWidget6.active = false;
+			cyclingButtonWidget5.active = false;
 		}
 
-		if (this.difficultyIndex == 0) {
-			this.spawnMonstersButton.active = false;
+		if (this.field_27943 == Difficulty.PEACEFUL) {
+			cyclingButtonWidget3.active = false;
 		}
 
 		this.addButton(
-			new ButtonWidget(
-				this.column1_x, row(13), this.column_width, 20, new TranslatableText("mco.configure.world.buttons.done"), buttonWidget -> this.saveSettings()
-			)
+			new ButtonWidget(this.column1_x, row(13), this.column2_x, 20, new TranslatableText("mco.configure.world.buttons.done"), buttonWidget -> this.saveSettings())
 		);
-		this.addButton(new ButtonWidget(this.column2_x, row(13), this.column_width, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+		this.addButton(new ButtonWidget(i, row(13), this.column2_x, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
 		this.addChild(this.nameEdit);
 		this.titleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.configure.world.buttons.options"), this.width / 2, 17, 16777215));
 		if (this.toastMessage != null) {
@@ -195,49 +224,11 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		this.narrateLabels();
 	}
 
-	private Text difficultyTitle() {
-		return new TranslatableText("options.difficulty").append(": ").append(DIFFICULTIES[this.difficultyIndex]);
-	}
-
-	private Text gameModeTitle() {
-		return new TranslatableText("options.generic_value", field_25884, GAME_MODES[this.gameModeIndex]);
-	}
-
-	private Text pvpTitle() {
-		return new TranslatableText("mco.configure.world.pvp").append(": ").append(getWorldConfigureMessage(this.pvp));
-	}
-
-	private Text spawnAnimalsTitle() {
-		return new TranslatableText("mco.configure.world.spawnAnimals").append(": ").append(getWorldConfigureMessage(this.spawnAnimals));
-	}
-
-	private Text spawnMonstersTitle() {
-		return this.difficultyIndex == 0
-			? new TranslatableText("mco.configure.world.spawnMonsters").append(": ").append(new TranslatableText("mco.configure.world.off"))
-			: new TranslatableText("mco.configure.world.spawnMonsters").append(": ").append(getWorldConfigureMessage(this.spawnMonsters));
-	}
-
-	private Text spawnNPCsTitle() {
-		return new TranslatableText("mco.configure.world.spawnNPCs").append(": ").append(getWorldConfigureMessage(this.spawnNPCs));
-	}
-
-	private Text commandBlocksTitle() {
-		return new TranslatableText("mco.configure.world.commandBlocks").append(": ").append(getWorldConfigureMessage(this.commandBlocks));
-	}
-
-	private Text forceGameModeTitle() {
-		return new TranslatableText("mco.configure.world.forceGameMode").append(": ").append(getWorldConfigureMessage(this.forceGameMode));
-	}
-
-	private static Text getWorldConfigureMessage(boolean enabled) {
-		return enabled ? field_24207 : field_24208;
-	}
-
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.textRenderer
-			.draw(matrices, field_26516, (float)(this.column1_x + this.column_width / 2 - this.textRenderer.getWidth(field_26516) / 2), (float)(row(0) - 5), 16777215);
+			.draw(matrices, field_26516, (float)(this.column1_x + this.column2_x / 2 - this.textRenderer.getWidth(field_26516) / 2), (float)(row(0) - 5), 16777215);
 		this.titleLabel.render(this, matrices);
 		if (this.toastMessage != null) {
 			this.toastMessage.render(this, matrices);
@@ -252,22 +243,15 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	}
 
 	private void saveSettings() {
+		int i = method_32499(DIFFICULTIES, this.field_27943, 2);
+		int j = method_32499(GAME_MODES, this.gameModeIndex, 0);
 		if (this.worldType != RealmsServer.WorldType.ADVENTUREMAP
 			&& this.worldType != RealmsServer.WorldType.EXPERIENCE
 			&& this.worldType != RealmsServer.WorldType.INSPIRATION) {
 			this.parent
 				.saveSlotSettings(
 					new RealmsWorldOptions(
-						this.pvp,
-						this.spawnAnimals,
-						this.spawnMonsters,
-						this.spawnNPCs,
-						this.spawnProtection,
-						this.commandBlocks,
-						this.difficultyIndex,
-						this.gameModeIndex,
-						this.forceGameMode,
-						this.getSlotName()
+						this.pvp, this.spawnAnimals, this.spawnMonsters, this.spawnNPCs, this.difficultyIndex, this.commandBlocks, i, j, this.forceGameMode, this.getSlotName()
 					)
 				);
 		} else {
@@ -280,8 +264,8 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 						this.options.spawnNPCs,
 						this.options.spawnProtection,
 						this.options.commandBlocks,
-						this.difficultyIndex,
-						this.gameModeIndex,
+						i,
+						j,
 						this.options.forceGameMode,
 						this.getSlotName()
 					)
@@ -294,31 +278,28 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		private final double min;
 		private final double max;
 
-		public SettingsSlider(int id, int x, int y, int width, float min, float max) {
-			super(id, x, y, 20, LiteralText.EMPTY, 0.0);
+		public SettingsSlider(int x, int y, int width, int value, float min, float max) {
+			super(x, y, width, 20, LiteralText.EMPTY, 0.0);
 			this.min = (double)min;
 			this.max = (double)max;
-			this.value = (double)((MathHelper.clamp((float)width, min, max) - min) / (max - min));
+			this.value = (double)((MathHelper.clamp((float)value, min, max) - min) / (max - min));
 			this.updateMessage();
 		}
 
 		@Override
 		public void applyValue() {
 			if (RealmsSlotOptionsScreen.this.spawnProtectionButton.active) {
-				RealmsSlotOptionsScreen.this.spawnProtection = (int)MathHelper.lerp(MathHelper.clamp(this.value, 0.0, 1.0), this.min, this.max);
+				RealmsSlotOptionsScreen.this.difficultyIndex = (int)MathHelper.lerp(MathHelper.clamp(this.value, 0.0, 1.0), this.min, this.max);
 			}
 		}
 
 		@Override
 		protected void updateMessage() {
 			this.setMessage(
-				new TranslatableText("mco.configure.world.spawnProtection")
-					.append(": ")
-					.append(
-						(Text)(RealmsSlotOptionsScreen.this.spawnProtection == 0
-							? new TranslatableText("mco.configure.world.off")
-							: new LiteralText(String.valueOf(RealmsSlotOptionsScreen.this.spawnProtection)))
-					)
+				ScreenTexts.method_32700(
+					RealmsSlotOptionsScreen.field_27942,
+					(Text)(RealmsSlotOptionsScreen.this.difficultyIndex == 0 ? ScreenTexts.OFF : new LiteralText(String.valueOf(RealmsSlotOptionsScreen.this.difficultyIndex)))
+				)
 			);
 		}
 

@@ -19,7 +19,12 @@ public abstract class AbstractTeam {
 
 	public abstract String getName();
 
-	public abstract MutableText modifyText(Text text);
+	/**
+	 * Decorates the name of an entity with the prefix, suffix and color of this team.
+	 * 
+	 * @param name the name to be decorated
+	 */
+	public abstract MutableText decorateName(Text name);
 
 	@Environment(EnvType.CLIENT)
 	public abstract boolean shouldShowFriendlyInvisibles();

@@ -3,12 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -30,134 +30,116 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 
 	public HorseEntityModel(ModelPart modelPart) {
 		super(true, 16.2F, 1.36F, 2.7272F, 2.0F, 20.0F);
-		this.torso = modelPart.method_32086("body");
-		this.head = modelPart.method_32086("head_parts");
-		this.field_27425 = modelPart.method_32086("right_hind_leg");
-		this.field_27426 = modelPart.method_32086("left_hind_leg");
-		this.field_27427 = modelPart.method_32086("right_front_leg");
-		this.field_27428 = modelPart.method_32086("left_front_leg");
-		this.field_27429 = modelPart.method_32086("right_hind_baby_leg");
-		this.field_27430 = modelPart.method_32086("left_hind_baby_leg");
-		this.field_27431 = modelPart.method_32086("right_front_baby_leg");
-		this.field_27432 = modelPart.method_32086("left_front_baby_leg");
-		this.tail = this.torso.method_32086("tail");
-		ModelPart modelPart2 = this.torso.method_32086("saddle");
-		ModelPart modelPart3 = this.head.method_32086("left_saddle_mouth");
-		ModelPart modelPart4 = this.head.method_32086("right_saddle_mouth");
-		ModelPart modelPart5 = this.head.method_32086("left_saddle_line");
-		ModelPart modelPart6 = this.head.method_32086("right_saddle_line");
-		ModelPart modelPart7 = this.head.method_32086("head_saddle");
-		ModelPart modelPart8 = this.head.method_32086("mouth_saddle_wrap");
+		this.torso = modelPart.getChild("body");
+		this.head = modelPart.getChild("head_parts");
+		this.field_27425 = modelPart.getChild("right_hind_leg");
+		this.field_27426 = modelPart.getChild("left_hind_leg");
+		this.field_27427 = modelPart.getChild("right_front_leg");
+		this.field_27428 = modelPart.getChild("left_front_leg");
+		this.field_27429 = modelPart.getChild("right_hind_baby_leg");
+		this.field_27430 = modelPart.getChild("left_hind_baby_leg");
+		this.field_27431 = modelPart.getChild("right_front_baby_leg");
+		this.field_27432 = modelPart.getChild("left_front_baby_leg");
+		this.tail = this.torso.getChild("tail");
+		ModelPart modelPart2 = this.torso.getChild("saddle");
+		ModelPart modelPart3 = this.head.getChild("left_saddle_mouth");
+		ModelPart modelPart4 = this.head.getChild("right_saddle_mouth");
+		ModelPart modelPart5 = this.head.getChild("left_saddle_line");
+		ModelPart modelPart6 = this.head.getChild("right_saddle_line");
+		ModelPart modelPart7 = this.head.getChild("head_saddle");
+		ModelPart modelPart8 = this.head.getChild("mouth_saddle_wrap");
 		this.field_3304 = new ModelPart[]{modelPart2, modelPart3, modelPart4, modelPart7, modelPart8};
 		this.field_3301 = new ModelPart[]{modelPart5, modelPart6};
 	}
 
-	public static class_5609 method_32010(class_5605 arg) {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		class_5610 lv3 = lv2.method_32117(
-			"body",
-			class_5606.method_32108().method_32101(0, 32).method_32098(-5.0F, -8.0F, -17.0F, 10.0F, 10.0F, 22.0F, new class_5605(0.05F)),
-			class_5603.method_32090(0.0F, 11.0F, 5.0F)
+	public static ModelData getModelData(Dilation dilation) {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		ModelPartData modelPartData2 = modelPartData.addChild(
+			"body", ModelPartBuilder.create().uv(0, 32).cuboid(-5.0F, -8.0F, -17.0F, 10.0F, 10.0F, 22.0F, new Dilation(0.05F)), ModelTransform.pivot(0.0F, 11.0F, 5.0F)
 		);
-		class_5610 lv4 = lv2.method_32117(
+		ModelPartData modelPartData3 = modelPartData.addChild(
 			"head_parts",
-			class_5606.method_32108().method_32101(0, 35).method_32097(-2.05F, -6.0F, -2.0F, 4.0F, 12.0F, 7.0F),
-			class_5603.method_32091(0.0F, 4.0F, -12.0F, (float) (Math.PI / 6), 0.0F, 0.0F)
+			ModelPartBuilder.create().uv(0, 35).cuboid(-2.05F, -6.0F, -2.0F, 4.0F, 12.0F, 7.0F),
+			ModelTransform.of(0.0F, 4.0F, -12.0F, (float) (Math.PI / 6), 0.0F, 0.0F)
 		);
-		class_5610 lv5 = lv4.method_32117(
-			"head", class_5606.method_32108().method_32101(0, 13).method_32098(-3.0F, -11.0F, -2.0F, 6.0F, 5.0F, 7.0F, arg), class_5603.field_27701
+		ModelPartData modelPartData4 = modelPartData3.addChild(
+			"head", ModelPartBuilder.create().uv(0, 13).cuboid(-3.0F, -11.0F, -2.0F, 6.0F, 5.0F, 7.0F, dilation), ModelTransform.NONE
 		);
-		lv4.method_32117("mane", class_5606.method_32108().method_32101(56, 36).method_32098(-1.0F, -11.0F, 5.01F, 2.0F, 16.0F, 2.0F, arg), class_5603.field_27701);
-		lv4.method_32117(
-			"upper_mouth", class_5606.method_32108().method_32101(0, 25).method_32098(-2.0F, -11.0F, -7.0F, 4.0F, 5.0F, 5.0F, arg), class_5603.field_27701
-		);
-		lv2.method_32117(
+		modelPartData3.addChild("mane", ModelPartBuilder.create().uv(56, 36).cuboid(-1.0F, -11.0F, 5.01F, 2.0F, 16.0F, 2.0F, dilation), ModelTransform.NONE);
+		modelPartData3.addChild("upper_mouth", ModelPartBuilder.create().uv(0, 25).cuboid(-2.0F, -11.0F, -7.0F, 4.0F, 5.0F, 5.0F, dilation), ModelTransform.NONE);
+		modelPartData.addChild(
 			"left_hind_leg",
-			class_5606.method_32108().method_32101(48, 21).method_32096().method_32098(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, arg),
-			class_5603.method_32090(4.0F, 14.0F, 7.0F)
+			ModelPartBuilder.create().uv(48, 21).mirrored().cuboid(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, dilation),
+			ModelTransform.pivot(4.0F, 14.0F, 7.0F)
 		);
-		lv2.method_32117(
-			"right_hind_leg",
-			class_5606.method_32108().method_32101(48, 21).method_32098(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, arg),
-			class_5603.method_32090(-4.0F, 14.0F, 7.0F)
+		modelPartData.addChild(
+			"right_hind_leg", ModelPartBuilder.create().uv(48, 21).cuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, dilation), ModelTransform.pivot(-4.0F, 14.0F, 7.0F)
 		);
-		lv2.method_32117(
+		modelPartData.addChild(
 			"left_front_leg",
-			class_5606.method_32108().method_32101(48, 21).method_32096().method_32098(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, arg),
-			class_5603.method_32090(4.0F, 14.0F, -12.0F)
+			ModelPartBuilder.create().uv(48, 21).mirrored().cuboid(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, dilation),
+			ModelTransform.pivot(4.0F, 14.0F, -12.0F)
 		);
-		lv2.method_32117(
+		modelPartData.addChild(
 			"right_front_leg",
-			class_5606.method_32108().method_32101(48, 21).method_32098(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, arg),
-			class_5603.method_32090(-4.0F, 14.0F, -12.0F)
+			ModelPartBuilder.create().uv(48, 21).cuboid(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, dilation),
+			ModelTransform.pivot(-4.0F, 14.0F, -12.0F)
 		);
-		class_5605 lv6 = arg.method_32095(0.0F, 5.5F, 0.0F);
-		lv2.method_32117(
+		Dilation dilation2 = dilation.add(0.0F, 5.5F, 0.0F);
+		modelPartData.addChild(
 			"left_hind_baby_leg",
-			class_5606.method_32108().method_32101(48, 21).method_32096().method_32098(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, lv6),
-			class_5603.method_32090(4.0F, 14.0F, 7.0F)
+			ModelPartBuilder.create().uv(48, 21).mirrored().cuboid(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, dilation2),
+			ModelTransform.pivot(4.0F, 14.0F, 7.0F)
 		);
-		lv2.method_32117(
+		modelPartData.addChild(
 			"right_hind_baby_leg",
-			class_5606.method_32108().method_32101(48, 21).method_32098(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, lv6),
-			class_5603.method_32090(-4.0F, 14.0F, 7.0F)
+			ModelPartBuilder.create().uv(48, 21).cuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, dilation2),
+			ModelTransform.pivot(-4.0F, 14.0F, 7.0F)
 		);
-		lv2.method_32117(
+		modelPartData.addChild(
 			"left_front_baby_leg",
-			class_5606.method_32108().method_32101(48, 21).method_32096().method_32098(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, lv6),
-			class_5603.method_32090(4.0F, 14.0F, -12.0F)
+			ModelPartBuilder.create().uv(48, 21).mirrored().cuboid(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, dilation2),
+			ModelTransform.pivot(4.0F, 14.0F, -12.0F)
 		);
-		lv2.method_32117(
+		modelPartData.addChild(
 			"right_front_baby_leg",
-			class_5606.method_32108().method_32101(48, 21).method_32098(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, lv6),
-			class_5603.method_32090(-4.0F, 14.0F, -12.0F)
+			ModelPartBuilder.create().uv(48, 21).cuboid(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, dilation2),
+			ModelTransform.pivot(-4.0F, 14.0F, -12.0F)
 		);
-		lv3.method_32117(
+		modelPartData2.addChild(
 			"tail",
-			class_5606.method_32108().method_32101(42, 36).method_32098(-1.5F, 0.0F, 0.0F, 3.0F, 14.0F, 4.0F, arg),
-			class_5603.method_32091(0.0F, -5.0F, 2.0F, (float) (Math.PI / 6), 0.0F, 0.0F)
+			ModelPartBuilder.create().uv(42, 36).cuboid(-1.5F, 0.0F, 0.0F, 3.0F, 14.0F, 4.0F, dilation),
+			ModelTransform.of(0.0F, -5.0F, 2.0F, (float) (Math.PI / 6), 0.0F, 0.0F)
 		);
-		lv3.method_32117(
-			"saddle", class_5606.method_32108().method_32101(26, 0).method_32098(-5.0F, -8.0F, -9.0F, 10.0F, 9.0F, 9.0F, new class_5605(0.5F)), class_5603.field_27701
+		modelPartData2.addChild("saddle", ModelPartBuilder.create().uv(26, 0).cuboid(-5.0F, -8.0F, -9.0F, 10.0F, 9.0F, 9.0F, new Dilation(0.5F)), ModelTransform.NONE);
+		modelPartData3.addChild("left_saddle_mouth", ModelPartBuilder.create().uv(29, 5).cuboid(2.0F, -9.0F, -6.0F, 1.0F, 2.0F, 2.0F, dilation), ModelTransform.NONE);
+		modelPartData3.addChild(
+			"right_saddle_mouth", ModelPartBuilder.create().uv(29, 5).cuboid(-3.0F, -9.0F, -6.0F, 1.0F, 2.0F, 2.0F, dilation), ModelTransform.NONE
 		);
-		lv4.method_32117(
-			"left_saddle_mouth", class_5606.method_32108().method_32101(29, 5).method_32098(2.0F, -9.0F, -6.0F, 1.0F, 2.0F, 2.0F, arg), class_5603.field_27701
-		);
-		lv4.method_32117(
-			"right_saddle_mouth", class_5606.method_32108().method_32101(29, 5).method_32098(-3.0F, -9.0F, -6.0F, 1.0F, 2.0F, 2.0F, arg), class_5603.field_27701
-		);
-		lv4.method_32117(
+		modelPartData3.addChild(
 			"left_saddle_line",
-			class_5606.method_32108().method_32101(32, 2).method_32098(3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, arg),
-			class_5603.method_32092((float) (-Math.PI / 6), 0.0F, 0.0F)
+			ModelPartBuilder.create().uv(32, 2).cuboid(3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, dilation),
+			ModelTransform.rotation((float) (-Math.PI / 6), 0.0F, 0.0F)
 		);
-		lv4.method_32117(
+		modelPartData3.addChild(
 			"right_saddle_line",
-			class_5606.method_32108().method_32101(32, 2).method_32098(-3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, arg),
-			class_5603.method_32092((float) (-Math.PI / 6), 0.0F, 0.0F)
+			ModelPartBuilder.create().uv(32, 2).cuboid(-3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, dilation),
+			ModelTransform.rotation((float) (-Math.PI / 6), 0.0F, 0.0F)
 		);
-		lv4.method_32117(
-			"head_saddle",
-			class_5606.method_32108().method_32101(1, 1).method_32098(-3.0F, -11.0F, -1.9F, 6.0F, 5.0F, 6.0F, new class_5605(0.2F)),
-			class_5603.field_27701
+		modelPartData3.addChild(
+			"head_saddle", ModelPartBuilder.create().uv(1, 1).cuboid(-3.0F, -11.0F, -1.9F, 6.0F, 5.0F, 6.0F, new Dilation(0.2F)), ModelTransform.NONE
 		);
-		lv4.method_32117(
-			"mouth_saddle_wrap",
-			class_5606.method_32108().method_32101(19, 0).method_32098(-2.0F, -11.0F, -4.0F, 4.0F, 5.0F, 2.0F, new class_5605(0.2F)),
-			class_5603.field_27701
+		modelPartData3.addChild(
+			"mouth_saddle_wrap", ModelPartBuilder.create().uv(19, 0).cuboid(-2.0F, -11.0F, -4.0F, 4.0F, 5.0F, 2.0F, new Dilation(0.2F)), ModelTransform.NONE
 		);
-		lv5.method_32117(
-			"left_ear",
-			class_5606.method_32108().method_32101(19, 16).method_32098(0.55F, -13.0F, 4.0F, 2.0F, 3.0F, 1.0F, new class_5605(-0.001F)),
-			class_5603.field_27701
+		modelPartData4.addChild(
+			"left_ear", ModelPartBuilder.create().uv(19, 16).cuboid(0.55F, -13.0F, 4.0F, 2.0F, 3.0F, 1.0F, new Dilation(-0.001F)), ModelTransform.NONE
 		);
-		lv5.method_32117(
-			"right_ear",
-			class_5606.method_32108().method_32101(19, 16).method_32098(-2.55F, -13.0F, 4.0F, 2.0F, 3.0F, 1.0F, new class_5605(-0.001F)),
-			class_5603.field_27701
+		modelPartData4.addChild(
+			"right_ear", ModelPartBuilder.create().uv(19, 16).cuboid(-2.55F, -13.0F, 4.0F, 2.0F, 3.0F, 1.0F, new Dilation(-0.001F)), ModelTransform.NONE
 		);
-		return lv;
+		return modelData;
 	}
 
 	public void setAngles(T horseBaseEntity, float f, float g, float h, float i, float j) {

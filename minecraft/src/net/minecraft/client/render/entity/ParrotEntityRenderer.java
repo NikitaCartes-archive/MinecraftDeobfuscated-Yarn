@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.ParrotEntityModel;
 import net.minecraft.entity.passive.ParrotEntity;
@@ -19,8 +18,8 @@ public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, Parrot
 		new Identifier("textures/entity/parrot/parrot_grey.png")
 	};
 
-	public ParrotEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new ParrotEntityModel(arg.method_32167(EntityModelLayers.PARROT)), 0.3F);
+	public ParrotEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new ParrotEntityModel(context.getPart(EntityModelLayers.PARROT)), 0.3F);
 	}
 
 	public Identifier getTexture(ParrotEntity parrotEntity) {

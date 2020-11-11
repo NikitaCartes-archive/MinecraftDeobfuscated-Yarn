@@ -46,6 +46,7 @@ import org.apache.logging.log4j.Logger;
 public class PresetsScreen extends Screen {
 	private static final Logger field_25043 = LogManager.getLogger();
 	private static final List<PresetsScreen.SuperflatPreset> PRESETS = Lists.<PresetsScreen.SuperflatPreset>newArrayList();
+	private static final RegistryKey<Biome> field_27985 = BiomeKeys.PLAINS;
 	private final CustomizeFlatLevelScreen parent;
 	private Text shareText;
 	private Text listText;
@@ -124,7 +125,7 @@ public class PresetsScreen extends Screen {
 				return FlatChunkGeneratorConfig.getDefaultConfig(registry);
 			} else {
 				FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getStructuresConfig());
-				RegistryKey<Biome> registryKey = BiomeKeys.PLAINS;
+				RegistryKey<Biome> registryKey = field_27985;
 				if (iterator.hasNext()) {
 					try {
 						Identifier identifier = new Identifier((String)iterator.next());
@@ -132,6 +133,7 @@ public class PresetsScreen extends Screen {
 						registry.getOrEmpty(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
 					} catch (Exception var8) {
 						field_25043.error("Error while parsing flat world string => {}", var8.getMessage());
+						registryKey = field_27985;
 					}
 				}
 

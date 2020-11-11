@@ -3,7 +3,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.class_5627;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class ShortTag extends AbstractNumberTag {
 	public static final TagReader<ShortTag> READER = new TagReader<ShortTag>() {
@@ -65,8 +65,8 @@ public class ShortTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void method_32289(class_5627 arg) {
-		arg.method_32301(this);
+	public void accept(NbtTagVisitor visitor) {
+		visitor.visitShortTag(this);
 	}
 
 	@Override

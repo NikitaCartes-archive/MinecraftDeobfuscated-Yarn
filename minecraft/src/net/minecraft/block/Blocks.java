@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.function.ToIntFunction;
+import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
@@ -918,8 +919,15 @@ public class Blocks {
 	public static final Block CAULDRON = register(
 		"cauldron", new CauldronBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.STONE).requiresTool().strength(2.0F).nonOpaque())
 	);
-	public static final Block WATER_CAULDRON = register("water_cauldron", new WaterCauldronBlock(AbstractBlock.Settings.copy(CAULDRON)));
-	public static final Block LAVA_CAULDRON = register("lava_cauldron", new LavaCauldronBlock(AbstractBlock.Settings.copy(CAULDRON).luminance(blockStatex -> 15)));
+	public static final Block WATER_CAULDRON = register(
+		"water_cauldron",
+		new LeveledCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.RAIN_PREDICATE, CauldronBehavior.WATER_CAULDRON_BEHAVIOR)
+	);
+	public static final Block LAVA_CAULDRON = register("lava_cauldron", new LavaCauldronBlock(AbstractBlock.Settings.copy(CAULDRON).luminance(state -> 15)));
+	public static final Block POWDER_SNOW_CAULDRON = register(
+		"powder_snow_cauldron",
+		new LeveledCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.SNOW_PREDICATE, CauldronBehavior.POWDER_SNOW_CAULDRON_BEHAVIOR)
+	);
 	public static final Block END_PORTAL = register(
 		"end_portal",
 		new EndPortalBlock(AbstractBlock.Settings.of(Material.PORTAL, MapColor.BLACK).noCollision().luminance(state -> 15).strength(-1.0F, 3600000.0F).dropsNothing())
@@ -2938,6 +2946,9 @@ public class Blocks {
 		"calcite", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.WHITE_TERRACOTTA).sounds(BlockSoundGroup.CALCITE).requiresTool().strength(0.75F))
 	);
 	public static final Block TINTED_GLASS = register("tinted_glass", new TintedGlassBlock(AbstractBlock.Settings.copy(GLASS).mapColor(MapColor.GRAY)));
+	public static final Block POWDER_SNOW = register(
+		"powder_snow", new PowderSnowBlock(AbstractBlock.Settings.of(Material.POWDER_SNOW).strength(0.1F).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds())
+	);
 	public static final Block WEATHERED_COPPER_BLOCK = register(
 		"weathered_copper_block",
 		new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.WARPED_NYLIUM).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER))

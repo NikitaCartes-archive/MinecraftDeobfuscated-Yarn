@@ -16,10 +16,12 @@ import net.minecraft.client.gui.screen.options.NarratorOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.options.NarratorMode;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.entity.Entity;
@@ -267,7 +269,7 @@ public class Keyboard {
 			tag.remove("UUID");
 			tag.remove("Pos");
 			tag.remove("Dimension");
-			String string = NbtHelper.method_32270(tag).getString();
+			String string = NbtHelper.toPrettyPrintedText(tag).getString();
 			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", id.toString(), pos.x, pos.y, pos.z, string);
 		} else {
 			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", id.toString(), pos.x, pos.y, pos.z);
@@ -316,11 +318,14 @@ public class Keyboard {
 				}
 			}
 
-			boolean bl = parentElement == null || !(parentElement.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)parentElement.getFocused()).isActive();
-			if (i != 0 && key == 66 && Screen.hasControlDown() && bl) {
-				Option.NARRATOR.cycle(this.client.options, 1);
-				if (parentElement instanceof NarratorOptionsScreen) {
-					((NarratorOptionsScreen)parentElement).updateNarratorButtonText();
+			if (NarratorManager.INSTANCE.isActive()) {
+				boolean bl = parentElement == null || !(parentElement.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)parentElement.getFocused()).isActive();
+				if (i != 0 && key == 66 && Screen.hasControlDown() && bl) {
+					this.client.options.narrator = NarratorMode.byId(this.client.options.narrator.getId() + 1);
+					NarratorManager.INSTANCE.addToast(this.client.options.narrator);
+					if (parentElement instanceof NarratorOptionsScreen) {
+						((NarratorOptionsScreen)parentElement).updateNarratorButtonText();
+					}
 				}
 			}
 

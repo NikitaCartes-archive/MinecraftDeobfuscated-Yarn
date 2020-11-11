@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen.ingame;
 
+import com.google.common.collect.ImmutableList;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -12,6 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
@@ -24,15 +26,19 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class StructureBlockScreen extends Screen {
-	private static final Text field_26572 = new TranslatableText("structure_block.structure_name");
-	private static final Text field_26573 = new TranslatableText("structure_block.position");
-	private static final Text field_26574 = new TranslatableText("structure_block.size");
-	private static final Text field_26575 = new TranslatableText("structure_block.integrity");
-	private static final Text field_26576 = new TranslatableText("structure_block.custom_data");
-	private static final Text field_26577 = new TranslatableText("structure_block.include_entities");
-	private static final Text field_26578 = new TranslatableText("structure_block.detect_size");
-	private static final Text field_26579 = new TranslatableText("structure_block.show_air");
-	private static final Text field_26580 = new TranslatableText("structure_block.show_boundingbox");
+	private static final Text STRUCTURE_NAME_TEXT = new TranslatableText("structure_block.structure_name");
+	private static final Text POSITION_TEXT = new TranslatableText("structure_block.position");
+	private static final Text SIZE_TEXT = new TranslatableText("structure_block.size");
+	private static final Text INTEGRITY_TEXT = new TranslatableText("structure_block.integrity");
+	private static final Text CUSTOM_DATA_TEXT = new TranslatableText("structure_block.custom_data");
+	private static final Text INCLUDE_ENTITIES_TEXT = new TranslatableText("structure_block.include_entities");
+	private static final Text DETECT_SIZE_TEXT = new TranslatableText("structure_block.detect_size");
+	private static final Text SHOW_AIR_TEXT = new TranslatableText("structure_block.show_air");
+	private static final Text SHOW_BOUNDING_BOX_TEXT = new TranslatableText("structure_block.show_boundingbox");
+	private static final ImmutableList<StructureBlockMode> field_27993 = ImmutableList.copyOf(StructureBlockMode.values());
+	private static final ImmutableList<StructureBlockMode> field_27994 = (ImmutableList<StructureBlockMode>)field_27993.stream()
+		.filter(structureBlockMode -> structureBlockMode != StructureBlockMode.DATA)
+		.collect(ImmutableList.toImmutableList());
 	private final StructureBlockBlockEntity structureBlock;
 	private BlockMirror mirror = BlockMirror.NONE;
 	private BlockRotation rotation = BlockRotation.NONE;
@@ -50,20 +56,17 @@ public class StructureBlockScreen extends Screen {
 	private TextFieldWidget inputIntegrity;
 	private TextFieldWidget inputSeed;
 	private TextFieldWidget inputMetadata;
-	private ButtonWidget buttonDone;
-	private ButtonWidget buttonCancel;
 	private ButtonWidget buttonSave;
 	private ButtonWidget buttonLoad;
 	private ButtonWidget buttonRotate0;
 	private ButtonWidget buttonRotate90;
 	private ButtonWidget buttonRotate180;
 	private ButtonWidget buttonRotate270;
-	private ButtonWidget buttonMode;
 	private ButtonWidget buttonDetect;
-	private ButtonWidget buttonEntities;
-	private ButtonWidget buttonMirror;
-	private ButtonWidget buttonShowAir;
-	private ButtonWidget buttonShowBoundingBox;
+	private CyclingButtonWidget<Boolean> buttonEntities;
+	private CyclingButtonWidget<BlockMirror> buttonMirror;
+	private CyclingButtonWidget<Boolean> buttonShowAir;
+	private CyclingButtonWidget<Boolean> buttonShowBoundingBox;
 	private final DecimalFormat decimalFormat = new DecimalFormat("0.0###");
 
 	public StructureBlockScreen(StructureBlockBlockEntity structureBlock) {
@@ -105,8 +108,14 @@ public class StructureBlockScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.buttonDone = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, buttonWidget -> this.done()));
-		this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.cancel()));
+		this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, buttonWidget -> this.done()));
+		this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.cancel()));
+		this.mirror = this.structureBlock.getMirror();
+		this.rotation = this.structureBlock.getRotation();
+		this.mode = this.structureBlock.getMode();
+		this.ignoreEntities = this.structureBlock.shouldIgnoreEntities();
+		this.showAir = this.structureBlock.shouldShowAir();
+		this.showBoundingBox = this.structureBlock.shouldShowBoundingBox();
 		this.buttonSave = this.addButton(
 			new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.save"), buttonWidget -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
@@ -123,10 +132,16 @@ public class StructureBlockScreen extends Screen {
 				}
 			})
 		);
-		this.buttonMode = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), buttonWidget -> {
-			this.structureBlock.cycleMode();
-			this.updateMode();
-		}));
+		this.addButton(
+			CyclingButtonWidget.<StructureBlockMode>method_32606(structureBlockMode -> new TranslatableText("structure_block.mode." + structureBlockMode.asString()))
+				.method_32621(field_27994, field_27993)
+				.method_32616()
+				.value(this.mode)
+				.build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (cyclingButtonWidget, structureBlockMode) -> {
+					this.structureBlock.setMode(structureBlockMode);
+					this.method_32650(structureBlockMode);
+				})
+		);
 		this.buttonDetect = this.addButton(
 			new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, new TranslatableText("structure_block.button.detect_size"), buttonWidget -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
@@ -135,32 +150,28 @@ public class StructureBlockScreen extends Screen {
 				}
 			})
 		);
-		this.buttonEntities = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 160, 50, 20, new LiteralText("ENTITIES"), buttonWidget -> {
-			this.structureBlock.setIgnoreEntities(!this.structureBlock.shouldIgnoreEntities());
-			this.updateIgnoreEntitiesButton();
-		}));
-		this.buttonMirror = this.addButton(new ButtonWidget(this.width / 2 - 20, 185, 40, 20, new LiteralText("MIRROR"), buttonWidget -> {
-			switch (this.structureBlock.getMirror()) {
-				case NONE:
-					this.structureBlock.setMirror(BlockMirror.LEFT_RIGHT);
-					break;
-				case LEFT_RIGHT:
-					this.structureBlock.setMirror(BlockMirror.FRONT_BACK);
-					break;
-				case FRONT_BACK:
-					this.structureBlock.setMirror(BlockMirror.NONE);
-			}
-
-			this.updateMirrorButton();
-		}));
-		this.buttonShowAir = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 80, 50, 20, new LiteralText("SHOWAIR"), buttonWidget -> {
-			this.structureBlock.setShowAir(!this.structureBlock.shouldShowAir());
-			this.updateShowAirButton();
-		}));
-		this.buttonShowBoundingBox = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 80, 50, 20, new LiteralText("SHOWBB"), buttonWidget -> {
-			this.structureBlock.setShowBoundingBox(!this.structureBlock.shouldShowBoundingBox());
-			this.updateShowBoundingBoxButton();
-		}));
+		this.buttonEntities = this.addButton(
+			CyclingButtonWidget.method_32613(this.structureBlock.shouldIgnoreEntities())
+				.method_32616()
+				.build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setIgnoreEntities(boolean_))
+		);
+		this.buttonMirror = this.addButton(
+			CyclingButtonWidget.<BlockMirror>method_32606(BlockMirror::method_32354)
+				.method_32624(BlockMirror.values())
+				.method_32616()
+				.value(this.mirror)
+				.build(this.width / 2 - 20, 185, 40, 20, new LiteralText("MIRROR"), (cyclingButtonWidget, blockMirror) -> this.structureBlock.setMirror(blockMirror))
+		);
+		this.buttonShowAir = this.addButton(
+			CyclingButtonWidget.method_32613(this.structureBlock.shouldShowAir())
+				.method_32616()
+				.build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_AIR_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setShowAir(boolean_))
+		);
+		this.buttonShowBoundingBox = this.addButton(
+			CyclingButtonWidget.method_32613(this.structureBlock.shouldShowBoundingBox())
+				.method_32616()
+				.build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_BOUNDING_BOX_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setShowBoundingBox(boolean_))
+		);
 		this.buttonRotate0 = this.addButton(new ButtonWidget(this.width / 2 - 1 - 40 - 1 - 40 - 20, 185, 40, 20, new LiteralText("0"), buttonWidget -> {
 			this.structureBlock.setRotation(BlockRotation.NONE);
 			this.updateRotationButton();
@@ -224,18 +235,8 @@ public class StructureBlockScreen extends Screen {
 		this.inputMetadata.setMaxLength(128);
 		this.inputMetadata.setText(this.structureBlock.getMetadata());
 		this.children.add(this.inputMetadata);
-		this.mirror = this.structureBlock.getMirror();
-		this.updateMirrorButton();
-		this.rotation = this.structureBlock.getRotation();
 		this.updateRotationButton();
-		this.mode = this.structureBlock.getMode();
-		this.updateMode();
-		this.ignoreEntities = this.structureBlock.shouldIgnoreEntities();
-		this.updateIgnoreEntitiesButton();
-		this.showAir = this.structureBlock.shouldShowAir();
-		this.updateShowAirButton();
-		this.showBoundingBox = this.structureBlock.shouldShowBoundingBox();
-		this.updateShowBoundingBoxButton();
+		this.method_32650(this.mode);
 		this.setInitialFocus(this.inputName);
 	}
 
@@ -269,32 +270,6 @@ public class StructureBlockScreen extends Screen {
 		this.client.keyboard.setRepeatEvents(false);
 	}
 
-	private void updateIgnoreEntitiesButton() {
-		this.buttonEntities.setMessage(ScreenTexts.getToggleText(!this.structureBlock.shouldIgnoreEntities()));
-	}
-
-	private void updateShowAirButton() {
-		this.buttonShowAir.setMessage(ScreenTexts.getToggleText(this.structureBlock.shouldShowAir()));
-	}
-
-	private void updateShowBoundingBoxButton() {
-		this.buttonShowBoundingBox.setMessage(ScreenTexts.getToggleText(this.structureBlock.shouldShowBoundingBox()));
-	}
-
-	private void updateMirrorButton() {
-		BlockMirror blockMirror = this.structureBlock.getMirror();
-		switch (blockMirror) {
-			case NONE:
-				this.buttonMirror.setMessage(new LiteralText("|"));
-				break;
-			case LEFT_RIGHT:
-				this.buttonMirror.setMessage(new LiteralText("< >"));
-				break;
-			case FRONT_BACK:
-				this.buttonMirror.setMessage(new LiteralText("^ v"));
-		}
-	}
-
 	private void updateRotationButton() {
 		this.buttonRotate0.active = true;
 		this.buttonRotate90.active = true;
@@ -315,7 +290,7 @@ public class StructureBlockScreen extends Screen {
 		}
 	}
 
-	private void updateMode() {
+	private void method_32650(StructureBlockMode structureBlockMode) {
 		this.inputName.setVisible(false);
 		this.inputPosX.setVisible(false);
 		this.inputPosY.setVisible(false);
@@ -337,7 +312,7 @@ public class StructureBlockScreen extends Screen {
 		this.buttonRotate270.visible = false;
 		this.buttonShowAir.visible = false;
 		this.buttonShowBoundingBox.visible = false;
-		switch (this.structureBlock.getMode()) {
+		switch (structureBlockMode) {
 			case SAVE:
 				this.inputName.setVisible(true);
 				this.inputPosX.setVisible(true);
@@ -374,8 +349,6 @@ public class StructureBlockScreen extends Screen {
 			case DATA:
 				this.inputMetadata.setVisible(true);
 		}
-
-		this.buttonMode.setMessage(new TranslatableText("structure_block.mode." + this.structureBlock.getMode().asString()));
 	}
 
 	private boolean method_2516(StructureBlockBlockEntity.Action action) {
@@ -455,36 +428,40 @@ public class StructureBlockScreen extends Screen {
 		StructureBlockMode structureBlockMode = this.structureBlock.getMode();
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
 		if (structureBlockMode != StructureBlockMode.DATA) {
-			drawTextWithShadow(matrices, this.textRenderer, field_26572, this.width / 2 - 153, 30, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, STRUCTURE_NAME_TEXT, this.width / 2 - 153, 30, 10526880);
 			this.inputName.render(matrices, mouseX, mouseY, delta);
 		}
 
 		if (structureBlockMode == StructureBlockMode.LOAD || structureBlockMode == StructureBlockMode.SAVE) {
-			drawTextWithShadow(matrices, this.textRenderer, field_26573, this.width / 2 - 153, 70, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, POSITION_TEXT, this.width / 2 - 153, 70, 10526880);
 			this.inputPosX.render(matrices, mouseX, mouseY, delta);
 			this.inputPosY.render(matrices, mouseX, mouseY, delta);
 			this.inputPosZ.render(matrices, mouseX, mouseY, delta);
-			drawTextWithShadow(matrices, this.textRenderer, field_26577, this.width / 2 + 154 - this.textRenderer.getWidth(field_26577), 150, 10526880);
+			drawTextWithShadow(
+				matrices, this.textRenderer, INCLUDE_ENTITIES_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(INCLUDE_ENTITIES_TEXT), 150, 10526880
+			);
 		}
 
 		if (structureBlockMode == StructureBlockMode.SAVE) {
-			drawTextWithShadow(matrices, this.textRenderer, field_26574, this.width / 2 - 153, 110, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, SIZE_TEXT, this.width / 2 - 153, 110, 10526880);
 			this.inputSizeX.render(matrices, mouseX, mouseY, delta);
 			this.inputSizeY.render(matrices, mouseX, mouseY, delta);
 			this.inputSizeZ.render(matrices, mouseX, mouseY, delta);
-			drawTextWithShadow(matrices, this.textRenderer, field_26578, this.width / 2 + 154 - this.textRenderer.getWidth(field_26578), 110, 10526880);
-			drawTextWithShadow(matrices, this.textRenderer, field_26579, this.width / 2 + 154 - this.textRenderer.getWidth(field_26579), 70, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, DETECT_SIZE_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(DETECT_SIZE_TEXT), 110, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, SHOW_AIR_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(SHOW_AIR_TEXT), 70, 10526880);
 		}
 
 		if (structureBlockMode == StructureBlockMode.LOAD) {
-			drawTextWithShadow(matrices, this.textRenderer, field_26575, this.width / 2 - 153, 110, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, INTEGRITY_TEXT, this.width / 2 - 153, 110, 10526880);
 			this.inputIntegrity.render(matrices, mouseX, mouseY, delta);
 			this.inputSeed.render(matrices, mouseX, mouseY, delta);
-			drawTextWithShadow(matrices, this.textRenderer, field_26580, this.width / 2 + 154 - this.textRenderer.getWidth(field_26580), 70, 10526880);
+			drawTextWithShadow(
+				matrices, this.textRenderer, SHOW_BOUNDING_BOX_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(SHOW_BOUNDING_BOX_TEXT), 70, 10526880
+			);
 		}
 
 		if (structureBlockMode == StructureBlockMode.DATA) {
-			drawTextWithShadow(matrices, this.textRenderer, field_26576, this.width / 2 - 153, 110, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, CUSTOM_DATA_TEXT, this.width / 2 - 153, 110, 10526880);
 			this.inputMetadata.render(matrices, mouseX, mouseY, delta);
 		}
 

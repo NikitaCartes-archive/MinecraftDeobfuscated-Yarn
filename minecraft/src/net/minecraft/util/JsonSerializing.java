@@ -105,6 +105,11 @@ public class JsonSerializing {
 			this.typeIdentification = typeIdentification;
 		}
 
+		public JsonSerializing.TypeHandler<E, T> method_32385(T jsonSerializableType, JsonSerializing.CustomSerializer<? extends E> customSerializer) {
+			this.customSerializer = com.mojang.datafixers.util.Pair.of(jsonSerializableType, customSerializer);
+			return this;
+		}
+
 		public Object createGsonSerializer() {
 			return new JsonSerializing.GsonSerializer(this.registry, this.rootFieldName, this.idFieldName, this.typeIdentification, this.customSerializer);
 		}

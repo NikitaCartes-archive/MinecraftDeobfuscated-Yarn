@@ -75,6 +75,7 @@ public class CommandManager {
 		GameRuleCommand.register(this.dispatcher);
 		GiveCommand.register(this.dispatcher);
 		HelpCommand.register(this.dispatcher);
+		ItemCommand.register(this.dispatcher);
 		KickCommand.register(this.dispatcher);
 		KillCommand.register(this.dispatcher);
 		ListCommand.register(this.dispatcher);
@@ -86,7 +87,6 @@ public class CommandManager {
 		PlaySoundCommand.register(this.dispatcher);
 		ReloadCommand.register(this.dispatcher);
 		RecipeCommand.register(this.dispatcher);
-		ReplaceItemCommand.register(this.dispatcher);
 		SayCommand.register(this.dispatcher);
 		ScheduleCommand.register(this.dispatcher);
 		ScoreboardCommand.register(this.dispatcher);

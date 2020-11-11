@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -21,20 +20,20 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	private final float scale;
 	private final boolean lit;
 
-	public FlyingItemEntityRenderer(class_5617.class_5618 arg, float f, boolean bl) {
-		super(arg);
-		this.itemRenderer = arg.method_32168();
-		this.scale = f;
-		this.lit = bl;
+	public FlyingItemEntityRenderer(EntityRendererFactory.Context ctx, float scale, boolean lit) {
+		super(ctx);
+		this.itemRenderer = ctx.getItemRenderer();
+		this.scale = scale;
+		this.lit = lit;
 	}
 
-	public FlyingItemEntityRenderer(class_5617.class_5618 arg) {
-		this(arg, 1.0F, false);
+	public FlyingItemEntityRenderer(EntityRendererFactory.Context context) {
+		this(context, 1.0F, false);
 	}
 
 	@Override
-	protected int getBlockLight(T entity, BlockPos blockPos) {
-		return this.lit ? 15 : super.getBlockLight(entity, blockPos);
+	protected int getBlockLight(T entity, BlockPos pos) {
+		return this.lit ? 15 : super.getBlockLight(entity, pos);
 	}
 
 	@Override

@@ -2,21 +2,20 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class GuardianEntityModel extends class_5597<GuardianEntity> {
+public class GuardianEntityModel extends SinglePartEntityModel<GuardianEntity> {
 	private static final float[] field_17131 = new float[]{1.75F, 0.25F, 0.0F, 0.0F, 0.5F, 0.5F, 0.5F, 0.5F, 1.25F, 0.75F, 0.0F, 0.0F};
 	private static final float[] field_17132 = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.25F, 1.75F, 1.25F, 0.75F, 0.0F, 0.0F, 0.0F, 0.0F};
 	private static final float[] field_17133 = new float[]{0.0F, 0.0F, 0.25F, 1.75F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.75F, 1.25F};
@@ -32,42 +31,42 @@ public class GuardianEntityModel extends class_5597<GuardianEntity> {
 	public GuardianEntityModel(ModelPart modelPart) {
 		this.field_27420 = modelPart;
 		this.field_3380 = new ModelPart[12];
-		this.body = modelPart.method_32086("head");
+		this.body = modelPart.getChild("head");
 
 		for (int i = 0; i < this.field_3380.length; i++) {
-			this.field_3380[i] = this.body.method_32086(method_32003(i));
+			this.field_3380[i] = this.body.getChild(method_32003(i));
 		}
 
-		this.eye = this.body.method_32086("eye");
+		this.eye = this.body.getChild("eye");
 		this.field_3378 = new ModelPart[3];
-		this.field_3378[0] = this.body.method_32086("tail0");
-		this.field_3378[1] = this.field_3378[0].method_32086("tail1");
-		this.field_3378[2] = this.field_3378[1].method_32086("tail2");
+		this.field_3378[0] = this.body.getChild("tail0");
+		this.field_3378[1] = this.field_3378[0].getChild("tail1");
+		this.field_3378[2] = this.field_3378[1].getChild("tail2");
 	}
 
 	private static String method_32003(int i) {
 		return "spike" + i;
 	}
 
-	public static class_5607 method_32002() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		class_5610 lv3 = lv2.method_32117(
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		ModelPartData modelPartData2 = modelPartData.addChild(
 			"head",
-			class_5606.method_32108()
-				.method_32101(0, 0)
-				.method_32097(-6.0F, 10.0F, -8.0F, 12.0F, 12.0F, 16.0F)
-				.method_32101(0, 28)
-				.method_32097(-8.0F, 10.0F, -6.0F, 2.0F, 12.0F, 12.0F)
-				.method_32101(0, 28)
-				.method_32100(6.0F, 10.0F, -6.0F, 2.0F, 12.0F, 12.0F, true)
-				.method_32101(16, 40)
-				.method_32097(-6.0F, 8.0F, -6.0F, 12.0F, 2.0F, 12.0F)
-				.method_32101(16, 40)
-				.method_32097(-6.0F, 22.0F, -6.0F, 12.0F, 2.0F, 12.0F),
-			class_5603.field_27701
+			ModelPartBuilder.create()
+				.uv(0, 0)
+				.cuboid(-6.0F, 10.0F, -8.0F, 12.0F, 12.0F, 16.0F)
+				.uv(0, 28)
+				.cuboid(-8.0F, 10.0F, -6.0F, 2.0F, 12.0F, 12.0F)
+				.uv(0, 28)
+				.cuboid(6.0F, 10.0F, -6.0F, 2.0F, 12.0F, 12.0F, true)
+				.uv(16, 40)
+				.cuboid(-6.0F, 8.0F, -6.0F, 12.0F, 2.0F, 12.0F)
+				.uv(16, 40)
+				.cuboid(-6.0F, 22.0F, -6.0F, 12.0F, 2.0F, 12.0F),
+			ModelTransform.NONE
 		);
-		class_5606 lv4 = class_5606.method_32108().method_32101(0, 0).method_32097(-1.0F, -4.5F, -1.0F, 2.0F, 9.0F, 2.0F);
+		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, -4.5F, -1.0F, 2.0F, 9.0F, 2.0F);
 
 		for (int i = 0; i < 12; i++) {
 			float f = method_32005(i, 0.0F, 0.0F);
@@ -76,32 +75,26 @@ public class GuardianEntityModel extends class_5597<GuardianEntity> {
 			float j = (float) Math.PI * field_17131[i];
 			float k = (float) Math.PI * field_17132[i];
 			float l = (float) Math.PI * field_17133[i];
-			lv3.method_32117(method_32003(i), lv4, class_5603.method_32091(f, g, h, j, k, l));
+			modelPartData2.addChild(method_32003(i), modelPartBuilder, ModelTransform.of(f, g, h, j, k, l));
 		}
 
-		lv3.method_32117(
-			"eye", class_5606.method_32108().method_32101(8, 0).method_32097(-1.0F, 15.0F, 0.0F, 2.0F, 2.0F, 1.0F), class_5603.method_32090(0.0F, 0.0F, -8.25F)
+		modelPartData2.addChild("eye", ModelPartBuilder.create().uv(8, 0).cuboid(-1.0F, 15.0F, 0.0F, 2.0F, 2.0F, 1.0F), ModelTransform.pivot(0.0F, 0.0F, -8.25F));
+		ModelPartData modelPartData3 = modelPartData2.addChild(
+			"tail0", ModelPartBuilder.create().uv(40, 0).cuboid(-2.0F, 14.0F, 7.0F, 4.0F, 4.0F, 8.0F), ModelTransform.NONE
 		);
-		class_5610 lv5 = lv3.method_32117(
-			"tail0", class_5606.method_32108().method_32101(40, 0).method_32097(-2.0F, 14.0F, 7.0F, 4.0F, 4.0F, 8.0F), class_5603.field_27701
+		ModelPartData modelPartData4 = modelPartData3.addChild(
+			"tail1", ModelPartBuilder.create().uv(0, 54).cuboid(0.0F, 14.0F, 0.0F, 3.0F, 3.0F, 7.0F), ModelTransform.pivot(-1.5F, 0.5F, 14.0F)
 		);
-		class_5610 lv6 = lv5.method_32117(
-			"tail1", class_5606.method_32108().method_32101(0, 54).method_32097(0.0F, 14.0F, 0.0F, 3.0F, 3.0F, 7.0F), class_5603.method_32090(-1.5F, 0.5F, 14.0F)
-		);
-		lv6.method_32117(
+		modelPartData4.addChild(
 			"tail2",
-			class_5606.method_32108()
-				.method_32101(41, 32)
-				.method_32097(0.0F, 14.0F, 0.0F, 2.0F, 2.0F, 6.0F)
-				.method_32101(25, 19)
-				.method_32097(1.0F, 10.5F, 3.0F, 1.0F, 9.0F, 9.0F),
-			class_5603.method_32090(0.5F, 0.5F, 6.0F)
+			ModelPartBuilder.create().uv(41, 32).cuboid(0.0F, 14.0F, 0.0F, 2.0F, 2.0F, 6.0F).uv(25, 19).cuboid(1.0F, 10.5F, 3.0F, 1.0F, 9.0F, 9.0F),
+			ModelTransform.pivot(0.5F, 0.5F, 6.0F)
 		);
-		return class_5607.method_32110(lv, 64, 64);
+		return TexturedModelData.of(modelData, 64, 64);
 	}
 
 	@Override
-	public ModelPart method_32008() {
+	public ModelPart getPart() {
 		return this.field_27420;
 	}
 

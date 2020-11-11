@@ -21,9 +21,10 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsTermsScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Text field_26523 = new TranslatableText("mco.terms.title");
-	private static final Text field_26524 = new TranslatableText("mco.terms.sentence.1");
-	private static final Text field_26525 = new LiteralText(" ").append(new TranslatableText("mco.terms.sentence.2").fillStyle(Style.EMPTY.withUnderline(true)));
+	private static final Text TITLE = new TranslatableText("mco.terms.title");
+	private static final Text SENTENCE_ONE_TEXT = new TranslatableText("mco.terms.sentence.1");
+	private static final Text SENTENCE_TWO_TEXT = new LiteralText(" ")
+		.append(new TranslatableText("mco.terms.sentence.2").fillStyle(Style.EMPTY.withUnderline(true)));
 	private final Screen parent;
 	private final RealmsMainScreen mainScreen;
 	private final RealmsServer realmsServer;
@@ -88,21 +89,21 @@ public class RealmsTermsScreen extends RealmsScreen {
 
 	@Override
 	public String getNarrationMessage() {
-		return super.getNarrationMessage() + ". " + field_26524.getString() + " " + field_26525.getString();
+		return super.getNarrationMessage() + ". " + SENTENCE_ONE_TEXT.getString() + " " + SENTENCE_TWO_TEXT.getString();
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, field_26523, this.width / 2, 17, 16777215);
-		this.textRenderer.draw(matrices, field_26524, (float)(this.width / 2 - 120), (float)row(5), 16777215);
-		int i = this.textRenderer.getWidth(field_26524);
+		drawCenteredText(matrices, this.textRenderer, TITLE, this.width / 2, 17, 16777215);
+		this.textRenderer.draw(matrices, SENTENCE_ONE_TEXT, (float)(this.width / 2 - 120), (float)row(5), 16777215);
+		int i = this.textRenderer.getWidth(SENTENCE_ONE_TEXT);
 		int j = this.width / 2 - 121 + i;
 		int k = row(5);
-		int l = j + this.textRenderer.getWidth(field_26525) + 1;
+		int l = j + this.textRenderer.getWidth(SENTENCE_TWO_TEXT) + 1;
 		int m = k + 1 + 9;
 		this.onLink = j <= mouseX && mouseX <= l && k <= mouseY && mouseY <= m;
-		this.textRenderer.draw(matrices, field_26525, (float)(this.width / 2 - 120 + i), (float)row(5), this.onLink ? 7107012 : 3368635);
+		this.textRenderer.draw(matrices, SENTENCE_TWO_TEXT, (float)(this.width / 2 - 120 + i), (float)row(5), this.onLink ? 7107012 : 3368635);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

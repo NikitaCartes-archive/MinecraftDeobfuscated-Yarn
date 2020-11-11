@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
-import net.minecraft.class_5627;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class StringTag implements Tag {
 	public static final TagReader<StringTag> READER = new TagReader<StringTag>() {
@@ -80,8 +80,8 @@ public class StringTag implements Tag {
 	}
 
 	@Override
-	public void method_32289(class_5627 arg) {
-		arg.method_32302(this);
+	public void accept(NbtTagVisitor visitor) {
+		visitor.visitStringTag(this);
 	}
 
 	public static String escape(String value) {

@@ -2,60 +2,49 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class CodEntityModel<T extends Entity> extends class_5597<T> {
+public class CodEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
 	private final ModelPart field_27405;
 	private final ModelPart tail;
 
 	public CodEntityModel(ModelPart modelPart) {
 		this.field_27405 = modelPart;
-		this.tail = modelPart.method_32086("tail_fin");
+		this.tail = modelPart.getChild("tail_fin");
 	}
 
-	public static class_5607 method_31989() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
 		int i = 22;
-		lv2.method_32117(
-			"body", class_5606.method_32108().method_32101(0, 0).method_32097(-1.0F, -2.0F, 0.0F, 2.0F, 4.0F, 7.0F), class_5603.method_32090(0.0F, 22.0F, 0.0F)
-		);
-		lv2.method_32117(
-			"head", class_5606.method_32108().method_32101(11, 0).method_32097(-1.0F, -2.0F, -3.0F, 2.0F, 4.0F, 3.0F), class_5603.method_32090(0.0F, 22.0F, 0.0F)
-		);
-		lv2.method_32117(
-			"nose", class_5606.method_32108().method_32101(0, 0).method_32097(-1.0F, -2.0F, -1.0F, 2.0F, 3.0F, 1.0F), class_5603.method_32090(0.0F, 22.0F, -3.0F)
-		);
-		lv2.method_32117(
+		modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, -2.0F, 0.0F, 2.0F, 4.0F, 7.0F), ModelTransform.pivot(0.0F, 22.0F, 0.0F));
+		modelPartData.addChild("head", ModelPartBuilder.create().uv(11, 0).cuboid(-1.0F, -2.0F, -3.0F, 2.0F, 4.0F, 3.0F), ModelTransform.pivot(0.0F, 22.0F, 0.0F));
+		modelPartData.addChild("nose", ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, -2.0F, -1.0F, 2.0F, 3.0F, 1.0F), ModelTransform.pivot(0.0F, 22.0F, -3.0F));
+		modelPartData.addChild(
 			"right_fin",
-			class_5606.method_32108().method_32101(22, 1).method_32097(-2.0F, 0.0F, -1.0F, 2.0F, 0.0F, 2.0F),
-			class_5603.method_32091(-1.0F, 23.0F, 0.0F, 0.0F, 0.0F, (float) (-Math.PI / 4))
+			ModelPartBuilder.create().uv(22, 1).cuboid(-2.0F, 0.0F, -1.0F, 2.0F, 0.0F, 2.0F),
+			ModelTransform.of(-1.0F, 23.0F, 0.0F, 0.0F, 0.0F, (float) (-Math.PI / 4))
 		);
-		lv2.method_32117(
+		modelPartData.addChild(
 			"left_fin",
-			class_5606.method_32108().method_32101(22, 4).method_32097(0.0F, 0.0F, -1.0F, 2.0F, 0.0F, 2.0F),
-			class_5603.method_32091(1.0F, 23.0F, 0.0F, 0.0F, 0.0F, (float) (Math.PI / 4))
+			ModelPartBuilder.create().uv(22, 4).cuboid(0.0F, 0.0F, -1.0F, 2.0F, 0.0F, 2.0F),
+			ModelTransform.of(1.0F, 23.0F, 0.0F, 0.0F, 0.0F, (float) (Math.PI / 4))
 		);
-		lv2.method_32117(
-			"tail_fin", class_5606.method_32108().method_32101(22, 3).method_32097(0.0F, -2.0F, 0.0F, 0.0F, 4.0F, 4.0F), class_5603.method_32090(0.0F, 22.0F, 7.0F)
-		);
-		lv2.method_32117(
-			"top_fin", class_5606.method_32108().method_32101(20, -6).method_32097(0.0F, -1.0F, -1.0F, 0.0F, 1.0F, 6.0F), class_5603.method_32090(0.0F, 20.0F, 0.0F)
-		);
-		return class_5607.method_32110(lv, 32, 32);
+		modelPartData.addChild("tail_fin", ModelPartBuilder.create().uv(22, 3).cuboid(0.0F, -2.0F, 0.0F, 0.0F, 4.0F, 4.0F), ModelTransform.pivot(0.0F, 22.0F, 7.0F));
+		modelPartData.addChild("top_fin", ModelPartBuilder.create().uv(20, -6).cuboid(0.0F, -1.0F, -1.0F, 0.0F, 1.0F, 6.0F), ModelTransform.pivot(0.0F, 20.0F, 0.0F));
+		return TexturedModelData.of(modelData, 32, 32);
 	}
 
 	@Override
-	public ModelPart method_32008() {
+	public ModelPart getPart() {
 		return this.field_27405;
 	}
 

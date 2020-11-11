@@ -1,8 +1,12 @@
 package net.minecraft.client.options;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -18,6 +22,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
@@ -118,10 +123,10 @@ public abstract class Option {
 		gameOptions -> Math.pow((double)gameOptions.fovEffectScale, 2.0),
 		(gameOptions, fovEffectScale) -> gameOptions.fovEffectScale = MathHelper.sqrt(fovEffectScale),
 		(gameOptions, option) -> {
-			option.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FOV_EFFECT_SCALE_TOOLTIP, 200));
 			double d = option.getRatio(option.get(gameOptions));
-			return d == 0.0 ? option.getGenericLabel(new TranslatableText("options.fovEffectScale.off")) : option.getPercentLabel(d);
-		}
+			return d == 0.0 ? option.getGenericLabel(ScreenTexts.OFF) : option.getPercentLabel(d);
+		},
+		client -> client.textRenderer.wrapLines(FOV_EFFECT_SCALE_TOOLTIP, 200)
 	);
 	private static final Text DISTORTION_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.screenEffectScale.tooltip");
 	public static final DoubleOption DISTORTION_EFFECT_SCALE = new DoubleOption(
@@ -132,10 +137,10 @@ public abstract class Option {
 		gameOptions -> (double)gameOptions.distortionEffectScale,
 		(gameOptions, distortionEffectScale) -> gameOptions.distortionEffectScale = distortionEffectScale.floatValue(),
 		(gameOptions, option) -> {
-			option.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(DISTORTION_EFFECT_SCALE_TOOLTIP, 200));
 			double d = option.getRatio(option.get(gameOptions));
-			return d == 0.0 ? option.getGenericLabel(new TranslatableText("options.screenEffectScale.off")) : option.getPercentLabel(d);
-		}
+			return d == 0.0 ? option.getGenericLabel(ScreenTexts.OFF) : option.getPercentLabel(d);
+		},
+		client -> client.textRenderer.wrapLines(DISTORTION_EFFECT_SCALE_TOOLTIP, 200)
 	);
 	public static final DoubleOption FRAMERATE_LIMIT = new DoubleOption(
 		"options.framerateLimit",
@@ -188,8 +193,8 @@ public abstract class Option {
 			return option.getGenericLabel(new LiteralText(String.format("%.2f", option.getValue(d))));
 		}
 	);
-	public static final BooleanOption RAW_MOUSE_INPUT = new BooleanOption(
-		"options.rawMouseInput", gameOptions -> gameOptions.rawMouseInput, (gameOptions, rawMouseInput) -> {
+	public static final CyclingOption<Boolean> RAW_MOUSE_INPUT = CyclingOption.create(
+		"options.rawMouseInput", gameOptions -> gameOptions.rawMouseInput, (gameOptions, option, rawMouseInput) -> {
 			gameOptions.rawMouseInput = rawMouseInput;
 			Window window = MinecraftClient.getInstance().getWindow();
 			if (window != null) {
@@ -240,144 +245,167 @@ public abstract class Option {
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, option) -> option.getPercentLabel(option.getRatio(option.get(gameOptions)))
 	);
-	public static final CyclingOption AO = new CyclingOption("options.ao", (gameOptions, amount) -> {
-		gameOptions.ao = AoMode.byId(gameOptions.ao.getId() + amount);
-		MinecraftClient.getInstance().worldRenderer.reload();
-	}, (gameOptions, option) -> option.getGenericLabel(new TranslatableText(gameOptions.ao.getTranslationKey())));
-	public static final CyclingOption ATTACK_INDICATOR = new CyclingOption(
-		"options.attackIndicator",
-		(gameOptions, amount) -> gameOptions.attackIndicator = AttackIndicator.byId(gameOptions.attackIndicator.getId() + amount),
-		(gameOptions, option) -> option.getGenericLabel(new TranslatableText(gameOptions.attackIndicator.getTranslationKey()))
+	public static final CyclingOption<AoMode> AO = CyclingOption.create(
+		"options.ao", AoMode.values(), aoMode -> new TranslatableText(aoMode.getTranslationKey()), gameOptions -> gameOptions.ao, (gameOptions, option, aoMode) -> {
+			gameOptions.ao = aoMode;
+			MinecraftClient.getInstance().worldRenderer.reload();
+		}
 	);
-	public static final CyclingOption VISIBILITY = new CyclingOption(
+	public static final CyclingOption<AttackIndicator> ATTACK_INDICATOR = CyclingOption.create(
+		"options.attackIndicator",
+		AttackIndicator.values(),
+		attackIndicator -> new TranslatableText(attackIndicator.getTranslationKey()),
+		gameOptions -> gameOptions.attackIndicator,
+		(gameOptions, option, attackIndicator) -> gameOptions.attackIndicator = attackIndicator
+	);
+	public static final CyclingOption<ChatVisibility> VISIBILITY = CyclingOption.create(
 		"options.chat.visibility",
-		(gameOptions, amount) -> gameOptions.chatVisibility = ChatVisibility.byId((gameOptions.chatVisibility.getId() + amount) % 3),
-		(gameOptions, option) -> option.getGenericLabel(new TranslatableText(gameOptions.chatVisibility.getTranslationKey()))
+		ChatVisibility.values(),
+		chatVisibility -> new TranslatableText(chatVisibility.getTranslationKey()),
+		gameOptions -> gameOptions.chatVisibility,
+		(gameOptions, option, chatVisibility) -> gameOptions.chatVisibility = chatVisibility
 	);
 	private static final Text FAST_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fast.tooltip");
 	private static final Text FABULOUS_GRAPHICS_TOOLTIP = new TranslatableText(
 		"options.graphics.fabulous.tooltip", new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC)
 	);
 	private static final Text FANCY_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fancy.tooltip");
-	public static final CyclingOption GRAPHICS = new CyclingOption(
-		"options.graphics",
-		(gameOptions, amount) -> {
-			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			VideoWarningManager videoWarningManager = minecraftClient.getVideoWarningManager();
-			if (gameOptions.graphicsMode == GraphicsMode.FANCY && videoWarningManager.canWarn()) {
-				videoWarningManager.scheduleWarning();
-			} else {
-				gameOptions.graphicsMode = gameOptions.graphicsMode.next();
-				if (gameOptions.graphicsMode == GraphicsMode.FABULOUS && (!GlStateManager.supportsGl30() || videoWarningManager.hasCancelledAfterWarning())) {
-					gameOptions.graphicsMode = GraphicsMode.FAST;
+	public static final CyclingOption<GraphicsMode> GRAPHICS = CyclingOption.<GraphicsMode>create(
+			"options.graphics",
+			Arrays.asList(GraphicsMode.values()),
+			(List<GraphicsMode>)Stream.of(GraphicsMode.values()).filter(graphicsMode -> graphicsMode != GraphicsMode.FABULOUS).collect(Collectors.toList()),
+			() -> !GlStateManager.supportsGl30() || MinecraftClient.getInstance().getVideoWarningManager().hasCancelledAfterWarning(),
+			graphicsMode -> {
+				MutableText mutableText = new TranslatableText(graphicsMode.getTranslationKey());
+				return graphicsMode == GraphicsMode.FABULOUS ? mutableText.formatted(Formatting.ITALIC) : mutableText;
+			},
+			gameOptions -> gameOptions.graphicsMode,
+			(gameOptions, option, graphicsMode) -> {
+				MinecraftClient minecraftClient = MinecraftClient.getInstance();
+				VideoWarningManager videoWarningManager = minecraftClient.getVideoWarningManager();
+				if (graphicsMode == GraphicsMode.FANCY && videoWarningManager.canWarn()) {
+					videoWarningManager.scheduleWarning();
+				} else {
+					gameOptions.graphicsMode = graphicsMode;
+					minecraftClient.worldRenderer.reload();
 				}
-
-				minecraftClient.worldRenderer.reload();
 			}
-		},
-		(gameOptions, option) -> {
-			switch (gameOptions.graphicsMode) {
-				case FAST:
-					option.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FAST_GRAPHICS_TOOLTIP, 200));
-					break;
-				case FANCY:
-					option.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FANCY_GRAPHICS_TOOLTIP, 200));
-					break;
-				case FABULOUS:
-					option.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FABULOUS_GRAPHICS_TOOLTIP, 200));
-			}
-
-			MutableText mutableText = new TranslatableText(gameOptions.graphicsMode.getTranslationKey());
-			return gameOptions.graphicsMode == GraphicsMode.FABULOUS
-				? option.getGenericLabel(mutableText.formatted(Formatting.ITALIC))
-				: option.getGenericLabel(mutableText);
-		}
-	);
-	public static final CyclingOption GUI_SCALE = new CyclingOption(
+		)
+		.method_32528(client -> {
+			List<OrderedText> list = client.textRenderer.wrapLines(FAST_GRAPHICS_TOOLTIP, 200);
+			List<OrderedText> list2 = client.textRenderer.wrapLines(FANCY_GRAPHICS_TOOLTIP, 200);
+			List<OrderedText> list3 = client.textRenderer.wrapLines(FABULOUS_GRAPHICS_TOOLTIP, 200);
+			return graphicsMode -> {
+				switch (graphicsMode) {
+					case FANCY:
+						return list2;
+					case FAST:
+						return list;
+					case FABULOUS:
+						return list3;
+					default:
+						return ImmutableList.of();
+				}
+			};
+		});
+	public static final CyclingOption GUI_SCALE = CyclingOption.create(
 		"options.guiScale",
-		(gameOptions, amount) -> gameOptions.guiScale = Integer.remainderUnsigned(
-				gameOptions.guiScale + amount, MinecraftClient.getInstance().getWindow().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()) + 1
-			),
-		(gameOptions, option) -> gameOptions.guiScale == 0
-				? option.getGenericLabel(new TranslatableText("options.guiScale.auto"))
-				: option.getGenericLabel(gameOptions.guiScale)
+		() -> (List)IntStream.rangeClosed(0, MinecraftClient.getInstance().getWindow().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()))
+				.boxed()
+				.collect(Collectors.toList()),
+		guiScale -> (Text)(guiScale == 0 ? new TranslatableText("options.guiScale.auto") : new LiteralText(Integer.toString(guiScale))),
+		gameOptions -> gameOptions.guiScale,
+		(gameOptions, option, guiScale) -> gameOptions.guiScale = guiScale
 	);
-	public static final CyclingOption MAIN_HAND = new CyclingOption(
-		"options.mainHand",
-		(gameOptions, amount) -> gameOptions.mainArm = gameOptions.mainArm.getOpposite(),
-		(gameOptions, option) -> option.getGenericLabel(gameOptions.mainArm.getOptionName())
+	public static final CyclingOption<Arm> MAIN_HAND = CyclingOption.create(
+		"options.mainHand", Arm.values(), Arm::getOptionName, gameOptions -> gameOptions.mainArm, (gameOptions, option, mainArm) -> {
+			gameOptions.mainArm = mainArm;
+			gameOptions.onPlayerModelPartChange();
+		}
 	);
-	public static final CyclingOption NARRATOR = new CyclingOption(
+	public static final CyclingOption<NarratorMode> NARRATOR = CyclingOption.create(
 		"options.narrator",
-		(gameOptions, amount) -> {
-			if (NarratorManager.INSTANCE.isActive()) {
-				gameOptions.narrator = NarratorMode.byId(gameOptions.narrator.getId() + amount);
-			} else {
-				gameOptions.narrator = NarratorMode.OFF;
-			}
-
-			NarratorManager.INSTANCE.addToast(gameOptions.narrator);
-		},
-		(gameOptions, option) -> NarratorManager.INSTANCE.isActive()
-				? option.getGenericLabel(gameOptions.narrator.getName())
-				: option.getGenericLabel(new TranslatableText("options.narrator.notavailable"))
+		NarratorMode.values(),
+		narrator -> (Text)(NarratorManager.INSTANCE.isActive() ? narrator.getName() : new TranslatableText("options.narrator.notavailable")),
+		gameOptions -> gameOptions.narrator,
+		(gameOptions, option, narrator) -> {
+			gameOptions.narrator = narrator;
+			NarratorManager.INSTANCE.addToast(narrator);
+		}
 	);
-	public static final CyclingOption PARTICLES = new CyclingOption(
+	public static final CyclingOption<ParticlesMode> PARTICLES = CyclingOption.create(
 		"options.particles",
-		(gameOptions, amount) -> gameOptions.particles = ParticlesMode.byId(gameOptions.particles.getId() + amount),
-		(gameOptions, option) -> option.getGenericLabel(new TranslatableText(gameOptions.particles.getTranslationKey()))
+		ParticlesMode.values(),
+		particlesMode -> new TranslatableText(particlesMode.getTranslationKey()),
+		gameOptions -> gameOptions.particles,
+		(gameOptions, option, particlesMode) -> gameOptions.particles = particlesMode
 	);
-	public static final CyclingOption CLOUDS = new CyclingOption("options.renderClouds", (gameOptions, amount) -> {
-		gameOptions.cloudRenderMode = CloudRenderMode.byId(gameOptions.cloudRenderMode.getId() + amount);
-		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-			Framebuffer framebuffer = MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer();
-			if (framebuffer != null) {
-				framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+	public static final CyclingOption<CloudRenderMode> CLOUDS = CyclingOption.create(
+		"options.renderClouds",
+		CloudRenderMode.values(),
+		cloudRenderMode -> new TranslatableText(cloudRenderMode.getTranslationKey()),
+		gameOptions -> gameOptions.cloudRenderMode,
+		(gameOptions, option, cloudRenderMode) -> {
+			gameOptions.cloudRenderMode = cloudRenderMode;
+			if (MinecraftClient.isFabulousGraphicsOrBetter()) {
+				Framebuffer framebuffer = MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer();
+				if (framebuffer != null) {
+					framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+				}
 			}
 		}
-	}, (gameOptions, option) -> option.getGenericLabel(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey())));
-	public static final CyclingOption TEXT_BACKGROUND = new CyclingOption(
+	);
+	public static final CyclingOption<Boolean> TEXT_BACKGROUND = CyclingOption.create(
 		"options.accessibility.text_background",
-		(gameOptions, amount) -> gameOptions.backgroundForChatOnly = !gameOptions.backgroundForChatOnly,
-		(gameOptions, option) -> option.getGenericLabel(
-				new TranslatableText(gameOptions.backgroundForChatOnly ? "options.accessibility.text_background.chat" : "options.accessibility.text_background.everywhere")
-			)
+		new TranslatableText("options.accessibility.text_background.chat"),
+		new TranslatableText("options.accessibility.text_background.everywhere"),
+		gameOptions -> gameOptions.backgroundForChatOnly,
+		(gameOptions, option, backgroundForChatOnly) -> gameOptions.backgroundForChatOnly = backgroundForChatOnly
 	);
-	private static final Text field_26925 = new TranslatableText("options.hideMatchedNames.tooltip");
-	public static final BooleanOption AUTO_JUMP = new BooleanOption(
-		"options.autoJump", gameOptions -> gameOptions.autoJump, (gameOptions, autoJump) -> gameOptions.autoJump = autoJump
+	private static final Text HIDE_MATCHED_NAMES_TOOLTIP = new TranslatableText("options.hideMatchedNames.tooltip");
+	public static final CyclingOption<Boolean> AUTO_JUMP = CyclingOption.create(
+		"options.autoJump", gameOptions -> gameOptions.autoJump, (gameOptions, option, autoJump) -> gameOptions.autoJump = autoJump
 	);
-	public static final BooleanOption AUTO_SUGGESTIONS = new BooleanOption(
-		"options.autoSuggestCommands", gameOptions -> gameOptions.autoSuggestions, (gameOptions, autoSuggestions) -> gameOptions.autoSuggestions = autoSuggestions
+	public static final CyclingOption<Boolean> AUTO_SUGGESTIONS = CyclingOption.create(
+		"options.autoSuggestCommands",
+		gameOptions -> gameOptions.autoSuggestions,
+		(gameOptions, option, autoSuggestions) -> gameOptions.autoSuggestions = autoSuggestions
 	);
-	public static final BooleanOption field_26924 = new BooleanOption(
-		"options.hideMatchedNames", field_26925, gameOptions -> gameOptions.hideMatchedNames, (gameOptions, boolean_) -> gameOptions.hideMatchedNames = boolean_
+	public static final CyclingOption<Boolean> CHAT_COLOR = CyclingOption.create(
+		"options.chat.color", gameOptions -> gameOptions.chatColors, (gameOptions, option, chatColors) -> gameOptions.chatColors = chatColors
 	);
-	public static final BooleanOption CHAT_COLOR = new BooleanOption(
-		"options.chat.color", gameOptions -> gameOptions.chatColors, (gameOptions, chatColors) -> gameOptions.chatColors = chatColors
+	public static final CyclingOption<Boolean> HIDE_MATCHED_NAMES = CyclingOption.create(
+		"options.hideMatchedNames",
+		HIDE_MATCHED_NAMES_TOOLTIP,
+		gameOptions -> gameOptions.hideMatchedNames,
+		(gameOptions, option, hideMatchedNames) -> gameOptions.hideMatchedNames = hideMatchedNames
 	);
-	public static final BooleanOption CHAT_LINKS = new BooleanOption(
-		"options.chat.links", gameOptions -> gameOptions.chatLinks, (gameOptions, chatLinks) -> gameOptions.chatLinks = chatLinks
+	public static final CyclingOption<Boolean> CHAT_LINKS = CyclingOption.create(
+		"options.chat.links", gameOptions -> gameOptions.chatLinks, (gameOptions, option, chatLinks) -> gameOptions.chatLinks = chatLinks
 	);
-	public static final BooleanOption CHAT_LINKS_PROMPT = new BooleanOption(
-		"options.chat.links.prompt", gameOptions -> gameOptions.chatLinksPrompt, (gameOptions, chatLinksPrompt) -> gameOptions.chatLinksPrompt = chatLinksPrompt
+	public static final CyclingOption<Boolean> CHAT_LINKS_PROMPT = CyclingOption.create(
+		"options.chat.links.prompt",
+		gameOptions -> gameOptions.chatLinksPrompt,
+		(gameOptions, option, chatLinksPrompt) -> gameOptions.chatLinksPrompt = chatLinksPrompt
 	);
-	public static final BooleanOption DISCRETE_MOUSE_SCROLL = new BooleanOption(
+	public static final CyclingOption<Boolean> DISCRETE_MOUSE_SCROLL = CyclingOption.create(
 		"options.discrete_mouse_scroll",
 		gameOptions -> gameOptions.discreteMouseScroll,
-		(gameOptions, discreteMouseScroll) -> gameOptions.discreteMouseScroll = discreteMouseScroll
+		(gameOptions, option, discreteMouseScroll) -> gameOptions.discreteMouseScroll = discreteMouseScroll
 	);
-	public static final BooleanOption VSYNC = new BooleanOption("options.vsync", gameOptions -> gameOptions.enableVsync, (gameOptions, enableVsync) -> {
-		gameOptions.enableVsync = enableVsync;
-		if (MinecraftClient.getInstance().getWindow() != null) {
-			MinecraftClient.getInstance().getWindow().setVsync(gameOptions.enableVsync);
+	public static final CyclingOption<Boolean> VSYNC = CyclingOption.create(
+		"options.vsync", gameOptions -> gameOptions.enableVsync, (gameOptions, option, enableVsync) -> {
+			gameOptions.enableVsync = enableVsync;
+			if (MinecraftClient.getInstance().getWindow() != null) {
+				MinecraftClient.getInstance().getWindow().setVsync(gameOptions.enableVsync);
+			}
 		}
-	});
-	public static final BooleanOption ENTITY_SHADOWS = new BooleanOption(
-		"options.entityShadows", gameOptions -> gameOptions.entityShadows, (gameOptions, entityShadows) -> gameOptions.entityShadows = entityShadows
 	);
-	public static final BooleanOption FORCE_UNICODE_FONT = new BooleanOption(
-		"options.forceUnicodeFont", gameOptions -> gameOptions.forceUnicodeFont, (gameOptions, forceUnicodeFont) -> {
+	public static final CyclingOption<Boolean> ENTITY_SHADOWS = CyclingOption.create(
+		"options.entityShadows", gameOptions -> gameOptions.entityShadows, (gameOptions, option, entityShadows) -> gameOptions.entityShadows = entityShadows
+	);
+	public static final CyclingOption<Boolean> FORCE_UNICODE_FONT = CyclingOption.create(
+		"options.forceUnicodeFont", gameOptions -> gameOptions.forceUnicodeFont, (gameOptions, option, forceUnicodeFont) -> {
 			gameOptions.forceUnicodeFont = forceUnicodeFont;
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			if (minecraftClient.getWindow() != null) {
@@ -385,52 +413,57 @@ public abstract class Option {
 			}
 		}
 	);
-	public static final BooleanOption INVERT_MOUSE = new BooleanOption(
-		"options.invertMouse", gameOptions -> gameOptions.invertYMouse, (gameOptions, invertYMouse) -> gameOptions.invertYMouse = invertYMouse
+	public static final CyclingOption<Boolean> INVERT_MOUSE = CyclingOption.create(
+		"options.invertMouse", gameOptions -> gameOptions.invertYMouse, (gameOptions, option, invertYMouse) -> gameOptions.invertYMouse = invertYMouse
 	);
-	public static final BooleanOption REALMS_NOTIFICATIONS = new BooleanOption(
+	public static final CyclingOption<Boolean> REALMS_NOTIFICATIONS = CyclingOption.create(
 		"options.realmsNotifications",
 		gameOptions -> gameOptions.realmsNotifications,
-		(gameOptions, realmsNotifications) -> gameOptions.realmsNotifications = realmsNotifications
+		(gameOptions, option, realmsNotifications) -> gameOptions.realmsNotifications = realmsNotifications
 	);
-	public static final BooleanOption REDUCED_DEBUG_INFO = new BooleanOption(
-		"options.reducedDebugInfo", gameOptions -> gameOptions.reducedDebugInfo, (gameOptions, reducedDebugInfo) -> gameOptions.reducedDebugInfo = reducedDebugInfo
+	public static final CyclingOption<Boolean> REDUCED_DEBUG_INFO = CyclingOption.create(
+		"options.reducedDebugInfo",
+		gameOptions -> gameOptions.reducedDebugInfo,
+		(gameOptions, option, reducedDebugInfo) -> gameOptions.reducedDebugInfo = reducedDebugInfo
 	);
-	public static final BooleanOption SUBTITLES = new BooleanOption(
-		"options.showSubtitles", gameOptions -> gameOptions.showSubtitles, (gameOptions, showSubtitles) -> gameOptions.showSubtitles = showSubtitles
+	public static final CyclingOption<Boolean> SUBTITLES = CyclingOption.create(
+		"options.showSubtitles", gameOptions -> gameOptions.showSubtitles, (gameOptions, option, showSubtitles) -> gameOptions.showSubtitles = showSubtitles
 	);
-	public static final BooleanOption SNOOPER = new BooleanOption("options.snooper", gameOptions -> {
+	public static final CyclingOption<Boolean> SNOOPER = CyclingOption.create("options.snooper", gameOptions -> {
 		if (gameOptions.snooperEnabled) {
 		}
 
 		return false;
-	}, (gameOptions, snooperEnabled) -> gameOptions.snooperEnabled = snooperEnabled);
-	public static final CyclingOption SNEAK_TOGGLED = new CyclingOption(
-		"key.sneak",
-		(gameOptions, amount) -> gameOptions.sneakToggled = !gameOptions.sneakToggled,
-		(gameOptions, option) -> option.getGenericLabel(new TranslatableText(gameOptions.sneakToggled ? "options.key.toggle" : "options.key.hold"))
+	}, (gameOptions, option, snooperEnabled) -> gameOptions.snooperEnabled = snooperEnabled);
+	private static final Text TOGGLE_TEXT = new TranslatableText("options.key.toggle");
+	private static final Text HOLD_TEXT = new TranslatableText("options.key.hold");
+	public static final CyclingOption<Boolean> SNEAK_TOGGLED = CyclingOption.create(
+		"key.sneak", TOGGLE_TEXT, HOLD_TEXT, gameOptions -> gameOptions.sneakToggled, (gameOptions, option, sneakToggled) -> gameOptions.sneakToggled = sneakToggled
 	);
-	public static final CyclingOption SPRINT_TOGGLED = new CyclingOption(
+	public static final CyclingOption<Boolean> SPRINT_TOGGLED = CyclingOption.create(
 		"key.sprint",
-		(gameOptions, amount) -> gameOptions.sprintToggled = !gameOptions.sprintToggled,
-		(gameOptions, option) -> option.getGenericLabel(new TranslatableText(gameOptions.sprintToggled ? "options.key.toggle" : "options.key.hold"))
+		TOGGLE_TEXT,
+		HOLD_TEXT,
+		gameOptions -> gameOptions.sprintToggled,
+		(gameOptions, option, sprintToggled) -> gameOptions.sprintToggled = sprintToggled
 	);
-	public static final BooleanOption TOUCHSCREEN = new BooleanOption(
-		"options.touchscreen", gameOptions -> gameOptions.touchscreen, (gameOptions, touchscreen) -> gameOptions.touchscreen = touchscreen
+	public static final CyclingOption<Boolean> TOUCHSCREEN = CyclingOption.create(
+		"options.touchscreen", gameOptions -> gameOptions.touchscreen, (gameOptions, option, touchscreen) -> gameOptions.touchscreen = touchscreen
 	);
-	public static final BooleanOption FULLSCREEN = new BooleanOption("options.fullscreen", gameOptions -> gameOptions.fullscreen, (gameOptions, fullscreen) -> {
-		gameOptions.fullscreen = fullscreen;
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		if (minecraftClient.getWindow() != null && minecraftClient.getWindow().isFullscreen() != gameOptions.fullscreen) {
-			minecraftClient.getWindow().toggleFullscreen();
-			gameOptions.fullscreen = minecraftClient.getWindow().isFullscreen();
+	public static final CyclingOption<Boolean> FULLSCREEN = CyclingOption.create(
+		"options.fullscreen", gameOptions -> gameOptions.fullscreen, (gameOptions, option, fullscreen) -> {
+			gameOptions.fullscreen = fullscreen;
+			MinecraftClient minecraftClient = MinecraftClient.getInstance();
+			if (minecraftClient.getWindow() != null && minecraftClient.getWindow().isFullscreen() != gameOptions.fullscreen) {
+				minecraftClient.getWindow().toggleFullscreen();
+				gameOptions.fullscreen = minecraftClient.getWindow().isFullscreen();
+			}
 		}
-	});
-	public static final BooleanOption VIEW_BOBBING = new BooleanOption(
-		"options.viewBobbing", gameOptions -> gameOptions.bobView, (gameOptions, bobView) -> gameOptions.bobView = bobView
+	);
+	public static final CyclingOption<Boolean> VIEW_BOBBING = CyclingOption.create(
+		"options.viewBobbing", gameOptions -> gameOptions.bobView, (gameOptions, option, bobView) -> gameOptions.bobView = bobView
 	);
 	private final Text key;
-	private Optional<List<OrderedText>> tooltip = Optional.empty();
 
 	public Option(String key) {
 		this.key = new TranslatableText(key);
@@ -440,14 +473,6 @@ public abstract class Option {
 
 	protected Text getDisplayPrefix() {
 		return this.key;
-	}
-
-	public void setTooltip(List<OrderedText> tooltip) {
-		this.tooltip = Optional.of(tooltip);
-	}
-
-	public Optional<List<OrderedText>> getTooltip() {
-		return this.tooltip;
 	}
 
 	protected Text getPixelLabel(int pixel) {

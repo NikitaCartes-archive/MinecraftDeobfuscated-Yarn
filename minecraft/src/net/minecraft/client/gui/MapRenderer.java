@@ -1,7 +1,7 @@
 package net.minecraft.client.gui;
 
-import com.google.common.collect.Maps;
-import java.util.Map;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -27,33 +27,28 @@ public class MapRenderer implements AutoCloseable {
 	private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
 	private static final RenderLayer field_21688 = RenderLayer.getText(MAP_ICONS_TEXTURE);
 	private final TextureManager textureManager;
-	private final Map<String, MapRenderer.MapTexture> mapTextures = Maps.<String, MapRenderer.MapTexture>newHashMap();
+	private final Int2ObjectMap<MapRenderer.MapTexture> mapTextures = new Int2ObjectOpenHashMap<>();
 
 	public MapRenderer(TextureManager textureManager) {
 		this.textureManager = textureManager;
 	}
 
-	public void updateTexture(MapState mapState) {
-		this.getMapTexture(mapState).updateTexture();
+	public void updateTexture(int i, MapState mapState) {
+		this.method_32601(i, mapState).updateTexture();
 	}
 
-	public void draw(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, MapState mapState, boolean bl, int i) {
-		this.getMapTexture(mapState).draw(matrixStack, vertexConsumerProvider, bl, i);
+	public void draw(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, MapState mapState, boolean bl, int j) {
+		this.method_32601(i, mapState).draw(matrixStack, vertexConsumerProvider, bl, j);
 	}
 
-	private MapRenderer.MapTexture getMapTexture(MapState mapState) {
-		MapRenderer.MapTexture mapTexture = (MapRenderer.MapTexture)this.mapTextures.get(mapState.getId());
-		if (mapTexture == null) {
-			mapTexture = new MapRenderer.MapTexture(mapState);
-			this.mapTextures.put(mapState.getId(), mapTexture);
-		}
-
-		return mapTexture;
+	private MapRenderer.MapTexture method_32601(int i, MapState mapState) {
+		return this.mapTextures.computeIfAbsent(i, ix -> new MapRenderer.MapTexture(ix, mapState));
 	}
 
 	@Nullable
-	public MapRenderer.MapTexture getTexture(String string) {
-		return (MapRenderer.MapTexture)this.mapTextures.get(string);
+	public MapState method_32599(int i) {
+		MapRenderer.MapTexture mapTexture = this.mapTextures.get(i);
+		return mapTexture != null ? mapTexture.mapState : null;
 	}
 
 	public void clearStateTextures() {
@@ -62,11 +57,6 @@ public class MapRenderer implements AutoCloseable {
 		}
 
 		this.mapTextures.clear();
-	}
-
-	@Nullable
-	public MapState getState(@Nullable MapRenderer.MapTexture texture) {
-		return texture != null ? texture.mapState : null;
 	}
 
 	public void close() {
@@ -79,10 +69,10 @@ public class MapRenderer implements AutoCloseable {
 		private final NativeImageBackedTexture texture;
 		private final RenderLayer field_21689;
 
-		private MapTexture(MapState mapState) {
+		private MapTexture(int i, MapState mapState) {
 			this.mapState = mapState;
 			this.texture = new NativeImageBackedTexture(128, 128, true);
-			Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + mapState.getId(), this.texture);
+			Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + i, this.texture);
 			this.field_21689 = RenderLayer.getText(identifier);
 		}
 
@@ -114,7 +104,7 @@ public class MapRenderer implements AutoCloseable {
 			vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(i).next();
 			int l = 0;
 
-			for (MapIcon mapIcon : this.mapState.icons.values()) {
+			for (MapIcon mapIcon : this.mapState.method_32373()) {
 				if (!bl || mapIcon.isAlwaysRendered()) {
 					matrixStack.push();
 					matrixStack.translate((double)(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F), (double)(0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F), -0.02F);

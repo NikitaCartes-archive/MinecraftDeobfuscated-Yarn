@@ -4,17 +4,17 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -37,18 +37,18 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 
 	public BannerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 		ModelPart modelPart = context.getLayerModelPart(EntityModelLayers.BANNER);
-		this.banner = modelPart.method_32086("flag");
-		this.pillar = modelPart.method_32086("pole");
-		this.crossbar = modelPart.method_32086("bar");
+		this.banner = modelPart.getChild("flag");
+		this.pillar = modelPart.getChild("pole");
+		this.crossbar = modelPart.getChild("bar");
 	}
 
-	public static class_5607 method_32135() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117("flag", class_5606.method_32108().method_32101(0, 0).method_32097(-10.0F, 0.0F, -2.0F, 20.0F, 40.0F, 1.0F), class_5603.field_27701);
-		lv2.method_32117("pole", class_5606.method_32108().method_32101(44, 0).method_32097(-1.0F, -30.0F, -1.0F, 2.0F, 42.0F, 2.0F), class_5603.field_27701);
-		lv2.method_32117("bar", class_5606.method_32108().method_32101(0, 42).method_32097(-10.0F, -32.0F, -1.0F, 20.0F, 2.0F, 2.0F), class_5603.field_27701);
-		return class_5607.method_32110(lv, 64, 64);
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("flag", ModelPartBuilder.create().uv(0, 0).cuboid(-10.0F, 0.0F, -2.0F, 20.0F, 40.0F, 1.0F), ModelTransform.NONE);
+		modelPartData.addChild("pole", ModelPartBuilder.create().uv(44, 0).cuboid(-1.0F, -30.0F, -1.0F, 2.0F, 42.0F, 2.0F), ModelTransform.NONE);
+		modelPartData.addChild("bar", ModelPartBuilder.create().uv(0, 42).cuboid(-10.0F, -32.0F, -1.0F, 20.0F, 2.0F, 2.0F), ModelTransform.NONE);
+		return TexturedModelData.of(modelData, 64, 64);
 	}
 
 	public void render(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

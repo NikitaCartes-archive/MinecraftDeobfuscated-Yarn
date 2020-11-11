@@ -7,7 +7,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.class_5627;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class ListTag extends AbstractListTag<Tag> {
 	public static final TagReader<ListTag> READER = new TagReader<ListTag>() {
@@ -261,8 +261,8 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public void method_32289(class_5627 arg) {
-		arg.method_32298(this);
+	public void accept(NbtTagVisitor visitor) {
+		visitor.visitListTag(this);
 	}
 
 	@Override

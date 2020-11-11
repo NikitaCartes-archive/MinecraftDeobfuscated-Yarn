@@ -3,45 +3,44 @@ package net.minecraft.client.render.entity.model;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BlazeEntityModel<T extends Entity> extends class_5597<T> {
+public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
 	private final ModelPart field_27394;
 	private final ModelPart[] rods;
 	private final ModelPart field_27395;
 
 	public BlazeEntityModel(ModelPart modelPart) {
 		this.field_27394 = modelPart;
-		this.field_27395 = modelPart.method_32086("head");
+		this.field_27395 = modelPart.getChild("head");
 		this.rods = new ModelPart[12];
-		Arrays.setAll(this.rods, i -> modelPart.method_32086(method_31983(i)));
+		Arrays.setAll(this.rods, i -> modelPart.getChild(method_31983(i)));
 	}
 
 	private static String method_31983(int i) {
 		return "part" + i;
 	}
 
-	public static class_5607 method_31982() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117("head", class_5606.method_32108().method_32101(0, 0).method_32097(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), class_5603.field_27701);
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE);
 		float f = 0.0F;
-		class_5606 lv3 = class_5606.method_32108().method_32101(0, 16).method_32097(0.0F, 0.0F, 0.0F, 2.0F, 8.0F, 2.0F);
+		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 16).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 8.0F, 2.0F);
 
 		for (int i = 0; i < 4; i++) {
 			float g = MathHelper.cos(f) * 9.0F;
 			float h = -2.0F + MathHelper.cos((float)(i * 2) * 0.25F);
 			float j = MathHelper.sin(f) * 9.0F;
-			lv2.method_32117(method_31983(i), lv3, class_5603.method_32090(g, h, j));
+			modelPartData.addChild(method_31983(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
 			f++;
 		}
 
@@ -51,7 +50,7 @@ public class BlazeEntityModel<T extends Entity> extends class_5597<T> {
 			float g = MathHelper.cos(f) * 7.0F;
 			float h = 2.0F + MathHelper.cos((float)(i * 2) * 0.25F);
 			float j = MathHelper.sin(f) * 7.0F;
-			lv2.method_32117(method_31983(i), lv3, class_5603.method_32090(g, h, j));
+			modelPartData.addChild(method_31983(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
 			f++;
 		}
 
@@ -61,15 +60,15 @@ public class BlazeEntityModel<T extends Entity> extends class_5597<T> {
 			float g = MathHelper.cos(f) * 5.0F;
 			float h = 11.0F + MathHelper.cos((float)i * 1.5F * 0.5F);
 			float j = MathHelper.sin(f) * 5.0F;
-			lv2.method_32117(method_31983(i), lv3, class_5603.method_32090(g, h, j));
+			modelPartData.addChild(method_31983(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
 			f++;
 		}
 
-		return class_5607.method_32110(lv, 64, 32);
+		return TexturedModelData.of(modelData, 64, 32);
 	}
 
 	@Override
-	public ModelPart method_32008() {
+	public ModelPart getPart() {
 		return this.field_27394;
 	}
 

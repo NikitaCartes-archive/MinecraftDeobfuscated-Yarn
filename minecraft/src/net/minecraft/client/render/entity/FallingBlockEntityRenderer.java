@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -20,8 +19,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntity> {
-	public FallingBlockEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
+	public FallingBlockEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
 		this.shadowRadius = 0.5F;
 	}
 

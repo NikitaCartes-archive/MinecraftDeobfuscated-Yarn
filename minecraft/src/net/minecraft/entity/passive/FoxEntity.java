@@ -450,7 +450,7 @@ public class FoxEntity extends AnimalEntity {
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+		EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
 		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canEquip(stack);
 	}
 

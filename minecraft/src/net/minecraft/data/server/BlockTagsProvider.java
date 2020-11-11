@@ -635,8 +635,9 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.RED_CANDLE_CAKE,
 				Blocks.BLACK_CANDLE_CAKE
 			);
-		this.getOrCreateTagBuilder(BlockTags.CAULDRONS).add(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON);
 		this.getOrCreateTagBuilder(BlockTags.CRYSTAL_SOUND_BLOCKS).add(Blocks.AMETHYST_BLOCK, Blocks.BUDDING_AMETHYST);
+		this.getOrCreateTagBuilder(BlockTags.CAULDRONS).add(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
+		this.getOrCreateTagBuilder(BlockTags.SNOW_STEP_SOUND_BLOCKS).add(Blocks.SNOW, Blocks.POWDER_SNOW);
 	}
 
 	@Override

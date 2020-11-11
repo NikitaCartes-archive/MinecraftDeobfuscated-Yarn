@@ -30,6 +30,7 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 				EntityType.DRAGON_FIREBALL,
 				EntityType.WITHER_SKULL
 			);
+		this.getOrCreateTagBuilder(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(EntityType.RABBIT, EntityType.ENDERMITE, EntityType.SILVERFISH);
 	}
 
 	@Override

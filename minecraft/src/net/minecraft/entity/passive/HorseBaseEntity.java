@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -981,26 +982,49 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return false;
 	}
 
-	@Override
-	public boolean equip(int slot, ItemStack item) {
-		int i = slot - 400;
-		if (i < 0 || i >= 2 || i >= this.items.size()) {
-			int j = slot - 500 + 2;
-			if (j >= 2 && j < this.items.size()) {
-				this.items.setStack(j, item);
-				return true;
-			} else {
-				return false;
+	private class_5630 method_32335(int i, Predicate<ItemStack> predicate) {
+		return new class_5630() {
+			@Override
+			public ItemStack method_32327() {
+				return HorseBaseEntity.this.items.getStack(i);
 			}
-		} else if (i == 0 && !item.isOf(Items.SADDLE)) {
-			return false;
-		} else if (i != 1 || this.hasArmorSlot() && this.isHorseArmor(item)) {
-			this.items.setStack(i, item);
-			this.updateSaddle();
-			return true;
-		} else {
-			return false;
+
+			@Override
+			public boolean method_32332(ItemStack itemStack) {
+				if (!predicate.test(itemStack)) {
+					return false;
+				} else {
+					HorseBaseEntity.this.items.setStack(i, itemStack);
+					HorseBaseEntity.this.updateSaddle();
+					return true;
+				}
+			}
+		};
+	}
+
+	@Override
+	public class_5630 method_32318(int i) {
+		int j = i - 400;
+		if (j >= 0 && j < 2 && j < this.items.size()) {
+			if (j == 0) {
+				if (!this.hasArmorSlot()) {
+					return class_5630.field_27860;
+				}
+
+				return this.method_32335(j, itemStack -> itemStack.isEmpty() || itemStack.isOf(Items.SADDLE));
+			}
+
+			if (j == 1) {
+				if (!this.hasArmorSlot()) {
+					return class_5630.field_27860;
+				}
+
+				return this.method_32335(j, itemStack -> itemStack.isEmpty() || this.isHorseArmor(itemStack));
+			}
 		}
+
+		int k = i - 500 + 2;
+		return k >= 2 && k < this.items.size() ? class_5630.method_32328(this.items, k) : super.method_32318(i);
 	}
 
 	@Nullable

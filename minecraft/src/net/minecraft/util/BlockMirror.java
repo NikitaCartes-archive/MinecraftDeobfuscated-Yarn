@@ -1,16 +1,22 @@
 package net.minecraft.util;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
 
 public enum BlockMirror {
-	NONE(DirectionTransformation.IDENTITY),
-	LEFT_RIGHT(DirectionTransformation.INVERT_Z),
-	FRONT_BACK(DirectionTransformation.INVERT_X);
+	NONE(new TranslatableText("mirror.none"), DirectionTransformation.IDENTITY),
+	LEFT_RIGHT(new TranslatableText("mirror.left_right"), DirectionTransformation.INVERT_Z),
+	FRONT_BACK(new TranslatableText("mirror.front_back"), DirectionTransformation.INVERT_X);
 
+	private final Text field_27883;
 	private final DirectionTransformation directionTransformation;
 
-	private BlockMirror(DirectionTransformation directionTransformation) {
+	private BlockMirror(Text text, DirectionTransformation directionTransformation) {
+		this.field_27883 = text;
 		this.directionTransformation = directionTransformation;
 	}
 
@@ -44,5 +50,10 @@ public enum BlockMirror {
 
 	public DirectionTransformation getDirectionTransformation() {
 		return this.directionTransformation;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Text method_32354() {
+		return this.field_27883;
 	}
 }

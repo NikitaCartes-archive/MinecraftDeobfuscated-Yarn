@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.SaddleFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.StriderEntityModel;
@@ -15,11 +14,11 @@ public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, Stri
 	private static final Identifier TEXTURE = new Identifier("textures/entity/strider/strider.png");
 	private static final Identifier COLD_TEXTURE = new Identifier("textures/entity/strider/strider_cold.png");
 
-	public StriderEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new StriderEntityModel<>(arg.method_32167(EntityModelLayers.STRIDER)), 0.5F);
+	public StriderEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new StriderEntityModel<>(context.getPart(EntityModelLayers.STRIDER)), 0.5F);
 		this.addFeature(
 			new SaddleFeatureRenderer<>(
-				this, new StriderEntityModel<>(arg.method_32167(EntityModelLayers.STRIDER_SADDLE)), new Identifier("textures/entity/strider/strider_saddle.png")
+				this, new StriderEntityModel<>(context.getPart(EntityModelLayers.STRIDER_SADDLE)), new Identifier("textures/entity/strider/strider_saddle.png")
 			)
 		);
 	}

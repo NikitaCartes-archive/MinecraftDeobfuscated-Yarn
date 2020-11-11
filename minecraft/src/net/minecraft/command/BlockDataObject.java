@@ -75,7 +75,7 @@ public class BlockDataObject implements DataCommandObject {
 
 	@Override
 	public Text feedbackQuery(Tag tag) {
-		return new TranslatableText("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), NbtHelper.method_32270(tag));
+		return new TranslatableText("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), NbtHelper.toPrettyPrintedText(tag));
 	}
 
 	@Override

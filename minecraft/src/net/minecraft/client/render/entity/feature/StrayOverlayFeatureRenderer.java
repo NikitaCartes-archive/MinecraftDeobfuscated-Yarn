@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.SkeletonEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ai.RangedAttackMob;
@@ -17,9 +17,9 @@ public class StrayOverlayFeatureRenderer<T extends MobEntity & RangedAttackMob, 
 	private static final Identifier SKIN = new Identifier("textures/entity/skeleton/stray_overlay.png");
 	private final SkeletonEntityModel<T> model;
 
-	public StrayOverlayFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, class_5599 arg) {
+	public StrayOverlayFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, EntityModelLoader entityModelLoader) {
 		super(featureRendererContext);
-		this.model = new SkeletonEntityModel<>(arg.method_32072(EntityModelLayers.STRAY_OUTER));
+		this.model = new SkeletonEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.STRAY_OUTER));
 	}
 
 	public void render(

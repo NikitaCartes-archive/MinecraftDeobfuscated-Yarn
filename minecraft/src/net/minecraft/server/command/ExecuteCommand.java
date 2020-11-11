@@ -545,7 +545,7 @@ public class ExecuteCommand {
 							root,
 							CommandManager.argument("predicate", IdentifierArgumentType.identifier()).suggests(LOOT_CONDITIONS),
 							positive,
-							commandContext -> testLootCondition(commandContext.getSource(), IdentifierArgumentType.method_23727(commandContext, "predicate"))
+							commandContext -> testLootCondition(commandContext.getSource(), IdentifierArgumentType.getPredicateArgument(commandContext, "predicate"))
 						)
 					)
 			);

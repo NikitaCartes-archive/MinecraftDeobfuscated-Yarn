@@ -3,33 +3,32 @@ package net.minecraft.client.render.entity.model;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5597;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class MagmaCubeEntityModel<T extends SlimeEntity> extends class_5597<T> {
+public class MagmaCubeEntityModel<T extends SlimeEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart field_27441;
 	private final ModelPart[] field_3427 = new ModelPart[8];
 
 	public MagmaCubeEntityModel(ModelPart modelPart) {
 		this.field_27441 = modelPart;
-		Arrays.setAll(this.field_3427, i -> modelPart.method_32086(method_32015(i)));
+		Arrays.setAll(this.field_3427, i -> modelPart.getChild(method_32015(i)));
 	}
 
 	private static String method_32015(int i) {
 		return "cube" + i;
 	}
 
-	public static class_5607 method_32014() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
 
 		for (int i = 0; i < 8; i++) {
 			int j = 0;
@@ -42,13 +41,11 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends class_5597<T> {
 				k = 19;
 			}
 
-			lv2.method_32117(
-				method_32015(i), class_5606.method_32108().method_32101(j, k).method_32097(-4.0F, (float)(16 + i), -4.0F, 8.0F, 1.0F, 8.0F), class_5603.field_27701
-			);
+			modelPartData.addChild(method_32015(i), ModelPartBuilder.create().uv(j, k).cuboid(-4.0F, (float)(16 + i), -4.0F, 8.0F, 1.0F, 8.0F), ModelTransform.NONE);
 		}
 
-		lv2.method_32117("inside_cube", class_5606.method_32108().method_32101(0, 16).method_32097(-2.0F, 18.0F, -2.0F, 4.0F, 4.0F, 4.0F), class_5603.field_27701);
-		return class_5607.method_32110(lv, 64, 32);
+		modelPartData.addChild("inside_cube", ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, 18.0F, -2.0F, 4.0F, 4.0F, 4.0F), ModelTransform.NONE);
+		return TexturedModelData.of(modelData, 64, 32);
 	}
 
 	public void setAngles(T slimeEntity, float f, float g, float h, float i, float j) {
@@ -66,7 +63,7 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends class_5597<T> {
 	}
 
 	@Override
-	public ModelPart method_32008() {
+	public ModelPart getPart() {
 		return this.field_27441;
 	}
 }

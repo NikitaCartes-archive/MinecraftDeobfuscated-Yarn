@@ -13,11 +13,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5489;
@@ -25,10 +26,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
@@ -42,7 +43,6 @@ import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -61,13 +61,15 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 	private static final Text CUSTOM_TEXT = new TranslatableText("generator.custom");
 	private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.amplified.info");
 	private static final Text MAP_FEATURES_INFO_TEXT = new TranslatableText("selectWorld.mapFeatures.info");
+	private static final Text field_28000 = new TranslatableText("selectWorld.import_worldgen_settings.select_file");
 	private class_5489 field_26605 = class_5489.field_26528;
 	private TextRenderer textRenderer;
 	private int parentWidth;
 	private TextFieldWidget seedTextField;
-	private ButtonWidget mapFeaturesButton;
-	public ButtonWidget bonusItemsButton;
-	private ButtonWidget mapTypeButton;
+	private CyclingButtonWidget<Boolean> mapFeaturesButton;
+	private CyclingButtonWidget<Boolean> bonusItemsButton;
+	private CyclingButtonWidget<GeneratorType> mapTypeButton;
+	private ButtonWidget field_28001;
 	private ButtonWidget customizeTypeButton;
 	private ButtonWidget importOptionsButton;
 	private DynamicRegistryManager.Impl registryManager;
@@ -93,67 +95,50 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		parent.addChild(this.seedTextField);
 		int i = this.parentWidth / 2 - 155;
 		int j = this.parentWidth / 2 + 5;
-		this.mapFeaturesButton = parent.addButton(new ButtonWidget(i, 100, 150, 20, new TranslatableText("selectWorld.mapFeatures"), buttonWidget -> {
-			this.generatorOptions = this.generatorOptions.toggleGenerateStructures();
-			buttonWidget.queueNarration(250);
-		}) {
-			@Override
-			public Text getMessage() {
-				return ScreenTexts.composeToggleText(super.getMessage(), MoreOptionsDialog.this.generatorOptions.shouldGenerateStructures());
-			}
-
-			@Override
-			protected MutableText getNarrationMessage() {
-				return super.getNarrationMessage().append(". ").append(new TranslatableText("selectWorld.mapFeatures.info"));
-			}
-		});
+		this.mapFeaturesButton = parent.addButton(
+			CyclingButtonWidget.method_32613(this.generatorOptions.shouldGenerateStructures())
+				.method_32623(cyclingButtonWidget -> cyclingButtonWidget.method_32611().append(". ").append(new TranslatableText("selectWorld.mapFeatures.info")))
+				.build(
+					i,
+					100,
+					150,
+					20,
+					new TranslatableText("selectWorld.mapFeatures"),
+					(cyclingButtonWidget, boolean_) -> this.generatorOptions = this.generatorOptions.toggleGenerateStructures()
+				)
+		);
 		this.mapFeaturesButton.visible = false;
 		this.mapTypeButton = parent.addButton(
-			new ButtonWidget(
-				j,
-				100,
-				150,
-				20,
-				new TranslatableText("selectWorld.mapType"),
-				buttonWidget -> {
-					while (this.generatorType.isPresent()) {
-						int ix = GeneratorType.VALUES.indexOf(this.generatorType.get()) + 1;
-						if (ix >= GeneratorType.VALUES.size()) {
-							ix = 0;
-						}
-
-						GeneratorType generatorType = (GeneratorType)GeneratorType.VALUES.get(ix);
+			CyclingButtonWidget.<GeneratorType>method_32606(GeneratorType::getTranslationKey)
+				.method_32621((List<GeneratorType>)GeneratorType.VALUES.stream().filter(GeneratorType::method_32685).collect(Collectors.toList()), GeneratorType.VALUES)
+				.method_32623(
+					cyclingButtonWidget -> cyclingButtonWidget.getValue() == GeneratorType.AMPLIFIED
+							? cyclingButtonWidget.method_32611().append(". ").append(AMPLIFIED_INFO_TEXT)
+							: cyclingButtonWidget.method_32611()
+				)
+				.build(
+					j,
+					100,
+					150,
+					20,
+					new TranslatableText("selectWorld.mapType"),
+					(cyclingButtonWidget, generatorType) -> {
 						this.generatorType = Optional.of(generatorType);
 						this.generatorOptions = generatorType.createDefaultOptions(
 							this.registryManager, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest()
 						);
-						if (!this.generatorOptions.isDebugWorld() || Screen.hasShiftDown()) {
-							break;
-						}
+						parent.setMoreOptionsOpen();
 					}
-
-					parent.setMoreOptionsOpen();
-					buttonWidget.queueNarration(250);
-				}
-			) {
-				@Override
-				public Text getMessage() {
-					return super.getMessage()
-						.shallowCopy()
-						.append(" ")
-						.append((Text)MoreOptionsDialog.this.generatorType.map(GeneratorType::getTranslationKey).orElse(MoreOptionsDialog.CUSTOM_TEXT));
-				}
-
-				@Override
-				protected MutableText getNarrationMessage() {
-					return Objects.equals(MoreOptionsDialog.this.generatorType, Optional.of(GeneratorType.AMPLIFIED))
-						? super.getNarrationMessage().append(". ").append(MoreOptionsDialog.AMPLIFIED_INFO_TEXT)
-						: super.getNarrationMessage();
-				}
-			}
+				)
 		);
+		this.generatorType.ifPresent(this.mapTypeButton::method_32605);
 		this.mapTypeButton.visible = false;
-		this.mapTypeButton.active = this.generatorType.isPresent();
+		this.field_28001 = parent.addButton(
+			new ButtonWidget(j, 100, 150, 20, ScreenTexts.method_32700(new TranslatableText("selectWorld.mapType"), CUSTOM_TEXT), buttonWidget -> {
+			})
+		);
+		this.field_28001.active = false;
+		this.field_28001.visible = false;
 		this.customizeTypeButton = parent.addButton(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), buttonWidget -> {
 			GeneratorType.ScreenProvider screenProvider = (GeneratorType.ScreenProvider)GeneratorType.SCREEN_PROVIDERS.get(this.generatorType);
 			if (screenProvider != null) {
@@ -161,15 +146,17 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 			}
 		}));
 		this.customizeTypeButton.visible = false;
-		this.bonusItemsButton = parent.addButton(new ButtonWidget(i, 151, 150, 20, new TranslatableText("selectWorld.bonusItems"), buttonWidget -> {
-			this.generatorOptions = this.generatorOptions.toggleBonusChest();
-			buttonWidget.queueNarration(250);
-		}) {
-			@Override
-			public Text getMessage() {
-				return ScreenTexts.composeToggleText(super.getMessage(), MoreOptionsDialog.this.generatorOptions.hasBonusChest() && !parent.hardcore);
-			}
-		});
+		this.bonusItemsButton = parent.addButton(
+			CyclingButtonWidget.method_32613(this.generatorOptions.hasBonusChest() && !parent.hardcore)
+				.build(
+					i,
+					151,
+					150,
+					20,
+					new TranslatableText("selectWorld.bonusItems"),
+					(cyclingButtonWidget, boolean_) -> this.generatorOptions = this.generatorOptions.toggleBonusChest()
+				)
+		);
 		this.bonusItemsButton.visible = false;
 		this.importOptionsButton = parent.addButton(
 			new ButtonWidget(
@@ -179,8 +166,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 				20,
 				new TranslatableText("selectWorld.import_worldgen_settings"),
 				buttonWidget -> {
-					TranslatableText translatableText = new TranslatableText("selectWorld.import_worldgen_settings.select_file");
-					String string = TinyFileDialogs.tinyfd_openFileDialog(translatableText.getString(), null, null, null, false);
+					String string = TinyFileDialogs.tinyfd_openFileDialog(field_28000.getString(), null, null, null, false);
 					if (string != null) {
 						DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 						ResourcePackManager resourcePackManager = new ResourcePackManager(
@@ -197,10 +183,10 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 							);
 							client.runTasks(completableFuture::isDone);
 							serverResourceManager = (ServerResourceManager)completableFuture.get();
-						} catch (ExecutionException | InterruptedException var25) {
-							LOGGER.error("Error loading data packs when importing world settings", (Throwable)var25);
+						} catch (ExecutionException | InterruptedException var24) {
+							LOGGER.error("Error loading data packs when importing world settings", (Throwable)var24);
 							Text text = new TranslatableText("selectWorld.import_worldgen_settings.failure");
-							Text text2 = new LiteralText(var25.getMessage());
+							Text text2 = new LiteralText(var24.getMessage());
 							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
 							resourcePackManager.close();
 							return;
@@ -217,24 +203,24 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 							try {
 								JsonElement jsonElement = jsonParser.parse(bufferedReader);
 								dataResult = GeneratorOptions.CODEC.parse(registryOps, jsonElement);
-							} catch (Throwable var24) {
-								string2 = var24;
-								throw var24;
+							} catch (Throwable var23) {
+								string2 = var23;
+								throw var23;
 							} finally {
 								if (bufferedReader != null) {
 									if (string2 != null) {
 										try {
 											bufferedReader.close();
-										} catch (Throwable var23) {
-											string2.addSuppressed(var23);
+										} catch (Throwable var22) {
+											string2.addSuppressed(var22);
 										}
 									} else {
 										bufferedReader.close();
 									}
 								}
 							}
-						} catch (JsonIOException | JsonSyntaxException | IOException var27) {
-							dataResult = DataResult.error("Failed to parse file: " + var27.getMessage());
+						} catch (JsonIOException | JsonSyntaxException | IOException var26) {
+							dataResult = DataResult.error("Failed to parse file: " + var26.getMessage());
 						}
 
 						if (dataResult.error().isPresent()) {
@@ -289,9 +275,9 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		this.registryManager = registryManager;
 		this.generatorOptions = generatorOptions;
 		this.generatorType = GeneratorType.fromGeneratorOptions(generatorOptions);
+		this.method_32683(true);
 		this.seed = OptionalLong.of(generatorOptions.getSeed());
 		this.seedTextField.setText(toSeedText(this.seed));
-		this.mapTypeButton.active = this.generatorType.isPresent();
 	}
 
 	@Override
@@ -354,7 +340,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 	}
 
 	public void setVisible(boolean visible) {
-		this.mapTypeButton.visible = visible;
+		this.method_32683(visible);
 		if (this.generatorOptions.isDebugWorld()) {
 			this.mapFeaturesButton.visible = false;
 			this.bonusItemsButton.visible = false;
@@ -368,6 +354,16 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		}
 
 		this.seedTextField.setVisible(visible);
+	}
+
+	private void method_32683(boolean bl) {
+		if (this.generatorType.isPresent()) {
+			this.mapTypeButton.visible = bl;
+			this.field_28001.visible = false;
+		} else {
+			this.mapTypeButton.visible = false;
+			this.field_28001.visible = bl;
+		}
 	}
 
 	public DynamicRegistryManager.Impl getRegistryManager() {
@@ -385,5 +381,15 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 			this.generatorOptions = generatorOptions;
 			this.registryManager = impl;
 		});
+	}
+
+	public void method_32682() {
+		this.bonusItemsButton.active = false;
+		this.bonusItemsButton.method_32605(false);
+	}
+
+	public void method_32684() {
+		this.bonusItemsButton.active = true;
+		this.bonusItemsButton.method_32605(this.generatorOptions.hasBonusChest());
 	}
 }

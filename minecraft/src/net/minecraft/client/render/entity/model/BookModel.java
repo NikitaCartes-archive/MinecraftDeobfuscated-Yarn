@@ -2,13 +2,13 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -27,38 +27,32 @@ public class BookModel extends Model {
 	public BookModel(ModelPart modelPart) {
 		super(RenderLayer::getEntitySolid);
 		this.field_27398 = modelPart;
-		this.leftCover = modelPart.method_32086("left_lid");
-		this.rightCover = modelPart.method_32086("right_lid");
-		this.leftBlock = modelPart.method_32086("left_pages");
-		this.rightBlock = modelPart.method_32086("right_pages");
-		this.leftPage = modelPart.method_32086("flip_page1");
-		this.rightPage = modelPart.method_32086("flip_page2");
+		this.leftCover = modelPart.getChild("left_lid");
+		this.rightCover = modelPart.getChild("right_lid");
+		this.leftBlock = modelPart.getChild("left_pages");
+		this.rightBlock = modelPart.getChild("right_pages");
+		this.leftPage = modelPart.getChild("flip_page1");
+		this.rightPage = modelPart.getChild("flip_page2");
 	}
 
-	public static class_5607 method_31986() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117(
-			"left_lid",
-			class_5606.method_32108().method_32101(0, 0).method_32097(-6.0F, -5.0F, -0.005F, 6.0F, 10.0F, 0.005F),
-			class_5603.method_32090(0.0F, 0.0F, -1.0F)
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild(
+			"left_lid", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -5.0F, -0.005F, 6.0F, 10.0F, 0.005F), ModelTransform.pivot(0.0F, 0.0F, -1.0F)
 		);
-		lv2.method_32117(
-			"right_lid",
-			class_5606.method_32108().method_32101(16, 0).method_32097(0.0F, -5.0F, -0.005F, 6.0F, 10.0F, 0.005F),
-			class_5603.method_32090(0.0F, 0.0F, 1.0F)
+		modelPartData.addChild(
+			"right_lid", ModelPartBuilder.create().uv(16, 0).cuboid(0.0F, -5.0F, -0.005F, 6.0F, 10.0F, 0.005F), ModelTransform.pivot(0.0F, 0.0F, 1.0F)
 		);
-		lv2.method_32117(
-			"seam",
-			class_5606.method_32108().method_32101(12, 0).method_32097(-1.0F, -5.0F, 0.0F, 2.0F, 10.0F, 0.005F),
-			class_5603.method_32092(0.0F, (float) (Math.PI / 2), 0.0F)
+		modelPartData.addChild(
+			"seam", ModelPartBuilder.create().uv(12, 0).cuboid(-1.0F, -5.0F, 0.0F, 2.0F, 10.0F, 0.005F), ModelTransform.rotation(0.0F, (float) (Math.PI / 2), 0.0F)
 		);
-		lv2.method_32117("left_pages", class_5606.method_32108().method_32101(0, 10).method_32097(0.0F, -4.0F, -0.99F, 5.0F, 8.0F, 1.0F), class_5603.field_27701);
-		lv2.method_32117("right_pages", class_5606.method_32108().method_32101(12, 10).method_32097(0.0F, -4.0F, -0.01F, 5.0F, 8.0F, 1.0F), class_5603.field_27701);
-		class_5606 lv3 = class_5606.method_32108().method_32101(24, 10).method_32097(0.0F, -4.0F, 0.0F, 5.0F, 8.0F, 0.005F);
-		lv2.method_32117("flip_page1", lv3, class_5603.field_27701);
-		lv2.method_32117("flip_page2", lv3, class_5603.field_27701);
-		return class_5607.method_32110(lv, 64, 32);
+		modelPartData.addChild("left_pages", ModelPartBuilder.create().uv(0, 10).cuboid(0.0F, -4.0F, -0.99F, 5.0F, 8.0F, 1.0F), ModelTransform.NONE);
+		modelPartData.addChild("right_pages", ModelPartBuilder.create().uv(12, 10).cuboid(0.0F, -4.0F, -0.01F, 5.0F, 8.0F, 1.0F), ModelTransform.NONE);
+		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(24, 10).cuboid(0.0F, -4.0F, 0.0F, 5.0F, 8.0F, 0.005F);
+		modelPartData.addChild("flip_page1", modelPartBuilder, ModelTransform.NONE);
+		modelPartData.addChild("flip_page2", modelPartBuilder, ModelTransform.NONE);
+		return TexturedModelData.of(modelData, 64, 32);
 	}
 
 	@Override

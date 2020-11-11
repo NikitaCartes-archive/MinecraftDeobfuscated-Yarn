@@ -9,9 +9,10 @@ import net.minecraft.util.math.MathHelper;
 
 public class MapIcon {
 	private final MapIcon.Type type;
-	private byte x;
-	private byte z;
-	private byte rotation;
+	private final byte x;
+	private final byte z;
+	private final byte rotation;
+	@Nullable
 	private final Text text;
 
 	public MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, @Nullable Text text) {
@@ -60,15 +61,11 @@ public class MapIcon {
 			return false;
 		} else {
 			MapIcon mapIcon = (MapIcon)o;
-			if (this.type != mapIcon.type) {
-				return false;
-			} else if (this.rotation != mapIcon.rotation) {
-				return false;
-			} else if (this.x != mapIcon.x) {
-				return false;
-			} else {
-				return this.z != mapIcon.z ? false : Objects.equals(this.text, mapIcon.text);
-			}
+			return this.type == mapIcon.type
+				&& this.rotation == mapIcon.rotation
+				&& this.x == mapIcon.x
+				&& this.z == mapIcon.z
+				&& Objects.equals(this.text, mapIcon.text);
 		}
 	}
 

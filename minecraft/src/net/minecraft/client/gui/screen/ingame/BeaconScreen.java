@@ -30,8 +30,8 @@ import net.minecraft.util.collection.DefaultedList;
 @Environment(EnvType.CLIENT)
 public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/beacon.png");
-	private static final Text field_26560 = new TranslatableText("block.minecraft.beacon.primary");
-	private static final Text field_26561 = new TranslatableText("block.minecraft.beacon.secondary");
+	private static final Text PRIMARY_POWER_TEXT = new TranslatableText("block.minecraft.beacon.primary");
+	private static final Text SECONDARY_POWER_TEXT = new TranslatableText("block.minecraft.beacon.secondary");
 	private BeaconScreen.DoneButtonWidget doneButton;
 	private boolean consumeGem;
 	private StatusEffect primaryEffect;
@@ -126,8 +126,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		drawCenteredText(matrices, this.textRenderer, field_26560, 62, 10, 14737632);
-		drawCenteredText(matrices, this.textRenderer, field_26561, 169, 10, 14737632);
+		drawCenteredText(matrices, this.textRenderer, PRIMARY_POWER_TEXT, 62, 10, 14737632);
+		drawCenteredText(matrices, this.textRenderer, SECONDARY_POWER_TEXT, 169, 10, 14737632);
 
 		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
 			if (abstractButtonWidget.isHovered()) {

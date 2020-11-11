@@ -829,12 +829,11 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.COPPER_BLOCK)
 			.input('#', Items.COPPER_INGOT)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
+			.pattern("##")
+			.pattern("##")
 			.criterion("has_copper_ingot", conditionsFromItem(Items.COPPER_INGOT))
 			.offerTo(consumer);
-		ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 9)
+		ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 4)
 			.input(Blocks.COPPER_BLOCK)
 			.group("copper_ingot")
 			.criterion("has_copper_block", conditionsFromItem(Blocks.COPPER_BLOCK))

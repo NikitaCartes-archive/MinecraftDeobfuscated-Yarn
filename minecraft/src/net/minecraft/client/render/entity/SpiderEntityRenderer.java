@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.feature.SpiderEyesFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -14,12 +13,12 @@ import net.minecraft.util.Identifier;
 public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRenderer<T, SpiderEntityModel<T>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/spider/spider.png");
 
-	public SpiderEntityRenderer(class_5617.class_5618 arg) {
-		this(arg, EntityModelLayers.SPIDER);
+	public SpiderEntityRenderer(EntityRendererFactory.Context context) {
+		this(context, EntityModelLayers.SPIDER);
 	}
 
-	public SpiderEntityRenderer(class_5617.class_5618 arg, EntityModelLayer entityModelLayer) {
-		super(arg, new SpiderEntityModel<>(arg.method_32167(entityModelLayer)), 0.8F);
+	public SpiderEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
+		super(ctx, new SpiderEntityModel<>(ctx.getPart(layer)), 0.8F);
 		this.addFeature(new SpiderEyesFeatureRenderer<>(this));
 	}
 

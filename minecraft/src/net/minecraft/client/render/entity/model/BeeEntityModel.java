@@ -3,14 +3,14 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.ModelUtil;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -29,56 +29,52 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 
 	public BeeEntityModel(ModelPart modelPart) {
 		super(false, 24.0F, 0.0F);
-		this.body = modelPart.method_32086("bone");
-		ModelPart modelPart2 = this.body.method_32086("body");
-		this.stinger = modelPart2.method_32086("stinger");
-		this.leftAntenna = modelPart2.method_32086("left_antenna");
-		this.rightAntenna = modelPart2.method_32086("right_antenna");
-		this.rightWing = this.body.method_32086("right_wing");
-		this.leftWing = this.body.method_32086("left_wing");
-		this.frontLegs = this.body.method_32086("front_legs");
-		this.middleLegs = this.body.method_32086("middle_legs");
-		this.backLegs = this.body.method_32086("back_legs");
+		this.body = modelPart.getChild("bone");
+		ModelPart modelPart2 = this.body.getChild("body");
+		this.stinger = modelPart2.getChild("stinger");
+		this.leftAntenna = modelPart2.getChild("left_antenna");
+		this.rightAntenna = modelPart2.getChild("right_antenna");
+		this.rightWing = this.body.getChild("right_wing");
+		this.leftWing = this.body.getChild("left_wing");
+		this.frontLegs = this.body.getChild("front_legs");
+		this.middleLegs = this.body.getChild("middle_legs");
+		this.backLegs = this.body.getChild("back_legs");
 	}
 
-	public static class_5607 method_31981() {
+	public static TexturedModelData getTexturedModelData() {
 		float f = 19.0F;
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		class_5610 lv3 = lv2.method_32117("bone", class_5606.method_32108(), class_5603.method_32090(0.0F, 19.0F, 0.0F));
-		class_5610 lv4 = lv3.method_32117(
-			"body", class_5606.method_32108().method_32101(0, 0).method_32097(-3.5F, -4.0F, -5.0F, 7.0F, 7.0F, 10.0F), class_5603.field_27701
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		ModelPartData modelPartData2 = modelPartData.addChild("bone", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 19.0F, 0.0F));
+		ModelPartData modelPartData3 = modelPartData2.addChild(
+			"body", ModelPartBuilder.create().uv(0, 0).cuboid(-3.5F, -4.0F, -5.0F, 7.0F, 7.0F, 10.0F), ModelTransform.NONE
 		);
-		lv4.method_32117("stinger", class_5606.method_32108().method_32101(26, 7).method_32097(0.0F, -1.0F, 5.0F, 0.0F, 1.0F, 2.0F), class_5603.field_27701);
-		lv4.method_32117(
-			"left_antenna", class_5606.method_32108().method_32101(2, 0).method_32097(1.5F, -2.0F, -3.0F, 1.0F, 2.0F, 3.0F), class_5603.method_32090(0.0F, -2.0F, -5.0F)
+		modelPartData3.addChild("stinger", ModelPartBuilder.create().uv(26, 7).cuboid(0.0F, -1.0F, 5.0F, 0.0F, 1.0F, 2.0F), ModelTransform.NONE);
+		modelPartData3.addChild(
+			"left_antenna", ModelPartBuilder.create().uv(2, 0).cuboid(1.5F, -2.0F, -3.0F, 1.0F, 2.0F, 3.0F), ModelTransform.pivot(0.0F, -2.0F, -5.0F)
 		);
-		lv4.method_32117(
-			"right_antenna",
-			class_5606.method_32108().method_32101(2, 3).method_32097(-2.5F, -2.0F, -3.0F, 1.0F, 2.0F, 3.0F),
-			class_5603.method_32090(0.0F, -2.0F, -5.0F)
+		modelPartData3.addChild(
+			"right_antenna", ModelPartBuilder.create().uv(2, 3).cuboid(-2.5F, -2.0F, -3.0F, 1.0F, 2.0F, 3.0F), ModelTransform.pivot(0.0F, -2.0F, -5.0F)
 		);
-		class_5605 lv5 = new class_5605(0.001F);
-		lv3.method_32117(
+		Dilation dilation = new Dilation(0.001F);
+		modelPartData2.addChild(
 			"right_wing",
-			class_5606.method_32108().method_32101(0, 18).method_32098(-9.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, lv5),
-			class_5603.method_32091(-1.5F, -4.0F, -3.0F, 0.0F, -0.2618F, 0.0F)
+			ModelPartBuilder.create().uv(0, 18).cuboid(-9.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, dilation),
+			ModelTransform.of(-1.5F, -4.0F, -3.0F, 0.0F, -0.2618F, 0.0F)
 		);
-		lv3.method_32117(
+		modelPartData2.addChild(
 			"left_wing",
-			class_5606.method_32108().method_32101(0, 18).method_32096().method_32098(0.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, lv5),
-			class_5603.method_32091(1.5F, -4.0F, -3.0F, 0.0F, 0.2618F, 0.0F)
+			ModelPartBuilder.create().uv(0, 18).mirrored().cuboid(0.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, dilation),
+			ModelTransform.of(1.5F, -4.0F, -3.0F, 0.0F, 0.2618F, 0.0F)
 		);
-		lv3.method_32117(
-			"front_legs", class_5606.method_32108().method_32104("front_legs", -5.0F, 0.0F, 0.0F, 7, 2, 0, 26, 1), class_5603.method_32090(1.5F, 3.0F, -2.0F)
+		modelPartData2.addChild(
+			"front_legs", ModelPartBuilder.create().cuboid("front_legs", -5.0F, 0.0F, 0.0F, 7, 2, 0, 26, 1), ModelTransform.pivot(1.5F, 3.0F, -2.0F)
 		);
-		lv3.method_32117(
-			"middle_legs", class_5606.method_32108().method_32104("middle_legs", -5.0F, 0.0F, 0.0F, 7, 2, 0, 26, 3), class_5603.method_32090(1.5F, 3.0F, 0.0F)
+		modelPartData2.addChild(
+			"middle_legs", ModelPartBuilder.create().cuboid("middle_legs", -5.0F, 0.0F, 0.0F, 7, 2, 0, 26, 3), ModelTransform.pivot(1.5F, 3.0F, 0.0F)
 		);
-		lv3.method_32117(
-			"back_legs", class_5606.method_32108().method_32104("back_legs", -5.0F, 0.0F, 0.0F, 7, 2, 0, 26, 5), class_5603.method_32090(1.5F, 3.0F, 2.0F)
-		);
-		return class_5607.method_32110(lv, 64, 64);
+		modelPartData2.addChild("back_legs", ModelPartBuilder.create().cuboid("back_legs", -5.0F, 0.0F, 0.0F, 7, 2, 0, 26, 5), ModelTransform.pivot(1.5F, 3.0F, 2.0F));
+		return TexturedModelData.of(modelData, 64, 64);
 	}
 
 	public void animateModel(T beeEntity, float f, float g, float h) {

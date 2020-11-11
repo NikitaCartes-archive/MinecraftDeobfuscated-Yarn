@@ -70,27 +70,27 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static final Identifier CROSS_ICON = new Identifier("realms", "textures/gui/realms/cross_icon.png");
 	private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
 	private static final Identifier WIDGETS = new Identifier("minecraft", "textures/gui/widgets.png");
-	private static final Text field_26447 = new TranslatableText("mco.invites.nopending");
-	private static final Text field_26448 = new TranslatableText("mco.invites.pending");
-	private static final List<Text> field_26449 = ImmutableList.of(
+	private static final Text NO_PENDING_TEXT = new TranslatableText("mco.invites.nopending");
+	private static final Text PENDING_TEXT = new TranslatableText("mco.invites.pending");
+	private static final List<Text> TRIAL_MESSAGE_LINES = ImmutableList.of(
 		new TranslatableText("mco.trial.message.line1"), new TranslatableText("mco.trial.message.line2")
 	);
-	private static final Text field_26450 = new TranslatableText("mco.selectServer.uninitialized");
-	private static final Text field_26451 = new TranslatableText("mco.selectServer.expiredList");
-	private static final Text field_26452 = new TranslatableText("mco.selectServer.expiredRenew");
-	private static final Text field_26453 = new TranslatableText("mco.selectServer.expiredTrial");
-	private static final Text field_26454 = new TranslatableText("mco.selectServer.expiredSubscribe");
-	private static final Text field_26455 = new TranslatableText("mco.selectServer.minigame").append(" ");
-	private static final Text field_26456 = new TranslatableText("mco.selectServer.popup");
-	private static final Text field_26457 = new TranslatableText("mco.selectServer.expired");
-	private static final Text field_26458 = new TranslatableText("mco.selectServer.expires.soon");
-	private static final Text field_26459 = new TranslatableText("mco.selectServer.expires.day");
-	private static final Text field_26460 = new TranslatableText("mco.selectServer.open");
-	private static final Text field_26461 = new TranslatableText("mco.selectServer.closed");
-	private static final Text field_26462 = new TranslatableText("mco.selectServer.leave");
-	private static final Text field_26463 = new TranslatableText("mco.selectServer.configure");
-	private static final Text field_26464 = new TranslatableText("mco.selectServer.info");
-	private static final Text field_26465 = new TranslatableText("mco.news");
+	private static final Text UNINITIALIZED_TEXT = new TranslatableText("mco.selectServer.uninitialized");
+	private static final Text EXPIRED_LIST_TEXT = new TranslatableText("mco.selectServer.expiredList");
+	private static final Text EXPIRED_RENEW_TEXT = new TranslatableText("mco.selectServer.expiredRenew");
+	private static final Text EXPIRED_TRIAL_TEXT = new TranslatableText("mco.selectServer.expiredTrial");
+	private static final Text EXPIRED_SUBSCRIBE_TEXT = new TranslatableText("mco.selectServer.expiredSubscribe");
+	private static final Text MINIGAME_TEXT = new TranslatableText("mco.selectServer.minigame").append(" ");
+	private static final Text POPUP_TEXT = new TranslatableText("mco.selectServer.popup");
+	private static final Text EXPIRED_TEXT = new TranslatableText("mco.selectServer.expired");
+	private static final Text EXPIRES_SOON_TEXT = new TranslatableText("mco.selectServer.expires.soon");
+	private static final Text EXPIRES_IN_A_DAY_TEXT = new TranslatableText("mco.selectServer.expires.day");
+	private static final Text OPEN_TEXT = new TranslatableText("mco.selectServer.open");
+	private static final Text CLOSED_TEXT = new TranslatableText("mco.selectServer.closed");
+	private static final Text LEAVE_TEXT = new TranslatableText("mco.selectServer.leave");
+	private static final Text CONFIGURE_TEXT = new TranslatableText("mco.selectServer.configure");
+	private static final Text INFO_TEXT = new TranslatableText("mco.selectServer.info");
+	private static final Text NEWS_TEXT = new TranslatableText("mco.news");
 	private static List<Identifier> IMAGES = ImmutableList.of();
 	private static final RealmsDataFetcher realmsDataFetcher = new RealmsDataFetcher();
 	private static boolean overrideConfigure;
@@ -220,7 +220,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 			this.addChild(this.realmSelectionList);
 			this.focusOn(this.realmSelectionList);
-			this.field_26466 = class_5489.method_30890(this.textRenderer, field_26456, 100);
+			this.field_26466 = class_5489.method_30890(this.textRenderer, POPUP_TEXT, 100);
 		}
 	}
 
@@ -791,7 +791,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				}
 			}
 
-			Realms.narrateNow(field_26456.getString());
+			Realms.narrateNow(POPUP_TEXT.getString());
 		}
 
 		if (this.hasFetchedServers) {
@@ -866,7 +866,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		int o = i + 12;
 		boolean bl7 = bl2 && bl3;
 		if (bl7) {
-			Text text = m == 0 ? field_26447 : field_26448;
+			Text text = m == 0 ? NO_PENDING_TEXT : PENDING_TEXT;
 			int q = this.textRenderer.getWidth(text);
 			this.fillGradient(matrixStack, o - 3, j - 3, o + q + 3, j + 8 + 3, -1073741824, -1073741824);
 			this.textRenderer.drawWithShadow(matrixStack, text, (float)o, (float)j, -1);
@@ -920,7 +920,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
-			this.method_27452(field_26457);
+			this.method_27452(EXPIRED_TEXT);
 		}
 	}
 
@@ -935,9 +935,9 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
 			if (m <= 0) {
-				this.method_27452(field_26458);
+				this.method_27452(EXPIRES_SOON_TEXT);
 			} else if (m == 1) {
-				this.method_27452(field_26459);
+				this.method_27452(EXPIRES_IN_A_DAY_TEXT);
 			} else {
 				this.method_27452(new TranslatableText("mco.selectServer.expires.days", m));
 			}
@@ -949,7 +949,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
-			this.method_27452(field_26460);
+			this.method_27452(OPEN_TEXT);
 		}
 	}
 
@@ -958,7 +958,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
-			this.method_27452(field_26461);
+			this.method_27452(CLOSED_TEXT);
 		}
 	}
 
@@ -973,7 +973,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		float f = bl ? 28.0F : 0.0F;
 		DrawableHelper.drawTexture(matrixStack, i, j, f, 0.0F, 28, 28, 56, 28);
 		if (bl) {
-			this.method_27452(field_26462);
+			this.method_27452(LEAVE_TEXT);
 			this.hoverState = RealmsMainScreen.HoverState.LEAVE;
 		}
 	}
@@ -989,7 +989,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		float f = bl ? 28.0F : 0.0F;
 		DrawableHelper.drawTexture(matrixStack, i, j, f, 0.0F, 28, 28, 56, 28);
 		if (bl) {
-			this.method_27452(field_26463);
+			this.method_27452(CONFIGURE_TEXT);
 			this.hoverState = RealmsMainScreen.HoverState.CONFIGURE;
 		}
 	}
@@ -1032,7 +1032,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		float f = bl ? 20.0F : 0.0F;
 		DrawableHelper.drawTexture(matrixStack, k, l, f, 0.0F, 20, 20, 40, 20);
 		if (bl2) {
-			this.method_27452(field_26464);
+			this.method_27452(INFO_TEXT);
 		}
 	}
 
@@ -1053,7 +1053,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		float f = bl5 ? 20.0F : 0.0F;
 		DrawableHelper.drawTexture(matrixStack, k, l, f, 0.0F, 20, 20, 40, 20);
 		if (bl4 && bl3) {
-			this.method_27452(field_26465);
+			this.method_27452(NEWS_TEXT);
 		}
 
 		if (bl && bl3) {
@@ -1147,7 +1147,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class NewsButton extends ButtonWidget {
 		public NewsButton() {
-			super(RealmsMainScreen.this.width - 62, 6, 20, 20, LiteralText.EMPTY, buttonWidget -> {
+			super(RealmsMainScreen.this.width - 62, 6, 20, 20, new TranslatableText("mco.news"), buttonWidget -> {
 				if (RealmsMainScreen.this.newsLink != null) {
 					Util.getOperatingSystem().open(RealmsMainScreen.this.newsLink);
 					if (RealmsMainScreen.this.hasUnreadNews) {
@@ -1158,7 +1158,6 @@ public class RealmsMainScreen extends RealmsScreen {
 					}
 				}
 			});
-			this.setMessage(new TranslatableText("mco.news"));
 		}
 
 		@Override
@@ -1175,7 +1174,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		@Override
 		public void tick() {
-			this.setMessage(new TranslatableText(RealmsMainScreen.this.numberOfPendingInvites == 0 ? "mco.invites.nopending" : "mco.invites.pending"));
+			this.setMessage(RealmsMainScreen.this.numberOfPendingInvites == 0 ? RealmsMainScreen.NO_PENDING_TEXT : RealmsMainScreen.PENDING_TEXT);
 		}
 
 		@Override
@@ -1375,7 +1374,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				DrawableHelper.drawTexture(matrixStack, i + 10, j + 6, 0.0F, 0.0F, 40, 20, 40, 20);
 				float f = 0.5F + (1.0F + MathHelper.sin((float)RealmsMainScreen.this.animTick * 0.25F)) * 0.25F;
 				int m = 0xFF000000 | (int)(127.0F * f) << 16 | (int)(255.0F * f) << 8 | (int)(127.0F * f);
-				DrawableHelper.drawCenteredText(matrixStack, RealmsMainScreen.this.textRenderer, RealmsMainScreen.field_26450, i + 10 + 40 + 75, j + 12, m);
+				DrawableHelper.drawCenteredText(matrixStack, RealmsMainScreen.this.textRenderer, RealmsMainScreen.UNINITIALIZED_TEXT, i + 10 + 40 + 75, j + 12, m);
 			} else {
 				int n = 225;
 				int m = 2;
@@ -1418,11 +1417,11 @@ public class RealmsMainScreen extends RealmsScreen {
 					Text text;
 					Text text2;
 					if (serverData.expiredTrial) {
-						text = RealmsMainScreen.field_26453;
-						text2 = RealmsMainScreen.field_26454;
+						text = RealmsMainScreen.EXPIRED_TRIAL_TEXT;
+						text2 = RealmsMainScreen.EXPIRED_SUBSCRIBE_TEXT;
 					} else {
-						text = RealmsMainScreen.field_26451;
-						text2 = RealmsMainScreen.field_26452;
+						text = RealmsMainScreen.EXPIRED_LIST_TEXT;
+						text2 = RealmsMainScreen.EXPIRED_RENEW_TEXT;
 					}
 
 					int o = RealmsMainScreen.this.textRenderer.getWidth(text2) + 17;
@@ -1448,8 +1447,8 @@ public class RealmsMainScreen extends RealmsScreen {
 				} else {
 					if (serverData.worldType == RealmsServer.WorldType.MINIGAME) {
 						int v = 13413468;
-						int w = RealmsMainScreen.this.textRenderer.getWidth(RealmsMainScreen.field_26455);
-						RealmsMainScreen.this.textRenderer.draw(matrixStack, RealmsMainScreen.field_26455, (float)(i + 2), (float)(j + 12), 13413468);
+						int w = RealmsMainScreen.this.textRenderer.getWidth(RealmsMainScreen.MINIGAME_TEXT);
+						RealmsMainScreen.this.textRenderer.draw(matrixStack, RealmsMainScreen.MINIGAME_TEXT, (float)(i + 2), (float)(j + 12), 13413468);
 						RealmsMainScreen.this.textRenderer.draw(matrixStack, serverData.getMinigameName(), (float)(i + 2 + w), (float)(j + 12), 7105644);
 					} else {
 						RealmsMainScreen.this.textRenderer.draw(matrixStack, serverData.getDescription(), (float)(i + 2), (float)(j + 12), 7105644);
@@ -1499,7 +1498,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				k = 6077788;
 			}
 
-			for (Text text : RealmsMainScreen.field_26449) {
+			for (Text text : RealmsMainScreen.TRIAL_MESSAGE_LINES) {
 				DrawableHelper.drawCenteredText(matrixStack, RealmsMainScreen.this.textRenderer, text, RealmsMainScreen.this.width / 2, i + j, k);
 				j += 10;
 			}

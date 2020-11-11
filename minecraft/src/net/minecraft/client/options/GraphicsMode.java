@@ -31,10 +31,6 @@ public enum GraphicsMode {
 		return this.translationKey;
 	}
 
-	public GraphicsMode next() {
-		return byId(this.getId() + 1);
-	}
-
 	public String toString() {
 		switch (this) {
 			case FAST:

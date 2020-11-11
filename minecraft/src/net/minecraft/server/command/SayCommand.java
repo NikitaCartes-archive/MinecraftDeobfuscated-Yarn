@@ -15,12 +15,12 @@ public class SayCommand {
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(CommandManager.argument("message", MessageArgumentType.message()).executes(commandContext -> {
 					Text text = MessageArgumentType.getMessage(commandContext, "message");
-					TranslatableText translatableText = new TranslatableText("chat.type.announcement", commandContext.getSource().getDisplayName(), text);
+					Text text2 = new TranslatableText("chat.type.announcement", commandContext.getSource().getDisplayName(), text);
 					Entity entity = commandContext.getSource().getEntity();
 					if (entity != null) {
-						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(translatableText, MessageType.CHAT, entity.getUuid());
+						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(text2, MessageType.CHAT, entity.getUuid());
 					} else {
-						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(translatableText, MessageType.SYSTEM, Util.NIL_UUID);
+						commandContext.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(text2, MessageType.SYSTEM, Util.NIL_UUID);
 					}
 
 					return 1;

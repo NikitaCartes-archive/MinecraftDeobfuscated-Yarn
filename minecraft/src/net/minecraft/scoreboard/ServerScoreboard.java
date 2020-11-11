@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
@@ -17,7 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class ServerScoreboard extends Scoreboard {
 	private final MinecraftServer server;
 	private final Set<ScoreboardObjective> objectives = Sets.<ScoreboardObjective>newHashSet();
-	private Runnable[] updateListeners = new Runnable[0];
+	private final List<Runnable> updateListeners = Lists.<Runnable>newArrayList();
 
 	public ServerScoreboard(MinecraftServer server) {
 		this.server = server;
@@ -141,8 +142,7 @@ public class ServerScoreboard extends Scoreboard {
 	}
 
 	public void addUpdateListener(Runnable listener) {
-		this.updateListeners = (Runnable[])Arrays.copyOf(this.updateListeners, this.updateListeners.length + 1);
-		this.updateListeners[this.updateListeners.length - 1] = listener;
+		this.updateListeners.add(listener);
 	}
 
 	protected void runUpdateListeners() {
@@ -222,6 +222,16 @@ public class ServerScoreboard extends Scoreboard {
 		}
 
 		return i;
+	}
+
+	public ScoreboardState method_32705() {
+		ScoreboardState scoreboardState = new ScoreboardState(this);
+		this.addUpdateListener(scoreboardState::markDirty);
+		return scoreboardState;
+	}
+
+	public ScoreboardState method_32704(CompoundTag compoundTag) {
+		return this.method_32705().fromTag(compoundTag);
 	}
 
 	public static enum UpdateMode {

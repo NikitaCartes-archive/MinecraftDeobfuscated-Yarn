@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.entity.model.CodEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
@@ -15,8 +14,8 @@ import net.minecraft.util.math.MathHelper;
 public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/fish/cod.png");
 
-	public CodEntityRenderer(class_5617.class_5618 arg) {
-		super(arg, new CodEntityModel<>(arg.method_32167(EntityModelLayers.COD)), 0.3F);
+	public CodEntityRenderer(EntityRendererFactory.Context context) {
+		super(context, new CodEntityModel<>(context.getPart(EntityModelLayers.COD)), 0.3F);
 	}
 
 	public Identifier getTexture(CodEntity codEntity) {

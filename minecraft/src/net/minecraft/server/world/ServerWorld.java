@@ -209,7 +209,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxWorldBorderRadius(server.getMaxWorldBorderRadius());
-		this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
+		this.raidManager = this.getPersistentStateManager()
+			.getOrCreate(compoundTag -> RaidManager.fromTag(this, compoundTag), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
 		if (!server.isSinglePlayer()) {
 			properties.setGameMode(server.getDefaultGameMode());
 		}
@@ -470,13 +471,14 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
 			}
 
-			if (bl && biome.canSetSnow(this, blockPos)) {
-				this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
-			}
+			if (bl) {
+				if (biome.canSetSnow(this, blockPos)) {
+					this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
+				}
 
-			if (bl && this.getBiome(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
 				BlockState blockState = this.getBlockState(blockPos2);
-				blockState.getBlock().rainTick(blockState, this, blockPos2);
+				Biome.Precipitation precipitation = this.getBiome(blockPos2).getPrecipitation();
+				blockState.getBlock().precipitationTick(blockState, this, blockPos2, precipitation);
 			}
 		}
 
@@ -511,7 +513,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private Optional<BlockPos> method_31418(BlockPos blockPos) {
 		Optional<BlockPos> optional = this.getPointOfInterestStorage()
 			.getNearestPosition(
-				pointOfInterestType -> pointOfInterestType == PointOfInterestType.LIGHTNING_ROD, blockPos, 64, PointOfInterestStorage.OccupationStatus.ANY
+				pointOfInterestType -> pointOfInterestType == PointOfInterestType.LIGHTNING_ROD, blockPos, 128, PointOfInterestStorage.OccupationStatus.ANY
 			);
 		if (optional.isPresent()) {
 			BlockPos blockPos2 = (BlockPos)optional.get();
@@ -1037,17 +1039,21 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Nullable
 	@Override
 	public MapState getMapState(String id) {
-		return this.getServer().getOverworld().getPersistentStateManager().get(() -> new MapState(id), id);
+		return this.getServer().getOverworld().getPersistentStateManager().get(MapState::method_32371, id);
 	}
 
 	@Override
-	public void putMapState(MapState mapState) {
-		this.getServer().getOverworld().getPersistentStateManager().set(mapState);
+	public void putMapState(String string, MapState mapState) {
+		this.getServer().getOverworld().getPersistentStateManager().set(string, mapState);
 	}
 
 	@Override
 	public int getNextMapId() {
-		return this.getServer().getOverworld().getPersistentStateManager().<IdCountsState>getOrCreate(IdCountsState::new, "idcounts").getNextMapId();
+		return this.getServer()
+			.getOverworld()
+			.getPersistentStateManager()
+			.<IdCountsState>getOrCreate(IdCountsState::method_32360, IdCountsState::new, "idcounts")
+			.getNextMapId();
 	}
 
 	public void setSpawnPos(BlockPos pos, float angle) {
@@ -1072,12 +1078,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public LongSet getForcedChunks() {
-		ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::new, "chunks");
+		ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::method_32350, "chunks");
 		return (LongSet)(forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET);
 	}
 
 	public boolean setChunkForced(int x, int z, boolean forced) {
-		ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::new, "chunks");
+		ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::method_32350, ForcedChunkState::new, "chunks");
 		ChunkPos chunkPos = new ChunkPos(x, z);
 		long l = chunkPos.toLong();
 		boolean bl;

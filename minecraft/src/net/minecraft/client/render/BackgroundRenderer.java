@@ -10,8 +10,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +28,9 @@ public class BackgroundRenderer {
 	private static long lastWaterFogColorUpdateTime = -1L;
 
 	public static void render(Camera camera, float tickDelta, ClientWorld world, int i, float f) {
-		FluidState fluidState = camera.getSubmergedFluidState();
-		if (fluidState.isIn(FluidTags.WATER)) {
+		CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
+		Entity entity = camera.getFocusedEntity();
+		if (cameraSubmersionType == CameraSubmersionType.WATER) {
 			long l = Util.getMeasuringTimeMs();
 			int j = world.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
 			if (lastWaterFogColorUpdateTime < 0L) {
@@ -58,15 +57,21 @@ public class BackgroundRenderer {
 				nextWaterFogColor = MathHelper.floor(h) << 16 | MathHelper.floor(r) << 8 | MathHelper.floor(s);
 				lastWaterFogColorUpdateTime = l;
 			}
-		} else if (fluidState.isIn(FluidTags.LAVA)) {
+		} else if (cameraSubmersionType == CameraSubmersionType.LAVA) {
 			red = 0.6F;
 			green = 0.1F;
 			blue = 0.0F;
 			lastWaterFogColorUpdateTime = -1L;
+		} else if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW) {
+			red = 0.623F;
+			green = 0.734F;
+			blue = 0.785F;
+			lastWaterFogColorUpdateTime = -1L;
+			RenderSystem.clearColor(red, green, blue, 0.0F);
 		} else {
 			float t = 0.25F + 0.75F * (float)i / 32.0F;
 			t = 1.0F - (float)Math.pow((double)t, 0.25);
-			Vec3d vec3d = world.method_23777(camera.getBlockPos(), tickDelta);
+			Vec3d vec3d = world.method_23777(camera.getPos(), tickDelta);
 			float u = (float)vec3d.x;
 			float v = (float)vec3d.y;
 			float w = (float)vec3d.z;
@@ -131,7 +136,7 @@ public class BackgroundRenderer {
 			}
 		}
 
-		if (d < 1.0 && !fluidState.isIn(FluidTags.LAVA)) {
+		if (d < 1.0 && cameraSubmersionType != CameraSubmersionType.LAVA) {
 			if (d < 0.0) {
 				d = 0.0;
 			}
@@ -148,10 +153,10 @@ public class BackgroundRenderer {
 			blue = blue * (1.0F - f) + blue * 0.6F * f;
 		}
 
-		if (fluidState.isIn(FluidTags.WATER)) {
+		if (cameraSubmersionType == CameraSubmersionType.WATER) {
 			float ux = 0.0F;
-			if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
-				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
+			if (entity instanceof ClientPlayerEntity) {
+				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
 				ux = clientPlayerEntity.getUnderwaterVisibility();
 			}
 
@@ -159,8 +164,8 @@ public class BackgroundRenderer {
 			red = red * (1.0F - ux) + red * vx * ux;
 			green = green * (1.0F - ux) + green * vx * ux;
 			blue = blue * (1.0F - ux) + blue * vx * ux;
-		} else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-			float ux = GameRenderer.getNightVisionStrength((LivingEntity)camera.getFocusedEntity(), tickDelta);
+		} else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.NIGHT_VISION)) {
+			float ux = GameRenderer.getNightVisionStrength((LivingEntity)entity, tickDelta);
 			float vx = Math.min(1.0F / red, Math.min(1.0F / green, 1.0F / blue));
 			red = red * (1.0F - ux) + red * vx * ux;
 			green = green * (1.0F - ux) + green * vx * ux;
@@ -176,9 +181,9 @@ public class BackgroundRenderer {
 	}
 
 	public static void applyFog(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog) {
-		FluidState fluidState = camera.getSubmergedFluidState();
+		CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
 		Entity entity = camera.getFocusedEntity();
-		if (fluidState.isIn(FluidTags.WATER)) {
+		if (cameraSubmersionType == CameraSubmersionType.WATER) {
 			float f = 1.0F;
 			f = 0.05F;
 			if (entity instanceof ClientPlayerEntity) {
@@ -195,7 +200,7 @@ public class BackgroundRenderer {
 		} else {
 			float f;
 			float g;
-			if (fluidState.isIn(FluidTags.LAVA)) {
+			if (cameraSubmersionType == CameraSubmersionType.LAVA) {
 				if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 					f = 0.0F;
 					g = 3.0F;
@@ -213,6 +218,9 @@ public class BackgroundRenderer {
 					f = h * 0.25F;
 					g = h;
 				}
+			} else if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW) {
+				f = 0.0F;
+				g = 2.0F;
 			} else if (thickFog) {
 				f = viewDistance * 0.05F;
 				g = Math.min(viewDistance, 192.0F) * 0.5F;

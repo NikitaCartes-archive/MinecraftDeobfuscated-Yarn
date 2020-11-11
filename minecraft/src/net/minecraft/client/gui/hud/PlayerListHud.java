@@ -44,14 +44,14 @@ public class PlayerListHud extends DrawableHelper {
 		this.inGameHud = inGameHud;
 	}
 
-	public Text getPlayerName(PlayerListEntry playerListEntry) {
-		return playerListEntry.getDisplayName() != null
-			? this.method_27538(playerListEntry, playerListEntry.getDisplayName().shallowCopy())
-			: this.method_27538(playerListEntry, Team.modifyText(playerListEntry.getScoreboardTeam(), new LiteralText(playerListEntry.getProfile().getName())));
+	public Text getPlayerName(PlayerListEntry entry) {
+		return entry.getDisplayName() != null
+			? this.applyGameModeFormatting(entry, entry.getDisplayName().shallowCopy())
+			: this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), new LiteralText(entry.getProfile().getName())));
 	}
 
-	private Text method_27538(PlayerListEntry playerListEntry, MutableText mutableText) {
-		return playerListEntry.getGameMode() == GameMode.SPECTATOR ? mutableText.formatted(Formatting.ITALIC) : mutableText;
+	private Text applyGameModeFormatting(PlayerListEntry entry, MutableText name) {
+		return entry.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name;
 	}
 
 	public void tick(boolean visible) {

@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -33,22 +34,22 @@ public class PersistentStateManager {
 		return new File(this.directory, id + ".dat");
 	}
 
-	public <T extends PersistentState> T getOrCreate(Supplier<T> factory, String id) {
-		T persistentState = this.get(factory, id);
+	public <T extends PersistentState> T getOrCreate(Function<CompoundTag, T> function, Supplier<T> supplier, String string) {
+		T persistentState = this.get(function, string);
 		if (persistentState != null) {
 			return persistentState;
 		} else {
-			T persistentState2 = (T)factory.get();
-			this.set(persistentState2);
+			T persistentState2 = (T)supplier.get();
+			this.set(string, persistentState2);
 			return persistentState2;
 		}
 	}
 
 	@Nullable
-	public <T extends PersistentState> T get(Supplier<T> factory, String id) {
+	public <T extends PersistentState> T get(Function<CompoundTag, T> function, String id) {
 		PersistentState persistentState = (PersistentState)this.loadedStates.get(id);
 		if (persistentState == null && !this.loadedStates.containsKey(id)) {
-			persistentState = this.readFromFile(factory, id);
+			persistentState = this.readFromFile(function, id);
 			this.loadedStates.put(id, persistentState);
 		}
 
@@ -56,24 +57,22 @@ public class PersistentStateManager {
 	}
 
 	@Nullable
-	private <T extends PersistentState> T readFromFile(Supplier<T> factory, String id) {
+	private <T extends PersistentState> T readFromFile(Function<CompoundTag, T> function, String id) {
 		try {
 			File file = this.getFile(id);
 			if (file.exists()) {
-				T persistentState = (T)factory.get();
 				CompoundTag compoundTag = this.readTag(id, SharedConstants.getGameVersion().getWorldVersion());
-				persistentState.fromTag(compoundTag.getCompound("data"));
-				return persistentState;
+				return (T)function.apply(compoundTag.getCompound("data"));
 			}
-		} catch (Exception var6) {
-			LOGGER.error("Error loading saved data: {}", id, var6);
+		} catch (Exception var5) {
+			LOGGER.error("Error loading saved data: {}", id, var5);
 		}
 
 		return null;
 	}
 
-	public void set(PersistentState state) {
-		this.loadedStates.put(state.getId(), state);
+	public void set(String string, PersistentState persistentState) {
+		this.loadedStates.put(string, persistentState);
 	}
 
 	public CompoundTag readTag(String id, int dataVersion) throws IOException {
@@ -171,10 +170,10 @@ public class PersistentStateManager {
 	}
 
 	public void save() {
-		for (PersistentState persistentState : this.loadedStates.values()) {
+		this.loadedStates.forEach((string, persistentState) -> {
 			if (persistentState != null) {
-				persistentState.save(this.getFile(persistentState.getId()));
+				persistentState.save(this.getFile(string));
 			}
-		}
+		});
 	}
 }

@@ -240,6 +240,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	protected void mobTick() {
 		if (this.getInvulnerableTimer() > 0) {
 			int i = this.getInvulnerableTimer() - 1;
+			this.bossBar.setPercent(1.0F - (float)i / 220.0F);
 			if (i <= 0) {
 				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
 					? Explosion.DestructionType.DESTROY
@@ -353,6 +354,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	public void method_6885() {
 		this.setInvulTimer(220);
+		this.bossBar.setPercent(0.0F);
 		this.setHealth(this.getMaxHealth() / 3.0F);
 	}
 

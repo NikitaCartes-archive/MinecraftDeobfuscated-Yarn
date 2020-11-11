@@ -1589,7 +1589,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			this.renderEndSky(matrices);
 		} else if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.NORMAL) {
 			RenderSystem.disableTexture();
-			Vec3d vec3d = this.world.method_23777(this.client.gameRenderer.getCamera().getBlockPos(), tickDelta);
+			Vec3d vec3d = this.world.method_23777(this.client.gameRenderer.getCamera().getPos(), tickDelta);
 			float f = (float)vec3d.x;
 			float g = (float)vec3d.y;
 			float h = (float)vec3d.z;

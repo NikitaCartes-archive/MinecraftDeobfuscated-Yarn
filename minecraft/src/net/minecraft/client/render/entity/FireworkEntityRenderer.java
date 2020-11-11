@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -17,9 +16,9 @@ import net.minecraft.util.Identifier;
 public class FireworkEntityRenderer extends EntityRenderer<FireworkRocketEntity> {
 	private final ItemRenderer itemRenderer;
 
-	public FireworkEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
-		this.itemRenderer = arg.method_32168();
+	public FireworkEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
+		this.itemRenderer = context.getItemRenderer();
 	}
 
 	public void render(FireworkRocketEntity fireworkRocketEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

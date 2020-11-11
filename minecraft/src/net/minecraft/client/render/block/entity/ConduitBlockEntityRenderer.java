@@ -2,14 +2,13 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5603;
-import net.minecraft.class_5605;
-import net.minecraft.class_5606;
-import net.minecraft.class_5607;
-import net.minecraft.class_5609;
-import net.minecraft.class_5610;
 import net.minecraft.block.entity.ConduitBlockEntity;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -17,6 +16,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.client.util.math.Dilation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
@@ -49,34 +49,32 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 		this.field_20826 = context.getLayerModelPart(EntityModelLayers.CONDUIT);
 	}
 
-	public static class_5607 method_32150() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117(
-			"eye", class_5606.method_32108().method_32101(0, 0).method_32098(-4.0F, -4.0F, 0.0F, 8.0F, 8.0F, 0.0F, new class_5605(0.01F)), class_5603.field_27701
-		);
-		return class_5607.method_32110(lv, 16, 16);
+	public static TexturedModelData getEyeTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("eye", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -4.0F, 0.0F, 8.0F, 8.0F, 0.0F, new Dilation(0.01F)), ModelTransform.NONE);
+		return TexturedModelData.of(modelData, 16, 16);
 	}
 
-	public static class_5607 method_32151() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117("wind", class_5606.method_32108().method_32101(0, 0).method_32097(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F), class_5603.field_27701);
-		return class_5607.method_32110(lv, 64, 32);
+	public static TexturedModelData getWindTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("wind", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F), ModelTransform.NONE);
+		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	public static class_5607 method_32152() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117("shell", class_5606.method_32108().method_32101(0, 0).method_32097(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F), class_5603.field_27701);
-		return class_5607.method_32110(lv, 32, 16);
+	public static TexturedModelData getShellTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("shell", ModelPartBuilder.create().uv(0, 0).cuboid(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F), ModelTransform.NONE);
+		return TexturedModelData.of(modelData, 32, 16);
 	}
 
-	public static class_5607 method_32153() {
-		class_5609 lv = new class_5609();
-		class_5610 lv2 = lv.method_32111();
-		lv2.method_32117("shell", class_5606.method_32108().method_32101(0, 0).method_32097(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), class_5603.field_27701);
-		return class_5607.method_32110(lv, 32, 16);
+	public static TexturedModelData getPlainTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild("shell", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE);
+		return TexturedModelData.of(modelData, 32, 16);
 	}
 
 	public void render(ConduitBlockEntity conduitBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

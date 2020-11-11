@@ -1,8 +1,12 @@
 package net.minecraft.block;
 
+import java.util.Optional;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -29,12 +33,17 @@ public interface Waterloggable extends FluidDrainable, FluidFillable {
 	}
 
 	@Override
-	default Fluid tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
+	default ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
 		if ((Boolean)state.get(Properties.WATERLOGGED)) {
 			world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(false)), 3);
-			return Fluids.WATER;
+			return new ItemStack(Items.WATER_BUCKET);
 		} else {
-			return Fluids.EMPTY;
+			return ItemStack.EMPTY;
 		}
+	}
+
+	@Override
+	default Optional<SoundEvent> getDrainSound() {
+		return Fluids.WATER.getFillSound();
 	}
 }

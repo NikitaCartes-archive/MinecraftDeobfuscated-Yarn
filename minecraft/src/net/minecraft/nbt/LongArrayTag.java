@@ -6,7 +6,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.class_5627;
+import net.minecraft.nbt.visitor.NbtTagVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class LongArrayTag extends AbstractListTag<LongTag> {
@@ -98,8 +98,8 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public void method_32289(class_5627 arg) {
-		arg.method_32299(this);
+	public void accept(NbtTagVisitor visitor) {
+		visitor.visitLongArrayTag(this);
 	}
 
 	public long[] getLongArray() {

@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SkullBlock;
@@ -23,6 +22,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.DragonHeadEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -43,19 +43,19 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 		hashMap.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.getTexture());
 	});
 
-	public static Map<SkullBlock.SkullType, SkullBlockEntityModel> method_32160(class_5599 arg) {
+	public static Map<SkullBlock.SkullType, SkullBlockEntityModel> getModels(EntityModelLoader modelLoader) {
 		Builder<SkullBlock.SkullType, SkullBlockEntityModel> builder = ImmutableMap.builder();
-		builder.put(SkullBlock.Type.SKELETON, new SkullEntityModel(arg.method_32072(EntityModelLayers.SKELETON_SKULL)));
-		builder.put(SkullBlock.Type.WITHER_SKELETON, new SkullEntityModel(arg.method_32072(EntityModelLayers.WITHER_SKELETON_SKULL)));
-		builder.put(SkullBlock.Type.PLAYER, new SkullEntityModel(arg.method_32072(EntityModelLayers.PLAYER_HEAD)));
-		builder.put(SkullBlock.Type.ZOMBIE, new SkullEntityModel(arg.method_32072(EntityModelLayers.ZOMBIE_HEAD)));
-		builder.put(SkullBlock.Type.CREEPER, new SkullEntityModel(arg.method_32072(EntityModelLayers.CREEPER_HEAD)));
-		builder.put(SkullBlock.Type.DRAGON, new DragonHeadEntityModel(arg.method_32072(EntityModelLayers.DRAGON_SKULL)));
+		builder.put(SkullBlock.Type.SKELETON, new SkullEntityModel(modelLoader.getModelPart(EntityModelLayers.SKELETON_SKULL)));
+		builder.put(SkullBlock.Type.WITHER_SKELETON, new SkullEntityModel(modelLoader.getModelPart(EntityModelLayers.WITHER_SKELETON_SKULL)));
+		builder.put(SkullBlock.Type.PLAYER, new SkullEntityModel(modelLoader.getModelPart(EntityModelLayers.PLAYER_HEAD)));
+		builder.put(SkullBlock.Type.ZOMBIE, new SkullEntityModel(modelLoader.getModelPart(EntityModelLayers.ZOMBIE_HEAD)));
+		builder.put(SkullBlock.Type.CREEPER, new SkullEntityModel(modelLoader.getModelPart(EntityModelLayers.CREEPER_HEAD)));
+		builder.put(SkullBlock.Type.DRAGON, new DragonHeadEntityModel(modelLoader.getModelPart(EntityModelLayers.DRAGON_SKULL)));
 		return builder.build();
 	}
 
-	public SkullBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		this.MODELS = method_32160(context.getLayerRenderDispatcher());
+	public SkullBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		this.MODELS = getModels(ctx.getLayerRenderDispatcher());
 	}
 
 	public void render(SkullBlockEntity skullBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

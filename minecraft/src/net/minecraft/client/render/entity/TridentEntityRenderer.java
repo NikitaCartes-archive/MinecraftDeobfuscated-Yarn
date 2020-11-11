@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -20,9 +19,9 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 	public static final Identifier TEXTURE = new Identifier("textures/entity/trident.png");
 	private final TridentEntityModel model;
 
-	public TridentEntityRenderer(class_5617.class_5618 arg) {
-		super(arg);
-		this.model = new TridentEntityModel(arg.method_32167(EntityModelLayers.TRIDENT));
+	public TridentEntityRenderer(EntityRendererFactory.Context context) {
+		super(context);
+		this.model = new TridentEntityModel(context.getPart(EntityModelLayers.TRIDENT));
 	}
 
 	public void render(TridentEntity tridentEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

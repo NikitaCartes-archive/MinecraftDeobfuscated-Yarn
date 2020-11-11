@@ -21,12 +21,15 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5459;
+import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.LadderBlock;
+import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -52,12 +55,15 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
@@ -114,6 +120,7 @@ import net.minecraft.world.World;
 public abstract class LivingEntity extends Entity {
 	private static final UUID SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
 	private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
+	private static final UUID field_27859 = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
 	private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(
 		SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", 0.3F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL
 	);
@@ -357,7 +364,7 @@ public abstract class LivingEntity extends Entity {
 			}
 		}
 
-		if (this.isAlive() && this.isWet()) {
+		if (this.isAlive() && (this.isWet() || this.inPowderSnow)) {
 			this.extinguish();
 		}
 
@@ -465,6 +472,32 @@ public abstract class LivingEntity extends Entity {
 					ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
 					itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.FEET));
 				}
+			}
+		}
+	}
+
+	protected void method_32324() {
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		if (entityAttributeInstance != null) {
+			if (entityAttributeInstance.getModifier(field_27859) != null) {
+				entityAttributeInstance.removeModifier(field_27859);
+			}
+		}
+	}
+
+	protected void method_32325() {
+		if (!this.getLandingBlockState().isAir()) {
+			int i = this.getFrozenTicks();
+			if (i > 0) {
+				EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+				if (entityAttributeInstance == null) {
+					return;
+				}
+
+				float f = -0.05F * this.getFreezingScale();
+				entityAttributeInstance.addTemporaryModifier(
+					new EntityAttributeModifier(field_27859, "Powder snow slow", (double)f, EntityAttributeModifier.Operation.ADDITION)
+				);
 			}
 		}
 	}
@@ -1035,6 +1068,8 @@ public abstract class LivingEntity extends Entity {
 						b = 37;
 					} else if (source == DamageSource.SWEET_BERRY_BUSH) {
 						b = 44;
+					} else if (source == DamageSource.FREEZE) {
+						b = 57;
 					} else {
 						b = 2;
 					}
@@ -1574,10 +1609,12 @@ public abstract class LivingEntity extends Entity {
 			case 36:
 			case 37:
 			case 44:
+			case 57:
 				boolean bl = status == 33;
 				boolean bl2 = status == 36;
 				boolean bl3 = status == 37;
 				boolean bl4 = status == 44;
+				boolean bl5 = status == 57;
 				this.limbDistance = 1.5F;
 				this.timeUntilRegen = 20;
 				this.maxHurtTime = 10;
@@ -1594,6 +1631,8 @@ public abstract class LivingEntity extends Entity {
 					damageSource = DamageSource.DROWN;
 				} else if (bl4) {
 					damageSource = DamageSource.SWEET_BERRY_BUSH;
+				} else if (bl5) {
+					damageSource = DamageSource.FREEZE;
 				} else {
 					damageSource = DamageSource.GENERIC;
 				}
@@ -1653,6 +1692,7 @@ public abstract class LivingEntity extends Entity {
 			case 43:
 			case 45:
 			case 53:
+			case 56:
 			default:
 				super.handleStatus(status);
 				break;
@@ -2065,7 +2105,8 @@ public abstract class LivingEntity extends Entity {
 		this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
 		this.move(MovementType.SELF, this.getVelocity());
 		Vec3d vec3d2 = this.getVelocity();
-		if ((this.horizontalCollision || this.jumping) && this.isClimbing()) {
+		if ((this.horizontalCollision || this.jumping)
+			&& (this.isClimbing() || this.getBlockState().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
 			vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
 		}
 
@@ -2458,6 +2499,21 @@ public abstract class LivingEntity extends Entity {
 		this.initAi();
 		Box box = this.getBoundingBox();
 		this.travel(new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed));
+		this.world.getProfiler().pop();
+		this.world.getProfiler().push("freezing");
+		int m = this.getFrozenTicks();
+		if (this.inPowderSnow && this.canFreeze()) {
+			this.setFrozenTicks(Math.min(this.getMinFreezeDamageTicks(), m + 1));
+		} else {
+			this.setFrozenTicks(Math.max(0, m - 2));
+		}
+
+		this.method_32324();
+		this.method_32325();
+		if (this.age % 60 == 0 && this.isFreezing() && this.canFreeze()) {
+			this.damage(DamageSource.FREEZE, 1.0F);
+		}
+
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("push");
 		if (this.riptideTicks > 0) {
@@ -3157,5 +3213,54 @@ public abstract class LivingEntity extends Entity {
 		} else {
 			return super.getVisibilityBoundingBox();
 		}
+	}
+
+	public static EquipmentSlot method_32326(ItemStack itemStack) {
+		Item item = itemStack.getItem();
+		if (!itemStack.isOf(Items.CARVED_PUMPKIN) && (!(item instanceof BlockItem) || !(((BlockItem)item).getBlock() instanceof AbstractSkullBlock))) {
+			if (item instanceof ArmorItem) {
+				return ((ArmorItem)item).getSlotType();
+			} else if (itemStack.isOf(Items.ELYTRA)) {
+				return EquipmentSlot.CHEST;
+			} else {
+				return itemStack.isOf(Items.SHIELD) ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
+			}
+		} else {
+			return EquipmentSlot.HEAD;
+		}
+	}
+
+	private static class_5630 method_32321(LivingEntity livingEntity, EquipmentSlot equipmentSlot) {
+		return equipmentSlot != EquipmentSlot.HEAD && equipmentSlot != EquipmentSlot.MAINHAND && equipmentSlot != EquipmentSlot.OFFHAND
+			? class_5630.method_32331(livingEntity, equipmentSlot, itemStack -> itemStack.isEmpty() || MobEntity.method_32326(itemStack) == equipmentSlot)
+			: class_5630.method_32330(livingEntity, equipmentSlot);
+	}
+
+	@Nullable
+	private static EquipmentSlot method_32322(int i) {
+		if (i == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
+			return EquipmentSlot.HEAD;
+		} else if (i == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
+			return EquipmentSlot.CHEST;
+		} else if (i == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
+			return EquipmentSlot.LEGS;
+		} else if (i == 100 + EquipmentSlot.FEET.getEntitySlotId()) {
+			return EquipmentSlot.FEET;
+		} else if (i == 98) {
+			return EquipmentSlot.MAINHAND;
+		} else {
+			return i == 99 ? EquipmentSlot.OFFHAND : null;
+		}
+	}
+
+	@Override
+	public class_5630 method_32318(int i) {
+		EquipmentSlot equipmentSlot = method_32322(i);
+		return equipmentSlot != null ? method_32321(this, equipmentSlot) : super.method_32318(i);
+	}
+
+	@Override
+	public boolean canFreeze() {
+		return !this.isSpectator();
 	}
 }

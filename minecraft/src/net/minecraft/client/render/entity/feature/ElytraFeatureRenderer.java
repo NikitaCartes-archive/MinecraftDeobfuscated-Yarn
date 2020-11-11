@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -12,6 +11,7 @@ import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.model.ElytraEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
@@ -25,9 +25,9 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 	private static final Identifier SKIN = new Identifier("textures/entity/elytra.png");
 	private final ElytraEntityModel<T> elytra;
 
-	public ElytraFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, class_5599 arg) {
+	public ElytraFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, EntityModelLoader entityModelLoader) {
 		super(featureRendererContext);
-		this.elytra = new ElytraEntityModel<>(arg.method_32072(EntityModelLayers.ELYTRA));
+		this.elytra = new ElytraEntityModel<>(entityModelLoader.getModelPart(EntityModelLayers.ELYTRA));
 	}
 
 	public void render(

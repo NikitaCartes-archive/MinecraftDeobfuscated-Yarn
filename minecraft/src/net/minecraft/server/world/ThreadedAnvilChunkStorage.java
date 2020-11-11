@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5567;
+import net.minecraft.class_5629;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -1057,7 +1058,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		private final Entity entity;
 		private final int maxDistance;
 		private ChunkSectionPos lastCameraPosition;
-		private final Set<ServerPlayerEntity> playersTracking = Sets.<ServerPlayerEntity>newHashSet();
+		private final Set<class_5629> playersTracking = Sets.newIdentityHashSet();
 
 		public EntityTracker(Entity maxDistance, int tickInterval, int i, boolean bl) {
 			this.entry = new EntityTrackerEntry(ThreadedAnvilChunkStorage.this.world, maxDistance, i, bl, this::sendToOtherNearbyPlayers);
@@ -1077,8 +1078,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 
 		public void sendToOtherNearbyPlayers(Packet<?> packet) {
-			for (ServerPlayerEntity serverPlayerEntity : this.playersTracking) {
-				serverPlayerEntity.networkHandler.sendPacket(packet);
+			for (class_5629 lv : this.playersTracking) {
+				lv.sendPacket(packet);
 			}
 		}
 
@@ -1090,13 +1091,13 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 
 		public void stopTracking() {
-			for (ServerPlayerEntity serverPlayerEntity : this.playersTracking) {
-				this.entry.stopTracking(serverPlayerEntity);
+			for (class_5629 lv : this.playersTracking) {
+				this.entry.stopTracking(lv.method_32311());
 			}
 		}
 
 		public void stopTracking(ServerPlayerEntity serverPlayerEntity) {
-			if (this.playersTracking.remove(serverPlayerEntity)) {
+			if (this.playersTracking.remove(serverPlayerEntity.networkHandler)) {
 				this.entry.stopTracking(serverPlayerEntity);
 			}
 		}
@@ -1116,10 +1117,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 						}
 					}
 
-					if (bl2 && this.playersTracking.add(player)) {
+					if (bl2 && this.playersTracking.add(player.networkHandler)) {
 						this.entry.startTracking(player);
 					}
-				} else if (this.playersTracking.remove(player)) {
+				} else if (this.playersTracking.remove(player.networkHandler)) {
 					this.entry.stopTracking(player);
 				}
 			}

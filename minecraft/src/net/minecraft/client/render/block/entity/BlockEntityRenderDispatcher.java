@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5599;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.font.TextRenderer;
@@ -16,6 +15,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
@@ -31,15 +31,15 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloadLis
 	private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = ImmutableMap.of();
 	private final BufferBuilder bufferBuilder = new BufferBuilder(256);
 	private final TextRenderer textRenderer;
-	private final class_5599 field_27746;
+	private final EntityModelLoader field_27746;
 	public World world;
 	public Camera camera;
 	public HitResult crosshairTarget;
 	private final Supplier<BlockRenderManager> field_27747;
 
-	public BlockEntityRenderDispatcher(TextRenderer textRenderer, class_5599 arg, Supplier<BlockRenderManager> supplier) {
+	public BlockEntityRenderDispatcher(TextRenderer textRenderer, EntityModelLoader entityModelLoader, Supplier<BlockRenderManager> supplier) {
 		this.textRenderer = textRenderer;
-		this.field_27746 = arg;
+		this.field_27746 = entityModelLoader;
 		this.field_27747 = supplier;
 	}
 

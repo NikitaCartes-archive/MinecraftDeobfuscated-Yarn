@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5617;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -34,8 +33,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	protected M model;
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
 
-	public LivingEntityRenderer(class_5617.class_5618 arg, M model, float shadowRadius) {
-		super(arg);
+	public LivingEntityRenderer(EntityRendererFactory.Context ctx, M model, float shadowRadius) {
+		super(ctx);
 		this.model = model;
 		this.shadowRadius = shadowRadius;
 	}
@@ -148,7 +147,9 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	 * Returns the packed overlay color for an entity, determined by its death progress and whether it is flashing.
 	 */
 	public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
-		return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
+		return OverlayTexture.packUv(
+			OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.method_32692(entity.hurtTime > 0 || entity.deathTime > 0, entity.getRecentDamageSource())
+		);
 	}
 
 	protected boolean isVisible(T entity) {

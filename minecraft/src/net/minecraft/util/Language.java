@@ -122,6 +122,6 @@ public abstract class Language {
 
 	@Environment(EnvType.CLIENT)
 	public List<OrderedText> reorder(List<StringVisitable> texts) {
-		return (List<OrderedText>)texts.stream().map(getInstance()::reorder).collect(ImmutableList.toImmutableList());
+		return (List<OrderedText>)texts.stream().map(this::reorder).collect(ImmutableList.toImmutableList());
 	}
 }

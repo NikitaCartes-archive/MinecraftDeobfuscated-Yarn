@@ -18,11 +18,12 @@ public abstract class LongRunningTask implements Errable, Runnable {
 	/**
 	 * Moved from RealmsTasks in 20w10a.
 	 */
-	protected static void pause(int seconds) {
+	protected static void pause(long l) {
 		try {
-			Thread.sleep((long)(seconds * 1000));
-		} catch (InterruptedException var2) {
-			LOGGER.error("", (Throwable)var2);
+			Thread.sleep(l * 1000L);
+		} catch (InterruptedException var3) {
+			Thread.currentThread().interrupt();
+			LOGGER.error("", (Throwable)var3);
 		}
 	}
 

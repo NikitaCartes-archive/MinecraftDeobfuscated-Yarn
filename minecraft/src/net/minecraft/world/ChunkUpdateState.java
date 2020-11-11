@@ -5,17 +5,20 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.nbt.CompoundTag;
 
 public class ChunkUpdateState extends PersistentState {
-	private LongSet all = new LongOpenHashSet();
-	private LongSet remaining = new LongOpenHashSet();
+	private final LongSet all;
+	private final LongSet remaining;
 
-	public ChunkUpdateState(String string) {
-		super(string);
+	private ChunkUpdateState(LongSet longSet, LongSet longSet2) {
+		this.all = longSet;
+		this.remaining = longSet2;
 	}
 
-	@Override
-	public void fromTag(CompoundTag tag) {
-		this.all = new LongOpenHashSet(tag.getLongArray("All"));
-		this.remaining = new LongOpenHashSet(tag.getLongArray("Remaining"));
+	public ChunkUpdateState() {
+		this(new LongOpenHashSet(), new LongOpenHashSet());
+	}
+
+	public static ChunkUpdateState method_32358(CompoundTag compoundTag) {
+		return new ChunkUpdateState(new LongOpenHashSet(compoundTag.getLongArray("All")), new LongOpenHashSet(compoundTag.getLongArray("Remaining")));
 	}
 
 	@Override

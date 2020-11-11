@@ -52,7 +52,7 @@ import net.minecraft.util.registry.Registry;
 public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
 	private static final SimpleInventory INVENTORY = new SimpleInventory(45);
-	private static final Text field_26563 = new TranslatableText("inventory.binSlot");
+	private static final Text DELETE_ITEM_SLOT_TEXT = new TranslatableText("inventory.binSlot");
 	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
 	private float scrollPosition;
 	private boolean scrolling;
@@ -587,7 +587,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (this.deleteItemSlot != null
 			&& selectedTab == ItemGroup.INVENTORY.getIndex()
 			&& this.isPointWithinBounds(this.deleteItemSlot.x, this.deleteItemSlot.y, 16, 16, (double)mouseX, (double)mouseY)) {
-			this.renderTooltip(matrices, field_26563, mouseX, mouseY);
+			this.renderTooltip(matrices, DELETE_ITEM_SLOT_TEXT, mouseX, mouseY);
 		}
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -626,7 +626,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				list2.add(1, itemGroup.getTranslationKey().shallowCopy().formatted(Formatting.BLUE));
 			}
 
-			this.renderTooltip(matrices, list2, x, y);
+			this.method_32634(matrices, list2, stack.getTooltipData(), x, y);
 		} else {
 			super.renderTooltip(matrices, stack, x, y);
 		}

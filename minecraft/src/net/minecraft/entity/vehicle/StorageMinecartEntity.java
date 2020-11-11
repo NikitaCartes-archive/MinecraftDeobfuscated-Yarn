@@ -1,6 +1,7 @@
 package net.minecraft.entity.vehicle;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -101,13 +102,19 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public boolean equip(int slot, ItemStack item) {
-		if (slot >= 0 && slot < this.size()) {
-			this.setStack(slot, item);
-			return true;
-		} else {
-			return false;
-		}
+	public class_5630 method_32318(int i) {
+		return i >= 0 && i < this.size() ? new class_5630() {
+			@Override
+			public ItemStack method_32327() {
+				return StorageMinecartEntity.this.getStack(i);
+			}
+
+			@Override
+			public boolean method_32332(ItemStack itemStack) {
+				StorageMinecartEntity.this.setStack(i, itemStack);
+				return true;
+			}
+		} : super.method_32318(i);
 	}
 
 	@Override

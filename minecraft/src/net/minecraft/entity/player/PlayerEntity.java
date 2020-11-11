@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -60,7 +61,6 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
@@ -637,8 +637,10 @@ public abstract class PlayerEntity extends LivingEntity {
 			return SoundEvents.ENTITY_PLAYER_HURT_ON_FIRE;
 		} else if (source == DamageSource.DROWN) {
 			return SoundEvents.ENTITY_PLAYER_HURT_DROWN;
+		} else if (source == DamageSource.SWEET_BERRY_BUSH) {
+			return SoundEvents.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH;
 		} else {
-			return source == DamageSource.SWEET_BERRY_BUSH ? SoundEvents.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH : SoundEvents.ENTITY_PLAYER_HURT;
+			return source == DamageSource.FREEZE ? SoundEvents.ENTITY_PLAYER_HURT_FREEZE : SoundEvents.ENTITY_PLAYER_HURT;
 		}
 	}
 
@@ -1817,7 +1819,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public Text getDisplayName() {
-		MutableText mutableText = Team.modifyText(this.getScoreboardTeam(), this.getName());
+		MutableText mutableText = Team.decorateName(this.getScoreboardTeam(), this.getName());
 		return this.addTellClickEvent(mutableText);
 	}
 
@@ -1882,52 +1884,12 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean equip(int slot, ItemStack item) {
-		if (slot >= 0 && slot < this.inventory.main.size()) {
-			this.inventory.setStack(slot, item);
-			return true;
+	public class_5630 method_32318(int i) {
+		if (i >= 0 && i < this.inventory.main.size()) {
+			return class_5630.method_32328(this.inventory, i);
 		} else {
-			EquipmentSlot equipmentSlot;
-			if (slot == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
-				equipmentSlot = EquipmentSlot.HEAD;
-			} else if (slot == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
-				equipmentSlot = EquipmentSlot.CHEST;
-			} else if (slot == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
-				equipmentSlot = EquipmentSlot.LEGS;
-			} else if (slot == 100 + EquipmentSlot.FEET.getEntitySlotId()) {
-				equipmentSlot = EquipmentSlot.FEET;
-			} else {
-				equipmentSlot = null;
-			}
-
-			if (slot == 98) {
-				this.equipStack(EquipmentSlot.MAINHAND, item);
-				return true;
-			} else if (slot == 99) {
-				this.equipStack(EquipmentSlot.OFFHAND, item);
-				return true;
-			} else if (equipmentSlot == null) {
-				int i = slot - 200;
-				if (i >= 0 && i < this.enderChestInventory.size()) {
-					this.enderChestInventory.setStack(i, item);
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if (!item.isEmpty()) {
-					if (!(item.getItem() instanceof ArmorItem) && !(item.getItem() instanceof ElytraItem)) {
-						if (equipmentSlot != EquipmentSlot.HEAD) {
-							return false;
-						}
-					} else if (MobEntity.getPreferredEquipmentSlot(item) != equipmentSlot) {
-						return false;
-					}
-				}
-
-				this.inventory.setStack(equipmentSlot.getEntitySlotId() + this.inventory.main.size(), item);
-				return true;
-			}
+			int j = i - 200;
+			return j >= 0 && j < this.enderChestInventory.size() ? class_5630.method_32328(this.enderChestInventory, j) : super.method_32318(i);
 		}
 	}
 
@@ -2002,7 +1964,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+		EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
 		return this.getEquippedStack(equipmentSlot).isEmpty();
 	}
 
@@ -2097,6 +2059,11 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Environment(EnvType.CLIENT)
 	public boolean isUsingSpyglass() {
 		return this.isUsingItem() && this.getActiveItem().isOf(Items.SPYGLASS);
+	}
+
+	@Override
+	public boolean canFreeze() {
+		return super.canFreeze() && !this.isCreative();
 	}
 
 	public static enum SleepFailureReason {

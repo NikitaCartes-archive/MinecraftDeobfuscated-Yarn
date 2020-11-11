@@ -18,11 +18,11 @@ public class ScreenTexts {
 	public static final Text BACK = new TranslatableText("gui.back");
 	public static final Text CONNECT_FAILED = new TranslatableText("connect.failed");
 
-	public static Text getToggleText(boolean value) {
-		return value ? ON : OFF;
-	}
-
 	public static MutableText composeToggleText(Text text, boolean value) {
 		return new TranslatableText(value ? "options.on.composed" : "options.off.composed", text);
+	}
+
+	public static MutableText method_32700(Text text, Text text2) {
+		return new TranslatableText("options.generic_value", text, text2);
 	}
 }
